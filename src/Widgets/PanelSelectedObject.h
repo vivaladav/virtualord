@@ -18,6 +18,7 @@ namespace game
 
 class GameObject;
 class ObjectsDataRegistry;
+class ObjectVisualStat;
 
 class PanelSelectedObject : public sgl::sgui::Widget
 {
@@ -43,6 +44,10 @@ private:
     sgl::sgui::Image * mImg = nullptr;
     sgl::sgui::TextArea * mTitle = nullptr;
     sgl::sgui::Image * mBarLvl = nullptr;
+
+    ObjectVisualStat * mStatEnergy = nullptr;
+    ObjectVisualStat * mStatHealth = nullptr;
+    ObjectVisualStat * mStatExperience = nullptr;
 
     GameObject * mObj = nullptr;
 };

@@ -3,6 +3,7 @@
 #include "GameUIData.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/ObjectsDataRegistry.h"
+#include "Widgets/DigitsDisplay.h"
 
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
@@ -51,6 +52,65 @@ public:
     }
 };
 
+// ========== OBJECT STAT ==========
+class ObjectVisualStat : public sgl::sgui::Widget
+{
+public:
+    enum VisualStatType : unsigned int
+    {
+        VST_ENERGY,
+        VST_HEALTH,
+        VST_EXPERIENCE,
+
+        NUM_VISUAL_STAT_TYPES
+    };
+
+public:
+    ObjectVisualStat(VisualStatType type, sgl::sgui::Widget * parent)
+        : sgl::sgui::Widget(parent)
+    {
+        using namespace sgl;
+
+        // ICON
+        const unsigned int textIds[NUM_VISUAL_STAT_TYPES] =
+        {
+            ID_PAN_SELOBJ_ICON_ENERGY,
+            ID_PAN_SELOBJ_ICON_HEALTH,
+            ID_PAN_SELOBJ_ICON_EXPERIENCE
+        };
+
+        auto tm = graphic::TextureManager::Instance();
+        auto tex = tm->GetSprite(SpriteFilePanelSelectedObject, textIds[type]);
+
+        // ICON
+        const unsigned int colorIcon = 0x85a1adff;
+        mIcon = new sgui::Image(tex, this);
+        mIcon->SetColor(colorIcon);
+
+        // BAR
+        tex = tm->GetSprite(SpriteFilePanelSelectedObject, ID_PAN_SELOBJ_VBAR_0);
+        mBar = new sgui::Image(tex, this);
+
+        // DIGITS
+        const int sizeFont = 16;
+        mDigits = new DigitsDisplay(3, sizeFont, "%", this);
+
+        // SIZE
+        const int w = 260;
+        const int h = mIcon->GetHeight();
+        SetSize(w, h);
+
+        mBar->SetPosition((w - mBar->GetWidth()) / 2, (h - mBar->GetHeight()) / 2);
+
+        mDigits->SetPosition(w - mDigits->GetWidth(), (h - mDigits->GetHeight()) / 2);
+    }
+
+private:
+    sgl::sgui::Image * mIcon = nullptr;
+    sgl::sgui::Image * mBar = nullptr;
+    DigitsDisplay * mDigits = nullptr;
+};
+
 // ========== PANEL ==========
 
 PanelSelectedObject::PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::sgui::Widget * parent)
@@ -70,6 +130,10 @@ PanelSelectedObject::PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::s
     SetSize(tex->GetWidth(), tex->GetHeight());
 
     // -- ELEMENTS --
+    const int contentW = 300;
+    const int contentX0 = 20;
+    const int contentY0 = 20;
+
     // BUTTON CLOSE
     const int btnCloseX = 5;
     const int btnCloseY = 5;
@@ -98,6 +162,24 @@ PanelSelectedObject::PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::s
 
     // LEVEL
     mBarLvl = new sgui::Image(this);
+
+    // STATS
+    mStatEnergy = new ObjectVisualStat(ObjectVisualStat::VST_ENERGY, this);
+    mStatHealth = new ObjectVisualStat(ObjectVisualStat::VST_HEALTH, this);
+    mStatExperience = new ObjectVisualStat(ObjectVisualStat::VST_EXPERIENCE, this);
+
+    const int statX = contentX0 + (contentW - mStatEnergy->GetWidth()) / 2;
+    const int statY0 = 155;
+    const int marginStatsV = 20;
+
+    int statY = statY0;
+    mStatEnergy->SetPosition(statX, statY);
+
+    statY += mStatEnergy->GetHeight() + marginStatsV;
+    mStatHealth->SetPosition(statX, statY);
+
+    statY += mStatHealth->GetHeight() + marginStatsV;
+    mStatExperience->SetPosition(statX, statY);
 
     PositionElements();
 }
