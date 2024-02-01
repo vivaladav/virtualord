@@ -49,6 +49,12 @@ private:
     ObjectVisualStat * mStatHealth = nullptr;
     ObjectVisualStat * mStatExperience = nullptr;
 
+    // buttons function
+    sgl::sgui::ImageButton * mButtonAutoAttack = nullptr;
+    sgl::sgui::ImageButton * mButtonAutoMove = nullptr;
+    sgl::sgui::ImageButton * mButtonShowInfo = nullptr;
+    sgl::sgui::ImageButton * mButtonShowUpgrade = nullptr;
+
     GameObject * mObj = nullptr;
 };
 

@@ -17,6 +17,8 @@
 #include <sgl/sgui/ImageButton.h>
 #include <sgl/sgui/TextArea.h>
 
+#include <cmath>
+
 namespace game
 {
 
@@ -93,22 +95,129 @@ public:
 
         // DIGITS
         const int sizeFont = 16;
+        const unsigned int colorDigits = 0x5e9ebaff;
+        const unsigned int colorZeros = 0x35677dff;
         mDigits = new DigitsDisplay(3, sizeFont, "%", this);
+        mDigits->SetColorDigits(colorDigits);
+        mDigits->SetColorZeros(colorZeros);
 
         // SIZE
         const int w = 260;
         const int h = mIcon->GetHeight();
         SetSize(w, h);
 
-        mBar->SetPosition((w - mBar->GetWidth()) / 2, (h - mBar->GetHeight()) / 2);
+        const int barX = (w - mBar->GetWidth()) / 2;
+        mBar->SetPosition(barX, (h - mBar->GetHeight()) / 2);
 
         mDigits->SetPosition(w - mDigits->GetWidth(), (h - mDigits->GetHeight()) / 2);
+    }
+
+    void SetValue(int val, int max)
+    {
+        auto tm = sgl::graphic::TextureManager::Instance();
+
+        const int perc = static_cast<int>(std::roundf(val * 100.f / max));
+        const int ind = perc / 10;
+
+        // BAR
+        const unsigned int texId = ID_PAN_SELOBJ_VBAR_0 + ind;
+        auto tex = tm->GetSprite(SpriteFilePanelSelectedObject, texId);
+        mBar->SetTexture(tex);
+
+        // ICON
+        const unsigned int colorIcon = 0x85a1adff;
+        mIcon->SetColor(colorIcon);
+
+        // DIGITS
+        mDigits->SetValue(perc);
     }
 
 private:
     sgl::sgui::Image * mIcon = nullptr;
     sgl::sgui::Image * mBar = nullptr;
     DigitsDisplay * mDigits = nullptr;
+};
+
+// ========== BUTTON CLOSE ==========
+class ButtonObjectFunction : public sgl::sgui::ImageButton
+{
+public:
+    enum ObjFunction : unsigned int
+    {
+        OBJFUN_AUTO_ATTACK,
+        OBJFUN_AUTO_MOVE,
+        OBJFUN_SHOW_INFO,
+        OBJFUN_SHOW_UPGRADE,
+
+        NUM_OBJECT_FUNCTIONS
+    };
+
+public:
+    ButtonObjectFunction(ObjFunction f, sgl::sgui::Widget * parent)
+        : sgl::sgui::ImageButton({
+                                     ID_PAN_SELOBJ_BTN_ACTION_NORMAL,
+                                     ID_PAN_SELOBJ_BTN_ACTION_DISABLED,
+                                     ID_PAN_SELOBJ_BTN_ACTION_OVER,
+                                     ID_PAN_SELOBJ_BTN_ACTION_PUSHED,
+                                     ID_PAN_SELOBJ_BTN_ACTION_CHECKED
+                                 }, SpriteFilePanelSelectedObject, parent)
+    {
+        using namespace sgl;
+
+        SetCheckable(OBJFUN_AUTO_ATTACK == f || OBJFUN_AUTO_MOVE == f);
+
+        // ICON
+        const unsigned int textIds[NUM_OBJECT_FUNCTIONS] =
+        {
+            ID_PAN_SELOBJ_ICON_ACT_ATTACK,
+            ID_PAN_SELOBJ_ICON_ACT_MOVE,
+            ID_PAN_SELOBJ_ICON_ACT_INFO,
+            ID_PAN_SELOBJ_ICON_ACT_UPGRADE,
+        };
+
+        auto tm = graphic::TextureManager::Instance();
+        auto tex = tm->GetSprite(SpriteFilePanelSelectedObject, textIds[f]);
+
+        mIcon = new sgui::Image(tex, this);
+        mIcon->SetPosition((GetWidth() - mIcon->GetWidth()) / 2,
+                           (GetHeight() - mIcon->GetHeight()) / 2);
+    }
+
+private:
+    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
+    {
+        sgl::sgui::ImageButton::OnStateChanged(state);
+
+        const unsigned int colors[sgl::sgui::AbstractButton::NUM_VISUAL_STATES] =
+        {
+            0xe0e7eaff,
+            0x737373ff,
+            0xf0f3f5ff,
+            0xd1dce0ff,
+            0xf5e1a3ff,
+        };
+
+        mIcon->SetColor(colors[state]);
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::ImageButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::ImageButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+private:
+    sgl::sgui::Image * mIcon = nullptr;
 };
 
 // ========== PANEL ==========
@@ -131,6 +240,7 @@ PanelSelectedObject::PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::s
 
     // -- ELEMENTS --
     const int contentW = 300;
+    const int contentH = 300;
     const int contentX0 = 20;
     const int contentY0 = 20;
 
@@ -181,7 +291,45 @@ PanelSelectedObject::PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::s
     statY += mStatHealth->GetHeight() + marginStatsV;
     mStatExperience->SetPosition(statX, statY);
 
-    PositionElements();
+    // BUTTONS FUNCTION
+    mButtonAutoAttack = new ButtonObjectFunction(ButtonObjectFunction::OBJFUN_AUTO_ATTACK, this);
+    mButtonAutoAttack->AddOnToggleFunction([this](bool checked)
+    {
+        // TODO
+    });
+
+    mButtonAutoMove = new ButtonObjectFunction(ButtonObjectFunction::OBJFUN_AUTO_MOVE, this);
+    mButtonAutoMove->AddOnToggleFunction([this](bool checked)
+    {
+        // TODO
+    });
+
+    mButtonShowInfo = new ButtonObjectFunction(ButtonObjectFunction::OBJFUN_SHOW_INFO, this);
+    mButtonShowInfo->AddOnClickFunction([this]
+    {
+        // TODO
+    });
+
+    mButtonShowUpgrade = new ButtonObjectFunction(ButtonObjectFunction::OBJFUN_SHOW_UPGRADE, this);
+    mButtonShowUpgrade->AddOnClickFunction([this]
+    {
+        // TODO
+    });
+
+    const int marginButtonFun = 5;
+    const int buttonFunX0 = contentX0 + marginButtonFun;
+    const int buttonFunY0 = contentY0 + contentH - mButtonAutoAttack->GetHeight() - marginButtonFun;
+
+    int buttonFunX = buttonFunX0;
+    int buttonFunY = buttonFunY0;
+    mButtonAutoAttack->SetPosition(buttonFunX, buttonFunY);
+
+    buttonFunX += mButtonAutoAttack->GetWidth();
+    mButtonAutoMove->SetPosition(buttonFunX, buttonFunY);
+
+    buttonFunX = contentX0 + contentW - mButtonShowInfo->GetWidth() - marginButtonFun;
+    mButtonShowInfo->SetPosition(buttonFunX, buttonFunY);
+    mButtonShowUpgrade->SetPosition(buttonFunX, buttonFunY);
 }
 
 void PanelSelectedObject::AddFunctionOnClose(const std::function<void()> & f)
@@ -256,6 +404,26 @@ void PanelSelectedObject::SetObject(GameObject * obj)
     }
     else
         mImg->ClearVisibleArea();
+
+    // STATS
+    const int exp = obj->GetExperience();
+    const int maxExp = obj->GetExperienceToNextLevel();
+
+    mStatEnergy->SetValue(obj->GetEnergy(), obj->GetMaxEnergy());
+    mStatHealth->SetValue(obj->GetHealth(), obj->GetMaxHealth());
+    mStatExperience->SetValue(exp, maxExp);
+
+    // BUTTONS FUNCTION
+    const bool showAutoActions = obj->GetObjectCategory() == GameObject::CAT_UNIT;
+
+    mButtonAutoAttack->SetVisible(showAutoActions);
+    mButtonAutoMove->SetVisible(showAutoActions);
+
+    const bool showInfo = exp < maxExp;
+    const bool showUpgrade = !showInfo;
+
+    mButtonShowInfo->SetVisible(showInfo);
+    mButtonShowUpgrade->SetVisible(showUpgrade);
 }
 
 void PanelSelectedObject::HandlePositionChanged()
