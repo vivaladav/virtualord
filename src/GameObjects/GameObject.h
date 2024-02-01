@@ -3,6 +3,7 @@
 #include "GameObjectTypes.h"
 
 #include <functional>
+#include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -167,7 +168,8 @@ public:
     int GetExperienceToNextLevel() const;
     int GetExperienceLevel() const;
 
-    void SetOnValuesChanged(const std::function<void()> & f);
+    unsigned int AddFunctionOnValueChanged(const std::function<void()> & f);
+    void RemoveFunctionOnValueChanged(unsigned int fId);
 
     float GetSpeed() const;
 
@@ -197,6 +199,8 @@ protected:
     void SetStatic(bool val);
 
     void SetSpeed(float speed);
+
+    void NotifyValueChanged();
 
 protected:
     static const unsigned int COLOR_FOW;
@@ -241,7 +245,7 @@ private:
     static const std::unordered_map<GameObjectTypeId, std::string> TYPE_STR_MAP;
 
 private:
-    std::function<void()> mOnValuesChanged;
+    std::map<unsigned int, std::function<void()>> mOnValueChanged;
 
     IsoObject * mIsoObj = nullptr;
 
@@ -354,11 +358,6 @@ inline void GameObject::SetMaxHealth(float max) { mMaxHealth = max; }
 inline float GameObject::GetEnergy() const { return mEnergy; }
 inline float GameObject::GetMaxEnergy() const { return mMaxEnergy; }
 inline void GameObject::SetMaxEnergy(float val) { mMaxEnergy = val; }
-
-inline void GameObject::SetOnValuesChanged(const std::function<void()> & f)
-{
-    mOnValuesChanged = f;
-}
 
 inline int GameObject::GetExperience() const { return mExp; }
 inline int GameObject::GetExperienceToNextLevel() const { return mExpToNextLvl; }

@@ -205,8 +205,7 @@ const GameObjectVariantId GameObject::VAR_0 = 0;
 
 // -- CONSTRUCTOR & DESTRUCTOR --
 GameObject::GameObject(GameObjectTypeId type, GameObjectCategoryId cat, int rows, int cols)
-    : mOnValuesChanged([](){})
-    , mIsoObj(new IsoObject(rows, cols))
+    : mIsoObj(new IsoObject(rows, cols))
     , mObjId(++counter)
     , mFaction(NO_FACTION)
     , mType(type)
@@ -285,20 +284,20 @@ void GameObject::SetObjectVariant(GameObjectVariantId var)
 
 void GameObject::SetHealth(float val)
 {
+    const float minDelta = 0.01f;
     const float oldH = mHealth;
 
     mHealth = val;
 
-    if(mHealth > mMaxHealth)
+    if(mHealth > mMaxHealth || (mMaxHealth - mHealth) < minDelta)
         mHealth = mMaxHealth;
     else if(mHealth < 0.f)
         mHealth = 0.f;
 
-    const float minDelta = 0.01f;
     const float diff = std::fabs(mHealth - oldH);
 
     if(diff > minDelta)
-        mOnValuesChanged();
+        NotifyValueChanged();
 }
 
 void GameObject::SumHealth(float val)
@@ -308,25 +307,43 @@ void GameObject::SumHealth(float val)
 
 void GameObject::SetEnergy(float val)
 {
+    const float minDelta = 0.01f;
     const float oldEn = mEnergy;
 
     mEnergy = val;
 
-    if(mEnergy > mMaxEnergy)
+    if(mEnergy > mMaxEnergy || (mMaxEnergy - mEnergy) < minDelta)
         mEnergy = mMaxEnergy;
     else if(mEnergy < 0.f)
         mEnergy = 0.f;
 
-    const float minDelta = 0.01f;
     const float diff = std::fabs(mEnergy - oldEn);
 
     if(diff > minDelta)
-        mOnValuesChanged();
+        NotifyValueChanged();
 }
 
 void GameObject::SumEnergy(float val)
 {
     SetEnergy(mEnergy + val);
+}
+
+unsigned int GameObject::AddFunctionOnValueChanged(const std::function<void()> & f)
+{
+    static unsigned int num = 0;
+
+    int fId = ++num;
+    mOnValueChanged.emplace(fId, f);
+
+    return fId;
+}
+
+void GameObject::RemoveFunctionOnValueChanged(unsigned int fId)
+{
+    auto it = mOnValueChanged.find(fId);
+
+    if(it != mOnValueChanged.end())
+        mOnValueChanged.erase(it);
 }
 
 void GameObject::Hit(float damage, PlayerFaction attacker)
@@ -494,6 +511,12 @@ void GameObject::SetDefaultColors()
             mObjColors.push_back(0x595959ff);
         break;
     }
+}
+
+void GameObject::NotifyValueChanged()
+{
+    for(const auto & it : mOnValueChanged)
+        it.second();
 }
 
 } // namespace game

@@ -112,7 +112,7 @@ public:
         mDigits->SetPosition(w - mDigits->GetWidth(), (h - mDigits->GetHeight()) / 2);
     }
 
-    void SetValue(int val, int max)
+    void SetValue(float val, float max)
     {
         auto tm = sgl::graphic::TextureManager::Instance();
 
@@ -345,6 +345,18 @@ void PanelSelectedObject::SetObject(GameObject * obj)
     if(obj == mObj)
         return ;
 
+    // UPDATE SELECTED OBJECT
+    if(mObj != nullptr)
+        mObj->RemoveFunctionOnValueChanged(mFuncValuesChangedId);
+
+    mObj = obj;
+
+    mFuncValuesChangedId = mObj->AddFunctionOnValueChanged([this]
+    {
+        UpdateStats();
+    });
+
+    // UPDATE PANEL ELEMENTS
     const PlayerFaction faction = obj->GetFaction();
     const GameObjectTypeId type = obj->GetObjectType();
 
@@ -406,12 +418,7 @@ void PanelSelectedObject::SetObject(GameObject * obj)
         mImg->ClearVisibleArea();
 
     // STATS
-    const int exp = obj->GetExperience();
-    const int maxExp = obj->GetExperienceToNextLevel();
-
-    mStatEnergy->SetValue(obj->GetEnergy(), obj->GetMaxEnergy());
-    mStatHealth->SetValue(obj->GetHealth(), obj->GetMaxHealth());
-    mStatExperience->SetValue(exp, maxExp);
+    UpdateStats();
 
     // BUTTONS FUNCTION
     const bool showAutoActions = obj->GetObjectCategory() == GameObject::CAT_UNIT;
@@ -422,12 +429,6 @@ void PanelSelectedObject::SetObject(GameObject * obj)
     // TODO get values from object when implementing auto action
     mButtonAutoAttack->SetChecked(false);
     mButtonAutoMove->SetChecked(false);
-
-    const bool showInfo = exp < maxExp;
-    const bool showUpgrade = !showInfo;
-
-    mButtonShowInfo->SetVisible(showInfo);
-    mButtonShowUpgrade->SetVisible(showUpgrade);
 }
 
 void PanelSelectedObject::HandlePositionChanged()
@@ -442,6 +443,24 @@ void PanelSelectedObject::PositionElements()
 
     // BACKGROUND
     mBg->SetPosition(x0 ,y0);
+}
+
+void PanelSelectedObject::UpdateStats()
+{
+    const int exp = mObj->GetExperience();
+    const int maxExp = mObj->GetExperienceToNextLevel();
+
+    // STAT BARS
+    mStatEnergy->SetValue(mObj->GetEnergy(), mObj->GetMaxEnergy());
+    mStatHealth->SetValue(mObj->GetHealth(), mObj->GetMaxHealth());
+    mStatExperience->SetValue(exp, maxExp);
+
+    // INFO / UPGRADE BUTTON
+    const bool showInfo = exp < maxExp;
+    const bool showUpgrade = !showInfo;
+
+    mButtonShowInfo->SetVisible(showInfo);
+    mButtonShowUpgrade->SetVisible(showUpgrade);
 }
 
 } // namespace game

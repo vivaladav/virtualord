@@ -167,7 +167,7 @@ void ButtonQuickUnitSelection::SetUnit(Unit * unit)
     UpdateValues();
 
     // track values changing
-    mUnit->SetOnValuesChanged([this] { UpdateValues(); });
+    mUnit->AddFunctionOnValueChanged([this] { UpdateValues(); });
 
     // make sure button is enabled
     SetEnabled(true);

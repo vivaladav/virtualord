@@ -34,6 +34,8 @@ private:
     void HandlePositionChanged() override;
     void PositionElements();
 
+    void UpdateStats();
+
 private:
     const ObjectsDataRegistry * mObjDataReg;
 
@@ -48,6 +50,7 @@ private:
     ObjectVisualStat * mStatEnergy = nullptr;
     ObjectVisualStat * mStatHealth = nullptr;
     ObjectVisualStat * mStatExperience = nullptr;
+    unsigned int mFuncValuesChangedId = 0;
 
     // buttons function
     sgl::sgui::ImageButton * mButtonAutoAttack = nullptr;

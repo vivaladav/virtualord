@@ -25,7 +25,7 @@ const float ACTION_COSTS[NUM_OBJ_ACTIONS] =
 {
     0.f,    // IDLE
     0.f,    // BUILD_UNIT
-    2.f,    // MOVE
+    4.f,    // MOVE
     5.f,    // CONQUER_CELL
     10.f,   // CONQUER_STRUCTURE
     1.f,    // ATTACK
