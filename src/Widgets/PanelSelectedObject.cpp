@@ -95,7 +95,7 @@ public:
 
         // DIGITS
         const int sizeFont = 16;
-        const unsigned int colorDigits = 0x5e9ebaff;
+        const unsigned int colorDigits = 0x70a9c2ff;
         const unsigned int colorZeros = 0x35677dff;
         mDigits = new DigitsDisplay(3, sizeFont, "%", this);
         mDigits->SetColorDigits(colorDigits);
@@ -418,6 +418,10 @@ void PanelSelectedObject::SetObject(GameObject * obj)
 
     mButtonAutoAttack->SetVisible(showAutoActions);
     mButtonAutoMove->SetVisible(showAutoActions);
+
+    // TODO get values from object when implementing auto action
+    mButtonAutoAttack->SetChecked(false);
+    mButtonAutoMove->SetChecked(false);
 
     const bool showInfo = exp < maxExp;
     const bool showUpgrade = !showInfo;
