@@ -11,6 +11,7 @@ namespace game
 {
 
 class ButtonMinimap;
+class ButtonPanelSelectedObject;
 class CameraMapController;
 class CountdownLabel;
 class DialogExit;
@@ -81,6 +82,7 @@ private:
     DialogNewElement * mDialogNewElement = nullptr;
 
     PanelSelectedObject * mPanelSelObj = nullptr;
+    ButtonPanelSelectedObject * mButtonPanelSelObj = nullptr;
 
     ScreenGame * mScreen = nullptr;
 };

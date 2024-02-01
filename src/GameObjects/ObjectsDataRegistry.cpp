@@ -153,6 +153,11 @@ void ObjectsDataRegistry::InitFactionData()
     // ===== FACTION 1 =====
     std::unordered_map<GameObjectTypeId, ObjectFactionData> & data1 = mFactionData[FACTION_1];
 
+    data1.emplace(GameObject::TYPE_BASE,
+                  ObjectFactionData(std::vector<int>{ 6, 6, 3, 5, 4, 5, 5, 6, 6 },
+                                    std::vector<int>{ 1000, 1000, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_BASE_L1_F1));
+
     data1.emplace(GameObject::TYPE_DEFENSIVE_TOWER,
                   ObjectFactionData(std::vector<int>{ 5, 4, 2, 4, 4, 5, 5, 5, 5 },
                                     std::vector<int>{ 150, 150, 0, 0 },
@@ -246,6 +251,11 @@ void ObjectsDataRegistry::InitFactionData()
     // ===== FACTION 2 =====
     std::unordered_map<GameObjectTypeId, ObjectFactionData> & data2 = mFactionData[FACTION_2];
 
+    data2.emplace(GameObject::TYPE_BASE,
+                  ObjectFactionData(std::vector<int>{ 6, 6, 3, 5, 4, 5, 5, 6, 6 },
+                                    std::vector<int>{ 1000, 1000, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_BASE_L1_F2));
+
     data2.emplace(GameObject::TYPE_DEFENSIVE_TOWER,
                   ObjectFactionData(std::vector<int>{ 5, 4, 2, 4, 4, 5, 5, 5, 5 },
                                     std::vector<int>{ 150, 150, 0, 0 },
@@ -338,6 +348,11 @@ void ObjectsDataRegistry::InitFactionData()
 
     // ===== FACTION 3 =====
     std::unordered_map<GameObjectTypeId, ObjectFactionData> & data3 = mFactionData[FACTION_3];
+
+    data3.emplace(GameObject::TYPE_BASE,
+                  ObjectFactionData(std::vector<int>{ 6, 6, 3, 5, 4, 5, 5, 6, 6 },
+                                    std::vector<int>{ 1000, 1000, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_BASE_L1_F3));
 
     data3.emplace(GameObject::TYPE_DEFENSIVE_TOWER,
                   ObjectFactionData(std::vector<int>{ 5, 4, 2, 4, 4, 5, 5, 5, 5 },

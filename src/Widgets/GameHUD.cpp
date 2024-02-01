@@ -13,6 +13,7 @@
 #include "GameObjects/Unit.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/ButtonMinimap.h"
+#include "Widgets/ButtonPanelSelectedObject.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
 #include "Widgets/CountdownLabel.h"
 #include "Widgets/DialogEndMission.h"
@@ -41,8 +42,10 @@ GameHUD::GameHUD(ScreenGame * screen)
 
     SetSize(rendW, rendH);
 
+    Game * game = mScreen->GetGame();
+
     // LOCAL PLAYER
-    Player * player = mScreen->GetGame()->GetLocalPlayer();
+    Player * player = game->GetLocalPlayer();
 
     // react to local player changes in stats
     player->SetOnResourcesChanged([this]
@@ -113,8 +116,23 @@ GameHUD::GameHUD(ScreenGame * screen)
     mPanelObjActions->SetVisible(false);
 
     // PANEL SELECTED OBJECT
-    mPanelSelObj = new PanelSelectedObject(this);
+    mPanelSelObj = new PanelSelectedObject(game->GetObjectsRegistry(), this);
     mPanelSelObj->SetVisible(false);
+
+    mButtonPanelSelObj = new ButtonPanelSelectedObject(this);
+    mButtonPanelSelObj->SetVisible(false);
+
+    mButtonPanelSelObj->AddOnClickFunction([this]
+    {
+        mButtonPanelSelObj->SetVisible(false);
+        mPanelSelObj->SetVisible(true);
+    });
+
+    mPanelSelObj->AddFunctionOnClose([this]
+    {
+        mButtonPanelSelObj->SetVisible(true);
+        mPanelSelObj->SetVisible(false);
+    });
 }
 
 GameHUD::~GameHUD()
@@ -367,11 +385,14 @@ void GameHUD::HideMissionCountdown()
 
 void GameHUD::HidePanelSelectedObject()
 {
+    mButtonPanelSelObj->SetVisible(false);
     mPanelSelObj->SetVisible(false);
 }
 
 void GameHUD::ShowPanelSelectedObject(GameObject *obj)
 {
+    mButtonPanelSelObj->SetVisible(false);
+
     mPanelSelObj->SetObject(obj);
     mPanelSelObj->SetVisible(true);
 }

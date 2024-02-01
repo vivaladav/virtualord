@@ -163,6 +163,10 @@ public:
     float GetMaxEnergy() const;
     void SetMaxEnergy(float val);
 
+    int GetExperience() const;
+    int GetExperienceToNextLevel() const;
+    int GetExperienceLevel() const;
+
     void SetOnValuesChanged(const std::function<void()> & f);
 
     float GetSpeed() const;
@@ -260,6 +264,10 @@ private:
 
     int mVisLevel = 0;
 
+    int mExpLevel = 0;
+    int mExp = 0;
+    int mExpToNextLvl = 1000;
+
     float mMaxEnergy = 100.f;
     float mEnergy = 100.f;
     float mMaxHealth = 100.f;
@@ -351,6 +359,10 @@ inline void GameObject::SetOnValuesChanged(const std::function<void()> & f)
 {
     mOnValuesChanged = f;
 }
+
+inline int GameObject::GetExperience() const { return mExp; }
+inline int GameObject::GetExperienceToNextLevel() const { return mExpToNextLvl; }
+inline int GameObject::GetExperienceLevel() const { return mExpLevel; }
 
 inline float GameObject::GetSpeed() const { return mSpeed; }
 inline void GameObject::SetSpeed(float speed) { mSpeed = speed; }

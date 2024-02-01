@@ -5,19 +5,25 @@
 namespace sgl
 {
     namespace graphic { class Image; }
-    namespace sgui { class ImageButton; }
+    namespace sgui
+    {
+        class Image;
+        class ImageButton;
+        class TextArea;
+    }
 }
 
 namespace game
 {
 
 class GameObject;
+class ObjectsDataRegistry;
 
 class PanelSelectedObject : public sgl::sgui::Widget
 {
 
 public:
-    PanelSelectedObject(sgl::sgui::Widget * parent);
+    PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::sgui::Widget * parent);
 
     void AddFunctionOnClose(const std::function<void()> & f);
 
@@ -28,9 +34,15 @@ private:
     void PositionElements();
 
 private:
+    const ObjectsDataRegistry * mObjDataReg;
+
     sgl::graphic::Image * mBg = nullptr;
 
     sgl::sgui::ImageButton * mButtonClose = nullptr;
+
+    sgl::sgui::Image * mImg = nullptr;
+    sgl::sgui::TextArea * mTitle = nullptr;
+    sgl::sgui::Image * mBarLvl = nullptr;
 
     GameObject * mObj = nullptr;
 };
