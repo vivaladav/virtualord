@@ -1,6 +1,5 @@
 #include "Cell2D.h"
 
-#include <sgl/graphic/Image.h>
 #include <sgl/sgui/Widget.h>
 
 #include <functional>
@@ -8,6 +7,7 @@
 
 namespace sgl
 {
+    namespace graphic { class Image; }
     namespace sgui { class ImageButton; }
 }
 
@@ -64,7 +64,7 @@ private:
             , img(i)
         {}
 
-        ~MiniMapElem() { delete img; }
+        ~MiniMapElem();
 
         int brR;
         int brC;

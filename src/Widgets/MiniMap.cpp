@@ -135,6 +135,10 @@ public:
     }
 };
 
+// ========== MINI MAP ELEMENT ==========
+
+MiniMap::MiniMapElem::~MiniMapElem() { delete img; }
+
 // ========== MINI MAP ==========
 
 const int MAP_SCALE = 3;

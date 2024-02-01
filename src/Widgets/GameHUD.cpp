@@ -23,6 +23,7 @@
 #include "Widgets/MiniMap.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/PanelResources.h"
+#include "Widgets/PanelSelectedObject.h"
 
 #include <sgl/graphic/Renderer.h>
 #include <sgl/sgui/ButtonsGroup.h>
@@ -110,6 +111,10 @@ GameHUD::GameHUD(ScreenGame * screen)
     // OBJECT ACTIONS
     mPanelObjActions = new PanelObjectActions(this);
     mPanelObjActions->SetVisible(false);
+
+    // PANEL SELECTED OBJECT
+    mPanelSelObj = new PanelSelectedObject(this);
+    mPanelSelObj->SetVisible(false);
 }
 
 GameHUD::~GameHUD()
@@ -358,6 +363,17 @@ void GameHUD::HideMissionCountdown()
 {
     delete mCountdownLabel;
     mCountdownLabel = nullptr;
+}
+
+void GameHUD::HidePanelSelectedObject()
+{
+    mPanelSelObj->SetVisible(false);
+}
+
+void GameHUD::ShowPanelSelectedObject(GameObject *obj)
+{
+    mPanelSelObj->SetObject(obj);
+    mPanelSelObj->SetVisible(true);
 }
 
 GameMapProgressBar * GameHUD::CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction)

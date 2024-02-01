@@ -18,9 +18,11 @@ class DialogExploreTemple;
 class DialogExploreTempleOutcome;
 class DialogNewElement;
 class GameMapProgressBar;
+class GameObject;
 class MiniMap;
 class PanelObjectActions;
 class PanelResources;
+class PanelSelectedObject;
 class Player;
 class ScreenGame;
 class Temple;
@@ -52,6 +54,9 @@ public:
     void ShowMissionCountdown(int secs);
     void HideMissionCountdown();
 
+    void HidePanelSelectedObject();
+    void ShowPanelSelectedObject(GameObject * obj);
+
     GameMapProgressBar * CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction);
 
 private:
@@ -74,6 +79,8 @@ private:
     DialogExploreTemple * mDialogExploreTemple = nullptr;
     DialogExploreTempleOutcome * mDialogExploreTempleOutcome = nullptr;
     DialogNewElement * mDialogNewElement = nullptr;
+
+    PanelSelectedObject * mPanelSelObj = nullptr;
 
     ScreenGame * mScreen = nullptr;
 };

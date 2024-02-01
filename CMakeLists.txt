@@ -255,6 +255,8 @@ add_executable(
     src/Widgets/PanelPlanetResources.cpp
     src/Widgets/PanelResources.h
     src/Widgets/PanelResources.cpp
+    src/Widgets/PanelSelectedObject.h
+    src/Widgets/PanelSelectedObject.cpp
     src/Widgets/PlanetMap.h
     src/Widgets/PlanetMap.cpp
     src/Widgets/ProgressBarResources.h
