@@ -116,7 +116,7 @@ void ConquerPath::CreateIndicators()
 void ConquerPath::InitNextConquest()
 {
     // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForAction(CONQUER_CELL))
+    if(!mUnit->HasEnergyForActionStep(CONQUER_CELL))
     {
         Fail();
         return ;
@@ -164,7 +164,7 @@ void ConquerPath::InitNextConquest()
 
         mGameMap->ConquerCell(nextCell, player);
 
-        mUnit->ConsumeEnergy(CONQUER_CELL);
+        mUnit->ActionStepCompleted(CONQUER_CELL);
 
         ++mNextCell;
 
@@ -184,7 +184,7 @@ void ConquerPath::InitNextConquest()
 void ConquerPath::InitNextMove()
 {
     // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForAction(MOVE))
+    if(!mUnit->HasEnergyForActionStep(MOVE))
     {
         Fail();
         return ;
@@ -301,7 +301,7 @@ void ConquerPath::UpdateMove(float delta)
         mGameMap->AddPlayerObjVisibility(mUnit, player);
         mGameMap->ApplyVisibility(player);
 
-        mUnit->ConsumeEnergy(MOVE);
+        mUnit->ActionStepCompleted(MOVE);
 
         // handle next step or termination
         if(ABORTING == mState)

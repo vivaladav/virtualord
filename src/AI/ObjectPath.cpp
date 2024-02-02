@@ -28,7 +28,7 @@ void ObjectPath::InitNextMove()
     // not enough energy -> FAIL
     // TODO remove type check if mObj is changed into mUnit like for other paths
     if(mObj->GetObjectCategory() == GameObject::CAT_UNIT &&
-       !static_cast<Unit *>(mObj)->HasEnergyForAction(MOVE))
+       !static_cast<Unit *>(mObj)->HasEnergyForActionStep(MOVE))
     {
         Fail();
         return ;
@@ -168,7 +168,7 @@ void ObjectPath::Update(float delta)
 
         // TODO remove check if mObj is changed into mUnit like for other paths
         if(mObj->GetObjectCategory() == GameObject::CAT_UNIT)
-            static_cast<Unit *>(mObj)->ConsumeEnergy(MOVE);
+            static_cast<Unit *>(mObj)->ActionStepCompleted(MOVE);
 
         // update cell counter
         ++mNextCell;

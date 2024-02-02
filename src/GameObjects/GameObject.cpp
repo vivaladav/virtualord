@@ -23,6 +23,34 @@ const unsigned int GameObject::COLOR_VIS = 0xFFFFFFFF;
 
 unsigned int GameObject::counter = 0;
 
+const float GameObject::ACTION_COSTS[NUM_OBJ_ACTIONS] =
+{
+    0.f,        // IDLE
+    10.f,       // BUILD_UNIT
+    5.f,        // MOVE
+    10.f,       // CONQUER_CELL
+    20.f,       // CONQUER_STRUCTURE
+    2.f,        // ATTACK
+    30.f,       // BUILD_STRUCTURE
+    10.f,       // BUILD_WALL
+    5.f,        // HEAL
+    1.f         // TOGGLE_GATE
+};
+
+const int GameObject::ACTION_EXPERIENCE[NUM_OBJ_ACTIONS] =
+{
+    0,      // IDLE
+    10,     // BUILD_UNIT
+    1,      // MOVE
+    2,      // CONQUER_CELL
+    5,      // CONQUER_STRUCTURE
+    1,      // ATTACK
+    5,      // BUILD_STRUCTURE
+    2,      // BUILD_WALL
+    2,      // HEAL
+    1,      // TOGGLE_GATE
+};
+
 // -- OBJECT TYPE --
 const std::string GameObject::TYPE_STR_BASE("BASE");
 const std::string GameObject::TYPE_STR_BASE_SPOT("BASE_SPOT");
@@ -326,6 +354,42 @@ void GameObject::SetEnergy(float val)
 void GameObject::SumEnergy(float val)
 {
     SetEnergy(mEnergy + val);
+}
+
+bool GameObject::HasEnergyForActionStep(GameObjectActionType action)
+{
+        if(action < NUM_OBJ_ACTIONS)
+            return GetEnergy() >= ACTION_COSTS[action];
+        else
+            return false;
+}
+
+void GameObject::ActionStepCompleted(GameObjectActionType action)
+{
+    if(action < NUM_OBJ_ACTIONS)
+    {
+        SumEnergy(-ACTION_COSTS[action]);
+
+        SumExperience(ACTION_EXPERIENCE[action]);
+    }
+}
+
+void GameObject::SetExperience(int val)
+{
+    if(val > mExpToNextLvl)
+        val = mExpToNextLvl;
+
+    if(val == mExp)
+        return ;
+
+    mExp = val;
+
+    NotifyValueChanged();
+}
+
+void GameObject::SumExperience(int val)
+{
+    SetExperience(val + mExp);
 }
 
 unsigned int GameObject::AddFunctionOnValueChanged(const std::function<void()> & f)

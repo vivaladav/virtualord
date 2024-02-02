@@ -164,9 +164,14 @@ public:
     float GetMaxEnergy() const;
     void SetMaxEnergy(float val);
 
+    bool HasEnergyForActionStep(GameObjectActionType action);
+    void ActionStepCompleted(GameObjectActionType action);
+
     int GetExperience() const;
     int GetExperienceToNextLevel() const;
     int GetExperienceLevel() const;
+    void SetExperience(int val);
+    void SumExperience(int val);
 
     unsigned int AddFunctionOnValueChanged(const std::function<void()> & f);
     void RemoveFunctionOnValueChanged(unsigned int fId);
@@ -243,6 +248,9 @@ private:
     static const std::string TYPE_STR_WALL_GATE;
 
     static const std::unordered_map<GameObjectTypeId, std::string> TYPE_STR_MAP;
+
+    static const float ACTION_COSTS[NUM_OBJ_ACTIONS];
+    static const int ACTION_EXPERIENCE[NUM_OBJ_ACTIONS];
 
 private:
     std::map<unsigned int, std::function<void()>> mOnValueChanged;

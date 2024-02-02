@@ -67,7 +67,7 @@ void WallBuildPath::CreateIndicators()
 void WallBuildPath::InitNextBuild()
 {
     // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForAction(BUILD_WALL))
+    if(!mUnit->HasEnergyForActionStep(BUILD_WALL))
     {
         Fail();
         return ;
@@ -118,7 +118,7 @@ void WallBuildPath::InitNextBuild()
         const GameObjectTypeId blockType = mIndicators[mNextCell - 1]->GetBlockType();
         mGameMap->BuildWall(nextCell, player, blockType);
 
-        mUnit->ConsumeEnergy(BUILD_WALL);
+        mUnit->ActionStepCompleted(BUILD_WALL);
 
         --mNextCell;
 
@@ -129,7 +129,7 @@ void WallBuildPath::InitNextBuild()
 void WallBuildPath::InitNextMove()
 {
     // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForAction(MOVE))
+    if(!mUnit->HasEnergyForActionStep(MOVE))
     {
         Fail();
         return ;
@@ -249,7 +249,7 @@ void WallBuildPath::UpdateMove(float delta)
         mGameMap->AddPlayerObjVisibility(mUnit, player);
         mGameMap->ApplyVisibility(player);
 
-        mUnit->ConsumeEnergy(MOVE);
+        mUnit->ActionStepCompleted(MOVE);
 
         // handle next step or termination
         if(ABORTING == mState)

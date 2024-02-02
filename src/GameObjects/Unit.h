@@ -38,9 +38,6 @@ public:
     void SetStructureToBuild(GameObjectTypeId type);
     GameObjectTypeId GetStructureToBuild() const;
 
-    bool HasEnergyForAction(GameObjectActionType action);
-    void ConsumeEnergy(GameObjectActionType action);
-
     int GetStat(unsigned int index) const;
 
 public:

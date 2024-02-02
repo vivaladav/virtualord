@@ -21,20 +21,6 @@
 namespace game
 {
 
-const float ACTION_COSTS[NUM_OBJ_ACTIONS] =
-{
-    0.f,    // IDLE
-    0.f,    // BUILD_UNIT
-    4.f,    // MOVE
-    5.f,    // CONQUER_CELL
-    10.f,   // CONQUER_STRUCTURE
-    1.f,    // ATTACK
-    20.f,   // BUILD_STRUCTURE
-    10.f,   // BUILD_WALL
-    5.f,    // HEAL
-    0.f     // TOGGLE_GATE
-};
-
 Unit::Unit(const ObjectBasicData & objData, const ObjectFactionData & facData)
     : GameObject(objData.objType, GameObject::CAT_UNIT, objData.rows, objData.cols)
     , mStructToBuild(GameObject::TYPE_NULL)
@@ -148,29 +134,12 @@ void Unit::Update(float delta)
 
 void Unit::ClearStructureToBuild() { mStructToBuild = GameObject::TYPE_NULL; }
 
-void Unit::ConsumeEnergy(GameObjectActionType action)
-{
-    if(action < NUM_OBJ_ACTIONS)
-       SumEnergy(-ACTION_COSTS[action]);
-}
-
 int Unit::GetStat(unsigned int index) const
 {
     if(index < mStats.size())
         return mStats[index];
     else
         return 0;
-}
-
-bool Unit::HasEnergyForAction(GameObjectActionType action)
-{
-    if(action < NUM_OBJ_ACTIONS)
-    {
-        const float diff = GetEnergy() - ACTION_COSTS[action];
-        return diff >= 0.f;
-    }
-    else
-        return false;
 }
 
 void Unit::UpdateGraphics()
@@ -292,7 +261,7 @@ void Unit::Shoot()
         return ;
 
     // consume energy
-    ConsumeEnergy(ATTACK);
+    ActionStepCompleted(ATTACK);
 
     auto pu = static_cast<UpdaterSingleLaser *>(GetScreen()->GetParticleUpdater(PU_SINGLE_LASER));
 
@@ -365,7 +334,7 @@ void Unit::Heal()
         return ;
 
     // consume energy
-    ConsumeEnergy(HEAL);
+    ActionStepCompleted(HEAL);
 
     auto pu = static_cast<UpdaterHealing *>(GetScreen()->GetParticleUpdater(PU_HEALING));
 

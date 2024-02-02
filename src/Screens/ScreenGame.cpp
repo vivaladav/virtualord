@@ -1286,6 +1286,7 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
 
     pb->AddFunctionOnCompleted([this, cell, player, gen, type]
     {
+        gen->ActionStepCompleted(BUILD_UNIT);
         gen->SetCurrentAction(GameObjectActionType::IDLE);
 
         mGameMap->CreateUnit(type, gen, cell, player);
@@ -1347,7 +1348,7 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     {
         mGameMap->ConquerStructure(end, player);
 
-        unit->ConsumeEnergy(CONQUER_STRUCTURE);
+        unit->ActionStepCompleted(CONQUER_STRUCTURE);
 
         const GameMapCell & cellStruct = mGameMap->GetCell(end.row, end.col);
         const GameObject * objStruct = cellStruct.objTop;
@@ -1398,7 +1399,7 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
     {
         mGameMap->BuildStructure(cellTarget, player, st);
 
-        unit->ConsumeEnergy(BUILD_STRUCTURE);
+        unit->ActionStepCompleted(BUILD_STRUCTURE);
 
         // add unit to map if cell is visible to local player
         const ObjectBasicData & data = GetGame()->GetObjectsRegistry()->GetObjectData(st);

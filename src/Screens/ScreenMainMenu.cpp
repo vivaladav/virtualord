@@ -298,6 +298,8 @@ void ScreenMainMenu::CreateChangelog()
                          "- Missions can be completed and that reflects on the planet map.\n"
                          "- Enemy units will shoot yours.\n"
                          "- Map dragging in mission screen and related options in settings.\n"
+                         "- Added selected object panel in mission.\n"
+                         "- Game objects gain experience by doing things.\n"
                         );
     textNewFeat->SetPosition(contX, contY);
     textNewFeat->SetColor(colorContent);
@@ -308,7 +310,7 @@ void ScreenMainMenu::CreateChangelog()
     auto textImpr = new sgui::TextArea(contentW, minBlockH, font, true, content);
     textImpr->SetText("IMPROVEMENTS\n"
                       "- New structure dialog now groups structures by category.\n"
-                      "- MiniMap now requires a connected radar station to work."
+                      "- MiniMap now requires a connected radar station to work.\n"
                      );
     textImpr->SetPosition(contX, contY);
     textImpr->SetColor(colorContent);
@@ -322,6 +324,7 @@ void ScreenMainMenu::CreateChangelog()
                         "- Units move along the planned path while conquering cells.\n"
                         "- Units move along the planned path while building walls.\n"
                         "- Planet screen redesigned.\n"
+                        "- Minimap bigger and minor redesign to match selected object panel.\n"
                      );
     textChange->SetPosition(contX, contY);
     textChange->SetColor(colorContent);

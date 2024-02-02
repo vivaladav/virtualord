@@ -741,7 +741,7 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
         return false;
 
     // check unit's energy
-    if(!unit->HasEnergyForAction(BUILD_STRUCTURE))
+    if(!unit->HasEnergyForActionStep(BUILD_STRUCTURE))
         return false;
 
     // check cells
@@ -976,7 +976,7 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
         return false;
 
     // unit doesn't have enough energy
-    if(!unit->HasEnergyForAction(CONQUER_STRUCTURE))
+    if(!unit->HasEnergyForActionStep(CONQUER_STRUCTURE))
         return false;
 
     const int ind1 = r1 * mCols + c1;
