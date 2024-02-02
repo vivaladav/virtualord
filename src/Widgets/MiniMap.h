@@ -106,7 +106,6 @@ private:
     IsoMap * mIsoMap = nullptr;
 
     sgl::graphic::Image * mBg = nullptr;
-    sgl::graphic::Image * mMapBg = nullptr;
 
     sgl::sgui::ImageButton * mButtonClose = nullptr;
 

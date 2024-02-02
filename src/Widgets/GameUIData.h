@@ -330,13 +330,12 @@ enum SpriteIdMainMenuButtons : unsigned int
 };
 
 // MAP PANELS
-extern const char SpriteFileMapPanels[];
+extern const char SpriteFilePanelMinimap[];
 
 enum SpriteIdMapPanels : unsigned int
 {
     // MINIMAP
     IND_MINIMAP_BG,
-    IND_MINIMAP_MAP_BG,
     IND_MINIMAP_MAP_ELEM,
     IND_MINIMAP_BTN_CLOSE_NORMAL,
     IND_MINIMAP_BTN_CLOSE_OVER,
