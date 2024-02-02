@@ -48,10 +48,14 @@ Unit::Unit(const ObjectBasicData & objData, const ObjectFactionData & facData)
     const int attRanges[maxAttVal] = { 0, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13 };
     mRangeAttack = attRanges[mStats[OSTAT_FIRE_RANGE]];
 
-    // set attack range converting attribute
+    // set healing range converting attribute
     const int maxHealVal = 11;
-    const int HealRanges[maxHealVal] = { 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5 };
+    const int HealRanges[maxHealVal] = { 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4 };
     mRangeHealing = HealRanges[mStats[OSTAT_HEALING]];
+
+    // set healing power converting attribute
+    const float HealPowers[maxHealVal] = { 0, 1.f, 2.f, 2.f, 3.f, 3.f, 4.f, 4.f, 5.f, 5.f, 6.f };
+    mHealingPower = HealPowers[mStats[OSTAT_HEALING]];
 
     // TODO translate stats into actual values, ex.: speed = 5 -> SetSpeed(2.f)
 

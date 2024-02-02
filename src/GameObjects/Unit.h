@@ -75,7 +75,7 @@ private:
     // healing
     float mTimeHealing = 0.5f;
     float mTimerHealing = 0.f;
-    float mHealingPower = 10.f;
+    float mHealingPower = 1.f;
     int mRangeHealing = 1;
     GameObject * mTargetHealing = nullptr;
 
