@@ -178,10 +178,20 @@ void ObjectsDataRegistry::InitFactionData()
                                     std::vector<int>{ 100, 50, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_RADAR_TOWER_F1));
 
+    data1.emplace(GameObject::TYPE_RES_GEN_ENERGY,
+                  ObjectFactionData(std::vector<int>{ 9, 4, 0, 0, 0, 0, 3, 2, 1 },
+                                    std::vector<int>{ 0, 0, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_GEN_ENERGY_F1));
+
     data1.emplace(GameObject::TYPE_RES_GEN_ENERGY_SOLAR,
                   ObjectFactionData(std::vector<int>{ 4, 2, 0, 0, 0, 0, 2, 2, 2 },
                                     std::vector<int>{ 150, 150, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_SOLAR_PANEL_F1));
+
+    data1.emplace(GameObject::TYPE_RES_GEN_MATERIAL,
+                  ObjectFactionData(std::vector<int>{ 9, 4, 0, 0, 0, 0, 3, 2, 1 },
+                                    std::vector<int>{ 0, 0, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_GEN_MATERIAL_F1));
 
     data1.emplace(GameObject::TYPE_RES_GEN_MATERIAL_EXTRACT,
                   ObjectFactionData(std::vector<int>{ 4, 2, 0, 0, 0, 0, 2, 2, 2 },
@@ -276,10 +286,20 @@ void ObjectsDataRegistry::InitFactionData()
                                     std::vector<int>{ 100, 50, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_RADAR_TOWER_F2));
 
+    data2.emplace(GameObject::TYPE_RES_GEN_ENERGY,
+                  ObjectFactionData(std::vector<int>{ 9, 4, 0, 0, 0, 0, 3, 2, 1 },
+                                    std::vector<int>{ 0, 0, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_GEN_ENERGY_F2));
+
     data2.emplace(GameObject::TYPE_RES_GEN_ENERGY_SOLAR,
                   ObjectFactionData(std::vector<int>{ 4, 2, 0, 0, 0, 0, 2, 2, 2 },
                                     std::vector<int>{ 150, 150, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_SOLAR_PANEL_F2));
+
+    data2.emplace(GameObject::TYPE_RES_GEN_MATERIAL,
+                  ObjectFactionData(std::vector<int>{ 9, 4, 0, 0, 0, 0, 3, 2, 1 },
+                                    std::vector<int>{ 0, 0, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_GEN_MATERIAL_F2));
 
     data2.emplace(GameObject::TYPE_RES_GEN_MATERIAL_EXTRACT,
                   ObjectFactionData(std::vector<int>{ 4, 2, 0, 0, 0, 0, 2, 2, 2 },
@@ -374,10 +394,20 @@ void ObjectsDataRegistry::InitFactionData()
                                     std::vector<int>{ 100, 50, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_RADAR_TOWER_F3));
 
+    data3.emplace(GameObject::TYPE_RES_GEN_ENERGY,
+                  ObjectFactionData(std::vector<int>{ 9, 4, 0, 0, 0, 0, 3, 2, 1 },
+                                    std::vector<int>{ 0, 0, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_GEN_ENERGY_F3));
+
     data3.emplace(GameObject::TYPE_RES_GEN_ENERGY_SOLAR,
                   ObjectFactionData(std::vector<int>{ 4, 2, 0, 0, 0, 0, 2, 2, 2 },
                                     std::vector<int>{ 150, 150, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_SOLAR_PANEL_F3));
+
+    data3.emplace(GameObject::TYPE_RES_GEN_MATERIAL,
+                  ObjectFactionData(std::vector<int>{ 9, 4, 0, 0, 0, 0, 3, 2, 1 },
+                                    std::vector<int>{ 0, 0, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_GEN_MATERIAL_F3));
 
     data3.emplace(GameObject::TYPE_RES_GEN_MATERIAL_EXTRACT,
                   ObjectFactionData(std::vector<int>{ 4, 2, 0, 0, 0, 0, 2, 2, 2 },
