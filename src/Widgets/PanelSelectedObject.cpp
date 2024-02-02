@@ -4,6 +4,7 @@
 #include "GameObjects/GameObject.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "Widgets/DigitsDisplay.h"
+#include "Widgets/GameSimpleTooltip.h"
 
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
@@ -110,6 +111,19 @@ public:
         mBar->SetPosition(barX, (h - mBar->GetHeight()) / 2);
 
         mDigits->SetPosition(w - mDigits->GetWidth(), (h - mDigits->GetHeight()) / 2);
+
+        // TOOLTIP
+        const char * tooltipText[NUM_VISUAL_STAT_TYPES] =
+        {
+            "Energy",
+            "Health",
+            "Experience"
+        };
+
+        const int ttDelay = 500;
+        auto tt = new GameSimpleTooltip(tooltipText[type]);
+        SetTooltip(tt);
+        SetTooltipDelay(ttDelay);
     }
 
     void SetValue(float val, float max)
@@ -180,7 +194,23 @@ public:
 
         mIcon = new sgui::Image(tex, this);
         mIcon->SetPosition((GetWidth() - mIcon->GetWidth()) / 2,
-                           (GetHeight() - mIcon->GetHeight()) / 2);
+                          (GetHeight() - mIcon->GetHeight()) / 2);
+
+        // TOOLTIP
+        const char * tooltipText[NUM_OBJECT_FUNCTIONS] =
+            {
+                "If checked enables automatic attack when spotting an enemy during their turn",
+                "If checked enables automatic move when spotting an enemy during their turn",
+                "Show the info panel of this object",
+                "Show the upgrade panel of this object"
+            };
+
+        const int ttDelay = 500;
+        const int ttTime = 3500;
+        auto tt = new GameSimpleTooltip(tooltipText[f]);
+        SetTooltip(tt);
+        SetTooltipDelay(ttDelay);
+        SetTooltipShowingTime(ttTime);
     }
 
 private:
@@ -272,6 +302,11 @@ PanelSelectedObject::PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::s
 
     // LEVEL
     mBarLvl = new sgui::Image(this);
+
+    const int ttDelay = 500;
+    auto tt = new GameSimpleTooltip("Experience level");
+    mBarLvl->SetTooltip(tt);
+    mBarLvl->SetTooltipDelay(ttDelay);
 
     // STATS
     mStatEnergy = new ObjectVisualStat(ObjectVisualStat::VST_ENERGY, this);
