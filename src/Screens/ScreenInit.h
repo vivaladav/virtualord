@@ -39,7 +39,8 @@ private:
         PACKAGE_IMGS_BACKGROUNDS,
         PACKAGE_IMGS_GAME,
         PACKAGE_IMGS_TEST,
-        PACKAGE_IMGS_UI,
+        PACKAGE_IMGS_UI_GAME,
+        PACKAGE_IMGS_UI_OTHERS,
 
         NUM_DATA_PACKAGES
     };
