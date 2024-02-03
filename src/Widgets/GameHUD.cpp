@@ -118,6 +118,10 @@ GameHUD::GameHUD(ScreenGame * screen)
 
     // PANEL TURN CONTROL
     mPanelTurnCtrl = new PanelTurnControl(player, this);
+    mPanelTurnCtrl->SetFunctionEndTurn([this]
+    {
+        mScreen->EndTurn();
+    });
 
     const int posPanelTurnX = (rendW - mPanelTurnCtrl->GetWidth()) / 2;
     const int posPanelTurnY = groupY - mPanelTurnCtrl->GetHeight();
@@ -413,6 +417,13 @@ void GameHUD::ShowTurnControlPanel()
 void GameHUD::ShowTurnControlText()
 {
     mPanelTurnCtrl->ShowText();
+}
+
+void GameHUD::SetLocalActionsEnabled(bool enabled)
+{
+    mPanelObjActions->SetActionsEnabled(enabled);
+
+    mPanelTurnCtrl->SetButtonEndTurnEnabled(enabled);
 }
 
 GameMapProgressBar * GameHUD::CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction)

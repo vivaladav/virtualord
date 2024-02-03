@@ -2,6 +2,8 @@
 
 #include <sgl/sgui/Widget.h>
 
+#include <functional>
+
 namespace sgl
 {
     namespace graphic { class Image; }
@@ -26,6 +28,10 @@ class PanelTurnControl : public sgl::sgui::Widget
 public:
     PanelTurnControl(Player * player, sgl::sgui::Widget * parent);
     ~PanelTurnControl();
+
+    void SetFunctionEndTurn(const std::function<void()> & f);
+
+    void SetButtonEndTurnEnabled(bool enabled);
 
     void ShowPanel();
     void ShowText();

@@ -348,7 +348,7 @@ void Player::HandleCollectable(GameObject * obj)
 void Player::SumTurnEnergy(float val)
 {
     const float oldVal = mTurnEnergy;
-    const float minDelta = 0.001f;
+    const float minDelta = 0.01f;
     const float minEnergy = 0.f;
 
     mTurnEnergy += val;

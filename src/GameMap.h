@@ -164,6 +164,9 @@ public:
     int ApproxDistance(const Cell2D & c1, const Cell2D & c2) const;
     int ApproxDistance(GameObject * obj1, GameObject * obj2) const;
 
+    // turn system
+    void RestoreFactionEnergy(PlayerFaction faction);
+
     void Update(float delta);
 
 private:

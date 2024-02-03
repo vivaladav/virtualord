@@ -805,6 +805,10 @@ void ScreenGame::OnMouseButtonUp(sgl::core::MouseButtonEvent & event)
     if(mPaused)
         return ;
 
+    // no interaction during enemy turn
+    if(!IsCurrentTurnLocal())
+        return ;
+
     if(event.GetButton() == sgl::core::MouseEvent::BUTTON_LEFT)
         HandleSelectionClick(event);
     else if(event.GetButton() == sgl::core::MouseEvent::BUTTON_RIGHT)
@@ -818,6 +822,10 @@ void ScreenGame::OnMouseMotion(sgl::core::MouseMotionEvent & event)
 
     // CAMERA
     mCamController->HandleMouseMotion(event);
+
+    // no interaction during enemy turn
+    if(!IsCurrentTurnLocal())
+        return ;
 
     UpdateCurrentCell();
 }
@@ -1056,7 +1064,7 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
             // re-enable actions for local player
             if(obj->GetFaction() == GetGame()->GetLocalPlayer()->GetFaction())
             {
-                mHUD->GetPanelObjectActions()->SetActionsEnabled(true);
+                mHUD->SetLocalActionsEnabled(true);
 
                 // show current indicator for units
                 if(obj->GetObjectCategory() == GameObject::CAT_UNIT)
@@ -1081,7 +1089,7 @@ void ScreenGame::SetObjectActionDone(GameObject * obj, bool successful)
         {
             // re-enable actions panel if obj is local
             if(obj->GetFaction() == GetGame()->GetLocalPlayerFaction())
-                mHUD->GetPanelObjectActions()->SetActionsEnabled(true);
+                mHUD->SetLocalActionsEnabled(true);
 
             // reset object's active action to default
             obj->SetActiveActionToDefault();
@@ -1316,7 +1324,7 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
 
     // disable actions panel (if action is done by local player)
     if(player->IsLocal())
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
     return true;
 }
@@ -1378,7 +1386,7 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
 
     // disable actions panel (if action is done by local player)
     if(player->IsLocal())
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
     return true;
 }
@@ -1428,7 +1436,7 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
     // disable actions panel and clear overlays (if action is done by local player)
     if(player->IsLocal())
     {
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
         ClearCellOverlays();
     }
@@ -1453,7 +1461,7 @@ bool ScreenGame::SetupUnitAttack(Unit * unit, GameObject * target, Player * play
 
     // disable actions panel (if action is done by local player)
     if(player->IsLocal())
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
     mObjActionsToDo.emplace_back(unit, GameObjectActionType::ATTACK, onDone);
 
@@ -1473,7 +1481,7 @@ bool ScreenGame::SetupUnitHeal(Unit * unit, GameObject * target, Player * player
 
     // disable actions panel (if action is done by local player)
     if(player->IsLocal())
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
     mObjActionsToDo.emplace_back(unit, GameObjectActionType::HEAL, onDone);
 
@@ -1502,7 +1510,7 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
     // disable actions panel (if action is done by local player)
     if(unit->GetFaction() == GetGame()->GetLocalPlayerFaction())
     {
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
         ClearCellOverlays();
     }
@@ -1801,7 +1809,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
                 }
 
                 // disable actions panel (if action is done by local player)
-                mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+                mHUD->SetLocalActionsEnabled(false);
 
                 // store active action
                 mObjActionsToDo.emplace_back(unit, GameObjectActionType::MOVE, onDone);
@@ -1900,8 +1908,6 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
     const GameMapCell & clickGameCell = mGameMap->GetCell(clickCell.row, clickCell.col);
     GameObject * clickObj = clickGameCell.objTop ? clickGameCell.objTop : clickGameCell.objBottom;
 
-    PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
-
     // selected object is a unit
     if(selObj->GetObjectCategory() == GameObject::CAT_UNIT)
     {
@@ -1944,7 +1950,7 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
                         mObjActionsToDo.emplace_back(selUnit, action, [](bool){});
 
                         // disable action buttons
-                        panelObjActions->SetActionsEnabled(false);
+                        mHUD->SetLocalActionsEnabled(false);
 
                         selUnit->SetActiveAction(GameObjectActionType::IDLE);
                         selUnit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
@@ -1996,8 +2002,7 @@ void ScreenGame::StartUnitBuildWall(Unit * unit)
     mObjActionsToDo.emplace_back(unit, GameObjectActionType::BUILD_WALL, [](bool){});
 
     // disable action buttons
-    PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
-    panelObjActions->SetActionsEnabled(false);
+    mHUD->SetLocalActionsEnabled(false);
 
     unit->SetActiveAction(GameObjectActionType::IDLE);
     unit->SetCurrentAction(GameObjectActionType::BUILD_WALL);
@@ -2544,6 +2549,52 @@ void ScreenGame::UpdateCurrentCell()
 
     if(sel != nullptr && sel->GetObjectCategory() == GameObject::CAT_UNIT)
         ShowActiveIndicators(static_cast<Unit *>(sel), cell);
+}
+
+void ScreenGame::EndTurn()
+{
+    Game * game = GetGame();
+
+    // END TURN
+    std::cout << "ScreenGame::EndTurn - END PLAYER " << mActivePlayerIdx << std::endl;
+
+    // current active player is local player
+    if(IsCurrentTurnLocal())
+        ClearSelection(game->GetLocalPlayer());
+
+    // START NEW TURN
+    const int players = game->GetNumPlayers();
+
+    mActivePlayerIdx = (mActivePlayerIdx + 1) % players;
+
+    std::cout << "ScreenGame::EndTurn - START PLAYER " << mActivePlayerIdx << std::endl;
+
+    // update active player data
+    Player * p = game->GetPlayerByIndex(mActivePlayerIdx);
+    const PlayerFaction activeFaction = p->GetFaction();
+    p->ResetTurnEnergy();
+    mGameMap->RestoreFactionEnergy(activeFaction);
+
+    // new active player is local player
+    if(IsCurrentTurnLocal())
+    {
+        mHUD->ShowTurnControlPanel();
+    }
+    // new active player is AI
+    else
+    {
+        mHUD->ShowTurnControlText();
+
+        // TEMP hack to make AI turn last some time while AI not implemented yet
+        const float timeAI = 1;
+        GameMapProgressBar * pb = mHUD->CreateProgressBarInCell({0,0}, timeAI, activeFaction);
+        pb->SetVisible(false);
+
+        pb->AddFunctionOnCompleted([this]
+        {
+            EndTurn();
+        });
+    }
 }
 
 } // namespace game

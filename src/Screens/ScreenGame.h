@@ -93,6 +93,9 @@ public:
     bool GetPaused() const;
     void SetPause(bool paused);
 
+    // TURN SYSTEM
+    bool IsCurrentTurnLocal() const;
+
 private:
     void OnApplicationQuit(sgl::core::ApplicationEvent & event) override;
 
@@ -158,6 +161,8 @@ private:
 
     void UpdateCurrentCell();
 
+    void EndTurn();
+
 private:
     friend class GameHUD;
 
@@ -197,6 +202,9 @@ private:
     struct Cell2D mCurrCell;
     sgl::core::Pointd2D mMousePos;
 
+    // TURN MANAGEMENT
+    int mActivePlayerIdx = 0;
+
     float mTimerEnergy;
     float mTimerAI;
 
@@ -222,5 +230,7 @@ inline void ScreenGame::SetObjectActionFailed(GameObject * obj)
 inline GameHUD * ScreenGame::GetHUD() const { return mHUD; }
 
 inline bool ScreenGame::GetPaused() const { return mPaused; }
+
+inline bool ScreenGame::IsCurrentTurnLocal() const { return mActivePlayerIdx == 0; }
 
 } // namespace game

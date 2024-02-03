@@ -62,6 +62,8 @@ public:
     void ShowTurnControlPanel();
     void ShowTurnControlText();
 
+    void SetLocalActionsEnabled(bool enabled);
+
     GameMapProgressBar * CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction);
 
 private:

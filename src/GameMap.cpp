@@ -1864,6 +1864,16 @@ int GameMap::ApproxDistance(GameObject * obj1, GameObject * obj2) const
            std::abs(obj1->GetCol0() - obj2->GetCol0());
 }
 
+void GameMap::RestoreFactionEnergy(PlayerFaction faction)
+{
+    // TODO keep a list of all faction objects in Player so this can be done there with no IFs
+    for(GameObject * obj : mObjects)
+    {
+        if(obj->GetFaction() == faction)
+            obj->RestoreTurnEnergy();
+    }
+}
+
 void GameMap::Update(float delta)
 {
     // -- game objects --

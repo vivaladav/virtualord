@@ -6,6 +6,7 @@
 #include "Widgets/GameUIData.h"
 #include "Widgets/ProgressBarTurnEnergy.h"
 
+#include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/Image.h>
@@ -35,10 +36,14 @@ public:
                                      ID_TURN_CONTROL_BUTTON_NORMAL
                                  }, SpriteFilePanelTurnControl, parent)
     {
+        // tooltip
         const int ttDelay = 500;
         auto tt = new GameSimpleTooltip("End your turn");
         SetTooltip(tt);
         SetTooltipDelay(ttDelay);
+
+        // shortcut
+        SetShortcutKey(sgl::core::KeyboardEvent::KEY_BACKSPACE);
     }
 
     void HandleMouseOver() override
@@ -155,6 +160,16 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
 PanelTurnControl::~PanelTurnControl()
 {
     mPlayer->SetOnTurnEnergyChanged([]{});
+}
+
+void PanelTurnControl::SetFunctionEndTurn(const std::function<void()> & f)
+{
+    mButtonEndTurn->AddOnClickFunction(f);
+}
+
+void PanelTurnControl::SetButtonEndTurnEnabled(bool enabled)
+{
+    mButtonEndTurn->SetEnabled(enabled);
 }
 
 void PanelTurnControl::ShowPanel()
