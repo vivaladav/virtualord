@@ -259,10 +259,14 @@ add_executable(
     src/Widgets/PanelResources.cpp
     src/Widgets/PanelSelectedObject.h
     src/Widgets/PanelSelectedObject.cpp
+    src/Widgets/PanelTurnControl.h
+    src/Widgets/PanelTurnControl.cpp
     src/Widgets/PlanetMap.h
     src/Widgets/PlanetMap.cpp
     src/Widgets/ProgressBarResources.h
     src/Widgets/ProgressBarResources.cpp
+    src/Widgets/ProgressBarTurnEnergy.h
+    src/Widgets/ProgressBarTurnEnergy.cpp
     src/Widgets/ResourceDisplay.h
     src/Widgets/ResourceDisplay.cpp
     src/Widgets/SimpleResourceDisplay.h

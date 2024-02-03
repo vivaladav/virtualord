@@ -545,6 +545,30 @@ void ScreenInit::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelSelectedObject, rects);
     });
 
+    // PANEL TURN CONTROL
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 788, 60 },
+            // PROGRESS BAR
+            { 0, 61, 404, 16 },
+            { 0, 78, 400, 12 },
+            // BUTTON
+            { 405, 61, 60, 40 },
+            { 466, 61, 60, 40 },
+            { 527, 61, 60, 40 },
+            { 588, 61, 60, 40 },
+            // ICONS
+            { 649, 61, 32, 32 },
+            { 682, 61, 32, 32 },
+            { 715, 61, 32, 32 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelTurnControl, rects);
+    });
+
     // MAP UI
     mJobs.emplace_back([this, tm]
     {

@@ -25,6 +25,7 @@
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/PanelResources.h"
 #include "Widgets/PanelSelectedObject.h"
+#include "Widgets/PanelTurnControl.h"
 
 #include <sgl/graphic/Renderer.h>
 #include <sgl/sgui/ButtonsGroup.h>
@@ -114,6 +115,13 @@ GameHUD::GameHUD(ScreenGame * screen)
     // OBJECT ACTIONS
     mPanelObjActions = new PanelObjectActions(this);
     mPanelObjActions->SetVisible(false);
+
+    // PANEL TURN CONTROL
+    mPanelTurnCtrl = new PanelTurnControl(player, this);
+
+    const int posPanelTurnX = (rendW - mPanelTurnCtrl->GetWidth()) / 2;
+    const int posPanelTurnY = groupY - mPanelTurnCtrl->GetHeight();
+    mPanelTurnCtrl->SetPosition(posPanelTurnX, posPanelTurnY);
 
     // PANEL SELECTED OBJECT
     mPanelSelObj = new PanelSelectedObject(game->GetObjectsRegistry(), this);

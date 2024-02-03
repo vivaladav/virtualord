@@ -382,6 +382,27 @@ enum SpriteIdMapUI : unsigned int
     IND_ICON_CELL_MATERIAL
 };
 
+// MAP UI
+extern const char SpriteFilePanelTurnControl[];
+
+enum SpriteIdPanelTurnControl : unsigned int
+{
+    // BACKGROUND
+    ID_TURN_CONTROL_BG,
+    // PROGRESS BAR
+    ID_TURN_CONTROL_PB_BG,
+    ID_TURN_CONTROL_PB_BAR,
+    // BUTTON
+    ID_TURN_CONTROL_BUTTON_NORMAL,
+    ID_TURN_CONTROL_BUTTON_DISABLED,
+    ID_TURN_CONTROL_BUTTON_OVER,
+    ID_TURN_CONTROL_BUTTON_PUSHED,
+    // ICONS
+    ID_TURN_CONTROL_ICON_F1,
+    ID_TURN_CONTROL_ICON_F2,
+    ID_TURN_CONTROL_ICON_F3,
+};
+
 // PLANET MAP
 extern const char SpriteFilePlanetMap[];
 

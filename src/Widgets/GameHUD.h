@@ -24,6 +24,7 @@ class MiniMap;
 class PanelObjectActions;
 class PanelResources;
 class PanelSelectedObject;
+class PanelTurnControl;
 class Player;
 class ScreenGame;
 class Temple;
@@ -70,6 +71,7 @@ private:
 
 private:
     PanelResources * mPanelRes = nullptr;
+    PanelTurnControl * mPanelTurnCtrl = nullptr;
     ButtonMinimap * mButtonMinimap = nullptr;
     MiniMap * mMiniMap = nullptr;
     PanelObjectActions * mPanelObjActions = nullptr;
