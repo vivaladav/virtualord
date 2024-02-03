@@ -360,10 +360,21 @@ void GameObject::SumEnergy(float val)
 
 bool GameObject::HasEnergyForActionStep(GameObjectActionType action)
 {
-        if(action < NUM_OBJ_ACTIONS)
-            return GetEnergy() >= ACTION_COSTS[action];
+    if(action < NUM_OBJ_ACTIONS)
+    {
+        const float cost = ACTION_COSTS[action];
+
+        if(mFaction != NO_FACTION)
+        {
+            Player * p = mScreen->GetGame()->GetPlayerByFaction(mFaction);
+
+            return GetEnergy() >= cost && p->GetTurnEnergy() >= cost;
+        }
         else
-            return false;
+            return GetEnergy() >= cost;
+    }
+    else
+        return false;
 }
 
 void GameObject::ActionStepCompleted(GameObjectActionType action)
@@ -375,8 +386,11 @@ void GameObject::ActionStepCompleted(GameObjectActionType action)
 
         SumEnergy(costEnergy);
 
-        Player * p = mScreen->GetGame()->GetPlayerByFaction(mFaction);
-        p->SumTurnEnergy(costEnergy);
+        if(mFaction != NO_FACTION)
+        {
+            Player * p = mScreen->GetGame()->GetPlayerByFaction(mFaction);
+            p->SumTurnEnergy(costEnergy);
+        }
 
         // EXPERIENCE
         SumExperience(ACTION_EXPERIENCE[action]);
