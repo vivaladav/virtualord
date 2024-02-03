@@ -128,19 +128,25 @@ void ScreenInit::SetupLoadPackages()
     // LOAD GAME PACKAGE
     mJobs.emplace_back([this]
     {
-        mTexPackages[PACKAGE_IMGS_GAME] =  new sgl::core::DataPackage("data/img/game.bin");
+        mTexPackages[PACKAGE_IMGS_GAME] = new sgl::core::DataPackage("data/img/game.bin");
     });
 
     // LOAD TEST PACKAGE
     mJobs.emplace_back([this]
     {
-        mTexPackages[PACKAGE_IMGS_TEST] =  new sgl::core::DataPackage("data/img/test.bin");
+        mTexPackages[PACKAGE_IMGS_TEST] = new sgl::core::DataPackage("data/img/test.bin");
     });
 
-    // LOAD UI PACKAGE
+    // LOAD UI GAME PACKAGE
     mJobs.emplace_back([this]
     {
-        mTexPackages[PACKAGE_IMGS_UI] =  new sgl::core::DataPackage("data/img/UI/UI.bin");
+        mTexPackages[PACKAGE_IMGS_UI_GAME] = new sgl::core::DataPackage("data/img/UI/UI-game.bin");
+    });
+
+    // LOAD UI OTHERS PACKAGE
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_OTHERS] = new sgl::core::DataPackage("data/img/UI/UI-others.bin");
     });
 
     // LOAD MUSIC GAME PACKAGE
@@ -279,7 +285,7 @@ void ScreenInit::SetupTextures()
             { 935, 193, 32, 24 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogExit, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileDialogExit, rects);
     });
 
     // DIALOG EXPLORE TEMPLE
@@ -310,7 +316,7 @@ void ScreenInit::SetupTextures()
             { 1059, 205, 24, 24 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogExploreTemple, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExploreTemple, rects);
     });
 
     // MAIN MENU
@@ -326,7 +332,7 @@ void ScreenInit::SetupTextures()
             { 537, 62, 20, 360 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileMainMenu, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileMainMenu, rects);
     });
 
     // MAIN MENU BUTTONS
@@ -356,7 +362,7 @@ void ScreenInit::SetupTextures()
             { 128, 500, 24, 24 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileMainMenuButtons, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileMainMenuButtons, rects);
     });
 
     // FACTION SELECTION
@@ -399,7 +405,7 @@ void ScreenInit::SetupTextures()
             { 1404, 554, 300, 60 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileFactionSelection, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileFactionSelection, rects);
     });
 
     // CELLS
@@ -477,7 +483,7 @@ void ScreenInit::SetupTextures()
             { 106, 341, 52, 52 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFilePanelMinimap, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelMinimap, rects);
     });
 
     // PANEL SELECTED OBJECT
@@ -536,7 +542,7 @@ void ScreenInit::SetupTextures()
             { 557, 296, 32, 32 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFilePanelSelectedObject, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelSelectedObject, rects);
     });
 
     // MAP UI
@@ -555,7 +561,7 @@ void ScreenInit::SetupTextures()
             { 9, 37, 11, 12 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileMapUI, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileMapUI, rects);
     });
 
     // COLLECTIBLES
@@ -1134,7 +1140,7 @@ void ScreenInit::SetupTextures()
             { 301, 546, 300, 44 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogEndMission, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogEndMission, rects);
     });
 
     // NEW ELEMENT DIALOG
@@ -1188,7 +1194,7 @@ void ScreenInit::SetupTextures()
             { 1268, 98, 20, 80 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogNewElement, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewElement, rects);
 
         // NEW ELEMENT DIALOG - EXPANDABLE GRAPHICS
         const std::vector<sgl::core::Rectd> rectsExp
@@ -1199,7 +1205,7 @@ void ScreenInit::SetupTextures()
             { 0, 62, 1280, 90 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogNewElementExp, rectsExp);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewElementExp, rectsExp);
     });
 
     // OBJECT ACTION BUTTON
@@ -1227,7 +1233,7 @@ void ScreenInit::SetupTextures()
             { 212, 127, 52, 52 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileObjActionButton, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileObjActionButton, rects);
     });
 
     // PLANET MAP
@@ -1296,7 +1302,7 @@ void ScreenInit::SetupTextures()
             { 351, 913, 350, 44 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFilePlanetMap, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFilePlanetMap, rects);
     });
 
     // PLANET MAP 2
@@ -1313,7 +1319,7 @@ void ScreenInit::SetupTextures()
             { 476, 552, 475, 85 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFilePlanetMap2, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFilePlanetMap2, rects);
     });
 
     // RESOURCES BAR
@@ -1334,7 +1340,7 @@ void ScreenInit::SetupTextures()
             { 141, 51, 26, 26 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileResourcesBar, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileResourcesBar, rects);
     });
 
     // TOOLTIPS
@@ -1348,7 +1354,7 @@ void ScreenInit::SetupTextures()
             { 42, 0, 20, 32 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileTooltips, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileTooltips, rects);
     });
 
     // QUICK UNIT SELECTION
@@ -1383,7 +1389,7 @@ void ScreenInit::SetupTextures()
             { 536, 82, 49, 40 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileUnitQuickSel, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileUnitQuickSel, rects);
     });
 
     // SETTINGS
@@ -1424,7 +1430,7 @@ void ScreenInit::SetupTextures()
             { 977, 801, 45, 39 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileSettings, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileSettings, rects);
     });
 
     // SETTINGS - EXPANDABLE TEXTURES
@@ -1443,7 +1449,7 @@ void ScreenInit::SetupTextures()
             { 606, 53, 30, 30 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileSettingsExp, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileSettingsExp, rects);
     });
 
     // TEST SPRITE
