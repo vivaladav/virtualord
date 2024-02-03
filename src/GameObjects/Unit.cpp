@@ -119,11 +119,6 @@ void Unit::SetActiveActionToDefault() { SetActiveAction(MOVE); }
 
 void Unit::Update(float delta)
 {
-    // UPDATE ENERGY
-    // TODO recover energy based on attributes
-    if(GetEnergy() < GetMaxEnergy())
-        SumEnergy(0.1f);
-
     // ATTACKING OTHER OBJECTS
     if(mTargetAttack)
         UpdateAttack(delta);

@@ -129,6 +129,13 @@ public:
 
     void HandleCollectable(GameObject * obj);
 
+    // -- TURN --
+    float GetTurnEnergy() const;
+    float GetTurnEnergyMax() const;
+    void ResetTurnEnergy();
+    void SumTurnEnergy(float val);
+    void SetOnTurnEnergyChanged(const std::function<void()> & f);
+
     // -- AI --
     bool IsAI() const;
     PlayerAI * GetAI();
@@ -156,6 +163,7 @@ private:
     std::function<void(int)> mOnNumCellsChanged;
     std::function<void()> mOnNumUnitsChanged;
     std::function<void()> mOnResourcesChanged;
+    std::function<void()> mOnTurnEnergyChanged;
 
     std::unordered_map<ResourceType, std::vector<ResourceGenerator *>> mResGeneratorsMap;
 
@@ -168,6 +176,9 @@ private:
     int mPlayerId;
 
     PlayerFaction mFaction;
+
+    float mTurnEnergy = 0.f;
+    float mTurnEnergyMax = 100.f;
 
     int mNumCells = 0;
     int mTotCellsLevel = 0;
@@ -269,6 +280,18 @@ inline const std::vector<GameObjectTypeId> & Player::GetAvailableUnits() const
 
 inline GameObject * Player::GetSelectedObject() const { return mSelObj; }
 inline bool Player::HasSelectedObject() const { return mSelObj != nullptr; }
+
+inline float Player::GetTurnEnergy() const { return mTurnEnergy; }
+inline float Player::GetTurnEnergyMax() const { return mTurnEnergyMax; }
+inline void Player::ResetTurnEnergy()
+{
+    mTurnEnergy = mTurnEnergyMax;
+    mOnTurnEnergyChanged();
+}
+inline void Player::SetOnTurnEnergyChanged(const std::function<void()> & f)
+{
+    mOnTurnEnergyChanged = f;
+}
 
 inline bool Player::IsAI() const { return mAI != nullptr; }
 inline PlayerAI * Player::GetAI() { return mAI; }

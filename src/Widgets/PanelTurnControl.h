@@ -5,10 +5,12 @@
 namespace sgl
 {
     namespace graphic { class Image; }
+
     namespace sgui
     {
         class Image;
         class ImageButton;
+        class Label;
         class ProgressBar;
     }
 }
@@ -23,6 +25,10 @@ class PanelTurnControl : public sgl::sgui::Widget
 {
 public:
     PanelTurnControl(Player * player, sgl::sgui::Widget * parent);
+    ~PanelTurnControl();
+
+    void ShowPanel();
+    void ShowText();
 
 private:
     void HandlePositionChanged() override;
@@ -34,6 +40,8 @@ private:
     sgl::sgui::ProgressBar * mEnergyBar = nullptr;
     DigitsDisplay * mDigits = nullptr;
     sgl::sgui::ImageButton * mButtonEndTurn = nullptr;
+
+    sgl::sgui::Label * mTextEnemyTurn = nullptr;
 
     Player * mPlayer = nullptr;
 };

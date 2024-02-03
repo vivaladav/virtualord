@@ -405,6 +405,16 @@ void GameHUD::ShowPanelSelectedObject(GameObject *obj)
     mPanelSelObj->SetVisible(true);
 }
 
+void GameHUD::ShowTurnControlPanel()
+{
+    mPanelTurnCtrl->ShowPanel();
+}
+
+void GameHUD::ShowTurnControlText()
+{
+    mPanelTurnCtrl->ShowText();
+}
+
 GameMapProgressBar * GameHUD::CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction)
 {
     GameMapProgressBar * pb = CreateProgressBar(time, faction);

@@ -154,6 +154,8 @@ ScreenGame::ScreenGame(Game * game)
     {
         Player * p = game->GetPlayerByIndex(i);
 
+        p->ResetTurnEnergy();
+
         if(p->IsAI())
         {
             p->GetAI()->SetGameMap(mGameMap);

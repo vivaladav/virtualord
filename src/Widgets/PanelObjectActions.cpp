@@ -113,7 +113,7 @@ void PanelObjectActions::SetObject(GameObject * obj)
     // update position
     const int rendW = sgl::graphic::Renderer::Instance()->GetWidth();
     const int rendH = sgl::graphic::Renderer::Instance()->GetHeight();
-    const int marginB = 100;
+    const int marginB = 150;
 
     const int panelX = (rendW - GetWidth()) * 0.5f;
     const int panelY = rendH - GetHeight() - marginB;

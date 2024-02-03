@@ -59,6 +59,9 @@ public:
     void HidePanelSelectedObject();
     void ShowPanelSelectedObject(GameObject * obj);
 
+    void ShowTurnControlPanel();
+    void ShowTurnControlText();
+
     GameMapProgressBar * CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction);
 
 private:

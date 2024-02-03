@@ -6,6 +6,8 @@
 #include "Widgets/GameUIData.h"
 #include "Widgets/ProgressBarTurnEnergy.h"
 
+#include <sgl/graphic/Font.h>
+#include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
@@ -13,6 +15,9 @@
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/ImageButton.h>
+#include <sgl/sgui/Label.h>
+
+#include <cmath>
 
 namespace game
 {
@@ -58,16 +63,20 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     : sgl::sgui::Widget(parent)
     , mPlayer(player)
 {
-    const PlayerFaction faction = player->GetFaction();
-    const int minEnergy = 0;
-    const int maxEnergy = 100;
+    using namespace sgl;
 
-    auto * tm = sgl::graphic::TextureManager::Instance();
-    sgl::graphic::Texture * tex = nullptr;
+    const PlayerFaction faction = player->GetFaction();
+    const float minEnergy = 0.f;
+    const float maxEnergy = player->GetTurnEnergyMax();
+    const float energy = player->GetTurnEnergy();
+
+    auto fm = graphic::FontManager::Instance();
+    auto tm = graphic::TextureManager::Instance();
+    graphic::Texture * tex = nullptr;
 
     // BACKGROUND
     tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURN_CONTROL_BG);
-    mBg = new sgl::graphic::Image(tex);
+    mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 
     const int w = mBg->GetWidth();
@@ -77,10 +86,11 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     // ICON ENERGY
     const unsigned int iconId = ID_TURN_CONTROL_ICON_F1 + faction;
     tex = tm->GetSprite(SpriteFilePanelTurnControl, iconId);
-    mIconEnergy = new sgl::sgui::Image(tex, this);
+    mIconEnergy = new sgui::Image(tex, this);
 
     // PROGRESS BAR ENERGY
     mEnergyBar = new ProgressBarTurnEnergy(faction, minEnergy, maxEnergy, this);
+    mEnergyBar->SetValue(energy);
 
     // DIGITS DISPLAY
     const unsigned int colorDigits = 0x70a9c2ff;
@@ -90,9 +100,28 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     mDigits = new DigitsDisplay(digits, fontDigitsSize, std::string(), this);
     mDigits->SetColorDigits(colorDigits);
     mDigits->SetColorZeros(colorZeros);
+    mDigits->SetValue(energy);
 
     // BUTTON END TURN
     mButtonEndTurn = new ButtonEndTurn(this);
+
+    // TEXT
+    const char * fontFile = "Lato-Regular.ttf";
+    const int fontSize = 28;
+    const unsigned int colorText = 0x76a7bcff;
+    graphic::Font * font = fm->GetFont(fontFile, fontSize, graphic::Font::NORMAL);
+
+    mTextEnemyTurn = new sgui::Label("ENEMY TURN", font, this);
+    mTextEnemyTurn->SetColor(colorText);
+    mTextEnemyTurn->SetVisible(false);
+
+    // CALLBACK ENERGY
+    player->SetOnTurnEnergyChanged([this]
+    {
+        const int energy = std::roundf(mPlayer->GetTurnEnergy());
+        mEnergyBar->SetValue(energy);
+        mDigits->SetValue(energy);
+    });
 
     // POSITION ELEMENTS
     const int marginIcon = 5;
@@ -117,6 +146,35 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     x += mDigits->GetWidth() + marginDigits;
     y = (h - mButtonEndTurn->GetHeight()) / 2;
     mButtonEndTurn->SetPosition(x, y);
+
+    x = (w - mTextEnemyTurn->GetWidth()) / 2;
+    y = (h - mTextEnemyTurn->GetHeight()) / 2;
+    mTextEnemyTurn->SetPosition(x, y);
+}
+
+PanelTurnControl::~PanelTurnControl()
+{
+    mPlayer->SetOnTurnEnergyChanged([]{});
+}
+
+void PanelTurnControl::ShowPanel()
+{
+    mIconEnergy->SetVisible(true);
+    mEnergyBar->SetVisible(true);
+    mDigits->SetVisible(true);
+    mButtonEndTurn->SetVisible(true);
+
+    mTextEnemyTurn->SetVisible(false);
+}
+
+void PanelTurnControl::ShowText()
+{
+    mIconEnergy->SetVisible(false);
+    mEnergyBar->SetVisible(false);
+    mDigits->SetVisible(false);
+    mButtonEndTurn->SetVisible(false);
+
+    mTextEnemyTurn->SetVisible(true);
 }
 
 void PanelTurnControl::HandlePositionChanged()

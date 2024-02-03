@@ -1,10 +1,12 @@
 #include "GameObject.h"
 
+#include "Game.h"
 #include "GameConstants.h"
 #include "GameData.h"
 #include "GameMap.h"
 #include "GameMapCell.h"
 #include "IsoObject.h"
+#include "Player.h"
 #include "Particles/DataParticleDamage.h"
 #include "Particles/UpdaterDamage.h"
 #include "Screens/ScreenGame.h"
@@ -368,8 +370,15 @@ void GameObject::ActionStepCompleted(GameObjectActionType action)
 {
     if(action < NUM_OBJ_ACTIONS)
     {
-        SumEnergy(-ACTION_COSTS[action]);
+        // ENERGY
+        const float costEnergy = -ACTION_COSTS[action];
 
+        SumEnergy(costEnergy);
+
+        Player * p = mScreen->GetGame()->GetPlayerByFaction(mFaction);
+        p->SumTurnEnergy(costEnergy);
+
+        // EXPERIENCE
         SumExperience(ACTION_EXPERIENCE[action]);
     }
 }

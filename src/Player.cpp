@@ -10,6 +10,7 @@
 #include "GameObjects/Structure.h"
 #include "GameObjects/Unit.h"
 
+#include <cmath>
 #include <iostream>
 
 namespace game
@@ -24,6 +25,7 @@ Player::Player(const char * name, int pid)
     , mOnNumCellsChanged([](int){})
     , mOnNumUnitsChanged([](){})
     , mOnResourcesChanged([](){})
+    , mOnTurnEnergyChanged([](){})
     , mPlayerId(pid)
     , mFaction(NO_FACTION)
 {
@@ -341,6 +343,25 @@ void Player::HandleCollectable(GameObject * obj)
 
     // notify collection
     static_cast<Collectable *>(obj)->Collected();
+}
+
+void Player::SumTurnEnergy(float val)
+{
+    const float oldVal = mTurnEnergy;
+    const float minDelta = 0.001f;
+    const float minEnergy = 0.f;
+
+    mTurnEnergy += val;
+
+    if(mTurnEnergy > mTurnEnergyMax)
+        mTurnEnergy = mTurnEnergyMax;
+    else if(mTurnEnergy < minEnergy)
+        mTurnEnergy = minEnergy;
+
+    const float diff = std::fabs(mTurnEnergy - oldVal);
+
+    if(diff > minDelta)
+        mOnTurnEnergyChanged();
 }
 
 void Player::AddAvailableStructure(GameObjectTypeId type)
