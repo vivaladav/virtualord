@@ -1847,6 +1847,11 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 void ScreenGame::HandleSelectionClick(sgl::core::MouseButtonEvent & event)
 {
     Player * player = GetGame()->GetLocalPlayer();
+    GameObject * currSel = player->GetSelectedObject();
+
+    // do not allow any selecting/deselection when an action is in progress
+    if(currSel != nullptr && currSel->GetCurrentAction() != IDLE)
+        return ;
 
     const sgl::graphic::Camera * cam = mCamController->GetCamera();
     const int worldX = cam->GetScreenToWorldX(event.GetX());
@@ -1868,8 +1873,6 @@ void ScreenGame::HandleSelectionClick(sgl::core::MouseButtonEvent & event)
     // clicked non-own or no object -> nothing to do
     if(!isClickObjOwn)
         return ;
-
-    GameObject * currSel = player->GetSelectedObject();
 
     // clicked selected object -> deselect it
     if(clickObj == currSel)

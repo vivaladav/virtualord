@@ -421,9 +421,18 @@ void GameHUD::ShowTurnControlText()
 
 void GameHUD::SetLocalActionsEnabled(bool enabled)
 {
+    // PANEL OBJECT ACTIONS
     mPanelObjActions->SetActionsEnabled(enabled);
 
+    // PANEL TURN CONTROL
     mPanelTurnCtrl->SetButtonEndTurnEnabled(enabled);
+
+    // QUICK UNIT SELECTION
+    Player * player = mScreen->GetGame()->GetLocalPlayer();
+    const unsigned int numButtons = player->GetNumUnits();;
+
+    for(unsigned int i = 0; i < numButtons; ++i)
+        mGroupUnitSel->GetButton(i)->SetEnabled(enabled);
 }
 
 GameMapProgressBar * GameHUD::CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction)
