@@ -268,8 +268,9 @@ void ScreenGame::Update(float delta)
     mGameMap->Update(delta);
 
     // -- AI --
-    if(!mAiPlayers.empty())
-        UpdateAI(delta);
+    // TODO re-enable AI when implemented for TBS
+    // if(!mAiPlayers.empty())
+    //     UpdateAI(delta);
 
     // check game end
     UpdateGameEnd();
