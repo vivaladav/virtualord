@@ -203,6 +203,8 @@ private:
     sgl::core::Pointd2D mMousePos;
 
     // TURN MANAGEMENT
+    Player * mLocalPlayer = nullptr;
+
     int mActivePlayerIdx = 0;
 
     float mTimerAI = 0.f;
