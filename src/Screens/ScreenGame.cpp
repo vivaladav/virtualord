@@ -65,14 +65,16 @@ constexpr float TIME_UPG_UNIT = 5.f;
 
 constexpr float TIME_ENERGY_USE = 8.f;
 constexpr float TIME_AI_MOVE = 0.5f;
+constexpr float TIME_AUTO_END_TURN = 2.f;
 
 ScreenGame::ScreenGame(Game * game)
     : Screen(game)
     , mPartMan(new sgl::graphic::ParticlesManager)
     , mPathfinder(new sgl::ai::Pathfinder)
     , mCurrCell(-1, -1)
-    , mTimerEnergy(TIME_ENERGY_USE)
     , mTimerAI(TIME_AI_MOVE)
+    , mTimerEnergy(TIME_ENERGY_USE)
+    , mTimerAutoEndTurn(TIME_AUTO_END_TURN)
 {
     game->SetClearColor(0x1A, 0x1A, 0x1A, 0xFF);
 
@@ -237,6 +239,8 @@ void ScreenGame::Update(float delta)
     if(mPaused)
         return ;
 
+    Game * game = GetGame();
+
     // keep track of time played (while not paused)
     mTimePlayed += delta;
 
@@ -251,8 +255,6 @@ void ScreenGame::Update(float delta)
 
     if(mTimerEnergy < 0.f)
     {
-        Game * game = GetGame();
-
         for(int i = 0; i < game->GetNumPlayers(); ++i)
         {
             Player * p = game->GetPlayerByIndex(i);
@@ -260,6 +262,22 @@ void ScreenGame::Update(float delta)
         }
 
         mTimerEnergy = TIME_ENERGY_USE;
+    }
+
+    // -- AUTO END TURN --
+    const float minEn = 1.f;
+
+    if(IsCurrentTurnLocal() && game->IsAutoEndTurnEnabled() &&
+       game->GetLocalPlayer()->GetTurnEnergy() < minEn)
+    {
+        mTimerAutoEndTurn -= delta;
+
+        if(mTimerAutoEndTurn <= 0.f)
+        {
+            EndTurn();
+
+            mTimerAutoEndTurn = TIME_AUTO_END_TURN;
+        }
     }
 
     // -- GAME MAP AND OBJECTS --

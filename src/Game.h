@@ -92,6 +92,8 @@ public:
     void SetMapScrollingSpeed(int val);
     bool IsMapScrollingOnEdges() const;
     void SetMapScrollingOnEdges(bool val);
+    bool IsAutoEndTurnEnabled() const;
+    void SetAutoEndTurn(bool val);
 
     unsigned int AddOnSettingsChangedFunction(const std::function<void()> & f);
     void RemoveOnSettingsChangedFunction(unsigned int fId);
@@ -126,10 +128,12 @@ private:
     Planets mCurrPlanet;
     unsigned int mCurrTerritory = 0;
 
+    // SETTINGS
     int mMapDraggingSpeed = 5;
     int mMapScrollingSpeed = 6;
     int mMapDragging = true;
     bool mMapScrollingOnEdges = true;
+    bool mAutoEndTurn = true;
 
     unsigned char mClearR = 0;
     unsigned char mClearG = 0;
@@ -189,10 +193,33 @@ inline PlayerFaction Game::GetLocalPlayerFaction() const
 
 inline int Game::GetMapDraggingSpeed() const { return mMapDraggingSpeed; }
 inline bool Game::IsMapDragging() const { return mMapDragging; }
-inline void Game::SetMapDragging(bool val) { mMapDragging = val; }
+inline void Game::SetMapDragging(bool val)
+{
+    if(val != mMapDragging)
+    {
+        mMapDragging = val;
+        NotifyOnSettingsChanged();
+    }
+}
 
 inline int Game::GetMapScrollingSpeed() const { return mMapScrollingSpeed; }
 inline bool Game::IsMapScrollingOnEdges() const { return mMapScrollingOnEdges; }
-inline void Game::SetMapScrollingOnEdges(bool val) { mMapScrollingOnEdges = val; }
+inline void Game::SetMapScrollingOnEdges(bool val)
+{
+    if(val != mMapScrollingOnEdges)
+    {
+        mMapScrollingOnEdges = val;
+        NotifyOnSettingsChanged();
+    }
+}
+inline bool Game::IsAutoEndTurnEnabled() const { return mAutoEndTurn; }
+inline void Game::SetAutoEndTurn(bool val)
+{
+    if(val != mAutoEndTurn)
+    {
+        mAutoEndTurn = val;
+        NotifyOnSettingsChanged();
+    }
+}
 
 } // namespace game

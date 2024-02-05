@@ -205,8 +205,9 @@ private:
     // TURN MANAGEMENT
     int mActivePlayerIdx = 0;
 
-    float mTimerEnergy;
-    float mTimerAI;
+    float mTimerAI = 0.f;
+    float mTimerEnergy = 0.f;
+    float mTimerAutoEndTurn = 0.f;
 
     float mTimePlayed = 0.f;
 

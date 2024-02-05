@@ -517,7 +517,7 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
 {
     using namespace sgl;
 
-    const int h = 400;
+    const int h = 600;
     auto panel = new PanelContentSettings(h, parent);
     mPanels[Panel::GAME] = panel;
 
@@ -625,6 +625,26 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
     cb->AddOnToggleFunction([this](bool checked)
     {
         mGame->SetMapDragging(checked);
+    });
+
+    // AUTO END TURN
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label("AUTO END TURN", font, panel);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    cb = new SettingsCheckbox(panel);
+    cb->SetChecked(mGame->IsAutoEndTurnEnabled());
+
+    x += blockSettingW;
+    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
+    cb->SetPosition(x, y);
+
+    cb->AddOnToggleFunction([this](bool checked)
+    {
+        mGame->SetAutoEndTurn(checked);
     });
 }
 
