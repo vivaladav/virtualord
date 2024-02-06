@@ -64,7 +64,6 @@ constexpr float TIME_CONQ_RES_GEN = 2.f;
 constexpr float TIME_UPG_UNIT = 5.f;
 
 constexpr float TIME_ENERGY_USE = 8.f;
-constexpr float TIME_AI_MOVE = 0.5f;
 constexpr float TIME_AUTO_END_TURN = 2.f;
 
 ScreenGame::ScreenGame(Game * game)
@@ -72,7 +71,6 @@ ScreenGame::ScreenGame(Game * game)
     , mPartMan(new sgl::graphic::ParticlesManager)
     , mPathfinder(new sgl::ai::Pathfinder)
     , mCurrCell(-1, -1)
-    , mTimerAI(TIME_AI_MOVE)
     , mTimerEnergy(TIME_ENERGY_USE)
     , mTimerAutoEndTurn(TIME_AUTO_END_TURN)
     , mLocalPlayer(game->GetLocalPlayer())
@@ -288,9 +286,8 @@ void ScreenGame::Update(float delta)
     mGameMap->Update(delta);
 
     // -- AI --
-    // TODO re-enable AI when implemented for TBS
-    // if(!mAiPlayers.empty())
-    //     UpdateAI(delta);
+    if(!mAiPlayers.empty())
+         UpdateAI(delta);
 
     // check game end
     UpdateGameEnd();
@@ -864,27 +861,42 @@ void ScreenGame::OnWindowMouseLeft(sgl::graphic::WindowEvent & event)
 
 void ScreenGame::UpdateAI(float delta)
 {
-    mTimerAI -= delta;
+    // nothing to do during local player turn
+    if(IsCurrentTurnLocal())
+        return ;
 
-    if(mTimerAI < 0.f)
+    // convert player playing turn to AI index
+    const int turnAI = mActivePlayerIdx - 1;
+
+    PlayerAI * ai = mAiPlayers[turnAI]->GetAI();
+    Player * player = ai->GetPlayer();
+
+    // already doing action -> wait
+    if(ai->IsDoingSomething())
+        return ;
+
+    // no more turn energy -> end turn
+    const float minEnergy = 1.f;
+
+    if(player->GetTurnEnergy() < minEnergy)
     {
-        PlayerAI * ai = mAiPlayers[mCurrPlayerAI]->GetAI();
-        ai->Update(delta);
-        ExecuteAIAction(ai);
+        std::cout << "ScreenGame::UpdateAI - AI " << turnAI
+                  << " ==================== END TURN ====================" << std::endl;
 
-        // move to next player and update timer
-        ++mCurrPlayerAI;
-
-        // reset current player if needed
-        if(mCurrPlayerAI >= mAiPlayers.size())
-            mCurrPlayerAI = 0;
-
-        mTimerAI = TIME_AI_MOVE;
+        EndTurn();
+        return ;
     }
+
+    // make AI decide what to do
+    ai->DecideNextAction();
+    ExecuteAIAction(ai);
 }
 
 void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 {
+    // convert player playing turn to AI index
+    const int turnAI = mActivePlayerIdx - 1;
+
     bool done = false;
 
     Player * player = ai->GetPlayer();
@@ -894,8 +906,15 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
     {
         const ActionAI * action = ai->GetNextActionTodo();
 
-        if(nullptr == action)
+        if(nullptr == action || AIA_END_TURN == action->type)
+        {
+            std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                      << " ==================== END TURN ====================" << std::endl;
+
+            EndTurn();
+
             return ;
+        }
 
         auto basicOnDone = [action, ai](bool)
         {
@@ -905,10 +924,12 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
         // new higher action for busy object
         if(action->ObjSrc->IsBusy() && ai->IsActionHighestPriorityForObject(action))
         {
-            std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
-                      << " - higher priority action for object " << action->ObjSrc << std::endl;
+            std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                      << " - higher priority action for object " << action->ObjSrc
+                      << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                      << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
 
-            // cancel current action
+            // can/cel current action
             ai->CancelObjectAction(action->ObjSrc);
             CancelObjectAction(action->ObjSrc);
         }
@@ -920,9 +941,11 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 auto unit = static_cast<Unit *>(action->ObjSrc);
                 done = SetupUnitAttack(unit, action->ObjDst, player, basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
                           << " - ATTACK ENEMY UNIT "
-                          << (done ? "DOING" : "FAILED") << std::endl;
+                          << (done ? "DOING" : "FAILED")
+                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
             break;
 
@@ -962,8 +985,10 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                     }
                 }
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI << " - CONQUER GENERATOR "
-                          << (done ? "DOING" : "FAILED") << std::endl;
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - CONQUER GENERATOR "
+                          << (done ? "DOING" : "FAILED")
+                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
             break;
 
@@ -996,8 +1021,10 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                     }
                 }
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI << " -Result CONNECT STRUCTURE "
-                          << (done ? "DOING" : "FAILED") << std::endl;
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " -Result CONNECT STRUCTURE "
+                          << (done ? "DOING" : "FAILED")
+                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
             break;
 
@@ -1007,13 +1034,16 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 done = SetupNewUnit(a->unitType, a->ObjSrc, ai->GetPlayer(), basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI << " - NEW UNIT "
-                          << (done ? "DOING" : "FAILED") << std::endl;
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - NEW UNIT "
+                          << (done ? "DOING" : "FAILED")
+                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
             break;
 
             default:
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI << " - unkown action" << action->type << std::endl;
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - UNKNOWN ACTION"
+                          << action->type << std::endl;
             break;
         }
 
@@ -1537,6 +1567,7 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
 
 bool ScreenGame::SetupConnectCells(Unit * unit, const std::function<void (bool)> & onDone)
 {
+    const int turnAI = mActivePlayerIdx - 1;
     const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
     const Cell2D startCell(unit->GetRow0(), unit->GetCol0());
 
@@ -1565,7 +1596,7 @@ bool ScreenGame::SetupConnectCells(Unit * unit, const std::function<void (bool)>
     // can't find a target
     if(-1 == targetCell.row)
     {
-        std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
+        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (can't find target)" << std::endl;
 
         return false;
@@ -1579,7 +1610,7 @@ bool ScreenGame::SetupConnectCells(Unit * unit, const std::function<void (bool)>
         // can't find an adjacent cell that's free
         if(-1 == targetCell.row)
         {
-            std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
+            std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                       << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed)" << std::endl;
 
             return false;
@@ -1593,7 +1624,7 @@ bool ScreenGame::SetupConnectCells(Unit * unit, const std::function<void (bool)>
     // can't find a path from start to target
     if(path.empty())
     {
-        std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
+        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (no path)" << std::endl;
 
         return false;
@@ -2573,24 +2604,10 @@ void ScreenGame::EndTurn()
 
     // new active player is local player
     if(IsCurrentTurnLocal())
-    {
         mHUD->ShowTurnControlPanel();
-    }
     // new active player is AI
     else
-    {
         mHUD->ShowTurnControlText();
-
-        // TEMP hack to make AI turn last some time while AI not implemented yet
-        const float timeAI = 1;
-        GameMapProgressBar * pb = mHUD->CreateProgressBarInCell({0,0}, timeAI, activeFaction);
-        pb->SetVisible(false);
-
-        pb->AddFunctionOnCompleted([this]
-        {
-            EndTurn();
-        });
-    }
 }
 
 } // namespace game

@@ -33,7 +33,7 @@ PlayerAI::~PlayerAI()
     ClearActionsDone();
 }
 
-void PlayerAI::Update(float delta)
+void PlayerAI::DecideNextAction()
 {
     // TODO track time and keep it into consideration when defining priorities
     // TODO use memory pools for actions
@@ -44,7 +44,7 @@ void PlayerAI::Update(float delta)
 
     UpdatePriorityRange();
 
-    DecideActions();
+    AddActions();
 }
 
 void PlayerAI::PrepareData()
@@ -82,7 +82,7 @@ void PlayerAI::UpdatePriorityRange()
     mMinPriority = 50;
 }
 
-void PlayerAI::DecideActions()
+void PlayerAI::AddActions()
 {
     // STRUCTURES
     for(unsigned int i = 0; i < mPlayer->GetNumStructures(); ++i)
@@ -101,6 +101,9 @@ void PlayerAI::DecideActions()
         Unit * u = mPlayer->GetUnit(i);
         AddActionsUnit(u);
     }
+
+    // KEEP THI LAST
+    AddActionEndTurn();
 }
 
 const ActionAI * PlayerAI::GetNextActionTodo()
@@ -296,6 +299,74 @@ void PlayerAI::AddNewAction(ActionAI * action)
     std::cout << "PlayerAI::AddNewAction - ADDED NEW ACTION id: " << action->actId
               << " - type: " << action->type << " - priority: " << action->priority << std::endl;
     PushAction(action);
+}
+
+void PlayerAI::AddActionEndTurn()
+{
+    // create action
+    auto action = new ActionAINewUnit;
+    action->type = AIA_END_TURN;
+    action->priority = MAX_PRIORITY;
+
+    // immediately push action if there's nothing else to do
+    if(mActionsTodo.empty())
+    {
+        PushAction(action);
+        return ;
+    }
+
+    const float c = 100.f;
+
+    // consider turn energy
+    const float energyLeftTurn = mPlayer->GetTurnEnergy() * c / mPlayer->GetTurnEnergyMax();
+
+    // consider total units energy
+    float totEnergy = 0.f;
+    float totMaxEnergy = 0.f;
+
+    for(GameObject * obj : mUnits)
+    {
+        totEnergy += obj->GetEnergy();
+        totMaxEnergy += obj->GetMaxEnergy();
+    }
+
+    const float energyLeftUnits = totEnergy * c / totMaxEnergy;
+
+    // consider total structures energy
+    totEnergy = 0.f;
+    totMaxEnergy = 0.f;
+
+    for(GameObject * obj : mUnits)
+    {
+        // only consider structure that have AI actions
+        if(obj->GetObjectType() == GameObject::TYPE_BASE)
+        {
+            totEnergy += obj->GetEnergy();
+            totMaxEnergy += obj->GetMaxEnergy();
+        }
+    }
+
+    const float energyLeftStructs = totEnergy * c / totMaxEnergy;
+
+    // combine units and structure energy left
+    const unsigned int numUnits = mPlayer->GetNumUnits();
+    const unsigned int maxUnits = mPlayer->GetMaxUnits();
+    const float unitsProportion = (static_cast<float>(numUnits) / static_cast<float>(maxUnits));
+    const float facUnits0 = 0.5f;
+    const float facUnitsVar = 0.3f * unitsProportion;
+    const float facUnits = facUnits0 + facUnitsVar;
+    const float factStructs = 1.f - facUnits;
+    const float energyLeftObjs = energyLeftUnits * facUnits + energyLeftStructs * factStructs;
+
+    // decrease priority base on global energy left (turn + objects)
+    const float facTurn = 0.5f;
+    const float facObjs = 1.f - facTurn;
+    const int decPriority = std::roundf(facTurn * energyLeftTurn + facObjs * energyLeftObjs);
+    action->priority -= decPriority;
+
+    // push action if above priority threshold
+    if(action->priority >= mMinPriority)
+        PushAction(action);
 }
 
 void PlayerAI::AddActionsBase(Structure * s)

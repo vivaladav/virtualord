@@ -26,7 +26,7 @@ public:
 
     void SetGameMap(GameMap * gm);
 
-    void Update(float delta);
+    void DecideNextAction();
 
     const ActionAI * GetNextActionTodo();
 
@@ -37,6 +37,8 @@ public:
     void CancelObjectAction(const GameObject * obj);
     void CancelAction(const ActionAI * action);
     void SetActionDone(const ActionAI * action);
+
+    bool IsDoingSomething() const;
 
     Player * GetPlayer();
 
@@ -51,13 +53,14 @@ private:
 
     void UpdatePriorityRange();
 
-    void DecideActions();
+    void AddActions();
 
     void PushAction(ActionAI * action);
     const ActionAI * PopAction();
 
     void AddNewAction(ActionAI * action);
 
+    void AddActionEndTurn();
     void AddActionsBase(Structure * s);
     void AddActionsUnit(Unit * u);
     void AddActionUnitAttackEnemyUnit(Unit * u);
@@ -89,6 +92,8 @@ private:
 inline void PlayerAI::SetGameMap(GameMap * gm) { mGm = gm; }
 
 inline Player * PlayerAI::GetPlayer() { return mPlayer; }
+
+inline bool PlayerAI::IsDoingSomething() const { return !mActionsDoing.empty(); }
 
 inline void PlayerAI::RegisterActionInProgress(const ActionAI * action)
 {

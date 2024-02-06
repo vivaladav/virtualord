@@ -207,13 +207,10 @@ private:
 
     int mActivePlayerIdx = 0;
 
-    float mTimerAI = 0.f;
     float mTimerEnergy = 0.f;
     float mTimerAutoEndTurn = 0.f;
 
     float mTimePlayed = 0.f;
-
-    unsigned int mCurrPlayerAI = 0;
 
     MissionType mMissionType;
     unsigned int mMissionTime = 0;

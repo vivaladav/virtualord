@@ -58,7 +58,6 @@ public:
     Planets GetCurrentPlanet() const;
     void SetCurrentPlanet(Planets planet);
 
-
     void SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
     void RequestNextActiveState(StateId sid);
