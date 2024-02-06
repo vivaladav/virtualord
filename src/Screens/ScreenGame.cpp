@@ -958,7 +958,11 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                                 if(successful)
                                 {
                                     const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
-                                    SetupStructureConquest(unit, currCell, end, player, basicOnDone);
+                                    const bool res = SetupStructureConquest(unit, currCell, end,
+                                                                            player, basicOnDone);
+
+                                    if(!res)
+                                        basicOnDone(false);
                                 }
                                 else
                                     basicOnDone(successful);
@@ -995,7 +999,12 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                             [this, unit, basicOnDone](bool successful)
                             {
                                 if(successful)
-                                    SetupConnectCells(unit, basicOnDone);
+                                {
+                                    const bool res = SetupConnectCells(unit, basicOnDone);
+
+                                    if(!res)
+                                        basicOnDone(false);
+                                }
                                 else
                                     basicOnDone(successful);
                             });
