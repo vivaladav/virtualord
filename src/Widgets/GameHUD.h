@@ -41,10 +41,12 @@ public:
 
     void SetMiniMapEnabled(bool val);
     MiniMap * GetMinimap() const;
-    sgl::sgui::ButtonsGroup * GetButtonsGroupUnitSel() const;
 
     PanelObjectActions * GetPanelObjectActions() const;
     void HidePanelObjActions();
+
+    void SetQuickUnitButtonChecked(GameObject * obj);
+    void ClearQuickUnitButtonChecked();
 
     void ShowDialogEndMission(bool won);
     void ShowDialogExit();
@@ -95,8 +97,6 @@ private:
 };
 
 inline MiniMap * GameHUD::GetMinimap() const { return mMiniMap; }
-
-inline sgl::sgui::ButtonsGroup * GameHUD::GetButtonsGroupUnitSel() const { return mGroupUnitSel; }
 
 inline PanelObjectActions * GameHUD::GetPanelObjectActions() const { return mPanelObjActions; }
 

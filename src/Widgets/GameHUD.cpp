@@ -173,6 +173,32 @@ void GameHUD::HidePanelObjActions()
     mPanelObjActions->SetVisible(false);
 }
 
+void GameHUD::SetQuickUnitButtonChecked(GameObject * obj)
+{
+    // check corresponding quick unit selection button
+    const int numButtons = mGroupUnitSel->GetNumButtons();
+
+    for(int i = 0; i < numButtons; ++i)
+    {
+        auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
+        Unit * unit = b->GetUnit();
+
+        if(unit == obj)
+        {
+            b->SetChecked(true);
+            break;
+        }
+    }
+}
+
+void GameHUD::ClearQuickUnitButtonChecked()
+{
+    const int checked = mGroupUnitSel->GetIndexChecked();
+
+    if(checked != -1)
+        mGroupUnitSel->GetButton(checked)->SetChecked(false);
+}
+
 void GameHUD::ShowDialogEndMission(bool won)
 {
     mScreen->SetPause(true);

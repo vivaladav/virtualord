@@ -47,7 +47,6 @@
 #include <sgl/graphic/Renderer.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
-#include <sgl/sgui/ButtonsGroup.h>
 #include <sgl/sgui/Stage.h>
 
 #include <cstdlib>
@@ -334,14 +333,14 @@ void ScreenGame::ClearSelection(Player * player)
     if(nullptr == selObj)
         return ;
 
+    mHUD->ClearQuickUnitButtonChecked();
     mHUD->HidePanelObjActions();
     mHUD->HidePanelSelectedObject();
+    mHUD->HideDialogNewElement();
 
     player->ClearSelectedObject();
 
     ClearCellOverlays();
-
-    mHUD->HideDialogNewElement();
 }
 
 void ScreenGame::SelectObject(GameObject * obj, Player * player)
@@ -349,24 +348,9 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     player->SetSelectedObject(obj);
 
     // update quick selection buttons when selected unit
-    sgl::sgui::ButtonsGroup * buttonsUnitSel = mHUD->GetButtonsGroupUnitSel();
-
     if(obj->GetObjectCategory() == GameObject::CAT_UNIT)
     {
-        // check corresponding quick unit selection button
-        const int numButtons = buttonsUnitSel->GetNumButtons();
-
-        for(int i = 0; i < numButtons; ++i)
-        {
-            auto b = static_cast<ButtonQuickUnitSelection *>(buttonsUnitSel->GetButton(i));
-            Unit * unit = b->GetUnit();
-
-            if(unit == obj)
-            {
-                b->SetChecked(true);
-                break;
-            }
-        }
+        mHUD->SetQuickUnitButtonChecked(obj);
 
         // show current indicator
         ShowActiveIndicators(static_cast<Unit *>(obj), mCurrCell);
@@ -374,10 +358,7 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     // not a unit
     else
     {
-        const int checked = buttonsUnitSel->GetIndexChecked();
-
-        if(checked != -1)
-            buttonsUnitSel->GetButton(checked)->SetChecked(false);
+        mHUD->ClearQuickUnitButtonChecked();
 
         // show attack range overlay for towers
         if(GameObject::TYPE_DEFENSIVE_TOWER == obj->GetObjectType())
