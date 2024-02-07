@@ -697,11 +697,14 @@ void GameMap::ConquerCell(const Cell2D & cell, Player * player)
     ApplyLocalVisibility();
 }
 
-void GameMap::ConquerCells(ConquerPath * path)
+bool GameMap::ConquerCells(ConquerPath * path)
 {
-    path->Start();
+    const bool res = path->Start();
 
-    mConquerPaths.emplace_back(path);
+    if(res)
+        mConquerPaths.emplace_back(path);
+
+    return res;
 }
 
 bool GameMap::AbortCellConquest(GameObject * obj)
@@ -941,11 +944,14 @@ void GameMap::BuildWall(const Cell2D & cell, Player * player, GameObjectTypeId p
     ApplyLocalVisibility();
 }
 
-void GameMap::BuildWalls(WallBuildPath * path)
+bool GameMap::BuildWalls(WallBuildPath * path)
 {
-    path->Start();
+    const bool res = path->Start();
 
-    mWallBuildPaths.emplace_back(path);
+    if(res)
+        mWallBuildPaths.emplace_back(path);
+
+    return res;
 }
 
 bool GameMap::AbortBuildWalls(GameObject * obj)
@@ -1638,9 +1644,7 @@ bool GameMap::MoveUnit(ObjectPath * path)
         return false;
 
     // start path
-    path->Start();
-
-    const bool started = path->GetState() == ObjectPath::MOVING;
+    const bool started = path->Start();
 
     if(started)
         mPaths.emplace_back(path);

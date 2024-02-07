@@ -36,7 +36,7 @@ public:
 
     void SetPathCells(const std::vector<unsigned int> & cells);
 
-    void Start();
+    bool Start();
 
     void Abort();
     void InstantAbort();
@@ -44,12 +44,12 @@ public:
     void Update(float delta);
 
 private:
-    void InitNextMove();
+    bool InitNextMove();
 
     void UpdatePathCost();
 
-    void Fail();
-    void Finish();
+    bool Fail();
+    bool Finish();
 
 private:
     std::vector<unsigned int> mCells;

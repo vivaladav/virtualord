@@ -145,7 +145,7 @@ private:
     void HandleSelectionClick(sgl::core::MouseButtonEvent & event);
     void HandleActionClick(sgl::core::MouseButtonEvent & event);
 
-    void StartUnitBuildWall(Unit * unit);
+    bool StartUnitBuildWall(Unit * unit);
 
     void ShowActiveIndicators(Unit * unit, const Cell2D & cell);
     void ShowAttackIndicators(const GameObject * obj, int range);

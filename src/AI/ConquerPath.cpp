@@ -36,11 +36,11 @@ ConquerPath::~ConquerPath()
         delete ind;
 }
 
-void ConquerPath::Start()
+bool ConquerPath::Start()
 {
     // do nothing if already started
     if(mState != READY)
-        return ;
+        return false;
 
     if(mLocalPlayer)
         CreateIndicators();
@@ -48,7 +48,7 @@ void ConquerPath::Start()
     mNextCell = 0;
 
     // stat conquering first cell
-    InitNextConquest();
+    return InitNextConquest();
 }
 
 void ConquerPath::Abort()
@@ -113,14 +113,11 @@ void ConquerPath::CreateIndicators()
     }
 }
 
-void ConquerPath::InitNextConquest()
+bool ConquerPath::InitNextConquest()
 {
     // not enough energy -> FAIL
     if(!mUnit->HasEnergyForActionStep(CONQUER_CELL))
-    {
-        Fail();
-        return ;
-    }
+        return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
     const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
@@ -140,11 +137,9 @@ void ConquerPath::InitNextConquest()
         ++mNextCell;
 
         if(mNextCell < mCells.size())
-            InitNextMove();
+            return InitNextMove();
         else
-            Fail();
-
-        return ;
+            return Fail();
     }
 
     // start conquest
@@ -179,16 +174,15 @@ void ConquerPath::InitNextConquest()
         else
             Finish();
     });
+
+    return true;
 }
 
-void ConquerPath::InitNextMove()
+bool ConquerPath::InitNextMove()
 {
     // not enough energy -> FAIL
     if(!mUnit->HasEnergyForActionStep(MOVE))
-    {
-        Fail();
-        return ;
-    }
+        return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
     const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
@@ -198,10 +192,7 @@ void ConquerPath::InitNextMove()
 
     // next cell not walkable -> FAIL
     if(!nextCell.walkable || nextCell.walkTarget)
-    {
-        Fail();
-        return ;
-    }
+        return Fail();
 
     const IsoObject * isoObj = mUnit->GetIsoObject();
     const IsoLayer * layerObj = isoObj->GetLayer();
@@ -219,6 +210,8 @@ void ConquerPath::InitNextMove()
     mGameMap->SetCellWalkTarget(nextInd, true);
 
     mState = MOVING;
+
+    return true;
 }
 
 void ConquerPath::UpdateMove(float delta)
@@ -319,7 +312,7 @@ void ConquerPath::UpdatePathCost()
     mCost = (cells.size() - 1) * 0.5f;
 }
 
-void ConquerPath::Fail()
+bool ConquerPath::Fail()
 {
     mState = FAILED;
 
@@ -329,14 +322,18 @@ void ConquerPath::Fail()
 
     // clear action data once the action is completed
     mScreen->SetObjectActionFailed(mUnit);
+
+    return false;
 }
 
-void ConquerPath::Finish()
+bool ConquerPath::Finish()
 {
     mState = COMPLETED;
 
     // clear action data once the action is completed
     mScreen->SetObjectActionCompleted(mUnit);
+
+    return true;
 }
 
 } // namespace game

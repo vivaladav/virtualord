@@ -1532,27 +1532,26 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
     auto op = new ObjectPath(unit, mIsoMap, mGameMap, this);
     op->SetPathCells(path);
 
-    const bool res = mGameMap->MoveUnit(op);
-
-    // movement failed
-    if(!res)
-        return false;
-
-    // disable actions panel (if action is done by local player)
-    if(unit->GetFaction() == mLocalPlayer->GetFaction())
+    if(mGameMap->MoveUnit(op))
     {
-        mHUD->SetLocalActionsEnabled(false);
+        // disable actions panel (if action is done by local player)
+        if(unit->GetFaction() == mLocalPlayer->GetFaction())
+        {
+            mHUD->SetLocalActionsEnabled(false);
 
-        ClearCellOverlays();
+            ClearCellOverlays();
+        }
+
+        // store active action
+        mObjActionsToDo.emplace_back(unit, GameObjectActionType::MOVE, onDone);
+
+        unit->SetActiveAction(GameObjectActionType::IDLE);
+        unit->SetCurrentAction(GameObjectActionType::MOVE);
+
+        return true;
     }
-
-    // store active action
-    mObjActionsToDo.emplace_back(unit, GameObjectActionType::MOVE, onDone);
-
-    unit->SetActiveAction(GameObjectActionType::IDLE);
-    unit->SetCurrentAction(GameObjectActionType::MOVE);
-
-    return true;
+    else
+        return false;
 }
 
 bool ScreenGame::SetupConnectCells(Unit * unit, const std::function<void (bool)> & onDone)
@@ -1624,12 +1623,15 @@ bool ScreenGame::SetupConnectCells(Unit * unit, const std::function<void (bool)>
     auto cp = new ConquerPath(unit, mIsoMap, mGameMap, this);
     cp->SetPathCells(path);
 
-    // store active action
-    mObjActionsToDo.emplace_back(unit, GameObjectActionType::CONQUER_CELL, onDone);
+    if(mGameMap->ConquerCells(cp))
+    {
+        // store active action
+        mObjActionsToDo.emplace_back(unit, GameObjectActionType::CONQUER_CELL, onDone);
 
-    mGameMap->ConquerCells(cp);
-
-    return true;
+        return true;
+    }
+    else
+        return false;
 }
 
 void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
@@ -1972,24 +1974,25 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
                     // reclicked on same cell of last path -> double click -> finalize path
                     if(mConquestPath.back() == clickInd)
                     {
-                        // store active action
-                        mObjActionsToDo.emplace_back(selUnit, action, [](bool){});
-
-                        // disable action buttons
-                        mHUD->SetLocalActionsEnabled(false);
-
-                        selUnit->SetActiveAction(GameObjectActionType::IDLE);
-                        selUnit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
-
-                        ClearCellOverlays();
-
                         // start conquest
                         auto cp = new ConquerPath(selUnit, mIsoMap, mGameMap, this);
                         cp->SetPathCells(mConquestPath);
 
-                        mGameMap->ConquerCells(cp);
+                        if(mGameMap->ConquerCells(cp))
+                        {
+                            mConquestPath.clear();
 
-                        mConquestPath.clear();
+                            ClearCellOverlays();
+
+                            // store active action
+                            mObjActionsToDo.emplace_back(selUnit, action, [](bool){});
+
+                            // disable action buttons
+                            mHUD->SetLocalActionsEnabled(false);
+
+                            selUnit->SetActiveAction(GameObjectActionType::IDLE);
+                            selUnit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
+                        }
 
                         return ;
                     }
@@ -2022,30 +2025,36 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
     }
 }
 
-void ScreenGame::StartUnitBuildWall(Unit * unit)
+bool ScreenGame::StartUnitBuildWall(Unit * unit)
 {
-    // store active action
-    mObjActionsToDo.emplace_back(unit, GameObjectActionType::BUILD_WALL, [](bool){});
-
-    // disable action buttons
-    mHUD->SetLocalActionsEnabled(false);
-
-    unit->SetActiveAction(GameObjectActionType::IDLE);
-    unit->SetCurrentAction(GameObjectActionType::BUILD_WALL);
-
-    // clear temporary overlay (if action is done by local player)
-    if(unit->GetFaction() == mLocalPlayer->GetFaction())
-        ClearCellOverlays();
-
     // setup build
     auto wbp = new WallBuildPath(unit, mIsoMap, mGameMap, this);
     wbp->SetPathCells(mWallPath);
     // NOTE only level 0 for now
     wbp->SetWallLevel(0);
 
-    mGameMap->BuildWalls(wbp);
+    if(mGameMap->BuildWalls(wbp))
+    {
+        // action done by local player
+        if(unit->GetFaction() == mLocalPlayer->GetFaction())
+        {
+            mHUD->SetLocalActionsEnabled(false);
 
-    mWallPath.clear();
+            ClearCellOverlays();
+        }
+
+        mWallPath.clear();
+
+        // store active action
+        mObjActionsToDo.emplace_back(unit, GameObjectActionType::BUILD_WALL, [](bool){});
+
+        unit->SetActiveAction(GameObjectActionType::IDLE);
+        unit->SetCurrentAction(GameObjectActionType::BUILD_WALL);
+
+        return true;
+    }
+    else
+        return false;
 }
 
 void ScreenGame::ShowActiveIndicators(Unit * unit, const Cell2D & cell)

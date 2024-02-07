@@ -47,7 +47,7 @@ public:
     unsigned int GetWallLevel() const;
     void SetWallLevel(unsigned int level);
 
-    void Start();
+    bool Start();
 
     void Abort();
     void InstantAbort();
@@ -60,15 +60,15 @@ public:
 private:
     void CreateIndicators();
 
-    void InitNextBuild();
-    void InitNextMove();
+    bool InitNextBuild();
+    bool InitNextMove();
 
     void UpdateMove(float delta);
 
     void UpdatePathCost();
 
-    void Fail();
-    void Finish();
+    bool Fail();
+    bool Finish();
 
 private:
     std::vector<unsigned int> mCells;

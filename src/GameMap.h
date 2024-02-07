@@ -110,7 +110,7 @@ public:
     bool CanConquerCell(const Cell2D & cell, Player * player);
     void StartConquerCell(const Cell2D & cell, Player * player);
     void ConquerCell(const Cell2D & cell, Player * player);
-    void ConquerCells(ConquerPath * path);
+    bool ConquerCells(ConquerPath * path);
     bool AbortCellConquest(GameObject * obj);
 
     // structure building
@@ -122,7 +122,7 @@ public:
     bool CanBuildWall(const Cell2D & cell, Player * player, unsigned int level);
     void StartBuildWall(const Cell2D & cell, Player * player, unsigned int level);
     void BuildWall(const Cell2D & cell, Player * player, GameObjectTypeId planned);
-    void BuildWalls(WallBuildPath * path);
+    bool BuildWalls(WallBuildPath * path);
     bool AbortBuildWalls(GameObject * obj);
 
     // structure conquest

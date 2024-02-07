@@ -64,14 +64,11 @@ void WallBuildPath::CreateIndicators()
     SetIndicatorsType(cellsPath, mIndicators);
 }
 
-void WallBuildPath::InitNextBuild()
+bool WallBuildPath::InitNextBuild()
 {
     // not enough energy -> FAIL
     if(!mUnit->HasEnergyForActionStep(BUILD_WALL))
-    {
-        Fail();
-        return ;
-    }
+        return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
     const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
@@ -90,11 +87,9 @@ void WallBuildPath::InitNextBuild()
         --mNextCell;
 
         if(mNextCell > 0)
-            InitNextMove();
+            return InitNextMove();
         else
-            Fail();
-
-        return;
+            return Fail();
     }
 
     // start building
@@ -124,22 +119,18 @@ void WallBuildPath::InitNextBuild()
 
         InitNextMove();
     });
+
+    return true;
 }
 
-void WallBuildPath::InitNextMove()
+bool WallBuildPath::InitNextMove()
 {
     // not enough energy -> FAIL
     if(!mUnit->HasEnergyForActionStep(MOVE))
-    {
-        Fail();
-        return ;
-    }
+        return Fail();
 
     if(0 == mNextCell)
-    {
-        Finish();
-        return ;
-    }
+        return Finish();
 
     const unsigned int movCell = mNextCell - 1;
     const unsigned int nextInd = mCells[movCell];
@@ -150,10 +141,7 @@ void WallBuildPath::InitNextMove()
 
     // next cell not walkable -> FAIL
     if(!nextCell.walkable || nextCell.walkTarget)
-    {
-        Fail();
-        return ;
-    }
+        return Fail();
 
     const IsoObject * isoObj = mUnit->GetIsoObject();
     const IsoLayer * layerObj = isoObj->GetLayer();
@@ -171,6 +159,8 @@ void WallBuildPath::InitNextMove()
     mGameMap->SetCellWalkTarget(nextInd, true);
 
     mState = MOVING;
+
+    return true;
 }
 
 void WallBuildPath::UpdateMove(float delta)
@@ -268,18 +258,18 @@ void WallBuildPath::UpdatePathCost()
     mMaterialCost = segments * Wall::GetCostMaterial(mLevel);
 }
 
-void WallBuildPath::Start()
+bool WallBuildPath::Start()
 {
     // do nothing if already started
     if(mState != READY)
-        return ;
+        return false;
 
     CreateIndicators();
 
     // stat building from last cell
     mNextCell = mCells.size() - 1;
 
-    InitNextBuild();
+    return InitNextBuild();
 }
 
 void WallBuildPath::Abort()
@@ -365,7 +355,7 @@ void WallBuildPath::SetIndicatorsType(const std::vector<Cell2D> & cells,
     }
 }
 
-void WallBuildPath::Fail()
+bool WallBuildPath::Fail()
 {
     // clear indicators
     IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
@@ -375,14 +365,18 @@ void WallBuildPath::Fail()
     mScreen->SetObjectActionFailed(mUnit);
 
     mState = FAILED;
+
+    return false;
 }
 
-void WallBuildPath::Finish()
+bool WallBuildPath::Finish()
 {
     mState = COMPLETED;
 
     // clear action data once the action is completed
     mScreen->SetObjectActionCompleted(mUnit);
+
+    return true;
 }
 
 } // namespace game
