@@ -136,7 +136,7 @@ private:
                        const std::function<void(bool)> & onDone = [](bool){});
     bool SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D & end,
                        const std::function<void(bool)> & onDone = [](bool){});
-    bool SetupConnectCells(Unit * unit, const std::function<void(bool)> & onDone = [](bool){});
+    bool SetupConnectCellsAI(Unit * unit, const std::function<void(bool)> & onDone = [](bool){});
 
     void HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell);
     void HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & clickCell);

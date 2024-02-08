@@ -1868,6 +1868,99 @@ int GameMap::ApproxDistance(GameObject * obj1, GameObject * obj2) const
            std::abs(obj1->GetCol0() - obj2->GetCol0());
 }
 
+
+bool GameMap::FindClosestCellConnectedToObject(const GameObject * obj, const Cell2D start, Cell2D & end)
+{
+    end.row = -1;
+    end.col = -1;
+
+    const PlayerFaction faction = obj->GetFaction();
+
+    // object has no faction -> no cell connected
+    if(faction == NO_FACTION)
+        return false;
+
+    const Player * player = mGame->GetPlayerByFaction(faction);
+
+    // FIND CONNECTED (SAME FACTION) CELLS
+    std::vector<unsigned int> todo;
+    std::unordered_set<unsigned int> done;
+
+    const Cell2D objCell(obj->GetRow0(), obj->GetCol0());
+    const unsigned int indObj = objCell.row * mCols + objCell.col;
+
+    todo.push_back(indObj);
+
+    end = objCell;
+    unsigned int closestDist = ApproxDistance(start, objCell);
+
+    while(!todo.empty())
+    {
+        unsigned int currInd = todo.back();
+        todo.pop_back();
+
+        const GameMapCell & currCell = mCells[currInd];
+        const Cell2D cc(currCell.row, currCell.col);
+
+        const unsigned int dist = ApproxDistance(start, cc);
+
+        if(dist < closestDist)
+        {
+            closestDist = dist;
+            end = cc;
+        }
+
+        // add TOP
+        unsigned int r = currCell.row - 1;
+
+        if(r < mRows)
+        {
+            const unsigned int ind = currInd - mCols;
+
+            if(mCells[ind].owner == player && done.find(ind) == done.end())
+                todo.push_back(ind);
+        }
+
+        // add BOTTOM
+        r = currCell.row + 1;
+
+        if(r < mRows)
+        {
+            unsigned int ind = currInd + mCols;
+
+            if(mCells[ind].owner == player && done.find(ind) == done.end())
+                todo.push_back(ind);
+        }
+
+        // add LEFT
+        unsigned int c = currCell.col - 1;
+
+        if(c < mCols)
+        {
+            const unsigned int ind = currInd - 1;
+
+            if(mCells[ind].owner == player && done.find(ind) == done.end())
+                todo.push_back(ind);
+        }
+
+        // add RIGHT
+        c = currCell.col + 1;
+
+        if(c < mCols)
+        {
+            const unsigned int ind = currInd + 1;
+
+            if(mCells[ind].owner == player && done.find(ind) == done.end())
+                todo.push_back(ind);
+        }
+
+        // add current to done
+        done.insert(currInd);
+    }
+
+    return true;
+}
+
 void GameMap::RestoreFactionEnergy(PlayerFaction faction)
 {
     // TODO keep a list of all faction objects in Player so this can be done there with no IFs

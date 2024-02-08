@@ -981,26 +981,20 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             {
                 auto unit = static_cast<Unit *>(action->ObjSrc);
                 const Cell2D unitCell(unit->GetRow0(), unit->GetCol0());
+                const Cell2D start = action->cellSrc;
 
-                // unit and structure are next to each other
-                if(mGameMap->AreObjectsOrthoAdjacent(unit, action->ObjDst))
-                    done = SetupConnectCells(unit, basicOnDone);
+                // unit already on start
+                if(unitCell == start || mGameMap->AreCellsOrthoAdjacent(unitCell, start))
+                    done = SetupConnectCellsAI(unit, basicOnDone);
                 // unit needs to move to the structure
                 else
                 {
-                    Cell2D target = mGameMap->GetOrthoAdjacentMoveTarget(unitCell, action->ObjDst);
-
-                    // failed to find a suitable target
-                    if(-1 == target.row || -1 == target.col)
-                        done = false;
-                    else
-                    {
-                        done = SetupUnitMove(unit, unitCell, target,
-                            [this, unit, basicOnDone](bool successful)
+                        done = SetupUnitMove(unit, unitCell, start,
+                            [this, unit, start, basicOnDone](bool successful)
                             {
                                 if(successful)
                                 {
-                                    const bool res = SetupConnectCells(unit, basicOnDone);
+                                const bool res = SetupConnectCellsAI(unit, basicOnDone);
 
                                     if(!res)
                                         basicOnDone(false);
@@ -1008,7 +1002,6 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                                 else
                                     basicOnDone(successful);
                             });
-                    }
                 }
 
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " -Result CONNECT STRUCTURE "
@@ -1554,18 +1547,18 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
         return false;
 }
 
-bool ScreenGame::SetupConnectCells(Unit * unit, const std::function<void (bool)> & onDone)
+bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool)> & onDone)
 {
     const int turnAI = mActivePlayerIdx - 1;
     const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
-    const Cell2D startCell(unit->GetRow0(), unit->GetCol0());
 
     // find closest linked cell
     const std::vector<GameMapCell> & cells = mGameMap->GetCells();
 
     const int maxDist = mGameMap->GetNumRows() + mGameMap->GetNumCols();
-    int minDist = maxDist;
+    const Cell2D startCell(unit->GetRow0(), unit->GetCol0());
     Cell2D targetCell(-1, -1);
+    int minDist = maxDist;
 
     for(const GameMapCell & cell : cells)
     {

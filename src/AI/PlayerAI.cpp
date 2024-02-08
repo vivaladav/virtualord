@@ -187,6 +187,7 @@ void PlayerAI::CancelAction(const ActionAI * action)
     }
 
     std::cout << "PlayerAI::CancelAction - can't find action" << std::endl;
+    delete action;
 }
 
 void PlayerAI::SetActionDone(const ActionAI * action)
@@ -610,7 +611,13 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 
 void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 {
-    int priority = 100;
+    // check active actions to avoid duplicates
+    for(auto action : mActionsDoing)
+    {
+        // any unit is already doing the same -> exit
+        if(action->type == AIA_UNIT_CONNECT_STRUCTURE)
+            return ;
+    }
 
     // check if there's any structure to connect
     const unsigned int numStructures = mStructures.size();
@@ -618,8 +625,11 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 
     unsigned int bestStructInd = numStructures;
     int minDist = maxDist;
+    Cell2D dest;
 
     const PlayerFaction faction = mPlayer->GetFaction();
+
+    const Cell2D start(u->GetRow0(), u->GetCol0());
 
     for(unsigned int i = 0; i < numStructures; ++i)
     {
@@ -628,12 +638,31 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
         // own structure which is not linked
         if(s->GetFaction() == faction && !s->IsLinked())
         {
-            const int dist = mGm->ApproxDistance(u, s);
+            Cell2D end;
 
-            if(dist < minDist)
+            if(mGm->FindClosestCellConnectedToObject(s, start, end))
             {
-                minDist = dist;
-                bestStructInd = i;
+                const GameMapCell & gmc = mGm->GetCell(end.row, end.col);
+
+                // connected cell is occupied and not by unit -> find adjacent
+                if(gmc.objTop != nullptr && gmc.objTop != u)
+                {
+                    end = mGm->GetOrthoAdjacentMoveTarget(start, s);
+
+                    // can't find any
+                    if(end.row == -1 || end.col == -1)
+                        continue;
+                }
+
+                const int dist = mGm->ApproxDistance(start, end);
+
+                // found a closest cell
+                if(dist < minDist)
+                {
+                    minDist = dist;
+                    bestStructInd = i;
+                    dest = end;
+                }
             }
         }
     }
@@ -642,17 +671,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
     if(bestStructInd == numStructures)
         return ;
 
-    // check active actions to avoid duplicates
-    for(auto action : mActionsDoing)
-    {
-        // any unit is already doing the same -> exit
-        if(action->type == AIA_UNIT_CONNECT_STRUCTURE)
-            return ;
-        // unit is already doing something -> exit
-        // NOTE keeping the case as this might change to lower priority instead of nothing
-        else if(action->ObjSrc == u)
-            return ;
-    }
+    int priority = MAX_PRIORITY;
 
     // scale priority based on unit's energy
     priority = priority * u->GetEnergy() / u->GetMaxEnergy();
@@ -671,6 +690,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
     auto action = new ActionAI;
     action->type = AIA_UNIT_CONNECT_STRUCTURE;
     action->ObjSrc = u;
+    action->cellSrc = dest;
     action->ObjDst = mStructures[bestStructInd];
     action->priority = priority;
 

@@ -163,6 +163,7 @@ public:
 
     int ApproxDistance(const Cell2D & c1, const Cell2D & c2) const;
     int ApproxDistance(GameObject * obj1, GameObject * obj2) const;
+    bool FindClosestCellConnectedToObject(const GameObject * obj, const Cell2D start, Cell2D & end);
 
     // turn system
     void RestoreFactionEnergy(PlayerFaction faction);
