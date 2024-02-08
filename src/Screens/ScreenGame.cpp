@@ -899,7 +899,8 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
         auto basicOnDone = [action, ai](bool)
         {
-             ai->SetActionDone(action);
+            std::cout << "basicOnDone - ACT ID: " << action->actId << std::endl;
+            ai->SetActionDone(action);
         };
 
         // new higher action for busy object
@@ -907,6 +908,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
         {
             std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
                       << " - higher priority action for object " << action->ObjSrc
+                      << " - ACT ID: " << action->actId
                       << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                       << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
 
@@ -925,6 +927,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
                           << " - ATTACK ENEMY UNIT "
                           << (done ? "DOING" : "FAILED")
+                          << " - ACT ID: " << action->actId
                           << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                           << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
@@ -941,7 +944,12 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 // unit and generator are next to each other
                 if(mGameMap->AreObjectsOrthoAdjacent(action->ObjSrc, action->ObjDst))
+                {
+                    std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                              << " - CONQUER GENERATOR ADJACENT" << std::endl;
+
                     done = SetupStructureConquest(unit, start, end, player, basicOnDone);
+                }
                 // unit needs to move to the generator
                 else
                 {
@@ -949,7 +957,12 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                     // failed to find a suitable target
                     if(-1 == target.row || -1 == target.col)
+                    {
+                        std::cout << "ScreenGame::ExecuteAIAction - CONQUER GENERATOR -"
+                                     "GetOrthoAdjacentMoveTarget FAILED" << std::endl;
+
                         done = false;
+                    }
                     else
                     {
                         done = SetupUnitMove(unit, start, target,
@@ -957,21 +970,33 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                             {
                                 if(successful)
                                 {
+                                    std::cout << "ScreenGame::ExecuteAIAction - CONQUER GENERATOR "
+                                                 "AFTER MOVE - SetupStructureConquest" << std::endl;
+
                                     const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
                                     const bool res = SetupStructureConquest(unit, currCell, end,
                                                                             player, basicOnDone);
+
+                                    std::cout << "ScreenGame::ExecuteAIAction - CONQUER GENERATOR "
+                                                 "AFTER MOVE - SetupStructureConquest - res: " << res << std::endl;
 
                                     if(!res)
                                         basicOnDone(false);
                                 }
                                 else
-                                    basicOnDone(successful);
+                                {
+                                    std::cout << "ScreenGame::ExecuteAIAction - CONQUER GENERATOR "
+                                                 "AFTER MOVE - MOVE FAILED" << std::endl;
+
+                                    basicOnDone(false);
+                                }
                             });
                     }
                 }
 
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - CONQUER GENERATOR "
                           << (done ? "DOING" : "FAILED")
+                          << " - ACT ID: " << action->actId
                           << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                           << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
@@ -985,27 +1010,47 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 // unit already on start
                 if(unitCell == start || mGameMap->AreCellsOrthoAdjacent(unitCell, start))
+                {
+                    std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                              << " - CONNECT STRUCTURE ADJACENT" << std::endl;
+
                     done = SetupConnectCellsAI(unit, basicOnDone);
+                }
                 // unit needs to move to the structure
                 else
                 {
-                        done = SetupUnitMove(unit, unitCell, start,
-                            [this, unit, start, basicOnDone](bool successful)
+                    std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                              << " - CONNECT STRUCTURE AFTER MOVE" << std::endl;
+
+                    done = SetupUnitMove(unit, unitCell, start,
+                        [this, unit, start, basicOnDone](bool successful)
+                        {
+                            if(successful)
                             {
-                                if(successful)
-                                {
+                                std::cout << "ScreenGame::ExecuteAIAction - CONNECT STRUCTURE "
+                                             "AFTER MOVE - SetupConnectCellsAI" << std::endl;
+
                                 const bool res = SetupConnectCellsAI(unit, basicOnDone);
 
-                                    if(!res)
-                                        basicOnDone(false);
-                                }
-                                else
-                                    basicOnDone(successful);
-                            });
+                                std::cout << "ScreenGame::ExecuteAIAction - CONNECT STRUCTURE "
+                                             "AFTER MOVE - SetupConnectCellsAI - res: " << res << std::endl;
+
+                                if(!res)
+                                    basicOnDone(false);
+                            }
+                            else
+                            {
+                                std::cout << "ScreenGame::ExecuteAIAction - CONNECT STRUCTURE "
+                                             "AFTER MOVE - MOVE FAILED" << std::endl;
+
+                                basicOnDone(false);
+                            }
+                        });
                 }
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " -Result CONNECT STRUCTURE "
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - CONNECT STRUCTURE "
                           << (done ? "DOING" : "FAILED")
+                          << " - ACT ID: " << action->actId
                           << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                           << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
@@ -1019,6 +1064,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - NEW UNIT "
                           << (done ? "DOING" : "FAILED")
+                          << " - ACT ID: " << action->actId
                           << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                           << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
@@ -1047,35 +1093,35 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
         if(act.obj == obj)
         {
             const GameObjectTypeId objType = act.obj->GetObjectType();
-            const GameObjectActionType objActId = act.actId;
+            const GameObjectActionType actType = act.type;
 
             // object is a Base
             if(objType == GameObject::TYPE_BASE)
             {
                 // building a new unit
-                if(objActId == GameObjectActionType::BUILD_UNIT)
+                if(actType == GameObjectActionType::BUILD_UNIT)
                     act.progressBar->DeleteLater();
             }
             // object is a Unit
             else if(act.obj->GetObjectCategory() == GameObject::CAT_UNIT)
             {
-                if(objActId == GameObjectActionType::MOVE)
+                if(actType == GameObjectActionType::MOVE)
                     mGameMap->AbortMove(obj);
-                else if(objActId == GameObjectActionType::CONQUER_CELL)
+                else if(actType == GameObjectActionType::CONQUER_CELL)
                     mGameMap->AbortCellConquest(obj);
-                else if(objActId == GameObjectActionType::BUILD_WALL)
+                else if(actType == GameObjectActionType::BUILD_WALL)
                     mGameMap->AbortBuildWalls(obj);
-                else if(objActId == GameObjectActionType::CONQUER_STRUCTURE)
+                else if(actType == GameObjectActionType::CONQUER_STRUCTURE)
                 {
                     mGameMap->AbortConquerStructure(act.target);
                     act.progressBar->DeleteLater();
                 }
-                else if(objActId == GameObjectActionType::ATTACK)
+                else if(actType == GameObjectActionType::ATTACK)
                 {
                     auto unit = static_cast<Unit *>(obj);
                     unit->ClearTargetAttack();
                 }
-                else if(objActId == GameObjectActionType::HEAL)
+                else if(actType == GameObjectActionType::HEAL)
                 {
                     auto unit = static_cast<Unit *>(obj);
                     unit->ClearTargetHealing();
@@ -1113,6 +1159,9 @@ void ScreenGame::SetObjectActionDone(GameObject * obj, bool successful)
     {
         if(it->obj == obj)
         {
+            std::cout << "ScreenGame::SetObjectActionDone - obj: " << obj << " - ACTION TYPE: " << it->type
+                      << (successful ? " - OK" : " - FAIL") << std::endl;
+
             // re-enable actions panel if obj is local
             if(obj->GetFaction() == mLocalPlayer->GetFaction())
                 mHUD->SetLocalActionsEnabled(true);
@@ -1624,7 +1673,11 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
         return true;
     }
     else
+    {
+        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
+                  << " - CONNECT STRUCTURE FAILED (ConquerCells failed)" << std::endl;
         return false;
+    }
 }
 
 void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)

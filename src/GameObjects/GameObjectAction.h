@@ -27,7 +27,7 @@ struct GameObjectAction
 
     Cell2D actionCell;
 
-    GameObjectActionType actId;
+    GameObjectActionType type;
 
     // TRUE -> success / FALSE -> fail
     std::function<void(bool)> onDone = [](bool){};
@@ -36,7 +36,7 @@ struct GameObjectAction
 inline GameObjectAction::GameObjectAction(GameObject * go, GameObjectActionType aid,
                                           const std::function<void(bool)> & cb)
     : obj(go)
-    , actId(aid)
+    , type(aid)
     , onDone(cb)
 {
 }
@@ -47,7 +47,7 @@ inline GameObjectAction::GameObjectAction(GameObject * go, GameObjectActionType 
     : obj(go)
     , progressBar(pb)
     , actionCell(cell)
-    , actId(aid)
+    , type(aid)
     , onDone(cb)
 {
 }
@@ -59,7 +59,7 @@ inline GameObjectAction::GameObjectAction(GameObject * go, GameObject * t, GameO
     , target(t)
     , progressBar(pb)
     , actionCell(cell)
-    , actId(aid)
+    , type(aid)
     , onDone(cb)
 {
 }

@@ -186,7 +186,9 @@ void PlayerAI::CancelAction(const ActionAI * action)
             ++it;
     }
 
-    std::cout << "PlayerAI::CancelAction - can't find action" << std::endl;
+    std::cout << "PlayerAI::CancelAction - can't find action ID: " << action->actId
+              << " - type: " << action->type << std::endl;
+
     delete action;
 }
 
