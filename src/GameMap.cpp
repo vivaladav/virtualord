@@ -593,14 +593,14 @@ bool GameMap::AreObjectsOrthoAdjacent(const GameObject * obj1, const GameObject 
             return (TL2.row - BR1.row) == maxD;
     }
     // obj1 below obj2
-    else if(TL1.row > BR1.row)
+    else if(TL1.row > BR2.row)
     {
         // obj1 left of obj2 OR obj1 right of obj2
         if(BR1.col < TL2.col || TL1.col > BR2.col)
             return false;
         // same cols
         else
-            return (BR2.row - TL1.row) == maxD;
+            return (TL1.row - BR2.row) == maxD;
     }
     // same rows
     else
