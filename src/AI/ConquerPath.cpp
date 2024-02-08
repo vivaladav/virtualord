@@ -314,24 +314,34 @@ void ConquerPath::UpdatePathCost()
 
 bool ConquerPath::Fail()
 {
-    mState = FAILED;
+    if(HasStarted())
+    {
+        mState = FAILED;
 
-    //clear overlays
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-    layerOverlay->ClearObjects();
+        //clear overlays
+        IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
+        layerOverlay->ClearObjects();
 
-    // clear action data once the action is completed
-    mScreen->SetObjectActionFailed(mUnit);
+        // clear action data once the action is completed
+        mScreen->SetObjectActionFailed(mUnit);
+    }
+    else
+        mState = FAILED;
 
     return false;
 }
 
 bool ConquerPath::Finish()
 {
-    mState = COMPLETED;
+    if(HasStarted())
+    {
+        mState = COMPLETED;
 
-    // clear action data once the action is completed
-    mScreen->SetObjectActionCompleted(mUnit);
+        // clear action data once the action is completed
+        mScreen->SetObjectActionCompleted(mUnit);
+    }
+    else
+        mState = COMPLETED;
 
     return true;
 }

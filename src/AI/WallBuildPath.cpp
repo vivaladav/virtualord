@@ -261,7 +261,7 @@ void WallBuildPath::UpdatePathCost()
 bool WallBuildPath::Start()
 {
     // do nothing if already started
-    if(mState != READY)
+    if(HasStarted())
         return false;
 
     CreateIndicators();
@@ -357,24 +357,34 @@ void WallBuildPath::SetIndicatorsType(const std::vector<Cell2D> & cells,
 
 bool WallBuildPath::Fail()
 {
-    // clear indicators
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-    layerOverlay->ClearObjects();
+    if(HasStarted())
+    {
+        // clear indicators
+        IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
+        layerOverlay->ClearObjects();
 
-    // clear action data
-    mScreen->SetObjectActionFailed(mUnit);
+        // clear action data
+        mScreen->SetObjectActionFailed(mUnit);
 
-    mState = FAILED;
+        mState = FAILED;
+    }
+    else
+        mState = FAILED;
 
     return false;
 }
 
 bool WallBuildPath::Finish()
 {
-    mState = COMPLETED;
+    if(HasStarted())
+    {
+        mState = COMPLETED;
 
-    // clear action data once the action is completed
-    mScreen->SetObjectActionCompleted(mUnit);
+        // clear action data once the action is completed
+        mScreen->SetObjectActionCompleted(mUnit);
+    }
+    else
+        mState = COMPLETED;
 
     return true;
 }

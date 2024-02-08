@@ -187,20 +187,30 @@ void ObjectPath::UpdatePathCost()
 
 bool ObjectPath::Fail()
 {
-    mState = FAILED;
+    if(HasStarted())
+    {
+        mState = FAILED;
 
-    // clear action data once the action is completed
-    mScreen->SetObjectActionFailed(mObj);
+        // clear action data once the action is completed
+        mScreen->SetObjectActionFailed(mObj);
+    }
+    else
+        mState = FAILED;
 
     return false;
 }
 
 bool ObjectPath::Finish()
 {
-    mState = COMPLETED;
+    if(HasStarted())
+    {
+        mState = COMPLETED;
 
-    // clear action data once the action is completed
-    mScreen->SetObjectActionCompleted(mObj);
+        // clear action data once the action is completed
+        mScreen->SetObjectActionCompleted(mObj);
+    }
+    else
+        mState = COMPLETED;
 
     return true;
 }

@@ -47,6 +47,7 @@ public:
     unsigned int GetWallLevel() const;
     void SetWallLevel(unsigned int level);
 
+    bool HasStarted() const;
     bool Start();
 
     void Abort();
@@ -129,5 +130,7 @@ inline void WallBuildPath::SetPathCells(const std::vector<unsigned int> & cells)
 
 inline unsigned int WallBuildPath::GetWallLevel() const { return mLevel; }
 inline void WallBuildPath::SetWallLevel(unsigned int level) { mLevel = level; }
+
+inline bool WallBuildPath::HasStarted() const { return mState != READY; }
 
 } // namespace game
