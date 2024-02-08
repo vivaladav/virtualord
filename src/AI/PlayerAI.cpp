@@ -152,7 +152,7 @@ void PlayerAI::CancelObjectAction(const GameObject * obj)
             mActionsDoing.erase(it);
 
             std::cout << "PlayerAI::CancelObjectActions - ACTION CANCELLED - id: " << action->actId
-                      << " - type: " << action->type << " - obj: " << obj << std::endl;
+                      << " - type: " << action->GetTypeStr() << " - obj: " << obj << std::endl;
 
             delete action;
 
@@ -176,7 +176,7 @@ void PlayerAI::CancelAction(const ActionAI * action)
             mActionsDoing.erase(it);
 
             std::cout << "PlayerAI::CancelAction - ACTION CANCELLED - id: " << action->actId
-                      << " - type: " << action->type << std::endl;
+                      << " - type: " << action->GetTypeStr() << std::endl;
 
             delete action;
 
@@ -187,7 +187,7 @@ void PlayerAI::CancelAction(const ActionAI * action)
     }
 
     std::cout << "PlayerAI::CancelAction - can't find action ID: " << action->actId
-              << " - type: " << action->type << std::endl;
+              << " - type: " << action->GetTypeStr() << std::endl;
 
     delete action;
 }
@@ -205,7 +205,7 @@ void PlayerAI::SetActionDone(const ActionAI * action)
             mActionsDone.push_back(action);
 
             std::cout << "PlayerAI::SetActionDone - ACTION DONE - id: " << action->actId
-                      << " - type: " << action->type << std::endl;
+                      << " - type: " << action->GetTypeStr() << std::endl;
 
             return ;
         }
@@ -300,7 +300,11 @@ void PlayerAI::AddNewAction(ActionAI * action)
     // NOTE not checking existing actions for now as all actions should be unique
     // as they are created by different objects (at least the ObjSrc is different)
     std::cout << "PlayerAI::AddNewAction - ADDED NEW ACTION id: " << action->actId
-              << " - type: " << action->type << " - priority: " << action->priority << std::endl;
+              << " - type: " << action->GetTypeStr() << " - priority: " << action->priority
+              << " - OBJ ID: " << action->ObjSrc->GetObjectId()
+              << " - OBJ energy: " << action->ObjSrc->GetEnergy()
+              << " - OBJ health: " << action->ObjSrc->GetHealth()
+              << std::endl;
     PushAction(action);
 }
 
@@ -642,6 +646,18 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
         {
             Cell2D end;
 
+            // check distance from structure
+            const int dist = mGm->ApproxDistance(u, s);
+
+            // unit is closer to structure
+            if(dist < minDist)
+            {
+                minDist = dist;
+                bestStructInd = i;
+                dest = mGm->GetOrthoAdjacentMoveTarget(start, s);
+            }
+
+            // check distance to closest connected cell
             if(mGm->FindClosestCellConnectedToObject(s, start, end))
             {
                 const GameMapCell & gmc = mGm->GetCell(end.row, end.col);
@@ -675,15 +691,17 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 
     int priority = MAX_PRIORITY;
 
-    // scale priority based on unit's energy
-    priority = priority * u->GetEnergy() / u->GetMaxEnergy();
+    // decrease priority based on unit's energy
+    const int decEnergy = 25;
+    priority -= decEnergy * (u->GetMaxEnergy() - u->GetEnergy()) / u->GetMaxEnergy();
 
-    // scale priority based on unit's health
-    priority = priority * u->GetHealth() / u->GetMaxHealth();
+    // decrease priority based on unit's health
+    const int healthDec = 10;
+    priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
 
     // bonus distance
-    const int bonusDist = -25;
-    priority += bonusDist * minDist / maxDist;
+    const int decDist = 90;
+    priority -= decDist * minDist / maxDist;
 
     // can't find something that's worth an action
     if(priority < mMinPriority)

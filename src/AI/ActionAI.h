@@ -31,6 +31,8 @@ struct ActionAI
     Cell2D cellDst;
     AIActionType type = AIA_NOP;
     int priority = 0;
+
+    const char * GetTypeStr() const;
 };
 
 struct ActionAiComp
@@ -47,6 +49,5 @@ struct ActionAINewUnit : public ActionAI
 {
     GameObjectTypeId unitType;
 };
-
 
 } // namespace game

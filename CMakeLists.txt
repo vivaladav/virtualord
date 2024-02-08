@@ -52,6 +52,7 @@ add_executable(
     src/StatValue.cpp
     src/Version.h
     src/AI/ActionAI.h
+    src/AI/ActionAI.cpp
     src/AI/ConquerPath.h
     src/AI/ConquerPath.cpp
     src/AI/ObjectPath.h

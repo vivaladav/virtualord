@@ -1,0 +1,27 @@
+#include "ActionAI.h"
+
+namespace game
+{
+
+const char * ActionAI::GetTypeStr() const
+{
+    static const char * STRINGS[NUM_AI_ACTIONS] =
+    {
+        "NOP",
+
+        "END TURN",
+        "NEW UNIT",
+        "UNIT ATTACK ENEMY UNIT",
+        "UNIT CONNECT STRUCTURE",
+        "UNIT CONQUER GEN",
+    };
+
+    static const char * UNKNOWN = "UNKNOWN TYPE";
+
+    if(type < NUM_AI_ACTIONS)
+        return STRINGS[type];
+    else
+        return UNKNOWN;
+}
+
+} // namespace game

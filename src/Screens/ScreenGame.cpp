@@ -907,7 +907,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
         if(action->ObjSrc->IsBusy() && ai->IsActionHighestPriorityForObject(action))
         {
             std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
-                      << " - higher priority action for object " << action->ObjSrc
+                      << " - higher priority action for object " << action->ObjSrc->GetObjectId()
                       << " - ACT ID: " << action->actId
                       << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                       << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
@@ -1072,7 +1072,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
             default:
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - UNKNOWN ACTION"
-                          << action->type << std::endl;
+                          << action->GetTypeStr() << std::endl;
             break;
         }
 
@@ -1159,7 +1159,8 @@ void ScreenGame::SetObjectActionDone(GameObject * obj, bool successful)
     {
         if(it->obj == obj)
         {
-            std::cout << "ScreenGame::SetObjectActionDone - obj: " << obj << " - ACTION TYPE: " << it->type
+            std::cout << "ScreenGame::SetObjectActionDone - obj ID: " << obj->GetObjectId()
+                      << " - ACTION TYPE: " << it->type
                       << (successful ? " - OK" : " - FAIL") << std::endl;
 
             // re-enable actions panel if obj is local
