@@ -631,11 +631,11 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 
     unsigned int bestStructInd = numStructures;
     int minDist = maxDist;
-    Cell2D dest;
+    Cell2D startConquest;
 
     const PlayerFaction faction = mPlayer->GetFaction();
 
-    const Cell2D start(u->GetRow0(), u->GetCol0());
+    const Cell2D posUnit(u->GetRow0(), u->GetCol0());
 
     for(unsigned int i = 0; i < numStructures; ++i)
     {
@@ -644,42 +644,73 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
         // own structure which is not linked
         if(s->GetFaction() == faction && !s->IsLinked())
         {
-            Cell2D end;
+            Cell2D start;
 
-            // check distance from structure
+            // SPECIAL CASE: unit is already next to structure -> best option
+            if(mGm->AreObjectsOrthoAdjacent(u, s))
+            {
+                minDist = 0;
+                bestStructInd = i;
+                startConquest = posUnit;
+
+                break;
+            }
+
+            // check unit distance from structure
             const int dist = mGm->ApproxDistance(u, s);
 
             // unit is closer to structure
             if(dist < minDist)
             {
-                minDist = dist;
-                bestStructInd = i;
-                dest = mGm->GetOrthoAdjacentMoveTarget(start, s);
+                start = mGm->GetOrthoAdjacentMoveTarget(posUnit, s);
+
+                if(start.row != -1 && start.col != -1)
+                {
+                    minDist = dist;
+                    bestStructInd = i;
+                    startConquest = start;
+
+                    std::cout << "PlayerAI::AddActionUnitConnectStructure - A - structure: " << s->GetObjectId()
+                              << " - new min dist: " << dist
+                              << " - dest: " << startConquest.row << "," << startConquest.col
+                              << " - obj: " << u->GetObjectId()
+                              << " - obj pos: " << posUnit.row << "," << posUnit.col <<std::endl;
+                }
             }
 
             // check distance to closest connected cell
-            if(mGm->FindClosestCellConnectedToObject(s, start, end))
+            if(mGm->FindClosestCellConnectedToObject(s, posUnit, start))
             {
-                const GameMapCell & gmc = mGm->GetCell(end.row, end.col);
+                const GameMapCell & gmc = mGm->GetCell(start.row, start.col);
 
                 // connected cell is occupied and not by unit -> find adjacent
                 if(gmc.objTop != nullptr && gmc.objTop != u)
                 {
-                    end = mGm->GetOrthoAdjacentMoveTarget(start, s);
+                    start = mGm->GetOrthoAdjacentMoveTarget(posUnit, s);
 
                     // can't find any
-                    if(end.row == -1 || end.col == -1)
+                    if(start.row == -1 || start.col == -1)
                         continue;
                 }
 
-                const int dist = mGm->ApproxDistance(start, end);
+                const int dist = mGm->ApproxDistance(posUnit, start);
 
                 // found a closest cell
                 if(dist < minDist)
                 {
                     minDist = dist;
                     bestStructInd = i;
-                    dest = end;
+                    startConquest = start;
+
+                    std::cout << "PlayerAI::AddActionUnitConnectStructure - B - structure: " << s->GetObjectId()
+                              << " - new min dist: " << dist
+                              << " - dest: " << startConquest.row << "," << startConquest.col
+                              << " - obj: " << u->GetObjectId()
+                              << " - obj pos: " << posUnit.row << "," << posUnit.col <<std::endl;
+
+                    // already found best option
+                    if(0 == dist)
+                        break;
                 }
             }
         }
@@ -710,7 +741,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
     auto action = new ActionAI;
     action->type = AIA_UNIT_CONNECT_STRUCTURE;
     action->ObjSrc = u;
-    action->cellSrc = dest;
+    action->cellSrc = startConquest;
     action->ObjDst = mStructures[bestStructInd];
     action->priority = priority;
 

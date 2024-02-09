@@ -1007,9 +1007,11 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 auto unit = static_cast<Unit *>(action->ObjSrc);
                 const Cell2D unitCell(unit->GetRow0(), unit->GetCol0());
                 const Cell2D start = action->cellSrc;
+                const GameMapCell & startGM = mGameMap->GetCell(start.row, start.col);
 
-                // unit already on start
-                if(unitCell == start || mGameMap->AreCellsOrthoAdjacent(unitCell, start))
+                // unit already on start or next to it
+                if(unitCell == start || (startGM.owner == player &&
+                   mGameMap->AreCellsOrthoAdjacent(unitCell, start)))
                 {
                     std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
                               << " - CONNECT STRUCTURE ADJACENT" << std::endl;
@@ -1602,6 +1604,7 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
     const int turnAI = mActivePlayerIdx - 1;
     const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
 
+    // TODO optimize this with search spreading from start
     // find closest linked cell
     const std::vector<GameMapCell> & cells = mGameMap->GetCells();
 
