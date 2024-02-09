@@ -151,8 +151,7 @@ void PlayerAI::CancelObjectAction(const GameObject * obj)
         {
             mActionsDoing.erase(it);
 
-            std::cout << "PlayerAI::CancelObjectActions - ACTION CANCELLED - id: " << action->actId
-                      << " - type: " << action->GetTypeStr() << " - obj: " << obj << std::endl;
+            PrintdActionDebug("PlayerAI::CancelObjectActions - ACTION CANCELLED", action);
 
             delete action;
 
@@ -162,7 +161,8 @@ void PlayerAI::CancelObjectAction(const GameObject * obj)
             ++it;
     }
 
-    std::cout << "PlayerAI::CancelObjectActions - can't find any action" << std::endl;
+    std::cout << "PlayerAI::CancelObjectActions - can't find any action for object "
+              << obj->GetObjectId() << std::endl;
 }
 
 void PlayerAI::CancelAction(const ActionAI * action)
@@ -175,8 +175,7 @@ void PlayerAI::CancelAction(const ActionAI * action)
         {
             mActionsDoing.erase(it);
 
-            std::cout << "PlayerAI::CancelAction - ACTION CANCELLED - id: " << action->actId
-                      << " - type: " << action->GetTypeStr() << std::endl;
+            PrintdActionDebug("PlayerAI::CancelAction - ACTION CANCELLED", action);
 
             delete action;
 
@@ -186,8 +185,7 @@ void PlayerAI::CancelAction(const ActionAI * action)
             ++it;
     }
 
-    std::cout << "PlayerAI::CancelAction - can't find action ID: " << action->actId
-              << " - type: " << action->GetTypeStr() << std::endl;
+    PrintdActionDebug("PlayerAI::CancelAction - can't find action", action);
 
     delete action;
 }
@@ -204,8 +202,7 @@ void PlayerAI::SetActionDone(const ActionAI * action)
 
             mActionsDone.push_back(action);
 
-            std::cout << "PlayerAI::SetActionDone - ACTION DONE - id: " << action->actId
-                      << " - type: " << action->GetTypeStr() << std::endl;
+            PrintdActionDebug("PlayerAI::SetActionDone | ACTION DONE", action);
 
             return ;
         }
@@ -297,14 +294,10 @@ void PlayerAI::AddNewAction(ActionAI * action)
     if(action->priority > MAX_PRIORITY)
         action->priority = MAX_PRIORITY;
 
+    PrintdActionDebug("PlayerAI::SetActionDone | ADDED NEW ACTION", action);
+
     // NOTE not checking existing actions for now as all actions should be unique
     // as they are created by different objects (at least the ObjSrc is different)
-    std::cout << "PlayerAI::AddNewAction - ADDED NEW ACTION id: " << action->actId
-              << " - type: " << action->GetTypeStr() << " - priority: " << action->priority
-              << " - OBJ ID: " << action->ObjSrc->GetObjectId()
-              << " - OBJ energy: " << action->ObjSrc->GetEnergy()
-              << " - OBJ health: " << action->ObjSrc->GetHealth()
-              << std::endl;
     PushAction(action);
 }
 
@@ -902,6 +895,41 @@ bool PlayerAI::IsSimilarActionInProgress(AIActionType type) const
     }
 
     return false;
+}
+
+void PlayerAI::PrintdActionDebug(const char * title, const ActionAI * a)
+{
+    std::cout << title;
+
+    std::cout << " - ID: " << a->actId
+              << " - TYPE: " << a->GetTypeStr() << " - PRIO: " << a->priority;
+
+    if(a->ObjSrc != nullptr)
+    {
+        auto obj = a->ObjSrc;
+        std::cout << " | OBJ SRC - ID: " << obj->GetObjectId()
+                  << " - FACT: " << obj->GetFaction()
+                  << " - ENRG: " << obj->GetEnergy() << "/" << obj->GetMaxEnergy()
+                  << " - HLTH: " << obj->GetHealth() << "/" << obj->GetMaxHealth();
+    }
+
+    if(a->ObjDst != nullptr)
+    {
+        auto obj = a->ObjDst;
+        std::cout << " | OBJ DST - ID: " << obj->GetObjectId()
+                  << " - FACT: " << obj->GetFaction()
+                  << " - ENRG: " << obj->GetEnergy() << "/" << obj->GetMaxEnergy()
+                  << " - HLT: " << obj->GetHealth() << "/" << obj->GetMaxHealth();
+    }
+
+    if(a->cellSrc.row != -1)
+        std::cout << " | CELL SRC: " << a->cellSrc.row << "," << a->cellSrc.col;
+
+    if(a->cellDst.row != -1)
+        std::cout << " | CELL DST: " << a->cellDst.row << "," << a->cellDst.col;
+
+    std::cout << " | TURN - ENRG: " << mPlayer->GetTurnEnergy() << "/" << mPlayer->GetTurnEnergyMax()
+              << std::endl;
 }
 
 } // namespace game

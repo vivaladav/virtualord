@@ -907,10 +907,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
         if(action->ObjSrc->IsBusy() && ai->IsActionHighestPriorityForObject(action))
         {
             std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
-                      << " - higher priority action for object " << action->ObjSrc->GetObjectId()
-                      << " - ACT ID: " << action->actId
-                      << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
-                      << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+                      << " - higher priority action for object" << std::endl;
 
             // can/cel current action
             ai->CancelObjectAction(action->ObjSrc);
@@ -928,6 +925,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                           << " - ATTACK ENEMY UNIT "
                           << (done ? "DOING" : "FAILED")
                           << " - ACT ID: " << action->actId
+                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
                           << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                           << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
@@ -997,6 +995,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - CONQUER GENERATOR "
                           << (done ? "DOING" : "FAILED")
                           << " - ACT ID: " << action->actId
+                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
                           << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                           << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
@@ -1053,6 +1052,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - CONNECT STRUCTURE "
                           << (done ? "DOING" : "FAILED")
                           << " - ACT ID: " << action->actId
+                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
                           << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                           << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }
@@ -1067,6 +1067,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - NEW UNIT "
                           << (done ? "DOING" : "FAILED")
                           << " - ACT ID: " << action->actId
+                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
                           << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
                           << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
             }

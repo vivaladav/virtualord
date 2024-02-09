@@ -70,6 +70,8 @@ private:
     bool IsObjectAlreadyDoingSimilarAction(GameObject * obj, AIActionType type) const;
     bool IsSimilarActionInProgress(AIActionType type) const;
 
+    void PrintdActionDebug(const char * title, const ActionAI * a);
+
 private:
     std::vector<ActionAI *> mActionsTodo;
     std::vector<const ActionAI *> mActionsDoing;

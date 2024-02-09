@@ -27,8 +27,8 @@ struct ActionAI
     unsigned int actId = 0;
     GameObject * ObjSrc = nullptr;
     GameObject * ObjDst = nullptr;
-    Cell2D cellSrc;
-    Cell2D cellDst;
+    Cell2D cellSrc = { -1, -1};
+    Cell2D cellDst = { -1, -1};
     AIActionType type = AIA_NOP;
     int priority = 0;
 
