@@ -1155,28 +1155,18 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
 
 void ScreenGame::SetObjectActionDone(GameObject * obj, bool successful)
 {
+    // search selected object in active actions
     auto it = mObjActions.begin();
 
-    // search selected object in active actions
     while(it != mObjActions.end())
     {
         if(it->obj == obj)
         {
-            std::cout << "ScreenGame::SetObjectActionDone - obj ID: " << obj->GetObjectId()
-                      << " - ACTION TYPE: " << it->type
-                      << (successful ? " - OK" : " - FAIL") << std::endl;
+            std::cout << "ScreenGame::SetObjectActionDone - OBJ ACTIONS - obj ID: "
+                      << obj->GetObjectId() << " - ACTION TYPE: "
+                      << it->type << (successful ? " - OK" : " - FAIL") << std::endl;
 
-            // re-enable actions panel if obj is local
-            if(obj->GetFaction() == mLocalPlayer->GetFaction())
-                mHUD->SetLocalActionsEnabled(true);
-
-            // reset object's active action to default
-            obj->SetActiveActionToDefault();
-            // reset current action to idle
-            obj->SetCurrentAction(IDLE);
-
-            // execute done callback
-            it->onDone(successful);
+            FinalizeObjectAction(*it, successful);
 
             // remove and destroy pending action
             mObjActions.erase(it);
@@ -1186,6 +1176,49 @@ void ScreenGame::SetObjectActionDone(GameObject * obj, bool successful)
 
         ++it;
     }
+
+    // search selected object in actions to add for special cases when
+    // action is completed immediately like AI quick actions
+    it = mObjActionsToDo.begin();
+
+    while(it != mObjActionsToDo.end())
+    {
+        if(it->obj == obj)
+        {
+            std::cout << "ScreenGame::SetObjectActionDone - OBJ ACTIONS TO DO - obj ID: "
+                      << obj->GetObjectId() << " - ACTION TYPE: "
+                      << it->type << (successful ? " - OK" : " - FAIL") << std::endl;
+
+            FinalizeObjectAction(*it, successful);
+
+            // remove and destroy pending action
+            mObjActionsToDo.erase(it);
+
+            return ;
+        }
+
+        ++it;
+    }
+
+    std::cout << "ScreenGame::SetObjectActionDone - ERROR can't find - obj ID: "
+              << obj->GetObjectId() << std::endl;
+}
+
+void ScreenGame::FinalizeObjectAction(const GameObjectAction & action, bool successful)
+{
+    GameObject * obj = action.obj;
+
+    // re-enable actions panel if obj is local
+    if(obj->GetFaction() == mLocalPlayer->GetFaction())
+        mHUD->SetLocalActionsEnabled(true);
+
+    // reset object's active action to default
+    obj->SetActiveActionToDefault();
+    // reset current action to idle
+    obj->SetCurrentAction(IDLE);
+
+    // execute done callback
+    action.onDone(successful);
 }
 
 void ScreenGame::UpdateGameEnd()

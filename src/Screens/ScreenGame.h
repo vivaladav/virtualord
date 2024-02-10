@@ -114,6 +114,7 @@ private:
 
     void CancelObjectAction(GameObject * obj);
     void SetObjectActionDone(GameObject * obj, bool successful);
+    void FinalizeObjectAction(const GameObjectAction & action, bool successful);
 
     void UpdateGameEnd();
     void HandleGameOver();
