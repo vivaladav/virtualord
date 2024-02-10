@@ -45,12 +45,27 @@ bool ObjectPath::InitNextMove()
     const IsoLayer * layerObj = isoObj->GetLayer();
     const sgl::core::Pointd2D target = layerObj->GetObjectPosition(isoObj, nextRow, nextCol);
 
-    mObjX = isoObj->GetX();
-    mObjY = isoObj->GetY();
-    mTargetX = target.x;
-    mTargetY = target.y;
-    mVelX = (mTargetX - mObjX) * mObj->GetSpeed();
-    mVelY = (mTargetY - mObjY) * mObj->GetSpeed();
+    // check if AI action not visible
+    Player * player = mScreen->GetGame()->GetPlayerByFaction(mObj->GetFaction());
+
+    if(!player->IsLocal() && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
+    {
+        mObjX = target.x;
+        mObjY = target.y;
+        mTargetX = target.x;
+        mTargetY = target.y;
+        mVelX = 0.f;
+        mVelY = 0.f;
+    }
+    else
+    {
+        mObjX = isoObj->GetX();
+        mObjY = isoObj->GetY();
+        mTargetX = target.x;
+        mTargetY = target.y;
+        mVelX = (mTargetX - mObjX) * mObj->GetSpeed();
+        mVelY = (mTargetY - mObjY) * mObj->GetSpeed();
+    }
 
     // mark next cell in game map
     mGameMap->SetCellWalkTarget(nextInd, true);

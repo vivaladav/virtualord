@@ -169,7 +169,7 @@ bool Player::IsObjectVisible(const GameObject * obj) const
     {
         const unsigned int ind0 = r * mVisMapCols;
 
-        for(unsigned int c = tlC; r <= brC; ++c)
+        for(unsigned int c = tlC; c <= brC; ++c)
         {
             const unsigned int ind = ind0 + c;
 

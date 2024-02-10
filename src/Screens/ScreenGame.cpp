@@ -1403,7 +1403,14 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
     mGameMap->StartCreateUnit(type, gen, cell, player);
 
     // create and init progress bar
-    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(cell, TIME_NEW_UNIT, player->GetFaction());
+    // TODO get time from generator
+    float timeBuild = TIME_NEW_UNIT;
+
+    // special time for invisible AI
+    if(!player->IsLocal() && !mGameMap->IsObjectVisibleToLocalPlayer(gen))
+        timeBuild = TIME_AI_MIN;
+
+    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(cell, timeBuild, player->GetFaction());
 
     pb->AddFunctionOnCompleted([this, cell, player, gen, type]
     {
@@ -1418,7 +1425,7 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
             const ObjectBasicData & data = GetGame()->GetObjectsRegistry()->GetObjectData(type);
 
             const PlayerFaction faction = player->GetFaction();
-            const MiniMap::MiniMapElemType type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
+            const auto type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
             MiniMap * mm = mHUD->GetMinimap();
             mm->AddElement(cell.row, cell.col, data.rows, data.cols, type, faction);
         }
@@ -1446,15 +1453,15 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     if(!mGameMap->CanConquerStructure(unit, end, player))
         return false;
 
+    const GameMapCell & gameCell = mGameMap->GetCell(end.row, end.col);
+    GameObject * target = gameCell.objTop;
+
     // handle special case: TEMPLE
     if(player->IsLocal())
     {
-        const GameMapCell & gameCell = mGameMap->GetCell(end.row, end.col);
-        GameObject * obj = gameCell.objTop;
-
-        if(obj != nullptr && obj->GetObjectType() == GameObject::TYPE_TEMPLE)
+        if(target->GetObjectType() == GameObject::TYPE_TEMPLE)
         {
-            mHUD->ShowDialogExploreTemple(player, static_cast<Temple *>(obj));
+            mHUD->ShowDialogExploreTemple(player, static_cast<Temple *>(target));
             return false;
         }
     }
@@ -1463,7 +1470,14 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     mGameMap->StartConquerStructure(end, player);
 
     // create and init progress bar
-    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(start, TIME_CONQ_RES_GEN, player->GetFaction());
+    // TODO get time from unit
+    float timeConquest = TIME_CONQ_RES_GEN;
+
+    // special time for invisible AI
+    if(!player->IsLocal() && !mGameMap->IsObjectVisibleToLocalPlayer(target))
+        timeConquest = TIME_AI_MIN;
+
+    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(start, timeConquest, player->GetFaction());
 
     pb->AddFunctionOnCompleted([this, start, end, player, unit]
     {
@@ -1475,7 +1489,7 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
         const GameObject * objStruct = cellStruct.objTop;
 
         const PlayerFaction faction = player->GetFaction();
-        const MiniMap::MiniMapElemType type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
+        const auto type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
 
         MiniMap * mm = mHUD->GetMinimap();
         mm->UpdateElement(objStruct->GetRow0(), objStruct->GetCol0(),
@@ -1531,7 +1545,7 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
         if(mGameMap->IsAnyCellVisibleToLocalPlayer(rTL, cTL, cellTarget.row, cellTarget.col))
         {
             const PlayerFaction faction = player->GetFaction();
-            const MiniMap::MiniMapElemType type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
+            const auto type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
             MiniMap * mm = mHUD->GetMinimap();
             mm->AddElement(cellTarget.row, cellTarget.col, data.rows, data.cols, type, faction);
         }

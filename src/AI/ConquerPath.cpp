@@ -149,9 +149,13 @@ bool ConquerPath::InitNextConquest()
 
     // TODO get conquer time from unit
     constexpr float TIME_CONQ_CELL = 1.f;
+    float timeConquest = TIME_CONQ_CELL;
+
+    if(!player->IsLocal() && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
+        timeConquest = TIME_AI_MIN;
 
     GameHUD * HUD = mScreen->GetHUD();
-    mProgressBar = HUD->CreateProgressBarInCell(nextCell, TIME_CONQ_CELL, player->GetFaction());
+    mProgressBar = HUD->CreateProgressBarInCell(nextCell, timeConquest, player->GetFaction());
 
     mProgressBar->AddFunctionOnCompleted([this, nextCell, player, layerOverlay]
     {
@@ -197,15 +201,28 @@ bool ConquerPath::InitNextMove()
     const IsoObject * isoObj = mUnit->GetIsoObject();
     const IsoLayer * layerObj = isoObj->GetLayer();
 
-    mObjX = isoObj->GetX();
-    mObjY = isoObj->GetY();
-
     const sgl::core::Pointd2D target = layerObj->GetObjectPosition(isoObj, nextRow, nextCol);
-    mTargetX = target.x;
-    mTargetY = target.y;
 
-    mVelX = (mTargetX - mObjX) * mUnit->GetSpeed();
-    mVelY = (mTargetY - mObjY) * mUnit->GetSpeed();
+    Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+
+    if(!player->IsLocal() && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
+    {
+        mObjX = target.x;
+        mObjY = target.y;
+        mTargetX = target.x;
+        mTargetY = target.y;
+        mVelX = 0.f;
+        mVelY = 0.f;
+    }
+    else
+    {
+        mObjX = isoObj->GetX();
+        mObjY = isoObj->GetY();
+        mTargetX = target.x;
+        mTargetY = target.y;
+        mVelX = (mTargetX - mObjX) * mUnit->GetSpeed();
+        mVelY = (mTargetY - mObjY) * mUnit->GetSpeed();
+    }
 
     mGameMap->SetCellWalkTarget(nextInd, true);
 
