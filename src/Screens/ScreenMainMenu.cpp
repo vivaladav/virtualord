@@ -288,6 +288,7 @@ void ScreenMainMenu::CreateChangelog()
 
     auto textNewFeat = new sgui::TextArea(contentW, minBlockH, font, true, content);
     textNewFeat->SetText("NEW FEATURES\n"
+                         "- Changed game from RTS to TBS!\n"
                          "- Added option for disabling edge map scrolling.\n"
                          "- Scrollable areas can be scrolled with mouse wheel.\n"
                          "- New map object: loot box.\n"
@@ -311,6 +312,7 @@ void ScreenMainMenu::CreateChangelog()
     textImpr->SetText("IMPROVEMENTS\n"
                       "- New structure dialog now groups structures by category.\n"
                       "- MiniMap now requires a connected radar station to work.\n"
+                      "- Added more tooltips to game UI.\n"
                      );
     textImpr->SetPosition(contX, contY);
     textImpr->SetColor(colorContent);
