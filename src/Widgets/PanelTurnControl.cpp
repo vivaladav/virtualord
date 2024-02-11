@@ -72,7 +72,7 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
 
     const PlayerFaction faction = player->GetFaction();
     const float minEnergy = 0.f;
-    const float maxEnergy = player->GetTurnEnergyMax();
+    const float maxEnergy = player->GetTurnMaxEnergy();
     const float energy = player->GetTurnEnergy();
 
     auto fm = graphic::FontManager::Instance();
@@ -125,7 +125,15 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     {
         const int energy = std::roundf(mPlayer->GetTurnEnergy());
         mEnergyBar->SetValue(energy);
+
         mDigits->SetValue(energy);
+    });
+
+    player->SetOnTurnMaxEnergyChanged([this]
+    {
+        const float minEnergy = 0.f;
+        const float maxEnergy = mPlayer->GetTurnMaxEnergy();
+        mEnergyBar->SetMinMax(minEnergy, maxEnergy);
     });
 
     // POSITION ELEMENTS
@@ -160,6 +168,7 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
 PanelTurnControl::~PanelTurnControl()
 {
     mPlayer->SetOnTurnEnergyChanged([]{});
+    mPlayer->SetOnTurnMaxEnergyChanged([]{});
 }
 
 void PanelTurnControl::SetFunctionEndTurn(const std::function<void()> & f)

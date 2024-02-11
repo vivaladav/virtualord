@@ -318,7 +318,7 @@ void PlayerAI::AddActionEndTurn()
     const float c = 100.f;
 
     // consider turn energy
-    const float energyLeftTurn = mPlayer->GetTurnEnergy() * c / mPlayer->GetTurnEnergyMax();
+    const float energyLeftTurn = mPlayer->GetTurnEnergy() * c / mPlayer->GetTurnMaxEnergy();
 
     // consider total units energy
     float totEnergy = 0.f;
@@ -928,7 +928,7 @@ void PlayerAI::PrintdActionDebug(const char * title, const ActionAI * a)
     if(a->cellDst.row != -1)
         std::cout << " | CELL DST: " << a->cellDst.row << "," << a->cellDst.col;
 
-    std::cout << " | TURN - ENRG: " << mPlayer->GetTurnEnergy() << "/" << mPlayer->GetTurnEnergyMax()
+    std::cout << " | TURN - ENRG: " << mPlayer->GetTurnEnergy() << "/" << mPlayer->GetTurnMaxEnergy()
               << std::endl;
 }
 

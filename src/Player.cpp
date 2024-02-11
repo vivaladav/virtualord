@@ -16,6 +16,9 @@
 namespace game
 {
 
+constexpr float MAX_ENERGY0 = 100.f;
+constexpr float INC_ENERGY = 50.f;
+
 // NOTE these will be replaced by dynamic values soon
 constexpr int ENERGY_PER_CELL = 1;
 
@@ -26,8 +29,11 @@ Player::Player(const char * name, int pid)
     , mOnNumUnitsChanged([](){})
     , mOnResourcesChanged([](){})
     , mOnTurnEnergyChanged([](){})
+    , mOnTurnMaxEnergyChanged([](){})
     , mPlayerId(pid)
     , mFaction(NO_FACTION)
+    , mTurnEnergy(MAX_ENERGY0)
+    , mTurnMaxEnergy(MAX_ENERGY0)
 {
     mStats.emplace_back(Stat::BLOBS, 0);
     mStats.emplace_back(Stat::DIAMONDS, 0);
@@ -63,6 +69,8 @@ void Player::AddUnit(Unit * unit)
 
     mUnits.push_back(unit);
 
+    AdjustTurnMaxEnergy();
+
     mOnNumUnitsChanged();
 }
 
@@ -75,6 +83,8 @@ void Player::RemoveUnit(Unit * unit)
         if(*it == unit)
         {
             mUnits.erase(it);
+
+            AdjustTurnMaxEnergy();
 
             mOnNumUnitsChanged();
 
@@ -345,6 +355,38 @@ void Player::HandleCollectable(GameObject * obj)
     static_cast<Collectable *>(obj)->Collected();
 }
 
+void Player::AdjustTurnMaxEnergy()
+{
+    const float oldVal = mTurnMaxEnergy;
+
+    // UPDATE MAX
+    const unsigned int units = mUnits.size();
+    const float inc = (units - 1) * INC_ENERGY;
+    mTurnMaxEnergy = MAX_ENERGY0 + inc;
+
+    mOnTurnMaxEnergyChanged();
+
+    // UPDATE ENERGY
+    bool energyChanged = false;
+
+    // increase tot energy if new max is higher
+    if(oldVal < mTurnMaxEnergy)
+    {
+        mTurnEnergy += inc;
+        energyChanged = true;
+    }
+
+    // clamp current value
+    if(mTurnEnergy > mTurnMaxEnergy)
+    {
+        mTurnEnergy = mTurnMaxEnergy;
+        energyChanged = true;
+    }
+
+    if(energyChanged)
+        mOnTurnEnergyChanged();
+}
+
 void Player::SumTurnEnergy(float val)
 {
     const float oldVal = mTurnEnergy;
@@ -353,8 +395,8 @@ void Player::SumTurnEnergy(float val)
 
     mTurnEnergy += val;
 
-    if(mTurnEnergy > mTurnEnergyMax)
-        mTurnEnergy = mTurnEnergyMax;
+    if(mTurnEnergy > mTurnMaxEnergy)
+        mTurnEnergy = mTurnMaxEnergy;
     else if(mTurnEnergy < minEnergy)
         mTurnEnergy = minEnergy;
 
