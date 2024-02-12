@@ -3,6 +3,7 @@
 #include "GameConstants.h"
 #include "GameMap.h"
 #include "Player.h"
+#include "GameObjects/Collectable.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "GameObjects/ResourceGenerator.h"
 #include "GameObjects/Structure.h"
@@ -50,6 +51,7 @@ void PlayerAI::DecideNextAction()
 void PlayerAI::PrepareData()
 {
     // clear data
+    mCollectables.clear();
     mResGenerators.clear();
     mStructures.clear();
     mUnits.clear();
@@ -72,6 +74,8 @@ void PlayerAI::PrepareData()
         }
         else if(obj->GetObjectCategory() == GameObject::CAT_UNIT)
             mUnits.push_back(obj);
+        else if(obj->CanBeCollected())
+            mCollectables.push_back(obj);
     }
 }
 
@@ -549,6 +553,9 @@ void PlayerAI::AddActionsUnit(Unit * u)
     // CONQUEST RESOURCE GENERATORS
     AddActionUnitConquestResGen(u, RES_ENERGY);
     AddActionUnitConquestResGen(u, RES_MATERIAL1);
+
+    // COLLECTABLES
+    AddActionUnitCollectLootbox(u);
 }
 
 void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
@@ -602,6 +609,69 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     action->type = AIA_UNIT_ATTACK_ENEMY_UNIT;
     action->ObjSrc = u;
     action->ObjDst = mUnits[bestUnitInd];
+    action->priority = priority;
+
+    // push action to the queue
+    AddNewAction(action);
+}
+
+void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
+{
+    // FIND BEST CANDIDATE
+    const unsigned int numCollectables = mCollectables.size();
+
+    const int maxDist = GetMaxDistanceForObject(u);
+    unsigned int bestInd = numCollectables;
+    int minDist = maxDist;
+
+    for(unsigned int i = 0; i < numCollectables; i++)
+    {
+        const GameObject * c = mCollectables[i];
+
+        // no lootbox
+        if(c->GetObjectType() != GameObject::TYPE_LOOTBOX)
+            continue;
+
+        // basic logic, collect closest one
+        const int dist = mGm->ApproxDistance(u, c);
+
+        if(dist < minDist)
+        {
+            minDist = dist;
+            bestInd = i;
+        }
+
+    }
+
+    // none found
+    if(bestInd == numCollectables)
+        return ;
+
+    // DEFINE PRIORITY
+    const int priority0 = 90;
+    int priority = priority0;
+
+    // decrease priority based on unit's energy
+    const int decEnergy = 35;
+    priority -= decEnergy * (u->GetMaxEnergy() - u->GetEnergy()) / u->GetMaxEnergy();
+
+    // decrease priority based on unit's health
+    const int healthDec = 10;
+    priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
+
+    // bonus distance
+    const int decDist = MAX_PRIORITY;
+    priority -= decDist * minDist / maxDist;
+
+    // can't find something that's worth an action
+    if(priority < mMinPriority)
+        return ;
+
+    // CREATE ACTION
+    auto action = new ActionAI;
+    action->type = AIA_UNIT_COLLECT_LOOTBOX;
+    action->ObjSrc = u;
+    action->ObjDst = mCollectables[bestInd];
     action->priority = priority;
 
     // push action to the queue
@@ -895,6 +965,22 @@ bool PlayerAI::IsSimilarActionInProgress(AIActionType type) const
     }
 
     return false;
+}
+
+int PlayerAI::GetMaxDistanceForObject(const GameObject * obj) const
+{
+    const int r = obj->GetRow0();
+    const int c = obj->GetCol0();
+
+    const int rows = mGm->GetNumRows();
+    const int cols = mGm->GetNumCols();
+    const int rowsH = rows / 2;
+    const int colsH = cols / 2;
+
+    const int distR = (r < rowsH) ? rows - r : r;
+    const int distC = (c < colsH) ? cols - c : c;
+
+    return distR + distC;
 }
 
 void PlayerAI::PrintdActionDebug(const char * title, const ActionAI * a)

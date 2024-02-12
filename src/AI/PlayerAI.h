@@ -64,11 +64,14 @@ private:
     void AddActionsBase(Structure * s);
     void AddActionsUnit(Unit * u);
     void AddActionUnitAttackEnemyUnit(Unit * u);
+    void AddActionUnitCollectLootbox(Unit * u);
     void AddActionUnitConnectStructure(Unit * u);
     void AddActionUnitConquestResGen(Unit * u, ResourceType type);
 
     bool IsObjectAlreadyDoingSimilarAction(GameObject * obj, AIActionType type) const;
     bool IsSimilarActionInProgress(AIActionType type) const;
+
+    int GetMaxDistanceForObject(const GameObject * obj) const;
 
     void PrintdActionDebug(const char * title, const ActionAI * a);
 
@@ -78,6 +81,7 @@ private:
     std::vector<const ActionAI *> mActionsDone;
 
     // shared data,
+    std::vector<GameObject *> mCollectables;
     std::vector<GameObject *> mResGenerators;
     std::vector<GameObject *> mStructures;
     std::vector<GameObject *> mUnits;

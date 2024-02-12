@@ -1862,7 +1862,7 @@ int GameMap::ApproxDistance(const Cell2D & c1, const Cell2D & c2) const
     return std::abs(c1.row - c2.row) + std::abs(c1.col - c2.col);
 }
 
-int GameMap::ApproxDistance(GameObject * obj1, GameObject * obj2) const
+int GameMap::ApproxDistance(const GameObject * obj1, const GameObject * obj2) const
 {
     return std::abs(obj1->GetRow0() - obj2->GetRow0()) +
            std::abs(obj1->GetCol0() - obj2->GetCol0());

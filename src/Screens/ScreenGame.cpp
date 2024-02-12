@@ -1073,6 +1073,24 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             }
             break;
 
+            case AIA_UNIT_COLLECT_LOOTBOX:
+            {
+                auto unit = static_cast<Unit *>(action->ObjSrc);
+
+                const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+                const Cell2D cellLootbox(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
+
+                done = SetupUnitMove(unit, cellUnit, cellLootbox, basicOnDone);
+
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - COLLECT LOOTBOX "
+                          << (done ? "DOING" : "FAILED")
+                          << " - ACT ID: " << action->actId
+                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
+                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+            }
+            break;
+
             default:
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - UNKNOWN ACTION"
                           << action->GetTypeStr() << std::endl;
@@ -2680,7 +2698,7 @@ void ScreenGame::EndTurn()
     Game * game = GetGame();
 
     // END TURN
-    std::cout << "ScreenGame::EndTurn - END PLAYER " << mActivePlayerIdx << std::endl;
+    std::cout << "ScreenGame::EndTurn - END PLAYER " << mActivePlayerIdx << "\n" << std::endl;
 
     // current active player is local player
     if(IsCurrentTurnLocal())
