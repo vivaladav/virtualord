@@ -64,6 +64,8 @@ private:
     void AddActionsBase(Structure * s);
     void AddActionsUnit(Unit * u);
     void AddActionUnitAttackEnemyUnit(Unit * u);
+    void AddActionUnitCollectBlobs(Unit * u);
+    void AddActionUnitCollectDiamonds(Unit * u);
     void AddActionUnitCollectLootbox(Unit * u);
     void AddActionUnitConnectStructure(Unit * u);
     void AddActionUnitConquestResGen(Unit * u, ResourceType type);

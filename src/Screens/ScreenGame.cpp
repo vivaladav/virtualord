@@ -856,6 +856,8 @@ void ScreenGame::UpdateAI(float delta)
     if(ai->IsDoingSomething())
         return ;
 
+    std::cout << "\n----- ScreenGame::UpdateAI " << turnAI << " -----" << std::endl;
+
     // no more turn energy -> end turn
     const float minEnergy = 1.f;
 
@@ -870,7 +872,10 @@ void ScreenGame::UpdateAI(float delta)
 
     // make AI decide what to do
     ai->DecideNextAction();
+    std::cout << std::endl;
     ExecuteAIAction(ai);
+
+    std::cout << "----------------------------------------\n" << std::endl;
 }
 
 void ScreenGame::ExecuteAIAction(PlayerAI * ai)
@@ -899,7 +904,6 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
         auto basicOnDone = [action, ai](bool)
         {
-            std::cout << "basicOnDone - ACT ID: " << action->actId << std::endl;
             ai->SetActionDone(action);
         };
 
@@ -1073,17 +1077,53 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             }
             break;
 
+            case AIA_UNIT_COLLECT_BLOBS:
+            {
+                auto unit = static_cast<Unit *>(action->ObjSrc);
+
+                const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+                const Cell2D cellDest(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
+
+                done = SetupUnitMove(unit, cellUnit, cellDest, basicOnDone);
+
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - COLLECT BLOBS"
+                          << (done ? " DOING" : " FAILED")
+                          << " - ACT ID: " << action->actId
+                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
+                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+            }
+            break;
+
+            case AIA_UNIT_COLLECT_DIAMONDS:
+            {
+                auto unit = static_cast<Unit *>(action->ObjSrc);
+
+                const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+                const Cell2D cellDest(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
+
+                done = SetupUnitMove(unit, cellUnit, cellDest, basicOnDone);
+
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - COLLECT DIAMONDS"
+                          << (done ? " DOING" : " FAILED")
+                          << " - ACT ID: " << action->actId
+                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
+                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+            }
+            break;
+
             case AIA_UNIT_COLLECT_LOOTBOX:
             {
                 auto unit = static_cast<Unit *>(action->ObjSrc);
 
                 const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
-                const Cell2D cellLootbox(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
+                const Cell2D cellDest(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
 
-                done = SetupUnitMove(unit, cellUnit, cellLootbox, basicOnDone);
+                done = SetupUnitMove(unit, cellUnit, cellDest, basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - COLLECT LOOTBOX "
-                          << (done ? "DOING" : "FAILED")
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - COLLECT LOOTBOX"
+                          << (done ? " DOING" : " FAILED")
                           << " - ACT ID: " << action->actId
                           << " - OBJ ID: " << action->ObjSrc->GetObjectId()
                           << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()

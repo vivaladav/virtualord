@@ -298,7 +298,7 @@ void PlayerAI::AddNewAction(ActionAI * action)
     if(action->priority > MAX_PRIORITY)
         action->priority = MAX_PRIORITY;
 
-    PrintdActionDebug("PlayerAI::SetActionDone | ADDED NEW ACTION", action);
+    PrintdActionDebug("PlayerAI::AddNewAction | ADDED NEW ACTION", action);
 
     // NOTE not checking existing actions for now as all actions should be unique
     // as they are created by different objects (at least the ObjSrc is different)
@@ -555,6 +555,8 @@ void PlayerAI::AddActionsUnit(Unit * u)
     AddActionUnitConquestResGen(u, RES_MATERIAL1);
 
     // COLLECTABLES
+    AddActionUnitCollectBlobs(u);
+    AddActionUnitCollectDiamonds(u);
     AddActionUnitCollectLootbox(u);
 }
 
@@ -571,7 +573,7 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     const unsigned int numUnits = mUnits.size();
 
     // check if there's any unit to shoot at
-    const int maxDist = mGm->GetNumRows() + mGm->GetNumCols();
+    const int maxDist = GetMaxDistanceForObject(u);
 
     unsigned int bestUnitInd = numUnits;
     int minDist = maxDist;
@@ -615,6 +617,162 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     AddNewAction(action);
 }
 
+void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
+{
+    // FIND BEST CANDIDATE
+    const unsigned int numCollectables = mCollectables.size();
+
+    const int maxDist = GetMaxDistanceForObject(u);
+    unsigned int bestInd = numCollectables;
+    int minDist = maxDist;
+
+    for(unsigned int i = 0; i < numCollectables; i++)
+    {
+        const GameObject * c = mCollectables[i];
+
+        // no blobs
+        if(c->GetObjectType() != GameObject::TYPE_BLOBS)
+            continue;
+
+        // basic logic, collect closest one
+        const int dist = mGm->ApproxDistance(u, c);
+
+        if(dist < minDist)
+        {
+            minDist = dist;
+            bestInd = i;
+        }
+    }
+
+    // none found
+    if(bestInd == numCollectables)
+        return ;
+
+    // DEFINE PRIORITY
+    int priority = MAX_PRIORITY;
+
+    // decrease priority based on owned blobs
+    const int decBlobs = 30;
+    const StatValue & blobs = mPlayer->GetStat(Player::BLOBS);
+    const int maxBlobs = blobs.GetIntMax();
+    const int numBlobs = blobs.GetIntValue();
+    priority -= decBlobs * (maxBlobs - numBlobs) / maxBlobs;
+
+    // decrease priority based on unit's energy
+    const int decEnergy = 20;
+    const int maxEnergy = u->GetMaxEnergy();
+    priority -= decEnergy * (maxEnergy - u->GetEnergy()) / maxEnergy;
+
+    // decrease priority based on turn energy
+    const int turnEnergy = mPlayer->GetTurnEnergy();
+
+    if(turnEnergy < maxEnergy)
+    {
+        const int decTurnEnergy = 20;
+        priority -= decTurnEnergy * (maxEnergy - turnEnergy) / maxEnergy;
+    }
+
+    // decrease priority based on unit's health
+    const int healthDec = 10;
+    priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
+
+    // bonus distance
+    const int decDist = 30;
+    priority -= decDist * minDist / maxDist;
+
+    // can't find something that's worth an action
+    if(priority < mMinPriority)
+        return ;
+
+    // CREATE ACTION
+    auto action = new ActionAI;
+    action->type = AIA_UNIT_COLLECT_BLOBS;
+    action->ObjSrc = u;
+    action->ObjDst = mCollectables[bestInd];
+    action->priority = priority;
+
+    // push action to the queue
+    AddNewAction(action);
+}
+
+void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
+{
+    // FIND BEST CANDIDATE
+    const unsigned int numCollectables = mCollectables.size();
+
+    const int maxDist = GetMaxDistanceForObject(u);
+    unsigned int bestInd = numCollectables;
+    int minDist = maxDist;
+
+    for(unsigned int i = 0; i < numCollectables; i++)
+    {
+        const GameObject * c = mCollectables[i];
+
+        // no blobs
+        if(c->GetObjectType() != GameObject::TYPE_DIAMONDS)
+            continue;
+
+        // basic logic, collect closest one
+        const int dist = mGm->ApproxDistance(u, c);
+
+        if(dist < minDist)
+        {
+            minDist = dist;
+            bestInd = i;
+        }
+    }
+
+    // none found
+    if(bestInd == numCollectables)
+        return ;
+
+    // DEFINE PRIORITY
+    int priority = MAX_PRIORITY;
+
+    // decrease priority based on owned diamonds
+    const int decDiamonds = 30;
+    const StatValue & diamonds = mPlayer->GetStat(Player::DIAMONDS);
+    const int maxDiamonds = diamonds.GetIntMax();
+    const int numDiamonds = diamonds.GetIntValue();
+    priority -= decDiamonds * (maxDiamonds - numDiamonds) / maxDiamonds;
+
+    // decrease priority based on unit's energy
+    const int decEnergy = 20;
+    const int maxEnergy = u->GetMaxEnergy();
+    priority -= decEnergy * (maxEnergy - u->GetEnergy()) / maxEnergy;
+
+    // decrease priority based on turn energy
+    const int turnEnergy = mPlayer->GetTurnEnergy();
+
+    if(turnEnergy < maxEnergy)
+    {
+        const int decTurnEnergy = 20;
+        priority -= decTurnEnergy * (maxEnergy - turnEnergy) / maxEnergy;
+    }
+
+    // decrease priority based on unit's health
+    const int healthDec = 10;
+    priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
+
+    // bonus distance
+    const int decDist = 30;
+    priority -= decDist * minDist / maxDist;
+
+    // can't find something that's worth an action
+    if(priority < mMinPriority)
+        return ;
+
+    // CREATE ACTION
+    auto action = new ActionAI;
+    action->type = AIA_UNIT_COLLECT_DIAMONDS;
+    action->ObjSrc = u;
+    action->ObjDst = mCollectables[bestInd];
+    action->priority = priority;
+
+    // push action to the queue
+    AddNewAction(action);
+}
+
 void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
 {
     // FIND BEST CANDIDATE
@@ -648,12 +806,21 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
         return ;
 
     // DEFINE PRIORITY
-    const int priority0 = 90;
-    int priority = priority0;
+    int priority = MAX_PRIORITY;
 
     // decrease priority based on unit's energy
-    const int decEnergy = 35;
-    priority -= decEnergy * (u->GetMaxEnergy() - u->GetEnergy()) / u->GetMaxEnergy();
+    const int decEnergy = 30;
+    const int maxEnergy = u->GetMaxEnergy();
+    priority -= decEnergy * (maxEnergy - u->GetEnergy()) / maxEnergy;
+
+    // decrease priority based on turn energy
+    const int turnEnergy = mPlayer->GetTurnEnergy();
+
+    if(turnEnergy < maxEnergy)
+    {
+        const int decTurnEnergy = 25;
+        priority -= decTurnEnergy * (maxEnergy - turnEnergy) / maxEnergy;
+    }
 
     // decrease priority based on unit's health
     const int healthDec = 10;
@@ -690,7 +857,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 
     // check if there's any structure to connect
     const unsigned int numStructures = mStructures.size();
-    const int maxDist = mGm->GetNumRows() + mGm->GetNumCols();
+    const int maxDist = GetMaxDistanceForObject(u);
 
     unsigned int bestStructInd = numStructures;
     int minDist = maxDist;
@@ -859,7 +1026,7 @@ void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
     priority += bonusResAvailable * stat.GetIntValue() / stat.GetIntMax();
 
     // visit all generators
-    const int maxDist = mGm->GetNumRows() + mGm->GetNumCols();
+    const int maxDist = GetMaxDistanceForObject(u);
     const unsigned int numGens = mResGenerators.size();
 
     const int bonusDist = -60;
