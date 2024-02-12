@@ -887,6 +887,18 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
     Player * player = ai->GetPlayer();
 
+    auto PrintAction = [](int turnAI, const ActionAI * action, bool done, Player * player)
+    {
+        std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - "
+                  << action->GetTypeStr()
+                  << (done ? " DOING" : " FAILED")
+                  << " | ACT ID: " << action->actId
+                  << " - PRIORITY: " << action->priority
+                  << " | OBJ ID: " << action->ObjSrc->GetObjectId()
+                  << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                  << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+    };
+
     // execute planned action until one is successful or there's no more actions to do (NOP)
     while(!done)
     {
@@ -925,13 +937,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 auto unit = static_cast<Unit *>(action->ObjSrc);
                 done = SetupUnitAttack(unit, action->ObjDst, player, basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
-                          << " - ATTACK ENEMY UNIT "
-                          << (done ? "DOING" : "FAILED")
-                          << " - ACT ID: " << action->actId
-                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
-                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
-                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
@@ -996,12 +1002,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                     }
                 }
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - CONQUER GENERATOR "
-                          << (done ? "DOING" : "FAILED")
-                          << " - ACT ID: " << action->actId
-                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
-                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
-                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
@@ -1053,12 +1054,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                         });
                 }
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - CONNECT STRUCTURE "
-                          << (done ? "DOING" : "FAILED")
-                          << " - ACT ID: " << action->actId
-                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
-                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
-                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
@@ -1068,12 +1064,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 done = SetupNewUnit(a->unitType, a->ObjSrc, ai->GetPlayer(), basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - NEW UNIT "
-                          << (done ? "DOING" : "FAILED")
-                          << " - ACT ID: " << action->actId
-                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
-                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
-                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
@@ -1086,12 +1077,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 done = SetupUnitMove(unit, cellUnit, cellDest, basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - COLLECT BLOBS"
-                          << (done ? " DOING" : " FAILED")
-                          << " - ACT ID: " << action->actId
-                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
-                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
-                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
@@ -1104,12 +1090,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 done = SetupUnitMove(unit, cellUnit, cellDest, basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - COLLECT DIAMONDS"
-                          << (done ? " DOING" : " FAILED")
-                          << " - ACT ID: " << action->actId
-                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
-                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
-                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
@@ -1122,12 +1103,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 done = SetupUnitMove(unit, cellUnit, cellDest, basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - COLLECT LOOTBOX"
-                          << (done ? " DOING" : " FAILED")
-                          << " - ACT ID: " << action->actId
-                          << " - OBJ ID: " << action->ObjSrc->GetObjectId()
-                          << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
-                          << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 

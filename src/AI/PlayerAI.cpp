@@ -3,7 +3,6 @@
 #include "GameConstants.h"
 #include "GameMap.h"
 #include "Player.h"
-#include "GameObjects/Collectable.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "GameObjects/ResourceGenerator.h"
 #include "GameObjects/Structure.h"
@@ -953,8 +952,18 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on unit's energy
-    const int decEnergy = 25;
-    priority -= decEnergy * (u->GetMaxEnergy() - u->GetEnergy()) / u->GetMaxEnergy();
+    const int decEnergy = 20;
+    const int maxEnergy = u->GetMaxEnergy();
+    priority -= decEnergy * (maxEnergy - u->GetEnergy()) / maxEnergy;
+
+    // decrease priority based on turn energy
+    const int turnEnergy = mPlayer->GetTurnEnergy();
+
+    if(turnEnergy < maxEnergy)
+    {
+        const int decTurnEnergy = 20;
+        priority -= decTurnEnergy * (maxEnergy - turnEnergy) / maxEnergy;
+    }
 
     // decrease priority based on unit's health
     const int healthDec = 10;
