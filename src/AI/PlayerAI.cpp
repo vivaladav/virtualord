@@ -651,7 +651,7 @@ void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on owned blobs
-    const int decBlobs = 30;
+    const int decBlobs = 25;
     const StatValue & blobs = mPlayer->GetStat(Player::BLOBS);
     const int maxBlobs = blobs.GetIntMax();
     const int numBlobs = blobs.GetIntValue();
@@ -676,8 +676,8 @@ void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
     priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
 
     // bonus distance
-    const int decDist = 30;
-    priority -= decDist * minDist / maxDist;
+    const float bonusDist = -20.f;
+    priority += GetPiorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -729,7 +729,7 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on owned diamonds
-    const int decDiamonds = 30;
+    const int decDiamonds = 25;
     const StatValue & diamonds = mPlayer->GetStat(Player::DIAMONDS);
     const int maxDiamonds = diamonds.GetIntMax();
     const int numDiamonds = diamonds.GetIntValue();
@@ -754,8 +754,8 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
     priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
 
     // bonus distance
-    const int decDist = 30;
-    priority -= decDist * minDist / maxDist;
+    const float bonusDist = -20.f;
+    priority += GetPiorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -808,7 +808,7 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on unit's energy
-    const int decEnergy = 30;
+    const int decEnergy = 25;
     const int maxEnergy = u->GetMaxEnergy();
     priority -= decEnergy * (maxEnergy - u->GetEnergy()) / maxEnergy;
 
@@ -826,8 +826,8 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
 
     // bonus distance
-    const int decDist = MAX_PRIORITY;
-    priority -= decDist * minDist / maxDist;
+    const float bonusDist = -50.f;
+    priority += GetPiorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -1157,6 +1157,25 @@ int PlayerAI::GetMaxDistanceForObject(const GameObject * obj) const
     const int distC = (c < colsH) ? cols - c : c;
 
     return distR + distC;
+}
+
+int PlayerAI::GetPiorityBonusDistance(const Unit * u, int dist, float bonus) const
+{
+    const float energyStep = u->GetEnergyForActionStep(MOVE);
+    const float energyTot = energyStep * dist;
+    const float energyUnit = u->GetEnergy();
+    const float maxDist = GetMaxDistanceForObject(u);
+
+    // bonuses
+    const float bonusRelDist = (energyUnit < energyTot) ?
+                               bonus * (energyTot - energyUnit) / energyTot : 0.f;
+    const float bonusAbsDist = bonus * dist / maxDist;
+
+    // weights
+    const float wRel = 0.7f;
+    const float wAbs = 0.3f;
+
+    return std::roundf(bonusRelDist * wRel + bonusAbsDist * wAbs);
 }
 
 void PlayerAI::PrintdActionDebug(const char * title, const ActionAI * a)

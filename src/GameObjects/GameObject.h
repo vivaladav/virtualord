@@ -165,7 +165,8 @@ public:
     void SetMaxEnergy(float val);
     void RestoreTurnEnergy();
 
-    bool HasEnergyForActionStep(GameObjectActionType action);
+    float GetEnergyForActionStep(GameObjectActionType action) const;
+    bool HasEnergyForActionStep(GameObjectActionType action) const;
     void ActionStepCompleted(GameObjectActionType action);
 
     int GetExperience() const;
@@ -371,6 +372,14 @@ inline void GameObject::SetMaxEnergy(float val) { mMaxEnergy = val; }
 inline void GameObject::RestoreTurnEnergy()
 {
     SumEnergy(mEnergyRegPower * mMaxEnergy / 100.f);
+}
+
+inline float GameObject::GetEnergyForActionStep(GameObjectActionType action) const
+{
+    if(action < NUM_OBJ_ACTIONS)
+        return ACTION_COSTS[action];
+    else
+        return 0.f;
 }
 
 inline int GameObject::GetExperience() const { return mExp; }

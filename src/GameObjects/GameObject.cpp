@@ -358,7 +358,7 @@ void GameObject::SumEnergy(float val)
     SetEnergy(mEnergy + val);
 }
 
-bool GameObject::HasEnergyForActionStep(GameObjectActionType action)
+bool GameObject::HasEnergyForActionStep(GameObjectActionType action) const
 {
     if(action < NUM_OBJ_ACTIONS)
     {
