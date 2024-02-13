@@ -769,9 +769,8 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     // FIND BEST CANDIDATE
     const unsigned int numCollectables = mCollectables.size();
 
-    const int maxDist = GetMaxDistanceForObject(u);
     unsigned int bestInd = numCollectables;
-    int minDist = maxDist;
+    int minDist = GetMaxDistanceForObject(u);
 
     for(unsigned int i = 0; i < numCollectables; i++)
     {
@@ -789,7 +788,6 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
             minDist = dist;
             bestInd = i;
         }
-
     }
 
     // none found
@@ -828,20 +826,11 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
 
 void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 {
-    // check active actions to avoid duplicates
-    for(auto action : mActionsDoing)
-    {
-        // any unit is already doing the same -> exit
-        if(action->type == AIA_UNIT_CONNECT_STRUCTURE)
-            return ;
-    }
-
     // check if there's any structure to connect
     const unsigned int numStructures = mStructures.size();
-    const int maxDist = GetMaxDistanceForObject(u);
 
     unsigned int bestStructInd = numStructures;
-    int minDist = maxDist;
+    int minDist = GetMaxDistanceForObject(u);
     Cell2D startConquest;
 
     const PlayerFaction faction = mPlayer->GetFaction();
@@ -942,7 +931,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
     priority += GetUnitPiorityBonusHealth(u, bonusHealth);
 
     // bonus distance
-    const float bonusDist = -40.f;
+    const float bonusDist = -50.f;
     priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
@@ -962,64 +951,52 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 
 void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
 {
-    const enum Player::Stat types[NUM_RESOURCES] =
+    // resource not supported
+    if(type != RES_ENERGY && type != RES_MATERIAL1)
+        return ;
+
+    const int supportedRes = 2;
+
+    const enum Player::Stat types[supportedRes] =
     {
         Player::Stat::ENERGY,
         Player::Stat::MATERIAL,
-        Player::Stat::DIAMONDS,
-        Player::Stat::BLOBS
-    };
-
-    const int basePriorities[NUM_RESOURCES] =
-    {
-        90,     //RES_ENERGY
-        75,     //RES_MATERIAL1
-        45,     //RES_DIAMONDS
-        45      //RES_BLOBS
     };
 
     const enum Player::Stat ptype = types[type];
     const StatValue & stat = mPlayer->GetStat(ptype);
 
-    int priority = basePriorities[type];
+    int priority = MAX_PRIORITY;
 
-    // check active actions to avoid duplicates
-    for(auto action : mActionsDoing)
-    {
-        // any unit is already doing the same -> exit
-        if(action->type == AIA_UNIT_CONQUER_GEN)
-            return ;
-        // unit is already doing something -> exit
-        // NOTE keeping the case as this might change to lower priority instead of nothing
-        else if(action->ObjSrc == u)
-            return ;
-    }
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -30.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
 
-    // scale priority based on unit's energy
-    priority = priority * u->GetEnergy() / u->GetMaxEnergy();
-
-    // scale priority based on unit's health
-    priority = priority * u->GetHealth() / u->GetMaxHealth();
+    // decrease priority based on unit's health
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
 
     // bonus resource availability level
-    const int bonusResAvailable = -20;
+    const float bonusRes = -10.f;
+    priority += std::roundf(bonusRes * stat.GetIntValue() / stat.GetIntMax());
 
-    priority += bonusResAvailable * stat.GetIntValue() / stat.GetIntMax();
+    // action is already not doable
+    if(priority < mMinPriority)
+        return ;
 
     // visit all generators
     const int maxDist = GetMaxDistanceForObject(u);
     const unsigned int numGens = mResGenerators.size();
 
-    const int bonusDist = -60;
-    const int bonusOwned = -40;
-
-    unsigned int indexMax = numGens;
-    int maxPriority = 0;
+    unsigned int bestInd = numGens;
+    int minDist = maxDist;
 
     int totGenerators = 0;
     int ownedGenerators = 0;
-    int unlinkedGenerators = 0;
 
+    const PlayerFaction playerFaction = mPlayer->GetFaction();
+
+    // find best candidate
     for(unsigned int i = 0; i < numGens; ++i)
     {
         auto resGen = static_cast<ResourceGenerator *>(mResGenerators[i]);
@@ -1029,54 +1006,38 @@ void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
 
         ++totGenerators;
 
-        const PlayerFaction playerFaction = mPlayer->GetFaction();
-        const PlayerFaction resGenFaction = resGen->GetFaction();
-
-        if(playerFaction == resGenFaction)
+        // generator already owned by player
+        if(playerFaction == resGen->GetFaction())
         {
             ++ownedGenerators;
-
-            if(!resGen->IsLinked())
-                ++unlinkedGenerators;
 
             continue;
         }
 
-        int loopPriority = priority;
-
-        // bonus distance
+        // basic logic, conquest closest one
         const int dist = mGm->ApproxDistance(u, resGen);
-        loopPriority += bonusDist * dist / maxDist;
 
-        // bonus owned by enemy
-        const int owned = resGenFaction != NO_FACTION;
-        loopPriority += owned * bonusOwned;
-
-        if(loopPriority > maxPriority)
+        if(dist < minDist)
         {
-            maxPriority = loopPriority;
-            indexMax = i;
+            minDist = dist;
+            bestInd = i;
         }
     }
 
-    priority = maxPriority;
+    // didn't find any
+    if(bestInd == numGens)
+        return ;
 
-    // bonus owned and unlinked generators
-    if(ownedGenerators > 0)
-    {
-        const int bonusOwnned = -30;
-        priority += bonusOwned * ownedGenerators / totGenerators;
+    // bonus distance
+    const float bonusDist = -40.f;
+    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
 
-        const int bonusUnlinked = -10;
-        priority += bonusUnlinked * unlinkedGenerators / ownedGenerators;
-    }
-
-    // bonus unit speed
-    const int bonusSpeed = 10;
-    priority += bonusSpeed * u->GetStat(OSTAT_SPEED) / ObjectFactionData::MAX_STAT_VAL;
+    // decrease priority for owned generators
+    const float bonusOwned = -30.f;
+    priority += std::roundf(bonusOwned * ownedGenerators / totGenerators);
 
     // bonus unit conquest
-    const int bonusConquest = 20;
+    const int bonusConquest = 10;
     priority += bonusConquest * u->GetStat(OSTAT_CONQUEST) / ObjectFactionData::MAX_STAT_VAL;
 
     // can't find something that's worth an action
@@ -1086,7 +1047,7 @@ void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
     auto action = new ActionAI;
     action->type = AIA_UNIT_CONQUER_GEN;
     action->ObjSrc = u;
-    action->ObjDst = mResGenerators[indexMax];
+    action->ObjDst = mResGenerators[bestInd];
     action->priority = priority;
 
     // push action to the queue

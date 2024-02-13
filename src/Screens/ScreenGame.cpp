@@ -856,7 +856,17 @@ void ScreenGame::UpdateAI(float delta)
     if(ai->IsDoingSomething())
         return ;
 
-    std::cout << "\n----- ScreenGame::UpdateAI " << turnAI << " -----" << std::endl;
+    std::cout << "\n----- ScreenGame::UpdateAI " << turnAI << " -----\n"
+              << "MONEY: " << player->GetStat(Player::MONEY).GetIntValue()
+              << " - ENERGY: " << player->GetStat(Player::ENERGY).GetIntValue() << " / "
+              << player->GetStat(Player::ENERGY).GetIntMax()
+              << " - MATERIAL: " << player->GetStat(Player::MATERIAL).GetIntValue() << "/"
+              << player->GetStat(Player::MATERIAL).GetIntMax()
+              << " - BLOBS: " << player->GetStat(Player::BLOBS).GetIntValue() << "/"
+              << player->GetStat(Player::BLOBS).GetIntMax()
+              << " - DIAMONDS: " << player->GetStat(Player::DIAMONDS).GetIntValue() << "/"
+              << player->GetStat(Player::DIAMONDS).GetIntMax()
+              << std::endl;
 
     // no more turn energy -> end turn
     const float minEnergy = 1.f;
