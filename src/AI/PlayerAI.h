@@ -74,7 +74,9 @@ private:
     bool IsSimilarActionInProgress(AIActionType type) const;
 
     int GetMaxDistanceForObject(const GameObject * obj) const;
-    int GetPiorityBonusDistance(const Unit * u, int dist, float bonus) const;
+    int GetUnitPiorityBonusDistance(const Unit * u, int dist, float bonus) const;
+    int GetUnitPiorityBonusEnergy(const Unit * u, float bonus) const;
+    int GetUnitPiorityBonusHealth(const Unit * u, float bonus) const;
 
     void PrintdActionDebug(const char * title, const ActionAI * a);
 

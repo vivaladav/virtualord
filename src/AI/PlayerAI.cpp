@@ -576,7 +576,7 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 
     unsigned int bestUnitInd = numUnits;
     int minDist = maxDist;
-    int priority = 100;
+    int priority = MAX_PRIORITY;
 
     for(unsigned int i = 0; i < numUnits; ++i)
     {
@@ -604,6 +604,18 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 
     // didn't find any
     if(bestUnitInd == numUnits)
+        return ;
+
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -5.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+
+    // decrease priority based on unit's health
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+
+    // can't find something that's worth an action
+    if(priority < mMinPriority)
         return ;
 
     auto action = new ActionAI;
@@ -651,33 +663,23 @@ void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on owned blobs
-    const int decBlobs = 25;
+    const int decBlobs = -25;
     const StatValue & blobs = mPlayer->GetStat(Player::BLOBS);
     const int maxBlobs = blobs.GetIntMax();
     const int numBlobs = blobs.GetIntValue();
-    priority -= decBlobs * (maxBlobs - numBlobs) / maxBlobs;
+    priority += decBlobs * (maxBlobs - numBlobs) / maxBlobs;
 
     // decrease priority based on unit's energy
-    const int decEnergy = 20;
-    const int maxEnergy = u->GetMaxEnergy();
-    priority -= decEnergy * (maxEnergy - u->GetEnergy()) / maxEnergy;
-
-    // decrease priority based on turn energy
-    const int turnEnergy = mPlayer->GetTurnEnergy();
-
-    if(turnEnergy < maxEnergy)
-    {
-        const int decTurnEnergy = 20;
-        priority -= decTurnEnergy * (maxEnergy - turnEnergy) / maxEnergy;
-    }
+    const float bonusEnergy = -30.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
-    const int healthDec = 10;
-    priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
 
     // bonus distance
-    const float bonusDist = -20.f;
-    priority += GetPiorityBonusDistance(u, minDist, bonusDist);
+    const float bonusDist = -25.f;
+    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -729,33 +731,23 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on owned diamonds
-    const int decDiamonds = 25;
+    const int decDiamonds = -25;
     const StatValue & diamonds = mPlayer->GetStat(Player::DIAMONDS);
     const int maxDiamonds = diamonds.GetIntMax();
     const int numDiamonds = diamonds.GetIntValue();
-    priority -= decDiamonds * (maxDiamonds - numDiamonds) / maxDiamonds;
+    priority += decDiamonds * (maxDiamonds - numDiamonds) / maxDiamonds;
 
     // decrease priority based on unit's energy
-    const int decEnergy = 20;
-    const int maxEnergy = u->GetMaxEnergy();
-    priority -= decEnergy * (maxEnergy - u->GetEnergy()) / maxEnergy;
-
-    // decrease priority based on turn energy
-    const int turnEnergy = mPlayer->GetTurnEnergy();
-
-    if(turnEnergy < maxEnergy)
-    {
-        const int decTurnEnergy = 20;
-        priority -= decTurnEnergy * (maxEnergy - turnEnergy) / maxEnergy;
-    }
+    const float bonusEnergy = -30.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
-    const int healthDec = 10;
-    priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
 
     // bonus distance
-    const float bonusDist = -20.f;
-    priority += GetPiorityBonusDistance(u, minDist, bonusDist);
+    const float bonusDist = -25.f;
+    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -808,26 +800,16 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on unit's energy
-    const int decEnergy = 25;
-    const int maxEnergy = u->GetMaxEnergy();
-    priority -= decEnergy * (maxEnergy - u->GetEnergy()) / maxEnergy;
-
-    // decrease priority based on turn energy
-    const int turnEnergy = mPlayer->GetTurnEnergy();
-
-    if(turnEnergy < maxEnergy)
-    {
-        const int decTurnEnergy = 25;
-        priority -= decTurnEnergy * (maxEnergy - turnEnergy) / maxEnergy;
-    }
+    const float bonusEnergy = -40.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
-    const int healthDec = 10;
-    priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
 
     // bonus distance
     const float bonusDist = -50.f;
-    priority += GetPiorityBonusDistance(u, minDist, bonusDist);
+    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -952,26 +934,16 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on unit's energy
-    const int decEnergy = 20;
-    const int maxEnergy = u->GetMaxEnergy();
-    priority -= decEnergy * (maxEnergy - u->GetEnergy()) / maxEnergy;
-
-    // decrease priority based on turn energy
-    const int turnEnergy = mPlayer->GetTurnEnergy();
-
-    if(turnEnergy < maxEnergy)
-    {
-        const int decTurnEnergy = 20;
-        priority -= decTurnEnergy * (maxEnergy - turnEnergy) / maxEnergy;
-    }
+    const float bonusEnergy = -30.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
-    const int healthDec = 10;
-    priority -= healthDec * (u->GetMaxHealth() - u->GetHealth()) / u->GetMaxHealth();
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
 
     // bonus distance
-    const int decDist = 90;
-    priority -= decDist * minDist / maxDist;
+    const float bonusDist = -40.f;
+    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -1159,7 +1131,7 @@ int PlayerAI::GetMaxDistanceForObject(const GameObject * obj) const
     return distR + distC;
 }
 
-int PlayerAI::GetPiorityBonusDistance(const Unit * u, int dist, float bonus) const
+int PlayerAI::GetUnitPiorityBonusDistance(const Unit * u, int dist, float bonus) const
 {
     const float energyStep = u->GetEnergyForActionStep(MOVE);
     const float energyTot = energyStep * dist;
@@ -1173,9 +1145,33 @@ int PlayerAI::GetPiorityBonusDistance(const Unit * u, int dist, float bonus) con
 
     // weights
     const float wRel = 0.7f;
-    const float wAbs = 0.3f;
+    const float wAbs = 1.f - wRel;
 
     return std::roundf(bonusRelDist * wRel + bonusAbsDist * wAbs);
+}
+
+int PlayerAI::GetUnitPiorityBonusEnergy(const Unit * u, float bonus) const
+{
+    const float energyUnit = u->GetEnergy();
+    const float energyUnitMax = u->GetMaxEnergy();
+    const float energyTurn = mPlayer->GetTurnEnergy();
+
+    // bonuses
+    const float bonusUnit = bonus * (energyUnitMax - energyUnit) / energyUnitMax;
+    const float bonusTurn = (energyTurn < energyUnitMax) ?
+                            bonus * (energyUnitMax - energyTurn) / energyUnitMax : 0.f;
+
+    // weights
+    const float wUnit = 0.5f;
+    const float wTurn = 1.f - wUnit;
+
+    return std::roundf(bonusUnit * wUnit + bonusTurn * wTurn);
+}
+
+int PlayerAI::GetUnitPiorityBonusHealth(const Unit * u, float bonus) const
+{
+    const float maxHealth = u->GetMaxHealth();
+    return std::roundf(bonus * (maxHealth - u->GetHealth()) / maxHealth);
 }
 
 void PlayerAI::PrintdActionDebug(const char * title, const ActionAI * a)
