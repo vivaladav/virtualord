@@ -1961,6 +1961,133 @@ bool GameMap::FindClosestCellConnectedToObject(const GameObject * obj, const Cel
     return true;
 }
 
+bool GameMap::FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, Cell2D & linked)
+{
+    const int maxDist = mRows * mCols;
+    int minDist = maxDist;
+
+    const Player * player = mGame->GetPlayerByFaction(faction);
+
+    const int r0 = start.row;
+    const int c0 = start.col;
+    const int maxRadiusR = start.row < (mRows / 2) ? (mRows - r0) : (r0 + 1);
+    const int maxRadiusC = start.col < (mCols / 2) ? (mCols - c0) : (c0 + 1);
+    const int maxRadius = maxRadiusR > maxRadiusC ? maxRadiusR : maxRadiusC;
+    int radius = 1;
+
+    linked.row = -1;
+    linked.col = -1;
+
+    while(radius < maxRadius)
+    {
+        const int tlR = (r0 - radius) >= 0 ? (r0 - radius) : 0;
+        const int tlC = (c0 - radius) >= 0 ? (c0 - radius) : 0;
+        const int brR = (r0 + radius) < (mRows - 1) ? r0 + radius : (mRows - 1);
+        const int brC = (c0 + radius) < (mCols - 1) ? c0 + radius : (mCols - 1);
+
+        // TOP
+        {
+            const int r = tlR;
+            const unsigned int ind0 = r * mCols;
+
+            for(int c = tlC; c <= brC; ++c)
+            {
+                const unsigned int ind = ind0 + c;
+                const GameMapCell & cell = mCells[ind];
+
+                if(cell.owner == player && cell.linked)
+                {
+                    const Cell2D dest(r, c);
+                    const int dist = ApproxDistance(start, dest);
+
+                    if(dist < minDist)
+                    {
+                        linked = dest;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+
+        // BOTTOM
+        {
+            const int r = brR;
+            const unsigned int ind0 = r * mCols;
+
+            for(int c = tlC; c <= brC; ++c)
+            {
+                const unsigned int ind = ind0 + c;
+                const GameMapCell & cell = mCells[ind];
+
+                if(cell.owner == player && cell.linked)
+                {
+                    const Cell2D dest(r, c);
+                    const int dist = ApproxDistance(start, dest);
+
+                    if(dist < minDist)
+                    {
+                        linked = dest;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+
+        // LEFT
+        {
+            const int c = tlC;
+
+            for(int r = tlR + 1; r < brR; ++r)
+            {
+                const unsigned int ind = r * mCols + c;
+                const GameMapCell & cell = mCells[ind];
+
+                if(cell.owner == player && cell.linked)
+                {
+                    const Cell2D dest(r, c);
+                    const int dist = ApproxDistance(start, dest);
+
+                    if(dist < minDist)
+                    {
+                        linked = dest;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+
+        // RIGHT
+        {
+            const int c = brC;
+
+            for(int r = tlR + 1; r < brR; ++r)
+            {
+                const unsigned int ind = r * mCols + c;
+                const GameMapCell & cell = mCells[ind];
+
+                if(cell.owner == player && cell.linked)
+                {
+                    const Cell2D dest(r, c);
+                    const int dist = ApproxDistance(start, dest);
+
+                    if(dist < minDist)
+                    {
+                        linked = dest;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+
+        if(linked.row != -1)
+            return true;
+
+        ++radius;
+    }
+
+    return false;
+}
+
 void GameMap::RestoreFactionEnergy(PlayerFaction faction)
 {
     // TODO keep a list of all faction objects in Player so this can be done there with no IFs

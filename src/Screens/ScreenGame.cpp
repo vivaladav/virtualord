@@ -1694,34 +1694,13 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
 bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool)> & onDone)
 {
     const int turnAI = mActivePlayerIdx - 1;
-    const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
 
-    // TODO optimize this with search spreading from start
     // find closest linked cell
-    const std::vector<GameMapCell> & cells = mGameMap->GetCells();
+    const PlayerFaction faction = unit->GetFaction();
+    const Cell2D start(unit->GetRow0(), unit->GetCol0());
+    Cell2D target;
 
-    const int maxDist = mGameMap->GetNumRows() + mGameMap->GetNumCols();
-    const Cell2D startCell(unit->GetRow0(), unit->GetCol0());
-    Cell2D targetCell(-1, -1);
-    int minDist = maxDist;
-
-    for(const GameMapCell & cell : cells)
-    {
-        if(cell.owner == player && cell.linked)
-        {
-            const Cell2D dest(cell.row, cell.col);
-            int dist = mGameMap->ApproxDistance(startCell, dest);
-
-            if(dist < minDist)
-            {
-                minDist = dist;
-                targetCell = dest;
-            }
-        }
-    }
-
-    // can't find a target
-    if(-1 == targetCell.row)
+    if(!mGameMap->FindClosestLinkedCell(faction, start, target))
     {
         std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (can't find target)" << std::endl;
@@ -1730,12 +1709,12 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
     }
 
     // if target cell has object try to find one next to it free
-    if(mGameMap->HasObject(targetCell.row, targetCell.col))
+    if(mGameMap->HasObject(target.row, target.col))
     {
-        targetCell = mGameMap->GetOrthoAdjacentMoveTarget(startCell, targetCell);
+        target = mGameMap->GetOrthoAdjacentMoveTarget(start, target);
 
         // can't find an adjacent cell that's free
-        if(-1 == targetCell.row)
+        if(-1 == target.row)
         {
             std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                       << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed)" << std::endl;
@@ -1744,8 +1723,8 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
         }
     }
 
-    const auto path = mPathfinder->MakePath(startCell.row, startCell.col,
-                                            targetCell.row, targetCell.col,
+    const auto path = mPathfinder->MakePath(start.row, start.col,
+                                            target.row, target.col,
                                             sgl::ai::Pathfinder::INCLUDE_START);
 
     // can't find a path from start to target
