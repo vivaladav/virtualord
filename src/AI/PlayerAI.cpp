@@ -663,11 +663,11 @@ void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on owned blobs
-    const int decBlobs = -25;
+    const int decBlobs = -30;
     const StatValue & blobs = mPlayer->GetStat(Player::BLOBS);
     const int maxBlobs = blobs.GetIntMax();
     const int numBlobs = blobs.GetIntValue();
-    priority += decBlobs * (maxBlobs - numBlobs) / maxBlobs;
+    priority += decBlobs * numBlobs / maxBlobs;
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -30.f;
@@ -731,11 +731,11 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on owned diamonds
-    const int decDiamonds = -25;
+    const int decDiamonds = -30;
     const StatValue & diamonds = mPlayer->GetStat(Player::DIAMONDS);
     const int maxDiamonds = diamonds.GetIntMax();
     const int numDiamonds = diamonds.GetIntValue();
-    priority += decDiamonds * (maxDiamonds - numDiamonds) / maxDiamonds;
+    priority += decDiamonds * numDiamonds / maxDiamonds;
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -30.f;
@@ -1099,14 +1099,13 @@ int PlayerAI::GetUnitPiorityBonusDistance(const Unit * u, int dist, float bonus)
     const float energyUnit = u->GetEnergy();
     const float maxDist = GetMaxDistanceForObject(u);
 
-    // bonuses
-    const float bonusRelDist = (energyUnit < energyTot) ?
-                               bonus * (energyTot - energyUnit) / energyTot : 0.f;
-    const float bonusAbsDist = bonus * dist / maxDist;
-
     // weights
     const float wRel = 0.7f;
     const float wAbs = 1.f - wRel;
+
+    // bonuses
+    const float bonusRelDist = bonus * energyTot / energyUnit;
+    const float bonusAbsDist = bonus * dist / maxDist;
 
     return std::roundf(bonusRelDist * wRel + bonusAbsDist * wAbs);
 }
