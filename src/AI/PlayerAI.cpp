@@ -630,6 +630,26 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 
 void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
 {
+    // DEFINE INITIAL PRIORITY
+    int priority = MAX_PRIORITY;
+
+    // decrease priority based on owned blobs
+    const float decBlobs = -30.f;
+    const StatValue & blobs = mPlayer->GetStat(Player::BLOBS);
+    priority += std::roundf(decBlobs * blobs.GetIntValue() / blobs.GetIntMax());
+
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -25.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+
+    // decrease priority based on unit's health
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+
+    // already below current priority threshold
+    if(priority < mMinPriority)
+        return ;
+
     // FIND BEST CANDIDATE
     const unsigned int numCollectables = mCollectables.size();
 
@@ -659,24 +679,6 @@ void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
     if(bestInd == numCollectables)
         return ;
 
-    // DEFINE PRIORITY
-    int priority = MAX_PRIORITY;
-
-    // decrease priority based on owned blobs
-    const int decBlobs = -30;
-    const StatValue & blobs = mPlayer->GetStat(Player::BLOBS);
-    const int maxBlobs = blobs.GetIntMax();
-    const int numBlobs = blobs.GetIntValue();
-    priority += decBlobs * numBlobs / maxBlobs;
-
-    // decrease priority based on unit's energy
-    const float bonusEnergy = -25.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
-
-    // decrease priority based on unit's health
-    const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
-
     // bonus distance
     const float bonusDist = -25.f;
     priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
@@ -698,6 +700,26 @@ void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
 
 void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
 {
+    // DEFINE INITIAL PRIORITY
+    int priority = MAX_PRIORITY;
+
+    // decrease priority based on owned diamonds
+    const float decDiamonds = -30.f;
+    const StatValue & diamonds = mPlayer->GetStat(Player::DIAMONDS);
+    priority += std::roundf(decDiamonds * diamonds.GetIntValue() / diamonds.GetIntMax());
+
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -25.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+
+    // decrease priority based on unit's health
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+
+    // already below current priority threshold
+    if(priority < mMinPriority)
+        return ;
+
     // FIND BEST CANDIDATE
     const unsigned int numCollectables = mCollectables.size();
 
@@ -727,24 +749,6 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
     if(bestInd == numCollectables)
         return ;
 
-    // DEFINE PRIORITY
-    int priority = MAX_PRIORITY;
-
-    // decrease priority based on owned diamonds
-    const int decDiamonds = -30;
-    const StatValue & diamonds = mPlayer->GetStat(Player::DIAMONDS);
-    const int maxDiamonds = diamonds.GetIntMax();
-    const int numDiamonds = diamonds.GetIntValue();
-    priority += decDiamonds * numDiamonds / maxDiamonds;
-
-    // decrease priority based on unit's energy
-    const float bonusEnergy = -25.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
-
-    // decrease priority based on unit's health
-    const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
-
     // bonus distance
     const float bonusDist = -25.f;
     priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
@@ -766,6 +770,21 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
 
 void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
 {
+    // DEFINE INITIAL PRIORITY
+    int priority = MAX_PRIORITY;
+
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -25.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+
+    // decrease priority based on unit's health
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+
+    // already below current priority threshold
+    if(priority < mMinPriority)
+        return ;
+
     // FIND BEST CANDIDATE
     const unsigned int numCollectables = mCollectables.size();
 
@@ -794,17 +813,6 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     if(bestInd == numCollectables)
         return ;
 
-    // DEFINE PRIORITY
-    int priority = MAX_PRIORITY;
-
-    // decrease priority based on unit's energy
-    const float bonusEnergy = -25.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
-
-    // decrease priority based on unit's health
-    const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
-
     // bonus distance
     const float bonusDist = -25.f;
     priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
@@ -826,6 +834,21 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
 
 void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 {
+    // DEFINE INITIAL PRIORITY
+    int priority = MAX_PRIORITY;
+
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -30.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+
+    // decrease priority based on unit's health
+    const float bonusHealth = -10.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+
+    // already below current priority threshold
+    if(priority < mMinPriority)
+        return ;
+
     // check if there's any structure to connect
     const unsigned int numStructures = mStructures.size();
 
@@ -919,16 +942,6 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
     // can't find any structure to connect
     if(bestStructInd == numStructures)
         return ;
-
-    int priority = MAX_PRIORITY;
-
-    // decrease priority based on unit's energy
-    const float bonusEnergy = -30.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
-
-    // decrease priority based on unit's health
-    const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
 
     // bonus distance
     const float bonusDist = -50.f;
@@ -1037,8 +1050,8 @@ void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
     priority += std::roundf(bonusOwned * ownedGenerators / totGenerators);
 
     // bonus unit conquest
-    const int bonusConquest = 10;
-    priority += bonusConquest * u->GetStat(OSTAT_CONQUEST) / ObjectFactionData::MAX_STAT_VAL;
+    const float bonusConquest = 10.f;
+    priority += std::roundf(bonusConquest * u->GetStat(OSTAT_CONQUEST) / ObjectFactionData::MAX_STAT_VAL);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
