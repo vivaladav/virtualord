@@ -211,7 +211,6 @@ private:
 
     int mActivePlayerIdx = 0;
 
-    float mTimerEnergy = 0.f;
     float mTimerAutoEndTurn = 0.f;
 
     float mTimePlayed = 0.f;

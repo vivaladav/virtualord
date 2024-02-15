@@ -70,7 +70,6 @@ ScreenGame::ScreenGame(Game * game)
     , mPartMan(new sgl::graphic::ParticlesManager)
     , mPathfinder(new sgl::ai::Pathfinder)
     , mCurrCell(-1, -1)
-    , mTimerEnergy(TIME_ENERGY_USE)
     , mTimerAutoEndTurn(TIME_AUTO_END_TURN)
     , mLocalPlayer(game->GetLocalPlayer())
 {
@@ -246,20 +245,6 @@ void ScreenGame::Update(float delta)
 
     // -- PARTICLES --
     mPartMan->Update(delta);
-
-    // -- UPDATE PLAYERS RESOURCES --
-    mTimerEnergy -= delta;
-
-    if(mTimerEnergy < 0.f)
-    {
-        for(int i = 0; i < game->GetNumPlayers(); ++i)
-        {
-            Player * p = game->GetPlayerByIndex(i);
-            p->UpdateResources();
-        }
-
-        mTimerEnergy = TIME_ENERGY_USE;
-    }
 
     // -- AUTO END TURN --
     const float minEn = 1.f;
@@ -2764,7 +2749,10 @@ void ScreenGame::EndTurn()
     // update active player data
     Player * p = game->GetPlayerByIndex(mActivePlayerIdx);
     const PlayerFaction activeFaction = p->GetFaction();
+
     p->ResetTurnEnergy();
+    p->UpdateResources();
+
     mGameMap->RestoreFactionEnergy(activeFaction);
 
     // new active player is local player
