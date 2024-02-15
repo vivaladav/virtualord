@@ -167,7 +167,7 @@ public:
     bool FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, Cell2D & linked);
 
     // turn system
-    void RestoreFactionEnergy(PlayerFaction faction);
+    void OnNewTurn(PlayerFaction faction);
 
     void Update(float delta);
 
@@ -213,6 +213,9 @@ private:
 
     void UpdateWalls(const Cell2D & center);
     void UpdateWall(const Cell2D & cell);
+
+    void RestoreFactionEnergy(PlayerFaction faction);
+    void TurnUpdateCollectableGenerators();
 
     const ObjectBasicData & GetObjectData(GameObjectTypeId t) const;
     const ObjectFactionData & GetFactionData(PlayerFaction f, GameObjectTypeId t) const;

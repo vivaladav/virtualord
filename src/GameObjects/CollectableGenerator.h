@@ -8,31 +8,29 @@ class GameMap;
 class CollectableGenerator
 {
 public:
-    CollectableGenerator(GameMap * gm, int timeMin, int timeMax);
+    CollectableGenerator(GameMap * gm, int turnsMin, int turnsMax);
     virtual ~CollectableGenerator();
 
     void SetCell(int row, int col);
     int GetRow() const;
     int GetCol() const;
 
-    void ResetTimer();
-
+    void TurnUpdate();
     void Update(float delta);
 
 protected:
     GameMap * GetGameMap() const;
 
 private:
+    void ResetCounter(int min, int max);
+
     virtual void OnGeneration() = 0;
 
 private:
     GameMap * mGameMap = nullptr;
 
-    int mTimeMin = 0;
-    int mTimeMax = 0;
-
-    float mTimeRegen = 0.f;
-    float mTimerRegen = 0.f;
+    int mRegenTurns = 0;
+    int mCounterRegen = 0;
 
     int mRow = -1;
     int mCol = -1;

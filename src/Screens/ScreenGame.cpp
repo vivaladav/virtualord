@@ -2753,7 +2753,7 @@ void ScreenGame::EndTurn()
     p->ResetTurnEnergy();
     p->UpdateResources();
 
-    mGameMap->RestoreFactionEnergy(activeFaction);
+    mGameMap->OnNewTurn(activeFaction);
 
     // new active player is local player
     if(IsCurrentTurnLocal())
@@ -2762,7 +2762,6 @@ void ScreenGame::EndTurn()
     else
         mHUD->ShowTurnControlText();
 }
-
 
 void ScreenGame::PlayLocalActionErrorSFX(const Player * player)
 {
