@@ -1495,7 +1495,15 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
 {
     // check if conquest is possible
     if(!mGameMap->CanConquerStructure(unit, end, player))
+    {
+        if(player->IsLocal())
+        {
+            auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+            player->PlaySound("game/error_action_01.ogg");
+        }
+
         return false;
+    }
 
     const GameMapCell & gameCell = mGameMap->GetCell(end.row, end.col);
     GameObject * target = gameCell.objTop;

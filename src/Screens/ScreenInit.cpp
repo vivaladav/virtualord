@@ -27,6 +27,7 @@ const char * packageMusicGame = "data/music/game.bin";
 const char * packageMusicMenus = "data/music/menus.bin";
 const char * packageMusicTest = "data/music/test.bin";
 
+const char * packageSoundsGame = "data/sfx/game.bin";
 const char * packageSoundsTest = "data/sfx/test.bin";
 const char * packageSoundsUI = "data/sfx/UI/UI.bin";
 }
@@ -167,6 +168,12 @@ void ScreenInit::SetupLoadPackages()
         am->RegisterDataPackage(packageMusicTest);
     });
 
+    // LOAD SFX GAME PACKAGE
+    mJobs.emplace_back([am]
+    {
+        am->RegisterDataPackage(packageSoundsGame);
+    });
+
     // LOAD SFX UI PACKAGE
     mJobs.emplace_back([am]
     {
@@ -222,6 +229,18 @@ void ScreenInit::SetupSFX()
 {
     auto am = sgl::media::AudioManager::Instance();
 
+    // GAME SFX
+    mJobs.emplace_back([this, am]
+    {
+        am->CreateSound(packageSoundsGame, "game/error_action_01.ogg");
+    });
+
+    // TEST SFX
+    mJobs.emplace_back([this, am]
+    {
+        am->CreateSound(packageSoundsTest, "test/test.ogg");
+    });
+
     // UI SFX
     mJobs.emplace_back([this, am]
     {
@@ -241,12 +260,6 @@ void ScreenInit::SetupSFX()
         am->CreateSound(packageSoundsUI, "UI/dialog_close-02.ogg");
         am->CreateSound(packageSoundsUI, "UI/dialog_open-01.ogg");
         am->CreateSound(packageSoundsUI, "UI/dialog_open-02.ogg");
-    });
-
-    // TEST SFX
-    mJobs.emplace_back([this, am]
-    {
-        am->CreateSound(packageSoundsTest, "test/test.ogg");
     });
 }
 
