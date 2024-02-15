@@ -164,6 +164,9 @@ private:
 
     void EndTurn();
 
+    // SFX
+    void PlayLocalActionErrorSFX(const Player * player);
+
 private:
     friend class GameHUD;
 

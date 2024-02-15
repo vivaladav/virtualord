@@ -1496,12 +1496,7 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     // check if conquest is possible
     if(!mGameMap->CanConquerStructure(unit, end, player))
     {
-        if(player->IsLocal())
-        {
-            auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-            player->PlaySound("game/error_action_01.ogg");
-        }
-
+        PlayLocalActionErrorSFX(player);
         return false;
     }
 
@@ -1574,7 +1569,10 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
 
     // check if building is possible
     if(!mGameMap->CanBuildStructure(unit, cellTarget, player, st))
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
 
     mGameMap->StartBuildStructure(cellTarget, player, st);
 
@@ -1630,7 +1628,10 @@ bool ScreenGame::SetupUnitAttack(Unit * unit, GameObject * target, Player * play
     const bool res = unit->SetTargetAttack(target);
 
     if(!res)
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
 
     unit->SetActiveAction(GameObjectActionType::IDLE);
     unit->SetCurrentAction(GameObjectActionType::ATTACK);
@@ -1650,7 +1651,10 @@ bool ScreenGame::SetupUnitHeal(Unit * unit, GameObject * target, Player * player
     const bool res = unit->SetTargetHealing(target);
 
     if(!res)
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
 
     unit->SetActiveAction(GameObjectActionType::IDLE);
     unit->SetCurrentAction(GameObjectActionType::HEAL);
@@ -1670,9 +1674,14 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
     const auto path = mPathfinder->MakePath(start.row, start.col, end.row, end.col,
                                             sgl::ai::Pathfinder::ALL_OPTIONS);
 
+    const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
+
     // empty path -> exit
     if(path.empty())
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
 
     auto op = new ObjectPath(unit, mIsoMap, mGameMap, this);
     op->SetPathCells(path);
@@ -1696,7 +1705,10 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
         return true;
     }
     else
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
 }
 
 bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool)> & onDone)
@@ -1705,6 +1717,7 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
 
     // find closest linked cell
     const PlayerFaction faction = unit->GetFaction();
+    const Player * player = GetGame()->GetPlayerByFaction(faction);
     const Cell2D start(unit->GetRow0(), unit->GetCol0());
     Cell2D target;
 
@@ -1713,6 +1726,7 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
         std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (can't find target)" << std::endl;
 
+        PlayLocalActionErrorSFX(player);
         return false;
     }
 
@@ -1727,6 +1741,7 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
             std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                       << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed)" << std::endl;
 
+            PlayLocalActionErrorSFX(player);
             return false;
         }
     }
@@ -1741,6 +1756,7 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
         std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (no path)" << std::endl;
 
+        PlayLocalActionErrorSFX(player);
         return false;
     }
 
@@ -1759,6 +1775,8 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
     {
         std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (ConquerCells failed)" << std::endl;
+
+        PlayLocalActionErrorSFX(player);
         return false;
     }
 }
@@ -1906,10 +1924,15 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
     const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
     const bool diffClick = unitCell != clickCell;
 
+    const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
+
     // not clicking on unit cell, destination is visible and walkable
     if(!diffClick || !mLocalPlayer->IsCellVisible(clickInd) ||
        !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    {
+        PlayLocalActionErrorSFX(player);
         return ;
+    }
 
     // default is starting pathfinding from unit position
     sgl::ai::Pathfinder::PathOptions po = sgl::ai::Pathfinder::INCLUDE_START;
@@ -1950,6 +1973,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
                 if(pathMov.empty())
                 {
                     onFail();
+                    PlayLocalActionErrorSFX(player);
                     return ;
                 }
 
@@ -1962,6 +1986,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
                 if(!res)
                 {
                     onFail();
+                    PlayLocalActionErrorSFX(player);
                     return;
                 }
 
@@ -1976,7 +2001,10 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
             }
             // only 1 block of wall -> no movement, start building
             else
-                StartUnitBuildWall(unit);
+            {
+                if(!StartUnitBuildWall(unit))
+                    PlayLocalActionErrorSFX(player);
+            }
 
             return ;
         }
@@ -1995,7 +2023,10 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 
     // empty path -> nothing to do
     if(path.empty())
+    {
+        PlayLocalActionErrorSFX(player);
         return ;
+    }
 
     mWallPath.reserve(mWallPath.size() + path.size());
     mWallPath.insert(mWallPath.end(), path.begin(), path.end());
@@ -2086,6 +2117,7 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
             SetupUnitHeal(selUnit, clickObj, mLocalPlayer);
         else if(action == GameObjectActionType::CONQUER_CELL)
         {
+            const Player * player = GetGame()->GetPlayerByFaction(selUnit->GetFaction());
             const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
 
             // destination is visible and walkable or conquering unit cell
@@ -2122,6 +2154,8 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
                             selUnit->SetActiveAction(GameObjectActionType::IDLE);
                             selUnit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
                         }
+                        else
+                            PlayLocalActionErrorSFX(player);
 
                         return ;
                     }
@@ -2141,7 +2175,10 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
 
                 // empty path -> nothing to do
                 if(path.empty())
+                {
+                    PlayLocalActionErrorSFX(player);
                     return ;
+                }
 
                 mConquestPath.reserve(mConquestPath.size() + path.size());
                 mConquestPath.insert(mConquestPath.end(), path.begin(), path.end());
@@ -2737,5 +2774,16 @@ void ScreenGame::EndTurn()
     else
         mHUD->ShowTurnControlText();
 }
+
+
+void ScreenGame::PlayLocalActionErrorSFX(const Player * player)
+{
+    if(player->IsLocal())
+    {
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("game/error_action_01.ogg");
+    }
+}
+
 
 } // namespace game
