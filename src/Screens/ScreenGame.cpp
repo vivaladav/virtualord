@@ -400,6 +400,17 @@ void ScreenGame::SetPause(bool paused)
     mPaused = paused;
 
     mHUD->SetEnabled(!paused);
+
+    // handle turn control panel text
+    if(paused)
+        mHUD->ShowTurnControlTextGamePaused();
+    else
+    {
+        if(IsCurrentTurnLocal())
+            mHUD->ShowTurnControlPanel();
+        else
+            mHUD->ShowTurnControlTextEnemyTurn();
+    }
 }
 
 void ScreenGame::OnApplicationQuit(sgl::core::ApplicationEvent & event)
@@ -2760,7 +2771,7 @@ void ScreenGame::EndTurn()
         mHUD->ShowTurnControlPanel();
     // new active player is AI
     else
-        mHUD->ShowTurnControlText();
+        mHUD->ShowTurnControlTextEnemyTurn();
 }
 
 void ScreenGame::PlayLocalActionErrorSFX(const Player * player)
@@ -2771,6 +2782,5 @@ void ScreenGame::PlayLocalActionErrorSFX(const Player * player)
         player->PlaySound("game/error_action_01.ogg");
     }
 }
-
 
 } // namespace game

@@ -62,7 +62,8 @@ public:
     void ShowPanelSelectedObject(GameObject * obj);
 
     void ShowTurnControlPanel();
-    void ShowTurnControlText();
+    void ShowTurnControlTextEnemyTurn();
+    void ShowTurnControlTextGamePaused();
 
     void SetLocalActionsEnabled(bool enabled);
 

@@ -116,9 +116,9 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     const unsigned int colorText = 0x76a7bcff;
     graphic::Font * font = fm->GetFont(fontFile, fontSize, graphic::Font::NORMAL);
 
-    mTextEnemyTurn = new sgui::Label("ENEMY TURN", font, this);
-    mTextEnemyTurn->SetColor(colorText);
-    mTextEnemyTurn->SetVisible(false);
+    mText = new sgui::Label(font, this);
+    mText->SetColor(colorText);
+    mText->SetVisible(false);
 
     // CALLBACK ENERGY
     player->SetOnTurnEnergyChanged([this]
@@ -159,10 +159,6 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     x += mDigits->GetWidth() + marginDigits;
     y = (h - mButtonEndTurn->GetHeight()) / 2;
     mButtonEndTurn->SetPosition(x, y);
-
-    x = (w - mTextEnemyTurn->GetWidth()) / 2;
-    y = (h - mTextEnemyTurn->GetHeight()) / 2;
-    mTextEnemyTurn->SetPosition(x, y);
 }
 
 PanelTurnControl::~PanelTurnControl()
@@ -188,17 +184,20 @@ void PanelTurnControl::ShowPanel()
     mDigits->SetVisible(true);
     mButtonEndTurn->SetVisible(true);
 
-    mTextEnemyTurn->SetVisible(false);
+    mText->SetVisible(false);
 }
 
-void PanelTurnControl::ShowText()
+void PanelTurnControl::ShowText(const char * text)
 {
     mIconEnergy->SetVisible(false);
     mEnergyBar->SetVisible(false);
     mDigits->SetVisible(false);
     mButtonEndTurn->SetVisible(false);
 
-    mTextEnemyTurn->SetVisible(true);
+    mText->SetVisible(true);
+    mText->SetText(text);
+
+    PositionText();
 }
 
 void PanelTurnControl::HandlePositionChanged()
@@ -207,6 +206,16 @@ void PanelTurnControl::HandlePositionChanged()
     const int y0 = GetScreenY();
 
     mBg->SetPosition(x0, y0);
+}
+
+void PanelTurnControl::PositionText()
+{
+    const int w = mBg->GetWidth();
+    const int h = mBg->GetHeight();
+    const int x = (w - mText->GetWidth()) / 2;
+    const int y = (h - mText->GetHeight()) / 2;
+
+    mText->SetPosition(x, y);
 }
 
 } // namespace game

@@ -34,10 +34,12 @@ public:
     void SetButtonEndTurnEnabled(bool enabled);
 
     void ShowPanel();
-    void ShowText();
+    void ShowText(const char * text);
 
 private:
     void HandlePositionChanged() override;
+
+    void PositionText();
 
 private:
     sgl::graphic::Image * mBg = nullptr;
@@ -47,7 +49,7 @@ private:
     DigitsDisplay * mDigits = nullptr;
     sgl::sgui::ImageButton * mButtonEndTurn = nullptr;
 
-    sgl::sgui::Label * mTextEnemyTurn = nullptr;
+    sgl::sgui::Label * mText = nullptr;
 
     Player * mPlayer = nullptr;
 };

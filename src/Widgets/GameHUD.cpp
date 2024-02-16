@@ -440,9 +440,14 @@ void GameHUD::ShowTurnControlPanel()
     mPanelTurnCtrl->ShowPanel();
 }
 
-void GameHUD::ShowTurnControlText()
+void GameHUD::ShowTurnControlTextEnemyTurn()
 {
-    mPanelTurnCtrl->ShowText();
+    mPanelTurnCtrl->ShowText("ENEMY TURN");
+}
+
+void GameHUD::ShowTurnControlTextGamePaused()
+{
+    mPanelTurnCtrl->ShowText("- GAME PAUSED -");
 }
 
 void GameHUD::SetLocalActionsEnabled(bool enabled)
