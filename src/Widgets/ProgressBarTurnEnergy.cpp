@@ -1,6 +1,5 @@
 #include "ProgressBarTurnEnergy.h"
 
-#include "GameConstants.h"
 #include "Widgets/GameUIData.h"
 
 #include <sgl/graphic/Image.h>
@@ -9,7 +8,7 @@
 namespace game
 {
 
-ProgressBarTurnEnergy::ProgressBarTurnEnergy(PlayerFaction faction, float min, float max, sgl::sgui::Widget * parent)
+ProgressBarTurnEnergy::ProgressBarTurnEnergy(float min, float max, sgl::sgui::Widget * parent)
     : sgl::sgui::ProgressBar(min, max, parent)
 {
     using namespace sgl::graphic;
@@ -24,17 +23,17 @@ ProgressBarTurnEnergy::ProgressBarTurnEnergy(PlayerFaction faction, float min, f
     SetSize(mBg->GetWidth(), mBg->GetHeight());
 
     // bar
-    const unsigned int colorBar[NUM_FACTIONS] =
-    {
-        0xcc6f66ff,
-        0x66cc6eff,
-        0x66aaccff
-    };
+    const unsigned int colorBar = 0xf5e1a3ff;
 
     tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURN_CONTROL_PB_BAR);
     mBar = new Image(tex);
-    mBar->SetColor(colorBar[faction]);
+    mBar->SetColor(colorBar);
     RegisterRenderable(mBar);
+
+    // marks overlay
+    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURN_CONTROL_PB_MARKS);
+    mMarks = new Image(tex);
+    RegisterRenderable(mMarks);
 
     mBarW = mBar->GetWidth();
     mBarH = mBar->GetHeight();
@@ -48,6 +47,7 @@ void ProgressBarTurnEnergy::HandlePositionChanged()
 
     mBg->SetPosition(x, y);
     mBar->SetPosition(x + border, y + border);
+    mMarks->SetPosition(x, y);
 }
 
 void ProgressBarTurnEnergy::HandleProgressUpdate()

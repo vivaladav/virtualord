@@ -568,6 +568,7 @@ void ScreenInit::SetupTextures()
             // PROGRESS BAR
             { 0, 61, 404, 16 },
             { 0, 78, 400, 12 },
+            { 0, 91, 400, 16 },
             // BUTTON
             { 405, 61, 60, 40 },
             { 466, 61, 60, 40 },
@@ -575,8 +576,6 @@ void ScreenInit::SetupTextures()
             { 588, 61, 60, 40 },
             // ICONS
             { 649, 61, 32, 32 },
-            { 682, 61, 32, 32 },
-            { 715, 61, 32, 32 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelTurnControl, rects);

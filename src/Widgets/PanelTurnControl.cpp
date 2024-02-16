@@ -70,7 +70,6 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
 {
     using namespace sgl;
 
-    const PlayerFaction faction = player->GetFaction();
     const float minEnergy = 0.f;
     const float maxEnergy = player->GetTurnMaxEnergy();
     const float energy = player->GetTurnEnergy();
@@ -89,12 +88,11 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     SetSize(w, h);
 
     // ICON ENERGY
-    const unsigned int iconId = ID_TURN_CONTROL_ICON_F1 + faction;
-    tex = tm->GetSprite(SpriteFilePanelTurnControl, iconId);
+    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURN_CONTROL_ICON);
     mIconEnergy = new sgui::Image(tex, this);
 
     // PROGRESS BAR ENERGY
-    mEnergyBar = new ProgressBarTurnEnergy(faction, minEnergy, maxEnergy, this);
+    mEnergyBar = new ProgressBarTurnEnergy(minEnergy, maxEnergy, this);
     mEnergyBar->SetValue(energy);
 
     // DIGITS DISPLAY

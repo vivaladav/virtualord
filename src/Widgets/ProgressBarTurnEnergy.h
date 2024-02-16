@@ -12,7 +12,7 @@ enum PlayerFaction : unsigned int;
 class ProgressBarTurnEnergy : public sgl::sgui::ProgressBar
 {
 public:
-    ProgressBarTurnEnergy(PlayerFaction faction, float min, float max, sgl::sgui::Widget * parent);
+    ProgressBarTurnEnergy(float min, float max, sgl::sgui::Widget * parent);
 
 private:
     void HandlePositionChanged() override;
@@ -22,6 +22,7 @@ private:
 private:
     sgl::graphic::Image * mBg = nullptr;
     sgl::graphic::Image * mBar = nullptr;
+    sgl::graphic::Image * mMarks = nullptr;
 
     int mBarW;
     int mBarH;
