@@ -31,7 +31,6 @@ const char * ObjectFactionData::STR_STAT[NUM_TOT_OBJ_STATS] =
 {
     "ENERGY",
     "VIEW RADIUS",
-    "FIRE RATE",
     "FIRE POWER",
     "FIRE ACCURACY",
     "FIRE RANGE",
