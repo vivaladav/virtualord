@@ -264,6 +264,8 @@ add_executable(
     src/Widgets/PanelTurnControl.cpp
     src/Widgets/PlanetMap.h
     src/Widgets/PlanetMap.cpp
+    src/Widgets/ProgressBarObjectVisualStat.h
+    src/Widgets/ProgressBarObjectVisualStat.cpp
     src/Widgets/ProgressBarResources.h
     src/Widgets/ProgressBarResources.cpp
     src/Widgets/ProgressBarTurnEnergy.h
