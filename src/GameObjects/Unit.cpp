@@ -81,7 +81,8 @@ bool Unit::IsTargetAttackInRange(GameObject * obj) const
 
 bool Unit::SetTargetAttack(GameObject * obj)
 {
-    if(nullptr == obj || !IsTargetAttackInRange(obj) || !obj->IsVisible() || obj == this)
+    if(nullptr == obj || !IsTargetAttackInRange(obj) || !obj->IsVisible()
+        || !HasEnergyForActionStep(ATTACK) || obj == this)
        return false;
 
     mTargetAttack = obj;
@@ -175,7 +176,7 @@ void Unit::UpdateAttack(float delta)
     // target still alive -> try to shoot
     if(GetGameMap()->HasObject(mTargetAttack))
     {
-        if(IsTargetAttackInRange(mTargetAttack))
+        if(IsTargetAttackInRange(mTargetAttack) && HasEnergyForActionStep(ATTACK))
             Shoot();
         else
         {
