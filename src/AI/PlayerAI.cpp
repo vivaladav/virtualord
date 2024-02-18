@@ -638,7 +638,7 @@ void PlayerAI::AddActionUnitAttackTrees(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on unit's energy
-    const float bonusEnergy = -35.f;
+    const float bonusEnergy = -40.f;
     priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
@@ -687,7 +687,7 @@ void PlayerAI::AddActionUnitAttackTrees(Unit * u)
     // bonus distance from unit
     const bool inRange = u->IsTargetAttackInRange(mTrees[bestInd]);
 
-    const float bonusDistUnit = inRange ? -5.f : -15.f;
+    const float bonusDistUnit = inRange ? -10.f : -20.f;
     priority += GetUnitPiorityBonusDistance(u, minDist, bonusDistUnit);
 
     // can't find something that's worth an action

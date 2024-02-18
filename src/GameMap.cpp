@@ -36,6 +36,7 @@
 #include "Widgets/MiniMap.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
 namespace game
@@ -1819,6 +1820,140 @@ Cell2D GameMap::GetOrthoAdjacentMoveTarget(const Cell2D & start, const Cell2D & 
     }
 
     return GetClosestCell(start, walkalbes);
+}
+
+bool GameMap::FindAttackPosition(const Unit * u, const GameObject * target, Cell2D & pos)
+{
+    const int dist = ceilf(u->GetRangeAttack() * 0.5f);
+
+    if(FindAttackPosition(u, target, dist, pos))
+        return true;
+
+    // fallback
+    return FindAttackPosition(u, target, dist + 1, pos);
+}
+
+bool GameMap::FindAttackPosition(const Unit * u, const GameObject * target, int dist, Cell2D & pos)
+{
+    const int unitR0 = u->GetRow0();
+    const int unitC0 = u->GetCol0();
+    const Cell2D unitCell(unitR0, unitC0);
+    const int targetR0 = target->GetRow0();
+    const int targetC0 = target->GetCol0();
+
+    // FIND CLOSEST VERTEX OF TARGET
+    int targetR = targetR0;
+    int targetC = targetC0;
+
+    if(target->GetRows() > 1 || target->GetCols() > 1)
+    {
+        const int targetR1 = target->GetRow1();
+        const int targetC1 = target->GetCol1();
+
+        const int VERTS = 4;
+        const Cell2D targetV[VERTS] =
+        {
+            {targetR0, targetC0},
+            {targetR0, targetC1},
+            {targetR1, targetC0},
+            {targetR1, targetC1}
+        };
+
+        int bestInd = 0;
+        int minDist = mRows + mCols;
+
+        for(int i = 0; i < VERTS; ++i)
+        {
+            const int distV = ApproxDistance(unitCell, targetV[i]);
+
+            if(distV < minDist)
+            {
+                bestInd = i;
+                minDist = distV;
+            }
+        }
+
+        targetR = targetV[bestInd].row;
+        targetC = targetV[bestInd].col;
+    }
+
+    // FIND ATTACK POSITION
+    const int tlR = (targetR - dist) >= 0 ? (targetR - dist) : 0;
+    const int tlC = (targetC - dist) >= 0 ? (targetC - dist) : 0;
+    const int brR = (targetR + dist) < (mRows - 1) ? targetR + dist : (mRows - 1);
+    const int brC = (targetC + dist) < (mCols - 1) ? targetC + dist : (mCols - 1);
+
+    int minDist = mRows + mCols;
+
+    // TOP
+    {
+        const int r = tlR;
+
+        for(int c = tlC; c <= brC; ++c)
+        {
+            const Cell2D dest(r, c);
+            const int dist = ApproxDistance(unitCell, dest);
+
+            if(dist < minDist)
+            {
+                pos = dest;
+                minDist = dist;
+            }
+        }
+    }
+
+    // BOTTOM
+    {
+        const int r = brR;
+
+        for(int c = tlC; c <= brC; ++c)
+        {
+            const Cell2D dest(r, c);
+            const int dist = ApproxDistance(unitCell, dest);
+
+            if(dist < minDist)
+            {
+                pos = dest;
+                minDist = dist;
+            }
+        }
+    }
+
+    // LEFT
+    {
+        const int c = tlC;
+
+        for(int r = tlR + 1; r < brR; ++r)
+        {
+            const Cell2D dest(r, c);
+            const int dist = ApproxDistance(unitCell, dest);
+
+            if(dist < minDist)
+            {
+                pos = dest;
+                minDist = dist;
+            }
+        }
+    }
+
+    // RIGHT
+    {
+        const int c = brC;
+
+        for(int r = tlR + 1; r < brR; ++r)
+        {
+            const Cell2D dest(r, c);
+            const int dist = ApproxDistance(unitCell, dest);
+
+            if(dist < minDist)
+            {
+                pos = dest;
+                minDist = dist;
+            }
+        }
+    }
+
+    return (pos.row != -1);
 }
 
 bool GameMap::MoveObjectDown(GameObject * obj)

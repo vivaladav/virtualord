@@ -1115,13 +1115,47 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
             case AIA_UNIT_ATTACK_TREES:
             {
-                auto unit = static_cast<Unit *>(action->ObjSrc);
+                const auto unit = static_cast<Unit *>(action->ObjSrc);
+                GameObject * target = action->ObjDst;
 
-                if(unit->IsTargetAttackInRange(action->ObjDst))
-                    done = SetupUnitAttack(unit, action->ObjDst, player, basicOnDone);
+                if(unit->IsTargetAttackInRange(target))
+                    done = SetupUnitAttack(unit, target, player, basicOnDone);
                 else
-                    // TODO
-                    done = false;
+                {
+                    const Cell2D start(unit->GetRow0(), unit->GetCol0());
+                    Cell2D dest;
+
+                    if(mGameMap->FindAttackPosition(unit, action->ObjDst, dest))
+                    {
+                        done = SetupUnitMove(unit, start, dest,
+                            [this, unit, target, player, basicOnDone](bool successful)
+                            {
+                                if(successful)
+                                {
+                                    const bool res = SetupUnitAttack(unit, target, player, basicOnDone);
+
+                                    std::cout << "ScreenGame::ExecuteAIAction - ATTACK TREES "
+                                                 "AFTER MOVE - SetupUnitMove - res: " << res << std::endl;
+
+                                    if(!res)
+                                        basicOnDone(false);
+                                }
+                                else
+                                {
+                                    std::cout << "ScreenGame::ExecuteAIAction - ATTACK TREES "
+                                                 "AFTER MOVE - MOVE FAILED" << std::endl;
+
+                                    basicOnDone(false);
+                                }
+                            });
+                    }
+                    else
+                    {
+                        std::cout << "ScreenGame::ExecuteAIAction - ATTACK TREES "
+                                     "FindAttackPosition FAILED" << std::endl;
+                        done = false;
+                    }
+                }
 
                 PrintAction(turnAI, action, done, player);
             }

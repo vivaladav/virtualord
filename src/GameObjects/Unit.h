@@ -21,7 +21,7 @@ public:
     // attack
     int GetRangeAttack() const;
     void ClearTargetAttack();
-    bool IsTargetAttackInRange(GameObject * obj) const;
+    bool IsTargetAttackInRange(const GameObject * obj) const;
     bool SetTargetAttack(GameObject * obj);
 
     // heal

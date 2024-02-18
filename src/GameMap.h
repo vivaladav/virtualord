@@ -44,8 +44,8 @@ public:
 
     bool HasObject(unsigned int ind) const;
     bool HasObject(unsigned int r, unsigned int c) const;
-    bool HasObject(GameObject * obj) const;
-    bool IsObjectVisibleToLocalPlayer(const GameObject *obj) const;
+    bool HasObject(const GameObject * obj) const;
+    bool IsObjectVisibleToLocalPlayer(const GameObject * obj) const;
 
     const std::vector<GameMapCell> & GetCells() const;
     const std::vector<GameObject *> & GetObjects() const;
@@ -151,6 +151,8 @@ public:
     Cell2D GetOrthoAdjacentMoveTarget(const Cell2D & start, const GameObject * target) const;
     Cell2D GetOrthoAdjacentMoveTarget(const Cell2D & start, const Cell2D & target) const;
     Cell2D GetOrthoAdjacentMoveTarget(const Cell2D & start, const Cell2D & targetTL, const Cell2D & targetBR) const;
+    bool FindAttackPosition(const Unit * u, const GameObject * target, Cell2D & pos);
+    bool FindAttackPosition(const Unit * u, const GameObject * target, int dist, Cell2D & pos);
 
     const GameMapCell & GetCell(unsigned int r, unsigned int c) const;
     const GameMapCell & GetCell(unsigned int ind) const;
@@ -240,7 +242,7 @@ private:
     std::vector<GameMapCell> mCells;
     std::vector<GameObject *> mObjects;
     std::vector<ObjectToAdd> mObjectsToAdd;
-    std::unordered_set<GameObject *> mObjectsSet;
+    std::unordered_set<const GameObject *> mObjectsSet;
     std::vector<CollectableGenerator *> mCollGen;
     std::vector<ObjectPath *> mPaths;
     std::vector<ConquerPath *> mConquerPaths;
@@ -277,7 +279,7 @@ inline bool GameMap::HasObject(unsigned int r, unsigned int c) const
     return ind < mCells.size() && mCells[ind].objTop != nullptr;
 }
 
-inline bool GameMap::HasObject(GameObject * obj) const
+inline bool GameMap::HasObject(const GameObject * obj) const
 {
     return mObjectsSet.find(obj) != mObjectsSet.end();
 }

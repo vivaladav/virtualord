@@ -65,7 +65,7 @@ void Unit::IncreaseUnitLevel()
     SetImage();
 }
 
-bool Unit::IsTargetAttackInRange(GameObject * obj) const
+bool Unit::IsTargetAttackInRange(const GameObject * obj) const
 {
     for(int r = obj->GetRow1(); r <= obj->GetRow0(); ++r)
     {
