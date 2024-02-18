@@ -53,6 +53,7 @@ void PlayerAI::PrepareData()
     mCollectables.clear();
     mResGenerators.clear();
     mStructures.clear();
+    mTrees.clear();
     mUnits.clear();
 
     // collect data
@@ -75,6 +76,8 @@ void PlayerAI::PrepareData()
             mUnits.push_back(obj);
         else if(obj->CanBeCollected())
             mCollectables.push_back(obj);
+        else if(obj->GetObjectType() == GameObject::TYPE_TREES)
+            mTrees.push_back(obj);
     }
 }
 
@@ -545,6 +548,7 @@ void PlayerAI::AddActionsUnit(Unit * u)
 {
     // ATTACK ENEMY
     AddActionUnitAttackEnemyUnit(u);
+    AddActionUnitAttackTrees(u);
 
     // CONNECT STRUCTURES
     AddActionUnitConnectStructure(u);
@@ -622,6 +626,78 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     action->type = AIA_UNIT_ATTACK_ENEMY_UNIT;
     action->ObjSrc = u;
     action->ObjDst = mUnits[bestUnitInd];
+    action->priority = priority;
+
+    // push action to the queue
+    AddNewAction(action);
+}
+
+void PlayerAI::AddActionUnitAttackTrees(Unit * u)
+{
+    // DEFINE INITIAL PRIORITY
+    int priority = MAX_PRIORITY;
+
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -35.f;
+    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+
+    // decrease priority based on unit's health
+    const float bonusHealth = -5.f;
+    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+
+    // already below current priority threshold
+    if(priority < mMinPriority)
+        return ;
+
+    // FIND TREE
+    if(mTrees.empty())
+        return ;
+
+    const unsigned int numTrees = mTrees.size();
+    const int maxDist = mGm->GetNumRows() * mGm->GetNumCols();
+    const GameObject * base = mPlayer->GetBase();
+
+    if(nullptr == base)
+        return ;
+
+    int minDist = maxDist;
+    unsigned int bestInd = numTrees;
+
+    for(unsigned int ind = 0; ind < numTrees; ++ind)
+    {
+        const GameObject * tree = mTrees[ind];
+
+        int dist = mGm->ApproxDistance(base, tree);
+
+        if(dist < minDist)
+        {
+            minDist = dist;
+            bestInd = ind;
+        }
+    }
+
+    // couldn't find any
+    if(numTrees == bestInd)
+        return ;
+
+    // consider distance from base for priority
+    const float bonusDistBase = -1.f;
+    priority += std::roundf(bonusDistBase * minDist);
+
+    // bonus distance from unit
+    const bool inRange = u->IsTargetAttackInRange(mTrees[bestInd]);
+
+    const float bonusDistUnit = inRange ? -5.f : -15.f;
+    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDistUnit);
+
+    // can't find something that's worth an action
+    if(priority < mMinPriority)
+        return ;
+
+    auto action = new ActionAI;
+    action->type = AIA_UNIT_ATTACK_TREES;
+    action->ObjSrc = u;
+    action->ObjDst = mTrees[bestInd];
     action->priority = priority;
 
     // push action to the queue

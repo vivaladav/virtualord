@@ -64,6 +64,7 @@ private:
     void AddActionsBase(Structure * s);
     void AddActionsUnit(Unit * u);
     void AddActionUnitAttackEnemyUnit(Unit * u);
+    void AddActionUnitAttackTrees(Unit * u);
     void AddActionUnitCollectBlobs(Unit * u);
     void AddActionUnitCollectDiamonds(Unit * u);
     void AddActionUnitCollectLootbox(Unit * u);
@@ -85,10 +86,11 @@ private:
     std::vector<const ActionAI *> mActionsDoing;
     std::vector<const ActionAI *> mActionsDone;
 
-    // shared data,
+    // shared data
     std::vector<GameObject *> mCollectables;
     std::vector<GameObject *> mResGenerators;
     std::vector<GameObject *> mStructures;
+    std::vector<GameObject *> mTrees;
     std::vector<GameObject *> mUnits;
 
     Player * mPlayer = nullptr;
