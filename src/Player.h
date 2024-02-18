@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Cell2D.h"
 #include "StatValue.h"
 #include "GameObjects/GameObjectTypes.h"
 
@@ -79,8 +78,8 @@ public:
 
     int GetPlayerId() const;
 
-    const Cell2D & GetBaseCell() const;
-    void SetBaseCell(const Cell2D & cell);
+    const GameObject * GetBase() const;
+    void SetBase(const GameObject * b);
 
     // stats
     const StatValue & GetStat(Stat sid);
@@ -174,7 +173,7 @@ private:
 
     GameObject * mSelObj = nullptr;
 
-    Cell2D mHomeCell;
+    const GameObject * mBase = nullptr;
 
     int mPlayerId;
 
@@ -235,8 +234,8 @@ inline const std::string & Player::GetName() const { return mName; }
 
 inline int Player::GetPlayerId() const { return mPlayerId; }
 
-inline const Cell2D & Player::GetBaseCell() const { return mHomeCell; }
-inline void Player::SetBaseCell(const Cell2D & cell) { mHomeCell = cell; }
+inline const GameObject * Player::GetBase() const { return mBase; }
+inline void Player::SetBase(const GameObject * b) { mBase = b; }
 
 inline const StatValue & Player::GetStat(Stat sid)
 {

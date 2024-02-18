@@ -500,7 +500,7 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
             }
         }
 
-        o2a.owner->SetBaseCell(Cell2D(r0, c0));
+        o2a.owner->SetBase(o2a.obj);
         o2a.owner->SumCells(rows * cols);
     }
     else if(GameObject::TYPE_PRACTICE_TARGET == type)
@@ -2221,6 +2221,11 @@ int GameMap::DefineCellType(unsigned int ind, const GameMapCell & cell)
 
 void GameMap::UpdateLinkedCells(Player * player)
 {
+    const GameObject * b = player->GetBase();
+
+    if(nullptr == b)
+        return;
+
     const std::vector<Structure *> & structures = player->GetStructures();
     std::unordered_map<GameObject *, bool> objsLink;
     std::unordered_map<int, bool> cells;
@@ -2252,8 +2257,7 @@ void GameMap::UpdateLinkedCells(Player * player)
     std::vector<unsigned int> todo;
     std::unordered_set<unsigned int> done;
 
-    const Cell2D & home = player->GetBaseCell();
-    const unsigned int indHome = home.row * mCols + home.col;
+    const unsigned int indHome = b->GetRow0() * mCols + b->GetCol0();
     todo.push_back(indHome);
 
     while(!todo.empty())

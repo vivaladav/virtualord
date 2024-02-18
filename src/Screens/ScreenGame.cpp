@@ -1113,6 +1113,20 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             }
             break;
 
+            case AIA_UNIT_ATTACK_TREES:
+            {
+                auto unit = static_cast<Unit *>(action->ObjSrc);
+
+                if(unit->IsTargetAttackInRange(action->ObjDst))
+                    done = SetupUnitAttack(unit, action->ObjDst, player, basicOnDone);
+                else
+                    // TODO
+                    done = false;
+
+                PrintAction(turnAI, action, done, player);
+            }
+            break;
+
             default:
                 std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - UNKNOWN ACTION"
                           << action->GetTypeStr() << std::endl;
@@ -2709,8 +2723,12 @@ void ScreenGame::ClearTempStructIndicator()
 
 void ScreenGame::CenterCameraOverPlayerBase()
 {
-    const Cell2D & cell = mLocalPlayer->GetBaseCell();
-    const sgl::core::Pointd2D pos = mIsoMap->GetCellPosition(cell.row, cell.col);
+    const GameObject * b = mLocalPlayer->GetBase();
+
+    if(nullptr == b)
+        return ;
+
+    const sgl::core::Pointd2D pos = mIsoMap->GetCellPosition(b->GetRow0(), b->GetCol0());
     const int cX = pos.x + mIsoMap->GetTileWidth() * 0.5f;
     const int cY = pos.y + mIsoMap->GetTileHeight() * 0.5f;
 
