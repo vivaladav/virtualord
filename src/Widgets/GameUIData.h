@@ -145,6 +145,53 @@ enum SpriteIdDialogNewElementExp : unsigned int
     IND_DLG_NEWE_BG_BTM,
 };
 
+// DIALOG OBJECT
+extern const char SpriteFileDialogObject[];
+
+enum SpriteIdDialogObject : unsigned int
+{
+    // DIALOG
+    ID_DLG_OBJ_BG,
+    ID_DLG_OBJ_BG_STAT,
+    ID_DLG_OBJ_BG_STAT_EMPTY,
+
+    // ATTRIBUTES BAR
+    ID_DLG_OBJ_BAR0,
+    ID_DLG_OBJ_BAR1,
+    ID_DLG_OBJ_BAR2,
+    ID_DLG_OBJ_BAR3,
+    ID_DLG_OBJ_BAR4,
+    ID_DLG_OBJ_BAR5,
+    ID_DLG_OBJ_BAR6,
+    ID_DLG_OBJ_BAR7,
+    ID_DLG_OBJ_BAR8,
+    ID_DLG_OBJ_BAR9,
+    ID_DLG_OBJ_BAR10,
+
+    // STARS BAR
+    ID_DLG_OBJ_SBAR_0,
+    ID_DLG_OBJ_SBAR_1,
+    ID_DLG_OBJ_SBAR_2,
+    ID_DLG_OBJ_SBAR_3,
+    ID_DLG_OBJ_SBAR_4,
+    ID_DLG_OBJ_SBAR_5,
+    ID_DLG_OBJ_SBAR_6,
+    ID_DLG_OBJ_SBAR_7,
+    ID_DLG_OBJ_SBAR_8,
+    ID_DLG_OBJ_SBAR_9,
+    ID_DLG_OBJ_SBAR_10,
+
+    // BUTTON CLOSE
+    ID_DLG_OBJ_BTN_CLOSE_NORMAL,
+    ID_DLG_OBJ_BTN_CLOSE_OVER,
+    ID_DLG_OBJ_BTN_CLOSE_PUSHED,
+
+    // PROGRESS BAR
+    ID_DLG_OBJ_PB_BG,
+    ID_DLG_OBJ_PB_BAR,
+    ID_DLG_OBJ_PB_MARKS,
+};
+
 // FACTION SELECTION DIALOG
 extern const char SpriteFileFactionSelection[];
 
