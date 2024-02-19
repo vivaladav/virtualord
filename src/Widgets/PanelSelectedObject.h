@@ -27,6 +27,7 @@ public:
     PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::sgui::Widget * parent);
 
     void AddFunctionOnClose(const std::function<void()> & f);
+    void AddFunctionOnShowInfo(const std::function<void()> & f);
 
     void SetObject(GameObject * obj);
 

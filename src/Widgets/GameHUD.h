@@ -18,6 +18,7 @@ class DialogExit;
 class DialogExploreTemple;
 class DialogExploreTempleOutcome;
 class DialogNewElement;
+class DialogObject;
 class GameMapProgressBar;
 class GameObject;
 class MiniMap;
@@ -70,8 +71,13 @@ public:
     GameMapProgressBar * CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction);
 
 private:
-    void ShowDialogExploreTempleOutcome(Player * player, Temple * temple);
     void HideDialogExploreTempleOutcome();
+    void ShowDialogExploreTempleOutcome(Player * player, Temple * temple);
+    void HideDialogObject();
+    void ShowDialogObject(GameObject * obj);
+
+    void ClosePanelSelectedObject();
+    void OpenPanelSelectedObject();
 
     GameMapProgressBar * CreateProgressBar(float time, PlayerFaction faction);
 
@@ -90,6 +96,7 @@ private:
     DialogExploreTemple * mDialogExploreTemple = nullptr;
     DialogExploreTempleOutcome * mDialogExploreTempleOutcome = nullptr;
     DialogNewElement * mDialogNewElement = nullptr;
+    DialogObject * mDialogObj = nullptr;
 
     PanelSelectedObject * mPanelSelObj = nullptr;
     ButtonPanelSelectedObject * mButtonPanelSelObj = nullptr;

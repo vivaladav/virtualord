@@ -371,6 +371,11 @@ void PanelSelectedObject::AddFunctionOnClose(const std::function<void()> & f)
     mButtonClose->AddOnClickFunction(f);
 }
 
+void PanelSelectedObject::AddFunctionOnShowInfo(const std::function<void()> & f)
+{
+    mButtonShowInfo->AddOnClickFunction(f);
+}
+
 void PanelSelectedObject::SetObject(GameObject * obj)
 {
     using namespace sgl;

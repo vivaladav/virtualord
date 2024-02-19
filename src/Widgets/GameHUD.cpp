@@ -19,6 +19,7 @@
 #include "Widgets/DialogEndMission.h"
 #include "Widgets/DialogExit.h"
 #include "Widgets/DialogExploreTemple.h"
+#include "Widgets/DialogObject.h"
 #include "Widgets/GameMapProgressBar.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/MiniMap.h"
@@ -131,19 +132,37 @@ GameHUD::GameHUD(ScreenGame * screen)
     mPanelSelObj = new PanelSelectedObject(game->GetObjectsRegistry(), this);
     mPanelSelObj->SetVisible(false);
 
+    mPanelSelObj->AddFunctionOnClose([this]
+    {
+        ClosePanelSelectedObject();
+    });
+
+    mPanelSelObj->AddFunctionOnShowInfo([this]
+    {
+        Player * player = mScreen->GetGame()->GetLocalPlayer();
+
+        ShowDialogObject(player->GetSelectedObject());
+    });
+
     mButtonPanelSelObj = new ButtonPanelSelectedObject(this);
     mButtonPanelSelObj->SetVisible(false);
 
     mButtonPanelSelObj->AddOnClickFunction([this]
     {
-        mButtonPanelSelObj->SetVisible(false);
-        mPanelSelObj->SetVisible(true);
+        OpenPanelSelectedObject();
     });
 
-    mPanelSelObj->AddFunctionOnClose([this]
+    // DIALOG OBJECT
+    mDialogObj = new DialogObject;
+    mDialogObj->SetVisible(false);
+
+    const int dialogObjX = (rendW - mDialogObj->GetWidth()) / 2;
+    const int dialogObjY = (rendH - mDialogObj->GetHeight()) / 2;
+    mDialogObj->SetPosition(dialogObjX, dialogObjY);
+
+    mDialogObj->SetFunctionOnClose([this]
     {
-        mButtonPanelSelObj->SetVisible(true);
-        mPanelSelObj->SetVisible(false);
+        HideDialogObject();
     });
 }
 
@@ -218,7 +237,7 @@ void GameHUD::ShowDialogEndMission(bool won)
 
     dialog->SetFunctionOnClose([this, dialog, won]
     {
-                                   dialog->DeleteLater();
+        dialog->DeleteLater();
 
         if(won)
             mScreen->HandleGameWon();
@@ -427,7 +446,7 @@ void GameHUD::HidePanelSelectedObject()
     mPanelSelObj->SetVisible(false);
 }
 
-void GameHUD::ShowPanelSelectedObject(GameObject *obj)
+void GameHUD::ShowPanelSelectedObject(GameObject * obj)
 {
     mButtonPanelSelObj->SetVisible(false);
 
@@ -483,6 +502,20 @@ GameMapProgressBar * GameHUD::CreateProgressBarInCell(const Cell2D & cell, float
     return pb;
 }
 
+void GameHUD::HideDialogExploreTempleOutcome()
+{
+    // no dialog -> nothing to do
+    if(nullptr == mDialogExploreTempleOutcome)
+        return ;
+
+    // schedule dialog deletion
+    mDialogExploreTempleOutcome->DeleteLater();
+    mDialogExploreTempleOutcome = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
+}
+
 void GameHUD::ShowDialogExploreTempleOutcome(Player * player, Temple * temple)
 {
     if(mDialogExploreTempleOutcome != nullptr)
@@ -517,18 +550,40 @@ void GameHUD::ShowDialogExploreTempleOutcome(Player * player, Temple * temple)
     CenterWidget(mDialogExploreTempleOutcome);
 }
 
-void GameHUD::HideDialogExploreTempleOutcome()
+void GameHUD::HideDialogObject()
 {
-    // no dialog -> nothing to do
-    if(nullptr == mDialogExploreTempleOutcome)
-        return ;
+    // hide dialog
+    mDialogObj->SetVisible(false);
 
-    // schedule dialog deletion
-    mDialogExploreTempleOutcome->DeleteLater();
-    mDialogExploreTempleOutcome = nullptr;
+    OpenPanelSelectedObject();
 
-    // un-pause game
+    // resume game
     mScreen->SetPause(false);
+}
+
+void GameHUD::ShowDialogObject(GameObject * obj)
+{
+    // pause game
+    mScreen->SetPause(true);
+
+    // show dialog
+    mDialogObj->SetObject(obj);
+    mDialogObj->SetVisible(true);
+    mDialogObj->SetFocus();
+
+    ClosePanelSelectedObject();
+}
+
+void GameHUD::ClosePanelSelectedObject()
+{
+    mButtonPanelSelObj->SetVisible(true);
+    mPanelSelObj->SetVisible(false);
+}
+
+void GameHUD::OpenPanelSelectedObject()
+{
+    mButtonPanelSelObj->SetVisible(false);
+    mPanelSelObj->SetVisible(true);
 }
 
 GameMapProgressBar * GameHUD::CreateProgressBar(float time, PlayerFaction faction)

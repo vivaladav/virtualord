@@ -220,6 +220,8 @@ add_executable(
     src/Widgets/DialogExploreTemple.cpp
     src/Widgets/DialogNewElement.h
     src/Widgets/DialogNewElement.cpp
+    src/Widgets/DialogObject.h
+    src/Widgets/DialogObject.cpp
     src/Widgets/DialogSettings.h
     src/Widgets/DialogSettings.cpp
     src/Widgets/DigitsDisplay.h
