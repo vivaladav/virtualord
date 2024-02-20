@@ -655,6 +655,9 @@ void ScreenGame::CreateUI()
     // MISSION COUNTDOWN
     if(MISSION_RESIST_TIME == mMissionType)
         mHUD->ShowMissionCountdown(mMissionTime);
+
+    // set initial focus to Stage
+    sgl::sgui::Stage::Instance()->SetFocus();
 }
 
 void ScreenGame::LoadMapFile()
@@ -2820,7 +2823,12 @@ void ScreenGame::EndTurn()
 
     // new active player is local player
     if(IsCurrentTurnLocal())
+    {
         mHUD->ShowTurnControlPanel();
+
+        // reset focus to Stage
+        sgl::sgui::Stage::Instance()->SetFocus();
+    }
     // new active player is AI
     else
         mHUD->ShowTurnControlTextEnemyTurn();

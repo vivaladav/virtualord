@@ -151,7 +151,7 @@ private:
     DigitsDisplay * mDigits = nullptr;
 };
 
-// ========== BUTTON CLOSE ==========
+// ========== BUTTON 'OBJECT FUNCTION ==========
 class ButtonObjectFunction : public sgl::sgui::ImageButton
 {
 public:

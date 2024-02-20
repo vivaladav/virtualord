@@ -30,6 +30,7 @@
 
 #include <sgl/graphic/Renderer.h>
 #include <sgl/sgui/ButtonsGroup.h>
+#include <sgl/sgui/Stage.h>
 
 namespace game
 {
@@ -556,6 +557,8 @@ void GameHUD::HideDialogObject()
     mDialogObj->SetVisible(false);
 
     OpenPanelSelectedObject();
+
+    sgl::sgui::Stage::Instance()->SetFocus();
 
     // resume game
     mScreen->SetPause(false);
