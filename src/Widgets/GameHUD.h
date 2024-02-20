@@ -76,8 +76,13 @@ private:
     void HideDialogObject();
     void ShowDialogObject(GameObject * obj);
 
+    void ClosePanelMinimap();
+    void OpenPanelMinimap();
     void ClosePanelSelectedObject();
     void OpenPanelSelectedObject();
+
+    void TemporaryCloseSidePanels();
+    void ReopenSidePanels();
 
     GameMapProgressBar * CreateProgressBar(float time, PlayerFaction faction);
 

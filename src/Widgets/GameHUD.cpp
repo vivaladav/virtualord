@@ -67,8 +67,7 @@ GameHUD::GameHUD(ScreenGame * screen)
 
     mButtonMinimap->AddOnClickFunction([this]
     {
-        mButtonMinimap->SetVisible(false);
-        mMiniMap->SetVisible(true);
+        OpenPanelMinimap();
     });
 
     mMiniMap = new MiniMap(mScreen->mCamController, mScreen->mIsoMap, this);
@@ -77,8 +76,7 @@ GameHUD::GameHUD(ScreenGame * screen)
 
     mMiniMap->AddFunctionOnClose([this]
     {
-        mButtonMinimap->SetVisible(true);
-        mMiniMap->SetVisible(false);
+        ClosePanelMinimap();
     });
 
     // QUICK UNIT SELECTION BUTTONS
@@ -157,9 +155,8 @@ GameHUD::GameHUD(ScreenGame * screen)
     mDialogObj = new DialogObject;
     mDialogObj->SetVisible(false);
 
-    const int dialogObjX = (rendW - mDialogObj->GetWidth()) / 2;
-    const int dialogObjY = (rendH - mDialogObj->GetHeight()) / 2;
-    mDialogObj->SetPosition(dialogObjX, dialogObjY);
+    // position dialog
+    CenterWidget(mDialogObj);
 
     mDialogObj->SetFunctionOnClose([this]
     {
@@ -262,18 +259,24 @@ void GameHUD::ShowDialogExit()
 
     mDialogExit->SetFunctionOnShowingDialogSettings([this]
     {
+        TemporaryCloseSidePanels();
+
         // keep game paused
         mScreen->SetPause(true);
     });
 
     mDialogExit->SetFunctionOnHidingDialogSettings([this]
     {
+        ReopenSidePanels();
+
         // un-pause game
         mScreen->SetPause(false);
     });
 
     mDialogExit->SetFunctionOnClose([this]
     {
+        ReopenSidePanels();
+
         // schedule dialog deletion
         mDialogExit->DeleteLater();
         mDialogExit = nullptr;
@@ -281,6 +284,8 @@ void GameHUD::ShowDialogExit()
         // un-pause game
         mScreen->SetPause(false);
     });
+
+    TemporaryCloseSidePanels();
 
     // position dialog
     CenterWidget(mDialogExit);
@@ -327,6 +332,8 @@ void GameHUD::ShowDialogExploreTemple(Player * player, Temple * temple)
         });
     });
 
+    TemporaryCloseSidePanels();
+
     // position dialog
     CenterWidget(mDialogExploreTemple);
 }
@@ -335,6 +342,8 @@ void GameHUD::HideDialogExploreTemple()
 {
     if(nullptr == mDialogExploreTemple)
         return ;
+
+    ReopenSidePanels();
 
     // delete dialog
     mDialogExploreTemple->DeleteLater();
@@ -396,6 +405,8 @@ void GameHUD::ShowDialogNewElement(unsigned int type)
         });
     }
 
+    TemporaryCloseSidePanels();
+
     // position dialog
     CenterWidget(mDialogNewElement);
 }
@@ -405,6 +416,8 @@ void GameHUD::HideDialogNewElement()
     // no dialog -> nothing to do
     if(nullptr == mDialogNewElement)
         return ;
+
+    ReopenSidePanels();
 
     // schedule dialog deletion
     mDialogNewElement->DeleteLater();
@@ -449,10 +462,9 @@ void GameHUD::HidePanelSelectedObject()
 
 void GameHUD::ShowPanelSelectedObject(GameObject * obj)
 {
-    mButtonPanelSelObj->SetVisible(false);
-
     mPanelSelObj->SetObject(obj);
-    mPanelSelObj->SetVisible(true);
+
+    OpenPanelSelectedObject();
 }
 
 void GameHUD::ShowTurnControlPanel()
@@ -509,6 +521,8 @@ void GameHUD::HideDialogExploreTempleOutcome()
     if(nullptr == mDialogExploreTempleOutcome)
         return ;
 
+    ReopenSidePanels();
+
     // schedule dialog deletion
     mDialogExploreTempleOutcome->DeleteLater();
     mDialogExploreTempleOutcome = nullptr;
@@ -547,6 +561,8 @@ void GameHUD::ShowDialogExploreTempleOutcome(Player * player, Temple * temple)
         mScreen->mGameMap->HandleTempleExplorationOutcome(outcome, player, temple);
     });
 
+    TemporaryCloseSidePanels();
+
     // position dialog
     CenterWidget(mDialogExploreTempleOutcome);
 }
@@ -556,7 +572,7 @@ void GameHUD::HideDialogObject()
     // hide dialog
     mDialogObj->SetVisible(false);
 
-    OpenPanelSelectedObject();
+    ReopenSidePanels();
 
     sgl::sgui::Stage::Instance()->SetFocus();
 
@@ -574,7 +590,19 @@ void GameHUD::ShowDialogObject(GameObject * obj)
     mDialogObj->SetVisible(true);
     mDialogObj->SetFocus();
 
-    ClosePanelSelectedObject();
+    TemporaryCloseSidePanels();
+}
+
+void GameHUD::ClosePanelMinimap()
+{
+    mButtonMinimap->SetVisible(true);
+    mMiniMap->SetVisible(false);
+}
+
+void GameHUD::OpenPanelMinimap()
+{
+    mButtonMinimap->SetVisible(false);
+    mMiniMap->SetVisible(true);
 }
 
 void GameHUD::ClosePanelSelectedObject()
@@ -587,6 +615,24 @@ void GameHUD::OpenPanelSelectedObject()
 {
     mButtonPanelSelObj->SetVisible(false);
     mPanelSelObj->SetVisible(true);
+}
+
+void GameHUD::TemporaryCloseSidePanels()
+{
+    if(mPanelSelObj->IsVisible())
+        ClosePanelSelectedObject();
+
+    if(mMiniMap->IsVisible())
+        ClosePanelMinimap();
+}
+
+void GameHUD::ReopenSidePanels()
+{
+    if(mButtonPanelSelObj->IsVisible())
+        OpenPanelSelectedObject();
+
+    if(mButtonMinimap->IsVisible())
+        OpenPanelMinimap();
 }
 
 GameMapProgressBar * GameHUD::CreateProgressBar(float time, PlayerFaction faction)
