@@ -172,6 +172,7 @@ public:
     int GetExperience() const;
     int GetExperienceToNextLevel() const;
     int GetExperienceLevel() const;
+    int GetMaxExperienceLevel() const;
     void SetExperience(int val);
     void SumExperience(int val);
 
@@ -385,6 +386,7 @@ inline float GameObject::GetEnergyForActionStep(GameObjectActionType action) con
 inline int GameObject::GetExperience() const { return mExp; }
 inline int GameObject::GetExperienceToNextLevel() const { return mExpToNextLvl; }
 inline int GameObject::GetExperienceLevel() const { return mExpLevel; }
+inline int GameObject::GetMaxExperienceLevel() const { return 10; }
 
 inline float GameObject::GetSpeed() const { return mSpeed; }
 inline void GameObject::SetSpeed(float speed) { mSpeed = speed; }

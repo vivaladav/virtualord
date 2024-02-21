@@ -146,6 +146,74 @@ private:
     ProgressBarObjectVisualStat * mBar = nullptr;
 };
 
+class ObjectExtendedVisualRank : public sgl::sgui::Widget
+{
+public:
+    ObjectExtendedVisualRank(const char * strHeader, sgl::sgui::Widget * parent)
+        : sgl::sgui::Widget(parent)
+    {
+        using namespace sgl;
+
+        // HEADER
+        auto fm = graphic::FontManager::Instance();
+
+        const char * fileFontHeader = "Lato-Regular.ttf";
+        const unsigned int colorHeader = 0xb3d4e5ff;
+        const int sizeHeader = 18;
+
+        graphic::Font * fontHeader = fm->GetFont(fileFontHeader, sizeHeader, graphic::Font::NORMAL);
+        mHeader = new sgui::Label(strHeader, fontHeader, this);
+        mHeader->SetColor(colorHeader);
+
+        // DATA
+        const char * fileFontData = "Lato-Regular.ttf";
+        const unsigned int colorData = 0x70a7c2ff;
+        const int sizeData = 18;
+
+        graphic::Font * fontData = fm->GetFont(fileFontData, sizeData, graphic::Font::NORMAL);
+        mData = new sgui::Label(fontData, this);
+        mData->SetColor(colorData);
+
+        // LEVEL
+        mBar = new sgui::Image(this);
+
+        // SIZE
+        const int w = 450;
+        const int h = mHeader->GetHeight();
+        SetSize(w, h);
+    }
+
+    void SetValue(int val, int max)
+    {
+        // DATA
+        std::ostringstream ss;
+        ss << (val + 1) << " / " << max;
+        mData->SetText(ss.str().c_str());
+
+        // BAR
+        const unsigned int barLvlTexId = ID_DLG_OBJ_SBAR_0 + val;
+        auto tm = sgl::graphic::TextureManager::Instance();
+        sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileDialogObject, barLvlTexId);
+        mBar->SetTexture(tex);
+
+        // POSITION ELEMENTS
+        const int w = GetWidth();
+        const int h = GetHeight();
+
+        mBar->SetPosition(w - mBar->GetWidth(), (h - mBar->GetHeight()) / 2);
+
+        const int marginData = 62;
+        const int dataX = mBar->GetX() - marginData - mData->GetWidth();
+        const int dataY = (GetHeight() - mData->GetHeight()) / 2;
+        mData->SetPosition(dataX, dataY);
+    }
+
+private:
+    sgl::sgui::Label * mHeader = nullptr;
+    sgl::sgui::Label * mData = nullptr;
+    sgl::sgui::Image * mBar = nullptr;
+};
+
 // ===== DIALOG =====
 DialogObject::DialogObject(const ObjectsDataRegistry * odr)
     : mObjDataReg(odr)
@@ -192,6 +260,11 @@ DialogObject::DialogObject(const ObjectsDataRegistry * odr)
     const int statBlockH = 50;
 
     int statY = statY0;
+    mStatRank = new ObjectExtendedVisualRank("RANK", this);
+    mStatRank->SetPosition(statX0, statY);
+
+    statY += statBlockH;
+
     mStatExperience = new ObjectExtendedVisualStat(ObjectExtendedVisualStat::VST_EXPERIENCE, this);
     mStatExperience->SetPosition(statX0, statY);
 
@@ -250,6 +323,7 @@ void DialogObject::SetObject(GameObject * obj)
     mImg->SetPosition(imgX, imgY);
 
     // VISUAL STATS
+    mStatRank->SetValue(obj->GetExperienceLevel(), obj->GetMaxExperienceLevel());
     mStatExperience->SetValue(obj->GetExperience(), obj->GetExperienceToNextLevel());
     mStatEnergy->SetValue(obj->GetEnergy(), obj->GetMaxEnergy());
     mStatHealth->SetValue(obj->GetHealth(), obj->GetMaxHealth());

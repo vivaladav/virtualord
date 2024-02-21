@@ -20,6 +20,7 @@ namespace game
 
 class GameObject;
 class ObjectsDataRegistry;
+class ObjectExtendedVisualRank;
 class ObjectExtendedVisualStat;
 
 class DialogObject : public sgl::sgui::Widget
@@ -46,6 +47,7 @@ private:
     sgl::sgui::Label * mTitle = nullptr;
     sgl::sgui::Image * mImg = nullptr;
 
+    ObjectExtendedVisualRank * mStatRank = nullptr;
     ObjectExtendedVisualStat * mStatExperience = nullptr;
     ObjectExtendedVisualStat * mStatEnergy = nullptr;
     ObjectExtendedVisualStat * mStatHealth = nullptr;
