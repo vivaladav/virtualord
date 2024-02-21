@@ -128,7 +128,9 @@ GameHUD::GameHUD(ScreenGame * screen)
     mPanelTurnCtrl->SetPosition(posPanelTurnX, posPanelTurnY);
 
     // PANEL SELECTED OBJECT
-    mPanelSelObj = new PanelSelectedObject(game->GetObjectsRegistry(), this);
+    const ObjectsDataRegistry * odr = game->GetObjectsRegistry();
+
+    mPanelSelObj = new PanelSelectedObject(odr, this);
     mPanelSelObj->SetVisible(false);
 
     mPanelSelObj->AddFunctionOnClose([this]
@@ -152,7 +154,7 @@ GameHUD::GameHUD(ScreenGame * screen)
     });
 
     // DIALOG OBJECT
-    mDialogObj = new DialogObject;
+    mDialogObj = new DialogObject(odr);
     mDialogObj->SetVisible(false);
 
     // position dialog
