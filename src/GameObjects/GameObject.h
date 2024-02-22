@@ -163,7 +163,6 @@ public:
     void SumEnergy(float val);
     float GetMaxEnergy() const;
     void SetMaxEnergy(float val);
-    void RestoreTurnEnergy();
 
     float GetEnergyForActionStep(GameObjectActionType action) const;
     bool HasEnergyForActionStep(GameObjectActionType action) const;
@@ -189,9 +188,9 @@ public:
     GameObjectActionType GetCurrentAction() const;
     void SetCurrentAction(GameObjectActionType action);
 
-    virtual void Update(float delta);
-
     virtual void OnNewTurn(PlayerFaction faction);
+
+    virtual void Update(float delta);
 
 protected:
     virtual void UpdateGraphics() = 0;
@@ -219,6 +218,9 @@ protected:
     std::vector<unsigned int> mObjColors;
 
     GameObjectVariantId mVariant = VAR_0;
+
+private:
+    void RestoreTurnEnergy();
 
 private:
     static unsigned int counter;
@@ -372,10 +374,6 @@ inline void GameObject::SetMaxHealth(float max) { mMaxHealth = max; }
 inline float GameObject::GetEnergy() const { return mEnergy; }
 inline float GameObject::GetMaxEnergy() const { return mMaxEnergy; }
 inline void GameObject::SetMaxEnergy(float val) { mMaxEnergy = val; }
-inline void GameObject::RestoreTurnEnergy()
-{
-    SumEnergy(mEnergyRegPower * mMaxEnergy / 100.f);
-}
 
 inline float GameObject::GetEnergyForActionStep(GameObjectActionType action) const
 {

@@ -17,7 +17,7 @@ CollectableGenerator::~CollectableGenerator()
 {
 }
 
-void CollectableGenerator::TurnUpdate()
+void CollectableGenerator::OnNewTurn()
 {
     // generate only if cell is empty
     if(mGameMap->HasObject(mRow, mCol))

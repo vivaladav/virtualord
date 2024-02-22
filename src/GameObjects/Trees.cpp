@@ -37,8 +37,10 @@ Trees::Trees(GameObjectVariantId var)
     SetImage();
 }
 
-void Trees::OnNewTurn(PlayerFaction)
+void Trees::OnNewTurn(PlayerFaction faction)
 {
+    GameObject::OnNewTurn(faction);
+
     ++mTurns;
 
     // needs more turns...

@@ -549,8 +549,13 @@ void GameObject::Hit(float damage, PlayerFaction attacker)
 
 void GameObject::SetActiveActionToDefault() { mActiveAction = IDLE; }
 
+void GameObject::OnNewTurn(PlayerFaction faction)
+{
+    if(mFaction == faction)
+        RestoreTurnEnergy();
+}
+
 void GameObject::Update(float) { }
-void GameObject::OnNewTurn(PlayerFaction) { }
 
 void GameObject::OnLinkedChanged() { }
 
@@ -606,5 +611,12 @@ void GameObject::NotifyValueChanged()
     for(const auto & it : mOnValueChanged)
         it.second();
 }
+
+void GameObject::RestoreTurnEnergy()
+{
+    // TODO restore based on attributes
+    SumEnergy(mEnergyRegPower * mMaxEnergy / 100.f);
+}
+
 
 } // namespace game

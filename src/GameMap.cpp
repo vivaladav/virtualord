@@ -2225,13 +2225,13 @@ bool GameMap::FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, C
 
 void GameMap::OnNewTurn(PlayerFaction faction)
 {
-    RestoreFactionEnergy(faction);
-
-    TurnUpdateCollectableGenerators();
-
-    // notify all objects of new turn
+    // notify all objects
     for(GameObject * obj : mObjects)
         obj->OnNewTurn(faction);
+
+    // notify all generators
+    for(CollectableGenerator * cg : mCollGen)
+        cg->OnNewTurn();
 }
 
 void GameMap::Update(float delta)
@@ -3281,22 +3281,6 @@ void GameMap::UpdateWall(const Cell2D & cell)
             break;
         }
     }
-}
-
-void GameMap::RestoreFactionEnergy(PlayerFaction faction)
-{
-    // TODO keep a list of all faction objects in Player so this can be done there with no IFs
-    for(GameObject * obj : mObjects)
-    {
-        if(obj->GetFaction() == faction)
-            obj->RestoreTurnEnergy();
-    }
-}
-
-void GameMap::TurnUpdateCollectableGenerators()
-{
-    for(CollectableGenerator * dg : mCollGen)
-        dg->TurnUpdate();
 }
 
 const ObjectBasicData & GameMap::GetObjectData(GameObjectTypeId t) const

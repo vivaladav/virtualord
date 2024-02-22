@@ -15,7 +15,8 @@ public:
     int GetRow() const;
     int GetCol() const;
 
-    void TurnUpdate();
+    void OnNewTurn();
+
     void Update(float delta);
 
 protected:
