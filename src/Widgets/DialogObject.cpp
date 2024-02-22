@@ -4,6 +4,7 @@
 #include "GameObjects/GameObject.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "Widgets/GameUIData.h"
+#include "Widgets/ObjectVisualAttribute.h"
 #include "Widgets/ProgressBarObjectVisualStat.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
@@ -277,6 +278,29 @@ DialogObject::DialogObject(const ObjectsDataRegistry * odr)
 
     mStatHealth = new ObjectExtendedVisualStat(ObjectExtendedVisualStat::VST_HEALTH, this);
     mStatHealth->SetPosition(statX0, statY);
+
+    // ATTRIBUTES
+    const int attX0 = 30;
+    const int attY0 = 280;
+
+    int attX = attX0;
+    int attY = attY0;
+    int ind = 0;
+
+    for(int c = 0; c < VIS_ATT_COLS; ++c)
+    {
+        for(int r = 0; r < VIS_ATT_ROWS; ++r)
+        {
+            mVisAtt[ind] = new ObjectVisualAttribute(this);
+            mVisAtt[ind]->SetPosition(attX, attY);
+            ++ind;
+
+            attY += mVisAtt[0]->GetHeight();
+        }
+
+        attX += mVisAtt[0]->GetWidth();
+        attY = attY0;
+    }
 }
 
 void DialogObject::SetFunctionOnClose(const std::function<void()> & f)
@@ -299,16 +323,13 @@ void DialogObject::SetObject(GameObject * obj)
     mTitle->SetText(GameObject::TITLES.at(type).c_str());
 
     // IMAGE
+    const ObjectBasicData & data = mObjDataReg->GetObjectData(type);
+    const ObjectFactionData & fData = mObjDataReg->GetFactionData(faction, type);
+
     if(faction == NO_FACTION)
-    {
-        const ObjectBasicData & data = mObjDataReg->GetObjectData(type);
         tex = tm->GetSprite(data.noFactionIconFile, data.noFactionIconTexId);
-    }
     else
-    {
-        const ObjectFactionData & data = mObjDataReg->GetFactionData(faction, type);
-        tex = tm->GetSprite(data.iconFile, data.iconTexId);
-    }
+        tex = tm->GetSprite(fData.iconFile, fData.iconTexId);
 
     mImg->SetTexture(tex);
 
@@ -327,6 +348,15 @@ void DialogObject::SetObject(GameObject * obj)
     mStatExperience->SetValue(obj->GetExperience(), obj->GetExperienceToNextLevel());
     mStatEnergy->SetValue(obj->GetEnergy(), obj->GetMaxEnergy());
     mStatHealth->SetValue(obj->GetHealth(), obj->GetMaxHealth());
+
+    // ATTRIBUTES
+    const int numStats = fData.stats.size();
+
+    for(int i = 0; i < numStats; ++i)
+        mVisAtt[i]->SetData(ObjectFactionData::STR_STAT[i], fData.stats[i]);
+
+    for(int i = numStats; i < NUM_VIS_ATT; ++i)
+        mVisAtt[i]->ClearData();
 }
 
 void DialogObject::HandlePositionChanged()
