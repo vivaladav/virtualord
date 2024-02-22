@@ -300,6 +300,7 @@ void ScreenMainMenu::CreateChangelog()
                          "- Enemy units will shoot yours.\n"
                          "- Map dragging in mission screen and related options in settings.\n"
                          "- Added selected object panel in mission.\n"
+                         "- Added object dialog in mission.\n"
                          "- Game objects gain experience by doing things.\n"
                         );
     textNewFeat->SetPosition(contX, contY);
