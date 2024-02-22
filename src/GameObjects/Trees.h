@@ -10,7 +10,7 @@ class Trees : public GameObject
 public:
     Trees(GameObjectVariantId var);
 
-    void Update(float delta) override;
+    void OnNewTurn(PlayerFaction faction) override;
 
 private:
     void SpawnTree(int r0, int c0);
@@ -24,8 +24,9 @@ private:
 private:
     int mLevel = 0;
     int mNumTrees = 1;
-    float mTimeChange = 0.f;
-    float mTimerChange = 0.f;
+
+    int mTurnsToChange = 1;
+    int mTurns = 0;
 };
 
 } // namespace game

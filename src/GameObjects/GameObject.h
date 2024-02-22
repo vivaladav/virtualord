@@ -191,6 +191,8 @@ public:
 
     virtual void Update(float delta);
 
+    virtual void OnNewTurn(PlayerFaction faction);
+
 protected:
     virtual void UpdateGraphics() = 0;
 

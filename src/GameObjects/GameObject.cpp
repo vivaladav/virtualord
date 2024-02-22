@@ -550,6 +550,7 @@ void GameObject::Hit(float damage, PlayerFaction attacker)
 void GameObject::SetActiveActionToDefault() { mActiveAction = IDLE; }
 
 void GameObject::Update(float) { }
+void GameObject::OnNewTurn(PlayerFaction) { }
 
 void GameObject::OnLinkedChanged() { }
 

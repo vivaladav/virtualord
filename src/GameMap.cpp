@@ -2228,6 +2228,10 @@ void GameMap::OnNewTurn(PlayerFaction faction)
     RestoreFactionEnergy(faction);
 
     TurnUpdateCollectableGenerators();
+
+    // notify all objects of new turn
+    for(GameObject * obj : mObjects)
+        obj->OnNewTurn(faction);
 }
 
 void GameMap::Update(float delta)
