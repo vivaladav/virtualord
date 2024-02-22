@@ -7,6 +7,7 @@
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "Widgets/ButtonPanelTab.h"
 #include "Widgets/GameUIData.h"
+#include "Widgets/ObjectVisualAttribute.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/DummyRenderable.h>
@@ -462,143 +463,6 @@ const int ButtonSlot::KEYS[NUM_SLOTS] = {
 
 const char * ButtonSlot::SHORTCUTS[NUM_SLOTS] = { "1", "2", "3", "4", "5", "6" };
 
-// ===== ATTRIBUTE PANEL =====
-
-class PanelAttribute : public sgl::sgui::Widget
-{
-public:
-    PanelAttribute(sgl::sgui::Widget * parent)
-        : sgl::sgui::Widget(parent)
-    {
-        using namespace sgl::graphic;
-
-        auto tm = TextureManager::Instance();
-
-        // BACKGROUND
-        Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ATT_OFF);
-        mBg = new Image(tex);
-        RegisterRenderable(mBg);
-
-        SetSize(mBg->GetWidth(), mBg->GetHeight());
-
-        // LABEL
-        mLabel = new DummyRenderable;
-        RegisterRenderable(mLabel);
-
-        // VALUE BAR
-        mValueBar = new DummyRenderable;
-        RegisterRenderable(mValueBar);
-    }
-
-    void ClearData()
-    {
-        using namespace sgl::graphic;
-
-        // check if already cleared
-        if(!mHasData)
-            return ;
-
-        // BACKGROUND
-        auto tm = TextureManager::Instance();
-        Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ATT_OFF);
-        mBg->SetTexture(tex);
-
-        // LABEL
-        UnregisterRenderable(mLabel);
-        delete mLabel;
-        mLabel = new DummyRenderable;
-        RegisterRenderable(mLabel);
-
-        // VALUE BAR
-        UnregisterRenderable(mValueBar);
-        delete mValueBar;
-        mValueBar = new DummyRenderable;
-        RegisterRenderable(mValueBar);
-
-        // update data flag
-        mHasData = false;
-    }
-
-    void SetData(const char * txt, unsigned int val)
-    {
-        using namespace sgl::graphic;
-
-        // BACKGROUND
-        auto tm = TextureManager::Instance();
-        Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ATT_ON);
-        mBg->SetTexture(tex);
-
-        // LABEL
-        auto fm = FontManager::Instance();
-
-        UnregisterRenderable(mLabel);
-        delete mLabel;
-
-        auto font = fm->GetFont("Lato-Regular.ttf", 18, Font::NORMAL);
-        mLabel = new Text(txt, font);
-        mLabel->SetColor(0xf1f2f4ff);
-        RegisterRenderable(mLabel);
-
-        // VALUE BAR
-        if(!mHasData)
-        {
-            UnregisterRenderable(mValueBar);
-            delete mValueBar;
-            mValueBar = new Image;
-            RegisterRenderable(mValueBar);
-        }
-
-        const unsigned int maxVal = 10;
-
-        if(val > maxVal)
-            val = maxVal;
-
-        const unsigned int texId = IND_DLG_NEWE_BAR0 + val;
-        tex = tm->GetSprite(SpriteFileDialogNewElement, texId);
-        static_cast<Image *>(mValueBar)->SetTexture(tex);
-
-        // update data flag
-        mHasData = true;
-
-        // reset positions
-        HandlePositionChanged();
-    }
-
-    void HandlePositionChanged() override
-    {
-        const int x0 = GetScreenX();
-        const int y0 = GetScreenY();
-
-        mBg->SetPosition(x0, y0);
-
-        const int marginH = 10;
-
-        // LABEL
-        const int labelX = x0 + marginH;
-        const int labelY = y0 + (mBg->GetHeight() - mLabel->GetHeight()) * 0.5f;
-        mLabel->SetPosition(labelX, labelY);
-
-        // BAR
-        const int barX = x0 + mBg->GetWidth() - marginH - mValueBar->GetWidth();
-        const int barY = y0 + (mBg->GetHeight() - mValueBar->GetHeight()) * 0.5f;
-        mValueBar->SetPosition(barX, barY);
-    }
-
-    void OnRender() override
-    {
-        mBg->Render();
-        mLabel->Render();
-        mValueBar->Render();
-    }
-
-private:
-    sgl::graphic::Image * mBg = nullptr;
-    sgl::graphic::Renderable * mLabel = nullptr;
-    sgl::graphic::Renderable * mValueBar = nullptr;
-
-    bool mHasData = false;
-};
-
 // ===== DIALOG NEW ELEMENT =====
 DialogNewElement::DialogNewElement(ElemType type, Player * player,
                                    const ObjectsDataRegistry * dataReg)
@@ -852,7 +716,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
         {
             const int ind = ind0 + r;
 
-            auto panAtt = new PanelAttribute(this);
+            auto panAtt = new ObjectVisualAttribute(this);
             panAtt->SetPosition(panelsX, panelsY);
 
             mPanelsAtt[ind] = panAtt;
@@ -866,7 +730,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
     // BUTTON BUILD
     mBtnBuild = new ButtonBuild(this);
-    const PanelAttribute * lastPanel = mPanelsAtt[NUM_PANELS_ATT - 1];
+    const ObjectVisualAttribute * lastPanel = mPanelsAtt[NUM_PANELS_ATT - 1];
     const int btnX = lastPanel->GetX() + lastPanel->GetWidth() - mBtnBuild->GetWidth();
     const int marginBtnTop = 15;
     const int btnY = lastPanel->GetY() + lastPanel->GetHeight() + marginBtnTop;

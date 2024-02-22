@@ -244,6 +244,8 @@ add_executable(
     src/Widgets/MiniMap.cpp
     src/Widgets/ObjectActionButton.h
     src/Widgets/ObjectActionButton.cpp
+    src/Widgets/ObjectVisualAttribute.h
+    src/Widgets/ObjectVisualAttribute.cpp
     src/Widgets/PanelPlanetActionConquer.h
     src/Widgets/PanelPlanetActionConquer.cpp
     src/Widgets/PanelPlanetActionConquerAI.h

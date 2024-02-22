@@ -30,7 +30,7 @@ class ButtonLeft;
 class ButtonRight;
 class ButtonSlot;
 class ObjectsDataRegistry;
-class PanelAttribute;
+class ObjectVisualAttribute;
 class Player;
 
 enum ObjFamily : unsigned int;
@@ -75,7 +75,7 @@ private:
     static const int NUM_COSTS = 4;
 
 private:
-    std::array<PanelAttribute *, NUM_PANELS_ATT> mPanelsAtt;
+    std::array<ObjectVisualAttribute *, NUM_PANELS_ATT> mPanelsAtt;
     std::array<sgl::sgui::Label *, NUM_COSTS> mLabelsCost;
 
     std::vector<GameObjectTypeId> mTypes;
