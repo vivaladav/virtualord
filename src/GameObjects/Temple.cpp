@@ -18,7 +18,8 @@ namespace game
 
 Temple::Temple()
     : Structure(GameObject::TYPE_TEMPLE, GameObject::CAT_GENERIC, 3, 3)
-    , mOnExplorationDone([]{})
+    , mOnDone([]{})
+    , mExplorer(NO_FACTION)
 {
     SetCanBeConquered(true);
 
@@ -49,7 +50,7 @@ void Temple::SetInvestedResources(int money, int material, int blobs, int diamon
     if(mInvestedDiamonds > mMaxDiamonds)
         mInvestedDiamonds = mMaxDiamonds;
 
-    const int maxTurns = 10;
+    const int maxTurns = 16;
     const int minTurns = 1;
     const float maxSuccess = 100.f;
     const float minSuccess = 0.f;
@@ -67,7 +68,7 @@ void Temple::SetInvestedResources(int money, int material, int blobs, int diamon
 
     const float timePerc = timeCostMoney * mInvestedMoney + timeCostMaterial * mInvestedMaterial +
                            timeCostBlobs * mInvestedBlobs + timeCostDiamonds * mInvestedDiamonds;
-    mExplorationTurns = (maxTurns - static_cast<int>(maxTurns * timePerc / 100.f)) * 2;
+    mExplorationTurns = (maxTurns - static_cast<int>(maxTurns * timePerc / 100.f));
 
     if(mExplorationTurns < minTurns)
         mExplorationTurns = minTurns;
@@ -93,16 +94,14 @@ void Temple::SetInvestedResources(int money, int material, int blobs, int diamon
         mExplorationSuccess = maxSuccess;
 }
 
-void Temple::StartExploring(const std::function<void()> & onDone)
+void Temple::StartExploring(PlayerFaction explorer, const std::function<void()> & onDone)
 {
     // CREATE PROGRESS BAR
-    //GameHUD * HUD = GetScreen()->GetHUD();
-
 
     // START
-    mExploring = true;
+    mExplorer = explorer;
 
-    mOnExplorationDone = onDone;
+    mOnDone = onDone;
 }
 
 const char * Temple::GetExplorationOutcomeString(ExplorationOutcome o) const
@@ -147,7 +146,7 @@ void Temple::OnNewTurn(PlayerFaction faction)
     GameObject::OnNewTurn(faction);
 
     // nothing to do while not exploring
-    if(!mExploring)
+    if(faction != mExplorer)
         return ;
 
     --mExplorationTurns;
@@ -156,14 +155,18 @@ void Temple::OnNewTurn(PlayerFaction faction)
     if(mExplorationTurns > 0)
         return ;
 
-    Explore();
+    // finalize exploration
+    FinishExploring();
 
-    mOnExplorationDone();
+    mOnDone();
 
-    mExploring = false;
+    // reset exploration
+    mExplorer = NO_FACTION;
+
+    mOnDone = []{};
 }
 
-void Temple::Explore()
+void Temple::FinishExploring()
 {
     const float probSuccess = mExplorationSuccess;
     const float probFail = 100.f - probSuccess;

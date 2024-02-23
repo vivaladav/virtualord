@@ -318,7 +318,7 @@ void GameHUD::ShowDialogExploreTemple(Player * player, Temple * temple)
         player->SumResource(Player::Stat::DIAMONDS, -temple->GetInvestedDiamonds());
 
         // start exploration
-        temple->StartExploring([this, player, temple]
+        temple->StartExploring(player->GetFaction(), [this, player, temple]
         {
             mScreen->CenterCameraOverObject(temple);
 

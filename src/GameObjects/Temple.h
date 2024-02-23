@@ -75,7 +75,7 @@ public:
     int GetExplorationTurns() const;
     int GetExplorationSuccessRate() const;
 
-    void StartExploring(const std::function<void()> & onDone);
+    void StartExploring(PlayerFaction explorer, const std::function<void()> & onDone);
     ExplorationOutcomeCategory GetExplorationOutcomeCategory() const;
     ExplorationOutcome GetExplorationOutcome1() const;
     ExplorationOutcome GetExplorationOutcome2() const;
@@ -89,7 +89,7 @@ public:
     void OnNewTurn(PlayerFaction faction) override;
 
 private:
-    void Explore();
+    void FinishExploring();
 
     void DefineMaxValues();
 
@@ -102,7 +102,7 @@ private:
     void SetObjColors();
 
 private:
-    std::function<void()> mOnExplorationDone;
+    std::function<void()> mOnDone;
 
     int mMaxMoney = 0;
     int mMaxMaterial = 0;
@@ -121,7 +121,7 @@ private:
     ExplorationOutcome mOutcome1 = EXP_OUT_NULL;
     ExplorationOutcome mOutcome2 = EXP_OUT_NULL;
 
-    bool mExploring = false;
+    PlayerFaction mExplorer;
 };
 
 inline int Temple::GetInvestedMoney() const { return mInvestedMoney; }
