@@ -52,9 +52,9 @@ private:
     sgl::graphic::Image * mLineH2 = nullptr;
 
     sgl::graphic::Text * mHeaderInvest = nullptr;
-    sgl::graphic::Text * mHeaderTime = nullptr;
+    sgl::graphic::Text * mHeaderTurns = nullptr;
     sgl::graphic::Text * mHeaderSuccess = nullptr;
-    sgl::sgui::Label * mLabelTime = nullptr;
+    sgl::sgui::Label * mLabelTurns = nullptr;
     sgl::sgui::Label * mLabelSuccess = nullptr;
 
     GameButton * mBtnAbort = nullptr;

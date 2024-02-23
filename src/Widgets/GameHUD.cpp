@@ -317,17 +317,9 @@ void GameHUD::ShowDialogExploreTemple(Player * player, Temple * temple)
         player->SumResource(Player::Stat::BLOBS, -temple->GetInvestedBlobs());
         player->SumResource(Player::Stat::DIAMONDS, -temple->GetInvestedDiamonds());
 
-        // start progress bar
-        const int time = temple->GetExplorationTime();
-        const Cell2D cell(temple->GetRow1(), temple->GetCol1());
-        const PlayerFaction faction = player->GetFaction();
-
-        GameMapProgressBar * pb = CreateProgressBarInCell(cell, time, faction);
-
-        pb->AddFunctionOnCompleted([this, player, temple]
+        // start exploration
+        temple->StartExploring([this, player, temple]
         {
-            temple->Explore();
-
             mScreen->CenterCameraOverObject(temple);
 
             ShowDialogExploreTempleOutcome(player, temple);

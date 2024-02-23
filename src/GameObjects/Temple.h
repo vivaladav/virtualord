@@ -2,6 +2,8 @@
 
 #include "Structure.h"
 
+#include <functional>
+
 namespace game
 {
 
@@ -70,10 +72,10 @@ public:
     int GetInvestedBlobs() const;
     int GetInvestedDiamonds() const;
 
-    int GetExplorationTime() const;
+    int GetExplorationTurns() const;
     int GetExplorationSuccessRate() const;
 
-    void Explore();
+    void StartExploring(const std::function<void()> & onDone);
     ExplorationOutcomeCategory GetExplorationOutcomeCategory() const;
     ExplorationOutcome GetExplorationOutcome1() const;
     ExplorationOutcome GetExplorationOutcome2() const;
@@ -84,7 +86,11 @@ public:
     int GetMaxInvestableBlobs() const;
     int GetMaxInvestableDiamonds() const;
 
+    void OnNewTurn(PlayerFaction faction) override;
+
 private:
+    void Explore();
+
     void DefineMaxValues();
 
     void DecideRewards();
@@ -96,6 +102,8 @@ private:
     void SetObjColors();
 
 private:
+    std::function<void()> mOnExplorationDone;
+
     int mMaxMoney = 0;
     int mMaxMaterial = 0;
     int mMaxBlobs = 0;
@@ -106,12 +114,14 @@ private:
     int mInvestedBlobs = 0;
     int mInvestedDiamonds = 0;
 
-    int mExplorationTime = 0;
+    int mExplorationTurns = 0;
     int mExplorationSuccess = 0;
 
     ExplorationOutcomeCategory mOutcomeCat = EXP_OUTC_NULL;
     ExplorationOutcome mOutcome1 = EXP_OUT_NULL;
     ExplorationOutcome mOutcome2 = EXP_OUT_NULL;
+
+    bool mExploring = false;
 };
 
 inline int Temple::GetInvestedMoney() const { return mInvestedMoney; }
@@ -119,9 +129,8 @@ inline int Temple::GetInvestedMaterial() const { return mInvestedMaterial; }
 inline int Temple::GetInvestedBlobs() const { return mInvestedBlobs; }
 inline int Temple::GetInvestedDiamonds() const { return mInvestedDiamonds; }
 
-inline int Temple::GetExplorationTime() const { return mExplorationTime; }
+inline int Temple::GetExplorationTurns() const { return mExplorationTurns; }
 inline int Temple::GetExplorationSuccessRate() const { return mExplorationSuccess; }
-
 
 inline Temple::ExplorationOutcomeCategory Temple::GetExplorationOutcomeCategory() const
 {
