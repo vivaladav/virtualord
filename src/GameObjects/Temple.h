@@ -7,6 +7,8 @@
 namespace game
 {
 
+class GameProgressBar;
+
 class Temple : public Structure
 {
 public:
@@ -122,6 +124,8 @@ private:
     ExplorationOutcome mOutcome2 = EXP_OUT_NULL;
 
     PlayerFaction mExplorer;
+
+    GameProgressBar * mProgressBar = nullptr;
 };
 
 inline int Temple::GetInvestedMoney() const { return mInvestedMoney; }

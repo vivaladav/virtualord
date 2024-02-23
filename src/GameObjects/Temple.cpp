@@ -3,8 +3,7 @@
 #include "GameConstants.h"
 #include "GameData.h"
 #include "IsoObject.h"
-#include "Screens/ScreenGame.h"
-#include "Widgets/GameHUD.h"
+#include "Widgets/GameProgressBar.h"
 
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/utilities/LoadedDie.h>
@@ -97,6 +96,13 @@ void Temple::SetInvestedResources(int money, int material, int blobs, int diamon
 void Temple::StartExploring(PlayerFaction explorer, const std::function<void()> & onDone)
 {
     // CREATE PROGRESS BAR
+    mProgressBar = new GameProgressBar(explorer, 0.f, mExplorationTurns);
+    mProgressBar->SetValue(0.f);
+
+    IsoObject * iObj = GetIsoObject();
+    const int pbX = iObj->GetX() + (iObj->GetWidth() - mProgressBar->GetWidth()) / 2;
+    const int pbY = iObj->GetY() - mProgressBar->GetHeight();
+    mProgressBar->SetPosition(pbX, pbY);
 
     // START
     mExplorer = explorer;
@@ -151,6 +157,9 @@ void Temple::OnNewTurn(PlayerFaction faction)
 
     --mExplorationTurns;
 
+    const int turnsLeft = mProgressBar->GetMax() - mExplorationTurns;
+    mProgressBar->SetValue(turnsLeft);
+
     // still exploring...
     if(mExplorationTurns > 0)
         return ;
@@ -164,6 +173,9 @@ void Temple::OnNewTurn(PlayerFaction faction)
     mExplorer = NO_FACTION;
 
     mOnDone = []{};
+
+    delete mProgressBar;
+    mProgressBar = nullptr;
 }
 
 void Temple::FinishExploring()
