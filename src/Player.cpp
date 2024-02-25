@@ -17,7 +17,6 @@ namespace game
 {
 
 constexpr float MAX_ENERGY0 = 100.f;
-constexpr float INC_ENERGY = 50.f;
 
 // NOTE these will be replaced by dynamic values soon
 constexpr int ENERGY_PER_CELL = 1;
@@ -357,12 +356,21 @@ void Player::HandleCollectable(GameObject * obj)
 
 void Player::AdjustTurnMaxEnergy()
 {
-    const float oldVal = mTurnMaxEnergy;
+    const float oldMax = mTurnMaxEnergy;
 
     // UPDATE MAX
-    const unsigned int units = mUnits.size();
-    const float inc = (units - 1) * INC_ENERGY;
-    mTurnMaxEnergy = MAX_ENERGY0 + inc;
+    int totUnitsEnergy = 0;
+
+    for(Unit * u : mUnits)
+        totUnitsEnergy += u->GetMaxEnergy();
+
+    const float maxPerc = 0.75f;
+    float newMax = totUnitsEnergy * maxPerc;
+
+    if(newMax < MAX_ENERGY0)
+        newMax = MAX_ENERGY0;
+
+    mTurnMaxEnergy = newMax;
 
     mOnTurnMaxEnergyChanged();
 
@@ -370,9 +378,9 @@ void Player::AdjustTurnMaxEnergy()
     bool energyChanged = false;
 
     // increase tot energy if new max is higher
-    if(oldVal < mTurnMaxEnergy)
+    if(oldMax < mTurnMaxEnergy)
     {
-        mTurnEnergy += inc;
+        mTurnEnergy += (mTurnMaxEnergy - oldMax);
         energyChanged = true;
     }
 
