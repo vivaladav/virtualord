@@ -53,6 +53,11 @@ Unit::Unit(const ObjectBasicData & objData, const ObjectFactionData & facData)
     const float speed = maxSpeed * static_cast<float>(mStats[OSTAT_SPEED]) / maxStatVal;
     SetSpeed(speed);
 
+    // set regeneration power
+    const float regPower = mStats[OSTAT_REGENERATION] / maxStatVal;
+    SetRegPower(regPower);
+
+    // set visibility
     SetVisibilityLevel(4);
 }
 

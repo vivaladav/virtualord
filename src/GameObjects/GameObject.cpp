@@ -614,9 +614,13 @@ void GameObject::NotifyValueChanged()
 
 void GameObject::RestoreTurnEnergy()
 {
-    // TODO restore based on attributes
-    SumEnergy(mEnergyRegPower * mMaxEnergy / 100.f);
-}
+    const float basePerc = 0.5f;
+    const float baseEnergy = mMaxEnergy * basePerc;
+    const float newEnergy = (mMaxEnergy - baseEnergy) * mEnergyRegPower;
+    const float prevEnergy = mEnergy * mEnergyRegPower;
+    const float energy = std::roundf(baseEnergy + prevEnergy + newEnergy);
 
+    SumEnergy(energy);
+}
 
 } // namespace game

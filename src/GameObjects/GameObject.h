@@ -208,6 +208,7 @@ protected:
     void SetStatic(bool val);
 
     void SetSpeed(float speed);
+    void SetRegPower(float val);
 
     void NotifyValueChanged();
 
@@ -289,7 +290,7 @@ private:
 
     float mMaxEnergy = 100.f;
     float mEnergy = 100.f;
-    float mEnergyRegPower = 100.f;
+    float mEnergyRegPower = 1.f;
     float mMaxHealth = 100.f;
     float mHealth = 100.f;
     float mSpeed = 0.f;
@@ -390,6 +391,13 @@ inline int GameObject::GetMaxExperienceLevel() const { return 10; }
 
 inline float GameObject::GetSpeed() const { return mSpeed; }
 inline void GameObject::SetSpeed(float speed) { mSpeed = speed; }
+
+inline void GameObject::SetRegPower(float val)
+{
+    const float maxVal = 1.f;
+
+    mEnergyRegPower = val > maxVal ? maxVal : val;
+}
 
 inline GameObjectActionType GameObject::GetActiveAction() const { return mActiveAction; }
 inline void GameObject::SetActiveAction(GameObjectActionType action) { mActiveAction = action; }
