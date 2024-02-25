@@ -87,6 +87,9 @@ void ButtonQuickUnitSelection::ClearUnit()
     if(nullptr == mUnit)
         return ;
 
+    mUnit->RemoveFunctionOnValueChanged(mFunValChangedId);
+    mFunValChangedId = 0;
+
     mUnit = nullptr;
 
     UnregisterRenderable(mImgUnit);
@@ -167,9 +170,7 @@ void ButtonQuickUnitSelection::SetUnit(Unit * unit)
     UpdateValues();
 
     // track values changing
-    // NOTE not calling remove before as this is valid until the unit is destroyed and
-    // in that case the value would be replaced anyway
-    mUnit->AddFunctionOnValueChanged([this] { UpdateValues(); });
+    mFunValChangedId = mUnit->AddFunctionOnValueChanged([this] { UpdateValues(); });
 
     // make sure button is enabled
     SetEnabled(true);
