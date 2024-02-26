@@ -293,6 +293,7 @@ void ScreenMainMenu::CreateChangelog()
                          "- Scrollable areas can be scrolled with mouse wheel.\n"
                          "- New map object: loot box.\n"
                          "- New map object: abandoned temple.\n"
+                         "- New map object: barracks.\n"
                          "- New unit: medic.\n"
                          "- New unit action: healing.\n"
                          "- Trees now can grow into surrounding cells.\n"
@@ -328,6 +329,8 @@ void ScreenMainMenu::CreateChangelog()
                         "- Units move along the planned path while building walls.\n"
                         "- Planet screen redesigned.\n"
                         "- Minimap bigger and minor redesign to match selected object panel.\n"
+                        "- Base generates a bit of power and material each turn.\n"
+                        "- Base can only build workers, whereas barracks build soldiers.\n"
                      );
     textChange->SetPosition(contX, contY);
     textChange->SetColor(colorContent);
