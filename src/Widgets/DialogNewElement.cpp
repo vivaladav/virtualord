@@ -478,14 +478,32 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     const int marginL = 40;
     const int marginT = 8;
 
-    int midBgH = 0;
-    int slotsY0 = 0;
+    int midBgH = 470;
+    int slotsY0 = 65;
 
-    if(ETYPE_UNITS == type)
+    if(ETYPE_UNITS_BARRACKS == type)
     {
-        mTypes = player->GetAvailableUnits();
-        midBgH = 470;
-        slotsY0 = 65;
+        const std::vector<GameObjectTypeId> & allUnits = player->GetAvailableUnits();
+
+        for(GameObjectTypeId t : allUnits)
+        {
+            const ObjectBasicData & data = dataReg->GetObjectData(t);
+
+            if(OCU_SOLDIER == data.objClass)
+                mTypes.push_back(t);
+        }
+    }
+    else if(ETYPE_UNITS_BASE == type)
+    {
+        const std::vector<GameObjectTypeId> & allUnits = player->GetAvailableUnits();
+
+        for(GameObjectTypeId t : allUnits)
+        {
+            const ObjectBasicData & data = dataReg->GetObjectData(t);
+
+            if(OCU_WORKER == data.objClass)
+                mTypes.push_back(t);
+        }
     }
     else
     {
@@ -519,14 +537,13 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     mBtnClose->SetX(GetWidth() - mBtnClose->GetWidth());
 
     // TITLE
-    const char * TITLES[NUM_ELEMENT_TYPES] =
-    {
-        "CREATE NEW UNIT",
-        "CREATE NEW STRUCTURE"
-    };
-
     auto font = fm->GetFont("Lato-Regular.ttf", 28, sgl::graphic::Font::NORMAL);
-    mTitle = new sgui::Label(TITLES[type], font, this);
+
+    if(ETYPE_STRUCTURES == type)
+        mTitle = new sgui::Label("CREATE NEW STRUCTURE", font, this);
+    else
+        mTitle = new sgui::Label("CREATE NEW UNIT", font, this);
+
     mTitle->SetColor(0xf1f2f4ff);
     mTitle->SetPosition(marginL, marginT);
 

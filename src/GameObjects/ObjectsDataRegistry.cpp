@@ -128,7 +128,7 @@ void ObjectsDataRegistry::InitObjectData()
                                   nullptr, 0, 1, 1));
 
     mData.emplace(GameObject::TYPE_UNIT_SCOUT1,
-                  ObjectBasicData(GameObject::TYPE_UNIT_SCOUT1, OCU_SCOUT, OCAT_UNIT,
+                  ObjectBasicData(GameObject::TYPE_UNIT_SCOUT1, OCU_SOLDIER, OCAT_UNIT,
                                   nullptr, 0, 1, 1));
 
     mData.emplace(GameObject::TYPE_UNIT_SOLDIER1,

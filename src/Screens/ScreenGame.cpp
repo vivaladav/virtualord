@@ -486,16 +486,22 @@ void ScreenGame::CreateUI()
     PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
 
     // create new unit
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT,
-                                       [this, panelObjActions]
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BARRACKS,
+        [this, panelObjActions]
     {
-        mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS);
+        mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_BARRACKS);
+    });
+
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE,
+        [this, panelObjActions]
+    {
+        mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_BASE);
     });
 
     // UNIT ACTIONS
     // build structure
     panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_STRUCT,
-                                       [this, panelObjActions]
+        [this, panelObjActions]
     {
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_STRUCTURES);
 

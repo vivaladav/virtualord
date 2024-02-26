@@ -17,8 +17,10 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     SetResizePolicy(ResizePolicy::DYNAMIC);
 
     // create all buttons
-    mButtons[BTN_BUILD_UNIT] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
-                                                      "Create a new unit", this);
+    mButtons[BTN_BUILD_UNIT_BARRACKS] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
+                                                               "Create a new soldier", this);
+    mButtons[BTN_BUILD_UNIT_BASE] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
+                                                           "Create a new worker", this);
     mButtons[BTN_MOVE] = new ObjectActionButton(ObjectActionButton::MOVE, "M", KeyboardEvent::KEY_M,
                                                 "Move your unit", this);
     mButtons[BTN_ATTACK] = new ObjectActionButton(ObjectActionButton::ATTACK, "K", KeyboardEvent::KEY_K,
@@ -43,12 +45,10 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
 
 PanelObjectActions::~PanelObjectActions()
 {
-
 }
 
 void PanelObjectActions::ClearObject()
 {
-
 }
 
 void PanelObjectActions::SetObject(GameObject * obj)
@@ -67,9 +67,7 @@ void PanelObjectActions::SetObject(GameObject * obj)
 
     if(objType == GameObject::TYPE_BASE)
     {
-        mButtons[BTN_BUILD_UNIT]->SetVisible(true);
-
-        // TODO handle upgrades
+        mButtons[BTN_BUILD_UNIT_BASE]->SetVisible(true);
     }
     else if(mObj->GetObjectCategory() == GameObject::CAT_UNIT)
     {
@@ -79,8 +77,13 @@ void PanelObjectActions::SetObject(GameObject * obj)
         mButtons[BTN_CONQUER_CELL]->SetVisible(true);
         mButtons[BTN_BUILD_WALL]->SetVisible(true);
         mButtons[BTN_BUILD_STRUCT]->SetVisible(true);
-
-        // TODO handle upgrades
+    }
+    else if(objType == GameObject::TYPE_BARRACKS)
+    {
+        if(obj->IsLinked())
+            mButtons[BTN_BUILD_UNIT_BARRACKS]->SetVisible(true);
+        else
+            mButtons[BTN_CANCEL]->SetVisible(false);
     }
     else if(objType == GameObject::TYPE_WALL_GATE)
     {

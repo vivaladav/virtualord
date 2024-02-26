@@ -21,7 +21,8 @@ class PanelObjectActions : public sgl::sgui::Widget
 public:
     enum Button
     {
-        BTN_BUILD_UNIT,
+        BTN_BUILD_UNIT_BARRACKS,
+        BTN_BUILD_UNIT_BASE,
         BTN_MOVE,
         BTN_ATTACK,
         BTN_HEAL,

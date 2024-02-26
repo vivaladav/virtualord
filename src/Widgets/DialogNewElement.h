@@ -40,7 +40,8 @@ class DialogNewElement : public sgl::sgui::Widget
 public:
     enum ElemType : unsigned int
     {
-        ETYPE_UNITS,
+        ETYPE_UNITS_BARRACKS,
+        ETYPE_UNITS_BASE,
         ETYPE_STRUCTURES,
 
         NUM_ELEMENT_TYPES

@@ -20,7 +20,6 @@ const char * ObjectBasicData::STR_CLASS[NUM_OBJ_CLASSES] =
 
     "GENERIC",
     "MEDIC",
-    "SCOUT",
     "SOLDIER",
     "WORKER",
 
