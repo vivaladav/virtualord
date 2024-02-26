@@ -10,6 +10,7 @@ namespace game
 enum ObjClass : unsigned int
 {
     // STRUCTURES
+    OCS_BARRACKS,
     OCS_BASE,
     OCS_GENERATOR,
     OCS_RADAR,

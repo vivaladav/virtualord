@@ -54,6 +54,7 @@ const int GameObject::ACTION_EXPERIENCE[NUM_OBJ_ACTIONS] =
 };
 
 // -- OBJECT TYPE --
+const std::string GameObject::TYPE_STR_BARRACKS("BARRACKS");
 const std::string GameObject::TYPE_STR_BASE("BASE");
 const std::string GameObject::TYPE_STR_BASE_SPOT("BASE_SPOT");
 const std::string GameObject::TYPE_STR_BLOBS("BLOBS");
@@ -85,6 +86,7 @@ const std::string GameObject::TYPE_STR_WALL_GATE("WALL_GATE");
 
 const GameObjectTypeId GameObject::TYPE_NULL = 0;
 
+const GameObjectTypeId GameObject::TYPE_BARRACKS = h{}(TYPE_STR_BARRACKS);
 const GameObjectTypeId GameObject::TYPE_BASE = h{}(TYPE_STR_BASE);
 const GameObjectTypeId GameObject::TYPE_BASE_SPOT = h{}(TYPE_STR_BASE_SPOT);
 const GameObjectTypeId GameObject::TYPE_BLOBS = h{}(TYPE_STR_BLOBS);
@@ -116,6 +118,7 @@ const GameObjectTypeId GameObject::TYPE_WALL_GATE = h{}(TYPE_STR_WALL_GATE);
 
 const std::unordered_map<GameObjectTypeId, std::string> GameObject::TYPE_STR_MAP =
 {
+    { GameObject::TYPE_BARRACKS, TYPE_STR_BARRACKS},
     { GameObject::TYPE_BASE, TYPE_STR_BASE},
     { GameObject::TYPE_BASE_SPOT, TYPE_STR_BASE_SPOT},
     { GameObject::TYPE_DEFENSIVE_TOWER, TYPE_STR_DEFENSIVE_TOWER },
@@ -158,6 +161,7 @@ std::string GameObject::GetObjectTypeStr(const GameObjectTypeId type)
 
 const std::unordered_map<GameObjectTypeId, std::string> GameObject::TITLES =
 {
+    { GameObject::TYPE_BARRACKS, "BARRACKS"},
     { GameObject::TYPE_BASE, "BASE"},
     { GameObject::TYPE_BASE_SPOT, "BASE SPOT"},
     { GameObject::TYPE_DEFENSIVE_TOWER, "DEFENSIVE TOWER"},
@@ -188,7 +192,8 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TITLES =
 
 const std::unordered_map<GameObjectTypeId, std::string> GameObject::DESCRIPTIONS =
 {
-    { GameObject::TYPE_BASE, "A control center. It can create units. "
+    { GameObject::TYPE_BARRACKS, "A structure that creates soldier units."},
+    { GameObject::TYPE_BASE, "A control center. It can create worker units."
                              "You need to defend it if you don't want to lose a territory."},
     { GameObject::TYPE_BASE_SPOT, "This represents where a faction base will be placed. "
                                   "Numbers identify the factions in a map."},

@@ -35,6 +35,10 @@ const ObjectFactionData & ObjectsDataRegistry::GetFactionData(PlayerFaction f, G
 
 void ObjectsDataRegistry::InitObjectData()
 {
+    mData.emplace(GameObject::TYPE_BARRACKS,
+                  ObjectBasicData(GameObject::TYPE_BARRACKS, OCS_BARRACKS, OCAT_GENERIC,
+                                  SpriteFileStructures, ID_STRUCT_BARRACKS, 2, 2));
+
     mData.emplace(GameObject::TYPE_BASE,
                   ObjectBasicData(GameObject::TYPE_BASE, OCS_BASE, OCAT_GENERIC,
                                   SpriteFileStructures, ID_STRUCT_BASE_L1, 3, 3));
@@ -153,6 +157,11 @@ void ObjectsDataRegistry::InitFactionData()
     // ===== FACTION 1 =====
     std::unordered_map<GameObjectTypeId, ObjectFactionData> & data1 = mFactionData[FACTION_1];
 
+    data1.emplace(GameObject::TYPE_BARRACKS,
+                  ObjectFactionData(std::vector<int>{ 5, 4, 0, 0, 0, 5, 4, 3 },
+                                    std::vector<int>{ 500, 500, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_BARRACKS_F1));
+
     data1.emplace(GameObject::TYPE_BASE,
                   ObjectFactionData(std::vector<int>{ 6, 6, 5, 4, 5, 5, 6, 6 },
                                     std::vector<int>{ 1000, 1000, 0, 0 },
@@ -261,6 +270,11 @@ void ObjectsDataRegistry::InitFactionData()
     // ===== FACTION 2 =====
     std::unordered_map<GameObjectTypeId, ObjectFactionData> & data2 = mFactionData[FACTION_2];
 
+    data2.emplace(GameObject::TYPE_BARRACKS,
+                  ObjectFactionData(std::vector<int>{ 5, 4, 0, 0, 0, 5, 4, 3 },
+                                    std::vector<int>{ 500, 500, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_BARRACKS_F2));
+
     data2.emplace(GameObject::TYPE_BASE,
                   ObjectFactionData(std::vector<int>{ 6, 6, 5, 4, 5, 5, 6, 6 },
                                     std::vector<int>{ 1000, 1000, 0, 0 },
@@ -368,6 +382,11 @@ void ObjectsDataRegistry::InitFactionData()
 
     // ===== FACTION 3 =====
     std::unordered_map<GameObjectTypeId, ObjectFactionData> & data3 = mFactionData[FACTION_3];
+
+    data3.emplace(GameObject::TYPE_BARRACKS,
+                  ObjectFactionData(std::vector<int>{ 5, 4, 0, 0, 0, 5, 4, 3 },
+                                    std::vector<int>{ 500, 500, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_BARRACKS_F3));
 
     data3.emplace(GameObject::TYPE_BASE,
                   ObjectFactionData(std::vector<int>{ 6, 6, 5, 4, 5, 5, 6, 6 },

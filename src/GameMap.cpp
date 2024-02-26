@@ -12,6 +12,7 @@
 #include "AI/ObjectPath.h"
 #include "AI/PlayerAI.h"
 #include "AI/WallBuildPath.h"
+#include "GameObjects/Barracks.h"
 #include "GameObjects/Base.h"
 #include "GameObjects/Blobs.h"
 #include "GameObjects/BlobsGenerator.h"
@@ -456,6 +457,8 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new RadarStation;
     else if(GameObject::TYPE_RADAR_TOWER == type)
         o2a.obj = new RadarTower;
+    else if(GameObject::TYPE_BARRACKS == type)
+        o2a.obj = new Barracks;
     else if(GameObject::TYPE_DEFENSIVE_TOWER == type)
     {
         const ObjectBasicData & data = GetObjectData(type);

@@ -34,6 +34,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
     p->SetMaxUnits(MAX_UNITS0);
 
     // assign initial available structures
+    p->AddAvailableStructure(GameObject::TYPE_BARRACKS);
     p->AddAvailableStructure(GameObject::TYPE_DEFENSIVE_TOWER);
     p->AddAvailableStructure(GameObject::TYPE_PRACTICE_TARGET);
     p->AddAvailableStructure(GameObject::TYPE_RADAR_STATION);
@@ -89,6 +90,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
         p->SetAI(ai);
 
         // assign initial available structures
+        p->AddAvailableStructure(GameObject::TYPE_BARRACKS);
         p->AddAvailableStructure(GameObject::TYPE_DEFENSIVE_TOWER);
         p->AddAvailableStructure(GameObject::TYPE_PRACTICE_TARGET);
         p->AddAvailableStructure(GameObject::TYPE_RADAR_STATION);

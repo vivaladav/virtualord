@@ -47,6 +47,7 @@ public:
     // -- OBJECT TYPE --
     static const GameObjectTypeId TYPE_NULL;
 
+    static const GameObjectTypeId TYPE_BARRACKS;
     static const GameObjectTypeId TYPE_BASE;
     static const GameObjectTypeId TYPE_BASE_SPOT;
     static const GameObjectTypeId TYPE_BLOBS;
@@ -226,6 +227,7 @@ private:
 private:
     static unsigned int counter;
 
+    static const std::string TYPE_STR_BARRACKS;
     static const std::string TYPE_STR_BASE;
     static const std::string TYPE_STR_BASE_SPOT;
     static const std::string TYPE_STR_BLOBS;
