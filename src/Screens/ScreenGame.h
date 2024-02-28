@@ -32,6 +32,7 @@ class GameHUD;
 class GameMap;
 class GameObject;
 class HealingRangeIndicator;
+class Hospital;
 class IsoLayer;
 class IsoMap;
 class MiniMap;
@@ -133,6 +134,8 @@ private:
                                 const std::function<void(bool)> & onDone = [](bool){});
     bool SetupUnitAttack(Unit * unit, GameObject * target, Player * player,
                          const std::function<void(bool)> & onDone = [](bool){});
+    bool SetupHospitalHeal(Hospital * hospital, GameObject * target, Player * player,
+                           const std::function<void(bool)> & onDone = [](bool){});
     bool SetupUnitHeal(Unit * unit, GameObject * target, Player * player,
                        const std::function<void(bool)> & onDone = [](bool){});
     bool SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D & end,

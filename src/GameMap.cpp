@@ -461,7 +461,10 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
     else if(GameObject::TYPE_BARRACKS == type)
         o2a.obj = new Barracks;
     else if(GameObject::TYPE_HOSPITAL == type)
-        o2a.obj = new Hospital;
+    {
+        const ObjectFactionData & fData = GetFactionData(faction, type);
+        o2a.obj = new Hospital(fData);
+    }
     else if(GameObject::TYPE_DEFENSIVE_TOWER == type)
     {
         const ObjectBasicData & data = GetObjectData(type);

@@ -15,6 +15,7 @@
 #include "AI/PlayerAI.h"
 #include "AI/WallBuildPath.h"
 #include "GameObjects/DefensiveTower.h"
+#include "GameObjects/Hospital.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "GameObjects/Temple.h"
 #include "GameObjects/Unit.h"
@@ -537,7 +538,19 @@ void ScreenGame::CreateUI()
     });
 
     // heal
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_HEAL, [this]
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_HEAL_HOSPITAL, [this]
+    {
+        auto hospital = static_cast<Hospital *>(mLocalPlayer->GetSelectedObject());
+        hospital->SetActiveAction(GameObjectActionType::HEAL);
+
+        ClearCellOverlays();
+
+        // show healing range overlay
+        const int range = hospital->GetRangeHealing();
+        ShowHealingIndicators(hospital, range);
+    });
+
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_HEAL_UNIT, [this]
     {
         auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::HEAL);
@@ -1229,6 +1242,15 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
                     unit->ClearTargetHealing();
                 }
             }
+            // object is a Hospital
+            else if(objType == GameObject::TYPE_HOSPITAL)
+            {
+                if(actType == GameObjectActionType::HEAL)
+                {
+                    auto hospital = static_cast<Hospital *>(obj);
+                    hospital->ClearTargetHealing();
+                }
+            }
 
             mObjActions.erase(it);
 
@@ -1700,6 +1722,29 @@ bool ScreenGame::SetupUnitAttack(Unit * unit, GameObject * target, Player * play
     return true;
 }
 
+bool ScreenGame::SetupHospitalHeal(Hospital * hospital, GameObject * target, Player * player,
+                                   const std::function<void(bool)> & onDone)
+{
+    const bool res = hospital->SetTargetHealing(target);
+
+    if(!res)
+    {
+        PlayLocalActionErrorSFX(player);
+        return false;
+    }
+
+    hospital->SetActiveAction(GameObjectActionType::IDLE);
+    hospital->SetCurrentAction(GameObjectActionType::HEAL);
+
+    // disable actions panel (if action is done by local player)
+    if(player->IsLocal())
+        mHUD->SetLocalActionsEnabled(false);
+
+    mObjActionsToDo.emplace_back(hospital, GameObjectActionType::HEAL, onDone);
+
+    return true;
+}
+
 bool ScreenGame::SetupUnitHeal(Unit * unit, GameObject * target, Player * player,
                                const std::function<void(bool)> & onDone)
 {
@@ -2158,7 +2203,7 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
     // selected object is a unit
     if(selObj->GetObjectCategory() == GameObject::CAT_UNIT)
     {
-        Unit * selUnit = static_cast<Unit *>(selObj);
+        auto selUnit = static_cast<Unit *>(selObj);
 
         const GameObjectActionType action = selUnit->GetActiveAction();
 
@@ -2247,6 +2292,15 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
             HandleUnitBuildWallOnMouseUp(selUnit, clickCell);
         else if (action == GameObjectActionType::BUILD_STRUCTURE)
             HandleUnitBuildStructureOnMouseUp(selUnit, clickCell);
+    }
+    else if(selObj->GetObjectType() == GameObject::TYPE_HOSPITAL)
+    {
+        auto selHospital = static_cast<Hospital *>(selObj);
+
+        const GameObjectActionType action = selHospital->GetActiveAction();
+
+        if(action == GameObjectActionType::HEAL)
+            SetupHospitalHeal(selHospital, clickObj, mLocalPlayer);
     }
 }
 
