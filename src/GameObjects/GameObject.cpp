@@ -60,6 +60,7 @@ const std::string GameObject::TYPE_STR_BASE_SPOT("BASE_SPOT");
 const std::string GameObject::TYPE_STR_BLOBS("BLOBS");
 const std::string GameObject::TYPE_STR_DEFENSIVE_TOWER("DEF_TOWER");
 const std::string GameObject::TYPE_STR_DIAMONDS("DIAMONDS");
+const std::string GameObject::TYPE_STR_HOSPITAL("HOSPITAL");
 const std::string GameObject::TYPE_STR_LOOTBOX("LOOTBOX");
 const std::string GameObject::TYPE_STR_MOUNTAINS("MOUNTAINS");
 const std::string GameObject::TYPE_STR_PRACTICE_TARGET("TARGET");
@@ -92,6 +93,7 @@ const GameObjectTypeId GameObject::TYPE_BASE_SPOT = h{}(TYPE_STR_BASE_SPOT);
 const GameObjectTypeId GameObject::TYPE_BLOBS = h{}(TYPE_STR_BLOBS);
 const GameObjectTypeId GameObject::TYPE_DEFENSIVE_TOWER = h{}(TYPE_STR_DEFENSIVE_TOWER);
 const GameObjectTypeId GameObject::TYPE_DIAMONDS = h{}(TYPE_STR_DIAMONDS);
+const GameObjectTypeId GameObject::TYPE_HOSPITAL = h{}(TYPE_STR_HOSPITAL);
 const GameObjectTypeId GameObject::TYPE_LOOTBOX = h{}(TYPE_STR_LOOTBOX);
 const GameObjectTypeId GameObject::TYPE_MOUNTAINS = h{}(TYPE_STR_MOUNTAINS);
 const GameObjectTypeId GameObject::TYPE_PRACTICE_TARGET = h{}(TYPE_STR_PRACTICE_TARGET);
@@ -122,6 +124,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TYPE_STR_MAP
     { GameObject::TYPE_BASE, TYPE_STR_BASE},
     { GameObject::TYPE_BASE_SPOT, TYPE_STR_BASE_SPOT},
     { GameObject::TYPE_DEFENSIVE_TOWER, TYPE_STR_DEFENSIVE_TOWER },
+    { GameObject::TYPE_HOSPITAL, TYPE_STR_HOSPITAL },
     { GameObject::TYPE_LOOTBOX, TYPE_STR_LOOTBOX },
     { GameObject::TYPE_MOUNTAINS, TYPE_STR_MOUNTAINS },
     { GameObject::TYPE_PRACTICE_TARGET, TYPE_STR_PRACTICE_TARGET },
@@ -165,6 +168,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TITLES =
     { GameObject::TYPE_BASE, "BASE"},
     { GameObject::TYPE_BASE_SPOT, "BASE SPOT"},
     { GameObject::TYPE_DEFENSIVE_TOWER, "DEFENSIVE TOWER"},
+    { GameObject::TYPE_HOSPITAL, "HOSPITAL"},
     { GameObject::TYPE_LOOTBOX, "LOOT BOX"},
     { GameObject::TYPE_MOUNTAINS, "MOUNTAINS"},
     { GameObject::TYPE_PRACTICE_TARGET, "PRACTICE TARGET"},
@@ -198,6 +202,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::DESCRIPTIONS
     { GameObject::TYPE_BASE_SPOT, "This represents where a faction base will be placed. "
                                   "Numbers identify the factions in a map."},
     { GameObject::TYPE_DEFENSIVE_TOWER, "A basic defensive tower."},
+    { GameObject::TYPE_HOSPITAL, "A structure that creates medics and that can heal units."},
     { GameObject::TYPE_LOOTBOX, "A loot box that can be collected by a unit to obtain various resources."},
     { GameObject::TYPE_MOUNTAINS, "Some mountains"},
     { GameObject::TYPE_PRACTICE_TARGET, "A practice target.\nIt can be used to train your units "

@@ -55,6 +55,10 @@ void ObjectsDataRegistry::InitObjectData()
                   ObjectBasicData(GameObject::TYPE_DIAMONDS, OCO_COLLECTABLE, OCAT_UNDEFINED,
                                   SpriteCollectiblesFile, DIAMONDS_1, 1, 1));
 
+    mData.emplace(GameObject::TYPE_HOSPITAL,
+                  ObjectBasicData(GameObject::TYPE_HOSPITAL, OCS_HOSPITAL, OCAT_GENERIC,
+                                  SpriteFileStructures, ID_STRUCT_HOSPITAL, 2, 2));
+
     mData.emplace(GameObject::TYPE_DEFENSIVE_TOWER,
                   ObjectBasicData(GameObject::TYPE_DEFENSIVE_TOWER, OCS_TOWER, OCAT_DEFENSE,
                                   SpriteFileStructures, ID_STRUCT_DTOWER_L1, 1, 1));
@@ -172,6 +176,11 @@ void ObjectsDataRegistry::InitFactionData()
                                     std::vector<int>{ 150, 150, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_DTOWER_L1_F1));
 
+    data1.emplace(GameObject::TYPE_HOSPITAL,
+                  ObjectFactionData(std::vector<int>{ 6, 4, 0, 0, 0, 5, 3, 2 },
+                                    std::vector<int>{ 1000, 500, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_HOSPITAL_F1));
+
     data1.emplace(GameObject::TYPE_PRACTICE_TARGET,
                   ObjectFactionData(std::vector<int>{ 8, 2, 0, 0, 0, 5, 8, 8 },
                                     std::vector<int>{ 50, 50, 0, 0 },
@@ -285,6 +294,11 @@ void ObjectsDataRegistry::InitFactionData()
                                     std::vector<int>{ 150, 150, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_DTOWER_L1_F2));
 
+    data2.emplace(GameObject::TYPE_HOSPITAL,
+                  ObjectFactionData(std::vector<int>{ 6, 4, 0, 0, 0, 5, 3, 2 },
+                                    std::vector<int>{ 1000, 500, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_HOSPITAL_F2));
+
     data2.emplace(GameObject::TYPE_PRACTICE_TARGET,
                   ObjectFactionData(std::vector<int>{ 8, 2, 0, 0, 0, 5, 8, 8 },
                                     std::vector<int>{ 50, 50, 0, 0 },
@@ -397,6 +411,11 @@ void ObjectsDataRegistry::InitFactionData()
                   ObjectFactionData(std::vector<int>{ 5, 4, 4, 4, 5, 5, 5, 5 },
                                     std::vector<int>{ 150, 150, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_DTOWER_L1_F3));
+
+    data3.emplace(GameObject::TYPE_HOSPITAL,
+                  ObjectFactionData(std::vector<int>{ 6, 4, 0, 0, 0, 5, 3, 2 },
+                                    std::vector<int>{ 1000, 500, 0, 0 },
+                                    SpriteFileStructures, ID_STRUCT_HOSPITAL_F3));
 
     data3.emplace(GameObject::TYPE_PRACTICE_TARGET,
                   ObjectFactionData(std::vector<int>{ 8, 2, 0, 0, 0, 5, 8, 8 },

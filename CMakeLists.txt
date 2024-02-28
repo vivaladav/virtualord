@@ -83,6 +83,8 @@ add_executable(
     src/GameObjects/GameObject.cpp
     src/GameObjects/GameObjectAction.h
     src/GameObjects/GameObjectTypes.h
+    src/GameObjects/Hospital.h
+    src/GameObjects/Hospital.cpp
     src/GameObjects/LootBox.h
     src/GameObjects/LootBox.cpp
     src/GameObjects/ObjectData.h

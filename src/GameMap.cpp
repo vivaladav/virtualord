@@ -19,6 +19,7 @@
 #include "GameObjects/DefensiveTower.h"
 #include "GameObjects/Diamonds.h"
 #include "GameObjects/DiamondsGenerator.h"
+#include "GameObjects/Hospital.h"
 #include "GameObjects/LootBox.h"
 #include "GameObjects/ObjectData.h"
 #include "GameObjects/ObjectsDataRegistry.h"
@@ -459,6 +460,8 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new RadarTower;
     else if(GameObject::TYPE_BARRACKS == type)
         o2a.obj = new Barracks;
+    else if(GameObject::TYPE_HOSPITAL == type)
+        o2a.obj = new Hospital;
     else if(GameObject::TYPE_DEFENSIVE_TOWER == type)
     {
         const ObjectBasicData & data = GetObjectData(type);

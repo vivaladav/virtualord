@@ -13,6 +13,7 @@ enum ObjClass : unsigned int
     OCS_BARRACKS,
     OCS_BASE,
     OCS_GENERATOR,
+    OCS_HOSPITAL,
     OCS_RADAR,
     OCS_RELICS,
     OCS_STORAGE,
