@@ -154,12 +154,14 @@ public:
     GameObjectVariantId GetObjectVariant() const;
     void SetObjectVariant(GameObjectVariantId var);
 
+    bool IsHealthMax() const;
     float GetHealth() const;
     float GetMaxHealth() const;
     void SetMaxHealth(float max);
     void SetHealth(float val);
     void SumHealth(float val);
 
+    bool IsEnergyMax() const;
     float GetEnergy() const;
     void SetEnergy(float val);
     void SumEnergy(float val);

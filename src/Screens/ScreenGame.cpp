@@ -1260,6 +1260,8 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
             // re-enable actions for local player
             if(obj->GetFaction() == mLocalPlayer->GetFaction())
             {
+                ClearCellOverlays();
+
                 mHUD->SetLocalActionsEnabled(true);
 
                 // show current indicator for units

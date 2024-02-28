@@ -322,6 +322,12 @@ void GameObject::SetObjectVariant(GameObjectVariantId var)
     UpdateGraphics();
 }
 
+bool GameObject::IsHealthMax() const
+{
+    const float delta = 0.01f;
+    return  mHealth >= mMaxHealth || (mMaxHealth - mHealth) < delta;
+}
+
 void GameObject::SetHealth(float val)
 {
     const float minDelta = 0.01f;
@@ -343,6 +349,12 @@ void GameObject::SetHealth(float val)
 void GameObject::SumHealth(float val)
 {
     SetHealth(mHealth + val);
+}
+
+bool GameObject::IsEnergyMax() const
+{
+    const float delta = 0.01f;
+    return  mEnergy >= mMaxEnergy || (mMaxEnergy - mEnergy) < delta;
 }
 
 void GameObject::SetEnergy(float val)
