@@ -33,10 +33,14 @@ public:
 
     void Update(float delta) override;
 
+    // build
     bool CanBuild() const;
     void ClearStructureToBuild();
     void SetStructureToBuild(GameObjectTypeId type);
     GameObjectTypeId GetStructureToBuild() const;
+
+    // conquer
+    bool CanConquer() const;
 
     int GetStat(unsigned int index) const;
 

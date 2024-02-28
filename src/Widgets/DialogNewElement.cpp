@@ -505,6 +505,18 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
                 mTypes.push_back(t);
         }
     }
+    else if(ETYPE_UNITS_HOSPITAL == type)
+    {
+        const std::vector<GameObjectTypeId> & allUnits = player->GetAvailableUnits();
+
+        for(GameObjectTypeId t : allUnits)
+        {
+            const ObjectBasicData & data = dataReg->GetObjectData(t);
+
+            if(OCU_MEDIC == data.objClass)
+                mTypes.push_back(t);
+        }
+    }
     else
     {
         midBgH = 515;

@@ -23,6 +23,7 @@ public:
     {
         BTN_BUILD_UNIT_BARRACKS,
         BTN_BUILD_UNIT_BASE,
+        BTN_BUILD_UNIT_HOSPITAL,
         BTN_MOVE,
         BTN_ATTACK,
         BTN_HEAL,

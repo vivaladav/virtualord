@@ -634,7 +634,7 @@ bool GameMap::AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) 
     return (distR == 0 && distC == maxDist) || (distR == maxDist && distC == 0);
 }
 
-bool GameMap::CanConquerCell(const Cell2D & cell, Player * player)
+bool GameMap::CanConquerCell(Unit * unit, const Cell2D & cell, Player * player)
 {
     const unsigned int r = static_cast<unsigned int>(cell.row);
     const unsigned int c = static_cast<unsigned int>(cell.col);
@@ -654,7 +654,23 @@ bool GameMap::CanConquerCell(const Cell2D & cell, Player * player)
     if(gcell.owner == player)
         return false;
 
-    // check if unit has enough energy - LAST CHECK
+    // no unit
+    if(nullptr == unit)
+        return false;
+
+    // not player's unit
+    if(unit->GetFaction() != player->GetFaction())
+        return false;
+
+    // unit can't conquer
+    if(!unit->CanConquer())
+        return false;
+
+    // unit doesn't have enough energy
+    if(!unit->HasEnergyForActionStep(CONQUER_STRUCTURE))
+        return false;
+
+    // check if player has enough material - LAST CHECK
     return player->HasEnough(Player::Stat::MATERIAL, COST_CONQUEST_CELL);
 }
 
@@ -988,6 +1004,10 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
     if(unit->GetFaction() != player->GetFaction())
         return false;
 
+    // unit can't conquer
+    if(!unit->CanConquer())
+        return false;
+
     // unit doesn't have enough energy
     if(!unit->HasEnergyForActionStep(CONQUER_STRUCTURE))
         return false;
@@ -1314,8 +1334,11 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     if(player->GetNumUnits() == player->GetMaxUnits())
         return false;
 
-    // only base can generate units (for now)
-    if(gen->GetObjectType() != GameObject::TYPE_BASE)
+    // check if generator is valid
+    const GameObjectTypeId genType = gen->GetObjectType();
+
+    if(genType != GameObject::TYPE_BASE && genType != GameObject::TYPE_BARRACKS &&
+       genType != GameObject::TYPE_HOSPITAL)
         return false;
 
     // generator is already busy
@@ -1338,8 +1361,8 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     const int r0 = gen->GetRow0() < static_cast<int>(mRows - 1) ? gen->GetRow0() + 1 : mRows - 1;
     const int c0 = gen->GetCol0() < static_cast<int>(mCols - 1) ? gen->GetCol0() + 1 : mCols - 1;
 
-    const int indBaseTop = r1 * mCols;
-    const int indBaseBottom = r0 * mCols;
+    const int indGenTop = r1 * mCols;
+    const int indGenBottom = r0 * mCols;
 
     // NOTE for simplicity corner cells are overlapping and sometimes checked twice.
     // This can be optimized, but it's probably not worth it for now.
@@ -1354,7 +1377,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     // check top (left to right)
     for(int c = c1; c <= c0; ++c)
     {
-        if(mCells[indBaseTop + c].walkable)
+        if(mCells[indGenTop + c].walkable)
             return true;
     }
 
@@ -1368,7 +1391,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     // check bottom (left to right)
     for(int c = c1; c <= c0; ++c)
     {
-        if(mCells[indBaseBottom + c].walkable)
+        if(mCells[indGenBottom + c].walkable)
             return true;
     }
 

@@ -42,6 +42,7 @@ public:
     {
         ETYPE_UNITS_BARRACKS,
         ETYPE_UNITS_BASE,
+        ETYPE_UNITS_HOSPITAL,
         ETYPE_STRUCTURES,
 
         NUM_ELEMENT_TYPES

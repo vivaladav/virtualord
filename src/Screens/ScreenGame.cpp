@@ -494,6 +494,12 @@ void ScreenGame::CreateUI()
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_BASE);
     });
 
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_HOSPITAL,
+        [this, panelObjActions]
+    {
+        mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_HOSPITAL);
+    });
+
     // UNIT ACTIONS
     // build structure
     panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_STRUCT,
@@ -1870,6 +1876,10 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
 
     // visible, but it can't be conquered -> exit
     if(!clickObj->CanBeConquered())
+        return ;
+
+    // unit can't conquer
+    if(!unit->CanConquer())
         return ;
 
     // object is adjacent -> try to interact

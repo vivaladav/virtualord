@@ -128,7 +128,7 @@ bool ConquerPath::InitNextConquest()
     IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
 
     // can't conquer current cell -> try to move to next one
-    if(!mGameMap->CanConquerCell(nextCell, player))
+    if(!mGameMap->CanConquerCell(mUnit, nextCell, player))
     {
         // remove current indicator
         if(mLocalPlayer && mNextCell < mIndicators.size())

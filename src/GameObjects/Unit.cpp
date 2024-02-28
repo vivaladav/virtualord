@@ -143,6 +143,11 @@ bool Unit::CanBuild() const
 
 void Unit::ClearStructureToBuild() { mStructToBuild = GameObject::TYPE_NULL; }
 
+bool Unit::CanConquer() const
+{
+    return mAttributes[OSTAT_CONQUEST] > 0;
+}
+
 int Unit::GetStat(unsigned int index) const
 {
     if(index < mAttributes.size())

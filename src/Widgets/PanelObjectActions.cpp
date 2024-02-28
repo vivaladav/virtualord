@@ -22,6 +22,8 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
                                                                "Create a new soldier", this);
     mButtons[BTN_BUILD_UNIT_BASE] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
                                                            "Create a new worker", this);
+    mButtons[BTN_BUILD_UNIT_HOSPITAL] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
+                                                               "Create a new medic", this);
     mButtons[BTN_MOVE] = new ObjectActionButton(ObjectActionButton::MOVE, "M", KeyboardEvent::KEY_M,
                                                 "Move your unit", this);
     mButtons[BTN_ATTACK] = new ObjectActionButton(ObjectActionButton::ATTACK, "K", KeyboardEvent::KEY_K,
@@ -74,7 +76,6 @@ void PanelObjectActions::SetObject(GameObject * obj)
     {
         auto unit = static_cast<Unit *>(mObj);
 
-        mButtons[BTN_CONQUER_CELL]->SetVisible(true);
         mButtons[BTN_MOVE]->SetVisible(true);
 
         if(unit->CanAttack())
@@ -86,6 +87,9 @@ void PanelObjectActions::SetObject(GameObject * obj)
             mButtons[BTN_BUILD_STRUCT]->SetVisible(true);
         }
 
+        if(unit->CanConquer())
+            mButtons[BTN_CONQUER_CELL]->SetVisible(true);
+
         if(unit->CanHeal())
             mButtons[BTN_HEAL]->SetVisible(true);
     }
@@ -93,6 +97,13 @@ void PanelObjectActions::SetObject(GameObject * obj)
     {
         if(obj->IsLinked())
             mButtons[BTN_BUILD_UNIT_BARRACKS]->SetVisible(true);
+        else
+            mButtons[BTN_CANCEL]->SetVisible(false);
+    }
+    else if(objType == GameObject::TYPE_HOSPITAL)
+    {
+        if(obj->IsLinked())
+            mButtons[BTN_BUILD_UNIT_HOSPITAL]->SetVisible(true);
         else
             mButtons[BTN_CANCEL]->SetVisible(false);
     }
