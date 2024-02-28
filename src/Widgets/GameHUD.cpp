@@ -186,10 +186,17 @@ void GameHUD::SetMiniMapEnabled(bool val)
     mButtonMinimap->SetVisible(false);
 }
 
-void GameHUD::HidePanelObjActions()
+void GameHUD::HidePanelObjectActions()
 {
     mPanelObjActions->ClearObject();
     mPanelObjActions->SetVisible(false);
+}
+
+void GameHUD::ShowPanelObjectActions(GameObject * obj)
+{
+    mPanelObjActions->SetObject(obj);
+    mPanelObjActions->SetVisible(true);
+    mPanelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
 }
 
 void GameHUD::SetQuickUnitButtonChecked(GameObject * obj)

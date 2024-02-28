@@ -319,7 +319,7 @@ void ScreenGame::ClearSelection(Player * player)
         return ;
 
     mHUD->ClearQuickUnitButtonChecked();
-    mHUD->HidePanelObjActions();
+    mHUD->HidePanelObjectActions();
     mHUD->HidePanelSelectedObject();
     mHUD->HideDialogNewElement();
 
@@ -354,11 +354,7 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
         }
     }
 
-    PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
-    panelObjActions->SetObject(obj);
-    panelObjActions->SetVisible(true);
-    panelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
-
+    mHUD->ShowPanelObjectActions(obj);
     mHUD->ShowPanelSelectedObject(obj);
 
     sgl::sgui::Stage::Instance()->SetFocus();

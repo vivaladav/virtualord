@@ -44,7 +44,8 @@ public:
     MiniMap * GetMinimap() const;
 
     PanelObjectActions * GetPanelObjectActions() const;
-    void HidePanelObjActions();
+    void HidePanelObjectActions();
+    void ShowPanelObjectActions(GameObject * obj);
 
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
