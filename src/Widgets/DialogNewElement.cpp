@@ -725,29 +725,29 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     int panelsX = panelsX0;
     int panelsY = panelsY0;
 
-    for(int c = 0; c < PANELS_ATT_COLS; ++c)
+    for(int c = 0; c < VIS_ATT_COLS; ++c)
     {
-        const int ind0 = c * PANELS_ATT_ROWS;
+        const int ind0 = c * VIS_ATT_ROWS;
 
-        for(int r = 0; r < PANELS_ATT_ROWS; ++r)
+        for(int r = 0; r < VIS_ATT_ROWS; ++r)
         {
             const int ind = ind0 + r;
 
             auto panAtt = new ObjectVisualAttribute(this);
             panAtt->SetPosition(panelsX, panelsY);
 
-            mPanelsAtt[ind] = panAtt;
+            mVisAtt[ind] = panAtt;
 
             panelsY += panAtt->GetHeight() - panelBorder;
         }
 
-        panelsX += mPanelsAtt[0]->GetWidth() - panelBorder;
+        panelsX += mVisAtt[0]->GetWidth() - panelBorder;
         panelsY = panelsY0;
     }
 
     // BUTTON BUILD
     mBtnBuild = new ButtonBuild(this);
-    const ObjectVisualAttribute * lastPanel = mPanelsAtt[NUM_PANELS_ATT - 1];
+    const ObjectVisualAttribute * lastPanel = mVisAtt[NUM_VIS_ATT - 1];
     const int btnX = lastPanel->GetX() + lastPanel->GetWidth() - mBtnBuild->GetWidth();
     const int marginBtnTop = 15;
     const int btnY = lastPanel->GetY() + lastPanel->GetHeight() + marginBtnTop;
@@ -917,14 +917,23 @@ void DialogNewElement::ShowData(int ind)
     for(int i = 0; i < NUM_COSTS; ++i)
         mLabelsCost[i]->SetText(std::to_string(fData.costs[i]).c_str());
 
-    // STATS
+    // ATTRIBUTES
     const int numStats = fData.stats.size();
+    int statsAdded = 0;
 
     for(int i = 0; i < numStats; ++i)
-        mPanelsAtt[i]->SetData(ObjectFactionData::STR_STAT[i], fData.stats[i]);
+    {
+        const int val = fData.stats[i];
 
-    for(int i = numStats; i < NUM_PANELS_ATT; ++i)
-        mPanelsAtt[i]->ClearData();
+        if(val > 0)
+        {
+            mVisAtt[statsAdded]->SetData(ObjectFactionData::STR_STAT[i], val);
+            ++statsAdded;
+        }
+    }
+
+    for(int i = statsAdded; i < NUM_VIS_ATT; ++i)
+        mVisAtt[i]->ClearData();
 }
 
 void DialogNewElement::CheckBuild(int ind)

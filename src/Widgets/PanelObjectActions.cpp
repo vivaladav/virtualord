@@ -1,5 +1,6 @@
 #include "Widgets/PanelObjectActions.h"
 
+#include "GameObjects/Unit.h"
 #include "GameObjects/WallGate.h"
 #include "Widgets/ObjectActionButton.h"
 
@@ -26,9 +27,9 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     mButtons[BTN_ATTACK] = new ObjectActionButton(ObjectActionButton::ATTACK, "K", KeyboardEvent::KEY_K,
                                                   "Attack a target", this);
     mButtons[BTN_HEAL] = new ObjectActionButton(ObjectActionButton::HEAL, "H", KeyboardEvent::KEY_H,
-                                                  "Heal/repair a target", this);
+                                                  "Heal a target", this);
     mButtons[BTN_CONQUER_CELL] = new ObjectActionButton(ObjectActionButton::CONQUER_CELL, "C", KeyboardEvent::KEY_C,
-                                                        "Conquer one or more cells", this);
+                                                        "Conquer cells", this);
     mButtons[BTN_BUILD_WALL] = new ObjectActionButton(ObjectActionButton::BUILD_WALL, "L", KeyboardEvent::KEY_L,
                                                       "Build a wall", this);
     mButtons[BTN_BUILD_STRUCT] = new ObjectActionButton(ObjectActionButton::BUILD_STRUCT, "B", KeyboardEvent::KEY_B,
@@ -36,7 +37,7 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     mButtons[BTN_UPGRADE] = new ObjectActionButton(ObjectActionButton::UPGRADE, "U", KeyboardEvent::KEY_U,
                                                    "Upgrade", this);
     mButtons[BTN_OPEN_GATE] = new ObjectActionButton(ObjectActionButton::OPEN_GATE, "G", KeyboardEvent::KEY_G,
-                                                     "Open the game", this);
+                                                     "Open the gate", this);
     mButtons[BTN_CLOSE_GATE] = new ObjectActionButton(ObjectActionButton::CLOSE_GATE, "G", KeyboardEvent::KEY_G,
                                                       "Close the gate", this);
     mButtons[BTN_CANCEL] = new ObjectActionButton(ObjectActionButton::CANCEL, "X", KeyboardEvent::KEY_X,
@@ -71,12 +72,22 @@ void PanelObjectActions::SetObject(GameObject * obj)
     }
     else if(mObj->GetObjectCategory() == GameObject::CAT_UNIT)
     {
-        mButtons[BTN_MOVE]->SetVisible(true);
-        mButtons[BTN_ATTACK]->SetVisible(true);
-        mButtons[BTN_HEAL]->SetVisible(true);
+        auto unit = static_cast<Unit *>(mObj);
+
         mButtons[BTN_CONQUER_CELL]->SetVisible(true);
-        mButtons[BTN_BUILD_WALL]->SetVisible(true);
-        mButtons[BTN_BUILD_STRUCT]->SetVisible(true);
+        mButtons[BTN_MOVE]->SetVisible(true);
+
+        if(unit->CanAttack())
+            mButtons[BTN_ATTACK]->SetVisible(true);
+
+        if(unit->CanBuild())
+        {
+            mButtons[BTN_BUILD_WALL]->SetVisible(true);
+            mButtons[BTN_BUILD_STRUCT]->SetVisible(true);
+        }
+
+        if(unit->CanHeal())
+            mButtons[BTN_HEAL]->SetVisible(true);
     }
     else if(objType == GameObject::TYPE_BARRACKS)
     {

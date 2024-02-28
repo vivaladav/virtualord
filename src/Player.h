@@ -102,9 +102,6 @@ public:
 
     void SetOnNumUnitsChanged(const std::function<void()> & f);
 
-    int GetTotalUnitsLevel() const;
-    void SumTotalUnitsLevel(int val);
-
     // available structures
     void AddAvailableStructure(GameObjectTypeId type);
     const std::vector<GameObjectTypeId> & GetAvailableStructures() const;
@@ -183,8 +180,6 @@ private:
     float mTurnMaxEnergy;
 
     int mNumCells = 0;
-    int mTotCellsLevel = 0;
-    int mTotUnitsLevel = 0;
     unsigned int mMaxUnits = 0;
 };
 
@@ -265,9 +260,6 @@ inline void Player::SetOnNumUnitsChanged(const std::function<void()> & f)
 {
     mOnNumUnitsChanged = f;
 }
-
-inline int Player::GetTotalUnitsLevel() const { return mTotUnitsLevel; }
-inline void Player::SumTotalUnitsLevel(int val) { mTotUnitsLevel += val; }
 
 inline const std::vector<GameObjectTypeId> &Player::GetAvailableStructures() const
 {

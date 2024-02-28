@@ -351,11 +351,20 @@ void DialogObject::SetObject(GameObject * obj)
 
     // ATTRIBUTES
     const int numStats = fData.stats.size();
+    int statsAdded = 0;
 
     for(int i = 0; i < numStats; ++i)
-        mVisAtt[i]->SetData(ObjectFactionData::STR_STAT[i], fData.stats[i]);
+    {
+        const int val = fData.stats[i];
 
-    for(int i = numStats; i < NUM_VIS_ATT; ++i)
+        if(val > 0)
+        {
+            mVisAtt[statsAdded]->SetData(ObjectFactionData::STR_STAT[i], val);
+            ++statsAdded;
+        }
+    }
+
+    for(int i = statsAdded; i < NUM_VIS_ATT; ++i)
         mVisAtt[i]->ClearData();
 }
 

@@ -58,7 +58,6 @@ enum ObjStatId : unsigned int
     OSTAT_HEALING,
 
     NUM_TOT_OBJ_STATS,
-    NUM_UNIT_STATS = NUM_TOT_OBJ_STATS - NUM_GEN_OBJ_STATS
 };
 
 enum ObjFamily : unsigned int

@@ -1580,7 +1580,6 @@ void GameMap::CreateUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & d
 
     // update player
     player->AddUnit(unit);
-    player->SumTotalUnitsLevel(unit->GetUnitLevel() + 1);
 
     // update visibility map
     AddPlayerObjVisibility(unit, player);

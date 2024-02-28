@@ -69,14 +69,14 @@ private:
     void PositionElements();
 
 private:
-    static const int PANELS_ATT_ROWS = 7;
-    static const int PANELS_ATT_COLS = 2;
-    static const int NUM_PANELS_ATT = PANELS_ATT_ROWS * PANELS_ATT_COLS;
+    static const int VIS_ATT_ROWS = 7;
+    static const int VIS_ATT_COLS = 2;
+    static const int NUM_VIS_ATT = VIS_ATT_ROWS * VIS_ATT_COLS;
 
     static const int NUM_COSTS = 4;
 
 private:
-    std::array<ObjectVisualAttribute *, NUM_PANELS_ATT> mPanelsAtt;
+    std::array<ObjectVisualAttribute *, NUM_VIS_ATT> mVisAtt;
     std::array<sgl::sgui::Label *, NUM_COSTS> mLabelsCost;
 
     std::vector<GameObjectTypeId> mTypes;
