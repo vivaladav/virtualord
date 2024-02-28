@@ -294,6 +294,7 @@ void ScreenMainMenu::CreateChangelog()
                          "- New map object: loot box.\n"
                          "- New map object: abandoned temple.\n"
                          "- New map object: barracks.\n"
+                         "- New map object: hospital.\n"
                          "- New unit: medic.\n"
                          "- New unit action: healing.\n"
                          "- Trees now can grow into surrounding cells.\n"
