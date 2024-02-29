@@ -13,6 +13,7 @@ const char * ObjectBasicData::STR_CLASS[NUM_OBJ_CLASSES] =
     "HOSPITAL",
     "RADAR",
     "RELICS",
+    "RESEARCH",
     "STORAGE",
     "TARGET",
     "TOWER",

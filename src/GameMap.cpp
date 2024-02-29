@@ -26,6 +26,7 @@
 #include "GameObjects/PracticeTarget.h"
 #include "GameObjects/RadarStation.h"
 #include "GameObjects/RadarTower.h"
+#include "GameObjects/ResearchCenter.h"
 #include "GameObjects/ResourceGenerator.h"
 #include "GameObjects/ResourceStorage.h"
 #include "GameObjects/SceneObject.h"
@@ -460,6 +461,8 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new RadarTower;
     else if(GameObject::TYPE_BARRACKS == type)
         o2a.obj = new Barracks;
+    else if(GameObject::TYPE_RESEARCH_CENTER == type)
+        o2a.obj = new ResearchCenter;
     else if(GameObject::TYPE_HOSPITAL == type)
     {
         const ObjectFactionData & fData = GetFactionData(faction, type);

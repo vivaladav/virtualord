@@ -83,6 +83,10 @@ void ObjectsDataRegistry::InitObjectData()
                   ObjectBasicData(GameObject::TYPE_RADAR_STATION, OCS_RADAR, OCAT_TECHNOLOGY,
                                   SpriteFileStructures, ID_STRUCT_RADAR_TOWER, 1, 1));
 
+    mData.emplace(GameObject::TYPE_RESEARCH_CENTER,
+                  ObjectBasicData(GameObject::TYPE_RESEARCH_CENTER, OCS_RESEARCH, OCAT_TECHNOLOGY,
+                                  SpriteFileStructures, ID_STRUCT_RESEARCH_CENTER, 2, 2));
+
     mData.emplace(GameObject::TYPE_RES_GEN_ENERGY,
                   ObjectBasicData(GameObject::TYPE_RES_GEN_ENERGY, OCS_GENERATOR, OCAT_RESOURCES,
                                   SpriteFileStructures, ID_STRUCT_GEN_ENERGY, 2, 2));
@@ -195,6 +199,11 @@ void ObjectsDataRegistry::InitFactionData()
                   ObjectFactionData(std::vector<int>{ 3, 6, 0, 0, 0, 3, 4, 2, 0, 0, 0, 0 },
                                     std::vector<int>{ 100, 50, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_RADAR_TOWER_F1));
+
+    data1.emplace(GameObject::TYPE_RESEARCH_CENTER,
+                  ObjectFactionData(std::vector<int>{ 4, 4, 0, 0, 0, 4, 3, 2, 0, 0, 0, 0 },
+                                    std::vector<int>{ 1000, 500, 100, 100 },
+                                    SpriteFileStructures, ID_STRUCT_RESEARCH_CENTER_F1));
 
     data1.emplace(GameObject::TYPE_RES_GEN_ENERGY,
                   ObjectFactionData(std::vector<int>{ 9, 4, 0, 0, 0, 3, 2, 1, 0, 0, 0, 0 },
@@ -314,6 +323,11 @@ void ObjectsDataRegistry::InitFactionData()
                                     std::vector<int>{ 100, 50, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_RADAR_TOWER_F2));
 
+    data2.emplace(GameObject::TYPE_RESEARCH_CENTER,
+                  ObjectFactionData(std::vector<int>{ 4, 4, 0, 0, 0, 4, 3, 2, 0, 0, 0, 0 },
+                                    std::vector<int>{ 1000, 500, 100, 100 },
+                                    SpriteFileStructures, ID_STRUCT_RESEARCH_CENTER_F2));
+
     data2.emplace(GameObject::TYPE_RES_GEN_ENERGY,
                   ObjectFactionData(std::vector<int>{ 9, 4, 0, 0, 0, 3, 2, 1, 0, 0, 0, 0 },
                                     std::vector<int>{ 0, 0, 0, 0 },
@@ -431,6 +445,11 @@ void ObjectsDataRegistry::InitFactionData()
                   ObjectFactionData(std::vector<int>{ 3, 6, 0, 0, 0, 3, 4, 2, 0, 0, 0, 0 },
                                     std::vector<int>{ 100, 50, 0, 0 },
                                     SpriteFileStructures, ID_STRUCT_RADAR_TOWER_F3));
+
+    data3.emplace(GameObject::TYPE_RESEARCH_CENTER,
+                  ObjectFactionData(std::vector<int>{ 4, 4, 0, 0, 0, 4, 3, 2, 0, 0, 0, 0 },
+                                    std::vector<int>{ 1000, 500, 100, 100 },
+                                    SpriteFileStructures, ID_STRUCT_RESEARCH_CENTER_F3));
 
     data3.emplace(GameObject::TYPE_RES_GEN_ENERGY,
                   ObjectFactionData(std::vector<int>{ 9, 4, 0, 0, 0, 3, 2, 1, 0, 0, 0, 0 },

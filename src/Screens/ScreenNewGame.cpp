@@ -40,6 +40,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
     p->AddAvailableStructure(GameObject::TYPE_PRACTICE_TARGET);
     p->AddAvailableStructure(GameObject::TYPE_RADAR_STATION);
     p->AddAvailableStructure(GameObject::TYPE_RADAR_TOWER);
+    p->AddAvailableStructure(GameObject::TYPE_RESEARCH_CENTER);
     p->AddAvailableStructure(GameObject::TYPE_RES_GEN_ENERGY_SOLAR);
     p->AddAvailableStructure(GameObject::TYPE_RES_GEN_MATERIAL_EXTRACT);
     p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_BLOBS);
@@ -97,6 +98,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
         p->AddAvailableStructure(GameObject::TYPE_PRACTICE_TARGET);
         p->AddAvailableStructure(GameObject::TYPE_RADAR_STATION);
         p->AddAvailableStructure(GameObject::TYPE_RADAR_TOWER);
+        p->AddAvailableStructure(GameObject::TYPE_RESEARCH_CENTER);
         p->AddAvailableStructure(GameObject::TYPE_RES_GEN_ENERGY_SOLAR);
         p->AddAvailableStructure(GameObject::TYPE_RES_GEN_MATERIAL_EXTRACT);
         p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_BLOBS);

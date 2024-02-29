@@ -16,6 +16,7 @@ enum ObjClass : unsigned int
     OCS_HOSPITAL,
     OCS_RADAR,
     OCS_RELICS,
+    OCS_RESEARCH,
     OCS_STORAGE,
     OCS_TARGET,
     OCS_TOWER,

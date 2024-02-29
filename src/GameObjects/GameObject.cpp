@@ -66,6 +66,7 @@ const std::string GameObject::TYPE_STR_MOUNTAINS("MOUNTAINS");
 const std::string GameObject::TYPE_STR_PRACTICE_TARGET("TARGET");
 const std::string GameObject::TYPE_STR_RADAR_STATION("RADAR_STATION");
 const std::string GameObject::TYPE_STR_RADAR_TOWER("RADAR_TOWER");
+const std::string GameObject::TYPE_STR_RESEARCH_CENTER("RESEARCH_CENTER");
 const std::string GameObject::TYPE_STR_RES_GEN_ENERGY("RESGEN_ENER");
 const std::string GameObject::TYPE_STR_RES_GEN_ENERGY_SOLAR("RESGEN_SOLAR");
 const std::string GameObject::TYPE_STR_RES_GEN_MATERIAL("RESGEN_MAT");
@@ -99,6 +100,7 @@ const GameObjectTypeId GameObject::TYPE_MOUNTAINS = h{}(TYPE_STR_MOUNTAINS);
 const GameObjectTypeId GameObject::TYPE_PRACTICE_TARGET = h{}(TYPE_STR_PRACTICE_TARGET);
 const GameObjectTypeId GameObject::TYPE_RADAR_STATION = h{}(TYPE_STR_RADAR_STATION);
 const GameObjectTypeId GameObject::TYPE_RADAR_TOWER = h{}(TYPE_STR_RADAR_TOWER);
+const GameObjectTypeId GameObject::TYPE_RESEARCH_CENTER = h{}(TYPE_STR_RESEARCH_CENTER);
 const GameObjectTypeId GameObject::TYPE_RES_GEN_ENERGY = h{}(TYPE_STR_RES_GEN_ENERGY);
 const GameObjectTypeId GameObject::TYPE_RES_GEN_ENERGY_SOLAR = h{}(TYPE_STR_RES_GEN_ENERGY_SOLAR);
 const GameObjectTypeId GameObject::TYPE_RES_GEN_MATERIAL = h{}(TYPE_STR_RES_GEN_MATERIAL);
@@ -130,6 +132,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TYPE_STR_MAP
     { GameObject::TYPE_PRACTICE_TARGET, TYPE_STR_PRACTICE_TARGET },
     { GameObject::TYPE_RADAR_STATION, TYPE_STR_RADAR_STATION },
     { GameObject::TYPE_RADAR_TOWER, TYPE_STR_RADAR_TOWER },
+    { GameObject::TYPE_RESEARCH_CENTER, TYPE_STR_RESEARCH_CENTER },
     { GameObject::TYPE_RES_GEN_ENERGY, TYPE_STR_RES_GEN_ENERGY },
     { GameObject::TYPE_RES_GEN_ENERGY_SOLAR, TYPE_STR_RES_GEN_ENERGY_SOLAR },
     { GameObject::TYPE_RES_GEN_MATERIAL, TYPE_STR_RES_GEN_MATERIAL },
@@ -174,6 +177,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TITLES =
     { GameObject::TYPE_PRACTICE_TARGET, "PRACTICE TARGET"},
     { GameObject::TYPE_RADAR_STATION, "RADAR STATION"},
     { GameObject::TYPE_RADAR_TOWER, "RADAR TOWER"},
+    { GameObject::TYPE_RESEARCH_CENTER, "RESEARCH CENTER"},
     { GameObject::TYPE_RES_GEN_ENERGY, "ENERGY GENERATOR"},
     { GameObject::TYPE_RES_GEN_ENERGY_SOLAR, "SOLAR PANELS"},
     { GameObject::TYPE_RES_GEN_MATERIAL, "MATERIAL GENERATOR"},
@@ -209,6 +213,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::DESCRIPTIONS
                                         "and to improve their attack skills."},
     { GameObject::TYPE_RADAR_STATION, "A powerful radar that can show a big portion of the map."},
     { GameObject::TYPE_RADAR_TOWER, "A compact radar that can show a small portion of the map."},
+    { GameObject::TYPE_RESEARCH_CENTER, "A building that will allow you to research and to develop new technologies and improvements."},
     { GameObject::TYPE_RES_GEN_ENERGY, "A generator of energy.\nConnect it to your base to produce energy."},
     { GameObject::TYPE_RES_GEN_ENERGY_SOLAR, "A solar panel.\nConnect it to your base to produce energy."},
     { GameObject::TYPE_RES_GEN_MATERIAL, "A generator of material.\nConnect it to your base to mine material."},

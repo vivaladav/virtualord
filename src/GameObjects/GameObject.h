@@ -59,6 +59,7 @@ public:
     static const GameObjectTypeId TYPE_PRACTICE_TARGET;
     static const GameObjectTypeId TYPE_RADAR_STATION;
     static const GameObjectTypeId TYPE_RADAR_TOWER;
+    static const GameObjectTypeId TYPE_RESEARCH_CENTER;
     static const GameObjectTypeId TYPE_RES_GEN_ENERGY;
     static const GameObjectTypeId TYPE_RES_GEN_ENERGY_SOLAR;
     static const GameObjectTypeId TYPE_RES_GEN_MATERIAL;
@@ -242,6 +243,7 @@ private:
     static const std::string TYPE_STR_PRACTICE_TARGET;
     static const std::string TYPE_STR_RADAR_STATION;
     static const std::string TYPE_STR_RADAR_TOWER;
+    static const std::string TYPE_STR_RESEARCH_CENTER;
     static const std::string TYPE_STR_RES_GEN_ENERGY;
     static const std::string TYPE_STR_RES_GEN_ENERGY_SOLAR;
     static const std::string TYPE_STR_RES_GEN_MATERIAL;
