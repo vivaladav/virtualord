@@ -13,6 +13,8 @@ Barracks::Barracks()
     : Structure(GameObject::TYPE_BARRACKS, GameObject::CAT_GENERIC, 2, 2)
 {
     SetVisibilityLevel(4);
+
+    SetImage();
 }
 
 void Barracks::UpdateGraphics()

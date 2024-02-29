@@ -10,6 +10,7 @@ class ObjectFactionData;
 class Hospital : public Structure
 {
 public:
+    Hospital();
     Hospital(const ObjectFactionData & facData);
 
     // heal

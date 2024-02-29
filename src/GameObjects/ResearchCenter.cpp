@@ -13,6 +13,8 @@ ResearchCenter::ResearchCenter()
     : Structure(GameObject::TYPE_RESEARCH_CENTER, GameObject::CAT_GENERIC, 2, 2)
 {
     SetVisibilityLevel(4);
+
+    SetImage();
 }
 
 void ResearchCenter::UpdateGraphics()

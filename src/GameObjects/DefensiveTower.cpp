@@ -24,7 +24,7 @@ const int attRanges[maxAttVal] = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15 };
 DefensiveTower::DefensiveTower(const ObjectBasicData & objData)
     : Structure(TYPE_DEFENSIVE_TOWER, CAT_GENERIC, objData.rows, objData.cols)
 {
-    mAttackRange = attRanges[0];
+    mAttackRange = attRanges[1];
 
     SetImage();
 

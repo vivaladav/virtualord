@@ -15,6 +15,21 @@
 namespace game
 {
 
+const int maxAttVals = 11;
+const int HealRanges[maxAttVals] = { 0, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6 };
+const float HealPowers[maxAttVals] = { 0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f };
+
+Hospital::Hospital()
+    : Structure(GameObject::TYPE_HOSPITAL, GameObject::CAT_GENERIC, 2, 2)
+{
+    mRangeHealing = HealRanges[1];
+    mHealingPower = HealPowers[1];
+
+    SetVisibilityLevel(4);
+
+    SetImage();
+}
+
 Hospital::Hospital(const ObjectFactionData & facData)
     : Structure(GameObject::TYPE_HOSPITAL, GameObject::CAT_GENERIC, 2, 2)
 {
@@ -23,15 +38,14 @@ Hospital::Hospital(const ObjectFactionData & facData)
     mAttributes = facData.stats;
 
     // set healing range converting attribute
-    const int maxHealVal = 11;
-    const int HealRanges[maxHealVal] = { 0, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6 };
     mRangeHealing = HealRanges[mAttributes[OSTAT_HEALING]];
 
     // set healing power converting attribute
-    const float HealPowers[maxHealVal] = { 0.f, 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f };
     mHealingPower = HealPowers[mAttributes[OSTAT_HEALING]];
 
     SetVisibilityLevel(4);
+
+    SetImage();
 }
 
 bool Hospital::IsTargetHealingInRange(GameObject * obj) const
