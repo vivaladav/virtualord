@@ -2,6 +2,7 @@
 
 #include "GameObjectTypes.h"
 
+#include <array>
 #include <vector>
 
 namespace game
@@ -38,27 +39,37 @@ enum ObjClass : unsigned int
     OC_NULL
 };
 
-enum ObjStatId : unsigned int
+enum ObjCost : unsigned int
 {
-    // GENERIC STATS
-    OSTAT_ENERGY,
-    OSTAT_VIEW_RADIUS,
-    OSTAT_FIRE_POWER,
-    OSTAT_FIRE_ACCURACY,
-    OSTAT_FIRE_RANGE,
-    OSTAT_REGENERATION,
-    OSTAT_RESISTANCE,
-    OSTAT_SHIELD,
+    OBJ_COST_ENERGY,
+    OBJ_COST_MATERIAL,
+    OBJ_COST_BLOBS,
+    OBJ_COST_DIAMONDS,
+
+    NUM_OBJ_COSTS
+};
+
+enum ObjAttId : unsigned int
+{
+    // GENERIC
+    OBJ_ATT_ENERGY,
+    OBJ_ATT_VIEW_RADIUS,
+    OBJ_ATT_FIRE_POWER,
+    OBJ_ATT_FIRE_ACCURACY,
+    OBJ_ATT_FIRE_RANGE,
+    OBJ_ATT_REGENERATION,
+    OBJ_ATT_RESISTANCE,
+    OBJ_ATT_SHIELD,
 
     NUM_GEN_OBJ_STATS,
 
     // UNIT ONLY
-    OSTAT_SPEED = NUM_GEN_OBJ_STATS,
-    OSTAT_CONSTRUCTION,
-    OSTAT_CONQUEST,
-    OSTAT_HEALING,
+    OBJ_ATT_SPEED = NUM_GEN_OBJ_STATS,
+    OBJ_ATT_CONSTRUCTION,
+    OBJ_ATT_CONQUEST,
+    OBJ_ATT_HEALING,
 
-    NUM_TOT_OBJ_STATS,
+    NUM_OBJ_ATTRIBUTES,
 };
 
 enum ObjFamily : unsigned int
@@ -77,59 +88,90 @@ enum ObjFamily : unsigned int
     OCAT_UNDEFINED
 };
 
-struct ObjectBasicData
+class ObjectData
 {
-    ObjectBasicData(GameObjectTypeId type, ObjClass oc, ObjFamily ofam,
-                    const char * file, unsigned int texId,
-                    unsigned int rs, unsigned int cs)
-        : objType(type)
-        , objClass(oc)
-        , objFamily(ofam)
-        , noFactionIconFile(file)
-        , noFactionIconTexId(texId)
-        , rows(rs)
-        , cols(cs)
-    {
-    }
-
-    GameObjectTypeId objType;
-    ObjClass objClass;
-    ObjFamily objFamily;
-
-    const char * noFactionIconFile = nullptr;
-    unsigned int noFactionIconTexId;
-
-    unsigned int rows;
-    unsigned int cols;
-
+public:
     static const char * STR_CLASS[NUM_OBJ_CLASSES];
-
-    static const ObjectBasicData NullObj;
-};
-
-struct ObjectFactionData
-{
-    ObjectFactionData(const std::vector<int> & sts,
-                      const std::vector<int> & cst,
-                      const char * file, unsigned int texId)
-        : stats(sts)
-        , costs(cst)
-        , iconFile(file)
-        , iconTexId(texId)
-    {
-    }
-
-    std::vector<int> stats;
-    std::vector<int> costs;
-
-    const char * iconFile = nullptr;
-    unsigned int iconTexId;
-
-    static const char * STR_STAT[NUM_TOT_OBJ_STATS];
-
-    static const ObjectFactionData NullObj;
+    static const char * STR_STAT[NUM_OBJ_ATTRIBUTES];
 
     static const int MAX_STAT_VAL = 10;
+
+    static const ObjectData NullObj;
+
+public:
+    ObjectData(const std::array<int, NUM_OBJ_ATTRIBUTES> & atts,
+               const std::array<int, NUM_OBJ_COSTS> & costs,
+               const std::vector<unsigned int> & texIds,
+               const char * file, GameObjectTypeId type, ObjClass oClass,
+               ObjFamily family,
+               unsigned int rows, unsigned int cols);
+
+    const std::array<int, NUM_OBJ_ATTRIBUTES> & GetAttributes() const;
+    const std::array<int, NUM_OBJ_COSTS> & GetCosts() const;
+
+    const std::vector<unsigned int> & GetTexIds() const;
+    const char * GetTextureFile() const;
+
+    GameObjectTypeId GetType() const;
+    ObjClass GetClass() const;
+    ObjFamily GetFamily() const;
+
+    int GetRows() const;
+    int GetCols() const;
+
+private:
+    std::array<int, NUM_OBJ_ATTRIBUTES> mAttributes;
+    std::array<int, NUM_OBJ_COSTS> mCosts;
+
+    std::vector<unsigned int> mTexIds;
+    const char * mTexFile = nullptr;
+
+    GameObjectTypeId mType;
+    ObjClass mClass;
+    ObjFamily mFamily;
+
+    unsigned int mRows;
+    unsigned int mCols;
 };
+
+inline ObjectData::ObjectData(const std::array<int, NUM_OBJ_ATTRIBUTES> & atts,
+                              const std::array<int, NUM_OBJ_COSTS> & costs,
+                              const std::vector<unsigned int> & texIds,
+                              const char * file, GameObjectTypeId type, ObjClass oClass,
+                              ObjFamily family, unsigned int rows, unsigned int cols)
+    : mAttributes(atts)
+    , mCosts(costs)
+    , mTexIds(texIds)
+    , mTexFile(file)
+    , mType(type)
+    , mClass(oClass)
+    , mFamily(family)
+    , mRows(rows)
+    , mCols(cols)
+{
+}
+
+inline const std::array<int, NUM_OBJ_ATTRIBUTES> & ObjectData::GetAttributes() const
+{
+    return mAttributes;
+}
+
+inline const std::array<int, NUM_OBJ_COSTS> & ObjectData::GetCosts() const
+{
+    return mCosts;
+}
+
+inline const std::vector<unsigned int> & ObjectData::GetTexIds() const
+{
+    return mTexIds;
+}
+inline const char * ObjectData::GetTextureFile() const { return mTexFile; }
+
+inline GameObjectTypeId ObjectData::GetType() const { return mType; }
+inline ObjClass ObjectData::GetClass() const { return mClass; }
+inline ObjFamily ObjectData::GetFamily() const { return mFamily; }
+
+inline int ObjectData::GetRows() const { return mRows; }
+inline int ObjectData::GetCols() const { return mCols; }
 
 } // namespace game

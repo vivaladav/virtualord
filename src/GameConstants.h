@@ -50,6 +50,7 @@ enum PlayerFaction : unsigned int
     FACTION_3,
 
     NUM_FACTIONS,
+    NUM_FACTIONS_PLUS_NO,
 
     NO_FACTION = 99
 };

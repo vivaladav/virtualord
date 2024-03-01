@@ -5,7 +5,7 @@
 namespace game
 {
 
-const char * ObjectBasicData::STR_CLASS[NUM_OBJ_CLASSES] =
+const char * ObjectData::STR_CLASS[NUM_OBJ_CLASSES] =
 {
     "BARRACKS",
     "BASE",
@@ -29,7 +29,7 @@ const char * ObjectBasicData::STR_CLASS[NUM_OBJ_CLASSES] =
     "SCENE"
 };
 
-const char * ObjectFactionData::STR_STAT[NUM_TOT_OBJ_STATS] =
+const char * ObjectData::STR_STAT[NUM_OBJ_ATTRIBUTES] =
 {
     "ENERGY",
     "VIEW RADIUS",
@@ -45,9 +45,7 @@ const char * ObjectFactionData::STR_STAT[NUM_TOT_OBJ_STATS] =
     "HEALING",
 };
 
-const ObjectBasicData ObjectBasicData::NullObj(GameObject::TYPE_NULL, OC_NULL,
-                                               OCAT_UNDEFINED, nullptr, 0, 0, 0);
-
-const ObjectFactionData ObjectFactionData::NullObj({}, {}, nullptr, 0);
+const ObjectData ObjectData::NullObj({}, {}, {}, nullptr, GameObject::TYPE_NULL,
+                                     OC_NULL, OCAT_UNDEFINED, 0, 0);
 
 } // namespace game
