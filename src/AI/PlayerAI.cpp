@@ -98,7 +98,7 @@ void PlayerAI::AddActions()
         const GameObjectTypeId objType = s->GetObjectType();
 
         if(objType == GameObject::TYPE_BASE)
-            AddActionsBase(s);
+            AddActionBaseCreateUnit(s);
     }
 
     // UNITS
@@ -375,12 +375,8 @@ void PlayerAI::AddActionEndTurn()
         PushAction(action);
 }
 
-void PlayerAI::AddActionsBase(Structure * s)
+void PlayerAI::AddActionBaseCreateUnit(Structure * base)
 {
-    // check if action is already in progress
-    if(IsSimilarActionInProgress(AIA_NEW_UNIT))
-        return ;
-
     const unsigned int numUnits = mPlayer->GetNumUnits();
     const unsigned int limitUnits = mPlayer->GetMaxUnits();
 
@@ -388,158 +384,87 @@ void PlayerAI::AddActionsBase(Structure * s)
     if(numUnits >= limitUnits)
         return ;
 
-    // define base priority
-    // MAX with 0 units and MIN with limit units
-    const int maxPriority = 100;
-    const int priority = maxPriority * (limitUnits - numUnits) / limitUnits;
+    int priority = MAX_PRIORITY;
+
+    // the more units exist the lower the priority
+    const float bonusUnits = -25.f;
+    priority += std::roundf(bonusUnits * numUnits / limitUnits);
+
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -20.f;
+    priority += GetStructurePiorityBonusEnergy(base, bonusEnergy);
+
+    // priority already too low
+    if(priority < mMinPriority)
+        return ;
 
     // DECIDE UNIT TYPE
-    // TODO keep into consideration faction attitude
-    // (i.e.: if faction is more inclined to attack then prefer soldier over builder)
-    std::vector<int> priorities(GameObject::NUM_UNIT_TYPES, priority);
-    std::vector<int> totCosts(GameObject::NUM_UNIT_TYPES, 0);
-    std::vector<int> relCosts(GameObject::NUM_UNIT_TYPES, 0);
+    std::vector<GameObjectTypeId> types { GameObject::TYPE_UNIT_WORKER1 };
+    const unsigned int numTypes = types.size();
 
-    // 1- exclude units that can't be built and check cost
-    const int multEnergy = 1;
-    const int multMaterial = 2;
-    const int multBlobs = 10;
-    const int multDiamonds = 20;
-    int maxCost = 0;
-    int validUnits = 0;
+    const int energy = mPlayer->GetStat(Player::ENERGY).GetIntValue();
+    const int material = mPlayer->GetStat(Player::MATERIAL).GetIntValue();
+    const int blobs = mPlayer->GetStat(Player::BLOBS).GetIntValue();
+    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetIntValue();
 
-    for(unsigned int i = 0; i < GameObject::NUM_UNIT_TYPES; ++i)
+    unsigned int bestInd = numTypes;
+    int bestPriority = mMinPriority;
+
+    for(unsigned int i = 0; i < numTypes; ++i)
     {
-        const GameObjectTypeId ut = Unit::IndexToType(i);
+        const GameObjectTypeId t = types[i];
 
-        if(!mPlayer->IsUnitAvailable(ut))
+        // can't create this unit -> next
+        if(!mGm->CanCreateUnit(t, base, mPlayer))
             continue;
 
-        if(!mGm->CanCreateUnit(ut, s, mPlayer))
+        int typePriority = priority;
+
+        // reduce priority for existing same type units
+        const float bonusSameType = -20.f;
+
+        for(unsigned int j = 0; j < numUnits; ++j)
         {
-            priorities[i] = 0;
-            continue;
+            if(mPlayer->GetUnit(j)->GetObjectType() == t)
+                typePriority += std::roundf(bonusSameType * numUnits / limitUnits);
         }
 
-        const ObjectData & data = mDataReg->GetObjectData(ut);
-        const auto & objCosts = data.GetCosts();
+        // reduce priority based on available resources
+        // NOTE all costs are < current resources or CanCreateUnit would have returned false
+        const ObjectData & data = mDataReg->GetObjectData(t);
+        const auto & costs = data.GetCosts();
 
-        // total cost
-        totCosts[i] = objCosts[RES_ENERGY] * multEnergy + objCosts[RES_MATERIAL1] * multMaterial +
-                   objCosts[RES_BLOBS] * multBlobs + objCosts[RES_DIAMONDS] * multDiamonds;
+        const float bonusRes = -10.f;
 
-        if(totCosts[i] > maxCost)
-            maxCost = totCosts[i];
+        if(costs[RES_ENERGY] > 0)
+            typePriority += std::roundf(bonusRes * costs[RES_ENERGY] / energy);
 
-        // relative cost
-        int costsIncluded = 0;
+        if(costs[RES_MATERIAL1] > 0)
+            typePriority += std::roundf(bonusRes * costs[RES_MATERIAL1] / material);
 
-        const int energy = mPlayer->GetStat(Player::ENERGY).GetIntValue();
-        const int material = mPlayer->GetStat(Player::MATERIAL).GetIntValue();
-        const int blobs = mPlayer->GetStat(Player::BLOBS).GetIntValue();
-        const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetIntValue();
+        if(costs[RES_BLOBS] > 0)
+            typePriority += std::roundf(bonusRes * costs[RES_BLOBS] / blobs);
 
-        if(energy > 0)
+        if(costs[RES_DIAMONDS] > 0)
+            typePriority += std::roundf(bonusRes * costs[RES_DIAMONDS] / diamonds);
+
+        if(typePriority > bestPriority)
         {
-            relCosts[i] += objCosts[RES_ENERGY] * 100 / energy;
-            ++costsIncluded;
-        }
-        if(material > 0)
-        {
-            relCosts[i] += objCosts[RES_MATERIAL1] * 100 / material;
-            ++costsIncluded;
-        }
-        if(blobs > 0)
-        {
-            relCosts[i] += objCosts[RES_BLOBS] * 100 / blobs;
-            ++costsIncluded;
-        }
-        if(diamonds > 0)
-        {
-            relCosts[i] += objCosts[RES_DIAMONDS] * 100 / diamonds;
-            ++costsIncluded;
-        }
-
-        if(costsIncluded > 0)
-            relCosts[i] /= costsIncluded;
-
-        ++validUnits;
-    }
-
-    // can't create any unit -> exit
-    if(0 == validUnits)
-        return ;
-
-    // 2- apply bonuses based on existing units
-    const int bonusExistingUnit = -25;
-
-    for(unsigned int i = 0; i < mPlayer->GetNumUnits(); ++i)
-    {
-        Unit * u = mPlayer->GetUnit(i);
-        const GameObjectTypeId typeId = u->GetObjectType();
-        const unsigned int ind = Unit::TypeToIndex(typeId);
-
-        if(priorities[ind] <= 0)
-            continue ;
-
-        priorities[ind] += bonusExistingUnit;
-    }
-
-    // 3- apply bonuses based on unit type
-    const int bonusCost = -15;
-    const int bonusRelCost = -20;
-
-    for(unsigned int i = 0; i < GameObject::NUM_UNIT_TYPES; ++i)
-    {
-        if(priorities[i] <= 0)
-            continue ;
-
-        // NOTE eventually costs can be weighted on the current resources.
-        // i.e.: if you have a lot of X it doesn't really matter if a unit requires 20 or 40.
-        priorities[i] += bonusCost * totCosts[i] / maxCost;
-        priorities[i] += bonusRelCost * relCosts[i] / 100;
-    }
-
-    // 4- pick highest priority
-    // check at least 1 priority is enough
-    bool priorityOk = false;
-
-    for(unsigned int i = 0; i < GameObject::NUM_UNIT_TYPES; ++i)
-    {
-        if(priorities[i] >= mMinPriority)
-        {
-            priorityOk = true;
-            break;
+            bestPriority = typePriority;
+            bestInd = i;
         }
     }
 
-    // can't find anything good enough
-    if(!priorityOk)
-        return ;
+    // couldn't find any good
+    if(bestInd == numTypes)
+        return;
 
     // create action
     auto action = new ActionAINewUnit;
     action->type = AIA_NEW_UNIT;
-    action->ObjSrc = s;
-    action->priority = 0;
-    action->unitType = GameObject::TYPE_NULL;
-
-    // for now picking first of list when priorities are the same
-    for(unsigned int i = 0; i < GameObject::NUM_UNIT_TYPES; ++i)
-    {
-        if(priorities[i] > action->priority)
-        {
-            action->priority = priorities[i];
-            action->unitType = Unit::IndexToType(i);
-        }
-    }
-
-    // no valid unit was found -> exit
-    if(GameObject::TYPE_NULL == action->unitType)
-    {
-        mActionsDone.push_back(action);
-        return ;
-    }
+    action->ObjSrc = base;
+    action->priority = bestPriority;
+    action->unitType = types[bestInd];
 
     // push action to the queue
     AddNewAction(action);
@@ -568,9 +493,6 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 {
     // nothing to do if there's no units on the map
     if(mUnits.empty())
-        return ;
-
-    if(IsObjectAlreadyDoingSimilarAction(u, AIA_UNIT_ATTACK_ENEMY_UNIT))
         return ;
 
     const PlayerFaction faction = mPlayer->GetFaction();
@@ -1144,28 +1066,6 @@ void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
     AddNewAction(action);
 }
 
-bool PlayerAI::IsObjectAlreadyDoingSimilarAction(GameObject * obj, AIActionType type) const
-{
-    for(const ActionAI * a : mActionsDoing)
-    {
-        if(a->ObjSrc == obj && a->type == type)
-            return true;
-    }
-
-    return false;
-}
-
-bool PlayerAI::IsSimilarActionInProgress(AIActionType type) const
-{
-    for(const ActionAI * a : mActionsDoing)
-    {
-        if(a->type == type)
-            return true;
-    }
-
-    return false;
-}
-
 int PlayerAI::GetMaxDistanceForObject(const GameObject * obj) const
 {
     const int r = obj->GetRow0();
@@ -1180,6 +1080,24 @@ int PlayerAI::GetMaxDistanceForObject(const GameObject * obj) const
     const int distC = (c < colsH) ? cols - c : c;
 
     return distR + distC;
+}
+
+int PlayerAI::GetStructurePiorityBonusEnergy(const Structure * s, float bonus) const
+{
+    const float energyUnit = s->GetEnergy();
+    const float energyUnitMax = s->GetMaxEnergy();
+    const float energyTurn = mPlayer->GetTurnEnergy();
+    const float energyTurnMax = mPlayer->GetTurnMaxEnergy();
+
+    // bonuses
+    const float bonusStruct = bonus * (energyUnitMax - energyUnit) / energyUnitMax;
+    const float bonusTurn = bonus * (energyTurnMax - energyTurn) / energyTurnMax;
+
+    // weights
+    const float wStruct = 0.4f;
+    const float wTurn = 1.f - wStruct;
+
+    return std::roundf(bonusStruct * wStruct + bonusTurn * wTurn);
 }
 
 int PlayerAI::GetUnitPiorityBonusDistance(const Unit * u, int dist, float bonus) const

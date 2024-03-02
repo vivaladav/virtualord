@@ -82,8 +82,6 @@ public:
     static const std::unordered_map<GameObjectTypeId, std::string> TITLES;
     static const std::unordered_map<GameObjectTypeId, std::string> DESCRIPTIONS;
 
-    static const unsigned int NUM_UNIT_TYPES = 4;
-
     // -- OBJECT CATEGORY --
     static const GameObjectCategoryId CAT_NULL;
 

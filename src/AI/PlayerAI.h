@@ -61,7 +61,7 @@ private:
     void AddNewAction(ActionAI * action);
 
     void AddActionEndTurn();
-    void AddActionsBase(Structure * s);
+    void AddActionBaseCreateUnit(Structure * base);
     void AddActionsUnit(Unit * u);
     void AddActionUnitAttackEnemyUnit(Unit * u);
     void AddActionUnitAttackTrees(Unit * u);
@@ -71,10 +71,8 @@ private:
     void AddActionUnitConnectStructure(Unit * u);
     void AddActionUnitConquestResGen(Unit * u, ResourceType type);
 
-    bool IsObjectAlreadyDoingSimilarAction(GameObject * obj, AIActionType type) const;
-    bool IsSimilarActionInProgress(AIActionType type) const;
-
     int GetMaxDistanceForObject(const GameObject * obj) const;
+    int GetStructurePiorityBonusEnergy(const Structure * s, float bonus) const;
     int GetUnitPiorityBonusDistance(const Unit * u, int dist, float bonus) const;
     int GetUnitPiorityBonusEnergy(const Unit * u, float bonus) const;
     int GetUnitPiorityBonusHealth(const Unit * u, float bonus) const;
