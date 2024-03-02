@@ -88,11 +88,13 @@ enum ObjFamily : unsigned int
     OCAT_UNDEFINED
 };
 
+enum PlayerFaction : unsigned int;
+
 class ObjectData
 {
 public:
     static const char * STR_CLASS[NUM_OBJ_CLASSES];
-    static const char * STR_STAT[NUM_OBJ_ATTRIBUTES];
+    static const char * STR_ATTRIBUTES[NUM_OBJ_ATTRIBUTES];
 
     static const int MAX_STAT_VAL = 10;
 
@@ -109,8 +111,8 @@ public:
     const std::array<int, NUM_OBJ_ATTRIBUTES> & GetAttributes() const;
     const std::array<int, NUM_OBJ_COSTS> & GetCosts() const;
 
-    const std::vector<unsigned int> & GetTexIds() const;
-    const char * GetTextureFile() const;
+    unsigned int GetIconTexId(PlayerFaction f) const;
+    const char * GetIconTexFile() const;
 
     GameObjectTypeId GetType() const;
     ObjClass GetClass() const;
@@ -123,8 +125,8 @@ private:
     std::array<int, NUM_OBJ_ATTRIBUTES> mAttributes;
     std::array<int, NUM_OBJ_COSTS> mCosts;
 
-    std::vector<unsigned int> mTexIds;
-    const char * mTexFile = nullptr;
+    std::vector<unsigned int> mIconTexIds;
+    const char * mIconTexFile = nullptr;
 
     GameObjectTypeId mType;
     ObjClass mClass;
@@ -141,8 +143,8 @@ inline ObjectData::ObjectData(const std::array<int, NUM_OBJ_ATTRIBUTES> & atts,
                               ObjFamily family, unsigned int rows, unsigned int cols)
     : mAttributes(atts)
     , mCosts(costs)
-    , mTexIds(texIds)
-    , mTexFile(file)
+    , mIconTexIds(texIds)
+    , mIconTexFile(file)
     , mType(type)
     , mClass(oClass)
     , mFamily(family)
@@ -161,11 +163,7 @@ inline const std::array<int, NUM_OBJ_COSTS> & ObjectData::GetCosts() const
     return mCosts;
 }
 
-inline const std::vector<unsigned int> & ObjectData::GetTexIds() const
-{
-    return mTexIds;
-}
-inline const char * ObjectData::GetTextureFile() const { return mTexFile; }
+inline const char * ObjectData::GetIconTexFile() const { return mIconTexFile; }
 
 inline GameObjectTypeId ObjectData::GetType() const { return mType; }
 inline ObjClass ObjectData::GetClass() const { return mClass; }

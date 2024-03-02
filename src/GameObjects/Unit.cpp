@@ -21,27 +21,24 @@
 namespace game
 {
 
-Unit::Unit(const ObjectBasicData & objData, const ObjectFactionData & facData)
-    : GameObject(objData.objType, GameObject::CAT_UNIT, objData.rows, objData.cols)
+Unit::Unit(const ObjectData & data)
+    : GameObject(data.GetType(), GameObject::CAT_UNIT, data.GetRows(), data.GetCols())
+    , mAttributes(data.GetAttributes())
     , mStructToBuild(GameObject::TYPE_NULL)
 {
-    // SET STATS values in range [1-10]
-    mAttributes.resize(facData.stats.size());
-    mAttributes = facData.stats;
-
     // set attack range converting attribute
     const int maxAttVal = 11;
     const int attRanges[maxAttVal] = { 0, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13 };
-    mRangeAttack = attRanges[mAttributes[OSTAT_FIRE_RANGE]];
+    mRangeAttack = attRanges[mAttributes[OBJ_ATT_FIRE_RANGE]];
 
     // set healing range converting attribute
     const int maxHealVal = 11;
     const int HealRanges[maxHealVal] = { 0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4 };
-    mRangeHealing = HealRanges[mAttributes[OSTAT_HEALING]];
+    mRangeHealing = HealRanges[mAttributes[OBJ_ATT_HEALING]];
 
     // set healing power converting attribute
     const float HealPowers[maxHealVal] = { 0.f, 1.f, 2.f, 2.f, 3.f, 3.f, 4.f, 4.f, 5.f, 5.f, 6.f };
-    mHealingPower = HealPowers[mAttributes[OSTAT_HEALING]];
+    mHealingPower = HealPowers[mAttributes[OBJ_ATT_HEALING]];
 
     // TODO translate stats into actual values, ex.: speed = 5 -> SetSpeed(2.f)
 
@@ -50,11 +47,11 @@ Unit::Unit(const ObjectBasicData & objData, const ObjectFactionData & facData)
 
     // set actual speed
     const float maxSpeed = 5.f;
-    const float speed = maxSpeed * static_cast<float>(mAttributes[OSTAT_SPEED]) / maxStatVal;
+    const float speed = maxSpeed * static_cast<float>(mAttributes[OBJ_ATT_SPEED]) / maxStatVal;
     SetSpeed(speed);
 
     // set regeneration power
-    const float regPower = mAttributes[OSTAT_REGENERATION] / maxStatVal;
+    const float regPower = mAttributes[OBJ_ATT_REGENERATION] / maxStatVal;
     SetRegPower(regPower);
 
     // set visibility
@@ -63,9 +60,9 @@ Unit::Unit(const ObjectBasicData & objData, const ObjectFactionData & facData)
 
 bool Unit::CanAttack() const
 {
-    return mAttributes[OSTAT_FIRE_ACCURACY] > 0 &&
-           mAttributes[OSTAT_FIRE_POWER] > 0 &&
-           mAttributes[OSTAT_FIRE_RANGE] > 0;
+    return mAttributes[OBJ_ATT_FIRE_ACCURACY] > 0 &&
+           mAttributes[OBJ_ATT_FIRE_POWER] > 0 &&
+           mAttributes[OBJ_ATT_FIRE_RANGE] > 0;
 }
 
 bool Unit::IsTargetAttackInRange(const GameObject * obj) const
@@ -96,7 +93,7 @@ bool Unit::SetTargetAttack(GameObject * obj)
 
 bool Unit::CanHeal() const
 {
-    return mAttributes[OSTAT_HEALING] > 0;
+    return mAttributes[OBJ_ATT_HEALING] > 0;
 }
 
 bool Unit::IsTargetHealingInRange(GameObject * obj) const
@@ -140,17 +137,17 @@ void Unit::Update(float delta)
 
 bool Unit::CanBuild() const
 {
-    return mAttributes[OSTAT_CONSTRUCTION] > 0;
+    return mAttributes[OBJ_ATT_CONSTRUCTION] > 0;
 }
 
 void Unit::ClearStructureToBuild() { mStructToBuild = GameObject::TYPE_NULL; }
 
 bool Unit::CanConquer() const
 {
-    return mAttributes[OSTAT_CONQUEST] > 0;
+    return mAttributes[OBJ_ATT_CONQUEST] > 0;
 }
 
-int Unit::GetStat(unsigned int index) const
+int Unit::GetAttribute(unsigned int index) const
 {
     if(index < mAttributes.size())
         return mAttributes[index];

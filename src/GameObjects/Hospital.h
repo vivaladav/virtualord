@@ -5,13 +5,12 @@
 namespace game
 {
 
-class ObjectFactionData;
+class ObjectData;
 
 class Hospital : public Structure
 {
 public:
-    Hospital();
-    Hospital(const ObjectFactionData & facData);
+    Hospital(const ObjectData & data);
 
     // heal
     int GetRangeHealing() const;
@@ -32,9 +31,6 @@ private:
     void Heal();
 
 private:
-    // attributes
-    std::vector<int> mAttributes;
-
     // healing
     float mTimeHealing = 0.5f;
     float mTimerHealing = 0.f;

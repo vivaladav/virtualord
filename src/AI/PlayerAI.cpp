@@ -397,7 +397,7 @@ void PlayerAI::AddActionsBase(Structure * s)
     // TODO keep into consideration faction attitude
     // (i.e.: if faction is more inclined to attack then prefer soldier over builder)
     std::vector<int> priorities(GameObject::NUM_UNIT_TYPES, priority);
-    std::vector<int> costs(GameObject::NUM_UNIT_TYPES, 0);
+    std::vector<int> totCosts(GameObject::NUM_UNIT_TYPES, 0);
     std::vector<int> relCosts(GameObject::NUM_UNIT_TYPES, 0);
 
     // 1- exclude units that can't be built and check cost
@@ -421,14 +421,15 @@ void PlayerAI::AddActionsBase(Structure * s)
             continue;
         }
 
-        const ObjectFactionData & fData = mDataReg->GetFactionData(mPlayer->GetFaction(), ut);
+        const ObjectData & data = mDataReg->GetObjectData(ut);
+        const auto & objCosts = data.GetCosts();
 
         // total cost
-        costs[i] = fData.costs[RES_ENERGY] * multEnergy + fData.costs[RES_MATERIAL1] * multMaterial +
-                   fData.costs[RES_BLOBS] * multBlobs + fData.costs[RES_DIAMONDS] * multDiamonds;
+        totCosts[i] = objCosts[RES_ENERGY] * multEnergy + objCosts[RES_MATERIAL1] * multMaterial +
+                   objCosts[RES_BLOBS] * multBlobs + objCosts[RES_DIAMONDS] * multDiamonds;
 
-        if(costs[i] > maxCost)
-            maxCost = costs[i];
+        if(totCosts[i] > maxCost)
+            maxCost = totCosts[i];
 
         // relative cost
         int costsIncluded = 0;
@@ -440,22 +441,22 @@ void PlayerAI::AddActionsBase(Structure * s)
 
         if(energy > 0)
         {
-            relCosts[i] += fData.costs[RES_ENERGY] * 100 / energy;
+            relCosts[i] += objCosts[RES_ENERGY] * 100 / energy;
             ++costsIncluded;
         }
         if(material > 0)
         {
-            relCosts[i] += fData.costs[RES_MATERIAL1] * 100 / material;
+            relCosts[i] += objCosts[RES_MATERIAL1] * 100 / material;
             ++costsIncluded;
         }
         if(blobs > 0)
         {
-            relCosts[i] += fData.costs[RES_BLOBS] * 100 / blobs;
+            relCosts[i] += objCosts[RES_BLOBS] * 100 / blobs;
             ++costsIncluded;
         }
         if(diamonds > 0)
         {
-            relCosts[i] += fData.costs[RES_DIAMONDS] * 100 / diamonds;
+            relCosts[i] += objCosts[RES_DIAMONDS] * 100 / diamonds;
             ++costsIncluded;
         }
 
@@ -495,7 +496,7 @@ void PlayerAI::AddActionsBase(Structure * s)
 
         // NOTE eventually costs can be weighted on the current resources.
         // i.e.: if you have a lot of X it doesn't really matter if a unit requires 20 or 40.
-        priorities[i] += bonusCost * costs[i] / maxCost;
+        priorities[i] += bonusCost * totCosts[i] / maxCost;
         priorities[i] += bonusRelCost * relCosts[i] / 100;
     }
 
@@ -1127,7 +1128,7 @@ void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
 
     // bonus unit conquest
     const float bonusConquest = 10.f;
-    priority += std::roundf(bonusConquest * u->GetStat(OSTAT_CONQUEST) / ObjectFactionData::MAX_STAT_VAL);
+    priority += std::roundf(bonusConquest * u->GetAttribute(OBJ_ATT_CONQUEST) / ObjectData::MAX_STAT_VAL);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)

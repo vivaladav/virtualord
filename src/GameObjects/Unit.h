@@ -1,19 +1,17 @@
 #pragma once
 
 #include "GameObject.h"
+#include "ObjectData.h"
 
 #include <vector>
 
 namespace game
 {
 
-struct ObjectBasicData;
-struct ObjectFactionData;
-
 class Unit : public GameObject
 {
 public:
-    Unit(const ObjectBasicData & objData, const ObjectFactionData & facData);
+    Unit(const ObjectData & data);
 
     // attack
     bool CanAttack() const;
@@ -42,7 +40,7 @@ public:
     // conquer
     bool CanConquer() const;
 
-    int GetStat(unsigned int index) const;
+    int GetAttribute(unsigned int index) const;
 
 public:
     static unsigned int TypeToIndex(GameObjectTypeId type);
@@ -61,7 +59,7 @@ private:
 
 private:
     // attributes
-    std::vector<int> mAttributes;
+    std::array<int, NUM_OBJ_ATTRIBUTES> mAttributes;
 
     // weapon
     float mTimeAttack = 0.25f;

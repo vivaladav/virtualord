@@ -487,9 +487,9 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
         for(GameObjectTypeId t : allUnits)
         {
-            const ObjectBasicData & data = dataReg->GetObjectData(t);
+            const ObjectData & data = dataReg->GetObjectData(t);
 
-            if(OCU_SOLDIER == data.objClass)
+            if(OCU_SOLDIER == data.GetClass())
                 mTypes.push_back(t);
         }
     }
@@ -499,9 +499,9 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
         for(GameObjectTypeId t : allUnits)
         {
-            const ObjectBasicData & data = dataReg->GetObjectData(t);
+            const ObjectData & data = dataReg->GetObjectData(t);
 
-            if(OCU_WORKER == data.objClass)
+            if(OCU_WORKER == data.GetClass())
                 mTypes.push_back(t);
         }
     }
@@ -511,9 +511,9 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
         for(GameObjectTypeId t : allUnits)
         {
-            const ObjectBasicData & data = dataReg->GetObjectData(t);
+            const ObjectData & data = dataReg->GetObjectData(t);
 
-            if(OCU_MEDIC == data.objClass)
+            if(OCU_MEDIC == data.GetClass())
                 mTypes.push_back(t);
         }
     }
@@ -869,9 +869,9 @@ void DialogNewElement::UpdateSlots()
 
         const PlayerFaction f = mPlayer->GetFaction();
         const GameObjectTypeId t = mTypes[mFirstElem + i];
-        const ObjectFactionData & data = mDataReg->GetFactionData(f, t);
+        const ObjectData & data = mDataReg->GetObjectData(t);
 
-        auto tex = tm->GetSprite(data.iconFile, data.iconTexId);
+        auto tex = tm->GetSprite(data.GetIconTexFile(), data.GetIconTexId(f));
         slot->SetData(GameObject::TITLES.at(t).c_str(), tex);
 
         // check first
@@ -897,9 +897,9 @@ void DialogNewElement::ShowStructuresByFamily(ObjFamily fam)
 
     for(const GameObjectTypeId s : structures)
     {
-        const ObjectBasicData & data = mDataReg->GetObjectData(s);
+        const ObjectData & data = mDataReg->GetObjectData(s);
 
-        if(data.objFamily == fam)
+        if(data.GetFamily() == fam)
             mTypes.emplace_back(s);
     }
 
@@ -916,35 +916,37 @@ void DialogNewElement::ShowData(int ind)
 
     const GameObjectTypeId t = mTypes[ind];
     const PlayerFaction f = mPlayer->GetFaction();
-    const ObjectBasicData & data = mDataReg->GetObjectData(t);
-    const ObjectFactionData & fData = mDataReg->GetFactionData(f, t);
+    const ObjectData & data = mDataReg->GetObjectData(t);
 
     // DESCRIPTION
     mDescription->SetText(GameObject::DESCRIPTIONS.at(t).c_str());
 
     // CLASS
-    mCategory->SetText(ObjectBasicData::STR_CLASS[data.objClass]);
+    mCategory->SetText(ObjectData::STR_CLASS[data.GetClass()]);
 
     // COSTS
+    const auto & costs = data.GetCosts();
+
     for(int i = 0; i < NUM_COSTS; ++i)
-        mLabelsCost[i]->SetText(std::to_string(fData.costs[i]).c_str());
+        mLabelsCost[i]->SetText(std::to_string(costs[i]).c_str());
 
     // ATTRIBUTES
-    const int numStats = fData.stats.size();
-    int statsAdded = 0;
+    const auto & atts = data.GetAttributes();
+    const int numAtts = atts.size();
+    int attsAdded = 0;
 
-    for(int i = 0; i < numStats; ++i)
+    for(int i = 0; i < numAtts; ++i)
     {
-        const int val = fData.stats[i];
+        const int val = atts[i];
 
         if(val > 0)
         {
-            mVisAtt[statsAdded]->SetData(ObjectFactionData::STR_STAT[i], val);
-            ++statsAdded;
+            mVisAtt[attsAdded]->SetData(ObjectData::STR_ATTRIBUTES[i], val);
+            ++attsAdded;
         }
     }
 
-    for(int i = statsAdded; i < NUM_VIS_ATT; ++i)
+    for(int i = attsAdded; i < NUM_VIS_ATT; ++i)
         mVisAtt[i]->ClearData();
 }
 
@@ -952,9 +954,9 @@ void DialogNewElement::CheckBuild(int ind)
 {
     const GameObjectTypeId t = mTypes[ind];
     const PlayerFaction f = mPlayer->GetFaction();
-    const ObjectFactionData & fData = mDataReg->GetFactionData(f, t);
+    const ObjectData & data = mDataReg->GetObjectData(t);
 
-    const std::vector<int> & costs = fData.costs;
+    const auto & costs = data.GetCosts();
 
     const bool CAN_SPEND[NUM_COSTS] =
     {

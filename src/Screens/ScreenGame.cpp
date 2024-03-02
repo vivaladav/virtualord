@@ -1545,12 +1545,12 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
         // add unit to map if cell is visible to local player
         if(mGameMap->IsCellVisibleToLocalPlayer(cell.row, cell.col))
         {
-            const ObjectBasicData & data = GetGame()->GetObjectsRegistry()->GetObjectData(type);
+            const ObjectData & data = GetGame()->GetObjectsRegistry()->GetObjectData(type);
 
             const PlayerFaction faction = player->GetFaction();
             const auto type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
             MiniMap * mm = mHUD->GetMinimap();
-            mm->AddElement(cell.row, cell.col, data.rows, data.cols, type, faction);
+            mm->AddElement(cell.row, cell.col, data.GetRows(), data.GetCols(), type, faction);
         }
 
         SetObjectActionCompleted(gen);
@@ -1666,17 +1666,17 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
         unit->ActionStepCompleted(BUILD_STRUCTURE);
 
         // add unit to map if cell is visible to local player
-        const ObjectBasicData & data = GetGame()->GetObjectsRegistry()->GetObjectData(st);
+        const ObjectData & data = GetGame()->GetObjectsRegistry()->GetObjectData(st);
 
-        const unsigned int rTL = cellTarget.row - data.rows + 1;
-        const unsigned int cTL = cellTarget.col - data.cols + 1;
+        const unsigned int rTL = cellTarget.row - data.GetRows() + 1;
+        const unsigned int cTL = cellTarget.col - data.GetCols() + 1;
 
         if(mGameMap->IsAnyCellVisibleToLocalPlayer(rTL, cTL, cellTarget.row, cellTarget.col))
         {
             const PlayerFaction faction = player->GetFaction();
             const auto type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
             MiniMap * mm = mHUD->GetMinimap();
-            mm->AddElement(cellTarget.row, cellTarget.col, data.rows, data.cols, type, faction);
+            mm->AddElement(cellTarget.row, cellTarget.col, data.GetRows(), data.GetCols(), type, faction);
         }
 
         // clear action data once the action is completed
@@ -1965,12 +1965,11 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
 
         const GameObjectTypeId st = unit->GetStructureToBuild();
         const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
-        const ObjectBasicData & objData = dataReg->GetObjectData(st);
-        const ObjectFactionData & factData = dataReg->GetFactionData(unit->GetFaction(), st);
+        const ObjectData & objData = dataReg->GetObjectData(st);
 
         // if unit is next to any target cell -> try to build
-        const int indRows = objData.rows;
-        const int indCols = objData.cols;
+        const int indRows = objData.GetRows();
+        const int indCols = objData.GetCols();
         const int r0 = clickCell.row >= indRows ? 1 + clickCell.row - indRows : 0;
         const int c0 = clickCell.col >= indCols ? 1 + clickCell.col - indCols : 0;
 
@@ -2002,8 +2001,7 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
                 return ;
 
             // add temporary indicator for tower
-            mTempStructIndicator = new StructureIndicator(objData, factData);
-            mTempStructIndicator->SetFaction(mLocalPlayer->GetFaction());
+            mTempStructIndicator = new StructureIndicator(objData, unit->GetFaction());
 
             IsoLayer * layer = mIsoMap->GetLayer(MapLayers::OBJECTS2);
             layer->AddObject(mTempStructIndicator, clickCell.row, clickCell.col);
@@ -2443,9 +2441,7 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
     else
     {
         const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
-        const ObjectBasicData & objData = dataReg->GetObjectData(st);
-        const ObjectFactionData & factData = dataReg->GetFactionData(unit->GetFaction(), st);
-        ind = new StructureIndicator(objData, factData);
+        ind = new StructureIndicator(dataReg->GetObjectData(st), unit->GetFaction());
         mStructIndicators.emplace(st, ind);
     }
 
@@ -2479,10 +2475,6 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
     }
 
     layer->SetObjectVisible(ind, showIndicator);
-
-    // indicator visible -> update faction
-    if(showIndicator)
-        ind->SetFaction(mLocalPlayer->GetFaction());
 }
 
 void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)

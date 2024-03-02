@@ -418,16 +418,8 @@ void PanelSelectedObject::SetObject(GameObject * obj)
     mBarLvl->SetPosition(barLvlX, barLvlY);
 
     // SET IMAGE
-    if(faction == NO_FACTION)
-    {
-        const ObjectBasicData & data = mObjDataReg->GetObjectData(type);
-        tex = tm->GetSprite(data.noFactionIconFile, data.noFactionIconTexId);
-    }
-    else
-    {
-        const ObjectFactionData & data = mObjDataReg->GetFactionData(faction, type);
-        tex = tm->GetSprite(data.iconFile, data.iconTexId);
-    }
+    const ObjectData & data = mObjDataReg->GetObjectData(type);
+    tex = tm->GetSprite(data.GetIconTexFile(), data.GetIconTexId(faction));
 
     mImg->SetTexture(tex);
 

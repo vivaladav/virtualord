@@ -28,8 +28,7 @@ class WallBuildPath;
 
 struct Cell2D;
 struct GameMapCell;
-struct ObjectBasicData;
-struct ObjectFactionData;
+struct ObjectData;
 
 enum ResourceType : unsigned int;
 
@@ -216,8 +215,7 @@ private:
     void UpdateWalls(const Cell2D & center);
     void UpdateWall(const Cell2D & cell);
 
-    const ObjectBasicData & GetObjectData(GameObjectTypeId t) const;
-    const ObjectFactionData & GetFactionData(PlayerFaction f, GameObjectTypeId t) const;
+    const ObjectData & GetObjectData(GameObjectTypeId t) const;
 
 private:
     struct ObjectToAdd

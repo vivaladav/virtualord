@@ -1,5 +1,6 @@
 #include "ObjectData.h"
 
+#include "GameConstants.h"
 #include "GameObjects/GameObject.h"
 
 namespace game
@@ -29,7 +30,7 @@ const char * ObjectData::STR_CLASS[NUM_OBJ_CLASSES] =
     "SCENE"
 };
 
-const char * ObjectData::STR_STAT[NUM_OBJ_ATTRIBUTES] =
+const char * ObjectData::STR_ATTRIBUTES[NUM_OBJ_ATTRIBUTES] =
 {
     "ENERGY",
     "VIEW RADIUS",
@@ -47,5 +48,14 @@ const char * ObjectData::STR_STAT[NUM_OBJ_ATTRIBUTES] =
 
 const ObjectData ObjectData::NullObj({}, {}, {}, nullptr, GameObject::TYPE_NULL,
                                      OC_NULL, OCAT_UNDEFINED, 0, 0);
+
+
+unsigned int ObjectData::GetIconTexId(PlayerFaction f) const
+{
+    if(f < NUM_FACTIONS)
+        return mIconTexIds[f];
+    else
+        return mIconTexIds.back();
+}
 
 } // namespace game

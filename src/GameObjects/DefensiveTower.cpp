@@ -21,20 +21,11 @@ namespace game
 const int maxAttVal = 11;
 const int attRanges[maxAttVal] = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15 };
 
-DefensiveTower::DefensiveTower(const ObjectBasicData & objData)
-    : Structure(TYPE_DEFENSIVE_TOWER, CAT_GENERIC, objData.rows, objData.cols)
-{
-    mAttackRange = attRanges[1];
-
-    SetImage();
-
-}
-
-DefensiveTower::DefensiveTower(const ObjectBasicData & objData, const ObjectFactionData & facData)
-    : Structure(TYPE_DEFENSIVE_TOWER, CAT_GENERIC, objData.rows, objData.cols)
+DefensiveTower::DefensiveTower(const ObjectData & data)
+    : Structure(TYPE_DEFENSIVE_TOWER, CAT_GENERIC, data.GetRows(), data.GetCols())
 {
     // set attack range converting attribute
-    mAttackRange = attRanges[facData.stats[OSTAT_FIRE_RANGE]];
+    mAttackRange = attRanges[data.GetAttributes()[OBJ_ATT_FIRE_RANGE]];
 
     SetImage();
 }

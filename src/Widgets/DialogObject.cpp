@@ -323,13 +323,8 @@ void DialogObject::SetObject(GameObject * obj)
     mTitle->SetText(GameObject::TITLES.at(type).c_str());
 
     // IMAGE
-    const ObjectBasicData & data = mObjDataReg->GetObjectData(type);
-    const ObjectFactionData & fData = mObjDataReg->GetFactionData(faction, type);
-
-    if(faction == NO_FACTION)
-        tex = tm->GetSprite(data.noFactionIconFile, data.noFactionIconTexId);
-    else
-        tex = tm->GetSprite(fData.iconFile, fData.iconTexId);
+    const ObjectData & data = mObjDataReg->GetObjectData(type);
+    tex = tm->GetSprite(data.GetIconTexFile(), data.GetIconTexId(faction));
 
     mImg->SetTexture(tex);
 
@@ -350,16 +345,17 @@ void DialogObject::SetObject(GameObject * obj)
     mStatHealth->SetValue(obj->GetHealth(), obj->GetMaxHealth());
 
     // ATTRIBUTES
-    const int numStats = fData.stats.size();
+    const auto & atts = data.GetAttributes();
+    const int numAtts = atts.size();
     int statsAdded = 0;
 
-    for(int i = 0; i < numStats; ++i)
+    for(int i = 0; i < numAtts; ++i)
     {
-        const int val = fData.stats[i];
+        const int val = atts[i];
 
         if(val > 0)
         {
-            mVisAtt[statsAdded]->SetData(ObjectFactionData::STR_STAT[i], val);
+            mVisAtt[statsAdded]->SetData(ObjectData::STR_ATTRIBUTES[i], val);
             ++statsAdded;
         }
     }
