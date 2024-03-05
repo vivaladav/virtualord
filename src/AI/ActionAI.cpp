@@ -13,6 +13,7 @@ const char * ActionAI::GetTypeStr() const
         "NEW UNIT",
         "UNIT ATTACK ENEMY UNIT",
         "UNIT ATTACK TREES",
+        "UNIT BUILD STRUCTURE",
         "UNIT COLLECT BLOBS",
         "UNIT COLLECT DIAMONDS",
         "UNIT COLLECT LOOTBOX",

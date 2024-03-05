@@ -16,6 +16,7 @@ enum AIActionType : unsigned int
     AIA_NEW_UNIT,
     AIA_UNIT_ATTACK_ENEMY_UNIT,
     AIA_UNIT_ATTACK_TREES,
+    AIA_UNIT_BUILD_STRUCTURE,
     AIA_UNIT_COLLECT_BLOBS,
     AIA_UNIT_COLLECT_DIAMONDS,
     AIA_UNIT_COLLECT_LOOTBOX,
@@ -45,6 +46,13 @@ struct ActionAiComp
     {
         return a->priority < b->priority;
     }
+};
+
+// ===== ACTION AI BUILD STRUCTURE =====
+
+struct ActionAIBuildStructure : public ActionAI
+{
+    GameObjectTypeId structType;
 };
 
 // ===== ACTION AI NEW UNIT =====

@@ -1137,6 +1137,16 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             }
             break;
 
+            case AIA_UNIT_BUILD_STRUCTURE:
+            {
+                auto a = static_cast<const ActionAIBuildStructure *>(action);
+
+                done = false;
+
+                PrintAction(turnAI, action, done, player);
+            }
+            break;
+
             case AIA_UNIT_ATTACK_TREES:
             {
                 const auto unit = static_cast<Unit *>(action->ObjSrc);
