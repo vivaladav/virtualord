@@ -1063,9 +1063,6 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                         {
                             if(successful)
                             {
-                                std::cout << "ScreenGame::ExecuteAIAction - CONNECT STRUCTURE "
-                                             "AFTER MOVE - SetupConnectCellsAI" << std::endl;
-
                                 const bool res = SetupConnectCellsAI(unit, basicOnDone);
 
                                 std::cout << "ScreenGame::ExecuteAIAction - CONNECT STRUCTURE "
@@ -1141,7 +1138,51 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             {
                 auto a = static_cast<const ActionAIBuildStructure *>(action);
 
-                done = false;
+                // decide where to build
+                auto unit = static_cast<Unit *>(a->ObjSrc);
+                unit->SetStructureToBuild(a->structType);
+
+                const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+                Cell2D target;
+
+                if(FindWhereToBuildStructureAI(unit, target))
+                {
+                    if(mGameMap->AreCellsAdjacent(cellUnit, target))
+                        done = SetupStructureBuilding(unit, target, player, basicOnDone);
+                    else
+                    {
+                        const Cell2D moveTarget = mGameMap->GetAdjacentMoveTarget(cellUnit, target);
+
+                        if(moveTarget.row != -1 && moveTarget.col != -1)
+                        {
+                            done = SetupUnitMove(unit, cellUnit, moveTarget,
+                                [this, unit, target, player, basicOnDone](bool successful)
+                                {
+                                    if(successful)
+                                    {
+                                        const bool res = SetupStructureBuilding(unit, target, player, basicOnDone);
+
+                                        std::cout << "ScreenGame::ExecuteAIAction - BUILD STRUCTURE "
+                                                     "AFTER MOVE - SetupUnitMove - res: " << res << std::endl;
+
+                                        if(!res)
+                                            basicOnDone(false);
+                                    }
+                                    else
+                                    {
+                                        std::cout << "ScreenGame::ExecuteAIAction - BUILD STRUCTURE "
+                                                     "AFTER MOVE - MOVE FAILED" << std::endl;
+
+                                        basicOnDone(false);
+                                    }
+                                });
+                        }
+                        else
+                            done = false;
+                    }
+                }
+                else
+                    done = false;
 
                 PrintAction(turnAI, action, done, player);
             }
@@ -1837,8 +1878,6 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
     {
         std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (can't find target)" << std::endl;
-
-        PlayLocalActionErrorSFX(player);
         return false;
     }
 
@@ -1853,7 +1892,6 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
             std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                       << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed)" << std::endl;
 
-            PlayLocalActionErrorSFX(player);
             return false;
         }
     }
@@ -1868,7 +1906,6 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
         std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (no path)" << std::endl;
 
-        PlayLocalActionErrorSFX(player);
         return false;
     }
 
@@ -1888,9 +1925,92 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
         std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (ConquerCells failed)" << std::endl;
 
-        PlayLocalActionErrorSFX(player);
         return false;
     }
+}
+
+bool ScreenGame::FindWhereToBuildStructureAI(Unit * unit, Cell2D & target)
+{
+    const PlayerFaction faction = unit->GetFaction();
+    const GameObjectTypeId type = unit->GetStructureToBuild();
+    const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
+    const ObjectData & data = dataReg->GetObjectData(type);
+    const int rows = data.GetRows();
+    const int cols = data.GetCols();
+
+    Game * game = GetGame();
+
+    // DECIDE WHERE TO LOOK FOR BUILDING AREA
+    Player * player = game->GetPlayerByFaction(faction);
+
+    Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+    Cell2D cellStart;
+
+    std::vector<Structure *> structures;
+
+    // build close to existing similar structure
+    if(player->HasStructure(type))
+        structures = player->GetStructuresByType(type);
+    // no similar structure -> build close to base
+    else
+        structures = player->GetStructuresByType(GameObject::TYPE_BASE);
+
+    // find similar structure which is closest to unit
+    unsigned int bestInd = 0;
+    int bestDist = mGameMap->GetNumRows() + mGameMap->GetNumCols();
+
+    for(unsigned int s = 0; s < structures.size(); ++s)
+    {
+        Structure * structure = structures[s];
+
+        // strucure made of multiple cells -> check 4 corners
+        if(rows > 1 || cols > 1)
+        {
+            // top-left
+            const Cell2D tl(structure->GetRow1(), structure->GetCol1());
+            const int distTL = mGameMap->ApproxDistance(cellUnit, tl);
+
+            if(distTL < bestDist)
+            {
+                cellStart = tl;
+                bestDist = distTL;
+            }
+
+            // top-right
+            const Cell2D tr(structure->GetRow1(), structure->GetCol0());
+            const int distTR = mGameMap->ApproxDistance(cellUnit, tr);
+
+            if(distTR < bestDist)
+            {
+                cellStart = tr;
+                bestDist = distTR;
+            }
+
+            // bottom-left
+            const Cell2D bl(structure->GetRow0(), structure->GetCol1());
+            const int distBL = mGameMap->ApproxDistance(cellUnit, bl);
+
+            if(distBL < bestDist)
+            {
+                cellStart = bl;
+                bestDist = distBL;
+            }
+        }
+
+        // bottom-right
+        const Cell2D br(structure->GetRow0(), structure->GetCol0());
+        const int distBR = mGameMap->ApproxDistance(cellUnit, br);
+
+        if(distBR < bestDist)
+        {
+            cellStart = br;
+            bestDist = distBR;
+        }
+    }
+
+    // TODO find suitable spot close to cellStart
+
+    return false;
 }
 
 void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
