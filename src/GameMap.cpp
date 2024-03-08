@@ -2243,6 +2243,140 @@ bool GameMap::FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, C
     return false;
 }
 
+bool GameMap::FindFreeArea(const Cell2D & start, int rows, int cols, int maxRadius, Cell2D & target)
+{
+    const int r0 = start.row;
+    const int c0 = start.col;
+
+    const int maxDist = mRows * mCols;
+    int minDist = maxDist;
+
+    int radius = 1;
+
+    target.row = -1;
+    target.col = -1;
+
+    while(radius < maxRadius)
+    {
+        const int tlR = (r0 - radius) >= 0 ? (r0 - radius) : 0;
+        const int tlC = (c0 - radius) >= 0 ? (c0 - radius) : 0;
+        const int brR = (r0 + radius) < (mRows - 1) ? r0 + radius : (mRows - 1);
+        const int brC = (c0 + radius) < (mCols - 1) ? c0 + radius : (mCols - 1);
+
+        // TOP
+        {
+            const int r = tlR;
+            const unsigned int ind0 = r * mCols;
+
+            for(int c = tlC; c <= brC; ++c)
+            {
+                if(IsAreaFree(r, c, rows, cols))
+                {
+                    const Cell2D t(r, c);
+                    const int dist = ApproxDistance(start, t);
+
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        target = t;
+                    }
+                }
+            }
+        }
+
+        // BOTTOM
+        {
+            const int r = brR;
+            const unsigned int ind0 = r * mCols;
+
+            for(int c = tlC; c <= brC; ++c)
+            {
+                if(IsAreaFree(r, c, rows, cols))
+                {
+                    const Cell2D t(r, c);
+                    const int dist = ApproxDistance(start, t);
+
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        target = t;
+                    }
+                }
+            }
+        }
+
+        // LEFT
+        {
+            const int c = tlC;
+
+            for(int r = tlR + 1; r < brR; ++r)
+            {
+                if(IsAreaFree(r, c, rows, cols))
+                {
+                    const Cell2D t(r, c);
+                    const int dist = ApproxDistance(start, t);
+
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        target = t;
+                    }
+                }
+            }
+        }
+
+        // RIGHT
+        {
+            const int c = brC;
+
+            for(int r = tlR + 1; r < brR; ++r)
+            {
+                if(IsAreaFree(r, c, rows, cols))
+                {
+                    const Cell2D t(r, c);
+                    const int dist = ApproxDistance(start, t);
+
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        target = t;
+                    }
+                }
+            }
+        }
+
+        if(target.row != -1)
+            return true;
+
+        ++radius;
+    }
+
+    return false;
+}
+
+bool GameMap::IsAreaFree(int brR, int brC, int rows, int cols)
+{
+    // area goes outside map
+    if(rows > brR || cols > brC)
+        return false;
+
+    for(int r = brR - rows + 1; r <= brR; ++r)
+    {
+        const int ind0 = r * mCols;
+
+        for(int c = brC - cols + 1; c <= brC; ++c)
+        {
+            const int ind = ind0 + c;
+            const GameMapCell & cell = mCells[ind];
+
+            if(cell.objTop != nullptr || cell.objBottom != nullptr)
+                return false;
+        }
+    }
+
+    return true;
+}
+
 void GameMap::OnNewTurn(PlayerFaction faction)
 {
     // notify all objects

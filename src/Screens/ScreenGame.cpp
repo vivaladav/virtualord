@@ -1166,7 +1166,10 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                                                      "AFTER MOVE - SetupUnitMove - res: " << res << std::endl;
 
                                         if(!res)
+                                        {
                                             basicOnDone(false);
+                                            unit->ClearStructureToBuild();
+                                        }
                                     }
                                     else
                                     {
@@ -1174,6 +1177,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                                                      "AFTER MOVE - MOVE FAILED" << std::endl;
 
                                         basicOnDone(false);
+                                        unit->ClearStructureToBuild();
                                     }
                                 });
                         }
@@ -1183,6 +1187,9 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 }
                 else
                     done = false;
+
+                if(!done)
+                    unit->ClearStructureToBuild();
 
                 PrintAction(turnAI, action, done, player);
             }
@@ -2008,10 +2015,20 @@ bool ScreenGame::FindWhereToBuildStructureAI(Unit * unit, Cell2D & target)
         }
     }
 
-    // TODO find suitable spot close to cellStart
+    // find suitable spot close to cellStart
+    const int maxRadius = mGameMap->GetNumRows() / 2;
 
-    return false;
-}
+    // first try to find an area big enough to have all sides free
+    if(mGameMap->FindFreeArea(cellStart, rows + 2, cols + 2, maxRadius, target))
+    {
+        target.row -= 1;
+        target.col -= 1;
+
+        return true;
+    }
+    else
+        return mGameMap->FindFreeArea(cellStart, rows, cols, maxRadius, target);
+;}
 
 void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
 {
