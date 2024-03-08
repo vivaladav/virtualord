@@ -106,6 +106,7 @@ public:
     bool AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) const;
 
     // cell conquest
+    bool HasResourcesToConquerCell(Unit * unit);
     bool CanConquerCell(Unit * unit, const Cell2D & cell, Player * player);
     void StartConquerCell(const Cell2D & cell, Player * player);
     void ConquerCell(const Cell2D & cell, Player * player);
@@ -118,6 +119,7 @@ public:
     void BuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st);
 
     // wall building
+    bool HasResourcesToBuildWall(Unit * unit, unsigned int level);
     bool CanBuildWall(const Cell2D & cell, Player * player, unsigned int level);
     void StartBuildWall(const Cell2D & cell, Player * player, unsigned int level);
     void BuildWall(const Cell2D & cell, Player * player, GameObjectTypeId planned);

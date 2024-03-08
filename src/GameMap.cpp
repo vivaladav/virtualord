@@ -627,6 +627,18 @@ bool GameMap::AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) 
     return (distR == 0 && distC == maxDist) || (distR == maxDist && distC == 0);
 }
 
+bool GameMap::HasResourcesToConquerCell(Unit * unit)
+{
+    // check if unit has enough energy
+    if(!unit->HasEnergyForActionStep(CONQUER_CELL))
+        return false;
+
+    // check if player has enough resources
+    Player * player = mGame->GetPlayerByFaction(unit->GetFaction());
+
+    return player->HasEnough(Player::Stat::MATERIAL, COST_CONQUEST_CELL);
+}
+
 bool GameMap::CanConquerCell(Unit * unit, const Cell2D & cell, Player * player)
 {
     const unsigned int r = static_cast<unsigned int>(cell.row);
@@ -659,12 +671,7 @@ bool GameMap::CanConquerCell(Unit * unit, const Cell2D & cell, Player * player)
     if(!unit->CanConquer())
         return false;
 
-    // unit doesn't have enough energy
-    if(!unit->HasEnergyForActionStep(CONQUER_STRUCTURE))
-        return false;
-
-    // check if player has enough material - LAST CHECK
-    return player->HasEnough(Player::Stat::MATERIAL, COST_CONQUEST_CELL);
+    return true;
 }
 
 void GameMap::StartConquerCell(const Cell2D & cell, Player * player)
@@ -866,6 +873,22 @@ void GameMap::BuildStructure(const Cell2D & cell, Player * player, GameObjectTyp
     ApplyLocalVisibility();
 }
 
+bool GameMap::HasResourcesToBuildWall(Unit * unit, unsigned int level)
+{
+    // check if unit has enough energy
+    if(!unit->HasEnergyForActionStep(BUILD_WALL))
+        return false;
+
+    // check if player has enough resources
+    const int costMat = Wall::GetCostMaterial(level);
+    const int costEne = Wall::GetCostEnergy(level);
+
+    Player * player = mGame->GetPlayerByFaction(unit->GetFaction());
+
+    return player->HasEnough(Player::Stat::MATERIAL, costMat)  &&
+           player->HasEnough(Player::Stat::ENERGY, costEne);
+}
+
 bool GameMap::CanBuildWall(const Cell2D & cell, Player * player, unsigned int level)
 {
     const unsigned int r = static_cast<unsigned int>(cell.row);
@@ -886,12 +909,7 @@ bool GameMap::CanBuildWall(const Cell2D & cell, Player * player, unsigned int le
     if(!gcell.walkable)
         return false;
 
-    // check if player has enough energy and material
-    const int costMat = Wall::GetCostMaterial(level);
-    const int costEne = Wall::GetCostEnergy(level);
-
-    return player->HasEnough(Player::Stat::MATERIAL, costMat)  &&
-           player->HasEnough(Player::Stat::ENERGY, costEne);
+    return true;
 }
 
 void GameMap::StartBuildWall(const Cell2D & cell, Player * player, unsigned int level)

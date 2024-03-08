@@ -115,8 +115,8 @@ void ConquerPath::CreateIndicators()
 
 bool ConquerPath::InitNextConquest()
 {
-    // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForActionStep(CONQUER_CELL))
+    // not enough resources -> FAIL
+    if(!mGameMap->HasResourcesToConquerCell(mUnit))
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
@@ -331,19 +331,18 @@ void ConquerPath::UpdatePathCost()
 
 bool ConquerPath::Fail()
 {
-    if(HasStarted())
+    //clear overlays
+    if(mLocalPlayer)
     {
-        mState = FAILED;
-
-        //clear overlays
         IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
         layerOverlay->ClearObjects();
+    }
 
+    if(HasStarted())
         // clear action data once the action is completed
         mScreen->SetObjectActionFailed(mUnit);
-    }
-    else
-        mState = FAILED;
+
+    mState = FAILED;
 
     return false;
 }

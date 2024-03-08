@@ -66,8 +66,8 @@ void WallBuildPath::CreateIndicators()
 
 bool WallBuildPath::InitNextBuild()
 {
-    // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForActionStep(BUILD_WALL))
+    // not enough resources -> FAIL
+    if(!mGameMap->HasResourcesToBuildWall(mUnit, mLevel))
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
@@ -357,19 +357,15 @@ void WallBuildPath::SetIndicatorsType(const std::vector<Cell2D> & cells,
 
 bool WallBuildPath::Fail()
 {
-    if(HasStarted())
-    {
-        // clear indicators
-        IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-        layerOverlay->ClearObjects();
+    // clear indicators
+    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
+    layerOverlay->ClearObjects();
 
+    if(HasStarted())
         // clear action data
         mScreen->SetObjectActionFailed(mUnit);
 
-        mState = FAILED;
-    }
-    else
-        mState = FAILED;
+    mState = FAILED;
 
     return false;
 }

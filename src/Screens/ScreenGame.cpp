@@ -2480,7 +2480,10 @@ bool ScreenGame::StartUnitBuildWall(Unit * unit)
         return true;
     }
     else
+    {
+        ClearCellOverlays();
         return false;
+    }
 }
 
 void ScreenGame::ShowActiveIndicators(Unit * unit, const Cell2D & cell)
