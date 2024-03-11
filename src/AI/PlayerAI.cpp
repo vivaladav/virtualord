@@ -685,13 +685,17 @@ void PlayerAI::AddActionUnitBuildStructure(Unit * u)
     if(mPlayer->IsStructureAvailable(GameObject::TYPE_HOSPITAL))
         AddActionUnitBuildUnitCreator(u, GameObject::TYPE_HOSPITAL, priority);
 
-    // TODO
-    /*
-    static const GameObjectTypeId TYPE_PRACTICE_TARGET;
-    static const GameObjectTypeId TYPE_RADAR_STATION;
-    static const GameObjectTypeId TYPE_RADAR_TOWER;
-    static const GameObjectTypeId TYPE_RESEARCH_CENTER;
-    */
+    // TECH
+    if(mPlayer->IsStructureAvailable(GameObject::TYPE_RESEARCH_CENTER))
+        AddActionUnitBuildResearchCenter(u, priority);
+    if(mPlayer->IsStructureAvailable(GameObject::TYPE_RADAR_STATION))
+        AddActionUnitBuildRadarStructure(u, GameObject::TYPE_RADAR_STATION, priority);
+    if(mPlayer->IsStructureAvailable(GameObject::TYPE_RADAR_TOWER))
+        AddActionUnitBuildRadarStructure(u, GameObject::TYPE_RADAR_TOWER, priority);
+
+    // OTHER
+    if(mPlayer->IsStructureAvailable(GameObject::TYPE_PRACTICE_TARGET))
+        AddActionUnitBuildPracticeTarget(u, priority);
 }
 
 void PlayerAI::AddActionUnitBuildUnitCreator(Unit * u, GameObjectTypeId structType, int priority0)
@@ -777,8 +781,8 @@ void PlayerAI::AddActionUnitBuildResourceGenerator(Unit * u, ResourceType resTyp
     const int resCur = res.GetIntValue();
     const int resMax = res.GetIntMax();
 
-    const float bonusStorage = -40.f;
-    priority += std::roundf(bonusStorage * resCur / resMax);
+    const float bonusGen = -40.f;
+    priority += std::roundf(bonusGen * resCur / resMax);
 
     // reduce priority based on available resources
     const float bonusRes = -5.f;
@@ -832,12 +836,114 @@ void PlayerAI::AddActionUnitBuildResourceStorage(Unit * u, ResourceType resType,
     const int resMax = res.GetIntMax();
     const int resDif = resMax - resCur;
 
-    const float bonusStorage = -50.f;
+    const float bonusStorage = -40.f;
     priority += std::roundf(bonusStorage * resDif / resMax);
 
     // reduce priority based on available resources
     const float bonusRes = -5.f;
     priority += GetPriorityBonusStructureBuildCost(structType, bonusRes);
+
+    // check if below current priority threshold
+    if(priority < mMinPriority)
+        return ;
+
+    // CREATE ACTION
+    auto action = new ActionAIBuildStructure;
+    action->type = AIA_UNIT_BUILD_STRUCTURE;
+    action->ObjSrc = u;
+    action->priority = priority;
+    action->structType = structType;
+
+    // push action to the queue
+    AddNewAction(action);
+}
+
+void PlayerAI::AddActionUnitBuildResearchCenter(Unit * u, int priority0)
+{
+    const GameObjectTypeId structType = GameObject::TYPE_RESEARCH_CENTER;
+
+    // no need to build these structures more than once
+    if(mPlayer->HasStructure(structType))
+        return ;
+
+    // not enough resources to build
+    if(!HasPlayerResourcesToBuild(structType))
+        return ;
+
+    int priority = priority0;
+
+    // reduce priority based on available resources
+    const float bonusRes = -10.f;
+    priority += GetPriorityBonusStructureBuildCost(structType, bonusRes);
+
+    // check if below current priority threshold
+    if(priority < mMinPriority)
+        return ;
+
+    // CREATE ACTION
+    auto action = new ActionAIBuildStructure;
+    action->type = AIA_UNIT_BUILD_STRUCTURE;
+    action->ObjSrc = u;
+    action->priority = priority;
+    action->structType = structType;
+
+    // push action to the queue
+    AddNewAction(action);
+}
+
+void PlayerAI::AddActionUnitBuildPracticeTarget(Unit * u, int priority0)
+{
+    const GameObjectTypeId structType = GameObject::TYPE_PRACTICE_TARGET;
+
+    // not enough resources to build
+    if(!HasPlayerResourcesToBuild(structType))
+        return ;
+
+    int priority = priority0;
+
+    // reduce priority based on available resources
+    const float bonusRes = -15.f;
+    priority += GetPriorityBonusStructureBuildCost(structType, bonusRes);
+
+    // check if below current priority threshold
+    if(priority < mMinPriority)
+        return ;
+
+    // CREATE ACTION
+    auto action = new ActionAIBuildStructure;
+    action->type = AIA_UNIT_BUILD_STRUCTURE;
+    action->ObjSrc = u;
+    action->priority = priority;
+    action->structType = structType;
+
+    // push action to the queue
+    AddNewAction(action);
+}
+
+void PlayerAI::AddActionUnitBuildRadarStructure(Unit * u, GameObjectTypeId structType, int priority0)
+{
+    // check object type is supported
+    if(structType != GameObject::TYPE_RADAR_STATION &&
+       structType != GameObject::TYPE_RADAR_TOWER)
+        return ;
+
+    // no need to build these structures more than once
+    if(GameObject::TYPE_RADAR_STATION == structType && mPlayer->HasStructure(structType))
+        return ;
+
+    // not enough resources to build
+    if(!HasPlayerResourcesToBuild(structType))
+        return ;
+
+    int priority = priority0;
+
+    // reduce priority based on available resources
+    const std::unordered_map<GameObjectTypeId, float> bonusRes
+    {
+        {GameObject::TYPE_RADAR_STATION , -10.f},
+        {GameObject::TYPE_RADAR_TOWER , -15.f},
+    };
+    priority += GetPriorityBonusStructureBuildCost(structType, bonusRes.at(structType));
 
     // check if below current priority threshold
     if(priority < mMinPriority)

@@ -69,6 +69,9 @@ private:
     void AddActionUnitBuildUnitCreator(Unit * u, GameObjectTypeId structType, int priority0);
     void AddActionUnitBuildResourceGenerator(Unit * u, ResourceType resType, int priority0);
     void AddActionUnitBuildResourceStorage(Unit * u, ResourceType resType, int priority0);
+    void AddActionUnitBuildResearchCenter(Unit * u, int priority0);
+    void AddActionUnitBuildPracticeTarget(Unit * u, int priority0);
+    void AddActionUnitBuildRadarStructure(Unit * u, GameObjectTypeId structType, int priority0);
     void AddActionUnitCollectBlobs(Unit * u);
     void AddActionUnitCollectDiamonds(Unit * u);
     void AddActionUnitCollectLootbox(Unit * u);
