@@ -679,12 +679,14 @@ void PlayerAI::AddActionUnitBuildStructure(Unit * u)
     if(mPlayer->IsStructureAvailable(GameObject::TYPE_RES_STORAGE_DIAMONDS))
         AddActionUnitBuildResourceStorage(u, RES_DIAMONDS, priority);
 
-    // UNIT GENERATION
-    AddActionUnitBuildBarracks(u, priority);
+    // UNIT CREATION
+    if(mPlayer->IsStructureAvailable(GameObject::TYPE_BARRACKS))
+        AddActionUnitBuildUnitCreator(u, GameObject::TYPE_BARRACKS, priority);
+    if(mPlayer->IsStructureAvailable(GameObject::TYPE_HOSPITAL))
+        AddActionUnitBuildUnitCreator(u, GameObject::TYPE_HOSPITAL, priority);
 
     // TODO
     /*
-    static const GameObjectTypeId TYPE_HOSPITAL;
     static const GameObjectTypeId TYPE_PRACTICE_TARGET;
     static const GameObjectTypeId TYPE_RADAR_STATION;
     static const GameObjectTypeId TYPE_RADAR_TOWER;
@@ -692,9 +694,15 @@ void PlayerAI::AddActionUnitBuildStructure(Unit * u)
     */
 }
 
-void PlayerAI::AddActionUnitBuildBarracks(Unit * u, int priority0)
+void PlayerAI::AddActionUnitBuildUnitCreator(Unit * u, GameObjectTypeId structType, int priority0)
 {
-    const GameObjectTypeId structType = GameObject::TYPE_BARRACKS;
+    // check object type is supported
+    if(structType != GameObject::TYPE_BARRACKS && structType != GameObject::TYPE_HOSPITAL)
+        return ;
+
+    // no need to build these structures more than once
+    if(mPlayer->HasStructure(structType))
+        return ;
 
     // not enough resources to build
     if(!HasPlayerResourcesToBuild(structType))
@@ -709,9 +717,14 @@ void PlayerAI::AddActionUnitBuildBarracks(Unit * u, int priority0)
 
     int priority = priority0;
 
-    // the more units exist the higher the priority as no soldier can be created yet
-    const float bonusUnits = 30.f;
-    priority += std::roundf(bonusUnits * numUnits / limitUnits);
+    // the more units exist the higher the priority as no unit can be created yet
+    const std::unordered_map<GameObjectTypeId, float> bonusUnits
+    {
+        {GameObject::TYPE_BARRACKS , 30.f},
+        {GameObject::TYPE_HOSPITAL , 15.f},
+    };
+
+    priority += std::roundf(bonusUnits.at(structType) * numUnits / limitUnits);
 
     // reduce priority based on available resources
     const float bonusRes = -5.f;
