@@ -66,6 +66,7 @@ private:
     void AddActionUnitAttackEnemyUnit(Unit * u);
     void AddActionUnitAttackTrees(Unit * u);
     void AddActionUnitBuildStructure(Unit * u);
+    void AddActionUnitBuildBarracks(Unit * u, int priority0);
     void AddActionUnitBuildResourceGenerator(Unit * u, ResourceType resType, int priority0);
     void AddActionUnitBuildResourceStorage(Unit * u, ResourceType resType, int priority0);
     void AddActionUnitCollectBlobs(Unit * u);
@@ -75,10 +76,13 @@ private:
     void AddActionUnitConquestResGen(Unit * u, ResourceType type);
 
     int GetMaxDistanceForObject(const GameObject * obj) const;
-    int GetStructurePiorityBonusEnergy(const Structure * s, float bonus) const;
-    int GetUnitPiorityBonusDistance(const Unit * u, int dist, float bonus) const;
-    int GetUnitPiorityBonusEnergy(const Unit * u, float bonus) const;
-    int GetUnitPiorityBonusHealth(const Unit * u, float bonus) const;
+    int GetStructurePriorityBonusEnergy(const Structure * s, float bonus) const;
+    int GetUnitPriorityBonusDistance(const Unit * u, int dist, float bonus) const;
+    int GetUnitPriorityBonusEnergy(const Unit * u, float bonus) const;
+    int GetUnitPriorityBonusHealth(const Unit * u, float bonus) const;
+
+    bool HasPlayerResourcesToBuild(GameObjectTypeId t) const;
+    int GetPriorityBonusStructureBuildCost(GameObjectTypeId t, float bonus) const;
 
     void PrintdActionDebug(const char * title, const ActionAI * a);
 

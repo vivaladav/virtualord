@@ -392,7 +392,7 @@ void PlayerAI::AddActionBaseCreateUnit(Structure * base)
 
     // decrease priority based on base's energy
     const float bonusEnergy = -20.f;
-    priority += GetStructurePiorityBonusEnergy(base, bonusEnergy);
+    priority += GetStructurePriorityBonusEnergy(base, bonusEnergy);
 
     // priority already too low
     if(priority < mMinPriority)
@@ -547,11 +547,11 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -5.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
     const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -574,11 +574,11 @@ void PlayerAI::AddActionUnitAttackTrees(Unit * u)
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -40.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
     const float bonusHealth = -5.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // already below current priority threshold
     if(priority < mMinPriority)
@@ -623,7 +623,7 @@ void PlayerAI::AddActionUnitAttackTrees(Unit * u)
     const bool inRange = u->IsTargetAttackInRange(mTrees[bestInd]);
 
     const float bonusDistUnit = inRange ? -10.f : -20.f;
-    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDistUnit);
+    priority += GetUnitPriorityBonusDistance(u, minDist, bonusDistUnit);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -645,12 +645,19 @@ void PlayerAI::AddActionUnitBuildStructure(Unit * u)
     int priority = MAX_PRIORITY;
 
     // decrease priority based on unit's energy
-    const float bonusEnergy = -30.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+    const float bonusEnergy = -25.f;
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
     const float bonusHealth = -5.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
+
+    // decrease priority based on distance from Base
+    const GameObject * base = mPlayer->GetBase();
+    const int distBase = mGm->ApproxDistance(u, base);
+    const int maxDist = GetMaxDistanceForObject(u);
+    const float bonusDistBase = -15.f;
+    priority += std::roundf(bonusDistBase * distBase / maxDist);
 
     // already below current priority threshold
     if(priority < mMinPriority)
@@ -671,6 +678,58 @@ void PlayerAI::AddActionUnitBuildStructure(Unit * u)
         AddActionUnitBuildResourceStorage(u, RES_BLOBS, priority);
     if(mPlayer->IsStructureAvailable(GameObject::TYPE_RES_STORAGE_DIAMONDS))
         AddActionUnitBuildResourceStorage(u, RES_DIAMONDS, priority);
+
+    // UNIT GENERATION
+    AddActionUnitBuildBarracks(u, priority);
+
+    // TODO
+    /*
+    static const GameObjectTypeId TYPE_HOSPITAL;
+    static const GameObjectTypeId TYPE_PRACTICE_TARGET;
+    static const GameObjectTypeId TYPE_RADAR_STATION;
+    static const GameObjectTypeId TYPE_RADAR_TOWER;
+    static const GameObjectTypeId TYPE_RESEARCH_CENTER;
+    */
+}
+
+void PlayerAI::AddActionUnitBuildBarracks(Unit * u, int priority0)
+{
+    const GameObjectTypeId structType = GameObject::TYPE_BARRACKS;
+
+    // not enough resources to build
+    if(!HasPlayerResourcesToBuild(structType))
+        return ;
+
+    // can't build more units -> exit
+    const unsigned int numUnits = mPlayer->GetNumUnits();
+    const unsigned int limitUnits = mPlayer->GetMaxUnits();
+
+    if(numUnits >= limitUnits)
+        return ;
+
+    int priority = priority0;
+
+    // the more units exist the higher the priority as no soldier can be created yet
+    const float bonusUnits = 30.f;
+    priority += std::roundf(bonusUnits * numUnits / limitUnits);
+
+    // reduce priority based on available resources
+    const float bonusRes = -5.f;
+    priority += GetPriorityBonusStructureBuildCost(structType, bonusRes);
+
+    // check if below current priority threshold
+    if(priority < mMinPriority)
+        return ;
+
+    // CREATE ACTION
+    auto action = new ActionAIBuildStructure;
+    action->type = AIA_UNIT_BUILD_STRUCTURE;
+    action->ObjSrc = u;
+    action->priority = priority;
+    action->structType = structType;
+
+    // push action to the queue
+    AddNewAction(action);
 }
 
 void PlayerAI::AddActionUnitBuildResourceGenerator(Unit * u, ResourceType resType, int priority0)
@@ -687,18 +746,11 @@ void PlayerAI::AddActionUnitBuildResourceGenerator(Unit * u, ResourceType resTyp
 
     const GameObjectTypeId structType = structTypes[resType];
 
-    const ObjectData & data = mDataReg->GetObjectData(structType);
-    const auto & costs = data.GetCosts();
-
-    const int energy = mPlayer->GetStat(Player::ENERGY).GetIntValue();
-    const int material = mPlayer->GetStat(Player::MATERIAL).GetIntValue();
-    const int blobs = mPlayer->GetStat(Player::BLOBS).GetIntValue();
-    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetIntValue();
-
     // not enough resources to build
-    if(energy < costs[RES_ENERGY] || material < costs[RES_MATERIAL1] ||
-        diamonds < costs[RES_DIAMONDS] || blobs < costs[RES_BLOBS])
+    if(!HasPlayerResourcesToBuild(structType))
         return ;
+
+    int priority = priority0;
 
     // decrease priority based on current resource level (high level -> lower priority)
     const Player::Stat ps[] =
@@ -713,23 +765,11 @@ void PlayerAI::AddActionUnitBuildResourceGenerator(Unit * u, ResourceType resTyp
     const int resMax = res.GetIntMax();
 
     const float bonusStorage = -40.f;
-    int priority = priority0 + std::roundf(bonusStorage * resCur / resMax);
+    priority += std::roundf(bonusStorage * resCur / resMax);
 
     // reduce priority based on available resources
-    // NOTE all costs are < current resources as checked above
     const float bonusRes = -5.f;
-
-    if(costs[RES_ENERGY] > 0)
-        priority += std::roundf(bonusRes * costs[RES_ENERGY] / energy);
-
-    if(costs[RES_MATERIAL1] > 0)
-        priority += std::roundf(bonusRes * costs[RES_MATERIAL1] / material);
-
-    if(costs[RES_BLOBS] > 0)
-        priority += std::roundf(bonusRes * costs[RES_BLOBS] / blobs);
-
-    if(costs[RES_DIAMONDS] > 0)
-        priority += std::roundf(bonusRes * costs[RES_DIAMONDS] / diamonds);
+    priority += GetPriorityBonusStructureBuildCost(structType, bonusRes);
 
     // check if below current priority threshold
     if(priority < mMinPriority)
@@ -758,18 +798,11 @@ void PlayerAI::AddActionUnitBuildResourceStorage(Unit * u, ResourceType resType,
 
     const GameObjectTypeId structType = structTypes[resType];
 
-    const ObjectData & data = mDataReg->GetObjectData(structType);
-    const auto & costs = data.GetCosts();
-
-    const int energy = mPlayer->GetStat(Player::ENERGY).GetIntValue();
-    const int material = mPlayer->GetStat(Player::MATERIAL).GetIntValue();
-    const int blobs = mPlayer->GetStat(Player::BLOBS).GetIntValue();
-    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetIntValue();
-
     // not enough resources to build
-    if(energy < costs[RES_ENERGY] || material < costs[RES_MATERIAL1] ||
-       diamonds < costs[RES_DIAMONDS] || blobs < costs[RES_BLOBS])
+    if(!HasPlayerResourcesToBuild(structType))
         return ;
+
+    int priority = priority0;
 
     // decrease priority based on current storage level
     const Player::Stat ps[] =
@@ -787,23 +820,11 @@ void PlayerAI::AddActionUnitBuildResourceStorage(Unit * u, ResourceType resType,
     const int resDif = resMax - resCur;
 
     const float bonusStorage = -50.f;
-    int priority = priority0 + std::roundf(bonusStorage * resDif / resMax);
+    priority += std::roundf(bonusStorage * resDif / resMax);
 
     // reduce priority based on available resources
-    // NOTE all costs are < current resources as checked above
     const float bonusRes = -5.f;
-
-    if(costs[RES_ENERGY] > 0)
-        priority += std::roundf(bonusRes * costs[RES_ENERGY] / energy);
-
-    if(costs[RES_MATERIAL1] > 0)
-        priority += std::roundf(bonusRes * costs[RES_MATERIAL1] / material);
-
-    if(costs[RES_BLOBS] > 0)
-        priority += std::roundf(bonusRes * costs[RES_BLOBS] / blobs);
-
-    if(costs[RES_DIAMONDS] > 0)
-        priority += std::roundf(bonusRes * costs[RES_DIAMONDS] / diamonds);
+    priority += GetPriorityBonusStructureBuildCost(structType, bonusRes);
 
     // check if below current priority threshold
     if(priority < mMinPriority)
@@ -832,11 +853,11 @@ void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -25.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
     const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // already below current priority threshold
     if(priority < mMinPriority)
@@ -873,7 +894,7 @@ void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
 
     // bonus distance
     const float bonusDist = -25.f;
-    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
+    priority += GetUnitPriorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -902,11 +923,11 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -25.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
     const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // already below current priority threshold
     if(priority < mMinPriority)
@@ -943,7 +964,7 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
 
     // bonus distance
     const float bonusDist = -25.f;
-    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
+    priority += GetUnitPriorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -967,11 +988,11 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -25.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
     const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // already below current priority threshold
     if(priority < mMinPriority)
@@ -1007,7 +1028,7 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
 
     // bonus distance
     const float bonusDist = -25.f;
-    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
+    priority += GetUnitPriorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -1031,11 +1052,11 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -30.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
     const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // already below current priority threshold
     if(priority < mMinPriority)
@@ -1137,7 +1158,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 
     // bonus distance
     const float bonusDist = -50.f;
-    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
+    priority += GetUnitPriorityBonusDistance(u, minDist, bonusDist);
 
     // can't find something that's worth an action
     if(priority < mMinPriority)
@@ -1175,11 +1196,11 @@ void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -20.f;
-    priority += GetUnitPiorityBonusEnergy(u, bonusEnergy);
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
 
     // decrease priority based on unit's health
     const float bonusHealth = -10.f;
-    priority += GetUnitPiorityBonusHealth(u, bonusHealth);
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // bonus resource availability level
     const float bonusRes = -25.f;
@@ -1235,7 +1256,7 @@ void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
 
     // bonus distance
     const float bonusDist = -20.f;
-    priority += GetUnitPiorityBonusDistance(u, minDist, bonusDist);
+    priority += GetUnitPriorityBonusDistance(u, minDist, bonusDist);
 
     // decrease priority for owned generators
     const float bonusOwned = -30.f;
@@ -1275,7 +1296,7 @@ int PlayerAI::GetMaxDistanceForObject(const GameObject * obj) const
     return distR + distC;
 }
 
-int PlayerAI::GetStructurePiorityBonusEnergy(const Structure * s, float bonus) const
+int PlayerAI::GetStructurePriorityBonusEnergy(const Structure * s, float bonus) const
 {
     const float energyUnit = s->GetEnergy();
     const float energyUnitMax = s->GetMaxEnergy();
@@ -1293,7 +1314,7 @@ int PlayerAI::GetStructurePiorityBonusEnergy(const Structure * s, float bonus) c
     return std::roundf(bonusStruct * wStruct + bonusTurn * wTurn);
 }
 
-int PlayerAI::GetUnitPiorityBonusDistance(const Unit * u, int dist, float bonus) const
+int PlayerAI::GetUnitPriorityBonusDistance(const Unit * u, int dist, float bonus) const
 {
     const float energyStep = u->GetEnergyForActionStep(MOVE);
     const float energyTot = energyStep * dist;
@@ -1311,7 +1332,7 @@ int PlayerAI::GetUnitPiorityBonusDistance(const Unit * u, int dist, float bonus)
     return std::roundf(bonusRelDist * wRel + bonusAbsDist * wAbs);
 }
 
-int PlayerAI::GetUnitPiorityBonusEnergy(const Unit * u, float bonus) const
+int PlayerAI::GetUnitPriorityBonusEnergy(const Unit * u, float bonus) const
 {
     const float energyUnit = u->GetEnergy();
     const float energyUnitMax = u->GetMaxEnergy();
@@ -1329,10 +1350,54 @@ int PlayerAI::GetUnitPiorityBonusEnergy(const Unit * u, float bonus) const
     return std::roundf(bonusUnit * wUnit + bonusTurn * wTurn);
 }
 
-int PlayerAI::GetUnitPiorityBonusHealth(const Unit * u, float bonus) const
+int PlayerAI::GetUnitPriorityBonusHealth(const Unit * u, float bonus) const
 {
     const float maxHealth = u->GetMaxHealth();
     return std::roundf(bonus * (maxHealth - u->GetHealth()) / maxHealth);
+}
+
+bool PlayerAI::HasPlayerResourcesToBuild(GameObjectTypeId t) const
+{
+    const ObjectData & data = mDataReg->GetObjectData(t);
+    const auto & costs = data.GetCosts();
+
+    const int energy = mPlayer->GetStat(Player::ENERGY).GetIntValue();
+    const int material = mPlayer->GetStat(Player::MATERIAL).GetIntValue();
+    const int blobs = mPlayer->GetStat(Player::BLOBS).GetIntValue();
+    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetIntValue();
+
+    // not enough resources to build
+    return energy >= costs[RES_ENERGY] && material >= costs[RES_MATERIAL1] &&
+           diamonds >= costs[RES_DIAMONDS] && blobs >= costs[RES_BLOBS];
+}
+
+// NOTE this requires that HasPlayerResourcesToBuild is called before to stop execution
+//      in case resources are not enough
+int PlayerAI::GetPriorityBonusStructureBuildCost(GameObjectTypeId t, float bonus) const
+{
+    const ObjectData & data = mDataReg->GetObjectData(t);
+    const auto & costs = data.GetCosts();
+
+    const int energy = mPlayer->GetStat(Player::ENERGY).GetIntValue();
+    const int material = mPlayer->GetStat(Player::MATERIAL).GetIntValue();
+    const int blobs = mPlayer->GetStat(Player::BLOBS).GetIntValue();
+    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetIntValue();
+
+    float b = 0.f;
+
+    if(costs[RES_ENERGY] > 0)
+        b += bonus * costs[RES_ENERGY] / energy;
+
+    if(costs[RES_MATERIAL1] > 0)
+        b += bonus * costs[RES_MATERIAL1] / material;
+
+    if(costs[RES_BLOBS] > 0)
+        b += bonus * costs[RES_BLOBS] / blobs;
+
+    if(costs[RES_DIAMONDS] > 0)
+        b += bonus * costs[RES_DIAMONDS] / diamonds;
+
+    return std::roundf(b);
 }
 
 void PlayerAI::PrintdActionDebug(const char * title, const ActionAI * a)
