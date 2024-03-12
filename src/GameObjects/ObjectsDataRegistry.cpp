@@ -74,13 +74,13 @@ void ObjectsDataRegistry::InitObjectData()
                              GameObject::TYPE_PRACTICE_TARGET, OCS_TARGET, OCAT_GENERIC, 1, 1));
 
     mData.emplace(GameObject::TYPE_RADAR_STATION,
-                  ObjectData({ 4, 8, 0, 0, 0, 4, 5, 3, 0, 0, 0, 0 }, { 100, 100, 0, 0 },
+                  ObjectData({ 4, 8, 0, 0, 0, 4, 5, 3, 0, 0, 0, 0 }, { 250, 150, 0, 0 },
                              { ID_STRUCT_RADAR_F1, ID_STRUCT_RADAR_F2, ID_STRUCT_RADAR_F3,
                                ID_STRUCT_RADAR }, SpriteFileStructures, GameObject::TYPE_RADAR_STATION,
                               OCS_RADAR, OCAT_TECHNOLOGY, 2, 2));
 
     mData.emplace(GameObject::TYPE_RADAR_TOWER,
-                  ObjectData({ 3, 6, 0, 0, 0, 3, 4, 2, 0, 0, 0, 0 }, { 100, 50, 0, 0 },
+                  ObjectData({ 3, 6, 0, 0, 0, 3, 4, 2, 0, 0, 0, 0 }, { 150, 100, 0, 0 },
                              { ID_STRUCT_RADAR_TOWER_F1, ID_STRUCT_RADAR_TOWER_F2,
                                ID_STRUCT_RADAR_TOWER_F3, ID_STRUCT_RADAR_TOWER }, SpriteFileStructures,
                              GameObject::TYPE_RADAR_STATION, OCS_RADAR, OCAT_TECHNOLOGY, 1, 1));

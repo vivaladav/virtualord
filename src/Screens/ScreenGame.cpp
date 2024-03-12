@@ -1148,10 +1148,22 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 if(FindWhereToBuildStructureAI(unit, target))
                 {
                     if(mGameMap->AreCellsAdjacent(cellUnit, target))
+                    {
+                        std::cout << "ScreenGame::ExecuteAIAction - BUILD STRUCTURE ADJACENT - unit: "
+                                  << cellUnit.row << "," << cellUnit.col
+                                  << " - target: " << target.row << "," << target.col << std::endl;
+
                         done = SetupStructureBuilding(unit, target, player, basicOnDone);
+                    }
                     else
                     {
                         const Cell2D moveTarget = mGameMap->GetAdjacentMoveTarget(cellUnit, target);
+
+                        std::cout << "ScreenGame::ExecuteAIAction - BUILD STRUCTURE MOVE - unit: "
+                                  << cellUnit.row << "," << cellUnit.col
+                                  << " - target: " << target.row << "," << target.col
+                                  << " - move target: " << moveTarget.row << "," << moveTarget.col
+                                  << std::endl;
 
                         if(moveTarget.row != -1 && moveTarget.col != -1)
                         {
@@ -1891,13 +1903,17 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
     // if target cell has object try to find one next to it free
     if(mGameMap->HasObject(target.row, target.col))
     {
+        const Cell2D oldTarget = target;
+
         target = mGameMap->GetOrthoAdjacentMoveTarget(start, target);
 
         // can't find an adjacent cell that's free
         if(-1 == target.row)
         {
             std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
-                      << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed)" << std::endl;
+                      << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed) - "
+                         "start: " << start.row << "," << start.col
+                      << " - target: " << oldTarget.row << "," << oldTarget.col << std::endl;
 
             return false;
         }
@@ -1911,7 +1927,9 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
     if(path.empty())
     {
         std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
-                  << " - CONNECT STRUCTURE FAILED (no path)" << std::endl;
+                  << " - CONNECT STRUCTURE FAILED (no path) - "
+                     "start: " << start.row << "," << start.col
+                  << " - target: " << target.row << "," << target.col << std::endl;
 
         return false;
     }
@@ -1930,7 +1948,9 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
     else
     {
         std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
-                  << " - CONNECT STRUCTURE FAILED (ConquerCells failed)" << std::endl;
+                  << " - CONNECT STRUCTURE FAILED (ConquerCells failed) - "
+                     "start: " << start.row << "," << start.col
+                  << " - target: " << target.row << "," << target.col << std::endl;
 
         return false;
     }
@@ -1957,10 +1977,19 @@ bool ScreenGame::FindWhereToBuildStructureAI(Unit * unit, Cell2D & target)
 
     // build close to existing similar structure
     if(player->HasStructure(type))
+    {
         structures = player->GetStructuresByType(type);
+
+        std::cout << "ScreenGame::FindWhereToBuildStructureAI - search near similar structures "
+                  << structures.size() << std::endl;
+    }
     // no similar structure -> build close to base
     else
+    {
         structures = player->GetStructuresByType(GameObject::TYPE_BASE);
+
+        std::cout << "ScreenGame::FindWhereToBuildStructureAI - search near base" << std::endl;
+    }
 
     // find similar structure which is closest to unit
     unsigned int bestInd = 0;
@@ -2015,6 +2044,11 @@ bool ScreenGame::FindWhereToBuildStructureAI(Unit * unit, Cell2D & target)
         }
     }
 
+    std::cout << "ScreenGame::FindWhereToBuildStructureAI - unit cell: "
+              << cellUnit.row << "," << cellUnit.col
+              << " - closest structure corner: "
+              << cellStart.row << "," << cellStart.col << std::endl;
+
     // find suitable spot close to cellStart
     const int maxRadius = mGameMap->GetNumRows() / 2;
 
@@ -2023,6 +2057,9 @@ bool ScreenGame::FindWhereToBuildStructureAI(Unit * unit, Cell2D & target)
     {
         target.row -= 1;
         target.col -= 1;
+
+        std::cout << "ScreenGame::FindWhereToBuildStructureAI - FOUND target area A - target: "
+                  << target.row << "," << target.col << std::endl;
 
         return true;
     }
