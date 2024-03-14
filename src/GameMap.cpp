@@ -2041,7 +2041,6 @@ int GameMap::ApproxDistance(const GameObject * obj1, const GameObject * obj2) co
            std::abs(obj1->GetCol0() - obj2->GetCol0());
 }
 
-
 bool GameMap::FindClosestCellConnectedToObject(const GameObject * obj, const Cell2D start, Cell2D & end)
 {
     end.row = -1;

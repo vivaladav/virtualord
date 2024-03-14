@@ -1900,48 +1900,67 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
         return false;
     }
 
-    // if target cell has object try to find one next to it free
-    if(mGameMap->HasObject(target.row, target.col))
+    auto cp = new ConquerPath(unit, mIsoMap, mGameMap, this);
+
+    // special case: unit is already next to target
+    if(mGameMap->AreCellsOrthoAdjacent(start, target))
     {
-        const Cell2D oldTarget = target;
+        const unsigned int startInd = (start.row * mGameMap->GetNumCols()) + start.col;
+        const std::vector<unsigned int> path { startInd };
 
-        target = mGameMap->GetOrthoAdjacentMoveTarget(start, target);
+        cp->SetPathCells(path);
 
-        // can't find an adjacent cell that's free
-        if(-1 == target.row)
+        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
+                  << " - CONNECT STRUCTURE - special case: unit ADJ target" << std::endl;
+    }
+    else
+    {
+        // if target cell has object try to find one next to it free
+        if(mGameMap->HasObject(target.row, target.col))
+        {
+            const Cell2D oldTarget = target;
+
+            target = mGameMap->GetOrthoAdjacentMoveTarget(start, target);
+
+            // can't find an adjacent cell that's free
+            if(-1 == target.row)
+            {
+                std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
+                          << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed) - "
+                             "start: " << start.row << "," << start.col
+                          << " - target: " << oldTarget.row << "," << oldTarget.col << std::endl;
+
+                return false;
+            }
+        }
+
+        const auto path = mPathfinder->MakePath(start.row, start.col,
+                                                target.row, target.col,
+                                                sgl::ai::Pathfinder::INCLUDE_START);
+
+        // can't find a path from start to target
+        if(path.empty())
         {
             std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
-                      << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed) - "
+                      << " - CONNECT STRUCTURE FAILED (no path) - "
                          "start: " << start.row << "," << start.col
-                      << " - target: " << oldTarget.row << "," << oldTarget.col << std::endl;
+                      << " - target: " << target.row << "," << target.col << std::endl;
 
             return false;
         }
-    }
 
-    const auto path = mPathfinder->MakePath(start.row, start.col,
-                                            target.row, target.col,
-                                            sgl::ai::Pathfinder::INCLUDE_START);
-
-    // can't find a path from start to target
-    if(path.empty())
-    {
-        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
-                  << " - CONNECT STRUCTURE FAILED (no path) - "
-                     "start: " << start.row << "," << start.col
-                  << " - target: " << target.row << "," << target.col << std::endl;
-
-        return false;
+        cp->SetPathCells(path);
     }
 
     // start conquest
-    auto cp = new ConquerPath(unit, mIsoMap, mGameMap, this);
-    cp->SetPathCells(path);
-
     if(mGameMap->ConquerCells(cp))
     {
         // store active action
         mObjActionsToDo.emplace_back(unit, GameObjectActionType::CONQUER_CELL, onDone);
+
+        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
+                  << " - CONNECT STRUCTURE - start: " << start.row << "," << start.col
+                  << " - target: " << target.row << "," << target.col << std::endl;
 
         return true;
     }

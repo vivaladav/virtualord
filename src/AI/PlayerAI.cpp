@@ -1208,6 +1208,11 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
                 bestStructInd = i;
                 startConquest = posUnit;
 
+                std::cout << "PlayerAI::AddActionUnitConnectStructure - ADJ - structure: " << s->GetObjectId()
+                          << " - min dist: 0"
+                          << " - dest/obj pos: " << startConquest.row << "," << startConquest.col
+                          << " - obj: " << u->GetObjectId() << std::endl;
+
                 break;
             }
 
@@ -1229,7 +1234,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
                               << " - new min dist: " << dist
                               << " - dest: " << startConquest.row << "," << startConquest.col
                               << " - obj: " << u->GetObjectId()
-                              << " - obj pos: " << posUnit.row << "," << posUnit.col <<std::endl;
+                              << " - obj pos: " << posUnit.row << "," << posUnit.col << std::endl;
                 }
             }
 
@@ -1261,7 +1266,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
                               << " - new min dist: " << dist
                               << " - dest: " << startConquest.row << "," << startConquest.col
                               << " - obj: " << u->GetObjectId()
-                              << " - obj pos: " << posUnit.row << "," << posUnit.col <<std::endl;
+                              << " - obj pos: " << posUnit.row << "," << posUnit.col << std::endl;
 
                     // already found best option
                     if(0 == dist)
