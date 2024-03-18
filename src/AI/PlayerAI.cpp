@@ -310,7 +310,7 @@ void PlayerAI::AddNewAction(ActionAI * action)
 void PlayerAI::AddActionEndTurn()
 {
     // create action
-    auto action = new ActionAINewUnit;
+    auto action = new ActionAI;
     action->type = AIA_END_TURN;
     action->priority = MAX_PRIORITY;
 
@@ -940,10 +940,20 @@ void PlayerAI::AddActionUnitBuildRadarStructure(Unit * u, GameObjectTypeId struc
     // reduce priority based on available resources
     const std::unordered_map<GameObjectTypeId, float> bonusRes
     {
-        {GameObject::TYPE_RADAR_STATION , -10.f},
-        {GameObject::TYPE_RADAR_TOWER , -15.f},
+        {GameObject::TYPE_RADAR_STATION , -20.f},
+        {GameObject::TYPE_RADAR_TOWER , -30.f},
     };
     priority += GetPriorityBonusStructureBuildCost(structType, bonusRes.at(structType));
+
+    // reduce priority based on number or existing same structure
+    if(GameObject::TYPE_RADAR_TOWER == structType)
+    {
+        const auto existingTowers = mPlayer->GetStructuresByType(structType);
+        const unsigned int numTowers = existingTowers.size();
+
+        const int bonusExisting = -5;
+        priority += numTowers * bonusExisting;
+    }
 
     // check if below current priority threshold
     if(priority < mMinPriority)
@@ -1530,6 +1540,17 @@ void PlayerAI::PrintdActionDebug(const char * title, const ActionAI * a)
 
     std::cout << " - ID: " << a->actId
               << " - TYPE: " << a->GetTypeStr() << " - PRIO: " << a->priority;
+
+    if(AIA_UNIT_BUILD_STRUCTURE == a->type)
+    {
+        auto ab = static_cast<const ActionAIBuildStructure *>(a);
+        std::cout << " | STRUCT: " << GameObject::TITLES.at(ab->structType);
+    }
+    else if(AIA_NEW_UNIT == a->type)
+    {
+        auto an = static_cast<const ActionAINewUnit *>(a);
+        std::cout << " | UNIT: " << GameObject::TITLES.at(an->unitType);
+    }
 
     if(a->ObjSrc != nullptr)
     {
