@@ -46,11 +46,13 @@ public:
     unsigned int GetMaxUnits() const;
     void SetMaxUnits(int val);
     unsigned int GetNumUnits() const;
+    unsigned int GetNumUnitsByType(GameObjectTypeId type) const;
     void AddUnit(Unit * unit);
     void RemoveUnit(Unit * unit);
     Unit * GetUnit(unsigned int index);
 
     unsigned int GetNumStructures() const;
+    unsigned int GetNumStructuresByType(GameObjectTypeId type) const;
     void AddStructure(Structure * s);
     void RemoveStructure(Structure * s);
     Structure * GetStructure(unsigned int index);

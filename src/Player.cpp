@@ -61,6 +61,19 @@ Player::~Player()
     delete mAI;
 }
 
+unsigned int Player::GetNumUnitsByType(GameObjectTypeId type) const
+{
+    unsigned int num = 0;
+
+    for(Unit * u : mUnits)
+    {
+        if(u->GetObjectType() == type)
+            ++num;
+    }
+
+    return num;
+}
+
 void Player::AddUnit(Unit * unit)
 {
     if(mUnits.size() == mMaxUnits)
@@ -100,6 +113,19 @@ Unit * Player::GetUnit(unsigned int index)
         return mUnits[index];
     else
         return nullptr;
+}
+
+unsigned int Player::GetNumStructuresByType(GameObjectTypeId type) const
+{
+    unsigned int num = 0;
+
+    for(Structure * s : mStructures)
+    {
+        if(s->GetObjectType() == type)
+            ++num;
+    }
+
+    return num;
 }
 
 void Player::AddStructure(Structure * s)
