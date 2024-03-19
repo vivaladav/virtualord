@@ -188,6 +188,8 @@ add_executable(
     src/States/StatesIds.h
     src/States/StateTest.h
     src/States/StateTest.cpp
+    src/Widgets/BlinkingIconEnergy.h
+    src/Widgets/BlinkingIconEnergy.cpp
     src/Widgets/ButtonDialogBack.h
     src/Widgets/ButtonDialogBack.cpp
     src/Widgets/ButtonDialogContinue.h

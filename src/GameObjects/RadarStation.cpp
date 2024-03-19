@@ -28,7 +28,7 @@ void RadarStation::UpdateGraphics()
 
 void RadarStation::OnLinkedChanged()
 {
-    GameObject::OnLinkedChanged();
+    Structure::OnLinkedChanged();
 
     const bool linked = IsLinked();
 

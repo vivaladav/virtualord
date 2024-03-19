@@ -107,6 +107,7 @@ public:
     unsigned int GetObjectId() const;
 
     IsoObject * GetIsoObject() const;
+    virtual void OnPositionChanged();
 
     bool IsStructure() const;
     bool CanBeConquered() const;
@@ -198,6 +199,7 @@ public:
 protected:
     virtual void UpdateGraphics() = 0;
 
+    virtual void OnFactionChanged();
     virtual void OnLinkedChanged();
 
     void SetDefaultColors();

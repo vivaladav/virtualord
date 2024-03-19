@@ -265,6 +265,8 @@ GameObject::GameObject(GameObjectTypeId type, GameObjectCategoryId cat, int rows
 
 GameObject::~GameObject() { delete mIsoObj; }
 
+void GameObject::OnPositionChanged() { }
+
 void GameObject::SetSelected(bool val)
 {
     // same value -> nothing to do
@@ -312,6 +314,8 @@ void GameObject::SetFaction(PlayerFaction f)
         return ;
 
     mFaction = f;
+
+    OnFactionChanged();
 
     UpdateGraphics();
 }
@@ -584,6 +588,7 @@ void GameObject::OnNewTurn(PlayerFaction faction)
 
 void GameObject::Update(float) { }
 
+void GameObject::OnFactionChanged() { }
 void GameObject::OnLinkedChanged() { }
 
 void GameObject::SetDefaultColors()

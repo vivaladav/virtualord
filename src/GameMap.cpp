@@ -1607,6 +1607,8 @@ void GameMap::CreateUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & d
 
     mIsoMap->GetLayer(OBJECTS2)->AddObject(unit->GetIsoObject(), r, c);
 
+    unit->OnPositionChanged();
+
     // store unit in map list and in registry
     mObjects.push_back(unit);
     mObjectsSet.insert(unit);
@@ -2814,6 +2816,8 @@ bool GameMap::MoveObjToCell(GameObject * obj, int row, int col)
     IsoLayer * layer = obj->GetIsoObject()->GetLayer();
     layer->MoveObject(obj->GetRow0(), obj->GetCol0(), row, col, false);
 
+    obj->OnPositionChanged();
+
     // remove object from current cell
     mCells[ind0].objTop = nullptr;
     mCells[ind0].walkable = true;
@@ -2905,6 +2909,8 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
 
     // create object in iso map
     mIsoMap->GetLayer(o2a.layer)->AddObject(o2a.obj->GetIsoObject(), o2a.r0, o2a.c0);
+
+    o2a.obj->OnPositionChanged();
 
     // apply visibility
     ApplyLocalVisibilityToObject(o2a.obj);

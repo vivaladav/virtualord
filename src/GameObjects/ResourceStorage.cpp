@@ -47,7 +47,7 @@ void ResourceStorage::UpdateGraphics()
 
 void ResourceStorage::OnLinkedChanged()
 {
-    GameObject::OnLinkedChanged();
+    Structure::OnLinkedChanged();
 
     if(NO_FACTION == GetFaction())
         return ;
