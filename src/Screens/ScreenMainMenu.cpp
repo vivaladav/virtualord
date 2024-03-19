@@ -305,6 +305,7 @@ void ScreenMainMenu::CreateChangelog()
                          "- Added selected object panel in mission.\n"
                          "- Added object dialog in mission.\n"
                          "- Game objects gain experience by doing things.\n"
+                         "- AI can build structures.\n"
                         );
     textNewFeat->SetPosition(contX, contY);
     textNewFeat->SetColor(colorContent);
