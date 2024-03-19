@@ -306,6 +306,7 @@ void ScreenMainMenu::CreateChangelog()
                          "- Added object dialog in mission.\n"
                          "- Game objects gain experience by doing things.\n"
                          "- AI can build structures.\n"
+                         "- Blinking icon appears on top of structures if not linked to base.\n"
                         );
     textNewFeat->SetPosition(contX, contY);
     textNewFeat->SetColor(colorContent);
