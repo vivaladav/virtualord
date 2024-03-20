@@ -646,6 +646,27 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
     {
         mGame->SetAutoEndTurn(checked);
     });
+
+    // TUTORIAL
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label("TUTORIAL", font, panel);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    cb = new SettingsCheckbox(panel);
+    cb->SetChecked(mGame->IsTutorialEnabled());
+
+    x += blockSettingW;
+    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
+    cb->SetPosition(x, y);
+
+    cb->AddOnToggleFunction([this](bool checked)
+    {
+        mGame->SetTutorialEnabled(checked);
+    });
+
 }
 
 void DialogSettings::CreatePanelAudio(sgl::sgui::Widget *parent)

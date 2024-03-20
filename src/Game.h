@@ -93,6 +93,8 @@ public:
     void SetMapScrollingOnEdges(bool val);
     bool IsAutoEndTurnEnabled() const;
     void SetAutoEndTurn(bool val);
+    bool IsTutorialEnabled() const;
+    void SetTutorialEnabled(bool val);
 
     unsigned int AddOnSettingsChangedFunction(const std::function<void()> & f);
     void RemoveOnSettingsChangedFunction(unsigned int fId);
@@ -133,6 +135,7 @@ private:
     int mMapDragging = true;
     bool mMapScrollingOnEdges = true;
     bool mAutoEndTurn = true;
+    bool mTutorialEnabled = true;
 
     unsigned char mClearR = 0;
     unsigned char mClearG = 0;
@@ -220,5 +223,8 @@ inline void Game::SetAutoEndTurn(bool val)
         NotifyOnSettingsChanged();
     }
 }
+
+inline bool Game::IsTutorialEnabled() const { return mTutorialEnabled; }
+inline void Game::SetTutorialEnabled(bool val) { mTutorialEnabled = val; }
 
 } // namespace game
