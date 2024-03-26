@@ -6,13 +6,14 @@ namespace game
 {
 
 class CollectableGenerator;
+class Player;
 
 class Collectable : public GameObject
 {
 public:
     Collectable(GameObjectTypeId type, int rows, int cols);
 
-    virtual void Collected();
+    virtual void Collected(Player * collector);
 };
 
 inline Collectable::Collectable(GameObjectTypeId type, int rows, int cols) :

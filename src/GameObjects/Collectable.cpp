@@ -3,7 +3,7 @@
 namespace game
 {
 
-void Collectable::Collected()
+void Collectable::Collected(Player *)
 {
 }
 

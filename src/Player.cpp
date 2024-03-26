@@ -377,7 +377,7 @@ void Player::HandleCollectable(GameObject * obj)
     mOnResourcesChanged();
 
     // notify collection
-    static_cast<Collectable *>(obj)->Collected();
+    static_cast<Collectable *>(obj)->Collected(this);
 }
 
 void Player::AdjustTurnMaxEnergy()
