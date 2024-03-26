@@ -313,6 +313,13 @@ int GameObject::GetCol0() const { return mCell->col; }
 int GameObject::GetRow1() const { return 1 + mCell->row - mRows; }
 int GameObject::GetCol1() const { return 1 + mCell->col - mCols; }
 
+bool GameObject::IsFactionLocal() const
+{
+    Player * p = mScreen->GetGame()->GetPlayerByFaction(mFaction);
+
+    return p != nullptr && p->IsLocal();
+}
+
 void GameObject::SetFaction(PlayerFaction f)
 {
     if(f == mFaction)

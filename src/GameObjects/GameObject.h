@@ -147,6 +147,7 @@ public:
     unsigned int GetCols() const;
 
     PlayerFaction GetFaction() const;
+    bool IsFactionLocal() const;
     void SetFaction(PlayerFaction f);
 
     GameObjectTypeId GetObjectType() const;

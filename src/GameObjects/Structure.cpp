@@ -53,6 +53,9 @@ void Structure::HideIconEnergy()
 
 void Structure::ShowIconEnergy()
 {
+    if(!IsFactionLocal())
+        return ;
+
     mIconEnergy->SetVisible(true);
     mIconEnergy->SetEnabled(true);
 

@@ -515,15 +515,15 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         return nullptr;
     }
 
+    // links to other objects
+    o2a.obj->SetGameMap(this);
+    o2a.obj->SetScreen(mScreenGame);
+
     // assign owner
     o2a.obj->SetFaction(faction);
 
     // set object properties
     o2a.obj->SetCell(&mCells[ind0]);
-
-    // links to other objects
-    o2a.obj->SetGameMap(this);
-    o2a.obj->SetScreen(mScreenGame);
 
     // schedule object for map addition
     if(instantAdd)
