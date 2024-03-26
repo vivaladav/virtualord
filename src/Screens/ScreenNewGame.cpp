@@ -35,6 +35,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
 
     // assign initial available structures
     p->AddAvailableStructure(GameObject::TYPE_BARRACKS);
+    p->AddAvailableStructure(GameObject::TYPE_BUNKER);
     p->AddAvailableStructure(GameObject::TYPE_DEFENSIVE_TOWER);
     p->AddAvailableStructure(GameObject::TYPE_HOSPITAL);
     p->AddAvailableStructure(GameObject::TYPE_PRACTICE_TARGET);
@@ -93,6 +94,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
 
         // assign initial available structures
         p->AddAvailableStructure(GameObject::TYPE_BARRACKS);
+        p->AddAvailableStructure(GameObject::TYPE_BUNKER);
         p->AddAvailableStructure(GameObject::TYPE_DEFENSIVE_TOWER);
         p->AddAvailableStructure(GameObject::TYPE_HOSPITAL);
         p->AddAvailableStructure(GameObject::TYPE_PRACTICE_TARGET);

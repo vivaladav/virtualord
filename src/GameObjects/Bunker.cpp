@@ -1,4 +1,4 @@
-#include "GameObjects/DefensiveTower.h"
+#include "GameObjects/Bunker.h"
 
 #include "GameConstants.h"
 #include "GameData.h"
@@ -19,9 +19,9 @@ namespace game
 {
 
 const int maxAttVal = 11;
-const int attRanges[maxAttVal] = { 0, 2, 3, 4, 5, 6, 7, 9, 10, 12, 14 };
+const int attRanges[maxAttVal] = { 0, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12 };
 
-DefensiveTower::DefensiveTower(const ObjectData & data)
+Bunker::Bunker(const ObjectData & data)
     : Structure(TYPE_DEFENSIVE_TOWER, CAT_GENERIC, data.GetRows(), data.GetCols())
 {
     // set attack range converting attribute
@@ -30,7 +30,7 @@ DefensiveTower::DefensiveTower(const ObjectData & data)
     SetImage();
 }
 
-void DefensiveTower::Update(float delta)
+void Bunker::Update(float delta)
 {
     // do nothing if not linked
     if(!IsLinked())
@@ -62,14 +62,14 @@ void DefensiveTower::Update(float delta)
     }
 }
 
-void DefensiveTower::UpdateGraphics()
+void Bunker::UpdateGraphics()
 {
     SetImage();
 
     SetDefaultColors();
 }
 
-void DefensiveTower::SetImage()
+void Bunker::SetImage()
 {
     auto * tm = sgl::graphic::TextureManager::Instance();
 
@@ -83,18 +83,18 @@ void DefensiveTower::SetImage()
     const unsigned int faction = GetFaction();
     const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
-    unsigned int texInd = ID_STRUCT_DTOWER_L1;
+    unsigned int texInd = ID_STRUCT_BUNKER;
 
     if(NO_FACTION == faction)
         texInd += sel;
     else
-        texInd = ID_STRUCT_DTOWER_L1_F1 + (faction * NUM_DTOWER_SPRITES_PER_FAC) + sel;
+        texInd = ID_STRUCT_BUNKER_F1 + (faction * NUM_BUNKER_SPRITES_PER_FAC) + sel;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
     isoObj->SetTexture(tex);
 }
 
-void DefensiveTower::CheckForEnemies()
+void Bunker::CheckForEnemies()
 {
     const GameMap * gm = GetGameMap();
 
@@ -144,7 +144,7 @@ void DefensiveTower::CheckForEnemies()
     mTarget = objs.front();
 }
 
-void DefensiveTower::Shoot()
+void Bunker::Shoot()
 {
     using namespace sgl::graphic;
     // TODO calculate chance of hitting based on attack and defense attributes

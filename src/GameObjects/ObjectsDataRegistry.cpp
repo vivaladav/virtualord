@@ -44,8 +44,14 @@ void ObjectsDataRegistry::InitObjectData()
                   ObjectData({}, {}, { BLOBS_1 }, SpriteCollectiblesFile,
                              GameObject::TYPE_BLOBS, OCO_COLLECTABLE, OCAT_UNDEFINED, 1, 1));
 
+    mData.emplace(GameObject::TYPE_BUNKER,
+                  ObjectData({ 4, 3, 3, 4, 3, 4, 4, 4, 0, 0, 0, 0 }, { 150, 200, 0, 0 },
+                             { ID_STRUCT_BUNKER_F1, ID_STRUCT_BUNKER_F2,
+                              ID_STRUCT_BUNKER_F3, ID_STRUCT_BUNKER }, SpriteFileStructures,
+                             GameObject::TYPE_BUNKER, OCS_TOWER, OCAT_DEFENSE, 1, 1));
+
     mData.emplace(GameObject::TYPE_DEFENSIVE_TOWER,
-                  ObjectData({ 5, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0, 0 }, { 150, 150, 0, 0 },
+                  ObjectData({ 5, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0, 0 }, { 250, 300, 0, 0 },
                              { ID_STRUCT_DTOWER_L1_F1, ID_STRUCT_DTOWER_L1_F2,
                                ID_STRUCT_DTOWER_L1_F3, ID_STRUCT_DTOWER_L1 }, SpriteFileStructures,
                              GameObject::TYPE_DEFENSIVE_TOWER, OCS_TOWER, OCAT_DEFENSE, 1, 1));

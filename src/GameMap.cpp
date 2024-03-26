@@ -16,6 +16,7 @@
 #include "GameObjects/Base.h"
 #include "GameObjects/Blobs.h"
 #include "GameObjects/BlobsGenerator.h"
+#include "GameObjects/Bunker.h"
 #include "GameObjects/DefensiveTower.h"
 #include "GameObjects/Diamonds.h"
 #include "GameObjects/DiamondsGenerator.h"
@@ -467,6 +468,8 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new Hospital(data);
     else if(GameObject::TYPE_DEFENSIVE_TOWER == type)
         o2a.obj = new DefensiveTower(data);
+    else if(GameObject::TYPE_BUNKER == type)
+        o2a.obj = new Bunker(data);
     else if(GameObject::TYPE_WALL == type)
         o2a.obj = new Wall(variant);
     else if(GameObject::TYPE_WALL_GATE == type)

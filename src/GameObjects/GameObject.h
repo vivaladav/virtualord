@@ -51,6 +51,7 @@ public:
     static const GameObjectTypeId TYPE_BASE;
     static const GameObjectTypeId TYPE_BASE_SPOT;
     static const GameObjectTypeId TYPE_BLOBS;
+    static const GameObjectTypeId TYPE_BUNKER;
     static const GameObjectTypeId TYPE_DEFENSIVE_TOWER;
     static const GameObjectTypeId TYPE_DIAMONDS;
     static const GameObjectTypeId TYPE_HOSPITAL;
@@ -235,6 +236,7 @@ private:
     static const std::string TYPE_STR_BASE;
     static const std::string TYPE_STR_BASE_SPOT;
     static const std::string TYPE_STR_BLOBS;
+    static const std::string TYPE_STR_BUNKER;
     static const std::string TYPE_STR_DEFENSIVE_TOWER;
     static const std::string TYPE_STR_DIAMONDS;
     static const std::string TYPE_STR_HOSPITAL;

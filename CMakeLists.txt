@@ -69,6 +69,8 @@ add_executable(
     src/GameObjects/Blobs.cpp
     src/GameObjects/BlobsGenerator.h
     src/GameObjects/BlobsGenerator.cpp
+    src/GameObjects/Bunker.h
+    src/GameObjects/Bunker.cpp
     src/GameObjects/Collectable.h
     src/GameObjects/Collectable.cpp
     src/GameObjects/CollectableGenerator.h

@@ -58,6 +58,7 @@ const std::string GameObject::TYPE_STR_BARRACKS("BARRACKS");
 const std::string GameObject::TYPE_STR_BASE("BASE");
 const std::string GameObject::TYPE_STR_BASE_SPOT("BASE_SPOT");
 const std::string GameObject::TYPE_STR_BLOBS("BLOBS");
+const std::string GameObject::TYPE_STR_BUNKER("BUNKER");
 const std::string GameObject::TYPE_STR_DEFENSIVE_TOWER("DEF_TOWER");
 const std::string GameObject::TYPE_STR_DIAMONDS("DIAMONDS");
 const std::string GameObject::TYPE_STR_HOSPITAL("HOSPITAL");
@@ -92,6 +93,7 @@ const GameObjectTypeId GameObject::TYPE_BARRACKS = h{}(TYPE_STR_BARRACKS);
 const GameObjectTypeId GameObject::TYPE_BASE = h{}(TYPE_STR_BASE);
 const GameObjectTypeId GameObject::TYPE_BASE_SPOT = h{}(TYPE_STR_BASE_SPOT);
 const GameObjectTypeId GameObject::TYPE_BLOBS = h{}(TYPE_STR_BLOBS);
+const GameObjectTypeId GameObject::TYPE_BUNKER = h{}(TYPE_STR_BUNKER);
 const GameObjectTypeId GameObject::TYPE_DEFENSIVE_TOWER = h{}(TYPE_STR_DEFENSIVE_TOWER);
 const GameObjectTypeId GameObject::TYPE_DIAMONDS = h{}(TYPE_STR_DIAMONDS);
 const GameObjectTypeId GameObject::TYPE_HOSPITAL = h{}(TYPE_STR_HOSPITAL);
@@ -125,6 +127,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TYPE_STR_MAP
     { GameObject::TYPE_BARRACKS, TYPE_STR_BARRACKS},
     { GameObject::TYPE_BASE, TYPE_STR_BASE},
     { GameObject::TYPE_BASE_SPOT, TYPE_STR_BASE_SPOT},
+    { GameObject::TYPE_BUNKER, TYPE_STR_BUNKER},
     { GameObject::TYPE_DEFENSIVE_TOWER, TYPE_STR_DEFENSIVE_TOWER },
     { GameObject::TYPE_HOSPITAL, TYPE_STR_HOSPITAL },
     { GameObject::TYPE_LOOTBOX, TYPE_STR_LOOTBOX },
@@ -170,6 +173,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TITLES =
     { GameObject::TYPE_BARRACKS, "BARRACKS"},
     { GameObject::TYPE_BASE, "BASE"},
     { GameObject::TYPE_BASE_SPOT, "BASE SPOT"},
+    { GameObject::TYPE_BUNKER, "BUNKER"},
     { GameObject::TYPE_DEFENSIVE_TOWER, "DEFENSIVE TOWER"},
     { GameObject::TYPE_HOSPITAL, "HOSPITAL"},
     { GameObject::TYPE_LOOTBOX, "LOOT BOX"},
@@ -205,6 +209,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::DESCRIPTIONS
                              "You need to defend it if you don't want to lose a territory."},
     { GameObject::TYPE_BASE_SPOT, "This represents where a faction base will be placed. "
                                   "Numbers identify the factions in a map."},
+    { GameObject::TYPE_BUNKER, "A simple defense structure."},
     { GameObject::TYPE_DEFENSIVE_TOWER, "A basic defensive tower."},
     { GameObject::TYPE_HOSPITAL, "A structure that creates medics and that can heal units."},
     { GameObject::TYPE_LOOTBOX, "A loot box that can be collected by a unit to obtain various resources."},
