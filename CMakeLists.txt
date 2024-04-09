@@ -295,6 +295,8 @@ add_executable(
     src/Widgets/Test/TestComboBox.cpp
     src/Widgets/Test/TestSliderH.h
     src/Widgets/Test/TestSliderH.cpp
+    src/Widgets/Tutorial/PanelClickFilter.h
+    src/Widgets/Tutorial/PanelClickFilter.cpp
 )
 
 target_include_directories(
