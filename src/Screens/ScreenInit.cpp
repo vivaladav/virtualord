@@ -150,6 +150,12 @@ void ScreenInit::SetupLoadPackages()
         mTexPackages[PACKAGE_IMGS_UI_OTHERS] = new sgl::core::DataPackage("data/img/UI/UI-others.bin");
     });
 
+    // LOAD UI TUTORIAL PACKAGE
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_TUTORIAL] = new sgl::core::DataPackage("data/img/UI/UI-tutorial.bin");
+    });
+
     // LOAD MUSIC GAME PACKAGE
     mJobs.emplace_back([am]
     {
@@ -640,6 +646,21 @@ void ScreenInit::SetupTextures()
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileMapUI, rects);
+    });
+
+    // TUTORIAL
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // AREA CORNERS
+            { 0, 0, 25, 25 },
+            { 26, 0, 25, 25 },
+            { 52, 0, 25, 25 },
+            { 78, 0, 25, 25 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorial, rects);
     });
 
     // COLLECTIBLES

@@ -647,4 +647,16 @@ enum SpriteIdUnitQuickSel : unsigned int
     NUM_UQS_UNIT_SPRITE_PER_FACTION = IND_UQS_UNIT1_F2 - IND_UQS_UNIT1_F1
 };
 
+// TUTORIAL
+extern const char SpriteFileTutorial[];
+
+enum SpriteIdTutorial : unsigned int
+{
+    // AREA CORNERS
+    IND_TUT_AREA_CORNER_TL,
+    IND_TUT_AREA_CORNER_TR,
+    IND_TUT_AREA_CORNER_BL,
+    IND_TUT_AREA_CORNER_BR,
+};
+
 } // namespace game

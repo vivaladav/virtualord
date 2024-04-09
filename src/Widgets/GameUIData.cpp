@@ -23,6 +23,7 @@ const char SpriteFileResourcesBar[] = "UI/resources_bar.png";
 const char SpriteFileSettings[] = "UI/game_settings.png";
 const char SpriteFileSettingsExp[] = "UI/game_settings-exp.png";
 const char SpriteFileTooltips[] = "UI/tooltips.png";
+const char SpriteFileTutorial[] = "UI/tutorial.png";
 const char SpriteFileUnitQuickSel[] = "UI/quick_unit_selection.png";
 
 } // namespace game
