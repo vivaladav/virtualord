@@ -1428,26 +1428,28 @@ void ScreenGame::UpdateGameEnd()
         case MISSION_DESTROY_ENEMY_BASE:
         {
             // check if destroyed all enemy bases
-            bool bases = false;
-
             for(Player * p : mAiPlayers)
-                bases |= p->HasStructure(GameObject::TYPE_BASE);
+            {
+                if(p->HasStructure(GameObject::TYPE_BASE))
+                    return ;
+            }
 
-            if(!bases)
-                mHUD->ShowDialogEndMission(true);
+            // no base found -> END
+            mHUD->ShowDialogEndMission(true);
         }
         break;
 
         case MISSION_DESTROY_ALL_ENEMIES:
         {
             // check if destroyed all enemies
-            int totEnemies = 0;
-
             for(Player * p : mAiPlayers)
-                totEnemies += p->GetNumObjects();
+            {
+                if(p->GetNumObjects() > 0)
+                    return ;
+            }
 
-            if(0 == totEnemies)
-                mHUD->ShowDialogEndMission(true);
+            // no enemy found -> END
+            mHUD->ShowDialogEndMission(true);
         }
         break;
 
