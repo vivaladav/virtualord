@@ -315,6 +315,9 @@ int GameObject::GetCol1() const { return 1 + mCell->col - mCols; }
 
 bool GameObject::IsFactionLocal() const
 {
+    if(nullptr == mScreen)
+        return false;
+
     Player * p = mScreen->GetGame()->GetPlayerByFaction(mFaction);
 
     return p != nullptr && p->IsLocal();

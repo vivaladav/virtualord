@@ -19,7 +19,6 @@ Structure::Structure(GameObjectTypeId type, GameObjectCategoryId cat, int rows, 
 
 Structure::~Structure()
 {
-    delete mIconEnergy;
 }
 
 void Structure::OnPositionChanged()
