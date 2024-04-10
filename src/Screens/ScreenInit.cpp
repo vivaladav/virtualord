@@ -663,6 +663,26 @@ void ScreenInit::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorial, rects);
     });
 
+    // TUTORIAL EXP
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // INFO PANEL
+            { 0, 0, 20, 20 },
+            { 21, 0, 20, 20 },
+            { 42, 0, 20, 20 },
+            { 63, 0, 20, 20 },
+            { 84, 0, 20, 20 },
+            { 105, 0, 20, 20 },
+            { 126, 0, 20, 20 },
+            { 147, 0, 20, 20 },
+            { 168, 0, 20, 20 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorialExp, rects);
+    });
+
     // COLLECTIBLES
     mJobs.emplace_back([this, tm]
     {

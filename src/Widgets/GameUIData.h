@@ -659,4 +659,22 @@ enum SpriteIdTutorial : unsigned int
     IND_TUT_AREA_CORNER_BR,
 };
 
+// TUTORIAL - EXPANDABLE TEXTURES
+extern const char SpriteFileTutorialExp[];
+
+enum SpriteIdTutorialExp : unsigned int
+{
+    // AREA CORNERS
+    IND_TUT_PANEL_INFO_CORNER_TL,
+    IND_TUT_PANEL_INFO_CORNER_TR,
+    IND_TUT_PANEL_INFO_CORNER_BL,
+    IND_TUT_PANEL_INFO_CORNER_BR,
+    IND_TUT_PANEL_INFO_BG,
+    IND_TUT_PANEL_INFO_L,
+    IND_TUT_PANEL_INFO_T,
+    IND_TUT_PANEL_INFO_R,
+    IND_TUT_PANEL_INFO_B
+};
+
+
 } // namespace game

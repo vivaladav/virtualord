@@ -299,6 +299,8 @@ add_executable(
     src/Widgets/Tutorial/FocusArea.cpp
     src/Widgets/Tutorial/PanelClickFilter.h
     src/Widgets/Tutorial/PanelClickFilter.cpp
+    src/Widgets/Tutorial/PanelInfoTutorial.h
+    src/Widgets/Tutorial/PanelInfoTutorial.cpp
 )
 
 target_include_directories(
