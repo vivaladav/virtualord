@@ -2,12 +2,18 @@
 
 #include "Widgets/GameUIData.h"
 
+#include <sgl/core/event/KeyboardEvent.h>
+#include <sgl/graphic/Font.h>
+#include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/sgui/TextArea.h>
 
 namespace game
 {
+
+const int marginSide = 25;
 
 PanelInfoTutorial::PanelInfoTutorial(int w, int h)
 {
@@ -42,6 +48,62 @@ PanelInfoTutorial::PanelInfoTutorial(int w, int h)
     }
 
     PositionElements();
+}
+
+void PanelInfoTutorial::AddInfoEntry(const char * text, unsigned int color, float timeNext,
+                                     bool showContinue, bool hideAfter)
+{
+    using namespace sgl;
+
+    // NEW ENTRY
+    auto entry = new InfoEntry;
+
+    // text area
+    auto fm = graphic::FontManager::Instance();
+    auto font = fm->GetFont("Lato-Regular.ttf", 20, graphic::Font::NORMAL);
+
+    const int areaW = GetWidth() - (2 * marginSide);
+    const int areaH = 0;
+
+    entry->mTxtArea = new sgui::TextArea(areaW, areaH, text, font, true, this);
+    entry->mTxtArea->SetColor(color);
+    entry->mTxtArea->SetVisible(false);
+
+    // auto time
+    entry->mTimeNext = timeNext;
+
+    // options
+    entry->mHideAfter = hideAfter;
+    entry->mShowContinue = showContinue;
+
+    // store
+    mInfoEntries.push_back(entry);
+}
+
+void PanelInfoTutorial::StartInfo()
+{
+    if(mInfoEntries.empty())
+        return ;
+
+    mCurrEntry = 0;
+
+    const int marginTop = 25;
+    mCurrEntryY = marginTop;
+
+    const int entryX = marginSide;
+
+    mInfoEntries[mCurrEntry]->mTxtArea->SetVisible(true);
+    mInfoEntries[mCurrEntry]->mTxtArea->SetPosition(entryX, mCurrEntryY);
+}
+
+void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
+{
+    if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE)
+    {
+
+
+        event.SetConsumed();
+    }
 }
 
 void PanelInfoTutorial::HandlePositionChanged()
@@ -119,6 +181,16 @@ void PanelInfoTutorial::PositionElements()
     x += pW;
 
     mBgParts[BGPART_BR]->SetPosition(x, y);
+}
+
+void PanelInfoTutorial::ShowNextInfo()
+{
+
+}
+
+void PanelInfoTutorial::OnUpdate(float delta)
+{
+
 }
 
 } // namespace game
