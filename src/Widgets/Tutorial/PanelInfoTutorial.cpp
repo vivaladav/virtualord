@@ -8,12 +8,15 @@
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/sgui/Label.h>
 #include <sgl/sgui/TextArea.h>
 
 namespace game
 {
 
 const int marginSide = 25;
+
+const float timeContinue = 1.5f;
 
 PanelInfoTutorial::PanelInfoTutorial(int w, int h)
 {
@@ -47,6 +50,20 @@ PanelInfoTutorial::PanelInfoTutorial(int w, int h)
         RegisterRenderable(mBgParts[ind]);
     }
 
+    // LABEL CONTINUE
+    const int marginBottom = 20;
+
+    auto fm = graphic::FontManager::Instance();
+    auto font = fm->GetFont("Lato-Regular.ttf", 18, graphic::Font::NORMAL);
+
+    mLabelContinue = new sgui::Label("press SPACE to continue", font, this);
+    mLabelContinue->SetColor(0x6c8093ff);
+
+    const int labelX = (w - mLabelContinue->GetWidth()) / 2;
+    const int labelY = h - marginBottom - mLabelContinue->GetHeight();
+    mLabelContinue->SetPosition(labelX, labelY);
+
+    // POSITION ELEMENTS
     PositionElements();
 }
 
@@ -73,8 +90,9 @@ void PanelInfoTutorial::AddInfoEntry(const char * text, unsigned int color, floa
     entry->mTimeNext = timeNext;
 
     // options
-    entry->mHideAfter = hideAfter;
+    entry->mAutoContinue = timeNext > 0.f;
     entry->mShowContinue = showContinue;
+    entry->mHideAfter = hideAfter;
 
     // store
     mInfoEntries.push_back(entry);
@@ -85,24 +103,67 @@ void PanelInfoTutorial::StartInfo()
     if(mInfoEntries.empty())
         return ;
 
-    mCurrEntry = 0;
-
     const int marginTop = 25;
     mCurrEntryY = marginTop;
 
+    mCurrEntry = 0;
+    ShowCurrentInfo();
+}
+
+void PanelInfoTutorial::ShowNextInfo()
+{
+    if(mInfoEntries.empty())
+        return ;
+
+    auto oldEntry = mInfoEntries[mCurrEntry];
+
+    // hide current entry
+    if(oldEntry->mHideAfter)
+        oldEntry->mTxtArea->SetVisible(false);
+    // keep current entry
+    else
+    {
+        const unsigned int colorOldEntry = 0x8a9aa8ff;
+        oldEntry->mTxtArea->SetColor(colorOldEntry);
+
+        const int marginTextV = 25;
+        mCurrEntryY += oldEntry->mTxtArea->GetTextHeight() + marginTextV;
+    }
+
+    // next
+    ++mCurrEntry;
+    ShowCurrentInfo();
+}
+
+void PanelInfoTutorial::ShowCurrentInfo()
+{
+    // show text
+    auto entry = mInfoEntries[mCurrEntry];
+
     const int entryX = marginSide;
 
-    mInfoEntries[mCurrEntry]->mTxtArea->SetVisible(true);
-    mInfoEntries[mCurrEntry]->mTxtArea->SetPosition(entryX, mCurrEntryY);
+    entry->mTxtArea->SetVisible(true);
+    entry->mTxtArea->SetPosition(entryX, mCurrEntryY);
+
+    // start auto continue
+    if(entry->mAutoContinue)
+        mTimerNextEntry = entry->mTimeNext;
+
+    // do not show continue immediately
+    mLabelContinue->SetVisible(false);
+    mTimerContinue = timeContinue;
 }
 
 void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
 {
     if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE)
     {
+        if(mCurrEntry < (mInfoEntries.size() - 1))
+        {
+            ShowNextInfo();
 
-
-        event.SetConsumed();
+            event.SetConsumed();
+        }
     }
 }
 
@@ -183,14 +244,30 @@ void PanelInfoTutorial::PositionElements()
     mBgParts[BGPART_BR]->SetPosition(x, y);
 }
 
-void PanelInfoTutorial::ShowNextInfo()
-{
-
-}
-
 void PanelInfoTutorial::OnUpdate(float delta)
 {
+    if(mInfoEntries.empty())
+        return ;
 
+    auto entry = mInfoEntries[mCurrEntry];
+
+    // need to show continue
+    if(entry->mShowContinue && !mLabelContinue->IsVisible())
+    {
+        mTimerContinue -= delta;
+
+        if(mTimerContinue <= 0.f)
+            mLabelContinue->SetVisible(true);
+    }
+
+    // auto continue
+    if(mCurrEntry < (mInfoEntries.size() - 1) && entry->mAutoContinue)
+    {
+        mTimerNextEntry -= delta;
+
+        if(mTimerNextEntry <= 0.f)
+            ShowNextInfo();
+    }
 }
 
 } // namespace game

@@ -8,7 +8,11 @@
 namespace sgl
 {
     namespace graphic { class Image; }
-    namespace sgui { class TextArea; }
+    namespace sgui
+    {
+        class Label;
+        class TextArea;
+    }
 }
 
 namespace game
@@ -25,13 +29,14 @@ public:
     void StartInfo();
 
 private:
+    void ShowNextInfo();
+    void ShowCurrentInfo();
+
     void HandleKeyUp(sgl::core::KeyboardEvent & event) override;
 
     void HandlePositionChanged() override;
 
     void PositionElements();
-
-    void ShowNextInfo();
 
     void OnUpdate(float delta) override;
 
@@ -55,6 +60,7 @@ private:
     {
         sgl::sgui::TextArea * mTxtArea = nullptr;
         float mTimeNext = 0.f;
+        bool mAutoContinue = false;
         bool mShowContinue = false;
         bool mHideAfter = false;
     };
@@ -62,8 +68,13 @@ private:
     std::vector<InfoEntry *> mInfoEntries;
     std::array<sgl::graphic::Image *, NUM_BGPARTS> mBgParts;
 
+    sgl::sgui::Label * mLabelContinue = nullptr;
+
     unsigned int mCurrEntry = 0;
     int mCurrEntryY = 0;
+
+    float mTimerContinue = 0.f;
+    float mTimerNextEntry = 0.f;
 };
 
 } // namespace game
