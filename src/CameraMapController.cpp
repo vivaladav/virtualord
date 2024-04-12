@@ -38,6 +38,9 @@ void CameraMapController::SetMapArea(const sgl::core::Pointd2D & t, const sgl::c
 
 void CameraMapController::CenterCameraToPoint(int x, int y)
 {
+    if(!mEnabled)
+        return ;
+
     sgl::core::Pointd2D p(x, y);
 
     // if point not inside -> use orthogonal projection
@@ -167,7 +170,7 @@ void CameraMapController::HandleMouseButtonUp(sgl::core::MouseButtonEvent & even
 void CameraMapController::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
 {
     // -- DRAGGING --
-    if(mGame->IsMapDragging() && event.IsButtonPushed(sgl::core::MouseEvent::BUTTON_LEFT))
+    if(mEnabled && mGame->IsMapDragging() && event.IsButtonPushed(sgl::core::MouseEvent::BUTTON_LEFT))
     {
         const int minDrag = 5;
 
@@ -185,7 +188,7 @@ void CameraMapController::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
     }
 
     // -- MAP SCROLLING ON EDGES --
-    if(!mGame->IsMapScrollingOnEdges())
+    if(!mEnabled || !mGame->IsMapScrollingOnEdges())
         return ;
 
     const int screenX = event.GetX();

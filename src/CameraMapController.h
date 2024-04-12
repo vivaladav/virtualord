@@ -26,6 +26,9 @@ public:
 
     const sgl::graphic::Camera * GetCamera() const;
 
+    bool IsEnabled() const;
+    void SetEnabled(bool enabled);
+
     void SetMapArea(const sgl::core::Pointd2D & t, const sgl::core::Pointd2D & r,
                     const sgl::core::Pointd2D & b, const sgl::core::Pointd2D & l);
 
@@ -73,6 +76,8 @@ private:
     int mDragX = 0;
     int mDragY = 0;
 
+    bool mEnabled = true;
+
     bool mKeyScrollX = false;
     bool mKeyScrollY = false;
     bool mMouseScrollX = false;
@@ -84,6 +89,9 @@ inline const sgl::graphic::Camera * CameraMapController::GetCamera() const
 {
     return mCamera;
 }
+
+inline bool CameraMapController::IsEnabled() const { return mEnabled; }
+inline void CameraMapController::SetEnabled(bool enabled) { mEnabled = enabled; }
 
 inline void CameraMapController::SetDraggingSpeed(int val)
 {
