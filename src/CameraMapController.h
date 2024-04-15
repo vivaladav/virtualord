@@ -70,8 +70,8 @@ private:
     float mSpeedScrolling;
     float mSpeedDragging;
 
-    int mDirX;
-    int mDirY;
+    int mDirX = 0;
+    int mDirY = 0;
 
     int mDragX = 0;
     int mDragY = 0;
@@ -91,7 +91,21 @@ inline const sgl::graphic::Camera * CameraMapController::GetCamera() const
 }
 
 inline bool CameraMapController::IsEnabled() const { return mEnabled; }
-inline void CameraMapController::SetEnabled(bool enabled) { mEnabled = enabled; }
+inline void CameraMapController::SetEnabled(bool enabled)
+{
+    mEnabled = enabled;
+
+    // make sure scrolling and dragging don't get in a weird state
+    if(!enabled)
+    {
+        mDirX = 0;
+        mDirY = 0;
+
+        mDragging = false;
+        mDragX = 0;
+        mDragY = 0;
+    }
+}
 
 inline void CameraMapController::SetDraggingSpeed(int val)
 {

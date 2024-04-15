@@ -90,6 +90,9 @@ void CameraMapController::HandleKeyDown(sgl::core::KeyboardEvent & event)
 {
     using namespace sgl::core;
 
+    if(!mEnabled)
+        return ;
+
     const int key = event.GetKey();
 
     if(key == KeyboardEvent::KEY_A)
@@ -129,6 +132,9 @@ void CameraMapController::HandleKeyDown(sgl::core::KeyboardEvent & event)
 void CameraMapController::HandleKeyUp(sgl::core::KeyboardEvent & event)
 {
     using namespace sgl::core;
+
+    if(!mEnabled)
+        return ;
 
     const int key = event.GetKey();
 
