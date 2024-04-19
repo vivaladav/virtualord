@@ -40,6 +40,7 @@ class MoveIndicator;
 class Player;
 class PlayerAI;
 class StructureIndicator;
+class TutorialManager;
 class Unit;
 class WallIndicator;
 
@@ -209,6 +210,9 @@ private:
 
     struct Cell2D mCurrCell;
     sgl::core::Pointd2D mMousePos;
+
+    // TUTORIAL
+    TutorialManager * mTutMan = nullptr;
 
     // TURN MANAGEMENT
     Player * mLocalPlayer = nullptr;

@@ -31,6 +31,8 @@
 #include "Particles/UpdaterLootboxPrize.h"
 #include "Particles/UpdaterSingleLaser.h"
 #include "States/StatesIds.h"
+#include "Tutorial/StepGameIntro.h"
+#include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/GameHUD.h"
@@ -174,6 +176,14 @@ ScreenGame::ScreenGame(Game * game)
 
     InitMusic();
 
+    // TUTORIAL MANAGER
+    if(game->IsTutorialEnabled())
+    {
+        mTutMan = new TutorialManager;
+        mTutMan->AddStep(new StepGameIntro);
+        mTutMan->Start();
+    }
+
     // record start time
     mTimeStart = std::chrono::steady_clock::now();
 }
@@ -276,6 +286,10 @@ void ScreenGame::Update(float delta)
 
     // check game end
     UpdateGameEnd();
+
+    // TUTORIAL
+    if(game->IsTutorialEnabled())
+        mTutMan->Update(delta);
 }
 
 void ScreenGame::Render()

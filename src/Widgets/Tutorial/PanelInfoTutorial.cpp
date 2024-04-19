@@ -124,7 +124,7 @@ void PanelInfoTutorial::ShowNextInfo()
     // keep current entry
     else
     {
-        oldEntry->mTxtArea->SetColor(colorTutorialOldText);
+        oldEntry->mTxtArea->SetColor(colorTutorialTextOld);
 
         const int marginTextV = 25;
         mCurrEntryY += oldEntry->mTxtArea->GetTextHeight() + marginTextV;

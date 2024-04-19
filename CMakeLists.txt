@@ -190,6 +190,13 @@ add_executable(
     src/States/StatesIds.h
     src/States/StateTest.h
     src/States/StateTest.cpp
+    src/Tutorial/StepGameIntro.h
+    src/Tutorial/StepGameIntro.cpp
+    src/Tutorial/TutorialConstants.h
+    src/Tutorial/TutorialManager.h
+    src/Tutorial/TutorialManager.cpp
+    src/Tutorial/TutorialStep.h
+    src/Tutorial/TutorialStep.cpp
     src/Widgets/BlinkingIconEnergy.h
     src/Widgets/BlinkingIconEnergy.cpp
     src/Widgets/ButtonDialogBack.h
