@@ -152,6 +152,10 @@ void PanelInfoTutorial::ShowCurrentInfo()
     // do not show continue immediately
     mLabelContinue->SetVisible(false);
     mTimerContinue = timeContinue;
+
+    // check for finished
+    if(!entry->mShowContinue && mCurrEntry == (mInfoEntries.size() - 1))
+        mOnFinished();
 }
 
 void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
@@ -159,14 +163,18 @@ void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
     if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE)
     {
         if(mCurrEntry < (mInfoEntries.size() - 1))
+        {
             ShowNextInfo();
-        else
+
+            event.SetConsumed();
+        }
+        else if(mCurrEntry < mInfoEntries.size())
         {
             ++mCurrEntry;
             mOnFinished();
-        }
 
-        event.SetConsumed();
+            event.SetConsumed();
+        }
     }
 }
 
