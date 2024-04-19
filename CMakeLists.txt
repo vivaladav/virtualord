@@ -190,6 +190,8 @@ add_executable(
     src/States/StatesIds.h
     src/States/StateTest.h
     src/States/StateTest.cpp
+    src/Tutorial/StepGameBase.h
+    src/Tutorial/StepGameBase.cpp
     src/Tutorial/StepGameIntro.h
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/TutorialConstants.h

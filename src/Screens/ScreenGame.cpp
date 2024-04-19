@@ -31,6 +31,7 @@
 #include "Particles/UpdaterLootboxPrize.h"
 #include "Particles/UpdaterSingleLaser.h"
 #include "States/StatesIds.h"
+#include "Tutorial/StepGameBase.h"
 #include "Tutorial/StepGameIntro.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
@@ -179,8 +180,11 @@ ScreenGame::ScreenGame(Game * game)
     // TUTORIAL MANAGER
     if(game->IsTutorialEnabled())
     {
+        Player * local = game->GetLocalPlayer();
+
         mTutMan = new TutorialManager;
         mTutMan->AddStep(new StepGameIntro);
+        mTutMan->AddStep(new StepGameBase(local->GetBase()));
         mTutMan->Start();
     }
 
