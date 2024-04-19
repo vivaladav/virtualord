@@ -1,5 +1,6 @@
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
+#include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameUIData.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
@@ -123,8 +124,7 @@ void PanelInfoTutorial::ShowNextInfo()
     // keep current entry
     else
     {
-        const unsigned int colorOldEntry = 0x8a9aa8ff;
-        oldEntry->mTxtArea->SetColor(colorOldEntry);
+        oldEntry->mTxtArea->SetColor(colorTutorialOldText);
 
         const int marginTextV = 25;
         mCurrEntryY += oldEntry->mTxtArea->GetTextHeight() + marginTextV;
@@ -159,11 +159,14 @@ void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
     if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE)
     {
         if(mCurrEntry < (mInfoEntries.size() - 1))
-        {
             ShowNextInfo();
-
-            event.SetConsumed();
+        else
+        {
+            ++mCurrEntry;
+            mOnFinished();
         }
+
+        event.SetConsumed();
     }
 }
 
@@ -246,7 +249,7 @@ void PanelInfoTutorial::PositionElements()
 
 void PanelInfoTutorial::OnUpdate(float delta)
 {
-    if(mInfoEntries.empty())
+    if(mInfoEntries.empty() || mCurrEntry == mInfoEntries.size())
         return ;
 
     auto entry = mInfoEntries[mCurrEntry];
@@ -261,12 +264,20 @@ void PanelInfoTutorial::OnUpdate(float delta)
     }
 
     // auto continue
-    if(mCurrEntry < (mInfoEntries.size() - 1) && entry->mAutoContinue)
+    if(entry->mAutoContinue)
     {
         mTimerNextEntry -= delta;
 
         if(mTimerNextEntry <= 0.f)
-            ShowNextInfo();
+        {
+            if(mCurrEntry < (mInfoEntries.size() - 1))
+                ShowNextInfo();
+            else
+            {
+                ++mCurrEntry;
+                mOnFinished();
+            }
+        }
     }
 }
 

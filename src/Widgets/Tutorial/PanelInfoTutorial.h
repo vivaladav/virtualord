@@ -3,6 +3,7 @@
 #include <sgl/sgui/Widget.h>
 
 #include <array>
+#include <functional>
 #include <vector>
 
 namespace sgl
@@ -25,6 +26,8 @@ public:
 
     void AddInfoEntry(const char * text, unsigned int color, float nextTime,
                       bool showContinue, bool hideAfter);
+
+    void SetFunctionOnFinished(const std::function<void()> & f);
 
     void StartInfo();
 
@@ -68,6 +71,8 @@ private:
     std::vector<InfoEntry *> mInfoEntries;
     std::array<sgl::graphic::Image *, NUM_BGPARTS> mBgParts;
 
+    std::function<void()> mOnFinished;
+
     sgl::sgui::Label * mLabelContinue = nullptr;
 
     unsigned int mCurrEntry = 0;
@@ -76,5 +81,10 @@ private:
     float mTimerContinue = 0.f;
     float mTimerNextEntry = 0.f;
 };
+
+inline void PanelInfoTutorial::SetFunctionOnFinished(const std::function<void()> & f)
+{
+    mOnFinished = f;
+}
 
 } // namespace game
