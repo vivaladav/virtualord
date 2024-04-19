@@ -3,16 +3,15 @@
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
-#include <sgl/core/Timer.h>
-
 namespace game
 {
 
 StepGameIntro::StepGameIntro()
 {
     mInfo = new PanelInfoTutorial(500, 250);
+    mInfo->SetEnabled(false);
+    mInfo->SetVisible(false);
     mInfo->SetPosition(200, 100);
-    mInfo->SetFocus();
 
     mInfo->AddInfoEntry("Welcome commander,",
                         colorTutorialText, 2.5f, true, false);
@@ -27,6 +26,10 @@ StepGameIntro::StepGameIntro()
 
 void StepGameIntro::OnStart()
 {
+    mInfo->SetEnabled(true);
+    mInfo->SetVisible(true);
+    mInfo->SetFocus();
+
     mInfo->StartInfo();
 }
 
