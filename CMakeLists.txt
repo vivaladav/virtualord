@@ -192,6 +192,10 @@ add_executable(
     src/States/StateTest.cpp
     src/Tutorial/StepGameBase.h
     src/Tutorial/StepGameBase.cpp
+    src/Tutorial/StepGameDisableCamera.h
+    src/Tutorial/StepGameDisableCamera.cpp
+    src/Tutorial/StepGameEnableCamera.h
+    src/Tutorial/StepGameEnableCamera.cpp
     src/Tutorial/StepGameIntro.h
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/TutorialConstants.h

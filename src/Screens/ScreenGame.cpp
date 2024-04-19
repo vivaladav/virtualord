@@ -32,6 +32,8 @@
 #include "Particles/UpdaterSingleLaser.h"
 #include "States/StatesIds.h"
 #include "Tutorial/StepGameBase.h"
+#include "Tutorial/StepGameDisableCamera.h"
+#include "Tutorial/StepGameEnableCamera.h"
 #include "Tutorial/StepGameIntro.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
@@ -183,8 +185,10 @@ ScreenGame::ScreenGame(Game * game)
         Player * local = game->GetLocalPlayer();
 
         mTutMan = new TutorialManager;
+        mTutMan->AddStep(new StepGameDisableCamera(mCamController));
         mTutMan->AddStep(new StepGameIntro);
         mTutMan->AddStep(new StepGameBase(local->GetBase()));
+        mTutMan->AddStep(new StepGameEnableCamera(mCamController));
         mTutMan->Start();
     }
 
