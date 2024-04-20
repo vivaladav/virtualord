@@ -13,6 +13,9 @@ public:
     void SetScreenClickableArea(int x0, int y0, int w, int h);
     void SetWorldClickableArea(int x0, int y0, int w, int h);
 
+    void ExpandClickableArea();
+    void ClearClickableArea();
+
 private:
     void SetClickableArea(int x0, int y0, int w, int h);
 
@@ -50,6 +53,11 @@ inline void PanelClickFilter::SetWorldClickableArea(int x0, int y0, int w, int h
     mAreaWorld = true;
 
     SetClickableArea(x0, y0, w, h);
+}
+
+inline void PanelClickFilter::ClearClickableArea()
+{
+    SetScreenClickableArea(0, 0, 0, 0);
 }
 
 } // namespace game

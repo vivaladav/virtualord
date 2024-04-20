@@ -48,4 +48,13 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
     }
 }
 
+void PanelClickFilter::ExpandClickableArea()
+{
+    auto renderer = sgl::graphic::Renderer::Instance();
+    const int rendW = renderer->GetWidth();
+    const int rendH = renderer->GetHeight();
+
+    SetScreenClickableArea(0, 0, rendW, rendH);
+}
+
 } // namespace game
