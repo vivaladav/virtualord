@@ -1,6 +1,7 @@
 #include "Tutorial/StepGameIntro.h"
 
 #include "Tutorial/TutorialConstants.h"
+#include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
 namespace game
@@ -8,6 +9,11 @@ namespace game
 
 StepGameIntro::StepGameIntro()
 {
+    // CLICK FILTER
+    mClickFilter = new PanelClickFilter;
+    mClickFilter->ClearClickableArea();
+
+    // INFO
     mInfo = new PanelInfoTutorial(500, 250);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
@@ -35,6 +41,7 @@ void StepGameIntro::OnStart()
 
 void StepGameIntro::OnEnd()
 {
+    delete mClickFilter;
     delete mInfo;
 }
 

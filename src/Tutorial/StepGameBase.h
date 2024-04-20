@@ -7,6 +7,7 @@ namespace game
 
 class FocusArea;
 class GameObject;
+class PanelClickFilter;
 class PanelInfoTutorial;
 
 class StepGameBase : public TutorialStep
@@ -21,6 +22,7 @@ public:
 
 private:
     FocusArea * mFocusArea = nullptr;
+    PanelClickFilter * mClickFilter = nullptr;
     PanelInfoTutorial * mInfo = nullptr;
 
     const GameObject * mBase = nullptr;

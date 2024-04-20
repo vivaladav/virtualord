@@ -4,6 +4,7 @@
 #include "GameObjects/GameObject.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
+#include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
 namespace game
@@ -12,6 +13,10 @@ namespace game
 StepGameBase::StepGameBase(const GameObject * b)
     : mBase(b)
 {
+    // CLICK FILTER
+    mClickFilter = new PanelClickFilter;
+    mClickFilter->ClearClickableArea();
+
     // FOCUS
     auto isoObj = mBase->GetIsoObject();
     const int objX = isoObj->GetX();
@@ -36,9 +41,11 @@ StepGameBase::StepGameBase(const GameObject * b)
                         "destroyed you are defeated.", colorTutorialText, 6.f, true, false);
     mInfo->AddInfoEntry("Select it with the LEFT MOUSE BUTTON", colorTutorialTextAction, 0.f, false, false);
 
-    mInfo->SetFunctionOnFinished([this]
+    mInfo->SetFunctionOnFinished([this, objX, objY, objW, objH]
     {
         mFocusArea->SetCornersColor(colorTutorialFocusAction);
+
+        mClickFilter->SetWorldClickableArea(objX, objY, objW, objH);
 
         mCheckBaseSelected = true;
     });
@@ -57,6 +64,7 @@ void StepGameBase::OnStart()
 
 void StepGameBase::OnEnd()
 {
+    delete mClickFilter;
     delete mFocusArea;
     delete mInfo;
 }

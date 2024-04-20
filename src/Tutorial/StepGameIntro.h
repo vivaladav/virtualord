@@ -5,6 +5,7 @@
 namespace game
 {
 
+class PanelClickFilter;
 class PanelInfoTutorial;
 
 class StepGameIntro : public TutorialStep
@@ -16,6 +17,7 @@ public:
     void OnEnd() override;
 
 private:
+    PanelClickFilter * mClickFilter = nullptr;
     PanelInfoTutorial * mInfo = nullptr;
 };
 
