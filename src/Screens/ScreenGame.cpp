@@ -31,6 +31,7 @@
 #include "Particles/UpdaterLootboxPrize.h"
 #include "Particles/UpdaterSingleLaser.h"
 #include "States/StatesIds.h"
+#include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameBase.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEnableCamera.h"
@@ -186,7 +187,9 @@ ScreenGame::ScreenGame(Game * game)
 
         mTutMan = new TutorialManager;
         mTutMan->AddStep(new StepGameDisableCamera(mCamController));
+        mTutMan->AddStep(new StepDelay(1.f));
         mTutMan->AddStep(new StepGameIntro);
+        mTutMan->AddStep(new StepDelay(0.3f));
         mTutMan->AddStep(new StepGameBase(local->GetBase()));
         mTutMan->AddStep(new StepGameEnableCamera(mCamController));
         mTutMan->Start();
