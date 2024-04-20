@@ -14,9 +14,9 @@ class StepGameBase : public TutorialStep
 {
 public:
     StepGameBase(const GameObject * b);
+    ~StepGameBase();
 
     void OnStart() override;
-    void OnEnd() override;
 
     void Update(float delta) override;
 

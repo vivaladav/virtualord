@@ -12,9 +12,9 @@ class StepGameIntro : public TutorialStep
 {
 public:
     StepGameIntro();
+    ~StepGameIntro();
 
     void OnStart() override;
-    void OnEnd() override;
 
 private:
     PanelClickFilter * mClickFilter = nullptr;

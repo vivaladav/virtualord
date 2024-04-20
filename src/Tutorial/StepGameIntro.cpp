@@ -30,6 +30,12 @@ StepGameIntro::StepGameIntro()
     });
 }
 
+StepGameIntro::~StepGameIntro()
+{
+    delete mClickFilter;
+    delete mInfo;
+}
+
 void StepGameIntro::OnStart()
 {
     mInfo->SetEnabled(true);
@@ -37,12 +43,6 @@ void StepGameIntro::OnStart()
     mInfo->SetFocus();
 
     mInfo->StartInfo();
-}
-
-void StepGameIntro::OnEnd()
-{
-    delete mClickFilter;
-    delete mInfo;
 }
 
 } // namespace game

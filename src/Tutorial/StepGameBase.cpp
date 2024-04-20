@@ -51,6 +51,13 @@ StepGameBase::StepGameBase(const GameObject * b)
     });
 }
 
+StepGameBase::~StepGameBase()
+{
+    delete mClickFilter;
+    delete mFocusArea;
+    delete mInfo;
+}
+
 void StepGameBase::OnStart()
 {
     mFocusArea->SetVisible(true);
@@ -60,13 +67,6 @@ void StepGameBase::OnStart()
     mInfo->SetFocus();
 
     mInfo->StartInfo();
-}
-
-void StepGameBase::OnEnd()
-{
-    delete mClickFilter;
-    delete mFocusArea;
-    delete mInfo;
 }
 
 void StepGameBase::Update(float)
