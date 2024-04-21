@@ -14,15 +14,19 @@ StepPlanetMapIntro::StepPlanetMapIntro()
     mClickFilter->ClearClickableArea();
 
     // INFO
-    mInfo = new PanelInfoTutorial(500, 200);
+    mInfo = new PanelInfoTutorial(800, 125);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(150, 850);
+    mInfo->SetPosition(560, 100);
 
     mInfo->AddInfoEntry("Welcome commander,",
-                        colorTutorialText, 2.5f, true, false);
+                        colorTutorialText, 3.f, true, true);
     mInfo->AddInfoEntry("I am your assistant and I will guide you in your first planet conquest.",
-                        colorTutorialText, 0.f, true, false);
+                        colorTutorialText, 0.f, true, true);
+    mInfo->AddInfoEntry("This is the planet map screen.",
+                        colorTutorialText, 3.f, true, true);
+    mInfo->AddInfoEntry("From here you can decide which territories to conquest and how to do it.",
+                        colorTutorialText, 0.f, true, true);
 
     mInfo->SetFunctionOnFinished([this]
     {
