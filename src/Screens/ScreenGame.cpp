@@ -180,7 +180,7 @@ ScreenGame::ScreenGame(Game * game)
 
     InitMusic();
 
-    // TUTORIAL MANAGER
+    // TUTORIAL
     if(game->IsTutorialEnabled())
     {
         Player * local = game->GetLocalPlayer();

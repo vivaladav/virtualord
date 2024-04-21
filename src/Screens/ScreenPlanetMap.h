@@ -19,6 +19,7 @@ class PanelPlanetActions;
 class PanelPlanetInfo;
 class PanelPlanetResources;
 class PlanetMap;
+class TutorialManager;
 
 class ScreenPlanetMap : public Screen
 {
@@ -26,7 +27,7 @@ public:
     ScreenPlanetMap(Game * game);
     ~ScreenPlanetMap();
 
-    void Update(float update) override;
+    void Update(float delta) override;
     void Render() override;
 
 private:
@@ -54,6 +55,9 @@ private:
     sgl::sgui::Label * mLabelDate = nullptr;
 
     PlanetMap * mPlanet = nullptr;
+
+    // TUTORIAL
+    TutorialManager * mTutMan = nullptr;
 };
 
 } // namespace game

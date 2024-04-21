@@ -5,6 +5,9 @@
 #include "MapsRegistry.h"
 #include "Player.h"
 #include "States/StatesIds.h"
+#include "Tutorial/StepDelay.h"
+#include "Tutorial/StepPlanetMapIntro.h"
+#include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonPlanetMap.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/PanelResources.h"
@@ -419,6 +422,17 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
     // START MUSIC
     sgl::media::AudioManager::Instance()->GetPlayer()->PlayMusic("game/music_01.ogg");
+
+    // TUTORIAL
+    if(game->IsTutorialEnabled())
+    {
+        Player * local = game->GetLocalPlayer();
+
+        mTutMan = new TutorialManager;
+        mTutMan->AddStep(new StepDelay(1.f));
+        mTutMan->AddStep(new StepPlanetMapIntro);
+        mTutMan->Start();
+    }
 }
 
 ScreenPlanetMap::~ScreenPlanetMap()
@@ -432,8 +446,13 @@ ScreenPlanetMap::~ScreenPlanetMap()
     stage->ClearWidgets();
 }
 
-void ScreenPlanetMap::Update(float update)
+void ScreenPlanetMap::Update(float delta)
 {
+    Game * game = GetGame();
+
+    // TUTORIAL
+    if(game->IsTutorialEnabled())
+        mTutMan->Update(delta);
 }
 
 void ScreenPlanetMap::Render()
