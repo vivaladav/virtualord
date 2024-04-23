@@ -5,7 +5,11 @@
 namespace sgl
 {
     namespace graphic { class Image; }
-    namespace sgui { class AbstractButtonsGroup; }
+    namespace sgui
+    {
+        class AbstractButton;
+        class AbstractButtonsGroup;
+    }
 }
 
 namespace game
@@ -28,6 +32,8 @@ public:
     void SetButtonState(unsigned int index, PlayerFaction occupier, TerritoryStatus ts);
 
     int GetSelectedTerritoryId() const;
+
+    sgl::sgui::AbstractButton * GetButton(unsigned int ind) const;
 
 private:
     void HandlePositionChanged() override;

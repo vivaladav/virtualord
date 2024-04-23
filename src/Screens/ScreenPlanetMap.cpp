@@ -7,6 +7,7 @@
 #include "States/StatesIds.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepPlanetMapIntro.h"
+#include "Tutorial/StepPlanetMapSelectTerritory.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonPlanetMap.h"
 #include "Widgets/GameUIData.h"
@@ -431,6 +432,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         mTutMan = new TutorialManager;
         mTutMan->AddStep(new StepDelay(1.f));
         mTutMan->AddStep(new StepPlanetMapIntro);
+        mTutMan->AddStep(new StepPlanetMapSelectTerritory(mPlanet));
         mTutMan->Start();
     }
 }
