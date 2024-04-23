@@ -14,13 +14,13 @@ StepPlanetMapIntro::StepPlanetMapIntro()
     mClickFilter->SetEnabled(false);
 
     // INFO
-    mInfo = new PanelInfoTutorial(800, 125);
+    mInfo = new PanelInfoTutorial(infoPlanetMapW, infoPlanetMapH);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(560, 100);
+    mInfo->SetPosition(infoPlanetMapX, infoPlanetMapY);
 
     mInfo->AddInfoEntry("Welcome commander,",
-                        colorTutorialText, 3.f, true, true);
+                        colorTutorialText, 2.5f, true, true);
     mInfo->AddInfoEntry("I am your assistant and I will guide you in your first planet conquest.",
                         colorTutorialText, 0.f, true, true);
     mInfo->AddInfoEntry("This is the planet map screen.",

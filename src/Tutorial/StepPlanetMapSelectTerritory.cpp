@@ -32,10 +32,10 @@ StepPlanetMapSelectTerritory::StepPlanetMapSelectTerritory(PlanetMap * planet)
     mFocusArea->SetVisible(false);
 
     // INFO
-    mInfo = new PanelInfoTutorial(800, 125);
+    mInfo = new PanelInfoTutorial(infoPlanetMapW, infoPlanetMapH);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(560, 100);
+    mInfo->SetPosition(infoPlanetMapX, infoPlanetMapY);
 
     mInfo->AddInfoEntry("Let's start to explore a territory of this planet.",
                         colorTutorialText, 3.f, true, true);
