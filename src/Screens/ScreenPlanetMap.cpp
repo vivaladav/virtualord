@@ -8,6 +8,8 @@
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepPlanetMapIntro.h"
 #include "Tutorial/StepPlanetMapExploreTerritory.h"
+#include "Tutorial/StepPlanetMapExploreTerritoryInfo.h"
+#include "Tutorial/StepPlanetMapExploreTerritoryStart.h"
 #include "Tutorial/StepPlanetMapNoInfo.h"
 #include "Tutorial/StepPlanetMapSelectTerritory.h"
 #include "Tutorial/TutorialManager.h"
@@ -438,6 +440,9 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         mTutMan->AddStep(new StepDelay(0.5f));
         mTutMan->AddStep(new StepPlanetMapNoInfo);
         mTutMan->AddStep(new StepPlanetMapExploreTerritory(mPanelActions));
+        mTutMan->AddStep(new StepDelay(0.5f));
+        mTutMan->AddStep(new StepPlanetMapExploreTerritoryInfo);
+        mTutMan->AddStep(new StepPlanetMapExploreTerritoryStart(mPanelExplore));
         mTutMan->Start();
     }
 }
@@ -451,6 +456,8 @@ ScreenPlanetMap::~ScreenPlanetMap()
     auto stage = sgl::sgui::Stage::Instance();
 
     stage->ClearWidgets();
+
+    delete mTutMan;
 }
 
 void ScreenPlanetMap::Update(float delta)

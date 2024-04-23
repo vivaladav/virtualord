@@ -1,13 +1,15 @@
-#include "Tutorial/StepPlanetMapIntro.h"
+#include "Tutorial/StepPlanetMapExploreTerritoryInfo.h"
 
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
+#include <sgl/sgui/AbstractButton.h>
+
 namespace game
 {
 
-StepPlanetMapIntro::StepPlanetMapIntro()
+StepPlanetMapExploreTerritoryInfo::StepPlanetMapExploreTerritoryInfo()
 {
     // CLICK FILTER
     mClickFilter = new PanelClickFilter;
@@ -19,14 +21,10 @@ StepPlanetMapIntro::StepPlanetMapIntro()
     mInfo->SetVisible(false);
     mInfo->SetPosition(infoPlanetMapX, infoPlanetMapY);
 
-    mInfo->AddInfoEntry("Welcome commander,",
-                        colorTutorialText, 2.5f, true, true);
-    mInfo->AddInfoEntry("I am your assistant and I will guide you in your first planet conquest.",
-                        colorTutorialText, 0.f, true, true);
-    mInfo->AddInfoEntry("This is the planet map screen.",
-                        colorTutorialText, 3.5f, true, true);
-    mInfo->AddInfoEntry("From here you can decide which territories to conquest and how to do it.",
-                        colorTutorialText, 0.f, true, true);
+    mInfo->AddInfoEntry("As you can see exploring a territory requires to spend some resources.",
+                        colorTutorialText, 5.f, true, true);
+    mInfo->AddInfoEntry("Usually It's worth it as it reveals all the important details.",
+                        colorTutorialText, 5.f, true, true);
 
     mInfo->SetFunctionOnFinished([this]
     {
@@ -34,13 +32,13 @@ StepPlanetMapIntro::StepPlanetMapIntro()
     });
 }
 
-StepPlanetMapIntro::~StepPlanetMapIntro()
+StepPlanetMapExploreTerritoryInfo::~StepPlanetMapExploreTerritoryInfo()
 {
     delete mClickFilter;
     delete mInfo;
 }
 
-void StepPlanetMapIntro::OnStart()
+void StepPlanetMapExploreTerritoryInfo::OnStart()
 {
     // CLICK FILTER
     mClickFilter->SetEnabled(true);

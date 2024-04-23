@@ -121,6 +121,11 @@ void PanelPlanetActionExplore::AddOnButtonCancelClickFunction(const std::functio
     mButtonCancel->AddOnClickFunction(f);
 }
 
+sgl::sgui::AbstractButton * PanelPlanetActionExplore::GetButtonOk() const
+{
+    return mButtonOk;
+}
+
 void PanelPlanetActionExplore::CreateContentStart(int money, int energy, int material)
 {
     using namespace sgl;
