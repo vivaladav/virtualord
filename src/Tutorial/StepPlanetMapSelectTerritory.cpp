@@ -15,7 +15,7 @@ StepPlanetMapSelectTerritory::StepPlanetMapSelectTerritory(PlanetMap * planet)
 {
     // CLICK FILTER
     mClickFilter = new PanelClickFilter;
-    mClickFilter->ClearClickableArea();
+    mClickFilter->SetEnabled(false);
 
     // FOCUS
     mTerritory = planet->GetButton(0);
@@ -62,8 +62,13 @@ StepPlanetMapSelectTerritory::~StepPlanetMapSelectTerritory()
 
 void StepPlanetMapSelectTerritory::OnStart()
 {
+    // CLICK FILTER
+    mClickFilter->SetEnabled(true);
+
+    // FOCUS
     mFocusArea->SetVisible(true);
 
+    // INFO
     mInfo->SetEnabled(true);
     mInfo->SetVisible(true);
     mInfo->SetFocus();
