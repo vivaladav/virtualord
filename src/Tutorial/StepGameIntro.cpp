@@ -11,7 +11,7 @@ StepGameIntro::StepGameIntro()
 {
     // CLICK FILTER
     mClickFilter = new PanelClickFilter;
-    mClickFilter->ClearClickableArea();
+    mClickFilter->SetEnabled(false);
 
     // INFO
     mInfo = new PanelInfoTutorial(500, 250);
@@ -38,6 +38,10 @@ StepGameIntro::~StepGameIntro()
 
 void StepGameIntro::OnStart()
 {
+    // CLICK FILTER
+    mClickFilter->SetEnabled(true);
+
+    // INFO
     mInfo->SetEnabled(true);
     mInfo->SetVisible(true);
     mInfo->SetFocus();

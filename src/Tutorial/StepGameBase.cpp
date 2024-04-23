@@ -15,7 +15,7 @@ StepGameBase::StepGameBase(const GameObject * b)
 {
     // CLICK FILTER
     mClickFilter = new PanelClickFilter;
-    mClickFilter->ClearClickableArea();
+    mClickFilter->SetEnabled(false);
 
     // FOCUS
     auto isoObj = mBase->GetIsoObject();
@@ -60,8 +60,13 @@ StepGameBase::~StepGameBase()
 
 void StepGameBase::OnStart()
 {
+    // CLICK FILTER
+    mClickFilter->SetEnabled(true);
+
+    // FOCUS
     mFocusArea->SetVisible(true);
 
+    // INFO
     mInfo->SetEnabled(true);
     mInfo->SetVisible(true);
     mInfo->SetFocus();
