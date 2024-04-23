@@ -27,9 +27,8 @@ StepPlanetMapSelectTerritory::StepPlanetMapSelectTerritory(PlanetMap * planet)
     const int fH = mTerritory->GetHeight() + (padding * 2);
 
     mFocusArea = new FocusArea;
-    mFocusArea->SetWorldArea(fX, fY, fW, fH);
+    mFocusArea->SetScreenArea(fX, fY, fW, fH);
     mFocusArea->SetCornersColor(colorTutorialFocusElement);
-
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -47,7 +46,7 @@ StepPlanetMapSelectTerritory::StepPlanetMapSelectTerritory(PlanetMap * planet)
     {
         mFocusArea->SetCornersColor(colorTutorialFocusAction);
 
-        mClickFilter->SetWorldClickableArea(fX, fY, fW, fH);
+        mClickFilter->SetScreenClickableArea(fX, fY, fW, fH);
 
         mCheckTerritorySelected = true;
     });

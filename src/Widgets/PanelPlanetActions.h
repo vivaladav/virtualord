@@ -11,6 +11,8 @@ namespace sgl
         class Image;
         class Text;
     }
+
+    namespace sgui { class AbstractButton; }
 }
 
 namespace game
@@ -38,6 +40,8 @@ public:
     void AddOnButtonClickFunction(Button btn, const std::function<void()> & f);
 
     void UpdateButtons(TerritoryStatus status, bool isPlayerOccupier);
+
+    sgl::sgui::AbstractButton * GetButton(Button btn) const;
 
 private:
     void HandlePositionChanged() override;
