@@ -206,6 +206,8 @@ add_executable(
     src/Tutorial/StepPlanetMapExploreTerritoryInfo.cpp
     src/Tutorial/StepPlanetMapExploreTerritoryStart.h
     src/Tutorial/StepPlanetMapExploreTerritoryStart.cpp
+    src/Tutorial/StepPlanetMapExploreTerritorySuccess.h
+    src/Tutorial/StepPlanetMapExploreTerritorySuccess.cpp
     src/Tutorial/StepPlanetMapIntro.h
     src/Tutorial/StepPlanetMapIntro.cpp
     src/Tutorial/StepPlanetMapNoInfo.h
