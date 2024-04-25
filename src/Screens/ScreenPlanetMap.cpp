@@ -13,6 +13,7 @@
 #include "Tutorial/StepPlanetMapExploreTerritorySuccess.h"
 #include "Tutorial/StepPlanetMapNoInfo.h"
 #include "Tutorial/StepPlanetMapSelectTerritory.h"
+#include "Tutorial/StepPlanetMapSendAI.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonPlanetMap.h"
 #include "Widgets/GameUIData.h"
@@ -446,6 +447,8 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         mTutMan->AddStep(new StepPlanetMapExploreTerritoryStart(mPanelExplore));
         mTutMan->AddStep(new StepDelay(0.5f));
         mTutMan->AddStep(new StepPlanetMapExploreTerritorySuccess(mPanelExplore));
+        mTutMan->AddStep(new StepDelay(0.5f));
+        mTutMan->AddStep(new StepPlanetMapSendAI(mPanelActions));
         mTutMan->Start();
     }
 }
