@@ -37,7 +37,7 @@ StepPlanetMapExploreTerritory::StepPlanetMapExploreTerritory(PanelPlanetActions 
     mInfo->SetVisible(false);
     mInfo->SetPosition(infoPlanetMapX, infoPlanetMapY);
 
-    mInfo->AddInfoEntry("Click the button EXPLORE to try to explore the selected territory.",
+    mInfo->AddInfoEntry("Click the button EXPLORE to try to explore it.",
                         colorTutorialTextAction, 0.f, false, false);
 
     mInfo->SetFunctionOnFinished([this, fX, fY, fW, fH]
