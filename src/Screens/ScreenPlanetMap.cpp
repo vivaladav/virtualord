@@ -6,6 +6,8 @@
 #include "Player.h"
 #include "States/StatesIds.h"
 #include "Tutorial/StepDelay.h"
+#include "Tutorial/StepPlanetMapConquerTerritory.h"
+#include "Tutorial/StepPlanetMapConquerTerritoryStart.h"
 #include "Tutorial/StepPlanetMapIntro.h"
 #include "Tutorial/StepPlanetMapExploreTerritory.h"
 #include "Tutorial/StepPlanetMapExploreTerritoryInfo.h"
@@ -449,6 +451,8 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         mTutMan->AddStep(new StepPlanetMapExploreTerritorySuccess(mPanelExplore));
         mTutMan->AddStep(new StepDelay(0.5f));
         mTutMan->AddStep(new StepPlanetMapSendAI(mPanelActions));
+        mTutMan->AddStep(new StepPlanetMapConquerTerritory(mPanelActions));
+        mTutMan->AddStep(new StepPlanetMapConquerTerritoryStart(mPanelConquer));
         mTutMan->Start();
     }
 }
