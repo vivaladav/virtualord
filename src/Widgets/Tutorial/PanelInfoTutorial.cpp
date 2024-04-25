@@ -69,12 +69,16 @@ PanelInfoTutorial::PanelInfoTutorial(int w, int h)
 }
 
 void PanelInfoTutorial::AddInfoEntry(const char * text, unsigned int color, float timeNext,
-                                     bool showContinue, bool hideAfter)
+                                     bool showContinue, bool hideAfter,
+                                     const std::function<void ()> & onShow)
 {
     using namespace sgl;
 
     // NEW ENTRY
     auto entry = new InfoEntry;
+
+    // on showing
+    entry->mOnShowing = onShow;
 
     // text area
     auto fm = graphic::FontManager::Instance();
@@ -152,6 +156,9 @@ void PanelInfoTutorial::ShowCurrentInfo()
     // do not show continue immediately
     mLabelContinue->SetVisible(false);
     mTimerContinue = timeContinue;
+
+    // on show
+    entry->mOnShowing();
 
     // check for finished
     if(!entry->mShowContinue && mCurrEntry == (mInfoEntries.size() - 1))

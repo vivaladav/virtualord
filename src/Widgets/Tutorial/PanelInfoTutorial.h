@@ -25,7 +25,7 @@ public:
     PanelInfoTutorial(int w, int h);
 
     void AddInfoEntry(const char * text, unsigned int color, float nextTime,
-                      bool showContinue, bool hideAfter);
+        bool showContinue, bool hideAfter, const std::function<void()> & onShow = [](){});
 
     void SetFunctionOnFinished(const std::function<void()> & f);
 
@@ -61,6 +61,7 @@ private:
 
     struct InfoEntry
     {
+        std::function<void()> mOnShowing = [](){};
         sgl::sgui::TextArea * mTxtArea = nullptr;
         float mTimeNext = 0.f;
         bool mAutoContinue = false;
@@ -71,7 +72,7 @@ private:
     std::vector<InfoEntry *> mInfoEntries;
     std::array<sgl::graphic::Image *, NUM_BGPARTS> mBgParts;
 
-    std::function<void()> mOnFinished;
+    std::function<void()> mOnFinished = [](){};
 
     sgl::sgui::Label * mLabelContinue = nullptr;
 
