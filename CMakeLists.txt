@@ -194,6 +194,8 @@ add_executable(
     src/Tutorial/StepDelay.cpp
     src/Tutorial/StepGameBase.h
     src/Tutorial/StepGameBase.cpp
+    src/Tutorial/StepGameBaseFeatures.h
+    src/Tutorial/StepGameBaseFeatures.cpp
     src/Tutorial/StepGameDisableCamera.h
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h

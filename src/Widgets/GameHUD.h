@@ -62,6 +62,7 @@ public:
 
     void HidePanelSelectedObject();
     void ShowPanelSelectedObject(GameObject * obj);
+    const PanelSelectedObject * GetPanelSelectedObject() const;
 
     void ShowTurnControlPanel();
     void ShowTurnControlTextEnemyTurn();
@@ -113,5 +114,7 @@ private:
 inline MiniMap * GameHUD::GetMinimap() const { return mMiniMap; }
 
 inline PanelObjectActions * GameHUD::GetPanelObjectActions() const { return mPanelObjActions; }
+
+inline const PanelSelectedObject * GameHUD::GetPanelSelectedObject() const { return mPanelSelObj; }
 
 } // namespace game
