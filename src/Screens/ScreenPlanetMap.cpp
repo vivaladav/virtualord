@@ -434,27 +434,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
     // TUTORIAL
     if(game->IsTutorialEnabled())
-    {
-        Player * local = game->GetLocalPlayer();
-
-        mTutMan = new TutorialManager;
-        mTutMan->AddStep(new StepDelay(1.f));
-        mTutMan->AddStep(new StepPlanetMapIntro);
-        mTutMan->AddStep(new StepPlanetMapSelectTerritory(mPlanet));
-        mTutMan->AddStep(new StepDelay(0.5f));
-        mTutMan->AddStep(new StepPlanetMapNoInfo);
-        mTutMan->AddStep(new StepPlanetMapExploreTerritory(mPanelActions));
-        mTutMan->AddStep(new StepDelay(0.5f));
-        mTutMan->AddStep(new StepPlanetMapExploreTerritoryInfo);
-        mTutMan->AddStep(new StepPlanetMapExploreTerritoryStart(mPanelExplore));
-        mTutMan->AddStep(new StepDelay(0.5f));
-        mTutMan->AddStep(new StepPlanetMapExploreTerritorySuccess(mPanelExplore));
-        mTutMan->AddStep(new StepDelay(0.5f));
-        mTutMan->AddStep(new StepPlanetMapSendAI(mPanelActions));
-        mTutMan->AddStep(new StepPlanetMapConquerTerritory(mPanelActions));
-        mTutMan->AddStep(new StepPlanetMapConquerTerritoryStart(mPanelConquer));
-        mTutMan->Start();
-    }
+        CreateTutorial();
 }
 
 ScreenPlanetMap::~ScreenPlanetMap()
@@ -482,6 +462,29 @@ void ScreenPlanetMap::Update(float delta)
 void ScreenPlanetMap::Render()
 {
     mBg->Render();
+}
+
+void ScreenPlanetMap::CreateTutorial()
+{
+    Player * local = GetGame()->GetLocalPlayer();
+
+    mTutMan = new TutorialManager;
+    mTutMan->AddStep(new StepDelay(1.f));
+    mTutMan->AddStep(new StepPlanetMapIntro);
+    mTutMan->AddStep(new StepPlanetMapSelectTerritory(mPlanet));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepPlanetMapNoInfo);
+    mTutMan->AddStep(new StepPlanetMapExploreTerritory(mPanelActions));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepPlanetMapExploreTerritoryInfo);
+    mTutMan->AddStep(new StepPlanetMapExploreTerritoryStart(mPanelExplore));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepPlanetMapExploreTerritorySuccess(mPanelExplore));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepPlanetMapSendAI(mPanelActions));
+    mTutMan->AddStep(new StepPlanetMapConquerTerritory(mPanelActions));
+    mTutMan->AddStep(new StepPlanetMapConquerTerritoryStart(mPanelConquer));
+    mTutMan->Start();
 }
 
 void ScreenPlanetMap::SetPlanetName(const char * name)

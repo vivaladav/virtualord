@@ -109,6 +109,8 @@ private:
 
     void CreateUI();
 
+    void CreateTutorial();
+
     void LoadMapFile();
 
     void UpdateAI(float delta);

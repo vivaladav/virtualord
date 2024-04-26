@@ -182,18 +182,7 @@ ScreenGame::ScreenGame(Game * game)
 
     // TUTORIAL
     if(game->IsTutorialEnabled())
-    {
-        Player * local = game->GetLocalPlayer();
-
-        mTutMan = new TutorialManager;
-        mTutMan->AddStep(new StepGameDisableCamera(mCamController));
-        mTutMan->AddStep(new StepDelay(1.f));
-        mTutMan->AddStep(new StepGameIntro);
-        mTutMan->AddStep(new StepDelay(0.3f));
-        mTutMan->AddStep(new StepGameBase(local->GetBase()));
-        mTutMan->AddStep(new StepGameEnableCamera(mCamController));
-        mTutMan->Start();
-    }
+        CreateTutorial();
 
     // record start time
     mTimeStart = std::chrono::steady_clock::now();
@@ -704,6 +693,20 @@ void ScreenGame::CreateUI()
 
     // set initial focus to Stage
     sgl::sgui::Stage::Instance()->SetFocus();
+}
+
+void ScreenGame::CreateTutorial()
+{
+    Player * local = GetGame()->GetLocalPlayer();
+
+    mTutMan = new TutorialManager;
+    mTutMan->AddStep(new StepGameDisableCamera(mCamController));
+    mTutMan->AddStep(new StepDelay(1.f));
+    mTutMan->AddStep(new StepGameIntro);
+    mTutMan->AddStep(new StepDelay(0.3f));
+    mTutMan->AddStep(new StepGameBase(local->GetBase()));
+    mTutMan->AddStep(new StepGameEnableCamera(mCamController));
+    mTutMan->Start();
 }
 
 void ScreenGame::LoadMapFile()
