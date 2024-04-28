@@ -14,6 +14,7 @@ namespace sgl
 
     namespace sgui
     {
+        class AbstractButton;
         class AbstractButtonsGroup;
         class ButtonsGroup;
         class Label;
@@ -54,6 +55,8 @@ public:
 
     void SetFunctionOnBuild(const std::function<void()> & f);
     void SetFunctionOnClose(const std::function<void()> & f);
+
+    sgl::sgui::AbstractButton * GetButtonBuild() const;
 
     int GetSelectedIndex() const;
     GameObjectTypeId GetSelectedType() const;

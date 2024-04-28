@@ -56,6 +56,7 @@ public:
     void HideDialogExploreTemple();
     void ShowDialogNewElement(unsigned int type);
     void HideDialogNewElement();
+    DialogNewElement * GetDialogNewElement();
 
     void ShowMissionCountdown(int secs);
     void HideMissionCountdown();
@@ -112,6 +113,8 @@ private:
 };
 
 inline MiniMap * GameHUD::GetMinimap() const { return mMiniMap; }
+
+inline DialogNewElement * GameHUD::GetDialogNewElement() { return mDialogNewElement; }
 
 inline PanelObjectActions * GameHUD::GetPanelObjectActions() const { return mPanelObjActions; }
 

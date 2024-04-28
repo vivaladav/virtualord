@@ -194,6 +194,8 @@ add_executable(
     src/Tutorial/StepDelay.cpp
     src/Tutorial/StepGameBase.h
     src/Tutorial/StepGameBase.cpp
+    src/Tutorial/StepGameBaseBuildUnit.h
+    src/Tutorial/StepGameBaseBuildUnit.cpp
     src/Tutorial/StepGameBaseBuildUnitIcon.h
     src/Tutorial/StepGameBaseBuildUnitIcon.cpp
     src/Tutorial/StepGameBaseFeatures.h

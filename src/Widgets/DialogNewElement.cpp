@@ -844,6 +844,11 @@ void DialogNewElement::SetFunctionOnClose(const std::function<void()> & f)
     mBtnClose->AddOnClickFunction(f);
 }
 
+sgl::sgui::AbstractButton * DialogNewElement::GetButtonBuild() const
+{
+    return mBtnBuild;
+}
+
 int DialogNewElement::GetSelectedIndex() const
 {
     return mFirstElem + mSlots->GetIndexChecked();

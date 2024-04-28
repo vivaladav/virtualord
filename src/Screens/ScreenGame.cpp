@@ -33,6 +33,7 @@
 #include "States/StatesIds.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameBase.h"
+#include "Tutorial/StepGameBaseBuildUnit.h"
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
 #include "Tutorial/StepGameBaseFeatures.h"
 #include "Tutorial/StepGameDisableCamera.h"
@@ -716,9 +717,13 @@ void ScreenGame::CreateTutorial()
     mTutMan->AddStep(new StepGameIntro);
     mTutMan->AddStep(new StepDelay(0.3f));
     mTutMan->AddStep(new StepGameBase(local->GetBase()));
-    mTutMan->AddStep(new StepGameEnableCamera(mCamController));
+    mTutMan->AddStep(new StepDelay(0.5f));
     mTutMan->AddStep(new StepGameBaseFeatures(panelObj, panelActions));
     mTutMan->AddStep(new StepGameBaseBuildUnitIcon(panelActions));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameBaseBuildUnit(mHUD));
+
+    mTutMan->AddStep(new StepGameEnableCamera(mCamController));
 
     mTutMan->Start();
 }
