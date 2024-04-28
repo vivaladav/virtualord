@@ -2,7 +2,6 @@
 
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/PanelObjectActions.h"
-#include "Widgets/PanelSelectedObject.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -57,13 +56,6 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
     {
         SetDone();
     });
-
-    // auto btn = panel->GetButton(PanelObjectActions::BTN_BUILD_UNIT_BASE);
-
-    // btn->AddOnClickFunction([this]
-    // {
-    //     SetDone();
-    // });
 }
 
 StepGameBaseBuildUnitIcon::~StepGameBaseBuildUnitIcon()
