@@ -33,7 +33,7 @@ StepGameBaseFeatures::StepGameBaseFeatures(const PanelSelectedObject * panelObj,
     mInfo = new PanelInfoTutorial(590, 250);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(400, 150);
+    mInfo->SetPosition(400, 400);
 
     mInfo->AddInfoEntry("Well done commander, you selected your base!",
                         colorTutorialText, 3.f, true, true);

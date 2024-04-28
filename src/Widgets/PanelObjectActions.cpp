@@ -163,4 +163,12 @@ void PanelObjectActions::SetActionsEnabled(bool val)
         mButtons[i]->SetEnabled(val);
 }
 
+const sgl::sgui::AbstractButton * PanelObjectActions::GetButton(Button btnId)
+{
+    if(btnId < NUM_BUTTONS)
+        return mButtons[btnId];
+    else
+        return nullptr;
+}
+
 } // namespace game

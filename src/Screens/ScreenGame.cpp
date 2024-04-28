@@ -33,6 +33,7 @@
 #include "States/StatesIds.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameBase.h"
+#include "Tutorial/StepGameBaseBuildUnitIcon.h"
 #include "Tutorial/StepGameBaseFeatures.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEnableCamera.h"
@@ -243,11 +244,17 @@ unsigned int ScreenGame::GetPlayTimeInSec() const
 
 void ScreenGame::Update(float delta)
 {
+    Game * game = GetGame();
+
     // do nothing when paused
     if(mPaused)
-        return ;
+    {
+        // only continue the tutorial if paused
+        if(game->IsTutorialEnabled())
+            mTutMan->Update(delta);
 
-    Game * game = GetGame();
+        return ;
+    }
 
     // keep track of time played (while not paused)
     mTimePlayed += delta;
@@ -711,6 +718,8 @@ void ScreenGame::CreateTutorial()
     mTutMan->AddStep(new StepGameBase(local->GetBase()));
     mTutMan->AddStep(new StepGameEnableCamera(mCamController));
     mTutMan->AddStep(new StepGameBaseFeatures(panelObj, panelActions));
+    mTutMan->AddStep(new StepGameBaseBuildUnitIcon(panelActions));
+
     mTutMan->Start();
 }
 
