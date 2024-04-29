@@ -4,6 +4,7 @@
 #include "Widgets/GameUIData.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
+#include <sgl/core/event/MouseButtonEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/Image.h>
@@ -57,7 +58,7 @@ PanelInfoTutorial::PanelInfoTutorial(int w, int h)
     auto fm = graphic::FontManager::Instance();
     auto font = fm->GetFont("Lato-Regular.ttf", 18, graphic::Font::NORMAL);
 
-    mLabelContinue = new sgui::Label("press SPACE to continue", font, this);
+    mLabelContinue = new sgui::Label("LEFT CLICK here or press SPACE to continue", font, this);
     mLabelContinue->SetColor(0x6c8093ff);
 
     const int labelX = (w - mLabelContinue->GetWidth()) / 2;
@@ -169,19 +170,30 @@ void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
 {
     if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE)
     {
-        if(mCurrEntry < (mInfoEntries.size() - 1))
-        {
-            ShowNextInfo();
+        event.SetConsumed();
 
-            event.SetConsumed();
-        }
-        else if(mCurrEntry < mInfoEntries.size())
-        {
-            ++mCurrEntry;
-            mOnFinished();
+        ContinueOnInput();
+    }
+}
 
-            event.SetConsumed();
-        }
+void PanelInfoTutorial::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
+{
+    if(event.GetButton() == sgl::core::MouseButtonEvent::BUTTON_LEFT)
+    {
+        event.SetConsumed();
+
+        ContinueOnInput();
+    }
+}
+
+void PanelInfoTutorial::ContinueOnInput()
+{
+    if(mCurrEntry < (mInfoEntries.size() - 1))
+        ShowNextInfo();
+    else if(mCurrEntry < mInfoEntries.size())
+    {
+        ++mCurrEntry;
+        mOnFinished();
     }
 }
 

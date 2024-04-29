@@ -36,6 +36,9 @@ private:
     void ShowCurrentInfo();
 
     void HandleKeyUp(sgl::core::KeyboardEvent & event) override;
+    void HandleMouseButtonUp(sgl::core::MouseButtonEvent & event) override;
+
+    void ContinueOnInput();
 
     void HandlePositionChanged() override;
 
