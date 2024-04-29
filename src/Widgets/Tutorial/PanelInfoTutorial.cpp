@@ -18,7 +18,8 @@ namespace game
 
 const int marginSide = 25;
 
-const float timeContinue = 1.5f;
+const float timeAutoContinue = 1.5f;
+const float minTimeShown = 1.f;
 
 PanelInfoTutorial::PanelInfoTutorial(int w, int h)
 {
@@ -150,13 +151,16 @@ void PanelInfoTutorial::ShowCurrentInfo()
     entry->mTxtArea->SetVisible(true);
     entry->mTxtArea->SetPosition(entryX, mCurrEntryY);
 
+    // reset timer shown
+    mTimerShown = 0.f;
+
     // start auto continue
     if(entry->mAutoContinue)
         mTimerNextEntry = entry->mTimeNext;
 
     // do not show continue immediately
     mLabelContinue->SetVisible(false);
-    mTimerContinue = timeContinue;
+    mTimerContinue = timeAutoContinue;
 
     // on show
     entry->mOnShowing();
@@ -168,7 +172,7 @@ void PanelInfoTutorial::ShowCurrentInfo()
 
 void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
 {
-    if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE)
+    if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE && mTimerShown > minTimeShown)
     {
         event.SetConsumed();
 
@@ -178,7 +182,7 @@ void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
 
 void PanelInfoTutorial::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
 {
-    if(event.GetButton() == sgl::core::MouseButtonEvent::BUTTON_LEFT)
+    if(event.GetButton() == sgl::core::MouseButtonEvent::BUTTON_LEFT && mTimerShown > minTimeShown)
     {
         event.SetConsumed();
 
@@ -278,6 +282,8 @@ void PanelInfoTutorial::OnUpdate(float delta)
 {
     if(mInfoEntries.empty() || mCurrEntry == mInfoEntries.size())
         return ;
+
+    mTimerShown += delta;
 
     auto entry = mInfoEntries[mCurrEntry];
 

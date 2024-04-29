@@ -84,6 +84,7 @@ private:
 
     float mTimerContinue = 0.f;
     float mTimerNextEntry = 0.f;
+    float mTimerShown = 0.f;
 };
 
 inline void PanelInfoTutorial::SetFunctionOnFinished(const std::function<void()> & f)
