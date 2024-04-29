@@ -22,9 +22,9 @@ StepPlanetMapExploreTerritoryInfo::StepPlanetMapExploreTerritoryInfo()
     mInfo->SetPosition(infoPlanetMapX, infoPlanetMapY);
 
     mInfo->AddInfoEntry("As you can see exploring a territory requires to spend some resources.",
-                        colorTutorialText, 5.f, true, true);
-    mInfo->AddInfoEntry("Usually It's worth it as it reveals all the important details.",
-                        colorTutorialText, 5.f, true, true);
+                        colorTutorialText, 6.f, true, true);
+    mInfo->AddInfoEntry("But it's well worth it as it reveals all the important details.",
+                        colorTutorialText, 6.f, true, true);
 
     mInfo->SetFunctionOnFinished([this]
     {

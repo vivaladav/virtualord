@@ -38,12 +38,10 @@ StepPlanetMapExploreTerritory::StepPlanetMapExploreTerritory(PanelPlanetActions 
     mInfo->SetPosition(infoPlanetMapX, infoPlanetMapY);
 
     mInfo->AddInfoEntry("Click the button EXPLORE to try to explore it.",
-                        colorTutorialTextAction, 0.f, false, false);
-
-    mInfo->SetFunctionOnFinished([this, fX, fY, fW, fH]
-    {
-        mClickFilter->SetScreenClickableArea(fX, fY, fW, fH);
-    });
+                        colorTutorialTextAction, 0.f, false, false, [this, fX, fY, fW, fH]
+                        {
+                            mClickFilter->SetScreenClickableArea(fX, fY, fW, fH);
+                        });
 
     // EXPLORE BUTTON
     btnExplore->AddOnClickFunction([this]

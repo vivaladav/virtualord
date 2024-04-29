@@ -38,19 +38,17 @@ StepPlanetMapConquerTerritory::StepPlanetMapConquerTerritory(PanelPlanetActions 
     mInfo->SetPosition(infoPlanetMapX, infoPlanetMapY);
 
     mInfo->AddInfoEntry("I would suggest you to conquer the territory yourself.",
-                        colorTutorialText, 4.f, true, true);
+                        colorTutorialText, 5.f, true, true);
     mInfo->AddInfoEntry("To do that click the button CONQUER.",
-                        colorTutorialTextAction, 0.f, false, false);
+                        colorTutorialTextAction, 0.f, false, false, [this, fX, fY, fW, fH]
+                        {
+                            // CLICK FILTER
+                            mClickFilter->SetScreenClickableArea(fX, fY, fW, fH);
+                            mClickFilter->SetEnabled(true);
 
-    mInfo->SetFunctionOnFinished([this, fX, fY, fW, fH]
-    {
-        // CLICK FILTER
-        mClickFilter->SetScreenClickableArea(fX, fY, fW, fH);
-        mClickFilter->SetEnabled(true);
-
-        // FOCUS
-        mFocusArea->SetVisible(true);
-    });
+                            // FOCUS
+                            mFocusArea->SetVisible(true);
+                        });
 
     // CONQUER BUTTON
     btn->AddOnClickFunction([this]
@@ -68,6 +66,9 @@ StepPlanetMapConquerTerritory::~StepPlanetMapConquerTerritory()
 
 void StepPlanetMapConquerTerritory::OnStart()
 {
+    // CLICK FILTER
+    mClickFilter->SetEnabled(true);
+
     // INFO
     mInfo->SetEnabled(true);
     mInfo->SetVisible(true);

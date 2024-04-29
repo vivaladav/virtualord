@@ -37,10 +37,10 @@ StepPlanetMapSendAI::StepPlanetMapSendAI(PanelPlanetActions * panel)
     mInfo->SetVisible(false);
     mInfo->SetPosition(infoPlanetMapX, infoPlanetMapY);
 
-    mInfo->AddInfoEntry("Now that the territory is explored you can decide if you want to conquer it or not.",
-                        colorTutorialText, 5.f, true, true);
-    mInfo->AddInfoEntry("You can send an AI general to do the job for you, but it will cost you a good amount"
-                        " of resources and victory is never guaranteed.",
+    mInfo->AddInfoEntry("Now that this territory is explored you can decide if you want to conquer it or not.",
+                        colorTutorialText, 6.f, true, true);
+    mInfo->AddInfoEntry("You can send an AI general to do the job for you, but it will cost you many "
+                        "resources and victory is not guaranteed.",
                         colorTutorialText, 7.f, true, true, [this]
                         {
                             mFocusArea->SetVisible(true);
