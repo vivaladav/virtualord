@@ -49,7 +49,7 @@ public:
     unsigned int GetNumUnitsByType(GameObjectTypeId type) const;
     void AddUnit(Unit * unit);
     void RemoveUnit(Unit * unit);
-    Unit * GetUnit(unsigned int index);
+    Unit * GetUnit(unsigned int index) const;
 
     unsigned int GetNumStructures() const;
     unsigned int GetNumStructuresByType(GameObjectTypeId type) const;

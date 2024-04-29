@@ -28,7 +28,7 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
     mInfo->SetVisible(false);
     mInfo->SetPosition(400, 550);
 
-    mInfo->AddInfoEntry("For example you can create worker units with your base...",
+    mInfo->AddInfoEntry("For example you can create worker units with your base.",
                         colorTutorialText, 4.f, true, false);
     mInfo->AddInfoEntry("Let's create a new one now.",
                         colorTutorialText, 3.f, true, false);

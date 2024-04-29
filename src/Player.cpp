@@ -107,7 +107,7 @@ void Player::RemoveUnit(Unit * unit)
     }
 }
 
-Unit * Player::GetUnit(unsigned int index)
+Unit * Player::GetUnit(unsigned int index) const
 {
     if(index < mUnits.size())
         return mUnits[index];
