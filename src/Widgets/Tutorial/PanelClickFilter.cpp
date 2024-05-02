@@ -30,6 +30,13 @@ void PanelClickFilter::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
 
 void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
 {
+    // check if button is filtered
+    if(mButton != sgl::core::MouseEvent::BUTTON_NULL && event.GetButton() == mButton)
+    {
+        event.SetConsumed();
+        return ;
+    }
+
     const int x = event.GetX();
     const int y = event.GetY();
 
@@ -61,6 +68,11 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
         if(x < mXtl || x > mXbr || y < mYtl || y > mYbr)
             event.SetConsumed();
     }
+}
+
+void PanelClickFilter::ClearButtonToExclude()
+{
+    mButton = sgl::core::MouseEvent::BUTTON_NULL;
 }
 
 void PanelClickFilter::ExpandClickableArea()
