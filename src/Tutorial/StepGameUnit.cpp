@@ -22,10 +22,10 @@ StepGameUnit::StepGameUnit(const Player * p)
     mFocusArea->SetVisible(false);
 
     // INFO
-    mInfo = new PanelInfoTutorial(500, 250);
+    mInfo = new PanelInfoTutorial(500, 200);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(1300, 200);
+    mInfo->SetPosition(1300, 300);
 
     mInfo->AddInfoEntry("Well done commander, this is your first unit!", colorTutorialText, 5.f, true, false);
     mInfo->AddInfoEntry("Now select it by clicking on its cell with the LEFT MOUSE BUTTON.",

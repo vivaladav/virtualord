@@ -206,6 +206,8 @@ add_executable(
     src/Tutorial/StepGameEnableCamera.cpp
     src/Tutorial/StepGameIntro.h
     src/Tutorial/StepGameIntro.cpp
+    src/Tutorial/StepGameMoveUnit.h
+    src/Tutorial/StepGameMoveUnit.cpp
     src/Tutorial/StepGameUnit.h
     src/Tutorial/StepGameUnit.cpp
     src/Tutorial/StepPlanetMapConquerTerritory.h

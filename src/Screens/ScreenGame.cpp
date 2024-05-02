@@ -39,6 +39,7 @@
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEnableCamera.h"
 #include "Tutorial/StepGameIntro.h"
+#include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
@@ -726,6 +727,8 @@ void ScreenGame::CreateTutorial()
     // TODO replace constant with time from Base when implemented
     mTutMan->AddStep(new StepDelay(TIME_NEW_UNIT));
     mTutMan->AddStep(new StepGameUnit(local));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameMoveUnit(local, mIsoMap));
 
     mTutMan->AddStep(new StepGameEnableCamera(mCamController));
 
