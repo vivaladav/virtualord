@@ -1,6 +1,7 @@
 #include "Tutorial/StepGameConquerStruct.h"
 
 #include "GameConstants.h"
+#include "IsoMap.h"
 #include "IsoObject.h"
 #include "GameObjects/GameObject.h"
 #include "Tutorial/TutorialConstants.h"
@@ -13,7 +14,7 @@
 namespace game
 {
 
-StepGameConquerStruct::StepGameConquerStruct(const GameObject * energyGen)
+StepGameConquerStruct::StepGameConquerStruct(const GameObject * energyGen, const IsoMap * isoMap)
     : mEnergyGen(energyGen)
 {
     // CLICK FILTER
@@ -45,7 +46,7 @@ StepGameConquerStruct::StepGameConquerStruct(const GameObject * energyGen)
                             mFocusArea->SetVisible(true);
                         });
     mInfo->AddInfoEntry("Click on the generator with the RIGHT MOUSE BUTTON to start the conquest.",
-                        colorTutorialTextAction, 0.f, false, false, [this, objX, objY, objW, objH]
+                        colorTutorialTextAction, 0.f, false, false, [this, objX, objY, objW, objH, energyGen, isoMap]
                         {
                             // FOCUS
                             mFocusArea->SetCornersColor(colorTutorialFocusAction);
@@ -53,6 +54,8 @@ StepGameConquerStruct::StepGameConquerStruct(const GameObject * energyGen)
                             // CLICK FILTER
                             mClickFilter->SetWorldClickableArea(objX, objY, objW, objH);
                             mClickFilter->SetButtonToExclude(sgl::core::MouseEvent::BUTTON_LEFT);
+                            mClickFilter->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
+                                                            energyGen->GetRow0(), energyGen->GetCol0());
                         });
 }
 

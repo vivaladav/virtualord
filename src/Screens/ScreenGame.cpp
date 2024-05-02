@@ -738,7 +738,7 @@ void ScreenGame::CreateTutorial()
     const int genR = 56;
     const int genC = 13;
     const GameMapCell gmc = mGameMap->GetCell(genR, genC);
-    mTutMan->AddStep(new StepGameConquerStruct(gmc.objTop));
+    mTutMan->AddStep(new StepGameConquerStruct(gmc.objTop, mIsoMap));
     mTutMan->AddStep(new StepDelay(0.5f));
     mTutMan->AddStep(new StepGameTurnEnergy(mHUD));
     mTutMan->AddStep(new StepDelay(0.5f));

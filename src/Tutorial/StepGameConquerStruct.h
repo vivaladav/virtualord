@@ -7,13 +7,14 @@ namespace game
 
 class FocusArea;
 class GameObject;
+class IsoMap;
 class PanelClickFilter;
 class PanelInfoTutorial;
 
 class StepGameConquerStruct : public TutorialStep
 {
 public:
-    StepGameConquerStruct(const GameObject * energyGen);
+    StepGameConquerStruct(const GameObject * energyGen, const IsoMap * isoMap);
     ~StepGameConquerStruct();
 
     void OnStart() override;

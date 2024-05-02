@@ -49,10 +49,23 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
     {
         const Cell2D cell = mIsoMap->CellFromWorldPoint(wX, wY);
 
-        if(cell.row != mRow || cell.col != mCol)
+        // single cell check
+        if(mRow != -1)
         {
-            event.SetConsumed();
-            return;
+            if(cell.row != mRow || cell.col != mCol)
+            {
+                event.SetConsumed();
+                return;
+            }
+        }
+        // cells area check
+        else
+        {
+            if(cell.row < mTLR || cell.col < mTLC || cell.row > mBRR || cell.col > mBRC)
+            {
+                event.SetConsumed();
+                return;
+            }
         }
     }
 
