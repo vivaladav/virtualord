@@ -39,9 +39,12 @@
 #include "Tutorial/StepGameConquerStruct.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEnableCamera.h"
+#include "Tutorial/StepGameEndTurn.h"
 #include "Tutorial/StepGameIntro.h"
 #include "Tutorial/StepGameMoveUnit.h"
+#include "Tutorial/StepGameTurnEnergy.h"
 #include "Tutorial/StepGameUnit.h"
+#include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
 #include "Widgets/DialogNewElement.h"
@@ -711,8 +714,9 @@ void ScreenGame::CreateTutorial()
 {
     Player * local = GetGame()->GetLocalPlayer();
 
-    auto panelObj = mHUD->GetPanelSelectedObject();
     auto panelActions = mHUD->GetPanelObjectActions();
+    auto panelObj = mHUD->GetPanelSelectedObject();
+    auto panelTurn = mHUD->GetPanelTurnControl();
 
     mTutMan = new TutorialManager;
     mTutMan->AddStep(new StepGameDisableCamera(mCamController));
@@ -735,6 +739,11 @@ void ScreenGame::CreateTutorial()
     const int genC = 13;
     const GameMapCell gmc = mGameMap->GetCell(genR, genC);
     mTutMan->AddStep(new StepGameConquerStruct(gmc.objTop));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameTurnEnergy(mHUD));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameEndTurn(panelTurn));
+    mTutMan->AddStep(new StepGameWaitTurn(this));
 
     mTutMan->AddStep(new StepGameEnableCamera(mCamController));
 

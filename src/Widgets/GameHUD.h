@@ -47,6 +47,7 @@ public:
     void HidePanelObjectActions();
     void ShowPanelObjectActions(GameObject * obj);
 
+    const sgl::sgui::ButtonsGroup * GetQuickUnitButtonsGroup() const;
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
 
@@ -68,6 +69,7 @@ public:
     void ShowTurnControlPanel();
     void ShowTurnControlTextEnemyTurn();
     void ShowTurnControlTextGamePaused();
+    const PanelTurnControl * GetPanelTurnControl() const;
 
     void SetLocalActionsEnabled(bool enabled);
 
@@ -120,4 +122,5 @@ inline PanelObjectActions * GameHUD::GetPanelObjectActions() const { return mPan
 
 inline const PanelSelectedObject * GameHUD::GetPanelSelectedObject() const { return mPanelSelObj; }
 
+inline const PanelTurnControl * GameHUD::GetPanelTurnControl() const { return mPanelTurnCtrl; }
 } // namespace game

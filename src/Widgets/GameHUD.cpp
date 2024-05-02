@@ -199,6 +199,11 @@ void GameHUD::ShowPanelObjectActions(GameObject * obj)
     mPanelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
 }
 
+const sgl::sgui::ButtonsGroup * GameHUD::GetQuickUnitButtonsGroup() const
+{
+    return mGroupUnitSel;
+}
+
 void GameHUD::SetQuickUnitButtonChecked(GameObject * obj)
 {
     // check corresponding quick unit selection button

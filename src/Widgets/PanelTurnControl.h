@@ -10,6 +10,7 @@ namespace sgl
 
     namespace sgui
     {
+        class AbstractButton;
         class Image;
         class ImageButton;
         class Label;
@@ -35,6 +36,8 @@ public:
 
     void ShowPanel();
     void ShowText(const char * text);
+
+    sgl::sgui::AbstractButton * GetButtonEndTurn() const;
 
 private:
     void HandlePositionChanged() override;

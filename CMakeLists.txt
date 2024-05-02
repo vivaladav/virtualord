@@ -206,12 +206,18 @@ add_executable(
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h
     src/Tutorial/StepGameEnableCamera.cpp
+    src/Tutorial/StepGameEndTurn.h
+    src/Tutorial/StepGameEndTurn.cpp
     src/Tutorial/StepGameIntro.h
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/StepGameMoveUnit.h
     src/Tutorial/StepGameMoveUnit.cpp
+    src/Tutorial/StepGameTurnEnergy.h
+    src/Tutorial/StepGameTurnEnergy.cpp
     src/Tutorial/StepGameUnit.h
     src/Tutorial/StepGameUnit.cpp
+    src/Tutorial/StepGameWaitTurn.h
+    src/Tutorial/StepGameWaitTurn.cpp
     src/Tutorial/StepPlanetMapConquerTerritory.h
     src/Tutorial/StepPlanetMapConquerTerritory.cpp
     src/Tutorial/StepPlanetMapConquerTerritoryStart.h
