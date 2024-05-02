@@ -5,6 +5,8 @@
 namespace game
 {
 
+class IsoMap;
+
 class PanelClickFilter : public sgl::sgui::Widget
 {
 public:
@@ -12,6 +14,7 @@ public:
 
     void SetScreenClickableArea(int x0, int y0, int w, int h);
     void SetWorldClickableArea(int x0, int y0, int w, int h);
+    void SetClickableCell(const IsoMap * im, int r, int c);
 
     void ExpandClickableArea();
     void ClearClickableArea();
@@ -29,6 +32,10 @@ private:
     int mYtl = 0;
     int mXbr = 0;
     int mYbr = 0;
+
+    const IsoMap * mIsoMap = nullptr;
+    int mRow = -1;
+    int mCol = -1;
 
     bool mAreaWorld = false;
 };
@@ -53,6 +60,13 @@ inline void PanelClickFilter::SetWorldClickableArea(int x0, int y0, int w, int h
     mAreaWorld = true;
 
     SetClickableArea(x0, y0, w, h);
+}
+
+inline void PanelClickFilter::SetClickableCell(const IsoMap * im, int r, int c)
+{
+    mIsoMap = im;
+    mRow = r;
+    mCol = c;
 }
 
 inline void PanelClickFilter::ClearClickableArea()

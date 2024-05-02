@@ -1,5 +1,7 @@
 #include "Widgets/Tutorial/PanelClickFilter.h"
 
+#include "Cell2D.h"
+#include "IsoMap.h"
 #include <sgl/core/event/MouseButtonEvent.h>
 #include <sgl/graphic/Camera.h>
 #include <sgl/graphic/Renderer.h>
@@ -31,16 +33,29 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
     const int x = event.GetX();
     const int y = event.GetY();
 
+    auto cam = sgl::graphic::Camera::GetDefaultCamera();
+    const int wX = cam->GetScreenToWorldX(x);
+    const int wY = cam->GetScreenToWorldY(y);
+
+    // filter by map cell first if required
+    if(mIsoMap)
+    {
+        const Cell2D cell = mIsoMap->CellFromWorldPoint(wX, wY);
+
+        if(cell.row != mRow || cell.col != mCol)
+        {
+            event.SetConsumed();
+            return;
+        }
+    }
+
+    // first by position in world
     if(mAreaWorld)
     {
-        auto cam = sgl::graphic::Camera::GetDefaultCamera();
-
-        const int wX = cam->GetScreenToWorldX(x);
-        const int wY = cam->GetScreenToWorldY(y);
-
         if(wX < mXtl || wX > mXbr || wY < mYtl || wY > mYbr)
             event.SetConsumed();
     }
+    // first by position in screen
     else
     {
         if(x < mXtl || x > mXbr || y < mYtl || y > mYbr)

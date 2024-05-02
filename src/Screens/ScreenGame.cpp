@@ -134,10 +134,10 @@ ScreenGame::ScreenGame(Game * game)
 
         // update MiniMap
         MiniMap * mm = mHUD->GetMinimap();
-        mm->SetCameraCells(mIsoMap->CellFromScreenPoint(camX0, camY0),
-                           mIsoMap->CellFromScreenPoint(camX1, camY0),
-                           mIsoMap->CellFromScreenPoint(camX0, camY1),
-                           mIsoMap->CellFromScreenPoint(camX1, camY1));
+        mm->SetCameraCells(mIsoMap->CellFromWorldPoint(camX0, camY0),
+                           mIsoMap->CellFromWorldPoint(camX1, camY0),
+                           mIsoMap->CellFromWorldPoint(camX0, camY1),
+                           mIsoMap->CellFromWorldPoint(camX1, camY1));
     });
 
     // set reduced map area to cam controller so camera will stop closer to inside cells
@@ -2403,7 +2403,7 @@ void ScreenGame::HandleSelectionClick(sgl::core::MouseButtonEvent & event)
     const sgl::graphic::Camera * cam = mCamController->GetCamera();
     const int worldX = cam->GetScreenToWorldX(event.GetX());
     const int worldY = cam->GetScreenToWorldY(event.GetY());
-    const Cell2D clickCell = mIsoMap->CellFromScreenPoint(worldX, worldY);
+    const Cell2D clickCell = mIsoMap->CellFromWorldPoint(worldX, worldY);
 
     // clicked outside the map -> clear current selection
     if(!mIsoMap->IsCellInside(clickCell))
@@ -2443,7 +2443,7 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
     const int worldX = cam->GetScreenToWorldX(event.GetX());
     const int worldY = cam->GetScreenToWorldY(event.GetY());
 
-    const Cell2D clickCell = mIsoMap->CellFromScreenPoint(worldX, worldY);
+    const Cell2D clickCell = mIsoMap->CellFromWorldPoint(worldX, worldY);
 
     // clicked outside the map -> nothing to do
     if(!mIsoMap->IsCellInside(clickCell))
@@ -3099,7 +3099,7 @@ void ScreenGame::UpdateCurrentCell()
     const int worldX = cam->GetScreenToWorldX(mMousePos.x);
     const int worldY = cam->GetScreenToWorldY(mMousePos.y);
 
-    const Cell2D cell = mIsoMap->CellFromScreenPoint(worldX, worldY);
+    const Cell2D cell = mIsoMap->CellFromWorldPoint(worldX, worldY);
 
     if(cell == mCurrCell)
         return ;
