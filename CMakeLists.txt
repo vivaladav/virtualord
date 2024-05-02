@@ -200,6 +200,8 @@ add_executable(
     src/Tutorial/StepGameBaseBuildUnitIcon.cpp
     src/Tutorial/StepGameBaseFeatures.h
     src/Tutorial/StepGameBaseFeatures.cpp
+    src/Tutorial/StepGameConquerStruct.h
+    src/Tutorial/StepGameConquerStruct.cpp
     src/Tutorial/StepGameDisableCamera.h
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h
