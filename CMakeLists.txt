@@ -206,6 +206,8 @@ add_executable(
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h
     src/Tutorial/StepGameEnableCamera.cpp
+    src/Tutorial/StepGameEnergyRegeneration.h
+    src/Tutorial/StepGameEnergyRegeneration.cpp
     src/Tutorial/StepGameEndTurn.h
     src/Tutorial/StepGameEndTurn.cpp
     src/Tutorial/StepGameIntro.h
