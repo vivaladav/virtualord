@@ -5,28 +5,20 @@
 namespace game
 {
 
-class FocusArea;
 class PanelClickFilter;
 class PanelInfoTutorial;
-class Player;
-class Unit;
 
-class StepGameUnit : public TutorialStep
+class StepGameStructDisconnected : public TutorialStep
 {
 public:
-    StepGameUnit(const Player * p);
-    ~StepGameUnit();
+    StepGameStructDisconnected();
+    ~StepGameStructDisconnected();
 
     void OnStart() override;
 
-    void Update(float delta) override;
-
 private:
-    FocusArea * mFocusArea = nullptr;
     PanelClickFilter * mClickFilter = nullptr;
     PanelInfoTutorial * mInfo = nullptr;
-
-    Unit * mUnit = nullptr;
 };
 
 } // namespace game

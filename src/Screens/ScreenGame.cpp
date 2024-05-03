@@ -44,8 +44,11 @@
 #include "Tutorial/StepGameIntro.h"
 #include "Tutorial/StepGameMoveCamera.h"
 #include "Tutorial/StepGameMoveUnit.h"
+#include "Tutorial/StepGameStructDisconnected.h"
 #include "Tutorial/StepGameTurnEnergy.h"
 #include "Tutorial/StepGameUnit.h"
+#include "Tutorial/StepGameUnitConquerCellsIcon.h"
+#include "Tutorial/StepGameUnitSelect.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
@@ -750,6 +753,9 @@ void ScreenGame::CreateTutorial()
     mTutMan->AddStep(new StepGameWaitTurn(this));
     mTutMan->AddStep(new StepDelay(0.5f));
     mTutMan->AddStep(new StepGameEnergyRegeneration);
+    mTutMan->AddStep(new StepGameStructDisconnected);
+    mTutMan->AddStep(new StepGameUnitSelect(local));
+    mTutMan->AddStep(new StepGameUnitConquerCellsIcon(panelActions));
 
     mTutMan->AddStep(new StepGameEnableCamera(mCamController));
 

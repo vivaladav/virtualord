@@ -1,4 +1,4 @@
-#include "Tutorial/StepGameUnit.h"
+#include "Tutorial/StepGameUnitSelect.h"
 
 #include "IsoObject.h"
 #include "Player.h"
@@ -11,7 +11,7 @@
 namespace game
 {
 
-StepGameUnit::StepGameUnit(const Player * p)
+StepGameUnitSelect::StepGameUnitSelect(const Player * p)
 {
     // CLICK FILTER
     mClickFilter = new PanelClickFilter;
@@ -25,10 +25,10 @@ StepGameUnit::StepGameUnit(const Player * p)
     mInfo = new PanelInfoTutorial(500, 200);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(1300, 300);
+    mInfo->SetPosition(1300, 350);
 
-    mInfo->AddInfoEntry("Well done commander, this is your first unit!", colorTutorialText, 5.f, true, false);
-    mInfo->AddInfoEntry("Now select it by clicking on its cell with the LEFT MOUSE BUTTON.",
+    mInfo->AddInfoEntry("Okay, let's do it!", colorTutorialText, 4.f, true, false);
+    mInfo->AddInfoEntry("Select your unit with the LEFT MOUSE BUTTON.",
                         colorTutorialTextAction, 0.f, false, false, [this, p]
                         {
                             // FOCUS
@@ -48,14 +48,14 @@ StepGameUnit::StepGameUnit(const Player * p)
                         });
 }
 
-StepGameUnit::~StepGameUnit()
+StepGameUnitSelect::~StepGameUnitSelect()
 {
     delete mClickFilter;
     delete mFocusArea;
     delete mInfo;
 }
 
-void StepGameUnit::OnStart()
+void StepGameUnitSelect::OnStart()
 {
     // CLICK FILTER
     mClickFilter->SetEnabled(true);
@@ -68,10 +68,10 @@ void StepGameUnit::OnStart()
     mInfo->StartInfo();
 }
 
-void StepGameUnit::Update(float)
+void StepGameUnitSelect::Update(float)
 {
     if(mUnit != nullptr && mUnit->IsSelected())
-        SetDone();
+            SetDone();
 }
 
 } // namespace game

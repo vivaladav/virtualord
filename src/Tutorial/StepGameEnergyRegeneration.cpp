@@ -24,7 +24,7 @@ StepGameEnergyRegeneration::StepGameEnergyRegeneration()
     mInfo->AddInfoEntry("Your unit's energy is fully restored too, but it's not always the case.",
                         colorTutorialText, 6.f, true, false);
     mInfo->AddInfoEntry("The amount restored depends on its REGENERATION attribute and by how much "
-                        "it was left when you ended your turn.", colorTutorialText, 10.f, true, false);
+                        "there was left when you ended your turn.", colorTutorialText, 10.f, true, false);
 
     mInfo->SetFunctionOnFinished([this]
     {

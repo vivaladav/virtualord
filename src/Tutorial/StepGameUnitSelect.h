@@ -11,11 +11,11 @@ class PanelInfoTutorial;
 class Player;
 class Unit;
 
-class StepGameUnit : public TutorialStep
+class StepGameUnitSelect : public TutorialStep
 {
 public:
-    StepGameUnit(const Player * p);
-    ~StepGameUnit();
+    StepGameUnitSelect(const Player * p);
+    ~StepGameUnitSelect();
 
     void OnStart() override;
 

@@ -212,12 +212,20 @@ add_executable(
     src/Tutorial/StepGameEndTurn.cpp
     src/Tutorial/StepGameIntro.h
     src/Tutorial/StepGameIntro.cpp
+    src/Tutorial/StepGameMoveCamera.h
+    src/Tutorial/StepGameMoveCamera.cpp
     src/Tutorial/StepGameMoveUnit.h
     src/Tutorial/StepGameMoveUnit.cpp
+    src/Tutorial/StepGameStructDisconnected.h
+    src/Tutorial/StepGameStructDisconnected.cpp
     src/Tutorial/StepGameTurnEnergy.h
     src/Tutorial/StepGameTurnEnergy.cpp
     src/Tutorial/StepGameUnit.h
     src/Tutorial/StepGameUnit.cpp
+    src/Tutorial/StepGameUnitSelect.h
+    src/Tutorial/StepGameUnitSelect.cpp
+    src/Tutorial/StepGameUnitConquerCellsIcon.h
+    src/Tutorial/StepGameUnitConquerCellsIcon.cpp
     src/Tutorial/StepGameWaitTurn.h
     src/Tutorial/StepGameWaitTurn.cpp
     src/Tutorial/StepPlanetMapConquerTerritory.h
