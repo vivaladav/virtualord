@@ -17,7 +17,7 @@ StepGameEnergyRegeneration::StepGameEnergyRegeneration()
     mInfo = new PanelInfoTutorial(550, 325);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(200, 600);
+    mInfo->SetPosition(1250, 600);
 
     mInfo->AddInfoEntry("As you can see now all your faction energy is restored.",
                         colorTutorialText, 5.f, true, false);

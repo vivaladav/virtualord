@@ -42,6 +42,7 @@
 #include "Tutorial/StepGameEndTurn.h"
 #include "Tutorial/StepGameEnergyRegeneration.h"
 #include "Tutorial/StepGameIntro.h"
+#include "Tutorial/StepGameMoveCamera.h"
 #include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameTurnEnergy.h"
 #include "Tutorial/StepGameUnit.h"
@@ -721,6 +722,7 @@ void ScreenGame::CreateTutorial()
 
     mTutMan = new TutorialManager;
     mTutMan->AddStep(new StepGameDisableCamera(mCamController));
+
     mTutMan->AddStep(new StepDelay(1.f));
     mTutMan->AddStep(new StepGameIntro);
     mTutMan->AddStep(new StepDelay(0.3f));
@@ -739,6 +741,7 @@ void ScreenGame::CreateTutorial()
     const int genR = 56;
     const int genC = 13;
     const GameMapCell gmc = mGameMap->GetCell(genR, genC);
+    mTutMan->AddStep(new StepGameMoveCamera(200, -100));
     mTutMan->AddStep(new StepGameConquerStruct(gmc.objTop, mIsoMap));
     mTutMan->AddStep(new StepDelay(0.5f));
     mTutMan->AddStep(new StepGameTurnEnergy(mHUD));
