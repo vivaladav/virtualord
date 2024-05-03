@@ -82,9 +82,9 @@ void StepGameBaseBuildUnit::OnStart()
 
     // move elements to front
     auto stage = sgl::sgui::Stage::Instance();
-    stage->MoveChildToFront(mInfo);
     stage->MoveChildToFront(mFocusArea);
     stage->MoveChildToFront(mClickFilter);
+    stage->MoveChildToFront(mInfo);
 }
 
 void StepGameBaseBuildUnit::OnEnd()

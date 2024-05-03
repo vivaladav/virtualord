@@ -31,10 +31,10 @@ StepGameBase::StepGameBase(const GameObject * b)
     mFocusArea->SetVisible(false);
 
     // INFO
-    mInfo = new PanelInfoTutorial(500, 300);
+    mInfo = new PanelInfoTutorial(500, 250);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(1150, 450);
+    mInfo->SetPosition(1150, 400);
 
     mInfo->AddInfoEntry("This is your base.", colorTutorialText, 3.f, true, false);
     mInfo->AddInfoEntry("You must protect it at all costs because if "

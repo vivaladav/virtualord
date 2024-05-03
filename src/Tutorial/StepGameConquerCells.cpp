@@ -25,7 +25,7 @@ StepGameConquerCells::StepGameConquerCells(const Player * p, const IsoMap * isoM
     mInfo = new PanelInfoTutorial(550, 350);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(1350, 350);
+    mInfo->SetPosition(1300, 350);
 
     mInfo->AddInfoEntry("Now that your unit is selected you can decide what cells to conquer.",
                         colorTutorialText, 6.f, true, false);

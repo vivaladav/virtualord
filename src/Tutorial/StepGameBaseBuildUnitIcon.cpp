@@ -23,10 +23,10 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
     mFocusArea->SetVisible(false);
 
     // INFO
-    mInfo = new PanelInfoTutorial(590, 250);
+    mInfo = new PanelInfoTutorial(590, 200);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(400, 550);
+    mInfo->SetPosition(300, 550);
 
     mInfo->AddInfoEntry("For example you can create worker units with your base.",
                         colorTutorialText, 4.f, true, false);

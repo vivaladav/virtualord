@@ -22,10 +22,10 @@ StepGameMoveUnit::StepGameMoveUnit(const Player * p, const IsoMap * isoMap)
     mFocusArea->SetVisible(false);
 
     // INFO
-    mInfo = new PanelInfoTutorial(500, 300);
+    mInfo = new PanelInfoTutorial(500, 275);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(1350, 100);
+    mInfo->SetPosition(1350, 125);
 
     mInfo->AddInfoEntry("Now that your unit is selected you can do several things with it.", colorTutorialText, 6.f, true, false);
     mInfo->AddInfoEntry("The default action is MOVE, so let's start with that.", colorTutorialText, 6.f, true, false);

@@ -31,6 +31,8 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
     mInfo->SetVisible(false);
     mInfo->SetPosition(1300, 550);
 
+    mInfo->AddInfoEntry("Well done commander!\nNow this energy generator is under your control and we can keep going.",
+                        colorTutorialText, 8.f, true, true);
     mInfo->AddInfoEntry("Always remember that your faction has a limited amount of energy to spend for "
                         "units and structures each turn.", colorTutorialText, 9.f, true, false);
     mInfo->AddInfoEntry("The big bar in this panel shows your remaining faction energy.", colorTutorialText,
