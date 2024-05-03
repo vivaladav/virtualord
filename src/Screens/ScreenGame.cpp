@@ -43,6 +43,7 @@
 #include "Tutorial/StepGameEndTurn.h"
 #include "Tutorial/StepGameEnergyRegeneration.h"
 #include "Tutorial/StepGameIntro.h"
+#include "Tutorial/StepGameMapNavigation.h"
 #include "Tutorial/StepGameMoveCamera.h"
 #include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameStructConnected.h"
@@ -763,6 +764,8 @@ void ScreenGame::CreateTutorial()
     mTutMan->AddStep(new StepGameStructConnected);
 
     mTutMan->AddStep(new StepGameEnableCamera(mCamController));
+
+    mTutMan->AddStep(new StepGameMapNavigation);
 
     mTutMan->Start();
 }

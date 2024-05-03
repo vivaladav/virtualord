@@ -214,6 +214,8 @@ add_executable(
     src/Tutorial/StepGameEndTurn.cpp
     src/Tutorial/StepGameIntro.h
     src/Tutorial/StepGameIntro.cpp
+    src/Tutorial/StepGameMapNavigation.h
+    src/Tutorial/StepGameMapNavigation.cpp
     src/Tutorial/StepGameMoveCamera.h
     src/Tutorial/StepGameMoveCamera.cpp
     src/Tutorial/StepGameMoveUnit.h
