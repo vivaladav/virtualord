@@ -23,10 +23,10 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
     mFocusArea->SetVisible(false);
 
     // INFO
-    mInfo = new PanelInfoTutorial(500, 200);
+    mInfo = new PanelInfoTutorial(450, 200);
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
-    mInfo->SetPosition(1300, 650);
+    mInfo->SetPosition(1300, 700);
 
     mInfo->AddInfoEntry("Click this button to set your unit's action to CELL CONQUEST.",
                         colorTutorialTextAction, 0.f, false, false, [this, panel]

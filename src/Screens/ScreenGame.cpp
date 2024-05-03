@@ -36,6 +36,7 @@
 #include "Tutorial/StepGameBaseBuildUnit.h"
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
 #include "Tutorial/StepGameBaseFeatures.h"
+#include "Tutorial/StepGameConquerCells.h"
 #include "Tutorial/StepGameConquerStruct.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEnableCamera.h"
@@ -756,6 +757,7 @@ void ScreenGame::CreateTutorial()
     mTutMan->AddStep(new StepGameStructDisconnected);
     mTutMan->AddStep(new StepGameUnitSelect(local));
     mTutMan->AddStep(new StepGameUnitConquerCellsIcon(panelActions));
+    mTutMan->AddStep(new StepGameConquerCells(local, mIsoMap));
 
     mTutMan->AddStep(new StepGameEnableCamera(mCamController));
 
