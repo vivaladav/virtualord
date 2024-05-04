@@ -86,33 +86,6 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
                                  {
                                     SetDone();
                                  });
-
-    /*
-    mInfo->AddInfoEntry("Click this button to END THIS TURN, then wait for the enemy to make their move.",
-                        colorTutorialTextAction, 0.f, false, false, [this, panel]
-                        {
-                            // FOCUS
-                            auto btn = panel->GetButtonEndTurn();
-                            const int padding = 10;
-                            const int fX = panel->GetX() + btn->GetX() - padding;
-                            const int fY = panel->GetY() + btn->GetY() - padding;
-                            const int fW = btn->GetWidth() + (padding * 2);
-                            const int fH = btn->GetHeight() + (padding * 2);
-
-                            mFocusArea1->SetCornersColor(colorTutorialFocusAction);
-                            mFocusArea1->SetScreenArea(fX, fY, fW, fH);
-
-                            // CLICK FILTER
-                            mClickFilter->SetScreenClickableArea(fX, fY, fW, fH);
-                        });
-
-    auto btn = panel->GetButtonEndTurn();
-
-    btn->AddOnClickFunction([this]
-    {
-        SetDone();
-    });
-*/
 }
 
 StepGameTurnEnergy::~StepGameTurnEnergy()
