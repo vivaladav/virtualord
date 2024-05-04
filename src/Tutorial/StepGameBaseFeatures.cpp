@@ -41,6 +41,7 @@ StepGameBaseFeatures::StepGameBaseFeatures(const PanelSelectedObject * panelObj,
                         "several stats and giving you access to the full info panel for that object.",
                         colorTutorialText, 12.f, true, false, [this]
                         {
+                            mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
                         });
     mInfo->AddInfoEntry("At the bottom of the screen you will see all the actions of the object you selected.",
@@ -51,6 +52,7 @@ StepGameBaseFeatures::StepGameBaseFeatures(const PanelSelectedObject * panelObj,
                             const int fW = panelActions->GetWidth() + (2 * padding);
                             const int fH = panelActions->GetHeight() + (2 * padding);
 
+                            mFocusArea->SetBlinking(true);
                             mFocusArea->SetScreenArea(fX, fY, fW, fH);
                         });
 

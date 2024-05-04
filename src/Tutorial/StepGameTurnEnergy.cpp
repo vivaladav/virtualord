@@ -48,6 +48,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
 
                             mFocusArea->SetScreenArea(fX, fY, fW, fH);
                             mFocusArea->SetVisible(true);
+                            mFocusArea->SetBlinking(true);
                         });
     mInfo->AddInfoEntry("You also need to consider the energy of your units or structures, which you can "
                         "track in the object panel.", colorTutorialText, 9.f, true, false, [this, HUD]
@@ -62,6 +63,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
 
                             mFocusArea->SetScreenArea(fX, fY, fW, fH);
                             mFocusArea->SetVisible(true);
+                            mFocusArea->SetBlinking(true);
                         });
     mInfo->AddInfoEntry("You can also see it in the quick selection button.", colorTutorialText, 8.f, true, false,
                         [this, HUD]
@@ -77,6 +79,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
 
                             mFocusArea->SetScreenArea(fX, fY, fW, fH);
                             mFocusArea->SetVisible(true);
+                            mFocusArea->SetBlinking(true);
                         });
 
     mInfo->SetFunctionOnFinished([this]
