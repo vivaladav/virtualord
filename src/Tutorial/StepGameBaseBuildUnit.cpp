@@ -23,6 +23,7 @@ StepGameBaseBuildUnit::StepGameBaseBuildUnit(GameHUD * HUD)
     // FOCUS
     mFocusArea = new FocusArea;
     mFocusArea->SetCornersColor(colorTutorialFocusAction);
+    mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
     // INFO

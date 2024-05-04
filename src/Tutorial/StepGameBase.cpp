@@ -44,6 +44,7 @@ StepGameBase::StepGameBase(const GameObject * b)
     mInfo->SetFunctionOnFinished([this, objX, objY, objW, objH]
     {
         mFocusArea->SetCornersColor(colorTutorialFocusAction);
+        mFocusArea->SetBlinking(true);
 
         mClickFilter->SetWorldClickableArea(objX, objY, objW, objH);
 

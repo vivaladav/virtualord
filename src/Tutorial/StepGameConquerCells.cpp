@@ -50,6 +50,7 @@ StepGameConquerCells::StepGameConquerCells(const Player * p, const IsoMap * isoM
 
                             mFocusArea->SetWorldArea(objX, objY, objW, objH);
                             mFocusArea->SetCornersColor(colorTutorialFocusAction);
+                            mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER

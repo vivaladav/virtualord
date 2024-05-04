@@ -41,6 +41,7 @@ StepGameUnitSelect::StepGameUnitSelect(const Player * p)
 
                             mFocusArea->SetWorldArea(objX, objY, objW, objH);
                             mFocusArea->SetCornersColor(colorTutorialFocusAction);
+                            mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER

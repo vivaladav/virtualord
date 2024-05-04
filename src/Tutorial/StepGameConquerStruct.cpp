@@ -50,6 +50,7 @@ StepGameConquerStruct::StepGameConquerStruct(const GameObject * energyGen, const
                         {
                             // FOCUS
                             mFocusArea->SetCornersColor(colorTutorialFocusAction);
+                            mFocusArea->SetBlinking(true);
 
                             // CLICK FILTER
                             mClickFilter->SetWorldClickableArea(objX, objY, objW, objH);

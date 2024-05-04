@@ -20,6 +20,7 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
     // FOCUS
     mFocusArea = new FocusArea;
     mFocusArea->SetCornersColor(colorTutorialFocusAction);
+    mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
     // INFO

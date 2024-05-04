@@ -44,6 +44,7 @@ StepGameEndTurn::StepGameEndTurn(const PanelTurnControl * panel)
                             const int fH = btn->GetHeight() + (padding * 2);
 
                             mFocusArea->SetCornersColor(colorTutorialFocusAction);
+                            mFocusArea->SetBlinking(true);
                             mFocusArea->SetScreenArea(fX, fY, fW, fH);
                             mFocusArea->SetVisible(true);
 
