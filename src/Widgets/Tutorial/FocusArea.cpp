@@ -9,6 +9,9 @@
 namespace game
 {
 
+const float TIME_BLINK_ON = 0.8f;
+const float TIME_BLINK_OFF = 0.4f;
+
 FocusArea::FocusArea()
 {
     using namespace sgl;
@@ -26,6 +29,18 @@ FocusArea::FocusArea()
 
     mCornerBR = new graphic::Image(tm->GetSprite(SpriteFileTutorial, IND_TUT_AREA_CORNER_BR));
     RegisterRenderable(mCornerBR);
+}
+
+void FocusArea::SetBlinking(bool enabled)
+{
+    if(enabled == mBlinking)
+        return ;
+
+    mBlinking = enabled;
+
+    // reset blinking state
+    mBlinkOn = true;
+    mTimerBlinking = TIME_BLINK_ON;
 }
 
 void FocusArea::SetScreenArea(int x0, int y0, int w, int h)
@@ -79,6 +94,28 @@ void FocusArea::SetArea(int x0, int y0, int w, int h)
     y = y0 + h - mCornerBR->GetHeight();
 
     mCornerBR->SetPosition(x, y);
+}
+
+void FocusArea::OnRender()
+{
+    // only render if not blinking or in ON state of blinking
+    if(!mBlinking || mBlinkOn)
+        sgl::sgui::Widget::OnRender();
+}
+
+void FocusArea::OnUpdate(float delta)
+{
+    if(mBlinking && IsVisible())
+    {
+        mTimerBlinking -= delta;
+
+        if(mTimerBlinking <= 0.f)
+        {
+            mBlinkOn = !mBlinkOn;
+
+            mTimerBlinking = mBlinkOn ? TIME_BLINK_ON : TIME_BLINK_OFF;
+        }
+    }
 }
 
 } // namespace game
