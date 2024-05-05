@@ -2,6 +2,7 @@
 
 #include "GameData.h"
 #include "IsoObject.h"
+#include "Player.h"
 #include "Particles/DataParticleLootboxPrize.h"
 #include "Particles/UpdaterLootboxPrize.h"
 #include "Screens/ScreenGame.h"
@@ -54,9 +55,13 @@ LootBox::LootBox()
     mPrizeQuantity = std::roundf(d.GetNextValue() / static_cast<float>(r)) * r;
 }
 
-void LootBox::Collected()
+void LootBox::Collected(Player * collector)
 {
-    Collectable::Collected();
+    Collectable::Collected(collector);
+
+    // do not show anyting for AI players
+    if(collector->IsAI())
+        return ;
 
     // emit notification
     auto pu = static_cast<UpdaterLootboxPrize *>(GetScreen()->GetParticleUpdater(PU_LOOTBOX_PRIZE));

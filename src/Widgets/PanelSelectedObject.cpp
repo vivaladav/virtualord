@@ -5,6 +5,7 @@
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "Widgets/DigitsDisplay.h"
 #include "Widgets/GameSimpleTooltip.h"
+#include "Widgets/ProgressBarObjectVisualStat.h"
 
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
@@ -91,8 +92,9 @@ public:
         mIcon->SetColor(colorIcon);
 
         // BAR
-        tex = tm->GetSprite(SpriteFilePanelSelectedObject, ID_PAN_SELOBJ_VBAR_0);
-        mBar = new sgui::Image(tex, this);
+        const float minBar = 0.f;
+        const float maxBar = 100.f;
+        mBar = new ProgressBarObjectVisualStat(minBar, maxBar, this);
 
         // DIGITS
         const int sizeFont = 16;
@@ -131,12 +133,9 @@ public:
         auto tm = sgl::graphic::TextureManager::Instance();
 
         const int perc = static_cast<int>(std::roundf(val * 100.f / max));
-        const int ind = perc / 10;
 
         // BAR
-        const unsigned int texId = ID_PAN_SELOBJ_VBAR_0 + ind;
-        auto tex = tm->GetSprite(SpriteFilePanelSelectedObject, texId);
-        mBar->SetTexture(tex);
+        mBar->SetValue(perc);
 
         // ICON
         const unsigned int colorIcon = 0x85a1adff;
@@ -148,11 +147,11 @@ public:
 
 private:
     sgl::sgui::Image * mIcon = nullptr;
-    sgl::sgui::Image * mBar = nullptr;
+    ProgressBarObjectVisualStat * mBar = nullptr;
     DigitsDisplay * mDigits = nullptr;
 };
 
-// ========== BUTTON CLOSE ==========
+// ========== BUTTON OBJECT FUNCTION ==========
 class ButtonObjectFunction : public sgl::sgui::ImageButton
 {
 public:
@@ -372,6 +371,11 @@ void PanelSelectedObject::AddFunctionOnClose(const std::function<void()> & f)
     mButtonClose->AddOnClickFunction(f);
 }
 
+void PanelSelectedObject::AddFunctionOnShowInfo(const std::function<void()> & f)
+{
+    mButtonShowInfo->AddOnClickFunction(f);
+}
+
 void PanelSelectedObject::SetObject(GameObject * obj)
 {
     using namespace sgl;
@@ -414,16 +418,8 @@ void PanelSelectedObject::SetObject(GameObject * obj)
     mBarLvl->SetPosition(barLvlX, barLvlY);
 
     // SET IMAGE
-    if(faction == NO_FACTION)
-    {
-        const ObjectBasicData & data = mObjDataReg->GetObjectData(type);
-        tex = tm->GetSprite(data.noFactionIconFile, data.noFactionIconTexId);
-    }
-    else
-    {
-        const ObjectFactionData & data = mObjDataReg->GetFactionData(faction, type);
-        tex = tm->GetSprite(data.iconFile, data.iconTexId);
-    }
+    const ObjectData & data = mObjDataReg->GetObjectData(type);
+    tex = tm->GetSprite(data.GetIconTexFile(), data.GetIconTexId(faction));
 
     mImg->SetTexture(tex);
 

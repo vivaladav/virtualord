@@ -54,7 +54,7 @@ public:
     void SetVisibleArea(int x, int y, int w, int h);
     void Render();
 
-    Cell2D CellFromScreenPoint(int x, int y) const;
+    Cell2D CellFromWorldPoint(int x, int y) const;
 
     bool IsCellInside(const Cell2D & cell) const;
 

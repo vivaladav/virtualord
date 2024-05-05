@@ -32,6 +32,7 @@ class GameHUD;
 class GameMap;
 class GameObject;
 class HealingRangeIndicator;
+class Hospital;
 class IsoLayer;
 class IsoMap;
 class MiniMap;
@@ -39,6 +40,7 @@ class MoveIndicator;
 class Player;
 class PlayerAI;
 class StructureIndicator;
+class TutorialManager;
 class Unit;
 class WallIndicator;
 
@@ -93,6 +95,9 @@ public:
     bool GetPaused() const;
     void SetPause(bool paused);
 
+    // TURN SYSTEM
+    bool IsCurrentTurnLocal() const;
+
 private:
     void OnApplicationQuit(sgl::core::ApplicationEvent & event) override;
 
@@ -104,6 +109,8 @@ private:
 
     void CreateUI();
 
+    void CreateTutorial();
+
     void LoadMapFile();
 
     void UpdateAI(float delta);
@@ -111,6 +118,7 @@ private:
 
     void CancelObjectAction(GameObject * obj);
     void SetObjectActionDone(GameObject * obj, bool successful);
+    void FinalizeObjectAction(const GameObjectAction & action, bool successful);
 
     void UpdateGameEnd();
     void HandleGameOver();
@@ -129,11 +137,14 @@ private:
                                 const std::function<void(bool)> & onDone = [](bool){});
     bool SetupUnitAttack(Unit * unit, GameObject * target, Player * player,
                          const std::function<void(bool)> & onDone = [](bool){});
+    bool SetupHospitalHeal(Hospital * hospital, GameObject * target, Player * player,
+                           const std::function<void(bool)> & onDone = [](bool){});
     bool SetupUnitHeal(Unit * unit, GameObject * target, Player * player,
                        const std::function<void(bool)> & onDone = [](bool){});
     bool SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D & end,
                        const std::function<void(bool)> & onDone = [](bool){});
-    bool SetupConnectCells(Unit * unit, const std::function<void(bool)> & onDone = [](bool){});
+    bool SetupConnectCellsAI(Unit * unit, const std::function<void(bool)> & onDone = [](bool){});
+    bool FindWhereToBuildStructureAI(Unit * unit, Cell2D & target);
 
     void HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell);
     void HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & clickCell);
@@ -142,7 +153,7 @@ private:
     void HandleSelectionClick(sgl::core::MouseButtonEvent & event);
     void HandleActionClick(sgl::core::MouseButtonEvent & event);
 
-    void StartUnitBuildWall(Unit * unit);
+    bool StartUnitBuildWall(Unit * unit);
 
     void ShowActiveIndicators(Unit * unit, const Cell2D & cell);
     void ShowAttackIndicators(const GameObject * obj, int range);
@@ -157,6 +168,11 @@ private:
     void CenterCameraOverPlayerBase();
 
     void UpdateCurrentCell();
+
+    void EndTurn();
+
+    // SFX
+    void PlayLocalActionErrorSFX(const Player * player);
 
 private:
     friend class GameHUD;
@@ -197,12 +213,17 @@ private:
     struct Cell2D mCurrCell;
     sgl::core::Pointd2D mMousePos;
 
-    float mTimerEnergy;
-    float mTimerAI;
+    // TUTORIAL
+    TutorialManager * mTutMan = nullptr;
+
+    // TURN MANAGEMENT
+    Player * mLocalPlayer = nullptr;
+
+    int mActivePlayerIdx = 0;
+
+    float mTimerAutoEndTurn = 0.f;
 
     float mTimePlayed = 0.f;
-
-    unsigned int mCurrPlayerAI = 0;
 
     MissionType mMissionType;
     unsigned int mMissionTime = 0;
@@ -222,5 +243,7 @@ inline void ScreenGame::SetObjectActionFailed(GameObject * obj)
 inline GameHUD * ScreenGame::GetHUD() const { return mHUD; }
 
 inline bool ScreenGame::GetPaused() const { return mPaused; }
+
+inline bool ScreenGame::IsCurrentTurnLocal() const { return mActivePlayerIdx == 0; }
 
 } // namespace game

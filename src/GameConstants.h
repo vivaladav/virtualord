@@ -8,6 +8,8 @@ constexpr int MAX_NUM_PLAYERS = 4;
 constexpr int MAX_UNITS_LEVEL = 2;
 constexpr int COST_UNIT_UPGRADE[] = { 1, 2 };
 
+constexpr float TIME_AI_MIN = 0.2f;
+
 constexpr unsigned int PLAYER_COLOR[] =
 {
     0xdb5757ff,
@@ -48,6 +50,7 @@ enum PlayerFaction : unsigned int
     FACTION_3,
 
     NUM_FACTIONS,
+    NUM_FACTIONS_PLUS_NO,
 
     NO_FACTION = 99
 };

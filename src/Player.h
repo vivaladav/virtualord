@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Cell2D.h"
 #include "StatValue.h"
 #include "GameObjects/GameObjectTypes.h"
 
@@ -47,11 +46,13 @@ public:
     unsigned int GetMaxUnits() const;
     void SetMaxUnits(int val);
     unsigned int GetNumUnits() const;
+    unsigned int GetNumUnitsByType(GameObjectTypeId type) const;
     void AddUnit(Unit * unit);
     void RemoveUnit(Unit * unit);
-    Unit * GetUnit(unsigned int index);
+    Unit * GetUnit(unsigned int index) const;
 
     unsigned int GetNumStructures() const;
+    unsigned int GetNumStructuresByType(GameObjectTypeId type) const;
     void AddStructure(Structure * s);
     void RemoveStructure(Structure * s);
     Structure * GetStructure(unsigned int index);
@@ -79,8 +80,8 @@ public:
 
     int GetPlayerId() const;
 
-    const Cell2D & GetBaseCell() const;
-    void SetBaseCell(const Cell2D & cell);
+    const GameObject * GetBase() const;
+    void SetBase(const GameObject * b);
 
     // stats
     const StatValue & GetStat(Stat sid);
@@ -102,9 +103,6 @@ public:
     int GetEnergyUse() const;
 
     void SetOnNumUnitsChanged(const std::function<void()> & f);
-
-    int GetTotalUnitsLevel() const;
-    void SumTotalUnitsLevel(int val);
 
     // available structures
     void AddAvailableStructure(GameObjectTypeId type);
@@ -128,6 +126,15 @@ public:
     void UpdateResources();
 
     void HandleCollectable(GameObject * obj);
+
+    // -- TURN --
+    float GetTurnEnergy() const;
+    float GetTurnMaxEnergy() const;
+    void AdjustTurnMaxEnergy();
+    void ResetTurnEnergy();
+    void SumTurnEnergy(float val);
+    void SetOnTurnEnergyChanged(const std::function<void()> & f);
+    void SetOnTurnMaxEnergyChanged(const std::function<void()> & f);
 
     // -- AI --
     bool IsAI() const;
@@ -156,6 +163,8 @@ private:
     std::function<void(int)> mOnNumCellsChanged;
     std::function<void()> mOnNumUnitsChanged;
     std::function<void()> mOnResourcesChanged;
+    std::function<void()> mOnTurnEnergyChanged;
+    std::function<void()> mOnTurnMaxEnergyChanged;
 
     std::unordered_map<ResourceType, std::vector<ResourceGenerator *>> mResGeneratorsMap;
 
@@ -163,16 +172,16 @@ private:
 
     GameObject * mSelObj = nullptr;
 
-    Cell2D mHomeCell;
+    const GameObject * mBase = nullptr;
 
     int mPlayerId;
 
     PlayerFaction mFaction;
 
+    float mTurnEnergy;
+    float mTurnMaxEnergy;
+
     int mNumCells = 0;
-    int mTotCellsLevel = 0;
-    int mNumUnits = 0;
-    int mTotUnitsLevel = 0;
     unsigned int mMaxUnits = 0;
 };
 
@@ -222,8 +231,8 @@ inline const std::string & Player::GetName() const { return mName; }
 
 inline int Player::GetPlayerId() const { return mPlayerId; }
 
-inline const Cell2D & Player::GetBaseCell() const { return mHomeCell; }
-inline void Player::SetBaseCell(const Cell2D & cell) { mHomeCell = cell; }
+inline const GameObject * Player::GetBase() const { return mBase; }
+inline void Player::SetBase(const GameObject * b) { mBase = b; }
 
 inline const StatValue & Player::GetStat(Stat sid)
 {
@@ -254,9 +263,6 @@ inline void Player::SetOnNumUnitsChanged(const std::function<void()> & f)
     mOnNumUnitsChanged = f;
 }
 
-inline int Player::GetTotalUnitsLevel() const { return mTotUnitsLevel; }
-inline void Player::SumTotalUnitsLevel(int val) { mTotUnitsLevel += val; }
-
 inline const std::vector<GameObjectTypeId> &Player::GetAvailableStructures() const
 {
     return mAvailableStructures;
@@ -269,6 +275,22 @@ inline const std::vector<GameObjectTypeId> & Player::GetAvailableUnits() const
 
 inline GameObject * Player::GetSelectedObject() const { return mSelObj; }
 inline bool Player::HasSelectedObject() const { return mSelObj != nullptr; }
+
+inline float Player::GetTurnEnergy() const { return mTurnEnergy; }
+inline float Player::GetTurnMaxEnergy() const { return mTurnMaxEnergy; }
+inline void Player::ResetTurnEnergy()
+{
+    mTurnEnergy = mTurnMaxEnergy;
+    mOnTurnEnergyChanged();
+}
+inline void Player::SetOnTurnEnergyChanged(const std::function<void()> & f)
+{
+    mOnTurnEnergyChanged = f;
+}
+inline void Player::SetOnTurnMaxEnergyChanged(const std::function<void()> & f)
+{
+    mOnTurnMaxEnergyChanged = f;
+}
 
 inline bool Player::IsAI() const { return mAI != nullptr; }
 inline PlayerAI * Player::GetAI() { return mAI; }

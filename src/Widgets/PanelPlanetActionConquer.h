@@ -11,6 +11,8 @@ namespace sgl
         class Image;
         class Text;
     }
+
+    namespace sgui { class AbstractButton; }
 }
 
 namespace game
@@ -29,6 +31,9 @@ public:
 
     void AddOnButtonOkClickFunction(const std::function<void()> & f);
     void AddOnButtonCancelClickFunction(const std::function<void()> & f);
+
+    sgl::sgui::AbstractButton * GetButtonOk() const;
+    sgl::sgui::AbstractButton * GetButtonCancel() const;
 
 private:
     void CreateContentStart();

@@ -1,10 +1,12 @@
 #include "GameObject.h"
 
+#include "Game.h"
 #include "GameConstants.h"
 #include "GameData.h"
 #include "GameMap.h"
 #include "GameMapCell.h"
 #include "IsoObject.h"
+#include "Player.h"
 #include "Particles/DataParticleDamage.h"
 #include "Particles/UpdaterDamage.h"
 #include "Screens/ScreenGame.h"
@@ -52,16 +54,20 @@ const int GameObject::ACTION_EXPERIENCE[NUM_OBJ_ACTIONS] =
 };
 
 // -- OBJECT TYPE --
+const std::string GameObject::TYPE_STR_BARRACKS("BARRACKS");
 const std::string GameObject::TYPE_STR_BASE("BASE");
 const std::string GameObject::TYPE_STR_BASE_SPOT("BASE_SPOT");
 const std::string GameObject::TYPE_STR_BLOBS("BLOBS");
+const std::string GameObject::TYPE_STR_BUNKER("BUNKER");
 const std::string GameObject::TYPE_STR_DEFENSIVE_TOWER("DEF_TOWER");
 const std::string GameObject::TYPE_STR_DIAMONDS("DIAMONDS");
+const std::string GameObject::TYPE_STR_HOSPITAL("HOSPITAL");
 const std::string GameObject::TYPE_STR_LOOTBOX("LOOTBOX");
 const std::string GameObject::TYPE_STR_MOUNTAINS("MOUNTAINS");
 const std::string GameObject::TYPE_STR_PRACTICE_TARGET("TARGET");
 const std::string GameObject::TYPE_STR_RADAR_STATION("RADAR_STATION");
 const std::string GameObject::TYPE_STR_RADAR_TOWER("RADAR_TOWER");
+const std::string GameObject::TYPE_STR_RESEARCH_CENTER("RESEARCH_CENTER");
 const std::string GameObject::TYPE_STR_RES_GEN_ENERGY("RESGEN_ENER");
 const std::string GameObject::TYPE_STR_RES_GEN_ENERGY_SOLAR("RESGEN_SOLAR");
 const std::string GameObject::TYPE_STR_RES_GEN_MATERIAL("RESGEN_MAT");
@@ -83,16 +89,20 @@ const std::string GameObject::TYPE_STR_WALL_GATE("WALL_GATE");
 
 const GameObjectTypeId GameObject::TYPE_NULL = 0;
 
+const GameObjectTypeId GameObject::TYPE_BARRACKS = h{}(TYPE_STR_BARRACKS);
 const GameObjectTypeId GameObject::TYPE_BASE = h{}(TYPE_STR_BASE);
 const GameObjectTypeId GameObject::TYPE_BASE_SPOT = h{}(TYPE_STR_BASE_SPOT);
 const GameObjectTypeId GameObject::TYPE_BLOBS = h{}(TYPE_STR_BLOBS);
+const GameObjectTypeId GameObject::TYPE_BUNKER = h{}(TYPE_STR_BUNKER);
 const GameObjectTypeId GameObject::TYPE_DEFENSIVE_TOWER = h{}(TYPE_STR_DEFENSIVE_TOWER);
 const GameObjectTypeId GameObject::TYPE_DIAMONDS = h{}(TYPE_STR_DIAMONDS);
+const GameObjectTypeId GameObject::TYPE_HOSPITAL = h{}(TYPE_STR_HOSPITAL);
 const GameObjectTypeId GameObject::TYPE_LOOTBOX = h{}(TYPE_STR_LOOTBOX);
 const GameObjectTypeId GameObject::TYPE_MOUNTAINS = h{}(TYPE_STR_MOUNTAINS);
 const GameObjectTypeId GameObject::TYPE_PRACTICE_TARGET = h{}(TYPE_STR_PRACTICE_TARGET);
 const GameObjectTypeId GameObject::TYPE_RADAR_STATION = h{}(TYPE_STR_RADAR_STATION);
 const GameObjectTypeId GameObject::TYPE_RADAR_TOWER = h{}(TYPE_STR_RADAR_TOWER);
+const GameObjectTypeId GameObject::TYPE_RESEARCH_CENTER = h{}(TYPE_STR_RESEARCH_CENTER);
 const GameObjectTypeId GameObject::TYPE_RES_GEN_ENERGY = h{}(TYPE_STR_RES_GEN_ENERGY);
 const GameObjectTypeId GameObject::TYPE_RES_GEN_ENERGY_SOLAR = h{}(TYPE_STR_RES_GEN_ENERGY_SOLAR);
 const GameObjectTypeId GameObject::TYPE_RES_GEN_MATERIAL = h{}(TYPE_STR_RES_GEN_MATERIAL);
@@ -114,14 +124,18 @@ const GameObjectTypeId GameObject::TYPE_WALL_GATE = h{}(TYPE_STR_WALL_GATE);
 
 const std::unordered_map<GameObjectTypeId, std::string> GameObject::TYPE_STR_MAP =
 {
+    { GameObject::TYPE_BARRACKS, TYPE_STR_BARRACKS},
     { GameObject::TYPE_BASE, TYPE_STR_BASE},
     { GameObject::TYPE_BASE_SPOT, TYPE_STR_BASE_SPOT},
+    { GameObject::TYPE_BUNKER, TYPE_STR_BUNKER},
     { GameObject::TYPE_DEFENSIVE_TOWER, TYPE_STR_DEFENSIVE_TOWER },
+    { GameObject::TYPE_HOSPITAL, TYPE_STR_HOSPITAL },
     { GameObject::TYPE_LOOTBOX, TYPE_STR_LOOTBOX },
     { GameObject::TYPE_MOUNTAINS, TYPE_STR_MOUNTAINS },
     { GameObject::TYPE_PRACTICE_TARGET, TYPE_STR_PRACTICE_TARGET },
     { GameObject::TYPE_RADAR_STATION, TYPE_STR_RADAR_STATION },
     { GameObject::TYPE_RADAR_TOWER, TYPE_STR_RADAR_TOWER },
+    { GameObject::TYPE_RESEARCH_CENTER, TYPE_STR_RESEARCH_CENTER },
     { GameObject::TYPE_RES_GEN_ENERGY, TYPE_STR_RES_GEN_ENERGY },
     { GameObject::TYPE_RES_GEN_ENERGY_SOLAR, TYPE_STR_RES_GEN_ENERGY_SOLAR },
     { GameObject::TYPE_RES_GEN_MATERIAL, TYPE_STR_RES_GEN_MATERIAL },
@@ -156,14 +170,18 @@ std::string GameObject::GetObjectTypeStr(const GameObjectTypeId type)
 
 const std::unordered_map<GameObjectTypeId, std::string> GameObject::TITLES =
 {
+    { GameObject::TYPE_BARRACKS, "BARRACKS"},
     { GameObject::TYPE_BASE, "BASE"},
     { GameObject::TYPE_BASE_SPOT, "BASE SPOT"},
+    { GameObject::TYPE_BUNKER, "BUNKER"},
     { GameObject::TYPE_DEFENSIVE_TOWER, "DEFENSIVE TOWER"},
+    { GameObject::TYPE_HOSPITAL, "HOSPITAL"},
     { GameObject::TYPE_LOOTBOX, "LOOT BOX"},
     { GameObject::TYPE_MOUNTAINS, "MOUNTAINS"},
     { GameObject::TYPE_PRACTICE_TARGET, "PRACTICE TARGET"},
     { GameObject::TYPE_RADAR_STATION, "RADAR STATION"},
     { GameObject::TYPE_RADAR_TOWER, "RADAR TOWER"},
+    { GameObject::TYPE_RESEARCH_CENTER, "RESEARCH CENTER"},
     { GameObject::TYPE_RES_GEN_ENERGY, "ENERGY GENERATOR"},
     { GameObject::TYPE_RES_GEN_ENERGY_SOLAR, "SOLAR PANELS"},
     { GameObject::TYPE_RES_GEN_MATERIAL, "MATERIAL GENERATOR"},
@@ -186,17 +204,21 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TITLES =
 
 const std::unordered_map<GameObjectTypeId, std::string> GameObject::DESCRIPTIONS =
 {
-    { GameObject::TYPE_BASE, "A control center. It can create units. "
+    { GameObject::TYPE_BARRACKS, "A structure that creates soldier units."},
+    { GameObject::TYPE_BASE, "A control center. It can create worker units."
                              "You need to defend it if you don't want to lose a territory."},
     { GameObject::TYPE_BASE_SPOT, "This represents where a faction base will be placed. "
                                   "Numbers identify the factions in a map."},
+    { GameObject::TYPE_BUNKER, "A simple defense structure."},
     { GameObject::TYPE_DEFENSIVE_TOWER, "A basic defensive tower."},
+    { GameObject::TYPE_HOSPITAL, "A structure that creates medics and that can heal units."},
     { GameObject::TYPE_LOOTBOX, "A loot box that can be collected by a unit to obtain various resources."},
     { GameObject::TYPE_MOUNTAINS, "Some mountains"},
     { GameObject::TYPE_PRACTICE_TARGET, "A practice target.\nIt can be used to train your units "
                                         "and to improve their attack skills."},
     { GameObject::TYPE_RADAR_STATION, "A powerful radar that can show a big portion of the map."},
     { GameObject::TYPE_RADAR_TOWER, "A compact radar that can show a small portion of the map."},
+    { GameObject::TYPE_RESEARCH_CENTER, "A building that will allow you to research and to develop new technologies and improvements."},
     { GameObject::TYPE_RES_GEN_ENERGY, "A generator of energy.\nConnect it to your base to produce energy."},
     { GameObject::TYPE_RES_GEN_ENERGY_SOLAR, "A solar panel.\nConnect it to your base to produce energy."},
     { GameObject::TYPE_RES_GEN_MATERIAL, "A generator of material.\nConnect it to your base to mine material."},
@@ -248,6 +270,8 @@ GameObject::GameObject(GameObjectTypeId type, GameObjectCategoryId cat, int rows
 
 GameObject::~GameObject() { delete mIsoObj; }
 
+void GameObject::OnPositionChanged() { }
+
 void GameObject::SetSelected(bool val)
 {
     // same value -> nothing to do
@@ -289,12 +313,24 @@ int GameObject::GetCol0() const { return mCell->col; }
 int GameObject::GetRow1() const { return 1 + mCell->row - mRows; }
 int GameObject::GetCol1() const { return 1 + mCell->col - mCols; }
 
+bool GameObject::IsFactionLocal() const
+{
+    if(nullptr == mScreen)
+        return false;
+
+    Player * p = mScreen->GetGame()->GetPlayerByFaction(mFaction);
+
+    return p != nullptr && p->IsLocal();
+}
+
 void GameObject::SetFaction(PlayerFaction f)
 {
     if(f == mFaction)
         return ;
 
     mFaction = f;
+
+    OnFactionChanged();
 
     UpdateGraphics();
 }
@@ -308,6 +344,12 @@ void GameObject::SetObjectVariant(GameObjectVariantId var)
     mVariant = var;
 
     UpdateGraphics();
+}
+
+bool GameObject::IsHealthMax() const
+{
+    const float delta = 0.01f;
+    return  mHealth >= mMaxHealth || (mMaxHealth - mHealth) < delta;
 }
 
 void GameObject::SetHealth(float val)
@@ -333,6 +375,12 @@ void GameObject::SumHealth(float val)
     SetHealth(mHealth + val);
 }
 
+bool GameObject::IsEnergyMax() const
+{
+    const float delta = 0.01f;
+    return  mEnergy >= mMaxEnergy || (mMaxEnergy - mEnergy) < delta;
+}
+
 void GameObject::SetEnergy(float val)
 {
     const float minDelta = 0.01f;
@@ -356,20 +404,41 @@ void GameObject::SumEnergy(float val)
     SetEnergy(mEnergy + val);
 }
 
-bool GameObject::HasEnergyForActionStep(GameObjectActionType action)
+bool GameObject::HasEnergyForActionStep(GameObjectActionType action) const
 {
-        if(action < NUM_OBJ_ACTIONS)
-            return GetEnergy() >= ACTION_COSTS[action];
+    if(action < NUM_OBJ_ACTIONS)
+    {
+        const float cost = ACTION_COSTS[action];
+
+        if(mFaction != NO_FACTION)
+        {
+            Player * p = mScreen->GetGame()->GetPlayerByFaction(mFaction);
+
+            return GetEnergy() >= cost && p->GetTurnEnergy() >= cost;
+        }
         else
-            return false;
+            return GetEnergy() >= cost;
+    }
+    else
+        return false;
 }
 
 void GameObject::ActionStepCompleted(GameObjectActionType action)
 {
     if(action < NUM_OBJ_ACTIONS)
     {
-        SumEnergy(-ACTION_COSTS[action]);
+        // ENERGY
+        const float costEnergy = -ACTION_COSTS[action];
 
+        SumEnergy(costEnergy);
+
+        if(mFaction != NO_FACTION)
+        {
+            Player * p = mScreen->GetGame()->GetPlayerByFaction(mFaction);
+            p->SumTurnEnergy(costEnergy);
+        }
+
+        // EXPERIENCE
         SumExperience(ACTION_EXPERIENCE[action]);
     }
 }
@@ -526,8 +595,15 @@ void GameObject::Hit(float damage, PlayerFaction attacker)
 
 void GameObject::SetActiveActionToDefault() { mActiveAction = IDLE; }
 
+void GameObject::OnNewTurn(PlayerFaction faction)
+{
+    if(mFaction == faction)
+        RestoreTurnEnergy();
+}
+
 void GameObject::Update(float) { }
 
+void GameObject::OnFactionChanged() { }
 void GameObject::OnLinkedChanged() { }
 
 void GameObject::SetDefaultColors()
@@ -581,6 +657,17 @@ void GameObject::NotifyValueChanged()
 {
     for(const auto & it : mOnValueChanged)
         it.second();
+}
+
+void GameObject::RestoreTurnEnergy()
+{
+    const float basePerc = 0.5f;
+    const float baseEnergy = mMaxEnergy * basePerc;
+    const float newEnergy = (mMaxEnergy - baseEnergy) * mEnergyRegPower;
+    const float prevEnergy = mEnergy * mEnergyRegPower;
+    const float energy = std::roundf(baseEnergy + prevEnergy + newEnergy);
+
+    SumEnergy(energy);
 }
 
 } // namespace game

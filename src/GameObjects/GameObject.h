@@ -47,16 +47,20 @@ public:
     // -- OBJECT TYPE --
     static const GameObjectTypeId TYPE_NULL;
 
+    static const GameObjectTypeId TYPE_BARRACKS;
     static const GameObjectTypeId TYPE_BASE;
     static const GameObjectTypeId TYPE_BASE_SPOT;
     static const GameObjectTypeId TYPE_BLOBS;
+    static const GameObjectTypeId TYPE_BUNKER;
     static const GameObjectTypeId TYPE_DEFENSIVE_TOWER;
     static const GameObjectTypeId TYPE_DIAMONDS;
+    static const GameObjectTypeId TYPE_HOSPITAL;
     static const GameObjectTypeId TYPE_LOOTBOX;
     static const GameObjectTypeId TYPE_MOUNTAINS;
     static const GameObjectTypeId TYPE_PRACTICE_TARGET;
     static const GameObjectTypeId TYPE_RADAR_STATION;
     static const GameObjectTypeId TYPE_RADAR_TOWER;
+    static const GameObjectTypeId TYPE_RESEARCH_CENTER;
     static const GameObjectTypeId TYPE_RES_GEN_ENERGY;
     static const GameObjectTypeId TYPE_RES_GEN_ENERGY_SOLAR;
     static const GameObjectTypeId TYPE_RES_GEN_MATERIAL;
@@ -78,8 +82,6 @@ public:
 
     static const std::unordered_map<GameObjectTypeId, std::string> TITLES;
     static const std::unordered_map<GameObjectTypeId, std::string> DESCRIPTIONS;
-
-    static const unsigned int NUM_UNIT_TYPES = 4;
 
     // -- OBJECT CATEGORY --
     static const GameObjectCategoryId CAT_NULL;
@@ -106,6 +108,7 @@ public:
     unsigned int GetObjectId() const;
 
     IsoObject * GetIsoObject() const;
+    virtual void OnPositionChanged();
 
     bool IsStructure() const;
     bool CanBeConquered() const;
@@ -144,6 +147,7 @@ public:
     unsigned int GetCols() const;
 
     PlayerFaction GetFaction() const;
+    bool IsFactionLocal() const;
     void SetFaction(PlayerFaction f);
 
     GameObjectTypeId GetObjectType() const;
@@ -152,24 +156,28 @@ public:
     GameObjectVariantId GetObjectVariant() const;
     void SetObjectVariant(GameObjectVariantId var);
 
+    bool IsHealthMax() const;
     float GetHealth() const;
     float GetMaxHealth() const;
     void SetMaxHealth(float max);
     void SetHealth(float val);
     void SumHealth(float val);
 
+    bool IsEnergyMax() const;
     float GetEnergy() const;
     void SetEnergy(float val);
     void SumEnergy(float val);
     float GetMaxEnergy() const;
     void SetMaxEnergy(float val);
 
-    bool HasEnergyForActionStep(GameObjectActionType action);
+    float GetEnergyForActionStep(GameObjectActionType action) const;
+    bool HasEnergyForActionStep(GameObjectActionType action) const;
     void ActionStepCompleted(GameObjectActionType action);
 
     int GetExperience() const;
     int GetExperienceToNextLevel() const;
     int GetExperienceLevel() const;
+    int GetMaxExperienceLevel() const;
     void SetExperience(int val);
     void SumExperience(int val);
 
@@ -186,11 +194,14 @@ public:
     GameObjectActionType GetCurrentAction() const;
     void SetCurrentAction(GameObjectActionType action);
 
+    virtual void OnNewTurn(PlayerFaction faction);
+
     virtual void Update(float delta);
 
 protected:
     virtual void UpdateGraphics() = 0;
 
+    virtual void OnFactionChanged();
     virtual void OnLinkedChanged();
 
     void SetDefaultColors();
@@ -204,6 +215,7 @@ protected:
     void SetStatic(bool val);
 
     void SetSpeed(float speed);
+    void SetRegPower(float val);
 
     void NotifyValueChanged();
 
@@ -216,18 +228,25 @@ protected:
     GameObjectVariantId mVariant = VAR_0;
 
 private:
+    void RestoreTurnEnergy();
+
+private:
     static unsigned int counter;
 
+    static const std::string TYPE_STR_BARRACKS;
     static const std::string TYPE_STR_BASE;
     static const std::string TYPE_STR_BASE_SPOT;
     static const std::string TYPE_STR_BLOBS;
+    static const std::string TYPE_STR_BUNKER;
     static const std::string TYPE_STR_DEFENSIVE_TOWER;
     static const std::string TYPE_STR_DIAMONDS;
+    static const std::string TYPE_STR_HOSPITAL;
     static const std::string TYPE_STR_LOOTBOX;
     static const std::string TYPE_STR_MOUNTAINS;
     static const std::string TYPE_STR_PRACTICE_TARGET;
     static const std::string TYPE_STR_RADAR_STATION;
     static const std::string TYPE_STR_RADAR_TOWER;
+    static const std::string TYPE_STR_RESEARCH_CENTER;
     static const std::string TYPE_STR_RES_GEN_ENERGY;
     static const std::string TYPE_STR_RES_GEN_ENERGY_SOLAR;
     static const std::string TYPE_STR_RES_GEN_MATERIAL;
@@ -282,6 +301,7 @@ private:
 
     float mMaxEnergy = 100.f;
     float mEnergy = 100.f;
+    float mEnergyRegPower = 1.f;
     float mMaxHealth = 100.f;
     float mHealth = 100.f;
     float mSpeed = 0.f;
@@ -367,12 +387,28 @@ inline float GameObject::GetEnergy() const { return mEnergy; }
 inline float GameObject::GetMaxEnergy() const { return mMaxEnergy; }
 inline void GameObject::SetMaxEnergy(float val) { mMaxEnergy = val; }
 
+inline float GameObject::GetEnergyForActionStep(GameObjectActionType action) const
+{
+    if(action < NUM_OBJ_ACTIONS)
+        return ACTION_COSTS[action];
+    else
+        return 0.f;
+}
+
 inline int GameObject::GetExperience() const { return mExp; }
 inline int GameObject::GetExperienceToNextLevel() const { return mExpToNextLvl; }
 inline int GameObject::GetExperienceLevel() const { return mExpLevel; }
+inline int GameObject::GetMaxExperienceLevel() const { return 10; }
 
 inline float GameObject::GetSpeed() const { return mSpeed; }
 inline void GameObject::SetSpeed(float speed) { mSpeed = speed; }
+
+inline void GameObject::SetRegPower(float val)
+{
+    const float maxVal = 1.f;
+
+    mEnergyRegPower = val > maxVal ? maxVal : val;
+}
 
 inline GameObjectActionType GameObject::GetActiveAction() const { return mActiveAction; }
 inline void GameObject::SetActiveAction(GameObjectActionType action) { mActiveAction = action; }

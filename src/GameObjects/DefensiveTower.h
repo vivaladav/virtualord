@@ -5,14 +5,12 @@
 namespace game
 {
 
-struct ObjectBasicData;
-struct ObjectFactionData;
+struct ObjectData;
 
 class DefensiveTower : public Structure
 {
 public:
-    DefensiveTower(const ObjectBasicData & objData);
-    DefensiveTower(const ObjectBasicData & objData, const ObjectFactionData & facData);
+    DefensiveTower(const ObjectData & data);
 
     int GetAttackRange() const;
 

@@ -52,6 +52,7 @@ add_executable(
     src/StatValue.cpp
     src/Version.h
     src/AI/ActionAI.h
+    src/AI/ActionAI.cpp
     src/AI/ConquerPath.h
     src/AI/ConquerPath.cpp
     src/AI/ObjectPath.h
@@ -60,12 +61,16 @@ add_executable(
     src/AI/PlayerAI.cpp
     src/AI/WallBuildPath.h
     src/AI/WallBuildPath.cpp
+    src/GameObjects/Barracks.h
+    src/GameObjects/Barracks.cpp
     src/GameObjects/Base.h
     src/GameObjects/Base.cpp
     src/GameObjects/Blobs.h
     src/GameObjects/Blobs.cpp
     src/GameObjects/BlobsGenerator.h
     src/GameObjects/BlobsGenerator.cpp
+    src/GameObjects/Bunker.h
+    src/GameObjects/Bunker.cpp
     src/GameObjects/Collectable.h
     src/GameObjects/Collectable.cpp
     src/GameObjects/CollectableGenerator.h
@@ -80,6 +85,8 @@ add_executable(
     src/GameObjects/GameObject.cpp
     src/GameObjects/GameObjectAction.h
     src/GameObjects/GameObjectTypes.h
+    src/GameObjects/Hospital.h
+    src/GameObjects/Hospital.cpp
     src/GameObjects/LootBox.h
     src/GameObjects/LootBox.cpp
     src/GameObjects/ObjectData.h
@@ -92,6 +99,8 @@ add_executable(
     src/GameObjects/RadarStation.cpp
     src/GameObjects/RadarTower.h
     src/GameObjects/RadarTower.cpp
+    src/GameObjects/ResearchCenter.h
+    src/GameObjects/ResearchCenter.cpp
     src/GameObjects/ResourceGenerator.h
     src/GameObjects/ResourceGenerator.cpp
     src/GameObjects/ResourceStorage.h
@@ -181,6 +190,77 @@ add_executable(
     src/States/StatesIds.h
     src/States/StateTest.h
     src/States/StateTest.cpp
+    src/Tutorial/StepDelay.h
+    src/Tutorial/StepDelay.cpp
+    src/Tutorial/StepGameBase.h
+    src/Tutorial/StepGameBase.cpp
+    src/Tutorial/StepGameBaseBuildUnit.h
+    src/Tutorial/StepGameBaseBuildUnit.cpp
+    src/Tutorial/StepGameBaseBuildUnitIcon.h
+    src/Tutorial/StepGameBaseBuildUnitIcon.cpp
+    src/Tutorial/StepGameBaseFeatures.h
+    src/Tutorial/StepGameBaseFeatures.cpp
+    src/Tutorial/StepGameConquerCells.h
+    src/Tutorial/StepGameConquerCells.cpp
+    src/Tutorial/StepGameConquerStruct.h
+    src/Tutorial/StepGameConquerStruct.cpp
+    src/Tutorial/StepGameDisableCamera.h
+    src/Tutorial/StepGameDisableCamera.cpp
+    src/Tutorial/StepGameEnableCamera.h
+    src/Tutorial/StepGameEnableCamera.cpp
+    src/Tutorial/StepGameEnergyRegeneration.h
+    src/Tutorial/StepGameEnergyRegeneration.cpp
+    src/Tutorial/StepGameEndTurn.h
+    src/Tutorial/StepGameEndTurn.cpp
+    src/Tutorial/StepGameIntro.h
+    src/Tutorial/StepGameIntro.cpp
+    src/Tutorial/StepGameMapNavigation.h
+    src/Tutorial/StepGameMapNavigation.cpp
+    src/Tutorial/StepGameMoveCamera.h
+    src/Tutorial/StepGameMoveCamera.cpp
+    src/Tutorial/StepGameMoveUnit.h
+    src/Tutorial/StepGameMoveUnit.cpp
+    src/Tutorial/StepGameStructConnected.h
+    src/Tutorial/StepGameStructConnected.cpp
+    src/Tutorial/StepGameStructDisconnected.h
+    src/Tutorial/StepGameStructDisconnected.cpp
+    src/Tutorial/StepGameTurnEnergy.h
+    src/Tutorial/StepGameTurnEnergy.cpp
+    src/Tutorial/StepGameUnit.h
+    src/Tutorial/StepGameUnit.cpp
+    src/Tutorial/StepGameUnitSelect.h
+    src/Tutorial/StepGameUnitSelect.cpp
+    src/Tutorial/StepGameUnitConquerCellsIcon.h
+    src/Tutorial/StepGameUnitConquerCellsIcon.cpp
+    src/Tutorial/StepGameWaitTurn.h
+    src/Tutorial/StepGameWaitTurn.cpp
+    src/Tutorial/StepPlanetMapConquerTerritory.h
+    src/Tutorial/StepPlanetMapConquerTerritory.cpp
+    src/Tutorial/StepPlanetMapConquerTerritoryStart.h
+    src/Tutorial/StepPlanetMapConquerTerritoryStart.cpp
+    src/Tutorial/StepPlanetMapExploreTerritory.h
+    src/Tutorial/StepPlanetMapExploreTerritory.cpp
+    src/Tutorial/StepPlanetMapExploreTerritoryInfo.h
+    src/Tutorial/StepPlanetMapExploreTerritoryInfo.cpp
+    src/Tutorial/StepPlanetMapExploreTerritoryStart.h
+    src/Tutorial/StepPlanetMapExploreTerritoryStart.cpp
+    src/Tutorial/StepPlanetMapExploreTerritorySuccess.h
+    src/Tutorial/StepPlanetMapExploreTerritorySuccess.cpp
+    src/Tutorial/StepPlanetMapIntro.h
+    src/Tutorial/StepPlanetMapIntro.cpp
+    src/Tutorial/StepPlanetMapNoInfo.h
+    src/Tutorial/StepPlanetMapNoInfo.cpp
+    src/Tutorial/StepPlanetMapSelectTerritory.h
+    src/Tutorial/StepPlanetMapSelectTerritory.cpp
+    src/Tutorial/StepPlanetMapSendAI.h
+    src/Tutorial/StepPlanetMapSendAI.cpp
+    src/Tutorial/TutorialConstants.h
+    src/Tutorial/TutorialManager.h
+    src/Tutorial/TutorialManager.cpp
+    src/Tutorial/TutorialStep.h
+    src/Tutorial/TutorialStep.cpp
+    src/Widgets/BlinkingIconEnergy.h
+    src/Widgets/BlinkingIconEnergy.cpp
     src/Widgets/ButtonDialogBack.h
     src/Widgets/ButtonDialogBack.cpp
     src/Widgets/ButtonDialogContinue.h
@@ -219,6 +299,8 @@ add_executable(
     src/Widgets/DialogExploreTemple.cpp
     src/Widgets/DialogNewElement.h
     src/Widgets/DialogNewElement.cpp
+    src/Widgets/DialogObject.h
+    src/Widgets/DialogObject.cpp
     src/Widgets/DialogSettings.h
     src/Widgets/DialogSettings.cpp
     src/Widgets/DigitsDisplay.h
@@ -241,6 +323,8 @@ add_executable(
     src/Widgets/MiniMap.cpp
     src/Widgets/ObjectActionButton.h
     src/Widgets/ObjectActionButton.cpp
+    src/Widgets/ObjectVisualAttribute.h
+    src/Widgets/ObjectVisualAttribute.cpp
     src/Widgets/PanelPlanetActionConquer.h
     src/Widgets/PanelPlanetActionConquer.cpp
     src/Widgets/PanelPlanetActionConquerAI.h
@@ -259,10 +343,16 @@ add_executable(
     src/Widgets/PanelResources.cpp
     src/Widgets/PanelSelectedObject.h
     src/Widgets/PanelSelectedObject.cpp
+    src/Widgets/PanelTurnControl.h
+    src/Widgets/PanelTurnControl.cpp
     src/Widgets/PlanetMap.h
     src/Widgets/PlanetMap.cpp
+    src/Widgets/ProgressBarObjectVisualStat.h
+    src/Widgets/ProgressBarObjectVisualStat.cpp
     src/Widgets/ProgressBarResources.h
     src/Widgets/ProgressBarResources.cpp
+    src/Widgets/ProgressBarTurnEnergy.h
+    src/Widgets/ProgressBarTurnEnergy.cpp
     src/Widgets/ResourceDisplay.h
     src/Widgets/ResourceDisplay.cpp
     src/Widgets/SimpleResourceDisplay.h
@@ -274,6 +364,12 @@ add_executable(
     src/Widgets/Test/TestComboBox.cpp
     src/Widgets/Test/TestSliderH.h
     src/Widgets/Test/TestSliderH.cpp
+    src/Widgets/Tutorial/FocusArea.h
+    src/Widgets/Tutorial/FocusArea.cpp
+    src/Widgets/Tutorial/PanelClickFilter.h
+    src/Widgets/Tutorial/PanelClickFilter.cpp
+    src/Widgets/Tutorial/PanelInfoTutorial.h
+    src/Widgets/Tutorial/PanelInfoTutorial.cpp
 )
 
 target_include_directories(

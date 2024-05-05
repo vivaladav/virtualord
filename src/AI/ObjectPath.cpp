@@ -23,16 +23,13 @@ ObjectPath::ObjectPath(GameObject * obj, IsoMap * im, GameMap * gm, ScreenGame *
 {
 }
 
-void ObjectPath::InitNextMove()
+bool ObjectPath::InitNextMove()
 {
     // not enough energy -> FAIL
     // TODO remove type check if mObj is changed into mUnit like for other paths
     if(mObj->GetObjectCategory() == GameObject::CAT_UNIT &&
        !static_cast<Unit *>(mObj)->HasEnergyForActionStep(MOVE))
-    {
-        Fail();
-        return ;
-    }
+        return Fail();
 
     // check if next destination is walkable
     const unsigned int nextInd = mCells[mNextCell];
@@ -41,38 +38,52 @@ void ObjectPath::InitNextMove()
     const GameMapCell & nextCell = mGameMap->GetCell(nextRow, nextCol);
 
     if(!nextCell.walkable || nextCell.walkTarget)
-    {
-        Fail();
-        return ;
-    }
+        return Fail();
 
     // set target for movement
     const IsoObject * isoObj = mObj->GetIsoObject();
     const IsoLayer * layerObj = isoObj->GetLayer();
     const sgl::core::Pointd2D target = layerObj->GetObjectPosition(isoObj, nextRow, nextCol);
 
-    mObjX = isoObj->GetX();
-    mObjY = isoObj->GetY();
-    mTargetX = target.x;
-    mTargetY = target.y;
-    mVelX = (mTargetX - mObjX) * mObj->GetSpeed();
-    mVelY = (mTargetY - mObjY) * mObj->GetSpeed();
+    // check if AI action not visible
+    Player * player = mScreen->GetGame()->GetPlayerByFaction(mObj->GetFaction());
+
+    if(!player->IsLocal() && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
+    {
+        mObjX = target.x;
+        mObjY = target.y;
+        mTargetX = target.x;
+        mTargetY = target.y;
+        mVelX = 0.f;
+        mVelY = 0.f;
+    }
+    else
+    {
+        mObjX = isoObj->GetX();
+        mObjY = isoObj->GetY();
+        mTargetX = target.x;
+        mTargetY = target.y;
+        mVelX = (mTargetX - mObjX) * mObj->GetSpeed();
+        mVelY = (mTargetY - mObjY) * mObj->GetSpeed();
+    }
 
     // mark next cell in game map
     mGameMap->SetCellWalkTarget(nextInd, true);
 
     mState = MOVING;
+
+    return true;
 }
 
-void ObjectPath::Start()
+bool ObjectPath::Start()
 {
     // do nothing if already started
     if(mState != READY)
-        return ;
+        return false;
 
     mNextCell = 1;
 
-    InitNextMove();
+    return InitNextMove();
 }
 
 void ObjectPath::InstantAbort()
@@ -189,20 +200,34 @@ void ObjectPath::UpdatePathCost()
     mCost = (mCells.size() - 1) * 0.5f;
 }
 
-void ObjectPath::Fail()
+bool ObjectPath::Fail()
 {
-    mState = FAILED;
+    if(HasStarted())
+    {
+        mState = FAILED;
 
-    // clear action data once the action is completed
-    mScreen->SetObjectActionFailed(mObj);
+        // clear action data once the action is completed
+        mScreen->SetObjectActionFailed(mObj);
+    }
+    else
+        mState = FAILED;
+
+    return false;
 }
 
-void ObjectPath::Finish()
+bool ObjectPath::Finish()
 {
-    mState = COMPLETED;
+    if(HasStarted())
+    {
+        mState = COMPLETED;
 
-    // clear action data once the action is completed
-    mScreen->SetObjectActionCompleted(mObj);
+        // clear action data once the action is completed
+        mScreen->SetObjectActionCompleted(mObj);
+    }
+    else
+        mState = COMPLETED;
+
+    return true;
 }
 
 } // namespace game

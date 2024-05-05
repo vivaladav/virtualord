@@ -6,25 +6,19 @@ namespace game
 {
 
 class CollectableGenerator;
+class Player;
 
 class Collectable : public GameObject
 {
 public:
     Collectable(GameObjectTypeId type, int rows, int cols);
 
-    void SetGenerator(CollectableGenerator * gen);
-
-    virtual void Collected();
-
-private:
-    CollectableGenerator * mGen = nullptr;
+    virtual void Collected(Player * collector);
 };
 
 inline Collectable::Collectable(GameObjectTypeId type, int rows, int cols) :
     GameObject(type, GameObject::CAT_COLLECTABLE, rows, cols)
 {
 }
-
-inline void Collectable::SetGenerator(CollectableGenerator * gen) { mGen = gen; }
 
 } // namespace game

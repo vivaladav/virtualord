@@ -240,6 +240,11 @@ int PlanetMap::GetSelectedTerritoryId() const
     return mButtonsMission->GetIndexChecked();
 }
 
+sgl::sgui::AbstractButton * PlanetMap::GetButton(unsigned int ind) const
+{
+    return mButtonsMission->GetButton(ind);
+}
+
 void PlanetMap::HandlePositionChanged()
 {
     const int x0 = GetScreenX();

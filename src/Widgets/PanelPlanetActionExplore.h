@@ -14,6 +14,7 @@ namespace sgl
 
     namespace sgui
     {
+        class AbstractButton;
         class Label;
     }
 }
@@ -37,6 +38,9 @@ public:
 
     void AddOnButtonOkClickFunction(const std::function<void()> & f);
     void AddOnButtonCancelClickFunction(const std::function<void()> & f);
+
+    sgl::sgui::AbstractButton * GetButtonOk() const;
+    sgl::sgui::AbstractButton * GetButtonCancel() const;
 
 private:
     void CreateContentStart(int money, int energy, int material);

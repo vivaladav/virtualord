@@ -41,6 +41,7 @@ private:
         PACKAGE_IMGS_TEST,
         PACKAGE_IMGS_UI_GAME,
         PACKAGE_IMGS_UI_OTHERS,
+        PACKAGE_IMGS_UI_TUTORIAL,
 
         NUM_DATA_PACKAGES
     };

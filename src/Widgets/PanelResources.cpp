@@ -1,9 +1,11 @@
 #include "PanelResources.h"
 
 #include "Player.h"
+#include "Widgets/GameSimpleTooltip.h"
+#include "Widgets/GameUIData.h"
 #include "Widgets/ResourceDisplay.h"
 #include "Widgets/SimpleResourceDisplay.h"
-#include "Widgets/GameUIData.h"
+
 
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Texture.h>
@@ -48,6 +50,8 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     srd->SetValue(money.GetIntValue());
     srd->SetPosition(slotX + (slotW - srd->GetWidth()) * 0.5f, (GetHeight() - srd->GetHeight()) * 0.5f);
 
+    AssignTooltip(srd, "MONEY");
+
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [srd](const StatValue * val)
     {
         srd->SetValue(val->GetIntValue());
@@ -63,6 +67,8 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     rd->SetValueMinMax(energy.GetIntMin(), energy.GetIntMax());
     rd->SetValue(energy.GetIntValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
+
+    AssignTooltip(rd, "ENERGY");
 
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
     {
@@ -84,6 +90,8 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     rd->SetValue(material.GetIntValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
+    AssignTooltip(rd, "MATERIAL");
+
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
     {
         rd->SetValue(val->GetIntValue());
@@ -104,6 +112,8 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     rd->SetValue(diamonds.GetIntValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
+    AssignTooltip(rd, "DIAMONDS");
+
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
     {
         rd->SetValue(val->GetIntValue());
@@ -115,7 +125,7 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
 
     slotX += slotW;
 
-    // BLOB
+    // BLOBS
     st = Player::Stat::BLOBS;
     const StatValue & blobs = player->GetStat(st);
     tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_BLOB);
@@ -123,6 +133,8 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     rd->SetValueMinMax(blobs.GetIntMin(), blobs.GetIntMax());
     rd->SetValue(blobs.GetIntValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
+
+    AssignTooltip(rd, "BLOBS");
 
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
     {
@@ -167,6 +179,16 @@ void PanelResources::SetBg()
     mBg->SetTexture(tex);
 
     SetSize(tex->GetWidth(), tex->GetHeight());
+}
+
+void PanelResources::AssignTooltip(sgl::sgui::Widget * target, const char * text)
+{
+    const int delayMs = 500;
+    const int showingMs = 2000;
+    auto tt = new GameSimpleTooltip(text);
+    target->SetTooltip(tt);
+    target->SetTooltipDelay(delayMs);
+    target->SetTooltipShowingTime(showingMs);
 }
 
 void PanelResources::HandlePositionChanged()

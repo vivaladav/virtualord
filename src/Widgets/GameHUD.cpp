@@ -19,15 +19,18 @@
 #include "Widgets/DialogEndMission.h"
 #include "Widgets/DialogExit.h"
 #include "Widgets/DialogExploreTemple.h"
+#include "Widgets/DialogObject.h"
 #include "Widgets/GameMapProgressBar.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/MiniMap.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/PanelResources.h"
 #include "Widgets/PanelSelectedObject.h"
+#include "Widgets/PanelTurnControl.h"
 
 #include <sgl/graphic/Renderer.h>
 #include <sgl/sgui/ButtonsGroup.h>
+#include <sgl/sgui/Stage.h>
 
 namespace game
 {
@@ -64,8 +67,7 @@ GameHUD::GameHUD(ScreenGame * screen)
 
     mButtonMinimap->AddOnClickFunction([this]
     {
-        mButtonMinimap->SetVisible(false);
-        mMiniMap->SetVisible(true);
+        OpenPanelMinimap();
     });
 
     mMiniMap = new MiniMap(mScreen->mCamController, mScreen->mIsoMap, this);
@@ -74,8 +76,7 @@ GameHUD::GameHUD(ScreenGame * screen)
 
     mMiniMap->AddFunctionOnClose([this]
     {
-        mButtonMinimap->SetVisible(true);
-        mMiniMap->SetVisible(false);
+        ClosePanelMinimap();
     });
 
     // QUICK UNIT SELECTION BUTTONS
@@ -115,23 +116,53 @@ GameHUD::GameHUD(ScreenGame * screen)
     mPanelObjActions = new PanelObjectActions(this);
     mPanelObjActions->SetVisible(false);
 
+    // PANEL TURN CONTROL
+    mPanelTurnCtrl = new PanelTurnControl(player, this);
+    mPanelTurnCtrl->SetFunctionEndTurn([this]
+    {
+        mScreen->EndTurn();
+    });
+
+    const int posPanelTurnX = (rendW - mPanelTurnCtrl->GetWidth()) / 2;
+    const int posPanelTurnY = groupY - mPanelTurnCtrl->GetHeight();
+    mPanelTurnCtrl->SetPosition(posPanelTurnX, posPanelTurnY);
+
     // PANEL SELECTED OBJECT
-    mPanelSelObj = new PanelSelectedObject(game->GetObjectsRegistry(), this);
+    const ObjectsDataRegistry * odr = game->GetObjectsRegistry();
+
+    mPanelSelObj = new PanelSelectedObject(odr, this);
     mPanelSelObj->SetVisible(false);
+
+    mPanelSelObj->AddFunctionOnClose([this]
+    {
+        ClosePanelSelectedObject();
+    });
+
+    mPanelSelObj->AddFunctionOnShowInfo([this]
+    {
+        Player * player = mScreen->GetGame()->GetLocalPlayer();
+
+        ShowDialogObject(player->GetSelectedObject());
+    });
 
     mButtonPanelSelObj = new ButtonPanelSelectedObject(this);
     mButtonPanelSelObj->SetVisible(false);
 
     mButtonPanelSelObj->AddOnClickFunction([this]
     {
-        mButtonPanelSelObj->SetVisible(false);
-        mPanelSelObj->SetVisible(true);
+        OpenPanelSelectedObject();
     });
 
-    mPanelSelObj->AddFunctionOnClose([this]
+    // DIALOG OBJECT
+    mDialogObj = new DialogObject(odr);
+    mDialogObj->SetVisible(false);
+
+    // position dialog
+    CenterWidget(mDialogObj);
+
+    mDialogObj->SetFunctionOnClose([this]
     {
-        mButtonPanelSelObj->SetVisible(true);
-        mPanelSelObj->SetVisible(false);
+        HideDialogObject();
     });
 }
 
@@ -155,10 +186,48 @@ void GameHUD::SetMiniMapEnabled(bool val)
     mButtonMinimap->SetVisible(false);
 }
 
-void GameHUD::HidePanelObjActions()
+void GameHUD::HidePanelObjectActions()
 {
     mPanelObjActions->ClearObject();
     mPanelObjActions->SetVisible(false);
+}
+
+void GameHUD::ShowPanelObjectActions(GameObject * obj)
+{
+    mPanelObjActions->SetObject(obj);
+    mPanelObjActions->SetVisible(true);
+    mPanelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
+}
+
+const sgl::sgui::ButtonsGroup * GameHUD::GetQuickUnitButtonsGroup() const
+{
+    return mGroupUnitSel;
+}
+
+void GameHUD::SetQuickUnitButtonChecked(GameObject * obj)
+{
+    // check corresponding quick unit selection button
+    const int numButtons = mGroupUnitSel->GetNumButtons();
+
+    for(int i = 0; i < numButtons; ++i)
+    {
+        auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
+        Unit * unit = b->GetUnit();
+
+        if(unit == obj)
+        {
+            b->SetChecked(true);
+            break;
+        }
+    }
+}
+
+void GameHUD::ClearQuickUnitButtonChecked()
+{
+    const int checked = mGroupUnitSel->GetIndexChecked();
+
+    if(checked != -1)
+        mGroupUnitSel->GetButton(checked)->SetChecked(false);
 }
 
 void GameHUD::ShowDialogEndMission(bool won)
@@ -180,7 +249,7 @@ void GameHUD::ShowDialogEndMission(bool won)
 
     dialog->SetFunctionOnClose([this, dialog, won]
     {
-                                   dialog->DeleteLater();
+        dialog->DeleteLater();
 
         if(won)
             mScreen->HandleGameWon();
@@ -204,18 +273,24 @@ void GameHUD::ShowDialogExit()
 
     mDialogExit->SetFunctionOnShowingDialogSettings([this]
     {
+        TemporaryCloseSidePanels();
+
         // keep game paused
         mScreen->SetPause(true);
     });
 
     mDialogExit->SetFunctionOnHidingDialogSettings([this]
     {
+        ReopenSidePanels();
+
         // un-pause game
         mScreen->SetPause(false);
     });
 
     mDialogExit->SetFunctionOnClose([this]
     {
+        ReopenSidePanels();
+
         // schedule dialog deletion
         mDialogExit->DeleteLater();
         mDialogExit = nullptr;
@@ -223,6 +298,8 @@ void GameHUD::ShowDialogExit()
         // un-pause game
         mScreen->SetPause(false);
     });
+
+    TemporaryCloseSidePanels();
 
     // position dialog
     CenterWidget(mDialogExit);
@@ -252,22 +329,16 @@ void GameHUD::ShowDialogExploreTemple(Player * player, Temple * temple)
         player->SumResource(Player::Stat::BLOBS, -temple->GetInvestedBlobs());
         player->SumResource(Player::Stat::DIAMONDS, -temple->GetInvestedDiamonds());
 
-        // start progress bar
-        const int time = temple->GetExplorationTime();
-        const Cell2D cell(temple->GetRow1(), temple->GetCol1());
-        const PlayerFaction faction = player->GetFaction();
-
-        GameMapProgressBar * pb = CreateProgressBarInCell(cell, time, faction);
-
-        pb->AddFunctionOnCompleted([this, player, temple]
+        // start exploration
+        temple->StartExploring(player->GetFaction(), [this, player, temple]
         {
-            temple->Explore();
-
             mScreen->CenterCameraOverObject(temple);
 
             ShowDialogExploreTempleOutcome(player, temple);
         });
     });
+
+    TemporaryCloseSidePanels();
 
     // position dialog
     CenterWidget(mDialogExploreTemple);
@@ -277,6 +348,8 @@ void GameHUD::HideDialogExploreTemple()
 {
     if(nullptr == mDialogExploreTemple)
         return ;
+
+    ReopenSidePanels();
 
     // delete dialog
     mDialogExploreTemple->DeleteLater();
@@ -338,6 +411,8 @@ void GameHUD::ShowDialogNewElement(unsigned int type)
         });
     }
 
+    TemporaryCloseSidePanels();
+
     // position dialog
     CenterWidget(mDialogNewElement);
 }
@@ -347,6 +422,8 @@ void GameHUD::HideDialogNewElement()
     // no dialog -> nothing to do
     if(nullptr == mDialogNewElement)
         return ;
+
+    ReopenSidePanels();
 
     // schedule dialog deletion
     mDialogNewElement->DeleteLater();
@@ -389,12 +466,42 @@ void GameHUD::HidePanelSelectedObject()
     mPanelSelObj->SetVisible(false);
 }
 
-void GameHUD::ShowPanelSelectedObject(GameObject *obj)
+void GameHUD::ShowPanelSelectedObject(GameObject * obj)
 {
-    mButtonPanelSelObj->SetVisible(false);
-
     mPanelSelObj->SetObject(obj);
-    mPanelSelObj->SetVisible(true);
+
+    OpenPanelSelectedObject();
+}
+
+void GameHUD::ShowTurnControlPanel()
+{
+    mPanelTurnCtrl->ShowPanel();
+}
+
+void GameHUD::ShowTurnControlTextEnemyTurn()
+{
+    mPanelTurnCtrl->ShowText("ENEMY TURN");
+}
+
+void GameHUD::ShowTurnControlTextGamePaused()
+{
+    mPanelTurnCtrl->ShowText("- GAME PAUSED -");
+}
+
+void GameHUD::SetLocalActionsEnabled(bool enabled)
+{
+    // PANEL OBJECT ACTIONS
+    mPanelObjActions->SetActionsEnabled(enabled);
+
+    // PANEL TURN CONTROL
+    mPanelTurnCtrl->SetButtonEndTurnEnabled(enabled);
+
+    // QUICK UNIT SELECTION
+    Player * player = mScreen->GetGame()->GetLocalPlayer();
+    const unsigned int numButtons = player->GetNumUnits();;
+
+    for(unsigned int i = 0; i < numButtons; ++i)
+        mGroupUnitSel->GetButton(i)->SetEnabled(enabled);
 }
 
 GameMapProgressBar * GameHUD::CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction)
@@ -412,6 +519,22 @@ GameMapProgressBar * GameHUD::CreateProgressBarInCell(const Cell2D & cell, float
     pb->SetVisible(mScreen->mGameMap->IsCellVisibleToLocalPlayer(cell.row, cell.col));
 
     return pb;
+}
+
+void GameHUD::HideDialogExploreTempleOutcome()
+{
+    // no dialog -> nothing to do
+    if(nullptr == mDialogExploreTempleOutcome)
+        return ;
+
+    ReopenSidePanels();
+
+    // schedule dialog deletion
+    mDialogExploreTempleOutcome->DeleteLater();
+    mDialogExploreTempleOutcome = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
 }
 
 void GameHUD::ShowDialogExploreTempleOutcome(Player * player, Temple * temple)
@@ -444,22 +567,78 @@ void GameHUD::ShowDialogExploreTempleOutcome(Player * player, Temple * temple)
         mScreen->mGameMap->HandleTempleExplorationOutcome(outcome, player, temple);
     });
 
+    TemporaryCloseSidePanels();
+
     // position dialog
     CenterWidget(mDialogExploreTempleOutcome);
 }
 
-void GameHUD::HideDialogExploreTempleOutcome()
+void GameHUD::HideDialogObject()
 {
-    // no dialog -> nothing to do
-    if(nullptr == mDialogExploreTempleOutcome)
-        return ;
+    // hide dialog
+    mDialogObj->SetVisible(false);
 
-    // schedule dialog deletion
-    mDialogExploreTempleOutcome->DeleteLater();
-    mDialogExploreTempleOutcome = nullptr;
+    ReopenSidePanels();
 
-    // un-pause game
+    sgl::sgui::Stage::Instance()->SetFocus();
+
+    // resume game
     mScreen->SetPause(false);
+}
+
+void GameHUD::ShowDialogObject(GameObject * obj)
+{
+    // pause game
+    mScreen->SetPause(true);
+
+    // show dialog
+    mDialogObj->SetObject(obj);
+    mDialogObj->SetVisible(true);
+    mDialogObj->SetFocus();
+
+    TemporaryCloseSidePanels();
+}
+
+void GameHUD::ClosePanelMinimap()
+{
+    mButtonMinimap->SetVisible(true);
+    mMiniMap->SetVisible(false);
+}
+
+void GameHUD::OpenPanelMinimap()
+{
+    mButtonMinimap->SetVisible(false);
+    mMiniMap->SetVisible(true);
+}
+
+void GameHUD::ClosePanelSelectedObject()
+{
+    mButtonPanelSelObj->SetVisible(true);
+    mPanelSelObj->SetVisible(false);
+}
+
+void GameHUD::OpenPanelSelectedObject()
+{
+    mButtonPanelSelObj->SetVisible(false);
+    mPanelSelObj->SetVisible(true);
+}
+
+void GameHUD::TemporaryCloseSidePanels()
+{
+    if(mPanelSelObj->IsVisible())
+        ClosePanelSelectedObject();
+
+    if(mMiniMap->IsVisible())
+        ClosePanelMinimap();
+}
+
+void GameHUD::ReopenSidePanels()
+{
+    if(mButtonPanelSelObj->IsVisible())
+        OpenPanelSelectedObject();
+
+    if(mButtonMinimap->IsVisible())
+        OpenPanelMinimap();
 }
 
 GameMapProgressBar * GameHUD::CreateProgressBar(float time, PlayerFaction faction)

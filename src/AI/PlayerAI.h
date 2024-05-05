@@ -26,7 +26,7 @@ public:
 
     void SetGameMap(GameMap * gm);
 
-    void Update(float delta);
+    void DecideNextAction();
 
     const ActionAI * GetNextActionTodo();
 
@@ -37,6 +37,8 @@ public:
     void CancelObjectAction(const GameObject * obj);
     void CancelAction(const ActionAI * action);
     void SetActionDone(const ActionAI * action);
+
+    bool IsDoingSomething() const;
 
     Player * GetPlayer();
 
@@ -51,30 +53,52 @@ private:
 
     void UpdatePriorityRange();
 
-    void DecideActions();
+    void AddActions();
 
     void PushAction(ActionAI * action);
     const ActionAI * PopAction();
 
     void AddNewAction(ActionAI * action);
 
-    void AddActionsBase(Structure * s);
+    void AddActionEndTurn();
+    void AddActionBaseCreateUnit(Structure * base);
     void AddActionsUnit(Unit * u);
     void AddActionUnitAttackEnemyUnit(Unit * u);
+    void AddActionUnitAttackTrees(Unit * u);
+    void AddActionUnitBuildStructure(Unit * u);
+    void AddActionUnitBuildUnitCreator(Unit * u, GameObjectTypeId structType, int priority0);
+    void AddActionUnitBuildResourceGenerator(Unit * u, ResourceType resType, int priority0);
+    void AddActionUnitBuildResourceStorage(Unit * u, ResourceType resType, int priority0);
+    void AddActionUnitBuildResearchCenter(Unit * u, int priority0);
+    void AddActionUnitBuildPracticeTarget(Unit * u, int priority0);
+    void AddActionUnitBuildRadarStructure(Unit * u, GameObjectTypeId structType, int priority0);
+    void AddActionUnitCollectBlobs(Unit * u);
+    void AddActionUnitCollectDiamonds(Unit * u);
+    void AddActionUnitCollectLootbox(Unit * u);
     void AddActionUnitConnectStructure(Unit * u);
     void AddActionUnitConquestResGen(Unit * u, ResourceType type);
 
-    bool IsObjectAlreadyDoingSimilarAction(GameObject * obj, AIActionType type) const;
-    bool IsSimilarActionInProgress(AIActionType type) const;
+    int GetMaxDistanceForObject(const GameObject * obj) const;
+    int GetStructurePriorityBonusEnergy(const Structure * s, float bonus) const;
+    int GetUnitPriorityBonusDistance(const Unit * u, int dist, float bonus) const;
+    int GetUnitPriorityBonusEnergy(const Unit * u, float bonus) const;
+    int GetUnitPriorityBonusHealth(const Unit * u, float bonus) const;
+
+    bool HasPlayerResourcesToBuild(GameObjectTypeId t) const;
+    int GetPriorityBonusStructureBuildCost(GameObjectTypeId t, float bonus) const;
+
+    void PrintdActionDebug(const char * title, const ActionAI * a);
 
 private:
     std::vector<ActionAI *> mActionsTodo;
     std::vector<const ActionAI *> mActionsDoing;
     std::vector<const ActionAI *> mActionsDone;
 
-    // shared data,
+    // shared data
+    std::vector<GameObject *> mCollectables;
     std::vector<GameObject *> mResGenerators;
     std::vector<GameObject *> mStructures;
+    std::vector<GameObject *> mTrees;
     std::vector<GameObject *> mUnits;
 
     Player * mPlayer = nullptr;
@@ -89,6 +113,8 @@ private:
 inline void PlayerAI::SetGameMap(GameMap * gm) { mGm = gm; }
 
 inline Player * PlayerAI::GetPlayer() { return mPlayer; }
+
+inline bool PlayerAI::IsDoingSomething() const { return !mActionsDoing.empty(); }
 
 inline void PlayerAI::RegisterActionInProgress(const ActionAI * action)
 {

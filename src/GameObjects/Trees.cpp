@@ -27,77 +27,78 @@ Trees::Trees(GameObjectVariantId var)
     SetMaxHealth(treeHealth);
     SetHealth(treeHealth);
 
-    //randomize time for change (1-5 mins)
-    const int minTime = 60;
-    const int maxTime = 60 * 5;
-    sgl::utilities::UniformDistribution dis(minTime, maxTime);
-
-    mTimeChange = dis.GetNextValue();
-    mTimerChange = mTimeChange;
+    // randomize turns for change
+    const int minTurns = 10;
+    const int maxTurns = 40;
+    sgl::utilities::UniformDistribution dis(minTurns, maxTurns);
+    mTurnsToChange = dis.GetNextValue();
 
     SetObjColors();
     SetImage();
 }
 
-void Trees::Update(float delta)
+void Trees::OnNewTurn(PlayerFaction faction)
 {
-    mTimerChange -= delta;
+    GameObject::OnNewTurn(faction);
 
-    const float zeroTime = 0.01f;
+    ++mTurns;
 
-    if(mTimerChange < zeroTime)
+    // needs more turns...
+    if(mTurns < mTurnsToChange)
+        return ;
+
+    // CHANGE TIME!
+    mTurns = 0;
+
+    // still growing 1 tree
+    if(1 == mNumTrees && mVariant < (NUM_TREE1_VARIANTS - 1))
     {
-        mTimerChange = mTimeChange;
+        ++mVariant;
 
-        // still growing 1 tree
-        if(1 == mNumTrees && mVariant < (NUM_TREE1_VARIANTS - 1))
+        SetImage();
+    }
+    // grow more trees
+    else if(mNumTrees < MAX_TREE1_TREES)
+    {
+        // randomize new variant
+        sgl::utilities::UniformDistribution dis(0, NUM_TREE1_VARIANTS - 1);
+        mVariant = dis.GetNextValue();
+
+        ++mNumTrees;
+
+        SetImage();
+
+        SetMaxHealth(GetMaxHealth() + treeHealth);
+        SumHealth(treeHealth);
+    }
+    // spawn tree
+    else
+    {
+        GameMap * gm = GetGameMap();
+
+        const int r0 = GetRow0();
+        const int c0 = GetCol0();
+        const int rows = gm->GetNumRows();
+        const int cols = gm->GetNumCols();
+
+        const int rTL = (r0 > 0) ? r0 - 1 : r0;
+        const int cTL = (c0 > 0) ? c0 - 1 : c0;
+        const int rBR = (r0 < (rows - 1)) ? r0 + 1 : r0;
+        const int cBR = (c0 < (cols -1)) ? c0 + 1 : c0;
+
+        for(int r = rTL; r <= rBR; ++r)
         {
-            ++mVariant;
+            const int ind0 = r * cols;
 
-            SetImage();
-        }
-        // grow more trees
-        else if(mNumTrees < MAX_TREE1_TREES)
-        {
-            // randomize new variant
-            sgl::utilities::UniformDistribution dis(0, NUM_TREE1_VARIANTS - 1);
-            mVariant = dis.GetNextValue();
-
-            ++mNumTrees;
-
-            SetImage();
-
-            SetMaxHealth(GetMaxHealth() + treeHealth);
-            SumHealth(treeHealth);
-        }
-        else
-        {
-            GameMap * gm = GetGameMap();
-
-            const int r0 = GetRow0();
-            const int c0 = GetCol0();
-            const int rows = gm->GetNumRows();
-            const int cols = gm->GetNumCols();
-
-            const int rTL = (r0 > 0) ? r0 - 1 : r0;
-            const int cTL = (c0 > 0) ? c0 - 1 : c0;
-            const int rBR = (r0 < (rows - 1)) ? r0 + 1 : r0;
-            const int cBR = (c0 < (cols -1)) ? c0 + 1 : c0;
-
-            for(int r = rTL; r <= rBR; ++r)
+            for(int c = cTL; c <= cBR; ++c)
             {
-                const int ind0 = r * cols;
+                const int ind = ind0 + c;
 
-                for(int c = cTL; c <= cBR; ++c)
+                if(!gm->HasObject(ind))
                 {
-                    const int ind = ind0 + c;
+                    SpawnTree(r, c);
 
-                    if(!gm->HasObject(ind))
-                    {
-                        SpawnTree(r, c);
-
-                        return;
-                    }
+                    return;
                 }
             }
         }

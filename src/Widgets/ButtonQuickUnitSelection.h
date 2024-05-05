@@ -52,6 +52,8 @@ private:
     DigitsDisplay * mDisplayHealth = nullptr;
 
     int mShortcutKey = -1;
+
+    unsigned int mFunValChangedId = 0;
 };
 
 inline Unit * ButtonQuickUnitSelection::GetUnit() const { return mUnit; }

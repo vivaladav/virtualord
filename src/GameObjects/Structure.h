@@ -5,17 +5,28 @@
 namespace game
 {
 
+class BlinkingIconEnergy;
+
 class Structure : public GameObject
 {
 public:
     Structure(GameObjectTypeId type, GameObjectCategoryId cat, int rows, int cols);
+    ~Structure();
+
+    void OnPositionChanged() override;
+
+protected:
+    void OnFactionChanged() override;
+    void OnLinkedChanged() override;
+
+private:
+    void HideIconEnergy();
+    void ShowIconEnergy();
+    void PositionIconEnergy();
+
+private:
+    BlinkingIconEnergy * mIconEnergy = nullptr;
 };
 
-inline Structure::Structure(GameObjectTypeId type, GameObjectCategoryId cat, int rows, int cols)
-    : GameObject(type, cat, rows, cols)
-{
-    SetStructure(true);
-    SetStatic(true);
-}
 
 } // namespace game

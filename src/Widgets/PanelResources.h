@@ -28,6 +28,8 @@ private:
 
     void SetBg();
 
+    void AssignTooltip(sgl::sgui::Widget * target, const char * text);
+
 private:
     sgl::graphic::Image * mBg = nullptr;
 

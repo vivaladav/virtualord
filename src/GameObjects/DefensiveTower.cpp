@@ -19,22 +19,13 @@ namespace game
 {
 
 const int maxAttVal = 11;
-const int attRanges[maxAttVal] = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15 };
+const int attRanges[maxAttVal] = { 0, 2, 3, 4, 5, 6, 7, 9, 10, 12, 14 };
 
-DefensiveTower::DefensiveTower(const ObjectBasicData & objData)
-    : Structure(TYPE_DEFENSIVE_TOWER, CAT_GENERIC, objData.rows, objData.cols)
-{
-    mAttackRange = attRanges[0];
-
-    SetImage();
-
-}
-
-DefensiveTower::DefensiveTower(const ObjectBasicData & objData, const ObjectFactionData & facData)
-    : Structure(TYPE_DEFENSIVE_TOWER, CAT_GENERIC, objData.rows, objData.cols)
+DefensiveTower::DefensiveTower(const ObjectData & data)
+    : Structure(TYPE_DEFENSIVE_TOWER, CAT_GENERIC, data.GetRows(), data.GetCols())
 {
     // set attack range converting attribute
-    mAttackRange = attRanges[facData.stats[OSTAT_FIRE_RANGE]];
+    mAttackRange = attRanges[data.GetAttributes()[OBJ_ATT_FIRE_RANGE]];
 
     SetImage();
 }
@@ -95,7 +86,7 @@ void DefensiveTower::SetImage()
     unsigned int texInd = ID_STRUCT_DTOWER_L1;
 
     if(NO_FACTION == faction)
-        texInd = ID_STRUCT_DTOWER_L1 + sel;
+        texInd += sel;
     else
         texInd = ID_STRUCT_DTOWER_L1_F1 + (faction * NUM_DTOWER_SPRITES_PER_FAC) + sel;
 

@@ -1,30 +1,27 @@
 #pragma once
 
 #include "GameObject.h"
+#include "ObjectData.h"
 
 #include <vector>
 
 namespace game
 {
 
-struct ObjectBasicData;
-struct ObjectFactionData;
-
 class Unit : public GameObject
 {
 public:
-    Unit(const ObjectBasicData & objData, const ObjectFactionData & facData);
-
-    int GetUnitLevel() const;
-    void IncreaseUnitLevel();
+    Unit(const ObjectData & data);
 
     // attack
+    bool CanAttack() const;
     int GetRangeAttack() const;
     void ClearTargetAttack();
-    bool IsTargetAttackInRange(GameObject * obj) const;
+    bool IsTargetAttackInRange(const GameObject * obj) const;
     bool SetTargetAttack(GameObject * obj);
 
     // heal
+    bool CanHeal() const;
     int GetRangeHealing() const;
     void ClearTargetHealing();
     bool IsTargetHealingInRange(GameObject * obj) const;
@@ -34,11 +31,16 @@ public:
 
     void Update(float delta) override;
 
+    // build
+    bool CanBuild() const;
     void ClearStructureToBuild();
     void SetStructureToBuild(GameObjectTypeId type);
     GameObjectTypeId GetStructureToBuild() const;
 
-    int GetStat(unsigned int index) const;
+    // conquer
+    bool CanConquer() const;
+
+    int GetAttribute(unsigned int index) const;
 
 public:
     static unsigned int TypeToIndex(GameObjectTypeId type);
@@ -56,10 +58,8 @@ private:
     void Heal();
 
 private:
-    int mLevel = 0;
-
-    // stats
-    std::vector<int> mStats;
+    // attributes
+    std::array<int, NUM_OBJ_ATTRIBUTES> mAttributes;
 
     // weapon
     float mTimeAttack = 0.25f;
@@ -78,8 +78,6 @@ private:
 
     GameObjectTypeId mStructToBuild;
 };
-
-inline int Unit::GetUnitLevel() const { return mLevel; }
 
 inline int Unit::GetRangeAttack() const { return mRangeAttack; }
 inline void Unit::ClearTargetAttack() { mTargetAttack = nullptr; }

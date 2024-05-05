@@ -248,12 +248,12 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     });
 
     // -- OUTCOME PANEL --
-    mHeaderTime = new graphic::Text("TIME REQUIRED", fontHeader);
-    mHeaderTime->SetColor(colorHeader);
-    RegisterRenderable(mHeaderTime);
+    mHeaderTurns = new graphic::Text("TURNS REQUIRED", fontHeader);
+    mHeaderTurns->SetColor(colorHeader);
+    RegisterRenderable(mHeaderTurns);
 
-    mLabelTime = new sgui::Label(fontLabel, this);
-    mLabelTime->SetColor(colorLabel);
+    mLabelTurns = new sgui::Label(fontLabel, this);
+    mLabelTurns->SetColor(colorLabel);
 
     mHeaderSuccess = new graphic::Text("SUCCESS PROBABILITY", fontHeader);
     mHeaderSuccess->SetColor(colorHeader);
@@ -307,33 +307,15 @@ void DialogExploreTemple::OnInvestmentChanged()
     mTemple->SetInvestedResources(mSliderMoney->GetValue(), mSliderMaterial->GetValue(),
                                   mSliderBlobs->GetValue(), mSliderDiamonds->GetValue());
 
-    // update time
-    int time = mTemple->GetExplorationTime();
-    // mins
-    const int secsInM = 60;
-    const int timeM = time / secsInM;
-    // secs
-    time -= timeM * secsInM;
-    const int timeS = time;
+    // update turns
+    const int turns = mTemple->GetExplorationTurns();
 
-    const int fieldW = 2;
-    const char fieldF = '0';
-    std::ostringstream ss;
-    ss.width(fieldW);
-    ss.fill(fieldF);
-    ss << timeM << ":";
-    ss.width(fieldW);
-    ss.fill(fieldF);
-    ss << timeS;
-
-    mLabelTime->SetText(ss.str().c_str());
-
-    ss.str(std::string());
-    ss.clear();
+    mLabelTurns->SetText(std::to_string(turns).c_str());
 
     // update success rate
     const int success = mTemple->GetExplorationSuccessRate();
 
+    std::ostringstream ss;
     ss << success << "%";
 
     mLabelSuccess->SetText(ss.str().c_str());
@@ -373,23 +355,23 @@ void DialogExploreTemple::SetPositions()
     const int marginPanel2V = 40;
     const int marginHeaderB = 5;
 
-    // HEADER TIME
-    const int headerTimeX = x0 + marginSide + (blockW - mHeaderTime->GetWidth()) / 2;
-    const int headerTimeY = line1Y + marginPanel2V;
-    mHeaderTime->SetPosition(headerTimeX, headerTimeY);
+    // HEADER TURNS
+    const int headerTurnsX = x0 + marginSide + (blockW - mHeaderTurns->GetWidth()) / 2;
+    const int headerTurnsY = line1Y + marginPanel2V;
+    mHeaderTurns->SetPosition(headerTurnsX, headerTurnsY);
 
-    // LABEL TIME
-    const int labelTimeX = headerTimeX + (mHeaderTime->GetWidth() - mLabelTime->GetWidth()) / 2 - x0;
-    const int labelTimeY = headerTimeY + mHeaderTime->GetHeight() + marginHeaderB - y0;
-    mLabelTime->SetPosition(labelTimeX, labelTimeY);
+    // LABEL TURNS
+    const int labelTurnsX = headerTurnsX + (mHeaderTurns->GetWidth() - mLabelTurns->GetWidth()) / 2 - x0;
+    const int labelTurnsY = headerTurnsY + mHeaderTurns->GetHeight() + marginHeaderB - y0;
+    mLabelTurns->SetPosition(labelTurnsX, labelTurnsY);
 
     // HEADER SUCCESS
     const int headerSuccessX = x0 + marginSide + blockW + (blockW - mHeaderSuccess->GetWidth()) / 2;
-    mHeaderSuccess->SetPosition(headerSuccessX, headerTimeY);
+    mHeaderSuccess->SetPosition(headerSuccessX, headerTurnsY);
 
     // LABEL SUCCESS
     const int labelSuccessX = headerSuccessX + (mHeaderSuccess->GetWidth() - mLabelSuccess->GetWidth()) / 2  - x0;
-    mLabelSuccess->SetPosition(labelSuccessX, labelTimeY);
+    mLabelSuccess->SetPosition(labelSuccessX, labelTurnsY);
 }
 
 // ===== DIALOG EXPLORE TEMPLE OUTCOME =====

@@ -168,7 +168,7 @@ void IsoMap::SetVisibleArea(int x, int y, int w, int h)
     const int y1 = y + h;
 
     // TOP LEFT
-    Cell2D TL = CellFromScreenPoint(x, y);
+    Cell2D TL = CellFromWorldPoint(x, y);
 
     if(TL.col < 0)
         TL.col = 0;
@@ -176,7 +176,7 @@ void IsoMap::SetVisibleArea(int x, int y, int w, int h)
     mRenderingC0 = TL.col;
 
     // TOP RIGHT
-    Cell2D TR = CellFromScreenPoint(x1, y);
+    Cell2D TR = CellFromWorldPoint(x1, y);
 
     if(TR.row < 0)
         TR.row = 0;
@@ -184,7 +184,7 @@ void IsoMap::SetVisibleArea(int x, int y, int w, int h)
     mRenderingR0 = TR.row;
 
     // BOTTOM LEFT
-    Cell2D BL = CellFromScreenPoint(x, y1);
+    Cell2D BL = CellFromWorldPoint(x, y1);
 
     ++BL.row;
 
@@ -194,7 +194,7 @@ void IsoMap::SetVisibleArea(int x, int y, int w, int h)
     mRenderingR1 = BL.row;
 
     // BOTTOM RIGHT
-    Cell2D BR = CellFromScreenPoint(x1, y1);
+    Cell2D BR = CellFromWorldPoint(x1, y1);
 
     ++BR.col;
 
@@ -239,7 +239,7 @@ void IsoMap::Render()
  * @param y Y coordinate of the position
  * @return A Cell2D struct containing a (row,col) pair that identifies the correspongind cell
  */
-Cell2D IsoMap::CellFromScreenPoint(int x, int y) const
+Cell2D IsoMap::CellFromWorldPoint(int x, int y) const
 {
     const float xf = x - mX0;
     const float yf = y - mY0;
