@@ -180,6 +180,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     const std::string strBuild = std::string(VERSION_BRANCH) + std::string("-") +
                                  std::string(VERSION_NUM) + strBuildType + std::string("-") +
                                  std::string(VERSION_SHORT_HASH);
+
     auto labelBuild = new sgui::Label(strBuild.c_str(), fnt);
     labelBuild->SetColor(colorVersion);
 
@@ -190,6 +191,19 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     const int labelVerX = screenW - labelVer->GetWidth() - marginLabelH;
     const int labelVerY = labelBuildY - labelVer->GetHeight();
     labelVer->SetPosition(labelVerX, labelVerY);
+
+#ifdef DEV_MODE
+    // SHOW DEV MODE LABEL
+    graphic::Font * fntBold = fm->GetFont("Lato-Bold.ttf", 20, graphic::Font::NORMAL);
+
+    const unsigned int colorDev = 0xf66455ff;
+    auto labelDEV = new sgui::Label("DEVELOPER MODE", fntBold);
+    labelDEV->SetColor(colorDev);
+
+    const int labelDevX = screenW - labelDEV->GetWidth() - marginLabelH;
+    const int labelDevY = labelVerY - labelDEV->GetHeight();
+    labelDEV->SetPosition(labelDevX, labelDevY);
+#endif
 
     // makes sure game data is cleared before starting something new
     game->ClearGameData();

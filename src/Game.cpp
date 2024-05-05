@@ -35,6 +35,10 @@ Game::Game(int argc, char * argv[])
     , mObjsRegistry(new ObjectsDataRegistry)
     , mLocalFaction(NO_FACTION)
     , mCurrPlanet(PLANET_UNKNOWN)
+#ifdef DEV_MODE
+    // tutorial disabled in DEV MODE
+    , mTutorialEnabled(false)
+#endif
 {
     using namespace sgl::graphic;
 
