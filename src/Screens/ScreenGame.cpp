@@ -15,6 +15,7 @@
 #include "AI/PlayerAI.h"
 #include "AI/WallBuildPath.h"
 #include "GameObjects/DefensiveTower.h"
+#include "GameObjects/Hospital.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "GameObjects/Temple.h"
 #include "GameObjects/Unit.h"
@@ -30,6 +31,29 @@
 #include "Particles/UpdaterLootboxPrize.h"
 #include "Particles/UpdaterSingleLaser.h"
 #include "States/StatesIds.h"
+#include "Tutorial/StepDelay.h"
+#include "Tutorial/StepGameBase.h"
+#include "Tutorial/StepGameBaseBuildUnit.h"
+#include "Tutorial/StepGameBaseBuildUnitIcon.h"
+#include "Tutorial/StepGameBaseFeatures.h"
+#include "Tutorial/StepGameConquerCells.h"
+#include "Tutorial/StepGameConquerStruct.h"
+#include "Tutorial/StepGameDisableCamera.h"
+#include "Tutorial/StepGameEnableCamera.h"
+#include "Tutorial/StepGameEndTurn.h"
+#include "Tutorial/StepGameEnergyRegeneration.h"
+#include "Tutorial/StepGameIntro.h"
+#include "Tutorial/StepGameMapNavigation.h"
+#include "Tutorial/StepGameMoveCamera.h"
+#include "Tutorial/StepGameMoveUnit.h"
+#include "Tutorial/StepGameStructConnected.h"
+#include "Tutorial/StepGameStructDisconnected.h"
+#include "Tutorial/StepGameTurnEnergy.h"
+#include "Tutorial/StepGameUnit.h"
+#include "Tutorial/StepGameUnitConquerCellsIcon.h"
+#include "Tutorial/StepGameUnitSelect.h"
+#include "Tutorial/StepGameWaitTurn.h"
+#include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/GameHUD.h"
@@ -47,7 +71,6 @@
 #include <sgl/graphic/Renderer.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
-#include <sgl/sgui/ButtonsGroup.h>
 #include <sgl/sgui/Stage.h>
 
 #include <cstdlib>
@@ -64,15 +87,15 @@ constexpr float TIME_CONQ_RES_GEN = 2.f;
 constexpr float TIME_UPG_UNIT = 5.f;
 
 constexpr float TIME_ENERGY_USE = 8.f;
-constexpr float TIME_AI_MOVE = 0.5f;
+constexpr float TIME_AUTO_END_TURN = 2.f;
 
 ScreenGame::ScreenGame(Game * game)
     : Screen(game)
     , mPartMan(new sgl::graphic::ParticlesManager)
     , mPathfinder(new sgl::ai::Pathfinder)
     , mCurrCell(-1, -1)
-    , mTimerEnergy(TIME_ENERGY_USE)
-    , mTimerAI(TIME_AI_MOVE)
+    , mTimerAutoEndTurn(TIME_AUTO_END_TURN)
+    , mLocalPlayer(game->GetLocalPlayer())
 {
     game->SetClearColor(0x1A, 0x1A, 0x1A, 0xFF);
 
@@ -124,10 +147,10 @@ ScreenGame::ScreenGame(Game * game)
 
         // update MiniMap
         MiniMap * mm = mHUD->GetMinimap();
-        mm->SetCameraCells(mIsoMap->CellFromScreenPoint(camX0, camY0),
-                           mIsoMap->CellFromScreenPoint(camX1, camY0),
-                           mIsoMap->CellFromScreenPoint(camX0, camY1),
-                           mIsoMap->CellFromScreenPoint(camX1, camY1));
+        mm->SetCameraCells(mIsoMap->CellFromWorldPoint(camX0, camY0),
+                           mIsoMap->CellFromWorldPoint(camX1, camY0),
+                           mIsoMap->CellFromWorldPoint(camX0, camY1),
+                           mIsoMap->CellFromWorldPoint(camX1, camY1));
     });
 
     // set reduced map area to cam controller so camera will stop closer to inside cells
@@ -154,6 +177,8 @@ ScreenGame::ScreenGame(Game * game)
     {
         Player * p = game->GetPlayerByIndex(i);
 
+        p->ResetTurnEnergy();
+
         if(p->IsAI())
         {
             p->GetAI()->SetGameMap(mGameMap);
@@ -168,10 +193,13 @@ ScreenGame::ScreenGame(Game * game)
     CenterCameraOverPlayerBase();
 
     // apply initial visibility to the game map
-    Player * localPlayer = game->GetLocalPlayer();
-    mGameMap->InitVisibility(localPlayer);
+    mGameMap->InitVisibility(mLocalPlayer);
 
     InitMusic();
+
+    // TUTORIAL
+    if(game->IsTutorialEnabled())
+        CreateTutorial();
 
     // record start time
     mTimeStart = std::chrono::steady_clock::now();
@@ -231,9 +259,17 @@ unsigned int ScreenGame::GetPlayTimeInSec() const
 
 void ScreenGame::Update(float delta)
 {
+    Game * game = GetGame();
+
     // do nothing when paused
     if(mPaused)
+    {
+        // only continue the tutorial if paused
+        if(game->IsTutorialEnabled())
+            mTutMan->Update(delta);
+
         return ;
+    }
 
     // keep track of time played (while not paused)
     mTimePlayed += delta;
@@ -244,20 +280,20 @@ void ScreenGame::Update(float delta)
     // -- PARTICLES --
     mPartMan->Update(delta);
 
-    // -- UPDATE PLAYERS RESOURCES --
-    mTimerEnergy -= delta;
+    // -- AUTO END TURN --
+    const float minEn = 1.f;
 
-    if(mTimerEnergy < 0.f)
+    if(IsCurrentTurnLocal() && game->IsAutoEndTurnEnabled() &&
+       mLocalPlayer->GetTurnEnergy() < minEn)
     {
-        Game * game = GetGame();
+        mTimerAutoEndTurn -= delta;
 
-        for(int i = 0; i < game->GetNumPlayers(); ++i)
+        if(mTimerAutoEndTurn <= 0.f)
         {
-            Player * p = game->GetPlayerByIndex(i);
-            p->UpdateResources();
-        }
+            EndTurn();
 
-        mTimerEnergy = TIME_ENERGY_USE;
+            mTimerAutoEndTurn = TIME_AUTO_END_TURN;
+        }
     }
 
     // -- GAME MAP AND OBJECTS --
@@ -269,10 +305,14 @@ void ScreenGame::Update(float delta)
 
     // -- AI --
     if(!mAiPlayers.empty())
-        UpdateAI(delta);
+         UpdateAI(delta);
 
     // check game end
     UpdateGameEnd();
+
+    // TUTORIAL
+    if(game->IsTutorialEnabled())
+        mTutMan->Update(delta);
 }
 
 void ScreenGame::Render()
@@ -316,13 +356,14 @@ void ScreenGame::ClearSelection(Player * player)
     if(nullptr == selObj)
         return ;
 
-    mHUD->HidePanelObjActions();
+    mHUD->ClearQuickUnitButtonChecked();
+    mHUD->HidePanelObjectActions();
+    mHUD->HidePanelSelectedObject();
+    mHUD->HideDialogNewElement();
 
     player->ClearSelectedObject();
 
     ClearCellOverlays();
-
-    mHUD->HideDialogNewElement();
 }
 
 void ScreenGame::SelectObject(GameObject * obj, Player * player)
@@ -330,24 +371,9 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     player->SetSelectedObject(obj);
 
     // update quick selection buttons when selected unit
-    sgl::sgui::ButtonsGroup * buttonsUnitSel = mHUD->GetButtonsGroupUnitSel();
-
     if(obj->GetObjectCategory() == GameObject::CAT_UNIT)
     {
-        // check corresponding quick unit selection button
-        const int numButtons = buttonsUnitSel->GetNumButtons();
-
-        for(int i = 0; i < numButtons; ++i)
-        {
-            auto b = static_cast<ButtonQuickUnitSelection *>(buttonsUnitSel->GetButton(i));
-            Unit * unit = b->GetUnit();
-
-            if(unit == obj)
-            {
-                b->SetChecked(true);
-                break;
-            }
-        }
+        mHUD->SetQuickUnitButtonChecked(obj);
 
         // show current indicator
         ShowActiveIndicators(static_cast<Unit *>(obj), mCurrCell);
@@ -355,10 +381,7 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     // not a unit
     else
     {
-        const int checked = buttonsUnitSel->GetIndexChecked();
-
-        if(checked != -1)
-            buttonsUnitSel->GetButton(checked)->SetChecked(false);
+        mHUD->ClearQuickUnitButtonChecked();
 
         // show attack range overlay for towers
         if(GameObject::TYPE_DEFENSIVE_TOWER == obj->GetObjectType())
@@ -369,10 +392,8 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
         }
     }
 
-    PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
-    panelObjActions->SetObject(obj);
-    panelObjActions->SetVisible(true);
-    panelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
+    mHUD->ShowPanelObjectActions(obj);
+    mHUD->ShowPanelSelectedObject(obj);
 
     sgl::sgui::Stage::Instance()->SetFocus();
 }
@@ -413,6 +434,17 @@ void ScreenGame::SetPause(bool paused)
     mPaused = paused;
 
     mHUD->SetEnabled(!paused);
+
+    // handle turn control panel text
+    if(paused)
+        mHUD->ShowTurnControlTextGamePaused();
+    else
+    {
+        if(IsCurrentTurnLocal())
+            mHUD->ShowTurnControlPanel();
+        else
+            mHUD->ShowTurnControlTextEnemyTurn();
+    }
 }
 
 void ScreenGame::OnApplicationQuit(sgl::core::ApplicationEvent & event)
@@ -480,8 +512,6 @@ void ScreenGame::CreateUI()
     const int rendW = graphic::Renderer::Instance()->GetWidth();
     const int rendH = graphic::Renderer::Instance()->GetHeight();
 
-    Player * player = GetGame()->GetLocalPlayer();
-
     // init HUD layer
     mHUD = new GameHUD(this);
 
@@ -490,16 +520,28 @@ void ScreenGame::CreateUI()
     PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
 
     // create new unit
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT,
-                                       [this, player, panelObjActions]
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BARRACKS,
+        [this, panelObjActions]
     {
-        mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS);
+        mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_BARRACKS);
+    });
+
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE,
+        [this, panelObjActions]
+    {
+        mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_BASE);
+    });
+
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_HOSPITAL,
+        [this, panelObjActions]
+    {
+        mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_HOSPITAL);
     });
 
     // UNIT ACTIONS
     // build structure
     panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_STRUCT,
-                                       [this, player, panelObjActions]
+        [this, panelObjActions]
     {
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_STRUCTURES);
 
@@ -507,9 +549,9 @@ void ScreenGame::CreateUI()
     });
 
     // build wall
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_WALL, [this, player]
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_WALL, [this]
     {
-        auto unit = static_cast<Unit *>(player->GetSelectedObject());
+        auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::BUILD_WALL);
 
         ClearCellOverlays();
@@ -520,9 +562,9 @@ void ScreenGame::CreateUI()
     });
 
     // attack
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_ATTACK, [this, player]
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_ATTACK, [this]
     {
-        auto unit = static_cast<Unit *>(player->GetSelectedObject());
+        auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::ATTACK);
 
         ClearCellOverlays();
@@ -533,9 +575,21 @@ void ScreenGame::CreateUI()
     });
 
     // heal
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_HEAL, [this, player]
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_HEAL_HOSPITAL, [this]
     {
-        auto unit = static_cast<Unit *>(player->GetSelectedObject());
+        auto hospital = static_cast<Hospital *>(mLocalPlayer->GetSelectedObject());
+        hospital->SetActiveAction(GameObjectActionType::HEAL);
+
+        ClearCellOverlays();
+
+        // show healing range overlay
+        const int range = hospital->GetRangeHealing();
+        ShowHealingIndicators(hospital, range);
+    });
+
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_HEAL_UNIT, [this]
+    {
+        auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::HEAL);
 
         ClearCellOverlays();
@@ -546,9 +600,9 @@ void ScreenGame::CreateUI()
     });
 
     // conquer
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, [this, player]
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, [this]
     {
-        auto unit = static_cast<Unit *>(player->GetSelectedObject());
+        auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::CONQUER_CELL);
 
         ClearCellOverlays();
@@ -559,9 +613,9 @@ void ScreenGame::CreateUI()
     });
 
     // move
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_MOVE, [this, player]
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_MOVE, [this]
     {
-        auto unit = static_cast<Unit *>(player->GetSelectedObject());
+        auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::MOVE);
 
         ClearCellOverlays();
@@ -571,10 +625,10 @@ void ScreenGame::CreateUI()
 
     // WALL GATE
     panelObjActions->SetButtonFunction(PanelObjectActions::BTN_OPEN_GATE,
-                                       [this, player, panelObjActions]
+                                       [this, panelObjActions]
     {
         // open gate
-        auto gate = static_cast<WallGate *>(player->GetSelectedObject());
+        auto gate = static_cast<WallGate *>(mLocalPlayer->GetSelectedObject());
         const bool res = gate->Toggle();
 
         if(!res)
@@ -594,10 +648,10 @@ void ScreenGame::CreateUI()
     });
 
     panelObjActions->SetButtonFunction(PanelObjectActions::BTN_CLOSE_GATE,
-                                       [this, player, panelObjActions]
+                                       [this, panelObjActions]
     {
         // close gate
-        auto gate = static_cast<WallGate *>(player->GetSelectedObject());
+        auto gate = static_cast<WallGate *>(mLocalPlayer->GetSelectedObject());
         const bool res = gate->Toggle();
 
         if(!res)
@@ -618,7 +672,7 @@ void ScreenGame::CreateUI()
 
     // GENERIC ACTIONS
     // upgrade
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_UPGRADE, [this, player]
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_UPGRADE, [this]
     {
         // TODO
 
@@ -627,9 +681,9 @@ void ScreenGame::CreateUI()
 
     // cancel
     panelObjActions->SetButtonFunction(PanelObjectActions::BTN_CANCEL,
-                                       [this, player, panelObjActions]
+                                       [this, panelObjActions]
     {
-        GameObject * selObj = player->GetSelectedObject();
+        GameObject * selObj = mLocalPlayer->GetSelectedObject();
 
         if(nullptr == selObj)
             return ;
@@ -659,6 +713,61 @@ void ScreenGame::CreateUI()
     // MISSION COUNTDOWN
     if(MISSION_RESIST_TIME == mMissionType)
         mHUD->ShowMissionCountdown(mMissionTime);
+
+    // set initial focus to Stage
+    sgl::sgui::Stage::Instance()->SetFocus();
+}
+
+void ScreenGame::CreateTutorial()
+{
+    Player * local = GetGame()->GetLocalPlayer();
+
+    auto panelActions = mHUD->GetPanelObjectActions();
+    auto panelObj = mHUD->GetPanelSelectedObject();
+    auto panelTurn = mHUD->GetPanelTurnControl();
+
+    mTutMan = new TutorialManager;
+    mTutMan->AddStep(new StepGameDisableCamera(mCamController));
+
+    mTutMan->AddStep(new StepDelay(1.f));
+    mTutMan->AddStep(new StepGameIntro);
+    mTutMan->AddStep(new StepDelay(0.3f));
+    mTutMan->AddStep(new StepGameBase(local->GetBase()));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameBaseFeatures(panelObj, panelActions));
+    mTutMan->AddStep(new StepGameBaseBuildUnitIcon(panelActions));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameBaseBuildUnit(mHUD));
+    // TODO replace constant with time from Base when implemented
+    mTutMan->AddStep(new StepDelay(TIME_NEW_UNIT));
+    mTutMan->AddStep(new StepGameUnit(local));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameMoveUnit(local, mIsoMap));
+    mTutMan->AddStep(new StepDelay(3.f));
+    const int genR = 56;
+    const int genC = 13;
+    const GameMapCell gmc = mGameMap->GetCell(genR, genC);
+    mTutMan->AddStep(new StepGameMoveCamera(200, -100));
+    mTutMan->AddStep(new StepGameConquerStruct(gmc.objTop, mIsoMap));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameTurnEnergy(mHUD));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameEndTurn(panelTurn));
+    mTutMan->AddStep(new StepGameWaitTurn(this));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameEnergyRegeneration);
+    mTutMan->AddStep(new StepGameStructDisconnected);
+    mTutMan->AddStep(new StepGameUnitSelect(local));
+    mTutMan->AddStep(new StepGameUnitConquerCellsIcon(panelActions));
+    mTutMan->AddStep(new StepGameConquerCells(local, mIsoMap));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameStructConnected);
+
+    mTutMan->AddStep(new StepGameEnableCamera(mCamController));
+
+    mTutMan->AddStep(new StepGameMapNavigation);
+
+    mTutMan->Start();
 }
 
 void ScreenGame::LoadMapFile()
@@ -730,8 +839,6 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
     // GAME
     const int key = event.GetKey();
 
-    Player * p = GetGame()->GetLocalPlayer();
-
     // P -> PAUSE
     if(key == KeyboardEvent::KEY_P)
         SetPause(!mPaused);
@@ -751,13 +858,13 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
     {
         if(event.IsModShiftDown())
         {
-            p->AddVisibilityToAll();
-            mGameMap->ApplyVisibility(p);
+            mLocalPlayer->AddVisibilityToAll();
+            mGameMap->ApplyVisibility(mLocalPlayer);
         }
         else if(event.IsModCtrlDown())
         {
-            p->RemVisibilityToAll();
-            mGameMap->ApplyVisibility(p);
+            mLocalPlayer->RemVisibilityToAll();
+            mGameMap->ApplyVisibility(mLocalPlayer);
         }
     }
     // DEBUG: end mission dialog
@@ -775,8 +882,7 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
             // assign first Temple found
             if(o->GetObjectType() == GameObject::TYPE_TEMPLE)
             {
-                Player * p = GetGame()->GetLocalPlayer();
-                mHUD->ShowDialogExploreTemple(p, static_cast<Temple *>(o));
+                mHUD->ShowDialogExploreTemple(mLocalPlayer, static_cast<Temple *>(o));
 
                 break;
             }
@@ -799,6 +905,10 @@ void ScreenGame::OnMouseButtonUp(sgl::core::MouseButtonEvent & event)
     if(mPaused)
         return ;
 
+    // no interaction during enemy turn
+    if(!IsCurrentTurnLocal())
+        return ;
+
     if(event.GetButton() == sgl::core::MouseEvent::BUTTON_LEFT)
         HandleSelectionClick(event);
     else if(event.GetButton() == sgl::core::MouseEvent::BUTTON_RIGHT)
@@ -812,6 +922,10 @@ void ScreenGame::OnMouseMotion(sgl::core::MouseMotionEvent & event)
 
     // CAMERA
     mCamController->HandleMouseMotion(event);
+
+    // no interaction during enemy turn
+    if(!IsCurrentTurnLocal())
+        return ;
 
     UpdateCurrentCell();
 }
@@ -837,51 +951,100 @@ void ScreenGame::OnWindowMouseLeft(sgl::graphic::WindowEvent & event)
 
 void ScreenGame::UpdateAI(float delta)
 {
-    mTimerAI -= delta;
+    // nothing to do during local player turn
+    if(IsCurrentTurnLocal())
+        return ;
 
-    if(mTimerAI < 0.f)
+    // convert player playing turn to AI index
+    const int turnAI = mActivePlayerIdx - 1;
+
+    PlayerAI * ai = mAiPlayers[turnAI]->GetAI();
+    Player * player = ai->GetPlayer();
+
+    // already doing action -> wait
+    if(ai->IsDoingSomething())
+        return ;
+
+    std::cout << "\n----- ScreenGame::UpdateAI " << turnAI << " -----\n"
+              << "MONEY: " << player->GetStat(Player::MONEY).GetIntValue()
+              << " - ENERGY: " << player->GetStat(Player::ENERGY).GetIntValue() << " / "
+              << player->GetStat(Player::ENERGY).GetIntMax()
+              << " - MATERIAL: " << player->GetStat(Player::MATERIAL).GetIntValue() << "/"
+              << player->GetStat(Player::MATERIAL).GetIntMax()
+              << " - BLOBS: " << player->GetStat(Player::BLOBS).GetIntValue() << "/"
+              << player->GetStat(Player::BLOBS).GetIntMax()
+              << " - DIAMONDS: " << player->GetStat(Player::DIAMONDS).GetIntValue() << "/"
+              << player->GetStat(Player::DIAMONDS).GetIntMax()
+              << std::endl;
+
+    // no more turn energy -> end turn
+    const float minEnergy = 1.f;
+
+    if(player->GetTurnEnergy() < minEnergy)
     {
-        PlayerAI * ai = mAiPlayers[mCurrPlayerAI]->GetAI();
-        ai->Update(delta);
-        ExecuteAIAction(ai);
+        std::cout << "ScreenGame::UpdateAI - AI " << turnAI
+                  << " ==================== END TURN ====================" << std::endl;
 
-        // move to next player and update timer
-        ++mCurrPlayerAI;
-
-        // reset current player if needed
-        if(mCurrPlayerAI >= mAiPlayers.size())
-            mCurrPlayerAI = 0;
-
-        mTimerAI = TIME_AI_MOVE;
+        EndTurn();
+        return ;
     }
+
+    // make AI decide what to do
+    ai->DecideNextAction();
+    std::cout << std::endl;
+    ExecuteAIAction(ai);
+
+    std::cout << "----------------------------------------\n" << std::endl;
 }
 
 void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 {
+    // convert player playing turn to AI index
+    const int turnAI = mActivePlayerIdx - 1;
+
     bool done = false;
 
     Player * player = ai->GetPlayer();
+
+    auto PrintAction = [](int turnAI, const ActionAI * action, bool done, Player * player)
+    {
+        std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - "
+                  << action->GetTypeStr()
+                  << (done ? " DOING" : " FAILED")
+                  << " | ACT ID: " << action->actId
+                  << " - PRIORITY: " << action->priority
+                  << " | OBJ ID: " << action->ObjSrc->GetObjectId()
+                  << " - OBJ ENERGY: " << action->ObjSrc->GetEnergy()
+                  << " - TURN ENERGY: " << player->GetTurnEnergy() << std::endl;
+    };
 
     // execute planned action until one is successful or there's no more actions to do (NOP)
     while(!done)
     {
         const ActionAI * action = ai->GetNextActionTodo();
 
-        if(nullptr == action)
+        if(nullptr == action || AIA_END_TURN == action->type)
+        {
+            std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                      << " ==================== END TURN ====================" << std::endl;
+
+            EndTurn();
+
             return ;
+        }
 
         auto basicOnDone = [action, ai](bool)
         {
-             ai->SetActionDone(action);
+            ai->SetActionDone(action);
         };
 
         // new higher action for busy object
         if(action->ObjSrc->IsBusy() && ai->IsActionHighestPriorityForObject(action))
         {
-            std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
-                      << " - higher priority action for object " << action->ObjSrc << std::endl;
+            std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                      << " - higher priority action for object" << std::endl;
 
-            // cancel current action
+            // can/cel current action
             ai->CancelObjectAction(action->ObjSrc);
             CancelObjectAction(action->ObjSrc);
         }
@@ -893,9 +1056,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 auto unit = static_cast<Unit *>(action->ObjSrc);
                 done = SetupUnitAttack(unit, action->ObjDst, player, basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
-                          << " - ATTACK ENEMY UNIT "
-                          << (done ? "DOING" : "FAILED") << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
@@ -910,7 +1071,12 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 // unit and generator are next to each other
                 if(mGameMap->AreObjectsOrthoAdjacent(action->ObjSrc, action->ObjDst))
+                {
+                    std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                              << " - CONQUER GENERATOR ADJACENT" << std::endl;
+
                     done = SetupStructureConquest(unit, start, end, player, basicOnDone);
+                }
                 // unit needs to move to the generator
                 else
                 {
@@ -918,7 +1084,12 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                     // failed to find a suitable target
                     if(-1 == target.row || -1 == target.col)
+                    {
+                        std::cout << "ScreenGame::ExecuteAIAction - CONQUER GENERATOR -"
+                                     "GetOrthoAdjacentMoveTarget FAILED" << std::endl;
+
                         done = false;
+                    }
                     else
                     {
                         done = SetupUnitMove(unit, start, target,
@@ -926,17 +1097,31 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                             {
                                 if(successful)
                                 {
+                                    std::cout << "ScreenGame::ExecuteAIAction - CONQUER GENERATOR "
+                                                 "AFTER MOVE - SetupStructureConquest" << std::endl;
+
                                     const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
-                                    SetupStructureConquest(unit, currCell, end, player, basicOnDone);
+                                    const bool res = SetupStructureConquest(unit, currCell, end,
+                                                                            player, basicOnDone);
+
+                                    std::cout << "ScreenGame::ExecuteAIAction - CONQUER GENERATOR "
+                                                 "AFTER MOVE - SetupStructureConquest - res: " << res << std::endl;
+
+                                    if(!res)
+                                        basicOnDone(false);
                                 }
                                 else
-                                    basicOnDone(successful);
+                                {
+                                    std::cout << "ScreenGame::ExecuteAIAction - CONQUER GENERATOR "
+                                                 "AFTER MOVE - MOVE FAILED" << std::endl;
+
+                                    basicOnDone(false);
+                                }
                             });
                     }
                 }
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI << " - CONQUER GENERATOR "
-                          << (done ? "DOING" : "FAILED") << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
@@ -944,33 +1129,48 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             {
                 auto unit = static_cast<Unit *>(action->ObjSrc);
                 const Cell2D unitCell(unit->GetRow0(), unit->GetCol0());
+                const Cell2D start = action->cellSrc;
+                const GameMapCell & startGM = mGameMap->GetCell(start.row, start.col);
 
-                // unit and structure are next to each other
-                if(mGameMap->AreObjectsOrthoAdjacent(unit, action->ObjDst))
-                    done = SetupConnectCells(unit, basicOnDone);
+                // unit already on start or next to it
+                if(unitCell == start || (startGM.owner == player &&
+                   mGameMap->AreCellsOrthoAdjacent(unitCell, start)))
+                {
+                    std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                              << " - CONNECT STRUCTURE ADJACENT" << std::endl;
+
+                    done = SetupConnectCellsAI(unit, basicOnDone);
+                }
                 // unit needs to move to the structure
                 else
                 {
-                    Cell2D target = mGameMap->GetOrthoAdjacentMoveTarget(unitCell, action->ObjDst);
+                    std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
+                              << " - CONNECT STRUCTURE AFTER MOVE" << std::endl;
 
-                    // failed to find a suitable target
-                    if(-1 == target.row || -1 == target.col)
-                        done = false;
-                    else
-                    {
-                        done = SetupUnitMove(unit, unitCell, target,
-                            [this, unit, basicOnDone](bool successful)
+                    done = SetupUnitMove(unit, unitCell, start,
+                        [this, unit, start, basicOnDone](bool successful)
+                        {
+                            if(successful)
                             {
-                                if(successful)
-                                    SetupConnectCells(unit, basicOnDone);
-                                else
-                                    basicOnDone(successful);
-                            });
-                    }
+                                const bool res = SetupConnectCellsAI(unit, basicOnDone);
+
+                                std::cout << "ScreenGame::ExecuteAIAction - CONNECT STRUCTURE "
+                                             "AFTER MOVE - SetupConnectCellsAI - res: " << res << std::endl;
+
+                                if(!res)
+                                    basicOnDone(false);
+                            }
+                            else
+                            {
+                                std::cout << "ScreenGame::ExecuteAIAction - CONNECT STRUCTURE "
+                                             "AFTER MOVE - MOVE FAILED" << std::endl;
+
+                                basicOnDone(false);
+                            }
+                        });
                 }
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI << " -Result CONNECT STRUCTURE "
-                          << (done ? "DOING" : "FAILED") << std::endl;
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
@@ -980,13 +1180,173 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 done = SetupNewUnit(a->unitType, a->ObjSrc, ai->GetPlayer(), basicOnDone);
 
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI << " - NEW UNIT "
-                          << (done ? "DOING" : "FAILED") << std::endl;
+                PrintAction(turnAI, action, done, player);
+            }
+            break;
+
+            case AIA_UNIT_COLLECT_BLOBS:
+            {
+                auto unit = static_cast<Unit *>(action->ObjSrc);
+
+                const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+                const Cell2D cellDest(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
+
+                done = SetupUnitMove(unit, cellUnit, cellDest, basicOnDone);
+
+                PrintAction(turnAI, action, done, player);
+            }
+            break;
+
+            case AIA_UNIT_COLLECT_DIAMONDS:
+            {
+                auto unit = static_cast<Unit *>(action->ObjSrc);
+
+                const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+                const Cell2D cellDest(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
+
+                done = SetupUnitMove(unit, cellUnit, cellDest, basicOnDone);
+
+                PrintAction(turnAI, action, done, player);
+            }
+            break;
+
+            case AIA_UNIT_COLLECT_LOOTBOX:
+            {
+                auto unit = static_cast<Unit *>(action->ObjSrc);
+
+                const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+                const Cell2D cellDest(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
+
+                done = SetupUnitMove(unit, cellUnit, cellDest, basicOnDone);
+
+                PrintAction(turnAI, action, done, player);
+            }
+            break;
+
+            case AIA_UNIT_BUILD_STRUCTURE:
+            {
+                auto a = static_cast<const ActionAIBuildStructure *>(action);
+
+                // decide where to build
+                auto unit = static_cast<Unit *>(a->ObjSrc);
+                unit->SetStructureToBuild(a->structType);
+
+                const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+                Cell2D target;
+
+                if(FindWhereToBuildStructureAI(unit, target))
+                {
+                    if(mGameMap->AreCellsAdjacent(cellUnit, target))
+                    {
+                        std::cout << "ScreenGame::ExecuteAIAction - BUILD STRUCTURE ADJACENT - unit: "
+                                  << cellUnit.row << "," << cellUnit.col
+                                  << " - target: " << target.row << "," << target.col << std::endl;
+
+                        done = SetupStructureBuilding(unit, target, player, basicOnDone);
+                    }
+                    else
+                    {
+                        const Cell2D moveTarget = mGameMap->GetAdjacentMoveTarget(cellUnit, target);
+
+                        std::cout << "ScreenGame::ExecuteAIAction - BUILD STRUCTURE MOVE - unit: "
+                                  << cellUnit.row << "," << cellUnit.col
+                                  << " - target: " << target.row << "," << target.col
+                                  << " - move target: " << moveTarget.row << "," << moveTarget.col
+                                  << std::endl;
+
+                        if(moveTarget.row != -1 && moveTarget.col != -1)
+                        {
+                            done = SetupUnitMove(unit, cellUnit, moveTarget,
+                                [this, unit, target, player, basicOnDone](bool successful)
+                                {
+                                    if(successful)
+                                    {
+                                        const bool res = SetupStructureBuilding(unit, target, player, basicOnDone);
+
+                                        std::cout << "ScreenGame::ExecuteAIAction - BUILD STRUCTURE "
+                                                     "AFTER MOVE - SetupUnitMove - res: " << res << std::endl;
+
+                                        if(!res)
+                                        {
+                                            basicOnDone(false);
+                                            unit->ClearStructureToBuild();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        std::cout << "ScreenGame::ExecuteAIAction - BUILD STRUCTURE "
+                                                     "AFTER MOVE - MOVE FAILED" << std::endl;
+
+                                        basicOnDone(false);
+                                        unit->ClearStructureToBuild();
+                                    }
+                                });
+                        }
+                        else
+                            done = false;
+                    }
+                }
+                else
+                    done = false;
+
+                if(!done)
+                    unit->ClearStructureToBuild();
+
+                PrintAction(turnAI, action, done, player);
+            }
+            break;
+
+            case AIA_UNIT_ATTACK_TREES:
+            {
+                const auto unit = static_cast<Unit *>(action->ObjSrc);
+                GameObject * target = action->ObjDst;
+
+                if(unit->IsTargetAttackInRange(target))
+                    done = SetupUnitAttack(unit, target, player, basicOnDone);
+                else
+                {
+                    const Cell2D start(unit->GetRow0(), unit->GetCol0());
+                    Cell2D dest;
+
+                    if(mGameMap->FindAttackPosition(unit, action->ObjDst, dest))
+                    {
+                        done = SetupUnitMove(unit, start, dest,
+                            [this, unit, target, player, basicOnDone](bool successful)
+                            {
+                                if(successful)
+                                {
+                                    const bool res = SetupUnitAttack(unit, target, player, basicOnDone);
+
+                                    std::cout << "ScreenGame::ExecuteAIAction - ATTACK TREES "
+                                                 "AFTER MOVE - SetupUnitMove - res: " << res << std::endl;
+
+                                    if(!res)
+                                        basicOnDone(false);
+                                }
+                                else
+                                {
+                                    std::cout << "ScreenGame::ExecuteAIAction - ATTACK TREES "
+                                                 "AFTER MOVE - MOVE FAILED" << std::endl;
+
+                                    basicOnDone(false);
+                                }
+                            });
+                    }
+                    else
+                    {
+                        std::cout << "ScreenGame::ExecuteAIAction - ATTACK TREES "
+                                     "FindAttackPosition FAILED" << std::endl;
+                        done = false;
+                    }
+                }
+
+                PrintAction(turnAI, action, done, player);
             }
             break;
 
             default:
-                std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI << " - unkown action" << action->type << std::endl;
+                std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << " - UNKNOWN ACTION"
+                          << action->GetTypeStr() << std::endl;
             break;
         }
 
@@ -1007,38 +1367,47 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
         if(act.obj == obj)
         {
             const GameObjectTypeId objType = act.obj->GetObjectType();
-            const GameObjectActionType objActId = act.actId;
+            const GameObjectActionType actType = act.type;
 
             // object is a Base
             if(objType == GameObject::TYPE_BASE)
             {
                 // building a new unit
-                if(objActId == GameObjectActionType::BUILD_UNIT)
+                if(actType == GameObjectActionType::BUILD_UNIT)
                     act.progressBar->DeleteLater();
             }
             // object is a Unit
             else if(act.obj->GetObjectCategory() == GameObject::CAT_UNIT)
             {
-                if(objActId == GameObjectActionType::MOVE)
+                if(actType == GameObjectActionType::MOVE)
                     mGameMap->AbortMove(obj);
-                else if(objActId == GameObjectActionType::CONQUER_CELL)
+                else if(actType == GameObjectActionType::CONQUER_CELL)
                     mGameMap->AbortCellConquest(obj);
-                else if(objActId == GameObjectActionType::BUILD_WALL)
+                else if(actType == GameObjectActionType::BUILD_WALL)
                     mGameMap->AbortBuildWalls(obj);
-                else if(objActId == GameObjectActionType::CONQUER_STRUCTURE)
+                else if(actType == GameObjectActionType::CONQUER_STRUCTURE)
                 {
                     mGameMap->AbortConquerStructure(act.target);
                     act.progressBar->DeleteLater();
                 }
-                else if(objActId == GameObjectActionType::ATTACK)
+                else if(actType == GameObjectActionType::ATTACK)
                 {
                     auto unit = static_cast<Unit *>(obj);
                     unit->ClearTargetAttack();
                 }
-                else if(objActId == GameObjectActionType::HEAL)
+                else if(actType == GameObjectActionType::HEAL)
                 {
                     auto unit = static_cast<Unit *>(obj);
                     unit->ClearTargetHealing();
+                }
+            }
+            // object is a Hospital
+            else if(objType == GameObject::TYPE_HOSPITAL)
+            {
+                if(actType == GameObjectActionType::HEAL)
+                {
+                    auto hospital = static_cast<Hospital *>(obj);
+                    hospital->ClearTargetHealing();
                 }
             }
 
@@ -1048,9 +1417,11 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
             obj->SetActiveActionToDefault();
 
             // re-enable actions for local player
-            if(obj->GetFaction() == GetGame()->GetLocalPlayer()->GetFaction())
+            if(obj->GetFaction() == mLocalPlayer->GetFaction())
             {
-                mHUD->GetPanelObjectActions()->SetActionsEnabled(true);
+                ClearCellOverlays();
+
+                mHUD->SetLocalActionsEnabled(true);
 
                 // show current indicator for units
                 if(obj->GetObjectCategory() == GameObject::CAT_UNIT)
@@ -1066,24 +1437,18 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
 
 void ScreenGame::SetObjectActionDone(GameObject * obj, bool successful)
 {
+    // search selected object in active actions
     auto it = mObjActions.begin();
 
-    // search selected object in active actions
     while(it != mObjActions.end())
     {
         if(it->obj == obj)
         {
-            // re-enable actions panel if obj is local
-            if(obj->GetFaction() == GetGame()->GetLocalPlayerFaction())
-                mHUD->GetPanelObjectActions()->SetActionsEnabled(true);
+            std::cout << "ScreenGame::SetObjectActionDone - OBJ ACTIONS - obj ID: "
+                      << obj->GetObjectId() << " - ACTION TYPE: "
+                      << it->type << (successful ? " - OK" : " - FAIL") << std::endl;
 
-            // reset object's active action to default
-            obj->SetActiveActionToDefault();
-            // reset current action to idle
-            obj->SetCurrentAction(IDLE);
-
-            // execute done callback
-            it->onDone(successful);
+            FinalizeObjectAction(*it, successful);
 
             // remove and destroy pending action
             mObjActions.erase(it);
@@ -1093,6 +1458,49 @@ void ScreenGame::SetObjectActionDone(GameObject * obj, bool successful)
 
         ++it;
     }
+
+    // search selected object in actions to add for special cases when
+    // action is completed immediately like AI quick actions
+    it = mObjActionsToDo.begin();
+
+    while(it != mObjActionsToDo.end())
+    {
+        if(it->obj == obj)
+        {
+            std::cout << "ScreenGame::SetObjectActionDone - OBJ ACTIONS TO DO - obj ID: "
+                      << obj->GetObjectId() << " - ACTION TYPE: "
+                      << it->type << (successful ? " - OK" : " - FAIL") << std::endl;
+
+            FinalizeObjectAction(*it, successful);
+
+            // remove and destroy pending action
+            mObjActionsToDo.erase(it);
+
+            return ;
+        }
+
+        ++it;
+    }
+
+    std::cout << "ScreenGame::SetObjectActionDone - ERROR can't find - obj ID: "
+              << obj->GetObjectId() << std::endl;
+}
+
+void ScreenGame::FinalizeObjectAction(const GameObjectAction & action, bool successful)
+{
+    GameObject * obj = action.obj;
+
+    // re-enable actions panel if obj is local
+    if(obj->GetFaction() == mLocalPlayer->GetFaction())
+        mHUD->SetLocalActionsEnabled(true);
+
+    // reset object's active action to default
+    obj->SetActiveActionToDefault();
+    // reset current action to idle
+    obj->SetCurrentAction(IDLE);
+
+    // execute done callback
+    action.onDone(successful);
 }
 
 void ScreenGame::UpdateGameEnd()
@@ -1109,26 +1517,28 @@ void ScreenGame::UpdateGameEnd()
         case MISSION_DESTROY_ENEMY_BASE:
         {
             // check if destroyed all enemy bases
-            bool bases = false;
-
             for(Player * p : mAiPlayers)
-                bases |= p->HasStructure(GameObject::TYPE_BASE);
+            {
+                if(p->HasStructure(GameObject::TYPE_BASE))
+                    return ;
+            }
 
-            if(!bases)
-                mHUD->ShowDialogEndMission(true);
+            // no base found -> END
+            mHUD->ShowDialogEndMission(true);
         }
         break;
 
         case MISSION_DESTROY_ALL_ENEMIES:
         {
             // check if destroyed all enemies
-            int totEnemies = 0;
-
             for(Player * p : mAiPlayers)
-                totEnemies += p->GetNumObjects();
+            {
+                if(p->GetNumObjects() > 0)
+                    return ;
+            }
 
-            if(0 == totEnemies)
-                mHUD->ShowDialogEndMission(true);
+            // no enemy found -> END
+            mHUD->ShowDialogEndMission(true);
         }
         break;
 
@@ -1178,8 +1588,8 @@ void ScreenGame::HandleGameWon()
 {
     Game * game = GetGame();
 
-    AssignWinningResources(game->GetLocalPlayer());
-    AssignMapToFaction(game->GetLocalPlayerFaction());
+    AssignWinningResources(mLocalPlayer);
+    AssignMapToFaction(mLocalPlayer->GetFaction());
 }
 
 void ScreenGame::AssignMapToFaction(PlayerFaction faction)
@@ -1193,7 +1603,7 @@ void ScreenGame::AssignMapToFaction(PlayerFaction faction)
     mapReg->SetMapOccupier(planet, territory, faction);
     mapReg->SetMapStatus(planet, territory, TER_ST_OCCUPIED);
 
-    if(faction == game->GetLocalPlayerFaction())
+    if(faction == mLocalPlayer->GetFaction())
         mapReg->SetMapMissionCompleted(planet, territory);
 
     game->RequestNextActiveState(StateId::PLANET_MAP);
@@ -1250,9 +1660,7 @@ void ScreenGame::AssignWinningResources(Player * player)
 bool ScreenGame::CheckGameOverForLocalPlayer()
 {
     // check if player still has base
-    const Player * player = GetGame()->GetLocalPlayer();
-
-    return !player->HasStructure(GameObject::TYPE_BASE);
+    return !mLocalPlayer->HasStructure(GameObject::TYPE_BASE);
 }
 
 int ScreenGame::CellToIndex(const Cell2D & cell) const
@@ -1279,10 +1687,18 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
     mGameMap->StartCreateUnit(type, gen, cell, player);
 
     // create and init progress bar
-    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(cell, TIME_NEW_UNIT, player->GetFaction());
+    // TODO get time from generator
+    float timeBuild = TIME_NEW_UNIT;
+
+    // special time for invisible AI
+    if(!player->IsLocal() && !mGameMap->IsObjectVisibleToLocalPlayer(gen))
+        timeBuild = TIME_AI_MIN;
+
+    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(cell, timeBuild, player->GetFaction());
 
     pb->AddFunctionOnCompleted([this, cell, player, gen, type]
     {
+        gen->ActionStepCompleted(BUILD_UNIT);
         gen->SetCurrentAction(GameObjectActionType::IDLE);
 
         mGameMap->CreateUnit(type, gen, cell, player);
@@ -1290,12 +1706,12 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
         // add unit to map if cell is visible to local player
         if(mGameMap->IsCellVisibleToLocalPlayer(cell.row, cell.col))
         {
-            const ObjectBasicData & data = GetGame()->GetObjectsRegistry()->GetObjectData(type);
+            const ObjectData & data = GetGame()->GetObjectsRegistry()->GetObjectData(type);
 
             const PlayerFaction faction = player->GetFaction();
-            const MiniMap::MiniMapElemType type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
+            const auto type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
             MiniMap * mm = mHUD->GetMinimap();
-            mm->AddElement(cell.row, cell.col, data.rows, data.cols, type, faction);
+            mm->AddElement(cell.row, cell.col, data.GetRows(), data.GetCols(), type, faction);
         }
 
         SetObjectActionCompleted(gen);
@@ -1309,7 +1725,7 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
 
     // disable actions panel (if action is done by local player)
     if(player->IsLocal())
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
     return true;
 }
@@ -1319,17 +1735,20 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
 {
     // check if conquest is possible
     if(!mGameMap->CanConquerStructure(unit, end, player))
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
+
+    const GameMapCell & gameCell = mGameMap->GetCell(end.row, end.col);
+    GameObject * target = gameCell.objTop;
 
     // handle special case: TEMPLE
     if(player->IsLocal())
     {
-        const GameMapCell & gameCell = mGameMap->GetCell(end.row, end.col);
-        GameObject * obj = gameCell.objTop;
-
-        if(obj != nullptr && obj->GetObjectType() == GameObject::TYPE_TEMPLE)
+        if(target->GetObjectType() == GameObject::TYPE_TEMPLE)
         {
-            mHUD->ShowDialogExploreTemple(player, static_cast<Temple *>(obj));
+            mHUD->ShowDialogExploreTemple(player, static_cast<Temple *>(target));
             return false;
         }
     }
@@ -1338,19 +1757,26 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     mGameMap->StartConquerStructure(end, player);
 
     // create and init progress bar
-    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(start, TIME_CONQ_RES_GEN, player->GetFaction());
+    // TODO get time from unit
+    float timeConquest = TIME_CONQ_RES_GEN;
+
+    // special time for invisible AI
+    if(!player->IsLocal() && !mGameMap->IsObjectVisibleToLocalPlayer(target))
+        timeConquest = TIME_AI_MIN;
+
+    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(start, timeConquest, player->GetFaction());
 
     pb->AddFunctionOnCompleted([this, start, end, player, unit]
     {
         mGameMap->ConquerStructure(end, player);
 
-        unit->ConsumeEnergy(CONQUER_STRUCTURE);
+        unit->ActionStepCompleted(CONQUER_STRUCTURE);
 
         const GameMapCell & cellStruct = mGameMap->GetCell(end.row, end.col);
         const GameObject * objStruct = cellStruct.objTop;
 
         const PlayerFaction faction = player->GetFaction();
-        const MiniMap::MiniMapElemType type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
+        const auto type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
 
         MiniMap * mm = mHUD->GetMinimap();
         mm->UpdateElement(objStruct->GetRow0(), objStruct->GetCol0(),
@@ -1371,7 +1797,7 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
 
     // disable actions panel (if action is done by local player)
     if(player->IsLocal())
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
     return true;
 }
@@ -1383,7 +1809,10 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
 
     // check if building is possible
     if(!mGameMap->CanBuildStructure(unit, cellTarget, player, st))
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
 
     mGameMap->StartBuildStructure(cellTarget, player, st);
 
@@ -1395,20 +1824,20 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
     {
         mGameMap->BuildStructure(cellTarget, player, st);
 
-        unit->ConsumeEnergy(BUILD_STRUCTURE);
+        unit->ActionStepCompleted(BUILD_STRUCTURE);
 
         // add unit to map if cell is visible to local player
-        const ObjectBasicData & data = GetGame()->GetObjectsRegistry()->GetObjectData(st);
+        const ObjectData & data = GetGame()->GetObjectsRegistry()->GetObjectData(st);
 
-        const unsigned int rTL = cellTarget.row - data.rows + 1;
-        const unsigned int cTL = cellTarget.col - data.cols + 1;
+        const unsigned int rTL = cellTarget.row - data.GetRows() + 1;
+        const unsigned int cTL = cellTarget.col - data.GetCols() + 1;
 
         if(mGameMap->IsAnyCellVisibleToLocalPlayer(rTL, cTL, cellTarget.row, cellTarget.col))
         {
             const PlayerFaction faction = player->GetFaction();
-            const MiniMap::MiniMapElemType type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
+            const auto type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
             MiniMap * mm = mHUD->GetMinimap();
-            mm->AddElement(cellTarget.row, cellTarget.col, data.rows, data.cols, type, faction);
+            mm->AddElement(cellTarget.row, cellTarget.col, data.GetRows(), data.GetCols(), type, faction);
         }
 
         // clear action data once the action is completed
@@ -1421,7 +1850,7 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
     // disable actions panel and clear overlays (if action is done by local player)
     if(player->IsLocal())
     {
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
         ClearCellOverlays();
     }
@@ -1439,16 +1868,42 @@ bool ScreenGame::SetupUnitAttack(Unit * unit, GameObject * target, Player * play
     const bool res = unit->SetTargetAttack(target);
 
     if(!res)
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
 
     unit->SetActiveAction(GameObjectActionType::IDLE);
     unit->SetCurrentAction(GameObjectActionType::ATTACK);
 
     // disable actions panel (if action is done by local player)
     if(player->IsLocal())
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
     mObjActionsToDo.emplace_back(unit, GameObjectActionType::ATTACK, onDone);
+
+    return true;
+}
+
+bool ScreenGame::SetupHospitalHeal(Hospital * hospital, GameObject * target, Player * player,
+                                   const std::function<void(bool)> & onDone)
+{
+    const bool res = hospital->SetTargetHealing(target);
+
+    if(!res)
+    {
+        PlayLocalActionErrorSFX(player);
+        return false;
+    }
+
+    hospital->SetActiveAction(GameObjectActionType::IDLE);
+    hospital->SetCurrentAction(GameObjectActionType::HEAL);
+
+    // disable actions panel (if action is done by local player)
+    if(player->IsLocal())
+        mHUD->SetLocalActionsEnabled(false);
+
+    mObjActionsToDo.emplace_back(hospital, GameObjectActionType::HEAL, onDone);
 
     return true;
 }
@@ -1459,14 +1914,17 @@ bool ScreenGame::SetupUnitHeal(Unit * unit, GameObject * target, Player * player
     const bool res = unit->SetTargetHealing(target);
 
     if(!res)
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
 
     unit->SetActiveAction(GameObjectActionType::IDLE);
     unit->SetCurrentAction(GameObjectActionType::HEAL);
 
     // disable actions panel (if action is done by local player)
     if(player->IsLocal())
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        mHUD->SetLocalActionsEnabled(false);
 
     mObjActionsToDo.emplace_back(unit, GameObjectActionType::HEAL, onDone);
 
@@ -1479,111 +1937,245 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
     const auto path = mPathfinder->MakePath(start.row, start.col, end.row, end.col,
                                             sgl::ai::Pathfinder::ALL_OPTIONS);
 
+    const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
+
     // empty path -> exit
     if(path.empty())
+    {
+        PlayLocalActionErrorSFX(player);
         return false;
+    }
 
     auto op = new ObjectPath(unit, mIsoMap, mGameMap, this);
     op->SetPathCells(path);
 
-    const bool res = mGameMap->MoveUnit(op);
-
-    // movement failed
-    if(!res)
-        return false;
-
-    // disable actions panel (if action is done by local player)
-    if(unit->GetFaction() == GetGame()->GetLocalPlayerFaction())
+    if(mGameMap->MoveUnit(op))
     {
-        mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+        // disable actions panel (if action is done by local player)
+        if(unit->GetFaction() == mLocalPlayer->GetFaction())
+        {
+            mHUD->SetLocalActionsEnabled(false);
 
-        ClearCellOverlays();
+            ClearCellOverlays();
+        }
+
+        // store active action
+        mObjActionsToDo.emplace_back(unit, GameObjectActionType::MOVE, onDone);
+
+        unit->SetActiveAction(GameObjectActionType::IDLE);
+        unit->SetCurrentAction(GameObjectActionType::MOVE);
+
+        return true;
     }
-
-    // store active action
-    mObjActionsToDo.emplace_back(unit, GameObjectActionType::MOVE, onDone);
-
-    unit->SetActiveAction(GameObjectActionType::IDLE);
-    unit->SetCurrentAction(GameObjectActionType::MOVE);
-
-    return true;
+    else
+    {
+        PlayLocalActionErrorSFX(player);
+        return false;
+    }
 }
 
-bool ScreenGame::SetupConnectCells(Unit * unit, const std::function<void (bool)> & onDone)
+bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool)> & onDone)
 {
-    const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
-    const Cell2D startCell(unit->GetRow0(), unit->GetCol0());
+    const int turnAI = mActivePlayerIdx - 1;
 
     // find closest linked cell
-    const std::vector<GameMapCell> & cells = mGameMap->GetCells();
+    const PlayerFaction faction = unit->GetFaction();
+    const Player * player = GetGame()->GetPlayerByFaction(faction);
+    const Cell2D start(unit->GetRow0(), unit->GetCol0());
+    Cell2D target;
 
-    const int maxDist = mGameMap->GetNumRows() + mGameMap->GetNumCols();
-    int minDist = maxDist;
-    Cell2D targetCell(-1, -1);
-
-    for(const GameMapCell & cell : cells)
+    if(!mGameMap->FindClosestLinkedCell(faction, start, target))
     {
-        if(cell.owner == player && cell.linked)
-        {
-            const Cell2D dest(cell.row, cell.col);
-            int dist = mGameMap->ApproxDistance(startCell, dest);
-
-            if(dist < minDist)
-            {
-                minDist = dist;
-                targetCell = dest;
-            }
-        }
-    }
-
-    // can't find a target
-    if(-1 == targetCell.row)
-    {
-        std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
+        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
                   << " - CONNECT STRUCTURE FAILED (can't find target)" << std::endl;
-
         return false;
     }
 
-    // if target cell has object try to find one next to it free
-    if(mGameMap->HasObject(targetCell.row, targetCell.col))
-    {
-        targetCell = mGameMap->GetOrthoAdjacentMoveTarget(startCell, targetCell);
+    auto cp = new ConquerPath(unit, mIsoMap, mGameMap, this);
 
-        // can't find an adjacent cell that's free
-        if(-1 == targetCell.row)
+    // special case: unit is already next to target
+    if(mGameMap->AreCellsOrthoAdjacent(start, target))
+    {
+        const unsigned int startInd = (start.row * mGameMap->GetNumCols()) + start.col;
+        const std::vector<unsigned int> path { startInd };
+
+        cp->SetPathCells(path);
+
+        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
+                  << " - CONNECT STRUCTURE - special case: unit ADJ target" << std::endl;
+    }
+    else
+    {
+        // if target cell has object try to find one next to it free
+        if(mGameMap->HasObject(target.row, target.col))
         {
-            std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
-                      << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed)" << std::endl;
+            const Cell2D oldTarget = target;
+
+            target = mGameMap->GetOrthoAdjacentMoveTarget(start, target);
+
+            // can't find an adjacent cell that's free
+            if(-1 == target.row)
+            {
+                std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
+                          << " - CONNECT STRUCTURE FAILED (GetOrthoAdjacentMoveTarget failed) - "
+                             "start: " << start.row << "," << start.col
+                          << " - target: " << oldTarget.row << "," << oldTarget.col << std::endl;
+
+                return false;
+            }
+        }
+
+        const auto path = mPathfinder->MakePath(start.row, start.col,
+                                                target.row, target.col,
+                                                sgl::ai::Pathfinder::INCLUDE_START);
+
+        // can't find a path from start to target
+        if(path.empty())
+        {
+            std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
+                      << " - CONNECT STRUCTURE FAILED (no path) - "
+                         "start: " << start.row << "," << start.col
+                      << " - target: " << target.row << "," << target.col << std::endl;
 
             return false;
         }
-    }
 
-    const auto path = mPathfinder->MakePath(startCell.row, startCell.col,
-                                            targetCell.row, targetCell.col,
-                                            sgl::ai::Pathfinder::INCLUDE_START);
-
-    // can't find a path from start to target
-    if(path.empty())
-    {
-        std::cout << "ScreenGame::ExecuteAIAction - AI " << mCurrPlayerAI
-                  << " - CONNECT STRUCTURE FAILED (no path)" << std::endl;
-
-        return false;
+        cp->SetPathCells(path);
     }
 
     // start conquest
-    auto cp = new ConquerPath(unit, mIsoMap, mGameMap, this);
-    cp->SetPathCells(path);
+    if(mGameMap->ConquerCells(cp))
+    {
+        // store active action
+        mObjActionsToDo.emplace_back(unit, GameObjectActionType::CONQUER_CELL, onDone);
 
-    // store active action
-    mObjActionsToDo.emplace_back(unit, GameObjectActionType::CONQUER_CELL, onDone);
+        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
+                  << " - CONNECT STRUCTURE - start: " << start.row << "," << start.col
+                  << " - target: " << target.row << "," << target.col << std::endl;
 
-    mGameMap->ConquerCells(cp);
+        return true;
+    }
+    else
+    {
+        std::cout << "ScreenGame::SetupConnectCells - AI " << turnAI
+                  << " - CONNECT STRUCTURE FAILED (ConquerCells failed) - "
+                     "start: " << start.row << "," << start.col
+                  << " - target: " << target.row << "," << target.col << std::endl;
 
-    return true;
+        return false;
+    }
 }
+
+bool ScreenGame::FindWhereToBuildStructureAI(Unit * unit, Cell2D & target)
+{
+    const PlayerFaction faction = unit->GetFaction();
+    const GameObjectTypeId type = unit->GetStructureToBuild();
+    const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
+    const ObjectData & data = dataReg->GetObjectData(type);
+    const int rows = data.GetRows();
+    const int cols = data.GetCols();
+
+    Game * game = GetGame();
+
+    // DECIDE WHERE TO LOOK FOR BUILDING AREA
+    Player * player = game->GetPlayerByFaction(faction);
+
+    Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+    Cell2D cellStart;
+
+    std::vector<Structure *> structures;
+
+    // build close to existing similar structure
+    if(player->HasStructure(type))
+    {
+        structures = player->GetStructuresByType(type);
+
+        std::cout << "ScreenGame::FindWhereToBuildStructureAI - search near similar structures "
+                  << structures.size() << std::endl;
+    }
+    // no similar structure -> build close to base
+    else
+    {
+        structures = player->GetStructuresByType(GameObject::TYPE_BASE);
+
+        std::cout << "ScreenGame::FindWhereToBuildStructureAI - search near base" << std::endl;
+    }
+
+    // find similar structure which is closest to unit
+    unsigned int bestInd = 0;
+    int bestDist = mGameMap->GetNumRows() + mGameMap->GetNumCols();
+
+    for(unsigned int s = 0; s < structures.size(); ++s)
+    {
+        Structure * structure = structures[s];
+
+        // strucure made of multiple cells -> check 4 corners
+        if(rows > 1 || cols > 1)
+        {
+            // top-left
+            const Cell2D tl(structure->GetRow1(), structure->GetCol1());
+            const int distTL = mGameMap->ApproxDistance(cellUnit, tl);
+
+            if(distTL < bestDist)
+            {
+                cellStart = tl;
+                bestDist = distTL;
+            }
+
+            // top-right
+            const Cell2D tr(structure->GetRow1(), structure->GetCol0());
+            const int distTR = mGameMap->ApproxDistance(cellUnit, tr);
+
+            if(distTR < bestDist)
+            {
+                cellStart = tr;
+                bestDist = distTR;
+            }
+
+            // bottom-left
+            const Cell2D bl(structure->GetRow0(), structure->GetCol1());
+            const int distBL = mGameMap->ApproxDistance(cellUnit, bl);
+
+            if(distBL < bestDist)
+            {
+                cellStart = bl;
+                bestDist = distBL;
+            }
+        }
+
+        // bottom-right
+        const Cell2D br(structure->GetRow0(), structure->GetCol0());
+        const int distBR = mGameMap->ApproxDistance(cellUnit, br);
+
+        if(distBR < bestDist)
+        {
+            cellStart = br;
+            bestDist = distBR;
+        }
+    }
+
+    std::cout << "ScreenGame::FindWhereToBuildStructureAI - unit cell: "
+              << cellUnit.row << "," << cellUnit.col
+              << " - closest structure corner: "
+              << cellStart.row << "," << cellStart.col << std::endl;
+
+    // find suitable spot close to cellStart
+    const int maxRadius = mGameMap->GetNumRows() / 2;
+
+    // first try to find an area big enough to have all sides free
+    if(mGameMap->FindFreeArea(cellStart, rows + 2, cols + 2, maxRadius, target))
+    {
+        target.row -= 1;
+        target.col -= 1;
+
+        std::cout << "ScreenGame::FindWhereToBuildStructureAI - FOUND target area A - target: "
+                  << target.row << "," << target.col << std::endl;
+
+        return true;
+    }
+    else
+        return mGameMap->FindFreeArea(cellStart, rows, cols, maxRadius, target);
+;}
 
 void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
 {
@@ -1597,8 +2189,6 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
         SetupUnitMove(unit, selCell, clickCell);
         return ;
     }
-
-    Player * player = GetGame()->GetLocalPlayer();
 
     const GameMapCell & clickGameCell = mGameMap->GetCell(clickCell.row, clickCell.col);
     const GameObject * clickObj = clickGameCell.objTop;
@@ -1629,9 +2219,13 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
     if(!clickObj->CanBeConquered())
         return ;
 
+    // unit can't conquer
+    if(!unit->CanConquer())
+        return ;
+
     // object is adjacent -> try to interact
     if(mGameMap->AreObjectsAdjacent(unit, clickObj))
-        SetupStructureConquest(unit, selCell, clickCell, player);
+        SetupStructureConquest(unit, selCell, clickCell, mLocalPlayer);
     // object is far -> move close and then try to interact
     else
     {
@@ -1642,12 +2236,12 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
             return ;
 
         SetupUnitMove(unit, selCell, target,
-            [this, unit, clickCell, player](bool successful)
+            [this, unit, clickCell](bool successful)
             {
                 if(successful)
                 {
                     const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
-                    SetupStructureConquest(unit, currCell, clickCell, player);
+                    SetupStructureConquest(unit, currCell, clickCell, mLocalPlayer);
                 }
             });
     }
@@ -1657,22 +2251,19 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
 {
     const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
 
-    Player * player = GetGame()->GetLocalPlayer();
-
     // destination is visible and walkable
-    if(player->IsCellVisible(clickInd) && mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    if(mLocalPlayer->IsCellVisible(clickInd) && mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
     {
         const GameMapCell * gmc = unit->GetCell();
         const Cell2D cellUnit(gmc->row, gmc->col);
 
         const GameObjectTypeId st = unit->GetStructureToBuild();
         const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
-        const ObjectBasicData & objData = dataReg->GetObjectData(st);
-        const ObjectFactionData & factData = dataReg->GetFactionData(unit->GetFaction(), st);
+        const ObjectData & objData = dataReg->GetObjectData(st);
 
         // if unit is next to any target cell -> try to build
-        const int indRows = objData.rows;
-        const int indCols = objData.cols;
+        const int indRows = objData.GetRows();
+        const int indCols = objData.GetCols();
         const int r0 = clickCell.row >= indRows ? 1 + clickCell.row - indRows : 0;
         const int c0 = clickCell.col >= indCols ? 1 + clickCell.col - indCols : 0;
 
@@ -1693,7 +2284,7 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
         }
 
         if(next2Target)
-            SetupStructureBuilding(unit, clickCell, player);
+            SetupStructureBuilding(unit, clickCell, mLocalPlayer);
         // unit is far -> move close then try to build
         else
         {
@@ -1704,20 +2295,19 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
                 return ;
 
             // add temporary indicator for tower
-            mTempStructIndicator = new StructureIndicator(objData, factData);
-            mTempStructIndicator->SetFaction(player->GetFaction());
+            mTempStructIndicator = new StructureIndicator(objData, unit->GetFaction());
 
             IsoLayer * layer = mIsoMap->GetLayer(MapLayers::OBJECTS2);
             layer->AddObject(mTempStructIndicator, clickCell.row, clickCell.col);
 
             // move
             SetupUnitMove(unit, cellUnit, target,
-                [this, unit, clickCell, player](bool successful)
+                [this, unit, clickCell](bool successful)
             {
                 if(successful)
                 {
                     const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
-                    SetupStructureBuilding(unit, clickCell, player);
+                    SetupStructureBuilding(unit, clickCell, mLocalPlayer);
                 }
 
                 ClearTempStructIndicator();
@@ -1732,12 +2322,15 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
     const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
     const bool diffClick = unitCell != clickCell;
 
-    Player * player = GetGame()->GetLocalPlayer();
+    const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
 
     // not clicking on unit cell, destination is visible and walkable
-    if(!diffClick || !player->IsCellVisible(clickInd) ||
+    if(!diffClick || !mLocalPlayer->IsCellVisible(clickInd) ||
        !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    {
+        PlayLocalActionErrorSFX(player);
         return ;
+    }
 
     // default is starting pathfinding from unit position
     sgl::ai::Pathfinder::PathOptions po = sgl::ai::Pathfinder::INCLUDE_START;
@@ -1778,6 +2371,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
                 if(pathMov.empty())
                 {
                     onFail();
+                    PlayLocalActionErrorSFX(player);
                     return ;
                 }
 
@@ -1790,11 +2384,12 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
                 if(!res)
                 {
                     onFail();
+                    PlayLocalActionErrorSFX(player);
                     return;
                 }
 
                 // disable actions panel (if action is done by local player)
-                mHUD->GetPanelObjectActions()->SetActionsEnabled(false);
+                mHUD->SetLocalActionsEnabled(false);
 
                 // store active action
                 mObjActionsToDo.emplace_back(unit, GameObjectActionType::MOVE, onDone);
@@ -1804,7 +2399,10 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
             }
             // only 1 block of wall -> no movement, start building
             else
-                StartUnitBuildWall(unit);
+            {
+                if(!StartUnitBuildWall(unit))
+                    PlayLocalActionErrorSFX(player);
+            }
 
             return ;
         }
@@ -1823,7 +2421,10 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 
     // empty path -> nothing to do
     if(path.empty())
+    {
+        PlayLocalActionErrorSFX(player);
         return ;
+    }
 
     mWallPath.reserve(mWallPath.size() + path.size());
     mWallPath.insert(mWallPath.end(), path.begin(), path.end());
@@ -1831,74 +2432,72 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 
 void ScreenGame::HandleSelectionClick(sgl::core::MouseButtonEvent & event)
 {
-    Player * player = GetGame()->GetLocalPlayer();
+    GameObject * currSel = mLocalPlayer->GetSelectedObject();
+
+    // do not allow any selecting/deselection when an action is in progress
+    if(currSel != nullptr && currSel->GetCurrentAction() != IDLE)
+        return ;
 
     const sgl::graphic::Camera * cam = mCamController->GetCamera();
     const int worldX = cam->GetScreenToWorldX(event.GetX());
     const int worldY = cam->GetScreenToWorldY(event.GetY());
-    const Cell2D clickCell = mIsoMap->CellFromScreenPoint(worldX, worldY);
+    const Cell2D clickCell = mIsoMap->CellFromWorldPoint(worldX, worldY);
 
     // clicked outside the map -> clear current selection
     if(!mIsoMap->IsCellInside(clickCell))
     {
-        ClearSelection(player);
+        ClearSelection(mLocalPlayer);
         return ;
     }
 
     // get clicked object, if any
     const GameMapCell & clickGameCell = mGameMap->GetCell(clickCell.row, clickCell.col);
     GameObject * clickObj = clickGameCell.objTop ? clickGameCell.objTop : clickGameCell.objBottom;
-    const bool isClickObjOwn = clickObj != nullptr && clickObj->GetFaction() == player->GetFaction();
+    const bool isClickObjOwn = clickObj != nullptr && clickObj->GetFaction() == mLocalPlayer->GetFaction();
 
     // clicked non-own or no object -> nothing to do
     if(!isClickObjOwn)
         return ;
 
-    GameObject * currSel = player->GetSelectedObject();
-
     // clicked selected object -> deselect it
     if(clickObj == currSel)
     {
-        ClearSelection(player);
+        ClearSelection(mLocalPlayer);
         return ;
     }
 
     // normal selection -> clear current selection and select clicked object
-    ClearSelection(player);
-    SelectObject(clickObj, player);
+    ClearSelection(mLocalPlayer);
+    SelectObject(clickObj, mLocalPlayer);
 }
 
 void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
 {
-    Player * player = GetGame()->GetLocalPlayer();
-
     // no object selected -> nothing to do
-    if(!player->HasSelectedObject())
+    if(!mLocalPlayer->HasSelectedObject())
         return ;
 
     const sgl::graphic::Camera * cam = mCamController->GetCamera();
     const int worldX = cam->GetScreenToWorldX(event.GetX());
     const int worldY = cam->GetScreenToWorldY(event.GetY());
 
-    const Cell2D clickCell = mIsoMap->CellFromScreenPoint(worldX, worldY);
+    const Cell2D clickCell = mIsoMap->CellFromWorldPoint(worldX, worldY);
 
     // clicked outside the map -> nothing to do
     if(!mIsoMap->IsCellInside(clickCell))
         return ;
 
-    GameObject * selObj = player->GetSelectedObject();
+    GameObject * selObj = mLocalPlayer->GetSelectedObject();
     const Cell2D selCell(selObj->GetRow0(), selObj->GetCol0());
 
     // check if there's a lower object when top is empty
     const GameMapCell & clickGameCell = mGameMap->GetCell(clickCell.row, clickCell.col);
     GameObject * clickObj = clickGameCell.objTop ? clickGameCell.objTop : clickGameCell.objBottom;
 
-    PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
-
     // selected object is a unit
     if(selObj->GetObjectCategory() == GameObject::CAT_UNIT)
     {
-        Unit * selUnit = static_cast<Unit *>(selObj);
+        auto selUnit = static_cast<Unit *>(selObj);
 
         const GameObjectActionType action = selUnit->GetActiveAction();
 
@@ -1911,15 +2510,16 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
                 HandleUnitMoveOnMouseUp(selUnit, clickCell);
         }
         else if(action == GameObjectActionType::ATTACK)
-            SetupUnitAttack(selUnit, clickObj, player);
+            SetupUnitAttack(selUnit, clickObj, mLocalPlayer);
         else if(action == GameObjectActionType::HEAL)
-            SetupUnitHeal(selUnit, clickObj, player);
+            SetupUnitHeal(selUnit, clickObj, mLocalPlayer);
         else if(action == GameObjectActionType::CONQUER_CELL)
         {
+            const Player * player = GetGame()->GetPlayerByFaction(selUnit->GetFaction());
             const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
 
             // destination is visible and walkable or conquering unit cell
-            if(player->IsCellVisible(clickInd) &&
+            if(mLocalPlayer->IsCellVisible(clickInd) &&
                (mGameMap->IsCellWalkable(clickCell.row, clickCell.col) || clickCell == selCell))
             {
                 // init start for empty path
@@ -1933,24 +2533,27 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
                     // reclicked on same cell of last path -> double click -> finalize path
                     if(mConquestPath.back() == clickInd)
                     {
-                        // store active action
-                        mObjActionsToDo.emplace_back(selUnit, action, [](bool){});
-
-                        // disable action buttons
-                        panelObjActions->SetActionsEnabled(false);
-
-                        selUnit->SetActiveAction(GameObjectActionType::IDLE);
-                        selUnit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
-
-                        ClearCellOverlays();
-
                         // start conquest
                         auto cp = new ConquerPath(selUnit, mIsoMap, mGameMap, this);
                         cp->SetPathCells(mConquestPath);
 
-                        mGameMap->ConquerCells(cp);
+                        if(mGameMap->ConquerCells(cp))
+                        {
+                            mConquestPath.clear();
 
-                        mConquestPath.clear();
+                            ClearCellOverlays();
+
+                            // store active action
+                            mObjActionsToDo.emplace_back(selUnit, action, [](bool){});
+
+                            // disable action buttons
+                            mHUD->SetLocalActionsEnabled(false);
+
+                            selUnit->SetActiveAction(GameObjectActionType::IDLE);
+                            selUnit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
+                        }
+                        else
+                            PlayLocalActionErrorSFX(player);
 
                         return ;
                     }
@@ -1970,7 +2573,10 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
 
                 // empty path -> nothing to do
                 if(path.empty())
+                {
+                    PlayLocalActionErrorSFX(player);
                     return ;
+                }
 
                 mConquestPath.reserve(mConquestPath.size() + path.size());
                 mConquestPath.insert(mConquestPath.end(), path.begin(), path.end());
@@ -1981,33 +2587,50 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
         else if (action == GameObjectActionType::BUILD_STRUCTURE)
             HandleUnitBuildStructureOnMouseUp(selUnit, clickCell);
     }
+    else if(selObj->GetObjectType() == GameObject::TYPE_HOSPITAL)
+    {
+        auto selHospital = static_cast<Hospital *>(selObj);
+
+        const GameObjectActionType action = selHospital->GetActiveAction();
+
+        if(action == GameObjectActionType::HEAL)
+            SetupHospitalHeal(selHospital, clickObj, mLocalPlayer);
+    }
 }
 
-void ScreenGame::StartUnitBuildWall(Unit * unit)
+bool ScreenGame::StartUnitBuildWall(Unit * unit)
 {
-    // store active action
-    mObjActionsToDo.emplace_back(unit, GameObjectActionType::BUILD_WALL, [](bool){});
-
-    // disable action buttons
-    PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
-    panelObjActions->SetActionsEnabled(false);
-
-    unit->SetActiveAction(GameObjectActionType::IDLE);
-    unit->SetCurrentAction(GameObjectActionType::BUILD_WALL);
-
-    // clear temporary overlay (if action is done by local player)
-    if(unit->GetFaction() == GetGame()->GetLocalPlayerFaction())
-        ClearCellOverlays();
-
     // setup build
     auto wbp = new WallBuildPath(unit, mIsoMap, mGameMap, this);
     wbp->SetPathCells(mWallPath);
     // NOTE only level 0 for now
     wbp->SetWallLevel(0);
 
-    mGameMap->BuildWalls(wbp);
+    if(mGameMap->BuildWalls(wbp))
+    {
+        // action done by local player
+        if(unit->GetFaction() == mLocalPlayer->GetFaction())
+        {
+            mHUD->SetLocalActionsEnabled(false);
 
-    mWallPath.clear();
+            ClearCellOverlays();
+        }
+
+        mWallPath.clear();
+
+        // store active action
+        mObjActionsToDo.emplace_back(unit, GameObjectActionType::BUILD_WALL, [](bool){});
+
+        unit->SetActiveAction(GameObjectActionType::IDLE);
+        unit->SetCurrentAction(GameObjectActionType::BUILD_WALL);
+
+        return true;
+    }
+    else
+    {
+        ClearCellOverlays();
+        return false;
+    }
 }
 
 void ScreenGame::ShowActiveIndicators(Unit * unit, const Cell2D & cell)
@@ -2104,8 +2727,6 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
     if(path.empty())
         layer->ClearObjects();
 
-    Player * player = GetGame()->GetLocalPlayer();
-
     // get an indicator
     const GameObjectTypeId st = unit->GetStructureToBuild();
 
@@ -2117,9 +2738,7 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
     else
     {
         const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
-        const ObjectBasicData & objData = dataReg->GetObjectData(st);
-        const ObjectFactionData & factData = dataReg->GetFactionData(unit->GetFaction(), st);
-        ind = new StructureIndicator(objData, factData);
+        ind = new StructureIndicator(dataReg->GetObjectData(st), unit->GetFaction());
         mStructIndicators.emplace(st, ind);
     }
 
@@ -2142,7 +2761,7 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
         {
             const int idx = idx0 + c;
 
-            showIndicator = player->IsCellVisible(idx) && mGameMap->IsCellWalkable(idx);
+            showIndicator = mLocalPlayer->IsCellVisible(idx) && mGameMap->IsCellWalkable(idx);
 
             if(!showIndicator)
                 break;
@@ -2153,10 +2772,6 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
     }
 
     layer->SetObjectVisible(ind, showIndicator);
-
-    // indicator visible -> update faction
-    if(showIndicator)
-        ind->SetFaction(player->GetFaction());
 }
 
 void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
@@ -2174,9 +2789,7 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
 
     const int currInd = dest.row * mGameMap->GetNumCols() + dest.col;
 
-    Player * player = GetGame()->GetLocalPlayer();
-
-    const bool currVisible = player->IsCellVisible(currInd);
+    const bool currVisible = mLocalPlayer->IsCellVisible(currInd);
     const bool currWalkable = mGameMap->IsCellWalkable(currInd);
     const bool currIsUnitCell = dest.row == unit->GetRow0() && dest.col == unit->GetCol0();
 
@@ -2222,7 +2835,7 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
 
     const unsigned int lastIdx = totPath.size() - 1;
 
-    const PlayerFaction faction = player->GetFaction();
+    const PlayerFaction faction = mLocalPlayer->GetFaction();
 
     for(unsigned int i = 0; i < totPath.size(); ++i)
     {
@@ -2268,9 +2881,7 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
 
     const int currInd = dest.row * mGameMap->GetNumCols() + dest.col;
 
-    Player * player = GetGame()->GetLocalPlayer();
-
-    const bool currVisible = player->IsCellVisible(currInd);
+    const bool currVisible = mLocalPlayer->IsCellVisible(currInd);
     const bool currWalkable = mGameMap->IsCellWalkable(currInd);
     const bool currIsUnitCell = dest.row == unit->GetRow0() && dest.col == unit->GetCol0();
 
@@ -2316,7 +2927,7 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
 
     const unsigned int lastIdx = totPath.size() - 1;
 
-    const PlayerFaction faction = player->GetFaction();
+    const PlayerFaction faction = mLocalPlayer->GetFaction();
 
     std::vector<Cell2D> cellsPath;
     cellsPath.reserve(totPath.size());
@@ -2438,9 +3049,7 @@ void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
 
     const int destInd = dest.row * mGameMap->GetNumCols() + dest.col;
 
-    Player * player = GetGame()->GetLocalPlayer();
-
-    const bool destVisible = player->IsCellVisible(destInd);
+    const bool destVisible = mLocalPlayer->IsCellVisible(destInd);
     const bool destVisited = mGameMap->IsCellObjectVisited(destInd);
     const bool destWalkable = mGameMap->IsCellWalkable(destInd);
 
@@ -2508,9 +3117,12 @@ void ScreenGame::ClearTempStructIndicator()
 
 void ScreenGame::CenterCameraOverPlayerBase()
 {
-    const Player * p = GetGame()->GetLocalPlayer();
-    const Cell2D & cell = p->GetBaseCell();
-    const sgl::core::Pointd2D pos = mIsoMap->GetCellPosition(cell.row, cell.col);
+    const GameObject * b = mLocalPlayer->GetBase();
+
+    if(nullptr == b)
+        return ;
+
+    const sgl::core::Pointd2D pos = mIsoMap->GetCellPosition(b->GetRow0(), b->GetCol0());
     const int cX = pos.x + mIsoMap->GetTileWidth() * 0.5f;
     const int cY = pos.y + mIsoMap->GetTileHeight() * 0.5f;
 
@@ -2525,7 +3137,7 @@ void ScreenGame::UpdateCurrentCell()
     const int worldX = cam->GetScreenToWorldX(mMousePos.x);
     const int worldY = cam->GetScreenToWorldY(mMousePos.y);
 
-    const Cell2D cell = mIsoMap->CellFromScreenPoint(worldX, worldY);
+    const Cell2D cell = mIsoMap->CellFromWorldPoint(worldX, worldY);
 
     if(cell == mCurrCell)
         return ;
@@ -2533,10 +3145,59 @@ void ScreenGame::UpdateCurrentCell()
     mCurrCell = cell;
 
     // react to change of cell like if mouse was moved
-    GameObject * sel = GetGame()->GetLocalPlayer()->GetSelectedObject();
+    GameObject * sel = mLocalPlayer->GetSelectedObject();
 
     if(sel != nullptr && sel->GetObjectCategory() == GameObject::CAT_UNIT)
         ShowActiveIndicators(static_cast<Unit *>(sel), cell);
+}
+
+void ScreenGame::EndTurn()
+{
+    Game * game = GetGame();
+
+    // END TURN
+    std::cout << "ScreenGame::EndTurn - END PLAYER " << mActivePlayerIdx << "\n" << std::endl;
+
+    // current active player is local player
+    if(IsCurrentTurnLocal())
+        ClearSelection(mLocalPlayer);
+
+    // START NEW TURN
+    const int players = game->GetNumPlayers();
+
+    mActivePlayerIdx = (mActivePlayerIdx + 1) % players;
+
+    std::cout << "ScreenGame::EndTurn - START PLAYER " << mActivePlayerIdx << std::endl;
+
+    // update active player data
+    Player * p = game->GetPlayerByIndex(mActivePlayerIdx);
+    const PlayerFaction activeFaction = p->GetFaction();
+
+    p->ResetTurnEnergy();
+    p->UpdateResources();
+
+    mGameMap->OnNewTurn(activeFaction);
+
+    // new active player is local player
+    if(IsCurrentTurnLocal())
+    {
+        mHUD->ShowTurnControlPanel();
+
+        // reset focus to Stage
+        sgl::sgui::Stage::Instance()->SetFocus();
+    }
+    // new active player is AI
+    else
+        mHUD->ShowTurnControlTextEnemyTurn();
+}
+
+void ScreenGame::PlayLocalActionErrorSFX(const Player * player)
+{
+    if(player->IsLocal())
+    {
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("game/error_action_01.ogg");
+    }
 }
 
 } // namespace game

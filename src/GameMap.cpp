@@ -12,18 +12,22 @@
 #include "AI/ObjectPath.h"
 #include "AI/PlayerAI.h"
 #include "AI/WallBuildPath.h"
+#include "GameObjects/Barracks.h"
 #include "GameObjects/Base.h"
 #include "GameObjects/Blobs.h"
 #include "GameObjects/BlobsGenerator.h"
+#include "GameObjects/Bunker.h"
 #include "GameObjects/DefensiveTower.h"
 #include "GameObjects/Diamonds.h"
 #include "GameObjects/DiamondsGenerator.h"
+#include "GameObjects/Hospital.h"
 #include "GameObjects/LootBox.h"
 #include "GameObjects/ObjectData.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "GameObjects/PracticeTarget.h"
 #include "GameObjects/RadarStation.h"
 #include "GameObjects/RadarTower.h"
+#include "GameObjects/ResearchCenter.h"
 #include "GameObjects/ResourceGenerator.h"
 #include "GameObjects/ResourceStorage.h"
 #include "GameObjects/SceneObject.h"
@@ -36,6 +40,7 @@
 #include "Widgets/MiniMap.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
 namespace game
@@ -406,9 +411,9 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
 
     ObjectToAdd o2a;
 
-    const ObjectBasicData & objData = GetObjectData(type);
-    const unsigned int rows = objData.rows;
-    const unsigned int cols = objData.cols;
+    const ObjectData & data = GetObjectData(type);
+    const unsigned int rows = data.GetRows();
+    const unsigned int cols = data.GetCols();
 
     o2a.r0 = r0;
     o2a.c0 = c0;
@@ -455,18 +460,16 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new RadarStation;
     else if(GameObject::TYPE_RADAR_TOWER == type)
         o2a.obj = new RadarTower;
+    else if(GameObject::TYPE_BARRACKS == type)
+        o2a.obj = new Barracks;
+    else if(GameObject::TYPE_RESEARCH_CENTER == type)
+        o2a.obj = new ResearchCenter;
+    else if(GameObject::TYPE_HOSPITAL == type)
+        o2a.obj = new Hospital(data);
     else if(GameObject::TYPE_DEFENSIVE_TOWER == type)
-    {
-        const ObjectBasicData & data = GetObjectData(type);
-
-        if(o2a.owner != nullptr)
-        {
-            const ObjectFactionData & fData = GetFactionData(faction, type);
-            o2a.obj = new DefensiveTower(data, fData);
-        }
-        else
-            o2a.obj = new DefensiveTower(data);
-    }
+        o2a.obj = new DefensiveTower(data);
+    else if(GameObject::TYPE_BUNKER == type)
+        o2a.obj = new Bunker(data);
     else if(GameObject::TYPE_WALL == type)
         o2a.obj = new Wall(variant);
     else if(GameObject::TYPE_WALL_GATE == type)
@@ -500,7 +503,7 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
             }
         }
 
-        o2a.owner->SetBaseCell(Cell2D(r0, c0));
+        o2a.owner->SetBase(o2a.obj);
         o2a.owner->SumCells(rows * cols);
     }
     else if(GameObject::TYPE_PRACTICE_TARGET == type)
@@ -512,15 +515,15 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         return nullptr;
     }
 
+    // links to other objects
+    o2a.obj->SetGameMap(this);
+    o2a.obj->SetScreen(mScreenGame);
+
     // assign owner
     o2a.obj->SetFaction(faction);
 
     // set object properties
     o2a.obj->SetCell(&mCells[ind0]);
-
-    // links to other objects
-    o2a.obj->SetGameMap(this);
-    o2a.obj->SetScreen(mScreenGame);
 
     // schedule object for map addition
     if(instantAdd)
@@ -593,14 +596,14 @@ bool GameMap::AreObjectsOrthoAdjacent(const GameObject * obj1, const GameObject 
             return (TL2.row - BR1.row) == maxD;
     }
     // obj1 below obj2
-    else if(TL1.row > BR1.row)
+    else if(TL1.row > BR2.row)
     {
         // obj1 left of obj2 OR obj1 right of obj2
         if(BR1.col < TL2.col || TL1.col > BR2.col)
             return false;
         // same cols
         else
-            return (BR2.row - TL1.row) == maxD;
+            return (TL1.row - BR2.row) == maxD;
     }
     // same rows
     else
@@ -627,7 +630,19 @@ bool GameMap::AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) 
     return (distR == 0 && distC == maxDist) || (distR == maxDist && distC == 0);
 }
 
-bool GameMap::CanConquerCell(const Cell2D & cell, Player * player)
+bool GameMap::HasResourcesToConquerCell(Unit * unit)
+{
+    // check if unit has enough energy
+    if(!unit->HasEnergyForActionStep(CONQUER_CELL))
+        return false;
+
+    // check if player has enough resources
+    Player * player = mGame->GetPlayerByFaction(unit->GetFaction());
+
+    return player->HasEnough(Player::Stat::MATERIAL, COST_CONQUEST_CELL);
+}
+
+bool GameMap::CanConquerCell(Unit * unit, const Cell2D & cell, Player * player)
 {
     const unsigned int r = static_cast<unsigned int>(cell.row);
     const unsigned int c = static_cast<unsigned int>(cell.col);
@@ -647,8 +662,19 @@ bool GameMap::CanConquerCell(const Cell2D & cell, Player * player)
     if(gcell.owner == player)
         return false;
 
-    // check if unit has enough energy - LAST CHECK
-    return player->HasEnough(Player::Stat::MATERIAL, COST_CONQUEST_CELL);
+    // no unit
+    if(nullptr == unit)
+        return false;
+
+    // not player's unit
+    if(unit->GetFaction() != player->GetFaction())
+        return false;
+
+    // unit can't conquer
+    if(!unit->CanConquer())
+        return false;
+
+    return true;
 }
 
 void GameMap::StartConquerCell(const Cell2D & cell, Player * player)
@@ -697,11 +723,14 @@ void GameMap::ConquerCell(const Cell2D & cell, Player * player)
     ApplyLocalVisibility();
 }
 
-void GameMap::ConquerCells(ConquerPath * path)
+bool GameMap::ConquerCells(ConquerPath * path)
 {
-    path->Start();
+    const bool res = path->Start();
 
-    mConquerPaths.emplace_back(path);
+    if(res)
+        mConquerPaths.emplace_back(path);
+
+    return res;
 }
 
 bool GameMap::AbortCellConquest(GameObject * obj)
@@ -723,30 +752,29 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
     const unsigned int r = static_cast<unsigned int>(cell.row);
     const unsigned int c = static_cast<unsigned int>(cell.col);
 
-    const ObjectBasicData & data = GetObjectData(st);
+    const ObjectData & data = GetObjectData(st);
 
     // out of bounds
-    if((data.rows - 1) > r || (data.cols - 1) > c || r >= mRows || c >= mCols)
+    if((data.GetRows() - 1) > r || (data.GetCols() - 1) > c || r >= mRows || c >= mCols)
         return false;
 
-    const ObjectFactionData & fData = GetFactionData(player->GetFaction(), st);
-
     // check costs
-    const bool costOk = player->HasEnough(Player::ENERGY, fData.costs[RES_ENERGY]) &&
-                        player->HasEnough(Player::MATERIAL, fData.costs[RES_MATERIAL1]) &&
-                        player->HasEnough(Player::DIAMONDS, fData.costs[RES_DIAMONDS]) &&
-                        player->HasEnough(Player::BLOBS, fData.costs[RES_BLOBS]);
+    const auto & costs = data.GetCosts();
+    const bool costOk = player->HasEnough(Player::ENERGY, costs[RES_ENERGY]) &&
+                        player->HasEnough(Player::MATERIAL, costs[RES_MATERIAL1]) &&
+                        player->HasEnough(Player::DIAMONDS, costs[RES_DIAMONDS]) &&
+                        player->HasEnough(Player::BLOBS, costs[RES_BLOBS]);
 
     if(!costOk)
         return false;
 
     // check unit's energy
-    if(!unit->HasEnergyForAction(BUILD_STRUCTURE))
+    if(!unit->HasEnergyForActionStep(BUILD_STRUCTURE))
         return false;
 
     // check cells
-    const unsigned int r0 = 1 + cell.row - data.rows;
-    const unsigned int c0 = 1 + cell.col - data.cols;
+    const unsigned int r0 = 1 + cell.row - data.GetRows();
+    const unsigned int c0 = 1 + cell.col - data.GetCols();
 
     for(int r = r0; r <= cell.row; ++r)
     {
@@ -768,12 +796,11 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
 
 void GameMap::StartBuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st)
 {
-    const ObjectBasicData & data = GetObjectData(st);
-    const ObjectFactionData & fData = GetFactionData(player->GetFaction(), st);
+    const ObjectData & data = GetObjectData(st);
 
     // mark cell as changing
-    const unsigned int r0 = 1 + cell.row - data.rows;
-    const unsigned int c0 = 1 + cell.col - data.cols;
+    const unsigned int r0 = 1 + cell.row - data.GetRows();
+    const unsigned int c0 = 1 + cell.col - data.GetCols();
 
     for(int r = r0; r <= cell.row; ++r)
     {
@@ -788,14 +815,16 @@ void GameMap::StartBuildStructure(const Cell2D & cell, Player * player, GameObje
     }
 
     // make player pay
-    if(fData.costs[RES_ENERGY] > 0)
-        player->SumResource(Player::ENERGY, -fData.costs[RES_ENERGY]);
-    if(fData.costs[RES_MATERIAL1] > 0)
-        player->SumResource(Player::MATERIAL, -fData.costs[RES_MATERIAL1]);
-    if(fData.costs[RES_DIAMONDS] > 0)
-        player->SumResource(Player::DIAMONDS, -fData.costs[RES_DIAMONDS]);
-    if(fData.costs[RES_BLOBS] > 0)
-        player->SumResource(Player::BLOBS, -fData.costs[RES_BLOBS]);
+    const auto & costs = data.GetCosts();
+
+    if(costs[RES_ENERGY] > 0)
+        player->SumResource(Player::ENERGY, -costs[RES_ENERGY]);
+    if(costs[RES_MATERIAL1] > 0)
+        player->SumResource(Player::MATERIAL, -costs[RES_MATERIAL1]);
+    if(costs[RES_DIAMONDS] > 0)
+        player->SumResource(Player::DIAMONDS, -costs[RES_DIAMONDS]);
+    if(costs[RES_BLOBS] > 0)
+        player->SumResource(Player::BLOBS, -costs[RES_BLOBS]);
 }
 
 void GameMap::BuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st)
@@ -847,6 +876,22 @@ void GameMap::BuildStructure(const Cell2D & cell, Player * player, GameObjectTyp
     ApplyLocalVisibility();
 }
 
+bool GameMap::HasResourcesToBuildWall(Unit * unit, unsigned int level)
+{
+    // check if unit has enough energy
+    if(!unit->HasEnergyForActionStep(BUILD_WALL))
+        return false;
+
+    // check if player has enough resources
+    const int costMat = Wall::GetCostMaterial(level);
+    const int costEne = Wall::GetCostEnergy(level);
+
+    Player * player = mGame->GetPlayerByFaction(unit->GetFaction());
+
+    return player->HasEnough(Player::Stat::MATERIAL, costMat)  &&
+           player->HasEnough(Player::Stat::ENERGY, costEne);
+}
+
 bool GameMap::CanBuildWall(const Cell2D & cell, Player * player, unsigned int level)
 {
     const unsigned int r = static_cast<unsigned int>(cell.row);
@@ -867,12 +912,7 @@ bool GameMap::CanBuildWall(const Cell2D & cell, Player * player, unsigned int le
     if(!gcell.walkable)
         return false;
 
-    // check if player has enough energy and material
-    const int costMat = Wall::GetCostMaterial(level);
-    const int costEne = Wall::GetCostEnergy(level);
-
-    return player->HasEnough(Player::Stat::MATERIAL, costMat)  &&
-           player->HasEnough(Player::Stat::ENERGY, costEne);
+    return true;
 }
 
 void GameMap::StartBuildWall(const Cell2D & cell, Player * player, unsigned int level)
@@ -921,12 +961,12 @@ void GameMap::BuildWall(const Cell2D & cell, Player * player, GameObjectTypeId p
     // update minimap
     if(IsCellVisibleToLocalPlayer(cell.row, cell.col))
     {
-        const ObjectBasicData & data = GetObjectData(GameObject::TYPE_WALL);
+        const ObjectData & data = GetObjectData(GameObject::TYPE_WALL);
 
         const PlayerFaction faction = player->GetFaction();
         const MiniMap::MiniMapElemType type = static_cast<MiniMap::MiniMapElemType>(MiniMap::MME_FACTION1 + faction);
         MiniMap * mm = mScreenGame->GetMiniMap();
-        mm->AddElement(cell.row, cell.col, data.rows, data.cols, type, faction);
+        mm->AddElement(cell.row, cell.col, data.GetRows(), data.GetCols(), type, faction);
     }
 
     // update this wall type and the ones surrounding it
@@ -941,11 +981,14 @@ void GameMap::BuildWall(const Cell2D & cell, Player * player, GameObjectTypeId p
     ApplyLocalVisibility();
 }
 
-void GameMap::BuildWalls(WallBuildPath * path)
+bool GameMap::BuildWalls(WallBuildPath * path)
 {
-    path->Start();
+    const bool res = path->Start();
 
-    mWallBuildPaths.emplace_back(path);
+    if(res)
+        mWallBuildPaths.emplace_back(path);
+
+    return res;
 }
 
 bool GameMap::AbortBuildWalls(GameObject * obj)
@@ -975,8 +1018,12 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
     if(unit->GetFaction() != player->GetFaction())
         return false;
 
+    // unit can't conquer
+    if(!unit->CanConquer())
+        return false;
+
     // unit doesn't have enough energy
-    if(!unit->HasEnergyForAction(CONQUER_STRUCTURE))
+    if(!unit->HasEnergyForActionStep(CONQUER_STRUCTURE))
         return false;
 
     const int ind1 = r1 * mCols + c1;
@@ -1301,21 +1348,24 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     if(player->GetNumUnits() == player->GetMaxUnits())
         return false;
 
-    // only base can generate units (for now)
-    if(gen->GetObjectType() != GameObject::TYPE_BASE)
+    // check if generator is valid
+    const GameObjectTypeId genType = gen->GetObjectType();
+
+    if(genType != GameObject::TYPE_BASE && genType != GameObject::TYPE_BARRACKS &&
+       genType != GameObject::TYPE_HOSPITAL)
         return false;
 
     // generator is already busy
     if(gen->IsBusy())
        return false;
 
-    const ObjectFactionData & fdata = GetFactionData(player->GetFaction(), ut);
-
     // check if player has enough resources
-    if(!player->HasEnough(Player::Stat::ENERGY, fdata.costs[RES_ENERGY]) ||
-       !player->HasEnough(Player::Stat::MATERIAL, fdata.costs[RES_MATERIAL1]) ||
-       !player->HasEnough(Player::Stat::DIAMONDS, fdata.costs[RES_DIAMONDS]) ||
-       !player->HasEnough(Player::Stat::BLOBS, fdata.costs[RES_BLOBS]))
+    const auto & costs = GetObjectData(ut).GetCosts();
+
+    if(!player->HasEnough(Player::Stat::ENERGY, costs[RES_ENERGY]) ||
+       !player->HasEnough(Player::Stat::MATERIAL, costs[RES_MATERIAL1]) ||
+       !player->HasEnough(Player::Stat::DIAMONDS, costs[RES_DIAMONDS]) ||
+       !player->HasEnough(Player::Stat::BLOBS, costs[RES_BLOBS]))
         return false;
 
     // check if there's at least 1 free cell where to place the new unit
@@ -1325,8 +1375,8 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     const int r0 = gen->GetRow0() < static_cast<int>(mRows - 1) ? gen->GetRow0() + 1 : mRows - 1;
     const int c0 = gen->GetCol0() < static_cast<int>(mCols - 1) ? gen->GetCol0() + 1 : mCols - 1;
 
-    const int indBaseTop = r1 * mCols;
-    const int indBaseBottom = r0 * mCols;
+    const int indGenTop = r1 * mCols;
+    const int indGenBottom = r0 * mCols;
 
     // NOTE for simplicity corner cells are overlapping and sometimes checked twice.
     // This can be optimized, but it's probably not worth it for now.
@@ -1341,7 +1391,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     // check top (left to right)
     for(int c = c1; c <= c0; ++c)
     {
-        if(mCells[indBaseTop + c].walkable)
+        if(mCells[indGenTop + c].walkable)
             return true;
     }
 
@@ -1355,7 +1405,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     // check bottom (left to right)
     for(int c = c1; c <= c0; ++c)
     {
-        if(mCells[indBaseBottom + c].walkable)
+        if(mCells[indGenBottom + c].walkable)
             return true;
     }
 
@@ -1523,12 +1573,12 @@ void GameMap::StartCreateUnit(GameObjectTypeId ut, GameObject * gen, const Cell2
     GameMapCell & gcell = mCells[ind];
 
     // make player pay
-    const ObjectFactionData & fData = GetFactionData(player->GetFaction(), ut);
+    const auto & costs = GetObjectData(ut).GetCosts();
 
-    player->SumResource(Player::Stat::ENERGY, -fData.costs[RES_ENERGY]);
-    player->SumResource(Player::Stat::MATERIAL, -fData.costs[RES_MATERIAL1]);
-    player->SumResource(Player::Stat::DIAMONDS, -fData.costs[RES_DIAMONDS]);
-    player->SumResource(Player::Stat::BLOBS, -fData.costs[RES_BLOBS]);
+    player->SumResource(Player::Stat::ENERGY, -costs[RES_ENERGY]);
+    player->SumResource(Player::Stat::MATERIAL, -costs[RES_MATERIAL1]);
+    player->SumResource(Player::Stat::DIAMONDS, -costs[RES_DIAMONDS]);
+    player->SumResource(Player::Stat::BLOBS, -costs[RES_BLOBS]);
 
     // mark cell as changing
     gcell.changing = true;
@@ -1543,10 +1593,9 @@ void GameMap::CreateUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & d
     GameMapCell & gcell = mCells[ind];
 
     const PlayerFaction faction = player->GetFaction();
-    const ObjectBasicData & data = GetObjectData(ut);
-    const ObjectFactionData & fData = GetFactionData(faction, ut);
+    const ObjectData & data = GetObjectData(ut);
 
-    Unit * unit = new Unit(data, fData);
+    Unit * unit = new Unit(data);
     unit->SetFaction(faction);
     unit->SetCell(&mCells[ind]);
 
@@ -1561,13 +1610,14 @@ void GameMap::CreateUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & d
 
     mIsoMap->GetLayer(OBJECTS2)->AddObject(unit->GetIsoObject(), r, c);
 
+    unit->OnPositionChanged();
+
     // store unit in map list and in registry
     mObjects.push_back(unit);
     mObjectsSet.insert(unit);
 
     // update player
     player->AddUnit(unit);
-    player->SumTotalUnitsLevel(unit->GetUnitLevel() + 1);
 
     // update visibility map
     AddPlayerObjVisibility(unit, player);
@@ -1638,9 +1688,7 @@ bool GameMap::MoveUnit(ObjectPath * path)
         return false;
 
     // start path
-    path->Start();
-
-    const bool started = path->GetState() == ObjectPath::MOVING;
+    const bool started = path->Start();
 
     if(started)
         mPaths.emplace_back(path);
@@ -1817,6 +1865,140 @@ Cell2D GameMap::GetOrthoAdjacentMoveTarget(const Cell2D & start, const Cell2D & 
     return GetClosestCell(start, walkalbes);
 }
 
+bool GameMap::FindAttackPosition(const Unit * u, const GameObject * target, Cell2D & pos)
+{
+    const int dist = ceilf(u->GetRangeAttack() * 0.5f);
+
+    if(FindAttackPosition(u, target, dist, pos))
+        return true;
+
+    // fallback
+    return FindAttackPosition(u, target, dist + 1, pos);
+}
+
+bool GameMap::FindAttackPosition(const Unit * u, const GameObject * target, int dist, Cell2D & pos)
+{
+    const int unitR0 = u->GetRow0();
+    const int unitC0 = u->GetCol0();
+    const Cell2D unitCell(unitR0, unitC0);
+    const int targetR0 = target->GetRow0();
+    const int targetC0 = target->GetCol0();
+
+    // FIND CLOSEST VERTEX OF TARGET
+    int targetR = targetR0;
+    int targetC = targetC0;
+
+    if(target->GetRows() > 1 || target->GetCols() > 1)
+    {
+        const int targetR1 = target->GetRow1();
+        const int targetC1 = target->GetCol1();
+
+        const int VERTS = 4;
+        const Cell2D targetV[VERTS] =
+        {
+            {targetR0, targetC0},
+            {targetR0, targetC1},
+            {targetR1, targetC0},
+            {targetR1, targetC1}
+        };
+
+        int bestInd = 0;
+        int minDist = mRows + mCols;
+
+        for(int i = 0; i < VERTS; ++i)
+        {
+            const int distV = ApproxDistance(unitCell, targetV[i]);
+
+            if(distV < minDist)
+            {
+                bestInd = i;
+                minDist = distV;
+            }
+        }
+
+        targetR = targetV[bestInd].row;
+        targetC = targetV[bestInd].col;
+    }
+
+    // FIND ATTACK POSITION
+    const int tlR = (targetR - dist) >= 0 ? (targetR - dist) : 0;
+    const int tlC = (targetC - dist) >= 0 ? (targetC - dist) : 0;
+    const int brR = (targetR + dist) < (mRows - 1) ? targetR + dist : (mRows - 1);
+    const int brC = (targetC + dist) < (mCols - 1) ? targetC + dist : (mCols - 1);
+
+    int minDist = mRows + mCols;
+
+    // TOP
+    {
+        const int r = tlR;
+
+        for(int c = tlC; c <= brC; ++c)
+        {
+            const Cell2D dest(r, c);
+            const int dist = ApproxDistance(unitCell, dest);
+
+            if(dist < minDist)
+            {
+                pos = dest;
+                minDist = dist;
+            }
+        }
+    }
+
+    // BOTTOM
+    {
+        const int r = brR;
+
+        for(int c = tlC; c <= brC; ++c)
+        {
+            const Cell2D dest(r, c);
+            const int dist = ApproxDistance(unitCell, dest);
+
+            if(dist < minDist)
+            {
+                pos = dest;
+                minDist = dist;
+            }
+        }
+    }
+
+    // LEFT
+    {
+        const int c = tlC;
+
+        for(int r = tlR + 1; r < brR; ++r)
+        {
+            const Cell2D dest(r, c);
+            const int dist = ApproxDistance(unitCell, dest);
+
+            if(dist < minDist)
+            {
+                pos = dest;
+                minDist = dist;
+            }
+        }
+    }
+
+    // RIGHT
+    {
+        const int c = brC;
+
+        for(int r = tlR + 1; r < brR; ++r)
+        {
+            const Cell2D dest(r, c);
+            const int dist = ApproxDistance(unitCell, dest);
+
+            if(dist < minDist)
+            {
+                pos = dest;
+                minDist = dist;
+            }
+        }
+    }
+
+    return (pos.row != -1);
+}
+
 bool GameMap::MoveObjectDown(GameObject * obj)
 {
     const unsigned int ind = (obj->GetRow0() * mCols) + obj->GetCol0();
@@ -1858,10 +2040,390 @@ int GameMap::ApproxDistance(const Cell2D & c1, const Cell2D & c2) const
     return std::abs(c1.row - c2.row) + std::abs(c1.col - c2.col);
 }
 
-int GameMap::ApproxDistance(GameObject * obj1, GameObject * obj2) const
+int GameMap::ApproxDistance(const GameObject * obj1, const GameObject * obj2) const
 {
-    return std::abs(obj1->GetRow0() - obj2->GetRow0()) +
-           std::abs(obj1->GetCol0() - obj2->GetCol0());
+    const int R1 = obj1->GetRows() > 1 ? (obj1->GetRow0() + obj1->GetRow1()) / 2 : obj1->GetRow0();
+    const int C1 = obj1->GetCols() > 1 ? (obj1->GetCol0() + obj1->GetCol1()) / 2 : obj1->GetCol0();
+
+    const int R2 = obj2->GetRows() > 1 ? (obj2->GetRow0() + obj2->GetRow1()) / 2 : obj2->GetRow0();
+    const int C2 = obj2->GetCols() > 1 ? (obj2->GetCol0() + obj2->GetCol1()) / 2 : obj2->GetCol0();
+
+    return std::abs(R2 - R1) + std::abs(C2 - C1);
+}
+
+bool GameMap::FindClosestCellConnectedToObject(const GameObject * obj, const Cell2D start, Cell2D & end)
+{
+    end.row = -1;
+    end.col = -1;
+
+    const PlayerFaction faction = obj->GetFaction();
+
+    // object has no faction -> no cell connected
+    if(faction == NO_FACTION)
+        return false;
+
+    const Player * player = mGame->GetPlayerByFaction(faction);
+
+    // FIND CONNECTED (SAME FACTION) CELLS
+    std::vector<unsigned int> todo;
+    std::unordered_set<unsigned int> done;
+
+    const Cell2D objCell(obj->GetRow0(), obj->GetCol0());
+    const unsigned int indObj = objCell.row * mCols + objCell.col;
+
+    todo.push_back(indObj);
+
+    end = objCell;
+    unsigned int closestDist = ApproxDistance(start, objCell);
+
+    while(!todo.empty())
+    {
+        unsigned int currInd = todo.back();
+        todo.pop_back();
+
+        const GameMapCell & currCell = mCells[currInd];
+        const Cell2D cc(currCell.row, currCell.col);
+
+        const unsigned int dist = ApproxDistance(start, cc);
+
+        if(dist < closestDist)
+        {
+            closestDist = dist;
+            end = cc;
+        }
+
+        // add TOP
+        unsigned int r = currCell.row - 1;
+
+        if(r < mRows)
+        {
+            const unsigned int ind = currInd - mCols;
+
+            if(mCells[ind].owner == player && done.find(ind) == done.end())
+                todo.push_back(ind);
+        }
+
+        // add BOTTOM
+        r = currCell.row + 1;
+
+        if(r < mRows)
+        {
+            unsigned int ind = currInd + mCols;
+
+            if(mCells[ind].owner == player && done.find(ind) == done.end())
+                todo.push_back(ind);
+        }
+
+        // add LEFT
+        unsigned int c = currCell.col - 1;
+
+        if(c < mCols)
+        {
+            const unsigned int ind = currInd - 1;
+
+            if(mCells[ind].owner == player && done.find(ind) == done.end())
+                todo.push_back(ind);
+        }
+
+        // add RIGHT
+        c = currCell.col + 1;
+
+        if(c < mCols)
+        {
+            const unsigned int ind = currInd + 1;
+
+            if(mCells[ind].owner == player && done.find(ind) == done.end())
+                todo.push_back(ind);
+        }
+
+        // add current to done
+        done.insert(currInd);
+    }
+
+    return true;
+}
+
+bool GameMap::FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, Cell2D & linked)
+{
+    const int maxDist = mRows * mCols;
+    int minDist = maxDist;
+
+    const Player * player = mGame->GetPlayerByFaction(faction);
+
+    const int r0 = start.row;
+    const int c0 = start.col;
+    const int maxRadiusR = start.row < (mRows / 2) ? (mRows - r0) : (r0 + 1);
+    const int maxRadiusC = start.col < (mCols / 2) ? (mCols - c0) : (c0 + 1);
+    const int maxRadius = maxRadiusR > maxRadiusC ? maxRadiusR : maxRadiusC;
+    int radius = 1;
+
+    linked.row = -1;
+    linked.col = -1;
+
+    while(radius < maxRadius)
+    {
+        const int tlR = (r0 - radius) >= 0 ? (r0 - radius) : 0;
+        const int tlC = (c0 - radius) >= 0 ? (c0 - radius) : 0;
+        const int brR = (r0 + radius) < (mRows - 1) ? r0 + radius : (mRows - 1);
+        const int brC = (c0 + radius) < (mCols - 1) ? c0 + radius : (mCols - 1);
+
+        // TOP
+        {
+            const int r = tlR;
+            const unsigned int ind0 = r * mCols;
+
+            for(int c = tlC; c <= brC; ++c)
+            {
+                const unsigned int ind = ind0 + c;
+                const GameMapCell & cell = mCells[ind];
+
+                if(cell.owner == player && cell.linked)
+                {
+                    const Cell2D dest(r, c);
+                    const int dist = ApproxDistance(start, dest);
+
+                    if(dist < minDist)
+                    {
+                        linked = dest;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+
+        // BOTTOM
+        {
+            const int r = brR;
+            const unsigned int ind0 = r * mCols;
+
+            for(int c = tlC; c <= brC; ++c)
+            {
+                const unsigned int ind = ind0 + c;
+                const GameMapCell & cell = mCells[ind];
+
+                if(cell.owner == player && cell.linked)
+                {
+                    const Cell2D dest(r, c);
+                    const int dist = ApproxDistance(start, dest);
+
+                    if(dist < minDist)
+                    {
+                        linked = dest;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+
+        // LEFT
+        {
+            const int c = tlC;
+
+            for(int r = tlR + 1; r < brR; ++r)
+            {
+                const unsigned int ind = r * mCols + c;
+                const GameMapCell & cell = mCells[ind];
+
+                if(cell.owner == player && cell.linked)
+                {
+                    const Cell2D dest(r, c);
+                    const int dist = ApproxDistance(start, dest);
+
+                    if(dist < minDist)
+                    {
+                        linked = dest;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+
+        // RIGHT
+        {
+            const int c = brC;
+
+            for(int r = tlR + 1; r < brR; ++r)
+            {
+                const unsigned int ind = r * mCols + c;
+                const GameMapCell & cell = mCells[ind];
+
+                if(cell.owner == player && cell.linked)
+                {
+                    const Cell2D dest(r, c);
+                    const int dist = ApproxDistance(start, dest);
+
+                    if(dist < minDist)
+                    {
+                        linked = dest;
+                        minDist = dist;
+                    }
+                }
+            }
+        }
+
+        if(linked.row != -1)
+            return true;
+
+        ++radius;
+    }
+
+    return false;
+}
+
+bool GameMap::FindFreeArea(const Cell2D & start, int rows, int cols, int maxRadius, Cell2D & target)
+{
+    const int r0 = start.row;
+    const int c0 = start.col;
+
+    const int maxDist = mRows * mCols;
+    int minDist = maxDist;
+
+    int radius = 1;
+
+    target.row = -1;
+    target.col = -1;
+
+    while(radius < maxRadius)
+    {
+        const int tlR = (r0 - radius) > 0 ? (r0 - radius) : 0;
+        const int tlC = (c0 - radius) > 0 ? (c0 - radius) : 0;
+        const int brR = (r0 + radius) < (mRows - 1) ? r0 + radius : (mRows - 1);
+        const int brC = (c0 + radius) < (mCols - 1) ? c0 + radius : (mCols - 1);
+
+        // TOP
+        {
+            const int r = tlR;
+
+            for(int c = tlC; c <= brC; ++c)
+            {
+                if(IsAreaFree(r, c, rows, cols))
+                {
+                    const Cell2D t(r, c);
+                    const int dist = ApproxDistance(start, t);
+
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        target = t;
+                    }
+                }
+            }
+
+            std::cout << "GameMap::FindFreeArea - BEST TOP: " << target.row << "," << target.col << std::endl;
+        }
+
+        // BOTTOM
+        {
+            const int r = brR;
+
+            for(int c = tlC; c <= brC; ++c)
+            {
+                if(IsAreaFree(r, c, rows, cols))
+                {
+                    const Cell2D t(r, c);
+                    const int dist = ApproxDistance(start, t);
+
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        target = t;
+                    }
+                }
+            }
+
+            std::cout << "GameMap::FindFreeArea - BEST BOTTOM: " << target.row << "," << target.col << std::endl;
+        }
+
+        // LEFT
+        {
+            const int c = tlC;
+
+            for(int r = tlR + 1; r < brR; ++r)
+            {
+                if(IsAreaFree(r, c, rows, cols))
+                {
+                    const Cell2D t(r, c);
+                    const int dist = ApproxDistance(start, t);
+
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        target = t;
+                    }
+                }
+            }
+
+            std::cout << "GameMap::FindFreeArea - BEST LEFT: " << target.row << "," << target.col << std::endl;
+        }
+
+        // RIGHT
+        {
+            const int c = brC;
+
+            for(int r = tlR + 1; r < brR; ++r)
+            {
+                if(IsAreaFree(r, c, rows, cols))
+                {
+                    const Cell2D t(r, c);
+                    const int dist = ApproxDistance(start, t);
+
+                    if(dist < minDist)
+                    {
+                        minDist = dist;
+                        target = t;
+                    }
+                }
+            }
+
+            std::cout << "GameMap::FindFreeArea - BEST RIGHT: " << target.row << "," << target.col << std::endl;
+        }
+
+        if(target.row != -1)
+        {
+            std::cout << "GameMap::FindFreeArea - FOUND BEST - radius: " << radius
+                      << " - target: " << target.row << "," << target.col << std::endl;
+
+            return true;
+        }
+
+        ++radius;
+    }
+
+    return false;
+}
+
+bool GameMap::IsAreaFree(int brR, int brC, int rows, int cols)
+{
+    // area goes outside map
+    if(rows > brR || cols > brC)
+        return false;
+
+    for(int r = brR - rows + 1; r <= brR; ++r)
+    {
+        const int ind0 = r * mCols;
+
+        for(int c = brC - cols + 1; c <= brC; ++c)
+        {
+            const int ind = ind0 + c;
+            const GameMapCell & cell = mCells[ind];
+
+            if(cell.objTop != nullptr || cell.objBottom != nullptr)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+void GameMap::OnNewTurn(PlayerFaction faction)
+{
+    // notify all objects
+    for(GameObject * obj : mObjects)
+        obj->OnNewTurn(faction);
+
+    // notify all generators
+    for(CollectableGenerator * cg : mCollGen)
+        cg->OnNewTurn();
 }
 
 void GameMap::Update(float delta)
@@ -1897,10 +2459,6 @@ void GameMap::Update(float delta)
         else
             ++itObj;
     }
-
-    // update generators
-    for(CollectableGenerator * dg : mCollGen)
-        dg->Update(delta);
 
     // add new objects to map
     UpdateObjectsToAdd();
@@ -1994,6 +2552,11 @@ int GameMap::DefineCellType(unsigned int ind, const GameMapCell & cell)
 
 void GameMap::UpdateLinkedCells(Player * player)
 {
+    const GameObject * b = player->GetBase();
+
+    if(nullptr == b)
+        return;
+
     const std::vector<Structure *> & structures = player->GetStructures();
     std::unordered_map<GameObject *, bool> objsLink;
     std::unordered_map<int, bool> cells;
@@ -2025,8 +2588,7 @@ void GameMap::UpdateLinkedCells(Player * player)
     std::vector<unsigned int> todo;
     std::unordered_set<unsigned int> done;
 
-    const Cell2D & home = player->GetBaseCell();
-    const unsigned int indHome = home.row * mCols + home.col;
+    const unsigned int indHome = b->GetRow0() * mCols + b->GetCol0();
     todo.push_back(indHome);
 
     while(!todo.empty())
@@ -2257,6 +2819,8 @@ bool GameMap::MoveObjToCell(GameObject * obj, int row, int col)
     IsoLayer * layer = obj->GetIsoObject()->GetLayer();
     layer->MoveObject(obj->GetRow0(), obj->GetCol0(), row, col, false);
 
+    obj->OnPositionChanged();
+
     // remove object from current cell
     mCells[ind0].objTop = nullptr;
     mCells[ind0].walkable = true;
@@ -2348,6 +2912,8 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
 
     // create object in iso map
     mIsoMap->GetLayer(o2a.layer)->AddObject(o2a.obj->GetIsoObject(), o2a.r0, o2a.c0);
+
+    o2a.obj->OnPositionChanged();
 
     // apply visibility
     ApplyLocalVisibilityToObject(o2a.obj);
@@ -2913,16 +3479,10 @@ void GameMap::UpdateWall(const Cell2D & cell)
     }
 }
 
-const ObjectBasicData & GameMap::GetObjectData(GameObjectTypeId t) const
+const ObjectData & GameMap::GetObjectData(GameObjectTypeId t) const
 {
     const ObjectsDataRegistry * objReg = mGame->GetObjectsRegistry();
     return objReg->GetObjectData(t);
-}
-
-const ObjectFactionData & GameMap::GetFactionData(PlayerFaction f, GameObjectTypeId t) const
-{
-    const ObjectsDataRegistry * objReg = mGame->GetObjectsRegistry();
-    return objReg->GetFactionData(f, t);
 }
 
 } // namespace game

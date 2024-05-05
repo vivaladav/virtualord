@@ -21,37 +21,24 @@
 namespace game
 {
 
-const float ACTION_COSTS[NUM_OBJ_ACTIONS] =
-{
-    0.f,    // IDLE
-    0.f,    // BUILD_UNIT
-    2.f,    // MOVE
-    5.f,    // CONQUER_CELL
-    10.f,   // CONQUER_STRUCTURE
-    1.f,    // ATTACK
-    20.f,   // BUILD_STRUCTURE
-    10.f,   // BUILD_WALL
-    5.f,    // HEAL
-    0.f     // TOGGLE_GATE
-};
-
-Unit::Unit(const ObjectBasicData & objData, const ObjectFactionData & facData)
-    : GameObject(objData.objType, GameObject::CAT_UNIT, objData.rows, objData.cols)
+Unit::Unit(const ObjectData & data)
+    : GameObject(data.GetType(), GameObject::CAT_UNIT, data.GetRows(), data.GetCols())
+    , mAttributes(data.GetAttributes())
     , mStructToBuild(GameObject::TYPE_NULL)
 {
-    // SET STATS values in range [1-10]
-    mStats.resize(NUM_UNIT_STATS);
-    mStats = facData.stats;
-
     // set attack range converting attribute
     const int maxAttVal = 11;
     const int attRanges[maxAttVal] = { 0, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13 };
-    mRangeAttack = attRanges[mStats[OSTAT_FIRE_RANGE]];
+    mRangeAttack = attRanges[mAttributes[OBJ_ATT_FIRE_RANGE]];
 
-    // set attack range converting attribute
+    // set healing range converting attribute
     const int maxHealVal = 11;
-    const int HealRanges[maxHealVal] = { 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5 };
-    mRangeHealing = HealRanges[mStats[OSTAT_HEALING]];
+    const int HealRanges[maxHealVal] = { 0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4 };
+    mRangeHealing = HealRanges[mAttributes[OBJ_ATT_HEALING]];
+
+    // set healing power converting attribute
+    const float HealPowers[maxHealVal] = { 0.f, 1.f, 2.f, 2.f, 3.f, 3.f, 4.f, 4.f, 5.f, 5.f, 6.f };
+    mHealingPower = HealPowers[mAttributes[OBJ_ATT_HEALING]];
 
     // TODO translate stats into actual values, ex.: speed = 5 -> SetSpeed(2.f)
 
@@ -60,22 +47,25 @@ Unit::Unit(const ObjectBasicData & objData, const ObjectFactionData & facData)
 
     // set actual speed
     const float maxSpeed = 5.f;
-    const float speed = maxSpeed * static_cast<float>(mStats[OSTAT_SPEED]) / maxStatVal;
+    const float speed = maxSpeed * static_cast<float>(mAttributes[OBJ_ATT_SPEED]) / maxStatVal;
     SetSpeed(speed);
 
+    // set regeneration power
+    const float regPower = mAttributes[OBJ_ATT_REGENERATION] / maxStatVal;
+    SetRegPower(regPower);
+
+    // set visibility
     SetVisibilityLevel(4);
 }
 
-void Unit::IncreaseUnitLevel()
+bool Unit::CanAttack() const
 {
-    if(mLevel >= MAX_UNITS_LEVEL)
-        return ;
-
-    ++mLevel;
-    SetImage();
+    return mAttributes[OBJ_ATT_FIRE_ACCURACY] > 0 &&
+           mAttributes[OBJ_ATT_FIRE_POWER] > 0 &&
+           mAttributes[OBJ_ATT_FIRE_RANGE] > 0;
 }
 
-bool Unit::IsTargetAttackInRange(GameObject * obj) const
+bool Unit::IsTargetAttackInRange(const GameObject * obj) const
 {
     for(int r = obj->GetRow1(); r <= obj->GetRow0(); ++r)
     {
@@ -91,13 +81,19 @@ bool Unit::IsTargetAttackInRange(GameObject * obj) const
 
 bool Unit::SetTargetAttack(GameObject * obj)
 {
-    if(nullptr == obj || !IsTargetAttackInRange(obj) || !obj->IsVisible() || obj == this)
+    if(nullptr == obj || !IsTargetAttackInRange(obj) || !obj->IsVisible()
+        || !HasEnergyForActionStep(ATTACK) || obj == this)
        return false;
 
     mTargetAttack = obj;
     mTimerAttack = 0.f;
 
     return true;
+}
+
+bool Unit::CanHeal() const
+{
+    return mAttributes[OBJ_ATT_HEALING] > 0;
 }
 
 bool Unit::IsTargetHealingInRange(GameObject * obj) const
@@ -116,7 +112,9 @@ bool Unit::IsTargetHealingInRange(GameObject * obj) const
 
 bool Unit::SetTargetHealing(GameObject * obj)
 {
-    if(nullptr == obj || !IsTargetHealingInRange(obj) || !obj->IsVisible() || obj == this)
+    if(nullptr == obj || !IsTargetHealingInRange(obj) || !obj->IsVisible() ||
+       obj == this || obj->GetObjectCategory() != GameObject::CAT_UNIT ||
+       obj->IsHealthMax())
         return false;
 
     mTargetHealing = obj;
@@ -129,11 +127,6 @@ void Unit::SetActiveActionToDefault() { SetActiveAction(MOVE); }
 
 void Unit::Update(float delta)
 {
-    // UPDATE ENERGY
-    // TODO recover energy based on attributes
-    if(GetEnergy() < GetMaxEnergy())
-        SumEnergy(0.1f);
-
     // ATTACKING OTHER OBJECTS
     if(mTargetAttack)
         UpdateAttack(delta);
@@ -142,31 +135,24 @@ void Unit::Update(float delta)
         UpdateHealing(delta);
 }
 
+bool Unit::CanBuild() const
+{
+    return mAttributes[OBJ_ATT_CONSTRUCTION] > 0;
+}
+
 void Unit::ClearStructureToBuild() { mStructToBuild = GameObject::TYPE_NULL; }
 
-void Unit::ConsumeEnergy(GameObjectActionType action)
+bool Unit::CanConquer() const
 {
-    if(action < NUM_OBJ_ACTIONS)
-       SumEnergy(-ACTION_COSTS[action]);
+    return mAttributes[OBJ_ATT_CONQUEST] > 0;
 }
 
-int Unit::GetStat(unsigned int index) const
+int Unit::GetAttribute(unsigned int index) const
 {
-    if(index < mStats.size())
-        return mStats[index];
+    if(index < mAttributes.size())
+        return mAttributes[index];
     else
         return 0;
-}
-
-bool Unit::HasEnergyForAction(GameObjectActionType action)
-{
-    if(action < NUM_OBJ_ACTIONS)
-    {
-        const float diff = GetEnergy() - ACTION_COSTS[action];
-        return diff >= 0.f;
-    }
-    else
-        return false;
 }
 
 void Unit::UpdateGraphics()
@@ -207,7 +193,7 @@ void Unit::UpdateAttack(float delta)
     // target still alive -> try to shoot
     if(GetGameMap()->HasObject(mTargetAttack))
     {
-        if(IsTargetAttackInRange(mTargetAttack))
+        if(IsTargetAttackInRange(mTargetAttack) && HasEnergyForActionStep(ATTACK))
             Shoot();
         else
         {
@@ -288,7 +274,7 @@ void Unit::Shoot()
         return ;
 
     // consume energy
-    ConsumeEnergy(ATTACK);
+    ActionStepCompleted(ATTACK);
 
     auto pu = static_cast<UpdaterSingleLaser *>(GetScreen()->GetParticleUpdater(PU_SINGLE_LASER));
 
@@ -361,7 +347,7 @@ void Unit::Heal()
         return ;
 
     // consume energy
-    ConsumeEnergy(HEAL);
+    ActionStepCompleted(HEAL);
 
     auto pu = static_cast<UpdaterHealing *>(GetScreen()->GetParticleUpdater(PU_HEALING));
 

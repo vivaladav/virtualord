@@ -23,34 +23,15 @@ namespace game
 
 const int ALPHA = 115;
 
-StructureIndicator::StructureIndicator(const ObjectBasicData & objData)
-    : IsoObject(objData.rows, objData.cols)
-    , mFaction(NO_FACTION)
+StructureIndicator::StructureIndicator(const ObjectData & data, PlayerFaction faction)
+    : IsoObject(data.GetRows(), data.GetCols())
+    , mFaction(faction)
 {
     auto tm = sgl::graphic::TextureManager::Instance();
 
-    SetTexture(tm->GetSprite(objData.noFactionIconFile, objData.noFactionIconTexId));
+    SetTexture(tm->GetSprite(data.GetIconTexFile(), data.GetIconTexId(faction)));
 
     SetAlpha(ALPHA);
-}
-
-StructureIndicator::StructureIndicator(const ObjectBasicData & objData, const ObjectFactionData & fData)
-    : IsoObject(objData.rows, objData.cols)
-    , mFaction(NO_FACTION)
-{
-    auto tm = sgl::graphic::TextureManager::Instance();
-
-    SetTexture(tm->GetSprite(fData.iconFile, fData.iconTexId));
-
-    SetAlpha(ALPHA);
-}
-
-void StructureIndicator::SetFaction(PlayerFaction faction)
-{
-    if(faction == mFaction)
-        return ;
-
-    mFaction = faction;
 
     UpdateCostColor();
 }

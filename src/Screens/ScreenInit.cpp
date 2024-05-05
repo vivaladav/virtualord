@@ -27,6 +27,7 @@ const char * packageMusicGame = "data/music/game.bin";
 const char * packageMusicMenus = "data/music/menus.bin";
 const char * packageMusicTest = "data/music/test.bin";
 
+const char * packageSoundsGame = "data/sfx/game.bin";
 const char * packageSoundsTest = "data/sfx/test.bin";
 const char * packageSoundsUI = "data/sfx/UI/UI.bin";
 }
@@ -128,19 +129,31 @@ void ScreenInit::SetupLoadPackages()
     // LOAD GAME PACKAGE
     mJobs.emplace_back([this]
     {
-        mTexPackages[PACKAGE_IMGS_GAME] =  new sgl::core::DataPackage("data/img/game.bin");
+        mTexPackages[PACKAGE_IMGS_GAME] = new sgl::core::DataPackage("data/img/game.bin");
     });
 
     // LOAD TEST PACKAGE
     mJobs.emplace_back([this]
     {
-        mTexPackages[PACKAGE_IMGS_TEST] =  new sgl::core::DataPackage("data/img/test.bin");
+        mTexPackages[PACKAGE_IMGS_TEST] = new sgl::core::DataPackage("data/img/test.bin");
     });
 
-    // LOAD UI PACKAGE
+    // LOAD UI GAME PACKAGE
     mJobs.emplace_back([this]
     {
-        mTexPackages[PACKAGE_IMGS_UI] =  new sgl::core::DataPackage("data/img/UI/UI.bin");
+        mTexPackages[PACKAGE_IMGS_UI_GAME] = new sgl::core::DataPackage("data/img/UI/UI-game.bin");
+    });
+
+    // LOAD UI OTHERS PACKAGE
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_OTHERS] = new sgl::core::DataPackage("data/img/UI/UI-others.bin");
+    });
+
+    // LOAD UI TUTORIAL PACKAGE
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_TUTORIAL] = new sgl::core::DataPackage("data/img/UI/UI-tutorial.bin");
     });
 
     // LOAD MUSIC GAME PACKAGE
@@ -159,6 +172,12 @@ void ScreenInit::SetupLoadPackages()
     mJobs.emplace_back([am]
     {
         am->RegisterDataPackage(packageMusicTest);
+    });
+
+    // LOAD SFX GAME PACKAGE
+    mJobs.emplace_back([am]
+    {
+        am->RegisterDataPackage(packageSoundsGame);
     });
 
     // LOAD SFX UI PACKAGE
@@ -216,6 +235,18 @@ void ScreenInit::SetupSFX()
 {
     auto am = sgl::media::AudioManager::Instance();
 
+    // GAME SFX
+    mJobs.emplace_back([this, am]
+    {
+        am->CreateSound(packageSoundsGame, "game/error_action_01.ogg");
+    });
+
+    // TEST SFX
+    mJobs.emplace_back([this, am]
+    {
+        am->CreateSound(packageSoundsTest, "test/test.ogg");
+    });
+
     // UI SFX
     mJobs.emplace_back([this, am]
     {
@@ -235,12 +266,6 @@ void ScreenInit::SetupSFX()
         am->CreateSound(packageSoundsUI, "UI/dialog_close-02.ogg");
         am->CreateSound(packageSoundsUI, "UI/dialog_open-01.ogg");
         am->CreateSound(packageSoundsUI, "UI/dialog_open-02.ogg");
-    });
-
-    // TEST SFX
-    mJobs.emplace_back([this, am]
-    {
-        am->CreateSound(packageSoundsTest, "test/test.ogg");
     });
 }
 
@@ -279,7 +304,7 @@ void ScreenInit::SetupTextures()
             { 935, 193, 32, 24 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogExit, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileDialogExit, rects);
     });
 
     // DIALOG EXPLORE TEMPLE
@@ -310,7 +335,57 @@ void ScreenInit::SetupTextures()
             { 1059, 205, 24, 24 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogExploreTemple, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExploreTemple, rects);
+    });
+
+    // DIALOG OBJECT
+    mJobs.emplace_back([this, tm]
+    {
+        std::vector<sgl::core::Rectd> rects
+        {
+            // DIALOG
+            { 0, 0, 860, 525 },
+            { 0, 526, 400, 38 },
+            { 401, 526, 400, 38 },
+
+            // ATTRIBUTES BAR
+            { 861, 0, 140, 18 },
+            { 861, 19, 140, 18 },
+            { 861, 38, 140, 18 },
+            { 861, 57, 140, 18 },
+            { 861, 76, 140, 18 },
+            { 861, 95, 140, 18 },
+            { 861, 114, 140, 18 },
+            { 861, 133, 140, 18 },
+            { 861, 152, 140, 18 },
+            { 861, 171, 140, 18 },
+            { 861, 190, 140, 18 },
+
+            // STARS BAR
+            { 861, 209, 112, 16 },
+            { 861, 226, 112, 16 },
+            { 861, 243, 112, 16 },
+            { 861, 260, 112, 16 },
+            { 861, 277, 112, 16 },
+            { 861, 294, 112, 16 },
+            { 861, 311, 112, 16 },
+            { 861, 328, 112, 16 },
+            { 861, 345, 112, 16 },
+            { 861, 362, 112, 16 },
+            { 861, 379, 112, 16 },
+
+            // BUTTON CLOSE
+            { 861, 396, 105, 40 },
+            { 861, 396, 105, 40 },
+            { 861, 396, 105, 40 },
+
+            // PROGRESS BAR
+            { 0, 565, 154, 16 },
+            { 155, 565, 150, 12 },
+            { 155, 565, 150, 12 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogObject, rects);
     });
 
     // MAIN MENU
@@ -326,7 +401,7 @@ void ScreenInit::SetupTextures()
             { 537, 62, 20, 360 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileMainMenu, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileMainMenu, rects);
     });
 
     // MAIN MENU BUTTONS
@@ -356,7 +431,7 @@ void ScreenInit::SetupTextures()
             { 128, 500, 24, 24 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileMainMenuButtons, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileMainMenuButtons, rects);
     });
 
     // FACTION SELECTION
@@ -399,7 +474,7 @@ void ScreenInit::SetupTextures()
             { 1404, 554, 300, 60 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileFactionSelection, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileFactionSelection, rects);
     });
 
     // CELLS
@@ -439,41 +514,120 @@ void ScreenInit::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // MINIMAP
-            { 0, 0, 286, 286 },
-            { 222, 287, 10, 10 },
-            { 233, 287, 10, 10 },
-            { 159, 287, 20, 20 },
-            { 180, 287, 20, 20 },
-            { 201, 287, 20, 20 },
-            { 287, 0, 60, 16 },
-            { 287, 17, 60, 16 },
-            { 287, 34, 60, 16 },
-            { 287, 51, 60, 16 },
-            { 287, 68, 60, 16 },
-            { 287, 85, 60, 16 },
-            { 287, 102, 60, 16 },
-            { 287, 119, 60, 16 },
-            { 287, 136, 16, 60 },
-            { 303, 136, 16, 60 },
-            { 287, 198, 16, 60 },
-            { 303, 198, 16, 60 },
-            { 320, 136, 16, 60 },
-            { 336, 136, 16, 60 },
-            { 320, 198, 16, 60 },
-            { 336, 198, 16, 60 },
-            { 159, 308, 14, 26 },
-            { 174, 308, 14, 26 },
-            { 189, 308, 26, 14 },
-            { 189, 323, 26, 14 },
+            { 0, 0, 340, 340 },
+            // element
+            { 341, 341, 10, 10 },
+            // button close
+            { 159, 341, 20, 20 },
+            { 180, 341, 20, 20 },
+            { 201, 341, 20, 20 },
+            // button up
+            { 341, 0, 60, 16 },
+            { 341, 17, 60, 16 },
+            { 341, 34, 60, 16 },
+            { 341, 51, 60, 16 },
+            // button down
+            { 341, 68, 60, 16 },
+            { 341, 85, 60, 16 },
+            { 341, 102, 60, 16 },
+            { 341, 119, 60, 16 },
+            // button right
+            { 341, 136, 16, 60 },
+            { 357, 136, 16, 60 },
+            { 341, 198, 16, 60 },
+            { 357, 198, 16, 60 },
+            // button left
+            { 374, 136, 16, 60 },
+            { 390, 136, 16, 60 },
+            { 374, 198, 16, 60 },
+            { 390, 198, 16, 60 },
+            // camera corners
+            { 224, 341, 14, 26 },
+            { 239, 341, 14, 26 },
+            { 254, 341, 26, 14 },
+            { 254, 356, 26, 14 },
             // MINIMAP BUTTON
-            { 0, 287, 52, 52 },
-            { 53, 287, 52, 52 },
-            { 106, 287, 52, 52 }
+            { 0, 341, 52, 52 },
+            { 53, 341, 52, 52 },
+            { 106, 341, 52, 52 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileMapPanels, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelMinimap, rects);
     });
 
+    // PANEL SELECTED OBJECT
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 340, 340 },
+            // VALUE BAR
+            { 0, 341, 154, 16 },
+            { 155, 341, 150, 12 },
+            { 341, 187, 154, 16 },
+            // STARS BAR
+            { 341, 0, 112, 16 },
+            { 341, 17, 112, 16 },
+            { 341, 34, 112, 16 },
+            { 341, 51, 112, 16 },
+            { 341, 68, 112, 16 },
+            { 341, 85, 112, 16 },
+            { 341, 102, 112, 16 },
+            { 341, 119, 112, 16 },
+            { 341, 136, 112, 16 },
+            { 341, 153, 112, 16 },
+            { 341, 170, 112, 16 },
+            // ICONS
+            { 454, 66, 22, 22 },
+            { 477, 66, 22, 22 },
+            { 500, 66, 22, 22 },
+            // BUTTON PANEL
+            { 341, 210, 52, 52 },
+            { 394, 210, 52, 52 },
+            { 448, 210, 52, 52 },
+            // BUTTON CLOSE PANEL
+            { 454, 89, 20, 20 },
+            { 475, 89, 20, 20 },
+            { 496, 89, 20, 20 },
+            // BUTTON ACTION
+            { 341, 263, 60, 40 },
+            { 402, 263, 60, 40 },
+            { 463, 263, 60, 40 },
+            { 341, 304, 60, 40 },
+            { 402, 304, 60, 40 },
+            // ICONS ACTION
+            { 454, 0, 32, 32 },
+            { 487, 0, 32, 32 },
+            { 454, 33, 32, 32 },
+            { 454, 33, 32, 32 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelSelectedObject, rects);
+    });
+
+    // PANEL TURN CONTROL
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 788, 60 },
+            // PROGRESS BAR
+            { 0, 61, 404, 16 },
+            { 0, 78, 400, 12 },
+            { 0, 91, 400, 16 },
+            // BUTTON
+            { 405, 61, 60, 40 },
+            { 466, 61, 60, 40 },
+            { 527, 61, 60, 40 },
+            { 588, 61, 60, 40 },
+            // ICONS
+            { 649, 61, 32, 32 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelTurnControl, rects);
+    });
 
     // MAP UI
     mJobs.emplace_back([this, tm]
@@ -491,7 +645,42 @@ void ScreenInit::SetupTextures()
             { 9, 37, 11, 12 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileMapUI, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileMapUI, rects);
+    });
+
+    // TUTORIAL
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // AREA CORNERS
+            { 0, 0, 25, 25 },
+            { 26, 0, 25, 25 },
+            { 52, 0, 25, 25 },
+            { 78, 0, 25, 25 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorial, rects);
+    });
+
+    // TUTORIAL EXP
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // INFO PANEL
+            { 0, 0, 20, 20 },
+            { 21, 0, 20, 20 },
+            { 42, 0, 20, 20 },
+            { 63, 0, 20, 20 },
+            { 84, 0, 20, 20 },
+            { 105, 0, 20, 20 },
+            { 126, 0, 20, 20 },
+            { 147, 0, 20, 20 },
+            { 168, 0, 20, 20 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorialExp, rects);
     });
 
     // COLLECTIBLES
@@ -830,6 +1019,42 @@ void ScreenInit::SetupTextures()
             { 1164, 1176, 288, 167 },
             { 1164, 0, 288, 167 },
             { 1164, 168, 288, 167 },
+            // BARRACKS
+            { 1453, 0, 192, 96 },
+            { 1453, 97, 192, 96 },
+            { 1453, 194, 192, 96 },
+            { 1453, 291, 192, 96 },
+            { 1453, 388, 192, 96 },
+            { 1453, 485, 192, 96 },
+            { 1453, 582, 192, 96 },
+            { 1453, 679, 192, 96 },
+            // HOSPITAL
+            { 1067, 1344, 192, 117 },
+            { 1260, 1344, 192, 117 },
+            { 1453, 775, 192, 117 },
+            { 1453, 893, 192, 117 },
+            { 1453, 1011, 192, 117 },
+            { 1453, 1129, 192, 117 },
+            { 1453, 1247, 192, 117 },
+            { 1453, 1365, 192, 117 },
+            // RESEARCH CENTER
+            { 0, 1536, 192, 107 },
+            { 193, 1536, 192, 107 },
+            { 386, 1536, 192, 107 },
+            { 579, 1536, 192, 107 },
+            { 776, 1378, 192, 107 },
+            { 776, 1486, 192, 107 },
+            { 969, 1462, 192, 107 },
+            { 1162, 1462, 192, 107 },
+            // BUNKER
+            { 1358, 1594, 96, 55 },
+            { 1455, 1594, 96, 55 },
+            { 776, 1594, 96, 55 },
+            { 873, 1594, 96, 55 },
+            { 970, 1594, 96, 55 },
+            { 1067, 1594, 96, 55 },
+            { 1164, 1594, 96, 55 },
+            { 1261, 1594, 96, 55 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileStructures, rects);
@@ -1070,7 +1295,7 @@ void ScreenInit::SetupTextures()
             { 301, 546, 300, 44 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogEndMission, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogEndMission, rects);
     });
 
     // NEW ELEMENT DIALOG
@@ -1124,7 +1349,7 @@ void ScreenInit::SetupTextures()
             { 1268, 98, 20, 80 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogNewElement, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewElement, rects);
 
         // NEW ELEMENT DIALOG - EXPANDABLE GRAPHICS
         const std::vector<sgl::core::Rectd> rectsExp
@@ -1135,7 +1360,7 @@ void ScreenInit::SetupTextures()
             { 0, 62, 1280, 90 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileDialogNewElementExp, rectsExp);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewElementExp, rectsExp);
     });
 
     // OBJECT ACTION BUTTON
@@ -1163,7 +1388,7 @@ void ScreenInit::SetupTextures()
             { 212, 127, 52, 52 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileObjActionButton, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileObjActionButton, rects);
     });
 
     // PLANET MAP
@@ -1232,7 +1457,7 @@ void ScreenInit::SetupTextures()
             { 351, 913, 350, 44 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFilePlanetMap, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFilePlanetMap, rects);
     });
 
     // PLANET MAP 2
@@ -1249,7 +1474,7 @@ void ScreenInit::SetupTextures()
             { 476, 552, 475, 85 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFilePlanetMap2, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFilePlanetMap2, rects);
     });
 
     // RESOURCES BAR
@@ -1270,7 +1495,7 @@ void ScreenInit::SetupTextures()
             { 141, 51, 26, 26 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileResourcesBar, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileResourcesBar, rects);
     });
 
     // TOOLTIPS
@@ -1284,7 +1509,7 @@ void ScreenInit::SetupTextures()
             { 42, 0, 20, 32 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileTooltips, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileTooltips, rects);
     });
 
     // QUICK UNIT SELECTION
@@ -1319,7 +1544,7 @@ void ScreenInit::SetupTextures()
             { 536, 82, 49, 40 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileUnitQuickSel, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileUnitQuickSel, rects);
     });
 
     // SETTINGS
@@ -1360,7 +1585,7 @@ void ScreenInit::SetupTextures()
             { 977, 801, 45, 39 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileSettings, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileSettings, rects);
     });
 
     // SETTINGS - EXPANDABLE TEXTURES
@@ -1379,7 +1604,7 @@ void ScreenInit::SetupTextures()
             { 606, 53, 30, 30 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI], SpriteFileSettingsExp, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileSettingsExp, rects);
     });
 
     // TEST SPRITE

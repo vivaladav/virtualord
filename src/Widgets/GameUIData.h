@@ -145,6 +145,53 @@ enum SpriteIdDialogNewElementExp : unsigned int
     IND_DLG_NEWE_BG_BTM,
 };
 
+// DIALOG OBJECT
+extern const char SpriteFileDialogObject[];
+
+enum SpriteIdDialogObject : unsigned int
+{
+    // DIALOG
+    ID_DLG_OBJ_BG,
+    ID_DLG_OBJ_BG_STAT,
+    ID_DLG_OBJ_BG_STAT_EMPTY,
+
+    // ATTRIBUTES BAR
+    ID_DLG_OBJ_BAR0,
+    ID_DLG_OBJ_BAR1,
+    ID_DLG_OBJ_BAR2,
+    ID_DLG_OBJ_BAR3,
+    ID_DLG_OBJ_BAR4,
+    ID_DLG_OBJ_BAR5,
+    ID_DLG_OBJ_BAR6,
+    ID_DLG_OBJ_BAR7,
+    ID_DLG_OBJ_BAR8,
+    ID_DLG_OBJ_BAR9,
+    ID_DLG_OBJ_BAR10,
+
+    // STARS BAR
+    ID_DLG_OBJ_SBAR_0,
+    ID_DLG_OBJ_SBAR_1,
+    ID_DLG_OBJ_SBAR_2,
+    ID_DLG_OBJ_SBAR_3,
+    ID_DLG_OBJ_SBAR_4,
+    ID_DLG_OBJ_SBAR_5,
+    ID_DLG_OBJ_SBAR_6,
+    ID_DLG_OBJ_SBAR_7,
+    ID_DLG_OBJ_SBAR_8,
+    ID_DLG_OBJ_SBAR_9,
+    ID_DLG_OBJ_SBAR_10,
+
+    // BUTTON CLOSE
+    ID_DLG_OBJ_BTN_CLOSE_NORMAL,
+    ID_DLG_OBJ_BTN_CLOSE_OVER,
+    ID_DLG_OBJ_BTN_CLOSE_PUSHED,
+
+    // PROGRESS BAR
+    ID_DLG_OBJ_PB_BG,
+    ID_DLG_OBJ_PB_BAR,
+    ID_DLG_OBJ_PB_MARKS,
+};
+
 // FACTION SELECTION DIALOG
 extern const char SpriteFileFactionSelection[];
 
@@ -220,6 +267,62 @@ enum SpriteIdObjActionButton : unsigned int
     NUM_IND_OBJ_ACT_BUTTON
 };
 
+
+// PANEL SELECTED OBJECT
+extern const char SpriteFilePanelSelectedObject[];
+
+enum SpriteIdPanelSelectedObject : unsigned int
+{
+    // BACKGROUND
+    ID_PAN_SELOBJ_BG,
+
+    // VALUE BAR
+    ID_PAN_SELOBJ_VALBAR_BG,
+    ID_PAN_SELOBJ_VALBAR_BAR,
+    ID_PAN_SELOBJ_VALBAR_MARKS,
+
+    // STARS BAR
+    ID_PAN_SELOBJ_SBAR_0,
+    ID_PAN_SELOBJ_SBAR_1,
+    ID_PAN_SELOBJ_SBAR_2,
+    ID_PAN_SELOBJ_SBAR_3,
+    ID_PAN_SELOBJ_SBAR_4,
+    ID_PAN_SELOBJ_SBAR_5,
+    ID_PAN_SELOBJ_SBAR_6,
+    ID_PAN_SELOBJ_SBAR_7,
+    ID_PAN_SELOBJ_SBAR_8,
+    ID_PAN_SELOBJ_SBAR_9,
+    ID_PAN_SELOBJ_SBAR_10,
+
+    // ICONS
+    ID_PAN_SELOBJ_ICON_ENERGY,
+    ID_PAN_SELOBJ_ICON_HEALTH,
+    ID_PAN_SELOBJ_ICON_EXPERIENCE,
+
+    // BUTTON PANEL
+    ID_PAN_SELOBJ_BTN_NORMAL,
+    ID_PAN_SELOBJ_BTN_OVER,
+    ID_PAN_SELOBJ_BTN_PUSHED,
+
+    // BUTTON CLOSE PANEL
+    ID_PAN_SELOBJ_BTN_CLOSE_NORMAL,
+    ID_PAN_SELOBJ_BTN_CLOSE_OVER,
+    ID_PAN_SELOBJ_BTN_CLOSE_PUSHED,
+
+    // BUTTON ACTION
+    ID_PAN_SELOBJ_BTN_ACTION_NORMAL,
+    ID_PAN_SELOBJ_BTN_ACTION_DISABLED,
+    ID_PAN_SELOBJ_BTN_ACTION_OVER,
+    ID_PAN_SELOBJ_BTN_ACTION_PUSHED,
+    ID_PAN_SELOBJ_BTN_ACTION_CHECKED,
+
+    // ICONS ACTION
+    ID_PAN_SELOBJ_ICON_ACT_ATTACK,
+    ID_PAN_SELOBJ_ICON_ACT_MOVE,
+    ID_PAN_SELOBJ_ICON_ACT_INFO,
+    ID_PAN_SELOBJ_ICON_ACT_UPGRADE,
+};
+
 // MAIN MENU
 extern const char SpriteFileMainMenu[];
 
@@ -266,13 +369,12 @@ enum SpriteIdMainMenuButtons : unsigned int
 };
 
 // MAP PANELS
-extern const char SpriteFileMapPanels[];
+extern const char SpriteFilePanelMinimap[];
 
 enum SpriteIdMapPanels : unsigned int
 {
     // MINIMAP
     IND_MINIMAP_BG,
-    IND_MINIMAP_MAP_BG,
     IND_MINIMAP_MAP_ELEM,
     IND_MINIMAP_BTN_CLOSE_NORMAL,
     IND_MINIMAP_BTN_CLOSE_OVER,
@@ -317,6 +419,26 @@ enum SpriteIdMapUI : unsigned int
     // ICON COSTS
     IND_ICON_CELL_ENERGY,
     IND_ICON_CELL_MATERIAL
+};
+
+// MAP UI
+extern const char SpriteFilePanelTurnControl[];
+
+enum SpriteIdPanelTurnControl : unsigned int
+{
+    // BACKGROUND
+    ID_TURN_CONTROL_BG,
+    // PROGRESS BAR
+    ID_TURN_CONTROL_PB_BG,
+    ID_TURN_CONTROL_PB_BAR,
+    ID_TURN_CONTROL_PB_MARKS,
+    // BUTTON
+    ID_TURN_CONTROL_BUTTON_NORMAL,
+    ID_TURN_CONTROL_BUTTON_DISABLED,
+    ID_TURN_CONTROL_BUTTON_OVER,
+    ID_TURN_CONTROL_BUTTON_PUSHED,
+    // ICONS
+    ID_TURN_CONTROL_ICON,
 };
 
 // PLANET MAP
@@ -524,5 +646,35 @@ enum SpriteIdUnitQuickSel : unsigned int
 
     NUM_UQS_UNIT_SPRITE_PER_FACTION = IND_UQS_UNIT1_F2 - IND_UQS_UNIT1_F1
 };
+
+// TUTORIAL
+extern const char SpriteFileTutorial[];
+
+enum SpriteIdTutorial : unsigned int
+{
+    // AREA CORNERS
+    IND_TUT_AREA_CORNER_TL,
+    IND_TUT_AREA_CORNER_TR,
+    IND_TUT_AREA_CORNER_BL,
+    IND_TUT_AREA_CORNER_BR,
+};
+
+// TUTORIAL - EXPANDABLE TEXTURES
+extern const char SpriteFileTutorialExp[];
+
+enum SpriteIdTutorialExp : unsigned int
+{
+    // AREA CORNERS
+    IND_TUT_PANEL_INFO_CORNER_TL,
+    IND_TUT_PANEL_INFO_CORNER_TR,
+    IND_TUT_PANEL_INFO_CORNER_BL,
+    IND_TUT_PANEL_INFO_CORNER_BR,
+    IND_TUT_PANEL_INFO_BG,
+    IND_TUT_PANEL_INFO_L,
+    IND_TUT_PANEL_INFO_T,
+    IND_TUT_PANEL_INFO_R,
+    IND_TUT_PANEL_INFO_B
+};
+
 
 } // namespace game

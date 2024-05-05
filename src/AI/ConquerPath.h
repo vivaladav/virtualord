@@ -40,7 +40,8 @@ public:
 
     void SetPathCells(const std::vector<unsigned int> & cells);
 
-    void Start();
+    bool HasStarted() const;
+    bool Start();
     void Abort();
     void InstantAbort();
 
@@ -49,15 +50,15 @@ public:
 private:
     void CreateIndicators();
 
-    void InitNextConquest();
-    void InitNextMove();
+    bool InitNextConquest();
+    bool InitNextMove();
 
     void UpdateMove(float delta);
 
     void UpdatePathCost();
 
-    void Fail();
-    void Finish();
+    bool Fail();
+    bool Finish();
 
 private:
     std::vector<unsigned int> mCells;
@@ -95,6 +96,8 @@ inline Unit * ConquerPath::GetUnit() const { return mUnit; }
 inline ConquerPath::ConquerState ConquerPath::GetState() const { return mState; }
 
 inline float ConquerPath::GetPathCost() const { return mCost; }
+
+inline bool ConquerPath::HasStarted() const { return mState != READY; }
 
 inline void ConquerPath::SetPathCells(const std::vector<unsigned int> & cells)
 {

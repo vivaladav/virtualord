@@ -14,6 +14,7 @@ namespace sgl
 
     namespace sgui
     {
+        class AbstractButton;
         class AbstractButtonsGroup;
         class ButtonsGroup;
         class Label;
@@ -30,7 +31,7 @@ class ButtonLeft;
 class ButtonRight;
 class ButtonSlot;
 class ObjectsDataRegistry;
-class PanelAttribute;
+class ObjectVisualAttribute;
 class Player;
 
 enum ObjFamily : unsigned int;
@@ -40,7 +41,9 @@ class DialogNewElement : public sgl::sgui::Widget
 public:
     enum ElemType : unsigned int
     {
-        ETYPE_UNITS,
+        ETYPE_UNITS_BARRACKS,
+        ETYPE_UNITS_BASE,
+        ETYPE_UNITS_HOSPITAL,
         ETYPE_STRUCTURES,
 
         NUM_ELEMENT_TYPES
@@ -52,6 +55,8 @@ public:
 
     void SetFunctionOnBuild(const std::function<void()> & f);
     void SetFunctionOnClose(const std::function<void()> & f);
+
+    sgl::sgui::AbstractButton * GetButtonBuild() const;
 
     int GetSelectedIndex() const;
     GameObjectTypeId GetSelectedType() const;
@@ -68,14 +73,14 @@ private:
     void PositionElements();
 
 private:
-    static const int PANELS_ATT_ROWS = 7;
-    static const int PANELS_ATT_COLS = 2;
-    static const int NUM_PANELS_ATT = PANELS_ATT_ROWS * PANELS_ATT_COLS;
+    static const int VIS_ATT_ROWS = 7;
+    static const int VIS_ATT_COLS = 2;
+    static const int NUM_VIS_ATT = VIS_ATT_ROWS * VIS_ATT_COLS;
 
     static const int NUM_COSTS = 4;
 
 private:
-    std::array<PanelAttribute *, NUM_PANELS_ATT> mPanelsAtt;
+    std::array<ObjectVisualAttribute *, NUM_VIS_ATT> mVisAtt;
     std::array<sgl::sgui::Label *, NUM_COSTS> mLabelsCost;
 
     std::vector<GameObjectTypeId> mTypes;

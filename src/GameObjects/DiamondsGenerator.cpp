@@ -8,7 +8,7 @@ namespace game
 {
 
 DiamondsGenerator::DiamondsGenerator(GameMap * gm)
-    : CollectableGenerator(gm, 10, 40)
+    : CollectableGenerator(gm, 4, 30)
 {
 }
 
@@ -24,9 +24,6 @@ void DiamondsGenerator::OnGeneration()
 
     if(nullptr == obj)
         return ;
-
-    auto diamonds = static_cast<Diamonds *>(obj);
-    diamonds->SetGenerator(this);
 
     // make the cell walkable for collection
     gm->SetCellWalkable(r, c, true);

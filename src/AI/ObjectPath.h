@@ -36,7 +36,8 @@ public:
 
     void SetPathCells(const std::vector<unsigned int> & cells);
 
-    void Start();
+    bool HasStarted() const;
+    bool Start();
 
     void Abort();
     void InstantAbort();
@@ -44,12 +45,12 @@ public:
     void Update(float delta);
 
 private:
-    void InitNextMove();
+    bool InitNextMove();
 
     void UpdatePathCost();
 
-    void Fail();
-    void Finish();
+    bool Fail();
+    bool Finish();
 
 private:
     std::vector<unsigned int> mCells;
@@ -81,6 +82,8 @@ inline GameObject * ObjectPath::GetObject() const { return mObj; }
 
 inline ObjectPath::PathState ObjectPath::GetState() const { return mState; }
 
+inline bool ObjectPath::HasStarted() const { return mState != READY; }
+
 inline float ObjectPath::GetPathCost() const { return mCost; }
 
 inline void ObjectPath::SetPathCells(const std::vector<unsigned int> & cells)
@@ -93,5 +96,7 @@ inline void ObjectPath::Abort()
 {
     mState = ABORTING;
 }
+
+
 
 } // namespace game

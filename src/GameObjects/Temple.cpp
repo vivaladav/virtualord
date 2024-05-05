@@ -3,6 +3,7 @@
 #include "GameConstants.h"
 #include "GameData.h"
 #include "IsoObject.h"
+#include "Widgets/GameProgressBar.h"
 
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/utilities/LoadedDie.h>
@@ -16,6 +17,8 @@ namespace game
 
 Temple::Temple()
     : Structure(GameObject::TYPE_TEMPLE, GameObject::CAT_GENERIC, 3, 3)
+    , mOnDone([]{})
+    , mExplorer(NO_FACTION)
 {
     SetCanBeConquered(true);
 
@@ -46,16 +49,16 @@ void Temple::SetInvestedResources(int money, int material, int blobs, int diamon
     if(mInvestedDiamonds > mMaxDiamonds)
         mInvestedDiamonds = mMaxDiamonds;
 
-    const float maxTime = 150.f;
-    const float minTime = 0.f;
+    const int maxTurns = 16;
+    const int minTurns = 1;
     const float maxSuccess = 100.f;
     const float minSuccess = 0.f;
 
     // TIME
     const float timeInfluenceMoney = 35.f;
-    const float timeInfluenceMaterial = 30.f;
-    const float timeInfluenceBlobs = 17.5f;
-    const float timeInfluenceDiamonds = 17.5f;
+    const float timeInfluenceMaterial = 25.f;
+    const float timeInfluenceBlobs = 20.f;
+    const float timeInfluenceDiamonds = 20.f;
 
     const float timeCostMoney = timeInfluenceMoney / mMaxMoney;
     const float timeCostMaterial = timeInfluenceMaterial / mMaxMaterial;
@@ -64,10 +67,10 @@ void Temple::SetInvestedResources(int money, int material, int blobs, int diamon
 
     const float timePerc = timeCostMoney * mInvestedMoney + timeCostMaterial * mInvestedMaterial +
                            timeCostBlobs * mInvestedBlobs + timeCostDiamonds * mInvestedDiamonds;
-    mExplorationTime = std::roundf(maxTime - maxTime * timePerc / 100.f);
+    mExplorationTurns = (maxTurns - static_cast<int>(maxTurns * timePerc / 100.f));
 
-    if(mExplorationTime < minTime)
-        mExplorationTime = minTime;
+    if(mExplorationTurns < minTurns)
+        mExplorationTurns = minTurns;
 
     // SUCCESS
     const float successInfluenceMoney = 20.f;
@@ -90,35 +93,21 @@ void Temple::SetInvestedResources(int money, int material, int blobs, int diamon
         mExplorationSuccess = maxSuccess;
 }
 
-void Temple::Explore()
+void Temple::StartExploring(PlayerFaction explorer, const std::function<void()> & onDone)
 {
-    const float probSuccess = mExplorationSuccess;
-    const float probFail = 100.f - probSuccess;
-    sgl::utilities::LoadedDie die({ EXP_OUTC_GOOD, EXP_OUTC_BAD }, { probSuccess, probFail });
+    // CREATE PROGRESS BAR
+    mProgressBar = new GameProgressBar(explorer, 0.f, mExplorationTurns);
+    mProgressBar->SetValue(0.f);
 
-    mOutcomeCat = static_cast<ExplorationOutcomeCategory>(die.GetNextValue());
+    IsoObject * iObj = GetIsoObject();
+    const int pbX = iObj->GetX() + (iObj->GetWidth() - mProgressBar->GetWidth()) / 2;
+    const int pbY = iObj->GetY() - mProgressBar->GetHeight();
+    mProgressBar->SetPosition(pbX, pbY);
 
-    // GOOD -> positive reward
-    if(mOutcomeCat == EXP_OUTC_GOOD)
-    {
-        DecideRewards();
-        return ;
-    }
+    // START
+    mExplorer = explorer;
 
-    // BAD route -> decide if NOTHING or BAD
-    sgl::utilities::LoadedDie die2({ EXP_OUTC_NOTHING, EXP_OUTC_BAD }, { probSuccess, probFail });
-
-    mOutcomeCat = static_cast<ExplorationOutcomeCategory>(die2.GetNextValue());
-
-    // NOTHING
-    if(mOutcomeCat == EXP_OUTC_NOTHING)
-    {
-        mOutcome1 = EXP_OUT_NULL;
-        mOutcome2 = EXP_OUT_NULL;
-    }
-    // BAD
-    else
-        DecidePunishments();
+    mOnDone = onDone;
 }
 
 const char * Temple::GetExplorationOutcomeString(ExplorationOutcome o) const
@@ -158,18 +147,81 @@ const char * Temple::GetExplorationOutcomeString(ExplorationOutcome o) const
     return strings[o];
 }
 
+void Temple::OnNewTurn(PlayerFaction faction)
+{
+    GameObject::OnNewTurn(faction);
+
+    // nothing to do while not exploring
+    if(faction != mExplorer)
+        return ;
+
+    --mExplorationTurns;
+
+    const int turnsLeft = mProgressBar->GetMax() - mExplorationTurns;
+    mProgressBar->SetValue(turnsLeft);
+
+    // still exploring...
+    if(mExplorationTurns > 0)
+        return ;
+
+    // finalize exploration
+    FinishExploring();
+
+    mOnDone();
+
+    // reset exploration
+    mExplorer = NO_FACTION;
+
+    mOnDone = []{};
+
+    delete mProgressBar;
+    mProgressBar = nullptr;
+}
+
+void Temple::FinishExploring()
+{
+    const float probSuccess = mExplorationSuccess;
+    const float probFail = 100.f - probSuccess;
+    sgl::utilities::LoadedDie die({ EXP_OUTC_GOOD, EXP_OUTC_BAD }, { probSuccess, probFail });
+
+    mOutcomeCat = static_cast<ExplorationOutcomeCategory>(die.GetNextValue());
+
+    // GOOD -> positive reward
+    if(mOutcomeCat == EXP_OUTC_GOOD)
+    {
+        DecideRewards();
+        return ;
+    }
+
+    // BAD route -> decide if NOTHING or BAD
+    sgl::utilities::LoadedDie die2({ EXP_OUTC_NOTHING, EXP_OUTC_BAD }, { probSuccess, probFail });
+
+    mOutcomeCat = static_cast<ExplorationOutcomeCategory>(die2.GetNextValue());
+
+    // NOTHING
+    if(mOutcomeCat == EXP_OUTC_NOTHING)
+    {
+        mOutcome1 = EXP_OUT_NULL;
+        mOutcome2 = EXP_OUT_NULL;
+    }
+    // BAD
+    else
+        DecidePunishments();
+}
+
 void Temple::DefineMaxValues()
 {
     const int numLevels = 5;
-    const int mainRes[numLevels] = { 2000, 2500, 3500, 5000, 7000 };
+    const int money[numLevels] = { 2000, 2500, 3500, 5000, 7000 };
+    const int material[numLevels] = { 1000, 2000, 3000, 4000, 5000 };
     const int secRes[numLevels] = { 200, 250, 350, 500, 700 };
 
     const std::vector<float> lvlProbs = { 30.f, 25.f, 20.f, 15.f, 10.f };
     sgl::utilities::LoadedDie die(lvlProbs);
     const int lvl = die.GetNextValue();
 
-    mMaxMoney = mainRes[lvl];
-    mMaxMaterial = mainRes[lvl];
+    mMaxMoney = money[lvl];
+    mMaxMaterial = material[lvl];
     mMaxBlobs = secRes[lvl];
     mMaxDiamonds = secRes[lvl];
 }

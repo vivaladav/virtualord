@@ -28,7 +28,7 @@ void RadarTower::UpdateGraphics()
 
 void RadarTower::OnLinkedChanged()
 {
-    GameObject::OnLinkedChanged();
+    Structure::OnLinkedChanged();
 
     const int maxVis = 9;
     SetVisibilityLevel(maxVis * static_cast<int>(IsLinked()));

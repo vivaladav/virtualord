@@ -7,6 +7,7 @@
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "Widgets/ButtonPanelTab.h"
 #include "Widgets/GameUIData.h"
+#include "Widgets/ObjectVisualAttribute.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/DummyRenderable.h>
@@ -462,143 +463,6 @@ const int ButtonSlot::KEYS[NUM_SLOTS] = {
 
 const char * ButtonSlot::SHORTCUTS[NUM_SLOTS] = { "1", "2", "3", "4", "5", "6" };
 
-// ===== ATTRIBUTE PANEL =====
-
-class PanelAttribute : public sgl::sgui::Widget
-{
-public:
-    PanelAttribute(sgl::sgui::Widget * parent)
-        : sgl::sgui::Widget(parent)
-    {
-        using namespace sgl::graphic;
-
-        auto tm = TextureManager::Instance();
-
-        // BACKGROUND
-        Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ATT_OFF);
-        mBg = new Image(tex);
-        RegisterRenderable(mBg);
-
-        SetSize(mBg->GetWidth(), mBg->GetHeight());
-
-        // LABEL
-        mLabel = new DummyRenderable;
-        RegisterRenderable(mLabel);
-
-        // VALUE BAR
-        mValueBar = new DummyRenderable;
-        RegisterRenderable(mValueBar);
-    }
-
-    void ClearData()
-    {
-        using namespace sgl::graphic;
-
-        // check if already cleared
-        if(!mHasData)
-            return ;
-
-        // BACKGROUND
-        auto tm = TextureManager::Instance();
-        Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ATT_OFF);
-        mBg->SetTexture(tex);
-
-        // LABEL
-        UnregisterRenderable(mLabel);
-        delete mLabel;
-        mLabel = new DummyRenderable;
-        RegisterRenderable(mLabel);
-
-        // VALUE BAR
-        UnregisterRenderable(mValueBar);
-        delete mValueBar;
-        mValueBar = new DummyRenderable;
-        RegisterRenderable(mValueBar);
-
-        // update data flag
-        mHasData = false;
-    }
-
-    void SetData(const char * txt, unsigned int val)
-    {
-        using namespace sgl::graphic;
-
-        // BACKGROUND
-        auto tm = TextureManager::Instance();
-        Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ATT_ON);
-        mBg->SetTexture(tex);
-
-        // LABEL
-        auto fm = FontManager::Instance();
-
-        UnregisterRenderable(mLabel);
-        delete mLabel;
-
-        auto font = fm->GetFont("Lato-Regular.ttf", 18, Font::NORMAL);
-        mLabel = new Text(txt, font);
-        mLabel->SetColor(0xf1f2f4ff);
-        RegisterRenderable(mLabel);
-
-        // VALUE BAR
-        if(!mHasData)
-        {
-            UnregisterRenderable(mValueBar);
-            delete mValueBar;
-            mValueBar = new Image;
-            RegisterRenderable(mValueBar);
-        }
-
-        const unsigned int maxVal = 10;
-
-        if(val > maxVal)
-            val = maxVal;
-
-        const unsigned int texId = IND_DLG_NEWE_BAR0 + val;
-        tex = tm->GetSprite(SpriteFileDialogNewElement, texId);
-        static_cast<Image *>(mValueBar)->SetTexture(tex);
-
-        // update data flag
-        mHasData = true;
-
-        // reset positions
-        HandlePositionChanged();
-    }
-
-    void HandlePositionChanged() override
-    {
-        const int x0 = GetScreenX();
-        const int y0 = GetScreenY();
-
-        mBg->SetPosition(x0, y0);
-
-        const int marginH = 10;
-
-        // LABEL
-        const int labelX = x0 + marginH;
-        const int labelY = y0 + (mBg->GetHeight() - mLabel->GetHeight()) * 0.5f;
-        mLabel->SetPosition(labelX, labelY);
-
-        // BAR
-        const int barX = x0 + mBg->GetWidth() - marginH - mValueBar->GetWidth();
-        const int barY = y0 + (mBg->GetHeight() - mValueBar->GetHeight()) * 0.5f;
-        mValueBar->SetPosition(barX, barY);
-    }
-
-    void OnRender() override
-    {
-        mBg->Render();
-        mLabel->Render();
-        mValueBar->Render();
-    }
-
-private:
-    sgl::graphic::Image * mBg = nullptr;
-    sgl::graphic::Renderable * mLabel = nullptr;
-    sgl::graphic::Renderable * mValueBar = nullptr;
-
-    bool mHasData = false;
-};
-
 // ===== DIALOG NEW ELEMENT =====
 DialogNewElement::DialogNewElement(ElemType type, Player * player,
                                    const ObjectsDataRegistry * dataReg)
@@ -614,14 +478,44 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     const int marginL = 40;
     const int marginT = 8;
 
-    int midBgH = 0;
-    int slotsY0 = 0;
+    int midBgH = 470;
+    int slotsY0 = 65;
 
-    if(ETYPE_UNITS == type)
+    if(ETYPE_UNITS_BARRACKS == type)
     {
-        mTypes = player->GetAvailableUnits();
-        midBgH = 470;
-        slotsY0 = 65;
+        const std::vector<GameObjectTypeId> & allUnits = player->GetAvailableUnits();
+
+        for(GameObjectTypeId t : allUnits)
+        {
+            const ObjectData & data = dataReg->GetObjectData(t);
+
+            if(OCU_SOLDIER == data.GetClass())
+                mTypes.push_back(t);
+        }
+    }
+    else if(ETYPE_UNITS_BASE == type)
+    {
+        const std::vector<GameObjectTypeId> & allUnits = player->GetAvailableUnits();
+
+        for(GameObjectTypeId t : allUnits)
+        {
+            const ObjectData & data = dataReg->GetObjectData(t);
+
+            if(OCU_WORKER == data.GetClass())
+                mTypes.push_back(t);
+        }
+    }
+    else if(ETYPE_UNITS_HOSPITAL == type)
+    {
+        const std::vector<GameObjectTypeId> & allUnits = player->GetAvailableUnits();
+
+        for(GameObjectTypeId t : allUnits)
+        {
+            const ObjectData & data = dataReg->GetObjectData(t);
+
+            if(OCU_MEDIC == data.GetClass())
+                mTypes.push_back(t);
+        }
     }
     else
     {
@@ -655,14 +549,13 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     mBtnClose->SetX(GetWidth() - mBtnClose->GetWidth());
 
     // TITLE
-    const char * TITLES[NUM_ELEMENT_TYPES] =
-    {
-        "CREATE NEW UNIT",
-        "CREATE NEW STRUCTURE"
-    };
-
     auto font = fm->GetFont("Lato-Regular.ttf", 28, sgl::graphic::Font::NORMAL);
-    mTitle = new sgui::Label(TITLES[type], font, this);
+
+    if(ETYPE_STRUCTURES == type)
+        mTitle = new sgui::Label("CREATE NEW STRUCTURE", font, this);
+    else
+        mTitle = new sgui::Label("CREATE NEW UNIT", font, this);
+
     mTitle->SetColor(0xf1f2f4ff);
     mTitle->SetPosition(marginL, marginT);
 
@@ -844,29 +737,29 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     int panelsX = panelsX0;
     int panelsY = panelsY0;
 
-    for(int c = 0; c < PANELS_ATT_COLS; ++c)
+    for(int c = 0; c < VIS_ATT_COLS; ++c)
     {
-        const int ind0 = c * PANELS_ATT_ROWS;
+        const int ind0 = c * VIS_ATT_ROWS;
 
-        for(int r = 0; r < PANELS_ATT_ROWS; ++r)
+        for(int r = 0; r < VIS_ATT_ROWS; ++r)
         {
             const int ind = ind0 + r;
 
-            auto panAtt = new PanelAttribute(this);
+            auto panAtt = new ObjectVisualAttribute(this);
             panAtt->SetPosition(panelsX, panelsY);
 
-            mPanelsAtt[ind] = panAtt;
+            mVisAtt[ind] = panAtt;
 
             panelsY += panAtt->GetHeight() - panelBorder;
         }
 
-        panelsX += mPanelsAtt[0]->GetWidth() - panelBorder;
+        panelsX += mVisAtt[0]->GetWidth() - panelBorder;
         panelsY = panelsY0;
     }
 
     // BUTTON BUILD
     mBtnBuild = new ButtonBuild(this);
-    const PanelAttribute * lastPanel = mPanelsAtt[NUM_PANELS_ATT - 1];
+    const ObjectVisualAttribute * lastPanel = mVisAtt[NUM_VIS_ATT - 1];
     const int btnX = lastPanel->GetX() + lastPanel->GetWidth() - mBtnBuild->GetWidth();
     const int marginBtnTop = 15;
     const int btnY = lastPanel->GetY() + lastPanel->GetHeight() + marginBtnTop;
@@ -951,6 +844,11 @@ void DialogNewElement::SetFunctionOnClose(const std::function<void()> & f)
     mBtnClose->AddOnClickFunction(f);
 }
 
+sgl::sgui::AbstractButton * DialogNewElement::GetButtonBuild() const
+{
+    return mBtnBuild;
+}
+
 int DialogNewElement::GetSelectedIndex() const
 {
     return mFirstElem + mSlots->GetIndexChecked();
@@ -976,9 +874,9 @@ void DialogNewElement::UpdateSlots()
 
         const PlayerFaction f = mPlayer->GetFaction();
         const GameObjectTypeId t = mTypes[mFirstElem + i];
-        const ObjectFactionData & data = mDataReg->GetFactionData(f, t);
+        const ObjectData & data = mDataReg->GetObjectData(t);
 
-        auto tex = tm->GetSprite(data.iconFile, data.iconTexId);
+        auto tex = tm->GetSprite(data.GetIconTexFile(), data.GetIconTexId(f));
         slot->SetData(GameObject::TITLES.at(t).c_str(), tex);
 
         // check first
@@ -1004,9 +902,9 @@ void DialogNewElement::ShowStructuresByFamily(ObjFamily fam)
 
     for(const GameObjectTypeId s : structures)
     {
-        const ObjectBasicData & data = mDataReg->GetObjectData(s);
+        const ObjectData & data = mDataReg->GetObjectData(s);
 
-        if(data.objFamily == fam)
+        if(data.GetFamily() == fam)
             mTypes.emplace_back(s);
     }
 
@@ -1023,36 +921,47 @@ void DialogNewElement::ShowData(int ind)
 
     const GameObjectTypeId t = mTypes[ind];
     const PlayerFaction f = mPlayer->GetFaction();
-    const ObjectBasicData & data = mDataReg->GetObjectData(t);
-    const ObjectFactionData & fData = mDataReg->GetFactionData(f, t);
+    const ObjectData & data = mDataReg->GetObjectData(t);
 
     // DESCRIPTION
     mDescription->SetText(GameObject::DESCRIPTIONS.at(t).c_str());
 
     // CLASS
-    mCategory->SetText(ObjectBasicData::STR_CLASS[data.objClass]);
+    mCategory->SetText(ObjectData::STR_CLASS[data.GetClass()]);
 
     // COSTS
+    const auto & costs = data.GetCosts();
+
     for(int i = 0; i < NUM_COSTS; ++i)
-        mLabelsCost[i]->SetText(std::to_string(fData.costs[i]).c_str());
+        mLabelsCost[i]->SetText(std::to_string(costs[i]).c_str());
 
-    // STATS
-    const int numStats = fData.stats.size();
+    // ATTRIBUTES
+    const auto & atts = data.GetAttributes();
+    const int numAtts = atts.size();
+    int attsAdded = 0;
 
-    for(int i = 0; i < numStats; ++i)
-        mPanelsAtt[i]->SetData(ObjectFactionData::STR_STAT[i], fData.stats[i]);
+    for(int i = 0; i < numAtts; ++i)
+    {
+        const int val = atts[i];
 
-    for(int i = numStats; i < NUM_PANELS_ATT; ++i)
-        mPanelsAtt[i]->ClearData();
+        if(val > 0)
+        {
+            mVisAtt[attsAdded]->SetData(ObjectData::STR_ATTRIBUTES[i], val);
+            ++attsAdded;
+        }
+    }
+
+    for(int i = attsAdded; i < NUM_VIS_ATT; ++i)
+        mVisAtt[i]->ClearData();
 }
 
 void DialogNewElement::CheckBuild(int ind)
 {
     const GameObjectTypeId t = mTypes[ind];
     const PlayerFaction f = mPlayer->GetFaction();
-    const ObjectFactionData & fData = mDataReg->GetFactionData(f, t);
+    const ObjectData & data = mDataReg->GetObjectData(t);
 
-    const std::vector<int> & costs = fData.costs;
+    const auto & costs = data.GetCosts();
 
     const bool CAN_SPEND[NUM_COSTS] =
     {

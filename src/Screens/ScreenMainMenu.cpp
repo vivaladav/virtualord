@@ -288,16 +288,26 @@ void ScreenMainMenu::CreateChangelog()
 
     auto textNewFeat = new sgui::TextArea(contentW, minBlockH, font, true, content);
     textNewFeat->SetText("NEW FEATURES\n"
+                         "- Changed game from RTS to TBS!\n"
                          "- Added option for disabling edge map scrolling.\n"
                          "- Scrollable areas can be scrolled with mouse wheel.\n"
                          "- New map object: loot box.\n"
                          "- New map object: abandoned temple.\n"
+                         "- New map object: barracks.\n"
+                         "- New map object: hospital.\n"
+                         "- New map object: research center.\n"
+                         "- New map object: bunker.\n"
                          "- New unit: medic.\n"
                          "- New unit action: healing.\n"
                          "- Trees now can grow into surrounding cells.\n"
                          "- Missions can be completed and that reflects on the planet map.\n"
                          "- Enemy units will shoot yours.\n"
                          "- Map dragging in mission screen and related options in settings.\n"
+                         "- Added selected object panel in mission.\n"
+                         "- Added object dialog in mission.\n"
+                         "- Game objects gain experience by doing things.\n"
+                         "- AI can build structures.\n"
+                         "- Blinking icon appears on top of structures if not linked to base.\n"
                         );
     textNewFeat->SetPosition(contX, contY);
     textNewFeat->SetColor(colorContent);
@@ -308,7 +318,8 @@ void ScreenMainMenu::CreateChangelog()
     auto textImpr = new sgui::TextArea(contentW, minBlockH, font, true, content);
     textImpr->SetText("IMPROVEMENTS\n"
                       "- New structure dialog now groups structures by category.\n"
-                      "- MiniMap now requires a connected radar station to work."
+                      "- MiniMap now requires a connected radar station to work.\n"
+                      "- Added more tooltips to game UI.\n"
                      );
     textImpr->SetPosition(contX, contY);
     textImpr->SetColor(colorContent);
@@ -322,6 +333,9 @@ void ScreenMainMenu::CreateChangelog()
                         "- Units move along the planned path while conquering cells.\n"
                         "- Units move along the planned path while building walls.\n"
                         "- Planet screen redesigned.\n"
+                        "- Minimap bigger and minor redesign to match selected object panel.\n"
+                        "- Base generates a bit of power and material each turn.\n"
+                        "- Base can only build workers, whereas barracks build soldiers.\n"
                      );
     textChange->SetPosition(contX, contY);
     textChange->SetColor(colorContent);

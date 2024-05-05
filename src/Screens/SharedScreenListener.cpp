@@ -6,6 +6,8 @@
 
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Window.h>
+#include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
 
 namespace game
 {
@@ -24,7 +26,7 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
         game->Exit();
 
     // -- WINDOW --
-    else if(key == KeyboardEvent::KEY_F)
+    else if(key == KeyboardEvent::KEY_F && event.IsModShiftDown())
         Window::Instance()->SwitchFullscreen();
     else if(key == KeyboardEvent::KEY_F1)
         Window::Instance()->SetSize(1280, 720);
@@ -60,6 +62,19 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
             p->SumResource(Player::Stat::BLOBS, -10);
             p->SumResource(Player::Stat::DIAMONDS, -10);
         }
+    }
+
+    // -- AUDIO --
+    else if(event.IsModAltDown())
+    {
+        auto am = sgl::media::AudioManager::Instance();
+        auto ap = am->GetPlayer();
+
+        // TOGGLE MUSIC
+        if(key == KeyboardEvent::KEY_M)
+            ap->SetMusicEnabled(!ap->IsMusicEnabled());
+        else if(key == KeyboardEvent::KEY_X)
+            ap->SetSoundEnabled(!ap->IsSoundEnabled());
     }
 }
 

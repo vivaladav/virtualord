@@ -8,7 +8,7 @@ namespace game
 {
 
 BlobsGenerator::BlobsGenerator(GameMap * gm)
-    : CollectableGenerator(gm, 10, 40)
+    : CollectableGenerator(gm, 5, 35)
 {
 }
 
@@ -20,13 +20,10 @@ void BlobsGenerator::OnGeneration()
     const int c = GetCol();
 
     GameObject * obj = gm->CreateObject(MapLayers::OBJECTS2, GameObject::TYPE_BLOBS,
-                                       0, NO_FACTION, r, c, true);
+                                        0, NO_FACTION, r, c, true);
 
     if(nullptr == obj)
         return ;
-
-    auto blobs = static_cast<Blobs *>(obj);
-    blobs->SetGenerator(this);
 
     // make the cell walkable for collection
     gm->SetCellWalkable(r, c, true);

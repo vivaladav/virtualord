@@ -73,6 +73,14 @@ void PanelPlanetActions::UpdateButtons(TerritoryStatus status, bool isPlayerOccu
     mButtons[SEND_AI]->SetEnabled(!isPlayerOccupier);
 }
 
+sgl::sgui::AbstractButton * PanelPlanetActions::GetButton(Button btn) const
+{
+    if(btn < NUM_BUTTONS)
+        return mButtons[btn];
+    else
+        return nullptr;
+}
+
 void PanelPlanetActions::HandlePositionChanged()
 {
     UpdatePositions();

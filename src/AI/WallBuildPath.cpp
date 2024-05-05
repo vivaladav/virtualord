@@ -64,14 +64,11 @@ void WallBuildPath::CreateIndicators()
     SetIndicatorsType(cellsPath, mIndicators);
 }
 
-void WallBuildPath::InitNextBuild()
+bool WallBuildPath::InitNextBuild()
 {
-    // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForAction(BUILD_WALL))
-    {
-        Fail();
-        return ;
-    }
+    // not enough resources -> FAIL
+    if(!mGameMap->HasResourcesToBuildWall(mUnit, mLevel))
+        return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
     const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
@@ -90,11 +87,9 @@ void WallBuildPath::InitNextBuild()
         --mNextCell;
 
         if(mNextCell > 0)
-            InitNextMove();
+            return InitNextMove();
         else
-            Fail();
-
-        return;
+            return Fail();
     }
 
     // start building
@@ -118,28 +113,24 @@ void WallBuildPath::InitNextBuild()
         const GameObjectTypeId blockType = mIndicators[mNextCell - 1]->GetBlockType();
         mGameMap->BuildWall(nextCell, player, blockType);
 
-        mUnit->ConsumeEnergy(BUILD_WALL);
+        mUnit->ActionStepCompleted(BUILD_WALL);
 
         --mNextCell;
 
         InitNextMove();
     });
+
+    return true;
 }
 
-void WallBuildPath::InitNextMove()
+bool WallBuildPath::InitNextMove()
 {
     // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForAction(MOVE))
-    {
-        Fail();
-        return ;
-    }
+    if(!mUnit->HasEnergyForActionStep(MOVE))
+        return Fail();
 
     if(0 == mNextCell)
-    {
-        Finish();
-        return ;
-    }
+        return Finish();
 
     const unsigned int movCell = mNextCell - 1;
     const unsigned int nextInd = mCells[movCell];
@@ -150,10 +141,7 @@ void WallBuildPath::InitNextMove()
 
     // next cell not walkable -> FAIL
     if(!nextCell.walkable || nextCell.walkTarget)
-    {
-        Fail();
-        return ;
-    }
+        return Fail();
 
     const IsoObject * isoObj = mUnit->GetIsoObject();
     const IsoLayer * layerObj = isoObj->GetLayer();
@@ -171,6 +159,8 @@ void WallBuildPath::InitNextMove()
     mGameMap->SetCellWalkTarget(nextInd, true);
 
     mState = MOVING;
+
+    return true;
 }
 
 void WallBuildPath::UpdateMove(float delta)
@@ -249,7 +239,7 @@ void WallBuildPath::UpdateMove(float delta)
         mGameMap->AddPlayerObjVisibility(mUnit, player);
         mGameMap->ApplyVisibility(player);
 
-        mUnit->ConsumeEnergy(MOVE);
+        mUnit->ActionStepCompleted(MOVE);
 
         // handle next step or termination
         if(ABORTING == mState)
@@ -268,18 +258,18 @@ void WallBuildPath::UpdatePathCost()
     mMaterialCost = segments * Wall::GetCostMaterial(mLevel);
 }
 
-void WallBuildPath::Start()
+bool WallBuildPath::Start()
 {
     // do nothing if already started
-    if(mState != READY)
-        return ;
+    if(HasStarted())
+        return false;
 
     CreateIndicators();
 
     // stat building from last cell
     mNextCell = mCells.size() - 1;
 
-    InitNextBuild();
+    return InitNextBuild();
 }
 
 void WallBuildPath::Abort()
@@ -365,24 +355,34 @@ void WallBuildPath::SetIndicatorsType(const std::vector<Cell2D> & cells,
     }
 }
 
-void WallBuildPath::Fail()
+bool WallBuildPath::Fail()
 {
     // clear indicators
     IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
     layerOverlay->ClearObjects();
 
-    // clear action data
-    mScreen->SetObjectActionFailed(mUnit);
+    if(HasStarted())
+        // clear action data
+        mScreen->SetObjectActionFailed(mUnit);
 
     mState = FAILED;
+
+    return false;
 }
 
-void WallBuildPath::Finish()
+bool WallBuildPath::Finish()
 {
-    mState = COMPLETED;
+    if(HasStarted())
+    {
+        mState = COMPLETED;
 
-    // clear action data once the action is completed
-    mScreen->SetObjectActionCompleted(mUnit);
+        // clear action data once the action is completed
+        mScreen->SetObjectActionCompleted(mUnit);
+    }
+    else
+        mState = COMPLETED;
+
+    return true;
 }
 
 } // namespace game

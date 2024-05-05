@@ -27,7 +27,7 @@ public:
                                      IND_MINIMAP_BTN_CLOSE_OVER,
                                      IND_MINIMAP_BTN_CLOSE_PUSHED,
                                      IND_MINIMAP_BTN_CLOSE_NORMAL
-                                 }, SpriteFileMapPanels, parent)
+                                 }, SpriteFilePanelMinimap, parent)
     {
     }
 
@@ -85,7 +85,7 @@ public:
                         IND_MINIMAP_BTN_L_OVER,
                         IND_MINIMAP_BTN_L_PUSHED,
                         IND_MINIMAP_BTN_L_NORMAL
-                    }, SpriteFileMapPanels, parent)
+                     }, SpriteFilePanelMinimap, parent)
     {
     }
 };
@@ -100,7 +100,7 @@ public:
                          IND_MINIMAP_BTN_R_OVER,
                          IND_MINIMAP_BTN_R_PUSHED,
                          IND_MINIMAP_BTN_R_NORMAL
-                    }, SpriteFileMapPanels, parent)
+                     }, SpriteFilePanelMinimap, parent)
     {
     }
 };
@@ -115,7 +115,7 @@ public:
                          IND_MINIMAP_BTN_U_OVER,
                          IND_MINIMAP_BTN_U_PUSHED,
                          IND_MINIMAP_BTN_U_NORMAL
-                    }, SpriteFileMapPanels, parent)
+                     }, SpriteFilePanelMinimap, parent)
     {
     }
 };
@@ -130,10 +130,14 @@ public:
                      IND_MINIMAP_BTN_D_OVER,
                      IND_MINIMAP_BTN_D_PUSHED,
                      IND_MINIMAP_BTN_D_NORMAL
-                    }, SpriteFileMapPanels, parent)
+                     }, SpriteFilePanelMinimap, parent)
     {
     }
 };
+
+// ========== MINI MAP ELEMENT ==========
+
+MiniMap::MiniMapElem::~MiniMapElem() { delete img; }
 
 // ========== MINI MAP ==========
 
@@ -160,34 +164,30 @@ MiniMap::MiniMap(CameraMapController * cameraController, IsoMap * im, sgl::sgui:
 
     // BACKGROUND
     auto tm = graphic::TextureManager::Instance();
-    auto tex = tm->GetSprite(SpriteFileMapPanels, IND_MINIMAP_BG);
+    auto tex = tm->GetSprite(SpriteFilePanelMinimap, IND_MINIMAP_BG);
     mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 
     SetSize(tex->GetWidth(), tex->GetHeight());
 
     // MAP AREA
-    tex = tm->GetSprite(SpriteFileMapPanels, IND_MINIMAP_MAP_BG);
-    mMapBg = new graphic::Image(tex);
-    RegisterRenderable(mMapBg);
-
     UpdateMapArea();
 
     // CAMERA CORNERS
     sgl::graphic::Camera * cam = GetCamera();
-    tex = tm->GetSprite(SpriteFileMapPanels, IND_MINIMAP_CAMERA_TL);
+    tex = tm->GetSprite(SpriteFilePanelMinimap, IND_MINIMAP_CAMERA_TL);
     mCameraCornerTL = new graphic::Image(tex);
     mCameraCornerTL->SetCamera(cam);
 
-    tex = tm->GetSprite(SpriteFileMapPanels, IND_MINIMAP_CAMERA_TR);
+    tex = tm->GetSprite(SpriteFilePanelMinimap, IND_MINIMAP_CAMERA_TR);
     mCameraCornerTR = new graphic::Image(tex);
     mCameraCornerTR->SetCamera(cam);
 
-    tex = tm->GetSprite(SpriteFileMapPanels, IND_MINIMAP_CAMERA_BL);
+    tex = tm->GetSprite(SpriteFilePanelMinimap, IND_MINIMAP_CAMERA_BL);
     mCameraCornerBL = new graphic::Image(tex);
     mCameraCornerBL->SetCamera(cam);
 
-    tex = tm->GetSprite(SpriteFileMapPanels, IND_MINIMAP_CAMERA_BR);
+    tex = tm->GetSprite(SpriteFilePanelMinimap, IND_MINIMAP_CAMERA_BR);
     mCameraCornerBR = new graphic::Image(tex);
     mCameraCornerBR->SetCamera(cam);
 
@@ -195,7 +195,7 @@ MiniMap::MiniMap(CameraMapController * cameraController, IsoMap * im, sgl::sgui:
     mMapMove = mIsoMap->GetNumRows() * 0.25f;
 
     // BUTTON LEFT
-    const int marginButtonsDir = 5;
+    const int marginButtonsDir = 6;
     mButtonL = new ButtonMoveLeft(this);
     mButtonL->SetPosition(marginButtonsDir, (GetHeight() - mButtonL->GetHeight()) * 0.5f);
 
@@ -340,7 +340,7 @@ void MiniMap::AddElement(int r0, int c0, int rows, int cols, MiniMapElemType typ
 
     // create and setup image
     auto tm = graphic::TextureManager::Instance();
-    auto tex = tm->GetSprite(SpriteFileMapPanels, IND_MINIMAP_MAP_ELEM);
+    auto tex = tm->GetSprite(SpriteFilePanelMinimap, IND_MINIMAP_MAP_ELEM);
     auto img = new sgl::graphic::Image(tex);
     img->SetCamera(GetCamera());
     img->SetWidth(cols * MAP_SCALE);
@@ -570,7 +570,7 @@ void MiniMap::UpdateMapArea()
 {
     const int mapRows = mIsoMap->GetNumRows();
     const int mapCols = mIsoMap->GetNumCols();
-    const int maxSize = 240;
+    const int maxSize = 280;
     const int maxCells = (maxSize / MAP_SCALE) - 1;
     const int mapW0 = mapCols * MAP_SCALE;
     const int mapH0 = mapRows * MAP_SCALE;
@@ -578,13 +578,11 @@ void MiniMap::UpdateMapArea()
     const bool mapBiggerThanH = mapH0 > maxSize;
     mMapW = mapBiggerThanW ? maxSize : mapW0;
     mMapH = mapBiggerThanH ? maxSize : mapH0;
+    mMapX = (GetWidth() - mMapW) / 2;
+    mMapY = (GetHeight() - mMapH) / 2;
 
     mR1 = mapBiggerThanW ? maxCells : (mMapH / MAP_SCALE) - 1;
     mC1 = mapBiggerThanH ? maxCells : (mMapW / MAP_SCALE) - 1;
-
-    // update map area size
-    mMapBg->SetWidth(mMapW);
-    mMapBg->SetHeight(mMapH);
 
     // init elements data
     mElementsMap.assign(mapRows * mapCols, nullptr);
@@ -599,9 +597,8 @@ void MiniMap::HandlePositionChanged()
     mBg->SetPosition(x0 ,y0);
 
     // MAP
-    mMapX = x0 + (GetWidth() - mMapBg->GetWidth()) * 0.5f;
-    mMapY = y0 + (GetHeight() - mMapBg->GetHeight()) * 0.5f;
-    mMapBg->SetPosition(mMapX, mMapY);
+    mMapX = x0 + (GetWidth() - mMapW) / 2;
+    mMapY = y0 + (GetHeight() - mMapH) / 2;
 }
 
 void MiniMap::HandleMouseButtonDown(sgl::core::MouseButtonEvent & event)

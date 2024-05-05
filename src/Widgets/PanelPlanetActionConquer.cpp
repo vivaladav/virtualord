@@ -72,6 +72,16 @@ void PanelPlanetActionConquer::AddOnButtonCancelClickFunction(const std::functio
     mButtonCancel->AddOnClickFunction(f);
 }
 
+sgl::sgui::AbstractButton * PanelPlanetActionConquer::GetButtonOk() const
+{
+    return mButtonOk;
+}
+
+sgl::sgui::AbstractButton * PanelPlanetActionConquer::GetButtonCancel() const
+{
+    return mButtonCancel;
+}
+
 void PanelPlanetActionConquer::CreateContentStart()
 {
     using namespace sgl;

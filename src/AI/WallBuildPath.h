@@ -47,7 +47,8 @@ public:
     unsigned int GetWallLevel() const;
     void SetWallLevel(unsigned int level);
 
-    void Start();
+    bool HasStarted() const;
+    bool Start();
 
     void Abort();
     void InstantAbort();
@@ -60,15 +61,15 @@ public:
 private:
     void CreateIndicators();
 
-    void InitNextBuild();
-    void InitNextMove();
+    bool InitNextBuild();
+    bool InitNextMove();
 
     void UpdateMove(float delta);
 
     void UpdatePathCost();
 
-    void Fail();
-    void Finish();
+    bool Fail();
+    bool Finish();
 
 private:
     std::vector<unsigned int> mCells;
@@ -129,5 +130,7 @@ inline void WallBuildPath::SetPathCells(const std::vector<unsigned int> & cells)
 
 inline unsigned int WallBuildPath::GetWallLevel() const { return mLevel; }
 inline void WallBuildPath::SetWallLevel(unsigned int level) { mLevel = level; }
+
+inline bool WallBuildPath::HasStarted() const { return mState != READY; }
 
 } // namespace game

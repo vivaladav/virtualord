@@ -1,5 +1,6 @@
 #include "Widgets/PanelObjectActions.h"
 
+#include "GameObjects/Unit.h"
 #include "GameObjects/WallGate.h"
 #include "Widgets/ObjectActionButton.h"
 
@@ -17,16 +18,22 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     SetResizePolicy(ResizePolicy::DYNAMIC);
 
     // create all buttons
-    mButtons[BTN_BUILD_UNIT] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
-                                                      "Create a new unit", this);
+    mButtons[BTN_BUILD_UNIT_BARRACKS] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
+                                                               "Create a new soldier", this);
+    mButtons[BTN_BUILD_UNIT_BASE] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
+                                                           "Create a new worker", this);
+    mButtons[BTN_BUILD_UNIT_HOSPITAL] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
+                                                               "Create a new medic", this);
     mButtons[BTN_MOVE] = new ObjectActionButton(ObjectActionButton::MOVE, "M", KeyboardEvent::KEY_M,
                                                 "Move your unit", this);
     mButtons[BTN_ATTACK] = new ObjectActionButton(ObjectActionButton::ATTACK, "K", KeyboardEvent::KEY_K,
                                                   "Attack a target", this);
-    mButtons[BTN_HEAL] = new ObjectActionButton(ObjectActionButton::HEAL, "H", KeyboardEvent::KEY_H,
-                                                  "Heal/repair a target", this);
+    mButtons[BTN_HEAL_HOSPITAL] = new ObjectActionButton(ObjectActionButton::HEAL, "H", KeyboardEvent::KEY_H,
+                                                         "Heal a target", this);
+    mButtons[BTN_HEAL_UNIT] = new ObjectActionButton(ObjectActionButton::HEAL, "H", KeyboardEvent::KEY_H,
+                                                     "Heal a target", this);
     mButtons[BTN_CONQUER_CELL] = new ObjectActionButton(ObjectActionButton::CONQUER_CELL, "C", KeyboardEvent::KEY_C,
-                                                        "Conquer one or more cells", this);
+                                                        "Conquer cells", this);
     mButtons[BTN_BUILD_WALL] = new ObjectActionButton(ObjectActionButton::BUILD_WALL, "L", KeyboardEvent::KEY_L,
                                                       "Build a wall", this);
     mButtons[BTN_BUILD_STRUCT] = new ObjectActionButton(ObjectActionButton::BUILD_STRUCT, "B", KeyboardEvent::KEY_B,
@@ -34,7 +41,7 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     mButtons[BTN_UPGRADE] = new ObjectActionButton(ObjectActionButton::UPGRADE, "U", KeyboardEvent::KEY_U,
                                                    "Upgrade", this);
     mButtons[BTN_OPEN_GATE] = new ObjectActionButton(ObjectActionButton::OPEN_GATE, "G", KeyboardEvent::KEY_G,
-                                                     "Open the game", this);
+                                                     "Open the gate", this);
     mButtons[BTN_CLOSE_GATE] = new ObjectActionButton(ObjectActionButton::CLOSE_GATE, "G", KeyboardEvent::KEY_G,
                                                       "Close the gate", this);
     mButtons[BTN_CANCEL] = new ObjectActionButton(ObjectActionButton::CANCEL, "X", KeyboardEvent::KEY_X,
@@ -43,12 +50,10 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
 
 PanelObjectActions::~PanelObjectActions()
 {
-
 }
 
 void PanelObjectActions::ClearObject()
 {
-
 }
 
 void PanelObjectActions::SetObject(GameObject * obj)
@@ -67,20 +72,45 @@ void PanelObjectActions::SetObject(GameObject * obj)
 
     if(objType == GameObject::TYPE_BASE)
     {
-        mButtons[BTN_BUILD_UNIT]->SetVisible(true);
-
-        // TODO handle upgrades
+        mButtons[BTN_BUILD_UNIT_BASE]->SetVisible(true);
     }
     else if(mObj->GetObjectCategory() == GameObject::CAT_UNIT)
     {
-        mButtons[BTN_MOVE]->SetVisible(true);
-        mButtons[BTN_ATTACK]->SetVisible(true);
-        mButtons[BTN_HEAL]->SetVisible(true);
-        mButtons[BTN_CONQUER_CELL]->SetVisible(true);
-        mButtons[BTN_BUILD_WALL]->SetVisible(true);
-        mButtons[BTN_BUILD_STRUCT]->SetVisible(true);
+        auto unit = static_cast<Unit *>(mObj);
 
-        // TODO handle upgrades
+        mButtons[BTN_MOVE]->SetVisible(true);
+
+        if(unit->CanAttack())
+            mButtons[BTN_ATTACK]->SetVisible(true);
+
+        if(unit->CanBuild())
+        {
+            mButtons[BTN_BUILD_WALL]->SetVisible(true);
+            mButtons[BTN_BUILD_STRUCT]->SetVisible(true);
+        }
+
+        if(unit->CanConquer())
+            mButtons[BTN_CONQUER_CELL]->SetVisible(true);
+
+        if(unit->CanHeal())
+            mButtons[BTN_HEAL_UNIT]->SetVisible(true);
+    }
+    else if(objType == GameObject::TYPE_BARRACKS)
+    {
+        if(obj->IsLinked())
+            mButtons[BTN_BUILD_UNIT_BARRACKS]->SetVisible(true);
+        else
+            mButtons[BTN_CANCEL]->SetVisible(false);
+    }
+    else if(objType == GameObject::TYPE_HOSPITAL)
+    {
+        if(obj->IsLinked())
+        {
+            mButtons[BTN_BUILD_UNIT_HOSPITAL]->SetVisible(true);
+            mButtons[BTN_HEAL_HOSPITAL]->SetVisible(true);
+        }
+        else
+            mButtons[BTN_CANCEL]->SetVisible(false);
     }
     else if(objType == GameObject::TYPE_WALL_GATE)
     {
@@ -113,7 +143,7 @@ void PanelObjectActions::SetObject(GameObject * obj)
     // update position
     const int rendW = sgl::graphic::Renderer::Instance()->GetWidth();
     const int rendH = sgl::graphic::Renderer::Instance()->GetHeight();
-    const int marginB = 100;
+    const int marginB = 150;
 
     const int panelX = (rendW - GetWidth()) * 0.5f;
     const int panelY = rendH - GetHeight() - marginB;
@@ -131,6 +161,14 @@ void PanelObjectActions::SetActionsEnabled(bool val)
 {
     for(unsigned int i = 0; i < static_cast<unsigned int>(BTN_CANCEL); ++i)
         mButtons[i]->SetEnabled(val);
+}
+
+const sgl::sgui::AbstractButton * PanelObjectActions::GetButton(Button btnId)
+{
+    if(btnId < NUM_BUTTONS)
+        return mButtons[btnId];
+    else
+        return nullptr;
 }
 
 } // namespace game

@@ -34,10 +34,14 @@ ScreenNewGame::ScreenNewGame(Game * game)
     p->SetMaxUnits(MAX_UNITS0);
 
     // assign initial available structures
+    p->AddAvailableStructure(GameObject::TYPE_BARRACKS);
+    p->AddAvailableStructure(GameObject::TYPE_BUNKER);
     p->AddAvailableStructure(GameObject::TYPE_DEFENSIVE_TOWER);
+    p->AddAvailableStructure(GameObject::TYPE_HOSPITAL);
     p->AddAvailableStructure(GameObject::TYPE_PRACTICE_TARGET);
     p->AddAvailableStructure(GameObject::TYPE_RADAR_STATION);
     p->AddAvailableStructure(GameObject::TYPE_RADAR_TOWER);
+    p->AddAvailableStructure(GameObject::TYPE_RESEARCH_CENTER);
     p->AddAvailableStructure(GameObject::TYPE_RES_GEN_ENERGY_SOLAR);
     p->AddAvailableStructure(GameObject::TYPE_RES_GEN_MATERIAL_EXTRACT);
     p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_BLOBS);
@@ -89,10 +93,14 @@ ScreenNewGame::ScreenNewGame(Game * game)
         p->SetAI(ai);
 
         // assign initial available structures
+        p->AddAvailableStructure(GameObject::TYPE_BARRACKS);
+        p->AddAvailableStructure(GameObject::TYPE_BUNKER);
         p->AddAvailableStructure(GameObject::TYPE_DEFENSIVE_TOWER);
+        p->AddAvailableStructure(GameObject::TYPE_HOSPITAL);
         p->AddAvailableStructure(GameObject::TYPE_PRACTICE_TARGET);
         p->AddAvailableStructure(GameObject::TYPE_RADAR_STATION);
         p->AddAvailableStructure(GameObject::TYPE_RADAR_TOWER);
+        p->AddAvailableStructure(GameObject::TYPE_RESEARCH_CENTER);
         p->AddAvailableStructure(GameObject::TYPE_RES_GEN_ENERGY_SOLAR);
         p->AddAvailableStructure(GameObject::TYPE_RES_GEN_MATERIAL_EXTRACT);
         p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_BLOBS);

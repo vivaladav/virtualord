@@ -7,43 +7,42 @@
 namespace game
 {
 
-CollectableGenerator::CollectableGenerator(GameMap * gm, int timeMin, int timeMax)
+CollectableGenerator::CollectableGenerator(GameMap * gm, int turnsMin, int turnsMax)
     : mGameMap(gm)
-    , mTimeMin(timeMin)
-    , mTimeMax(timeMax)
 {
-    ResetTimer();
+    ResetCounter(turnsMin, turnsMax);
 }
 
 CollectableGenerator::~CollectableGenerator()
 {
-
 }
 
-void CollectableGenerator::ResetTimer()
+void CollectableGenerator::OnNewTurn()
 {
-    // randomize generation time between min and max
-    sgl::utilities::UniformDistribution ran(mTimeMin, mTimeMax);
-
-    mTimeRegen = ran.GetNextValue();
-    mTimerRegen = mTimeRegen;
-}
-
-void CollectableGenerator::Update(float delta)
-{
-    // decrease timer
-    mTimerRegen -= delta;
-
-    // nothing to do until timer is 0
-    if(mTimerRegen > 0.f)
+    // generate only if cell is empty
+    if(mGameMap->HasObject(mRow, mCol))
         return ;
 
-    // reset timer
-    mTimerRegen = mTimeRegen;
+    --mCounterRegen;
 
-    // generate only if cell is empty
-    if(!mGameMap->HasObject(mRow, mCol))
-        OnGeneration();
+    // nothing to do until counter is 0
+    if(mCounterRegen > 0)
+        return ;
+
+    // reset counter
+    mCounterRegen = mRegenTurns;
+
+    // generate
+    OnGeneration();
+}
+
+void CollectableGenerator::ResetCounter(int min, int max)
+{
+    // randomize generation time between min and max
+    sgl::utilities::UniformDistribution ran(min, max);
+
+    mRegenTurns = ran.GetNextValue();
+    mCounterRegen = mRegenTurns;
 }
 
 } // namespace game

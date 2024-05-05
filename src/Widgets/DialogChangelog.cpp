@@ -200,7 +200,7 @@ public:
     void HandleMouseWheel(sgl::core::MouseWheelEvent & event) override
     {
         const int val = mScrollbar->GetValue();
-        const int inc = 15;
+        const int inc = 20;
 
         if(event.ScrollingUp())
             mScrollbar->SetValue(val - inc);
