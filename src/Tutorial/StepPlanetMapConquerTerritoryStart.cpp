@@ -29,6 +29,7 @@ StepPlanetMapConquerTerritoryStart::StepPlanetMapConquerTerritoryStart(PanelPlan
     mFocusArea = new FocusArea;
     mFocusArea->SetScreenArea(fX, fY, fW, fH);
     mFocusArea->SetCornersColor(colorTutorialFocusAction);
+    mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
     // INFO

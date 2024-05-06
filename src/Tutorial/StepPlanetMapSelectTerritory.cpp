@@ -45,6 +45,7 @@ StepPlanetMapSelectTerritory::StepPlanetMapSelectTerritory(PlanetMap * planet)
     mInfo->SetFunctionOnFinished([this, fX, fY, fW, fH]
     {
         mFocusArea->SetCornersColor(colorTutorialFocusAction);
+        mFocusArea->SetBlinking(true);
 
         mClickFilter->SetScreenClickableArea(fX, fY, fW, fH);
 

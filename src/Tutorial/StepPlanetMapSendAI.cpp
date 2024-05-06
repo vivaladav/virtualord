@@ -43,6 +43,7 @@ StepPlanetMapSendAI::StepPlanetMapSendAI(PanelPlanetActions * panel)
                         "resources and victory is not guaranteed.",
                         colorTutorialText, 7.f, true, true, [this]
                         {
+                            mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
                         });
 
