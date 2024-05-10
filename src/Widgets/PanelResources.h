@@ -2,14 +2,11 @@
 
 #include <sgl/sgui/Widget.h>
 
-#include <functional>
-#include <string>
 #include <vector>
 
 namespace sgl
 {
     namespace graphic { class Image; }
-    namespace sgui { class Label; }
 }
 
 namespace game

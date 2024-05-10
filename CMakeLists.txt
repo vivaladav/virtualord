@@ -357,6 +357,8 @@ add_executable(
     src/Widgets/ProgressBarTurnEnergy.cpp
     src/Widgets/ResourceDisplay.h
     src/Widgets/ResourceDisplay.cpp
+    src/Widgets/ResourceTooltip.h
+    src/Widgets/ResourceTooltip.cpp
     src/Widgets/SimpleResourceDisplay.h
     src/Widgets/SimpleResourceDisplay.cpp
     src/Widgets/WidgetsConstants.h

@@ -1503,13 +1503,22 @@ void ScreenInit::SetupTextures()
     {
         const std::vector<sgl::core::Rectd> rects
         {
-            // SIMPLE TOOLTIP
-            { 0, 0, 20, 32 },
-            { 21, 0, 20, 32 },
-            { 42, 0, 20, 32 }
+            // RESOURCE BAR TOOLTIP
+            { 0, 0, 250, 155 }
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileTooltips, rects);
+
+        // EXPANDABLE TEXTURE
+        const std::vector<sgl::core::Rectd> rectsExp
+            {
+                // SIMPLE TOOLTIP
+                { 0, 0, 20, 32 },
+                { 0, 33, 20, 32 },
+                { 0, 66, 20, 32 },
+            };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileTooltipsExp, rectsExp);
     });
 
     // QUICK UNIT SELECTION

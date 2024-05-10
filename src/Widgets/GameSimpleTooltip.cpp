@@ -30,17 +30,17 @@ GameSimpleTooltip::GameSimpleTooltip(const char * text)
     const int marginT = 8;
 
     // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileTooltips, IND_TOOLTIP_SIMPLE_LEFT);
+    graphic::Texture * tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_LEFT);
     tex->SetScaleMode(0);
 
     mBgLeft = new graphic::Image(tex);
     RegisterRenderable(mBgLeft);
 
-    tex = tm->GetSprite(SpriteFileTooltips, IND_TOOLTIP_SIMPLE_CONT);
+    tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_CONT);
     mBgCont = new graphic::Image(tex);
     RegisterRenderable(mBgCont);
 
-    tex = tm->GetSprite(SpriteFileTooltips, IND_TOOLTIP_SIMPLE_RIGHT);
+    tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_RIGHT);
     mBgRight = new graphic::Image(tex);
     RegisterRenderable(mBgRight);
 
