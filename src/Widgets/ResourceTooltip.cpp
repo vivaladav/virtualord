@@ -72,19 +72,22 @@ void ResourceTooltip::SetValues(unsigned int resIn, unsigned int resOut)
     int posX;
 
     // IN
-    mLabelIn->SetText(std::to_string(resIn).c_str());
+    const std::string strIn = GetSignedNumber(resIn);
+    mLabelIn->SetText(strIn.c_str());
 
     posX = w - marginRight - mLabelIn->GetWidth();
     mLabelIn->SetPosition(posX, marginTop1);
 
     // OUT
-    mLabelOut->SetText(std::to_string(-resOut).c_str());
+    const std::string strOut = GetSignedNumber(-resOut);
+    mLabelOut->SetText(strOut.c_str());
 
     posX = w - marginRight - mLabelOut->GetWidth();
     mLabelOut->SetPosition(posX, marginTop2);
 
     // TOT
-    mLabelTot->SetText(std::to_string(diff).c_str());
+    const std::string strDiff = GetSignedNumber(diff);
+    mLabelTot->SetText(strDiff.c_str());
 
     posX = w - marginRight - mLabelTot->GetWidth();
     mLabelTot->SetPosition(posX, marginTop3);
@@ -122,6 +125,24 @@ void ResourceTooltip::SetPositions()
     const int labelY = y0 + marginTop;
 
     mTitle->SetPosition(labelX, labelY);
+}
+
+std::string ResourceTooltip::GetSignedNumber(int val)
+{
+    const std::string plus("+");
+    const std::string zero("0");
+
+    // IN
+    std::string str;
+
+    if(val > 0)
+        str = plus + std::to_string(val);
+    else if(val < 0)
+        str = std::to_string(val);
+    else
+        str = zero;
+
+    return str;
 }
 
 } // namespace game

@@ -2,6 +2,8 @@
 
 #include <sgl/sgui/Widget.h>
 
+#include <string>
+
 namespace sgl
 {
     namespace graphic
@@ -30,6 +32,8 @@ protected:
 
 private:
     void SetPositions();
+
+    std::string GetSignedNumber(int val);
 
 private:
     sgl::graphic::Image * mBg = nullptr;
