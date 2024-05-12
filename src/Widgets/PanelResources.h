@@ -12,11 +12,13 @@ namespace sgl
 namespace game
 {
 
+class GameMap;
 class Player;
 
 class PanelResources : public sgl::sgui::Widget
 {
 public:
+    PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget * parent);
     PanelResources(Player * player, sgl::sgui::Widget * parent);
     ~PanelResources();
 
@@ -25,12 +27,15 @@ private:
 
     void SetBg();
 
-    void AssignTooltip(sgl::sgui::Widget * target, const char * text);
+    void AssignResourceTooltip(sgl::sgui::Widget * target, const char * text);
+    void AssignSimpleTooltip(sgl::sgui::Widget * target, const char * text);
+    void SetTooltip(sgl::sgui::Widget * tt, sgl::sgui::Widget * target);
 
 private:
     sgl::graphic::Image * mBg = nullptr;
 
     Player * mPlayer = nullptr;
+    GameMap * mGameMap = nullptr;
 
     std::vector<unsigned int> mCallbackValIds;
     std::vector<unsigned int> mCallbackRangeIds;

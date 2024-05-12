@@ -23,7 +23,7 @@ class ResourceTooltip : public sgl::sgui::Widget
 public:
     ResourceTooltip(const char * title);
 
-    void SetValues(int resIn, int resOut);
+    void SetValues(unsigned int resIn, unsigned int resOut);
 
 protected:
     void HandlePositionChanged() override;
@@ -37,6 +37,9 @@ private:
     sgl::sgui::Label * mLabelIn = nullptr;
     sgl::sgui::Label * mLabelOut = nullptr;
     sgl::sgui::Label * mLabelTot = nullptr;
+
+    unsigned int mIn = -1;
+    unsigned int mOut = -1;
 };
 
 } // namespace game

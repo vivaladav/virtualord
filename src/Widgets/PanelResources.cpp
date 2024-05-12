@@ -4,6 +4,7 @@
 #include "Widgets/GameSimpleTooltip.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/ResourceDisplay.h"
+#include "Widgets/ResourceTooltip.h"
 #include "Widgets/SimpleResourceDisplay.h"
 
 
@@ -16,10 +17,11 @@
 namespace game
 {
 
-PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
+PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget * parent)
     : sgl::sgui::Widget(parent)
     , mBg(new sgl::graphic::Image)
     , mPlayer(player)
+    , mGameMap(gm)
 {
     RegisterRenderable(mBg);
 
@@ -50,7 +52,10 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     srd->SetValue(money.GetIntValue());
     srd->SetPosition(slotX + (slotW - srd->GetWidth()) * 0.5f, (GetHeight() - srd->GetHeight()) * 0.5f);
 
-    AssignTooltip(srd, "MONEY");
+    if(mGameMap)
+        AssignResourceTooltip(srd, "MONEY / TURN");
+    else
+        AssignSimpleTooltip(srd, "MONEY");
 
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [srd](const StatValue * val)
     {
@@ -68,7 +73,10 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     rd->SetValue(energy.GetIntValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
-    AssignTooltip(rd, "ENERGY");
+    if(mGameMap)
+        AssignResourceTooltip(rd, "ENERGY / TURN");
+    else
+        AssignSimpleTooltip(rd, "ENERGY");
 
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
     {
@@ -90,7 +98,10 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     rd->SetValue(material.GetIntValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
-    AssignTooltip(rd, "MATERIAL");
+    if(mGameMap)
+        AssignResourceTooltip(rd, "MATERIAL / TURN");
+    else
+        AssignSimpleTooltip(rd, "MATERIAL");
 
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
     {
@@ -112,7 +123,10 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     rd->SetValue(diamonds.GetIntValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
-    AssignTooltip(rd, "DIAMONDS");
+    if(mGameMap)
+        AssignResourceTooltip(rd, "DIAMONDS / TURN");
+    else
+        AssignSimpleTooltip(rd, "DIAMONDS");
 
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
     {
@@ -134,7 +148,10 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     rd->SetValue(blobs.GetIntValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
-    AssignTooltip(rd, "BLOBS");
+    if(mGameMap)
+        AssignResourceTooltip(rd, "BLOBS / TURN");
+    else
+        AssignSimpleTooltip(rd, "BLOBS");
 
     mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
     {
@@ -144,6 +161,11 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
     {
         rd->SetValueMinMax(val->GetIntMin(), val->GetIntMax());
     });
+}
+
+PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
+    : PanelResources(player, nullptr, parent)
+{
 }
 
 PanelResources::~PanelResources()
@@ -181,11 +203,23 @@ void PanelResources::SetBg()
     SetSize(tex->GetWidth(), tex->GetHeight());
 }
 
-void PanelResources::AssignTooltip(sgl::sgui::Widget * target, const char * text)
+void PanelResources::AssignResourceTooltip(sgl::sgui::Widget * target, const char * text)
+{
+    auto tt = new ResourceTooltip(text);
+    SetTooltip(tt, target);
+}
+
+void PanelResources::AssignSimpleTooltip(sgl::sgui::Widget * target, const char * text)
+{
+    auto tt = new GameSimpleTooltip(text);
+    SetTooltip(tt, target);
+}
+
+void PanelResources::SetTooltip(sgl::sgui::Widget * tt, sgl::sgui::Widget * target)
 {
     const int delayMs = 500;
     const int showingMs = 2000;
-    auto tt = new GameSimpleTooltip(text);
+
     target->SetTooltip(tt);
     target->SetTooltipDelay(delayMs);
     target->SetTooltipShowingTime(showingMs);

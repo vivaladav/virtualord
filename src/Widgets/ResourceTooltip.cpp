@@ -48,10 +48,16 @@ ResourceTooltip::ResourceTooltip(const char * title)
 
     mLabelTot = new sgui::Label(font, this);
     mLabelTot->SetColor(colorLabels);
+
+    // init labels
+    SetValues(0, 0);
 }
 
-void ResourceTooltip::SetValues(int resIn, int resOut)
+void ResourceTooltip::SetValues(unsigned int resIn, unsigned int resOut)
 {
+    if(resIn == mIn && resOut == mOut)
+        return ;
+
     const int w = GetWidth();
     const int marginTop1 = 43;
     const int marginTop2 = marginTop1 + 40;
@@ -89,6 +95,10 @@ void ResourceTooltip::SetValues(int resIn, int resOut)
         mLabelTot->SetColor(colorNeg);
     else
         mLabelTot->SetColor(colorLabels);
+
+    // UPDATE VALUES
+    mIn = resIn;
+    mOut = resOut;
 }
 
 void ResourceTooltip::HandlePositionChanged()

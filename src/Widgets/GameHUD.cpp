@@ -58,7 +58,7 @@ GameHUD::GameHUD(ScreenGame * screen)
     });
 
     // TOP RESOURCE BAR
-    mPanelRes = new PanelResources(player, this);
+    mPanelRes = new PanelResources(player, mScreen->mGameMap, this);
     mPanelRes->SetX((rendW - mPanelRes->GetWidth()) / 2);
 
     // MINIMAP
