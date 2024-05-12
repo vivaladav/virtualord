@@ -174,6 +174,8 @@ public:
     // turn system
     void OnNewTurn(PlayerFaction faction);
 
+    int GetFactionMoneyPerTurn(PlayerFaction faction);
+
     void Update(float delta);
 
 private:

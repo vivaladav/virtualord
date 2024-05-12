@@ -308,18 +308,17 @@ void Player::SumCells(int val)
     mOnNumCellsChanged(mNumCells);
 }
 
-int Player::GetEnergyUse() const
+int Player::GetMoneySpentPerTurn() const
 {
-    const int energyCells = mNumCells * ENERGY_PER_CELL;
-
-    return energyCells;
+    // TODO
+    return 0;
 }
 
 void Player::UpdateResources()
 {
     // energy
     const int energyProd = GetResourceProduction(ResourceType::RES_ENERGY);
-    const int energyUsed = GetEnergyUse();
+    const int energyUsed = GetResourceConsumption(ResourceType::RES_ENERGY);
     const int energyDiff = energyProd - energyUsed;
 
     bool changed = false;
@@ -565,13 +564,29 @@ int Player::GetResourceProduction(ResourceType type) const
         const int energyBase = 14;
         res += energyBase;
     }
-    else if(RES_MATERIAL1)
+    else if(RES_MATERIAL1 == type)
     {
         const int materialBase = 5;
         res += materialBase;
     }
 
     return res;
+}
+
+int Player::GetResourceConsumption(ResourceType type) const
+{
+    switch(type)
+    {
+        case RES_ENERGY:
+        {
+            return mNumCells * ENERGY_PER_CELL;
+        }
+        break;
+
+        default:
+            return 0;
+        break;
+    }
 }
 
 } // namespace game

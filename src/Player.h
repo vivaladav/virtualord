@@ -100,7 +100,7 @@ public:
     void SumCells(int val);
     void SetOnNumCellsChanged(const std::function<void(int)> & f);
 
-    int GetEnergyUse() const;
+    int GetMoneySpentPerTurn() const;
 
     void SetOnNumUnitsChanged(const std::function<void()> & f);
 
@@ -123,6 +123,7 @@ public:
     void RemoveResourceGenerator(ResourceGenerator * gen);
 
     int GetResourceProduction(ResourceType type) const;
+    int GetResourceConsumption(ResourceType type) const;
     void UpdateResources();
 
     void HandleCollectable(GameObject * obj);
