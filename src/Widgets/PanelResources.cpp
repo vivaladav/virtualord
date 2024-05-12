@@ -1,5 +1,7 @@
 #include "PanelResources.h"
 
+#include "GameConstants.h"
+#include "GameMap.h"
 #include "Player.h"
 #include "Widgets/GameSimpleTooltip.h"
 #include "Widgets/GameUIData.h"
@@ -53,7 +55,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     srd->SetPosition(slotX + (slotW - srd->GetWidth()) * 0.5f, (GetHeight() - srd->GetHeight()) * 0.5f);
 
     if(mGameMap)
-        AssignResourceTooltip(srd, "MONEY / TURN");
+    {
+        auto tt = AssignResourceTooltip(srd, "MONEY / TURN");
+
+        srd->SetFunctionOnShowingTooltip([this, tt]
+        {
+            const int resIn = mGameMap->GetFactionMoneyPerTurn(mPlayer->GetFaction());
+            const int resOut = mPlayer->GetMoneySpentPerTurn();
+            tt->SetValues(resIn, resOut);
+        });
+    }
     else
         AssignSimpleTooltip(srd, "MONEY");
 
@@ -74,7 +85,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
     if(mGameMap)
-        AssignResourceTooltip(rd, "ENERGY / TURN");
+    {
+        auto tt = AssignResourceTooltip(rd, "ENERGY / TURN");
+
+        rd->SetFunctionOnShowingTooltip([this, tt]
+        {
+            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_ENERGY);
+            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_ENERGY);
+            tt->SetValues(resIn, resOut);
+        });
+    }
     else
         AssignSimpleTooltip(rd, "ENERGY");
 
@@ -99,7 +119,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
     if(mGameMap)
-        AssignResourceTooltip(rd, "MATERIAL / TURN");
+    {
+        auto tt = AssignResourceTooltip(rd, "MATERIAL / TURN");
+
+        rd->SetFunctionOnShowingTooltip([this, tt]
+        {
+            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_MATERIAL1);
+            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_MATERIAL1);
+            tt->SetValues(resIn, resOut);
+        });
+    }
     else
         AssignSimpleTooltip(rd, "MATERIAL");
 
@@ -124,7 +153,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
     if(mGameMap)
-        AssignResourceTooltip(rd, "DIAMONDS / TURN");
+    {
+        auto tt = AssignResourceTooltip(rd, "DIAMONDS / TURN");
+
+        rd->SetFunctionOnShowingTooltip([this, tt]
+        {
+            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_DIAMONDS);
+            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_DIAMONDS);
+            tt->SetValues(resIn, resOut);
+        });
+    }
     else
         AssignSimpleTooltip(rd, "DIAMONDS");
 
@@ -149,7 +187,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
     if(mGameMap)
-        AssignResourceTooltip(rd, "BLOBS / TURN");
+    {
+        auto tt = AssignResourceTooltip(rd, "BLOBS / TURN");
+
+        rd->SetFunctionOnShowingTooltip([this, tt]
+        {
+            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_BLOBS);
+            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_BLOBS);
+            tt->SetValues(resIn, resOut);
+        });
+    }
     else
         AssignSimpleTooltip(rd, "BLOBS");
 
@@ -203,22 +250,27 @@ void PanelResources::SetBg()
     SetSize(tex->GetWidth(), tex->GetHeight());
 }
 
-void PanelResources::AssignResourceTooltip(sgl::sgui::Widget * target, const char * text)
+ResourceTooltip * PanelResources::AssignResourceTooltip(sgl::sgui::Widget * target, const char * text)
 {
+    const int showingMs = 5000;
+
     auto tt = new ResourceTooltip(text);
-    SetTooltip(tt, target);
+    SetTooltip(tt, target, showingMs);
+
+    return tt;
 }
 
 void PanelResources::AssignSimpleTooltip(sgl::sgui::Widget * target, const char * text)
 {
+    const int showingMs = 2000;
+
     auto tt = new GameSimpleTooltip(text);
-    SetTooltip(tt, target);
+    SetTooltip(tt, target, showingMs);
 }
 
-void PanelResources::SetTooltip(sgl::sgui::Widget * tt, sgl::sgui::Widget * target)
+void PanelResources::SetTooltip(sgl::sgui::Widget * tt, sgl::sgui::Widget * target, int showingMs)
 {
     const int delayMs = 500;
-    const int showingMs = 2000;
 
     target->SetTooltip(tt);
     target->SetTooltipDelay(delayMs);

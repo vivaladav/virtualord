@@ -14,6 +14,7 @@ namespace game
 
 class GameMap;
 class Player;
+class ResourceTooltip;
 
 class PanelResources : public sgl::sgui::Widget
 {
@@ -27,9 +28,9 @@ private:
 
     void SetBg();
 
-    void AssignResourceTooltip(sgl::sgui::Widget * target, const char * text);
+    ResourceTooltip * AssignResourceTooltip(sgl::sgui::Widget * target, const char * text);
     void AssignSimpleTooltip(sgl::sgui::Widget * target, const char * text);
-    void SetTooltip(sgl::sgui::Widget * tt, sgl::sgui::Widget * target);
+    void SetTooltip(sgl::sgui::Widget * tt, sgl::sgui::Widget * target, int showingMs);
 
 private:
     sgl::graphic::Image * mBg = nullptr;
