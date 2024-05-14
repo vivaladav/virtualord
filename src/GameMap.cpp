@@ -486,7 +486,9 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
             faction = o2a.owner->GetFaction();
         }
 
-        o2a.obj = new Base;
+
+        auto b = new Base;
+        o2a.obj = b;
 
         // base cells update
         for(unsigned int r = o2a.r1; r <= r0; ++r)
@@ -503,7 +505,7 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
             }
         }
 
-        o2a.owner->SetBase(o2a.obj);
+        o2a.owner->SetBase(b);
         o2a.owner->SumCells(rows * cols);
     }
     else if(GameObject::TYPE_PRACTICE_TARGET == type)

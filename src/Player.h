@@ -11,6 +11,7 @@
 namespace game
 {
 
+class Base;
 class GameObject;
 class PlayerAI;
 class ResourceGenerator;
@@ -80,8 +81,8 @@ public:
 
     int GetPlayerId() const;
 
-    const GameObject * GetBase() const;
-    void SetBase(const GameObject * b);
+    const Base * GetBase() const;
+    void SetBase(const Base * b);
 
     // stats
     const StatValue & GetStat(Stat sid);
@@ -173,7 +174,7 @@ private:
 
     GameObject * mSelObj = nullptr;
 
-    const GameObject * mBase = nullptr;
+    const Base * mBase = nullptr;
 
     int mPlayerId;
 
@@ -232,8 +233,8 @@ inline const std::string & Player::GetName() const { return mName; }
 
 inline int Player::GetPlayerId() const { return mPlayerId; }
 
-inline const GameObject * Player::GetBase() const { return mBase; }
-inline void Player::SetBase(const GameObject * b) { mBase = b; }
+inline const Base * Player::GetBase() const { return mBase; }
+inline void Player::SetBase(const Base * b) { mBase = b; }
 
 inline const StatValue & Player::GetStat(Stat sid)
 {

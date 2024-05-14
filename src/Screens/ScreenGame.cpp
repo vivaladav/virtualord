@@ -14,6 +14,7 @@
 #include "AI/ObjectPath.h"
 #include "AI/PlayerAI.h"
 #include "AI/WallBuildPath.h"
+#include "GameObjects/Base.h"
 #include "GameObjects/DefensiveTower.h"
 #include "GameObjects/Hospital.h"
 #include "GameObjects/ObjectsDataRegistry.h"
@@ -3117,7 +3118,7 @@ void ScreenGame::ClearTempStructIndicator()
 
 void ScreenGame::CenterCameraOverPlayerBase()
 {
-    const GameObject * b = mLocalPlayer->GetBase();
+    const Base * b = mLocalPlayer->GetBase();
 
     if(nullptr == b)
         return ;

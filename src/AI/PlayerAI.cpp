@@ -3,6 +3,7 @@
 #include "GameConstants.h"
 #include "GameMap.h"
 #include "Player.h"
+#include "GameObjects/Base.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "GameObjects/ResourceGenerator.h"
 #include "GameObjects/Structure.h"
@@ -585,7 +586,7 @@ void PlayerAI::AddActionUnitAttackTrees(Unit * u)
 
     const unsigned int numTrees = mTrees.size();
     const int maxDist = mGm->GetNumRows() * mGm->GetNumCols();
-    const GameObject * base = mPlayer->GetBase();
+    const Base * base = mPlayer->GetBase();
 
     if(nullptr == base)
         return ;
