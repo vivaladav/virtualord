@@ -17,6 +17,8 @@ public:
 
     ResourceType GetResourceType() const;
 
+    void OnNewTurn(PlayerFaction faction) override;
+
 protected:
     void UpdateGraphics() override;
 

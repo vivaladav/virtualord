@@ -3,6 +3,10 @@
 #include "GameConstants.h"
 #include "GameData.h"
 #include "IsoObject.h"
+#include "GameObjects/LootBox.h"
+#include "Particles/DataParticleLootboxPrize.h"
+#include "Particles/UpdaterLootboxPrize.h"
+#include "Screens/ScreenGame.h"
 
 #include <sgl/graphic/TextureManager.h>
 
@@ -40,6 +44,46 @@ void ResourceGenerator::ScaleOutput(float mult)
         mOutput = minOutput;
     else
         mOutput = std::roundf(output);
+}
+
+void ResourceGenerator::OnNewTurn(PlayerFaction faction)
+{
+    // not linked yet -> exit
+    if(!IsLinked())
+        return ;
+
+    // not own turn -> exit
+    if(faction != GetFaction())
+        return ;
+
+    // AI -> exit
+    if(!IsFactionLocal())
+        return ;
+
+    const GameObjectTypeId type = GetObjectType();
+    unsigned int outputType;
+
+    if(type == GameObject::TYPE_RES_GEN_ENERGY || type == GameObject::TYPE_RES_GEN_ENERGY_SOLAR)
+        outputType = LootBox::LB_ENERGY;
+    else if(type == GameObject::TYPE_RES_GEN_MATERIAL || type == GameObject::TYPE_RES_GEN_MATERIAL_EXTRACT)
+        outputType = LootBox::LB_MATERIAL;
+    else
+        return ;
+
+    // emit notification
+    auto pu = static_cast<UpdaterLootboxPrize *>(GetScreen()->GetParticleUpdater(PU_LOOTBOX_PRIZE));
+
+    IsoObject * isoObj = GetIsoObject();
+
+    const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
+    const float y0 = isoObj->GetY() - isoObj->GetHeight() * 0.1f;
+
+    const float speed = 40.f;
+    const float decaySpeed = 125.f;
+
+    DataParticleLootboxPrize pd(mOutput, outputType, x0, y0, speed, decaySpeed);
+
+    pu->AddParticle(pd);
 }
 
 void ResourceGenerator::UpdateGraphics()
