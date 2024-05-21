@@ -159,6 +159,13 @@ void ObjectsDataRegistry::InitObjectData()
                                ID_STRUCT_TEMPLE}, SpriteFileStructures, GameObject::TYPE_TEMPLE,
                               OCS_RELICS, OCAT_GENERIC, 3, 3));
 
+    // GENERIC
+    mData.emplace(GameObject::TYPE_TRADING_POST,
+                  ObjectData({ 5, 4, 0, 0, 0, 4, 2, 2 }, { 1000, 1000, 0, 0 },
+                             { ID_STRUCT_TRADING_POST_F1, ID_STRUCT_TRADING_POST_F2,
+                              ID_STRUCT_TRADING_POST_F3, ID_STRUCT_TRADING_POST}, SpriteFileStructures,
+                             GameObject::TYPE_TRADING_POST, OCS_TRADING, OCAT_GENERIC, 3, 3));
+
     mData.emplace(GameObject::TYPE_TREES,
                   ObjectData({}, {}, { TREE1_1T_1 }, SpriteFileTrees,
                              GameObject::TYPE_TREES, OCO_SCENE, OCAT_UNDEFINED, 1, 1));

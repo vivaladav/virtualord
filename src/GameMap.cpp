@@ -32,6 +32,7 @@
 #include "GameObjects/ResourceStorage.h"
 #include "GameObjects/SceneObject.h"
 #include "GameObjects/Temple.h"
+#include "GameObjects/TradingPost.h"
 #include "GameObjects/Trees.h"
 #include "GameObjects/Unit.h"
 #include "GameObjects/Wall.h"
@@ -470,6 +471,8 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new DefensiveTower(data);
     else if(GameObject::TYPE_BUNKER == type)
         o2a.obj = new Bunker(data);
+    else if(GameObject::TYPE_TRADING_POST == type)
+        o2a.obj = new TradingPost(data);
     else if(GameObject::TYPE_WALL == type)
         o2a.obj = new Wall(variant);
     else if(GameObject::TYPE_WALL_GATE == type)

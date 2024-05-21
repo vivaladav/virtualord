@@ -48,6 +48,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
     p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_DIAMONDS);
     p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_ENERGY);
     p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_MATERIAL);
+    p->AddAvailableStructure(GameObject::TYPE_TRADING_POST);
     p->AddAvailableStructure(GameObject::TYPE_WALL_GATE);
 
     // assign initial available units
@@ -107,6 +108,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
         p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_DIAMONDS);
         p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_ENERGY);
         p->AddAvailableStructure(GameObject::TYPE_RES_STORAGE_MATERIAL);
+        p->AddAvailableStructure(GameObject::TYPE_TRADING_POST);
         p->AddAvailableStructure(GameObject::TYPE_WALL_GATE);
 
         // assign initial available units

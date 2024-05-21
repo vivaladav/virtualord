@@ -113,6 +113,8 @@ add_executable(
     src/GameObjects/Structure.cpp
     src/GameObjects/Temple.h
     src/GameObjects/Temple.cpp
+    src/GameObjects/TradingPost.h
+    src/GameObjects/TradingPost.cpp
     src/GameObjects/Trees.h
     src/GameObjects/Trees.cpp
     src/GameObjects/Unit.h

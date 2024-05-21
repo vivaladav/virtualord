@@ -78,6 +78,7 @@ const std::string GameObject::TYPE_STR_RES_STORAGE_ENERGY("RESSTOR_ENER");
 const std::string GameObject::TYPE_STR_RES_STORAGE_MATERIAL("RESSTOR_MAT");
 const std::string GameObject::TYPE_STR_ROCKS("ROCKS");
 const std::string GameObject::TYPE_STR_TEMPLE("TEMPLE");
+const std::string GameObject::TYPE_STR_TRADING_POST("TRADING_POST");
 const std::string GameObject::TYPE_STR_TREES("TREES");
 const std::string GameObject::TYPE_STR_UNIT_MEDIC1("UNIT_MEDIC1");
 const std::string GameObject::TYPE_STR_UNIT_SCOUT1("UNIT_SCOUT1");
@@ -113,6 +114,7 @@ const GameObjectTypeId GameObject::TYPE_RES_STORAGE_ENERGY = h{}(TYPE_STR_RES_ST
 const GameObjectTypeId GameObject::TYPE_RES_STORAGE_MATERIAL = h{}(TYPE_STR_RES_STORAGE_MATERIAL);
 const GameObjectTypeId GameObject::TYPE_ROCKS = h{}(TYPE_STR_ROCKS);
 const GameObjectTypeId GameObject::TYPE_TEMPLE = h{}(TYPE_STR_TEMPLE);
+const GameObjectTypeId GameObject::TYPE_TRADING_POST = h{}(TYPE_STR_TRADING_POST);
 const GameObjectTypeId GameObject::TYPE_TREES = h{}(TYPE_STR_TREES);
 const GameObjectTypeId GameObject::TYPE_UNIT_MEDIC1 = h{}(TYPE_STR_UNIT_MEDIC1);
 const GameObjectTypeId GameObject::TYPE_UNIT_SCOUT1 = h{}(TYPE_STR_UNIT_SCOUT1);
@@ -147,6 +149,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TYPE_STR_MAP
     { GameObject::TYPE_ROCKS, TYPE_STR_ROCKS },
     { GameObject::TYPE_TEMPLE, TYPE_STR_TEMPLE },
     { GameObject::TYPE_TREES, TYPE_STR_TREES },
+    { GameObject::TYPE_TRADING_POST, TYPE_STR_TRADING_POST },
     { GameObject::TYPE_UNIT_MEDIC1, TYPE_STR_UNIT_MEDIC1 },
     { GameObject::TYPE_UNIT_SCOUT1, TYPE_STR_UNIT_SCOUT1 },
     { GameObject::TYPE_UNIT_SOLDIER1, TYPE_STR_UNIT_SOLDIER1 },
@@ -192,6 +195,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::TITLES =
     { GameObject::TYPE_RES_STORAGE_MATERIAL, "MATERIAL STORAGE"},
     { GameObject::TYPE_ROCKS, "ROCKS"},
     { GameObject::TYPE_TEMPLE, "TEMPLE"},
+    { GameObject::TYPE_TRADING_POST, "TRADING POST"},
     { GameObject::TYPE_TREES, "TREES"},
     { GameObject::TYPE_UNIT_MEDIC1, "MEDIC"},
     { GameObject::TYPE_UNIT_SCOUT1, "SCOUT"},
@@ -231,6 +235,7 @@ const std::unordered_map<GameObjectTypeId, std::string> GameObject::DESCRIPTIONS
     { GameObject::TYPE_ROCKS, "Some rocks."},
     { GameObject::TYPE_TEMPLE, "An ancient temple that can be explored."},
     { GameObject::TYPE_TREES, "A single tree which will slowly grow into a forest."},
+    { GameObject::TYPE_TRADING_POST, "This structure allows you to buy and to sell resources."},
     { GameObject::TYPE_UNIT_MEDIC1, "This unit is specialized in healing other units.\nIt's a bit slow, but effective."},
     { GameObject::TYPE_UNIT_SCOUT1, "A light and fast unit ideal for exploring, but not for fighting."},
     { GameObject::TYPE_UNIT_SOLDIER1, "A basic soldier unit.\nUseful for defense and exploration."},
