@@ -44,6 +44,9 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
                                                      "Open the gate", this);
     mButtons[BTN_CLOSE_GATE] = new ObjectActionButton(ObjectActionButton::CLOSE_GATE, "G", KeyboardEvent::KEY_G,
                                                       "Close the gate", this);
+    mButtons[BTN_TRADE] = new ObjectActionButton(ObjectActionButton::TRADE, "T", KeyboardEvent::KEY_T,
+                                                      "Trade your resources", this);
+
     mButtons[BTN_CANCEL] = new ObjectActionButton(ObjectActionButton::CANCEL, "X", KeyboardEvent::KEY_X,
                                                   "Cancel current action", this);
 }
@@ -109,6 +112,13 @@ void PanelObjectActions::SetObject(GameObject * obj)
             mButtons[BTN_BUILD_UNIT_HOSPITAL]->SetVisible(true);
             mButtons[BTN_HEAL_HOSPITAL]->SetVisible(true);
         }
+        else
+            mButtons[BTN_CANCEL]->SetVisible(false);
+    }
+    else if(objType == GameObject::TYPE_TRADING_POST)
+    {
+        if(obj->IsLinked())
+            mButtons[BTN_TRADE]->SetVisible(true);
         else
             mButtons[BTN_CANCEL]->SetVisible(false);
     }

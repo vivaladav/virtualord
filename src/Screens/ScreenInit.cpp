@@ -388,6 +388,36 @@ void ScreenInit::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogObject, rects);
     });
 
+    // DIALOG TRADING
+    mJobs.emplace_back([this, tm]
+    {
+        std::vector<sgl::core::Rectd> rects
+        {
+            // DIALOG
+            { 0, 0, 1340, 560 },
+
+            // BUTTON CLOSE
+            { 0, 561, 100, 40 },
+            { 101, 561, 100, 40 },
+            { 202, 561, 100, 40 },
+
+            // ICONS
+            { 303, 561, 24, 24 },
+            { 328, 561, 26, 26 },
+            { 355, 561, 26, 26 },
+            { 382, 561, 26, 26 },
+            { 409, 561, 26, 26 },
+
+            // BUTTON ACTION
+            { 436, 561, 161, 40 },
+            { 598, 561, 161, 40 },
+            { 761, 561, 161, 40 },
+            { 922, 561, 161, 40 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogTrading, rects);
+    });
+
     // MAIN MENU
     mJobs.emplace_back([this, tm]
     {
@@ -1395,6 +1425,7 @@ void ScreenInit::SetupTextures()
             { 106, 127, 52, 52 },
             { 159, 127, 52, 52 },
             { 212, 127, 52, 52 },
+            { 265, 127, 52, 52 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileObjActionButton, rects);

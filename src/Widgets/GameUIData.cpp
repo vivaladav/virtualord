@@ -9,6 +9,7 @@ const char SpriteFileDialogExploreTemple[] = "UI/dialog_explore_temple.png";
 const char SpriteFileDialogNewElement[] = "UI/new_element_dalog.png";
 const char SpriteFileDialogNewElementExp[] = "UI/new_element_dalog-exp.png";
 const char SpriteFileDialogObject[] = "UI/dialog_object.png";
+const char SpriteFileDialogTrading[] = "UI/dialog_trading.png";
 const char SpriteFileFactionSelection[] = "UI/faction_selection.png";
 const char SpriteFileMainMenu[] = "UI/main_menu.png";
 const char SpriteFileMainMenuButtons[] = "UI/main_menu_buttons.png";

@@ -19,6 +19,7 @@ class DialogExploreTemple;
 class DialogExploreTempleOutcome;
 class DialogNewElement;
 class DialogObject;
+class DialogTrading;
 class GameMapProgressBar;
 class GameObject;
 class MiniMap;
@@ -71,6 +72,9 @@ public:
     void ShowTurnControlTextGamePaused();
     const PanelTurnControl * GetPanelTurnControl() const;
 
+    void ShowDialogTrading();
+    void HideDialogTrading();
+
     void SetLocalActionsEnabled(bool enabled);
 
     GameMapProgressBar * CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction);
@@ -107,6 +111,7 @@ private:
     DialogExploreTempleOutcome * mDialogExploreTempleOutcome = nullptr;
     DialogNewElement * mDialogNewElement = nullptr;
     DialogObject * mDialogObj = nullptr;
+    DialogTrading * mDialogTrading = nullptr;
 
     PanelSelectedObject * mPanelSelObj = nullptr;
     ButtonPanelSelectedObject * mButtonPanelSelObj = nullptr;

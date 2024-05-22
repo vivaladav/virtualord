@@ -19,9 +19,10 @@
 #include "Widgets/DialogEndMission.h"
 #include "Widgets/DialogExit.h"
 #include "Widgets/DialogExploreTemple.h"
-#include "Widgets/DialogObject.h"
-#include "Widgets/GameMapProgressBar.h"
 #include "Widgets/DialogNewElement.h"
+#include "Widgets/DialogObject.h"
+#include "Widgets/DialogTrading.h"
+#include "Widgets/GameMapProgressBar.h"
 #include "Widgets/MiniMap.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/PanelResources.h"
@@ -486,6 +487,39 @@ void GameHUD::ShowTurnControlTextEnemyTurn()
 void GameHUD::ShowTurnControlTextGamePaused()
 {
     mPanelTurnCtrl->ShowText("- GAME PAUSED -");
+}
+
+void GameHUD::ShowDialogTrading()
+{
+    if(mDialogTrading != nullptr)
+        return ;
+
+    mScreen->SetPause(true);
+
+    mDialogTrading = new DialogTrading;
+    mDialogTrading->SetFocus();
+
+    mDialogTrading->SetFunctionOnClose([this]
+    {
+        HideDialogTrading();
+    });
+
+    TemporaryCloseSidePanels();
+
+    // position dialog
+    CenterWidget(mDialogTrading);
+}
+
+void GameHUD::HideDialogTrading()
+{
+    ReopenSidePanels();
+
+    // schedule dialog deletion
+    mDialogTrading->DeleteLater();
+    mDialogTrading = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
 }
 
 void GameHUD::SetLocalActionsEnabled(bool enabled)

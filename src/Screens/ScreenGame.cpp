@@ -671,6 +671,12 @@ void ScreenGame::CreateUI()
         sgl::sgui::Stage::Instance()->SetFocus();
     });
 
+    // TRADING POST
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_TRADE, [this]
+    {
+        mHUD->ShowDialogTrading();
+    });
+
     // GENERIC ACTIONS
     // upgrade
     panelObjActions->SetButtonFunction(PanelObjectActions::BTN_UPGRADE, [this]

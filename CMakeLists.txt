@@ -307,6 +307,8 @@ add_executable(
     src/Widgets/DialogObject.cpp
     src/Widgets/DialogSettings.h
     src/Widgets/DialogSettings.cpp
+    src/Widgets/DialogTrading.h
+    src/Widgets/DialogTrading.cpp
     src/Widgets/DigitsDisplay.h
     src/Widgets/DigitsDisplay.cpp
     src/Widgets/GameButton.h

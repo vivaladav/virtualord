@@ -192,6 +192,33 @@ enum SpriteIdDialogObject : unsigned int
     ID_DLG_OBJ_PB_MARKS,
 };
 
+// DIALOG TRADING
+extern const char SpriteFileDialogTrading[];
+
+enum SpriteIdDialogTrading : unsigned int
+{
+    // DIALOG
+    ID_DLG_TRADING_BG,
+
+    // BUTTON CLOSE
+    ID_DLG_TRADING_BTN_CLOSE_NORMAL,
+    ID_DLG_TRADING_BTN_CLOSE_OVER,
+    ID_DLG_TRADING_BTN_CLOSE_PUSHED,
+
+    // ICONS
+    ID_DLG_TRADING_ICON_MONEY,
+    ID_DLG_TRADING_ICON_ENERGY,
+    ID_DLG_TRADING_ICON_MATERIAL,
+    ID_DLG_TRADING_ICON_BLOBS,
+    ID_DLG_TRADING_ICON_DIAMONDS,
+
+    // BUTTON ACTION
+    ID_DLG_TRADING_BTN_ACT_NORMAL,
+    ID_DLG_TRADING_BTN_ACT_OVER,
+    ID_DLG_TRADING_BTN_ACT_PUSHED,
+    ID_DLG_TRADING_BTN_ACT_DISABLED,
+};
+
 // FACTION SELECTION DIALOG
 extern const char SpriteFileFactionSelection[];
 
@@ -263,6 +290,7 @@ enum SpriteIdObjActionButton : unsigned int
     IND_BUTTON_ICON_CLOSE_GATE,
     IND_BUTTON_ICON_CANCEL,
     IND_BUTTON_ICON_HEAL,
+    IND_BUTTON_ICON_TRADE,
 
     NUM_IND_OBJ_ACT_BUTTON
 };

@@ -161,7 +161,7 @@ void ObjectsDataRegistry::InitObjectData()
 
     // GENERIC
     mData.emplace(GameObject::TYPE_TRADING_POST,
-                  ObjectData({ 5, 4, 0, 0, 0, 4, 2, 2 }, { 1000, 1000, 0, 0 },
+                  ObjectData({ 5, 4, 0, 0, 0, 4, 2, 2 }, { 1000, 500, 0, 0 },
                              { ID_STRUCT_TRADING_POST_F1, ID_STRUCT_TRADING_POST_F2,
                               ID_STRUCT_TRADING_POST_F3, ID_STRUCT_TRADING_POST}, SpriteFileStructures,
                              GameObject::TYPE_TRADING_POST, OCS_TRADING, OCAT_GENERIC, 3, 3));

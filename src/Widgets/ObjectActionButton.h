@@ -30,6 +30,7 @@ public:
         CLOSE_GATE,
         CANCEL,
         HEAL,
+        TRADE,
 
         NUM_ACTION_ICONS
     };

@@ -35,6 +35,7 @@ public:
         BTN_UPGRADE,
         BTN_OPEN_GATE,
         BTN_CLOSE_GATE,
+        BTN_TRADE,
         BTN_CANCEL,
 
         NUM_BUTTONS
