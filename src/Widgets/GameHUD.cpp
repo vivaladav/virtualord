@@ -496,7 +496,8 @@ void GameHUD::ShowDialogTrading()
 
     mScreen->SetPause(true);
 
-    mDialogTrading = new DialogTrading;
+    Player * player = mScreen->GetGame()->GetLocalPlayer();
+    mDialogTrading = new DialogTrading(player);
     mDialogTrading->SetFocus();
 
     mDialogTrading->SetFunctionOnClose([this]
