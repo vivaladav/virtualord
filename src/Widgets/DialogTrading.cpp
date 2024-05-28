@@ -12,6 +12,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/sgui/Image.h>
 #include <sgl/sgui/ImageButton.h>
 #include <sgl/sgui/Label.h>
 #include <sgl/utilities/System.h>
@@ -85,59 +86,124 @@ DialogTrading::DialogTrading(Player * p)
     title->SetColor(0xf0f3f5ff);
 
     // -- HEADERS --
+    const int hbH = 40;
+    const int hbW0 = 300;
+    const int hbW1 = 200;
+    const int hbW2 = 350;
+    const int hbW3 = 350;
+    const int marginHB = 20;
     const int hbX0 = 40;
     const int hbY0 = 75;
-    const int hbH = 40;
-    const int hbW1 = 300;
-    const int hbW2 = 200;
-    const int hbW3 = 350;
-    const int hbW4 = 350;
-    const int marginHB = 20;
+    const int hbX1 = hbX0 + hbW0 + marginHB;
+    const int hbX2 = hbX1 + hbW1 + marginHB;
+    const int hbX3 = hbX2 + hbW2 + marginHB;
 
     const unsigned int colorHeader = 0xd6eaf5ff;
     auto fontHeader = fm->GetFont("Lato-Regular.ttf", 22, graphic::Font::NORMAL);
 
     // RESOURCE
     sgui::Label * header = new sgui::Label("RESOURCE", fontHeader, this);
-
-    int hbX = hbX0;
-    int headerX = hbX + (hbW1 - header->GetWidth()) / 2;
-    int headerY = hbY0 + (hbH - header->GetHeight()) / 2;
-    header->SetPosition(headerX, headerY);
     header->SetColor(colorHeader);
 
-    hbX += hbW1 + marginHB;
+    int headerX = hbX0 + (hbW0 - header->GetWidth()) / 2;
+    int headerY = hbY0 + (hbH - header->GetHeight()) / 2;
+    header->SetPosition(headerX, headerY);
 
     // STOCK
     header = new sgui::Label("STOCK", fontHeader, this);
-
-    headerX = hbX + (hbW2 - header->GetWidth()) / 2;
-    headerY = hbY0 + (hbH - header->GetHeight()) / 2;
-    header->SetPosition(headerX, headerY);
     header->SetColor(colorHeader);
 
-    hbX += hbW2 + marginHB;
+    headerX = hbX1 + (hbW1 - header->GetWidth()) / 2;
+    headerY = hbY0 + (hbH - header->GetHeight()) / 2;
+    header->SetPosition(headerX, headerY);
 
     // BUY
     header = new sgui::Label("BUY", fontHeader, this);
-
-    headerX = hbX + (hbW3 - header->GetWidth()) / 2;
-    headerY = hbY0 + (hbH - header->GetHeight()) / 2;
-    header->SetPosition(headerX, headerY);
     header->SetColor(colorHeader);
 
-    hbX += hbW3 + marginHB;
+    headerX = hbX2 + (hbW2 - header->GetWidth()) / 2;
+    headerY = hbY0 + (hbH - header->GetHeight()) / 2;
+    header->SetPosition(headerX, headerY);
 
     // SELL
     header = new sgui::Label("SELL", fontHeader, this);
-
-    headerX = hbX + (hbW4 - header->GetWidth()) / 2;
-    headerY = hbY0 + (hbH - header->GetHeight()) / 2;
-    header->SetPosition(headerX, headerY);
     header->SetColor(colorHeader);
 
-    // -- LABELS STOCK --
+    headerX = hbX3 + (hbW3 - header->GetWidth()) / 2;
+    headerY = hbY0 + (hbH - header->GetHeight()) / 2;
+    header->SetPosition(headerX, headerY);
 
+    // -- ICONS & LABELS RESOURCES --
+    const int dbX0 = 40;
+    const int dbY0 = 135;
+    const int dbY1 = 215;
+    const int dbY2 = 295;
+    const int dbY3 = 375;
+    const int dbH = 50;
+    const int paddingIcon = 10;
+
+    const unsigned int colorData = 0xadd4ebff;
+    auto fontData = fm->GetFont("Lato-Regular.ttf", 20, graphic::Font::NORMAL);
+
+    // ENERGY
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_ENERGY);
+    auto icon = new sgui::Image(tex, this);
+
+    auto data = new sgui::Label("ENERGY", fontHeader, this);
+    data->SetColor(colorData);
+
+    int dataX = dbX0 + paddingIcon;
+    int dataY = dbY0 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    dataX += icon->GetWidth() + paddingIcon;
+    dataY = dbY0 + (dbH - data->GetHeight()) / 2;
+    data->SetPosition(dataX, dataY);
+
+    // MATERIAL
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MATERIAL);
+    icon = new sgui::Image(tex, this);
+
+    data = new sgui::Label("MATERIAL", fontHeader, this);
+    data->SetColor(colorData);
+
+    dataX = dbX0 + paddingIcon;
+    dataY = dbY1 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    dataX += icon->GetWidth() + paddingIcon;
+    dataY = dbY1 + (dbH - data->GetHeight()) / 2;
+    data->SetPosition(dataX, dataY);
+
+    // BLOBS
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_BLOBS);
+    icon = new sgui::Image(tex, this);
+
+    data = new sgui::Label("BLOBS", fontHeader, this);
+    data->SetColor(colorData);
+
+    dataX = dbX0 + paddingIcon;
+    dataY = dbY2 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    dataX += icon->GetWidth() + paddingIcon;
+    dataY = dbY2 + (dbH - data->GetHeight()) / 2;
+    data->SetPosition(dataX, dataY);
+
+    // DIAMONDS
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_DIAMONDS);
+    icon = new sgui::Image(tex, this);
+
+    data = new sgui::Label("DIAMONDS", fontHeader, this);
+    data->SetColor(colorData);
+
+    dataX = dbX0 + paddingIcon;
+    dataY = dbY3 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    dataX += icon->GetWidth() + paddingIcon;
+    dataY = dbY3 + (dbH - data->GetHeight()) / 2;
+    data->SetPosition(dataX, dataY);
 }
 
 void DialogTrading::SetFunctionOnClose(const std::function<void()> & f)
