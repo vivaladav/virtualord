@@ -1,6 +1,8 @@
 #include "Widgets/DialogTrading.h"
 
 #include "Game.h"
+#include "Player.h"
+#include "StatValue.h"
 #include "Widgets/GameButton.h"
 #include "Widgets/GameUIData.h"
 
@@ -18,6 +20,7 @@
 #include <sgl/utilities/System.h>
 
 #include <sstream>
+#include <string>
 
 namespace game
 {
@@ -149,7 +152,7 @@ DialogTrading::DialogTrading(Player * p)
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_ENERGY);
     auto icon = new sgui::Image(tex, this);
 
-    auto data = new sgui::Label("ENERGY", fontHeader, this);
+    auto data = new sgui::Label("ENERGY", fontData, this);
     data->SetColor(colorData);
 
     int dataX = dbX0 + paddingIcon;
@@ -164,7 +167,7 @@ DialogTrading::DialogTrading(Player * p)
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MATERIAL);
     icon = new sgui::Image(tex, this);
 
-    data = new sgui::Label("MATERIAL", fontHeader, this);
+    data = new sgui::Label("MATERIAL", fontData, this);
     data->SetColor(colorData);
 
     dataX = dbX0 + paddingIcon;
@@ -179,7 +182,7 @@ DialogTrading::DialogTrading(Player * p)
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_BLOBS);
     icon = new sgui::Image(tex, this);
 
-    data = new sgui::Label("BLOBS", fontHeader, this);
+    data = new sgui::Label("BLOBS", fontData, this);
     data->SetColor(colorData);
 
     dataX = dbX0 + paddingIcon;
@@ -194,7 +197,7 @@ DialogTrading::DialogTrading(Player * p)
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_DIAMONDS);
     icon = new sgui::Image(tex, this);
 
-    data = new sgui::Label("DIAMONDS", fontHeader, this);
+    data = new sgui::Label("DIAMONDS", fontData, this);
     data->SetColor(colorData);
 
     dataX = dbX0 + paddingIcon;
@@ -204,6 +207,63 @@ DialogTrading::DialogTrading(Player * p)
     dataX += icon->GetWidth() + paddingIcon;
     dataY = dbY3 + (dbH - data->GetHeight()) / 2;
     data->SetPosition(dataX, dataY);
+
+    // -- LABELS STOCK --
+    std::ostringstream ss;
+
+    // ENERGY
+    const StatValue & s0 = mPlayer->GetStat(Player::ENERGY);
+
+    ss << s0.GetIntValue() << " / " << s0.GetIntMax();
+
+    mLabelStockEnergy = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelStockEnergy->SetColor(colorData);
+
+    dataX = hbX1 + (hbW1 - mLabelStockEnergy->GetWidth()) / 2;
+    dataY = dbY0 + (dbH - mLabelStockEnergy->GetHeight()) / 2;
+    mLabelStockEnergy->SetPosition(dataX, dataY);
+
+    // MATERIAL
+    const StatValue & s1 = mPlayer->GetStat(Player::MATERIAL);
+
+    ss.str(std::string());
+    ss.clear();
+    ss << s1.GetIntValue() << " / " << s1.GetIntMax();
+
+    mLabelStockMaterial = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelStockMaterial->SetColor(colorData);
+
+    dataX = hbX1 + (hbW1 - mLabelStockMaterial->GetWidth()) / 2;
+    dataY = dbY1 + (dbH - mLabelStockMaterial->GetHeight()) / 2;
+    mLabelStockMaterial->SetPosition(dataX, dataY);
+
+    // BLOBS
+    const StatValue & s2 = mPlayer->GetStat(Player::BLOBS);
+
+    ss.str(std::string());
+    ss.clear();
+    ss << s2.GetIntValue() << " / " << s2.GetIntMax();
+
+    mLabelStockBlobs = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelStockBlobs->SetColor(colorData);
+
+    dataX = hbX1 + (hbW1 - mLabelStockBlobs->GetWidth()) / 2;
+    dataY = dbY2 + (dbH - mLabelStockBlobs->GetHeight()) / 2;
+    mLabelStockBlobs->SetPosition(dataX, dataY);
+
+    // DIAMONDS
+    const StatValue & s3 = mPlayer->GetStat(Player::DIAMONDS);
+
+    ss.str(std::string());
+    ss.clear();
+    ss << s3.GetIntValue() << " / " << s3.GetIntMax();
+
+    mLabelStockDiamonds = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelStockDiamonds->SetColor(colorData);
+
+    dataX = hbX1 + (hbW1 - mLabelStockDiamonds->GetWidth()) / 2;
+    dataY = dbY3 + (dbH - mLabelStockDiamonds->GetHeight()) / 2;
+    mLabelStockDiamonds->SetPosition(dataX, dataY);
 }
 
 void DialogTrading::SetFunctionOnClose(const std::function<void()> & f)
