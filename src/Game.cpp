@@ -138,6 +138,42 @@ const std::string & Game::GetCurrentMapFile() const
     return mMapsReg->GetMapFile(mCurrPlanet, mCurrTerritory);
 }
 
+int Game::GetResourcePriceBuy(ResourceType t) const
+{
+    // TODO make it change depending on territory/planet
+
+    const int price[NUM_RESOURCES] =
+    {
+        60,
+        70,
+        120,
+        170
+    };
+
+    if(t < NUM_RESOURCES)
+        return price[t];
+    else
+        return 0;
+}
+
+int Game::GetResourcePriceSell(ResourceType t) const
+{
+    // TODO make it change depending on territory/planet
+
+    const int price[NUM_RESOURCES] =
+    {
+        50,
+        60,
+        100,
+        150
+    };
+
+    if(t < NUM_RESOURCES)
+        return price[t];
+    else
+        return 0;
+}
+
 void Game::RequestNextActiveState(StateId sid) { mStateMan->RequestNextActiveState(sid); }
 
 void Game::SetMapDraggingSpeed(int val)

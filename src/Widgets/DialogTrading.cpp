@@ -1,6 +1,7 @@
 #include "Widgets/DialogTrading.h"
 
 #include "Game.h"
+#include "GameConstants.h"
 #include "Player.h"
 #include "StatValue.h"
 #include "Widgets/GameButton.h"
@@ -55,8 +56,9 @@ public:
 };
 
 // ===== DIALOG =====
-DialogTrading::DialogTrading(Player * p)
-    : mPlayer(p)
+DialogTrading::DialogTrading(Game * g, Player * p)
+    : mGame(g)
+    , mPlayer(p)
 {
     using namespace sgl;
 
@@ -142,6 +144,7 @@ DialogTrading::DialogTrading(Player * p)
     const int dbY1 = 215;
     const int dbY2 = 295;
     const int dbY3 = 375;
+    const int dbY4 = 470;
     const int dbH = 50;
     const int paddingIcon = 10;
 
@@ -264,6 +267,228 @@ DialogTrading::DialogTrading(Player * p)
     dataX = hbX1 + (hbW1 - mLabelStockDiamonds->GetWidth()) / 2;
     dataY = dbY3 + (dbH - mLabelStockDiamonds->GetHeight()) / 2;
     mLabelStockDiamonds->SetPosition(dataX, dataY);
+
+    // -- LABELS TOTAL BUY --
+    const int marginIconMoneyL = 20;
+    const int marginIconMoneyR = 10;
+
+    const int digitsBuy = 3;
+    const int digitsTot = 5;
+    const char digitsFill = '0';
+
+    const std::string zero("0");
+    ss.str(std::string());
+    ss.clear();
+
+    // ENERGY
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX2 + marginIconMoneyL;
+    dataY = dbY0 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.width(digitsBuy);
+    ss.fill(digitsFill);
+    ss << g->GetResourcePriceBuy(RES_ENERGY);
+
+    mLabelTotBuyEnergy = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuyEnergy->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY0 + (dbH - mLabelTotBuyEnergy->GetHeight()) / 2;
+    mLabelTotBuyEnergy->SetPosition(dataX, dataY);
+
+    // MATERIAL
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX2 + marginIconMoneyL;
+    dataY = dbY1 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.str(std::string());
+    ss.clear();
+    ss.width(digitsBuy);
+    ss.fill(digitsFill);
+    ss << g->GetResourcePriceBuy(RES_MATERIAL1);
+
+    mLabelTotBuyMaterial = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuyMaterial->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY1 + (dbH - mLabelTotBuyMaterial->GetHeight()) / 2;
+    mLabelTotBuyMaterial->SetPosition(dataX, dataY);
+
+    // BLOBS
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX2 + marginIconMoneyL;
+    dataY = dbY2 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.str(std::string());
+    ss.clear();
+    ss.width(digitsBuy);
+    ss.fill(digitsFill);
+    ss << g->GetResourcePriceBuy(RES_BLOBS);
+
+    mLabelTotBuyBlobs = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuyBlobs->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY2 + (dbH - mLabelTotBuyBlobs->GetHeight()) / 2;
+    mLabelTotBuyBlobs->SetPosition(dataX, dataY);
+
+    // DIAMONDS
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX2 + marginIconMoneyL;
+    dataY = dbY3 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.str(std::string());
+    ss.clear();
+    ss.width(digitsBuy);
+    ss.fill(digitsFill);
+    ss << g->GetResourcePriceBuy(RES_DIAMONDS);
+
+    mLabelTotBuyDiamonds = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuyDiamonds->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY3 + (dbH - mLabelTotBuyDiamonds->GetHeight()) / 2;
+    mLabelTotBuyDiamonds->SetPosition(dataX, dataY);
+
+    // TOTAL BUY
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX2 + marginIconMoneyL;
+    dataY = dbY4 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.str(std::string());
+    ss.clear();
+    ss.width(digitsTot);
+    ss.fill(digitsFill);
+    ss << zero;
+
+    mLabelTotBuy = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuy->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY4 + (dbH - mLabelTotBuy->GetHeight()) / 2;
+    mLabelTotBuy->SetPosition(dataX, dataY);
+
+    // -- LABELS TOTAL SELL --
+    ss.str(std::string());
+    ss.clear();
+
+    // ENERGY
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX3 + marginIconMoneyL;
+    dataY = dbY0 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.width(digitsBuy);
+    ss.fill(digitsFill);
+    ss << g->GetResourcePriceSell(RES_ENERGY);
+
+    mLabelTotBuyEnergy = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuyEnergy->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY0 + (dbH - mLabelTotBuyEnergy->GetHeight()) / 2;
+    mLabelTotBuyEnergy->SetPosition(dataX, dataY);
+
+    // MATERIAL
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX3 + marginIconMoneyL;
+    dataY = dbY1 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.str(std::string());
+    ss.clear();
+    ss.width(digitsBuy);
+    ss.fill(digitsFill);
+    ss << g->GetResourcePriceSell(RES_MATERIAL1);
+
+    mLabelTotBuyMaterial = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuyMaterial->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY1 + (dbH - mLabelTotBuyMaterial->GetHeight()) / 2;
+    mLabelTotBuyMaterial->SetPosition(dataX, dataY);
+
+    // BLOBS
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX3 + marginIconMoneyL;
+    dataY = dbY2 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.str(std::string());
+    ss.clear();
+    ss.width(digitsBuy);
+    ss.fill(digitsFill);
+    ss << g->GetResourcePriceSell(RES_BLOBS);
+
+    mLabelTotBuyBlobs = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuyBlobs->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY2 + (dbH - mLabelTotBuyBlobs->GetHeight()) / 2;
+    mLabelTotBuyBlobs->SetPosition(dataX, dataY);
+
+    // DIAMONDS
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX3 + marginIconMoneyL;
+    dataY = dbY3 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.str(std::string());
+    ss.clear();
+    ss.width(digitsBuy);
+    ss.fill(digitsFill);
+    ss << g->GetResourcePriceSell(RES_DIAMONDS);
+
+    mLabelTotBuyDiamonds = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuyDiamonds->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY3 + (dbH - mLabelTotBuyDiamonds->GetHeight()) / 2;
+    mLabelTotBuyDiamonds->SetPosition(dataX, dataY);
+
+    // TOTAL SELL
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    icon = new sgui::Image(tex, this);
+
+    dataX = hbX3 + marginIconMoneyL;
+    dataY = dbY4 + (dbH - icon->GetHeight()) / 2;
+    icon->SetPosition(dataX, dataY);
+
+    ss.str(std::string());
+    ss.clear();
+    ss.width(digitsTot);
+    ss.fill(digitsFill);
+    ss << zero;
+
+    mLabelTotSell = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotSell->SetColor(colorData);
+
+    dataX += icon->GetWidth() + marginIconMoneyR;
+    dataY = dbY4 + (dbH - mLabelTotSell->GetHeight()) / 2;
+    mLabelTotSell->SetPosition(dataX, dataY);
 }
 
 void DialogTrading::SetFunctionOnClose(const std::function<void()> & f)

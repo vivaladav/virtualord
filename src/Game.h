@@ -32,6 +32,7 @@ class Player;
 
 enum Planets : unsigned int;
 enum PlayerFaction : unsigned int;
+enum ResourceType : unsigned int;
 enum StateId : int;
 
 enum Difficulty : unsigned int
@@ -57,6 +58,9 @@ public:
     void SetCurrentTerritory(unsigned int territory);
     Planets GetCurrentPlanet() const;
     void SetCurrentPlanet(Planets planet);
+
+    int GetResourcePriceBuy(ResourceType t) const;
+    int GetResourcePriceSell(ResourceType t) const;
 
     void SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 

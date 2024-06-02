@@ -24,7 +24,7 @@ class Screen;
 class DialogTrading : public sgl::sgui::Widget
 {
 public:
-    DialogTrading(Player * p);
+    DialogTrading(Game * g, Player * p);
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
@@ -43,6 +43,19 @@ private:
     sgl::sgui::Label * mLabelStockBlobs = nullptr;
     sgl::sgui::Label * mLabelStockDiamonds = nullptr;
 
+    sgl::sgui::Label * mLabelTotBuyEnergy = nullptr;
+    sgl::sgui::Label * mLabelTotBuyMaterial = nullptr;
+    sgl::sgui::Label * mLabelTotBuyBlobs = nullptr;
+    sgl::sgui::Label * mLabelTotBuyDiamonds = nullptr;
+    sgl::sgui::Label * mLabelTotBuy = nullptr;
+
+    sgl::sgui::Label * mLabelTotSellEnergy = nullptr;
+    sgl::sgui::Label * mLabelTotSellMaterial = nullptr;
+    sgl::sgui::Label * mLabelTotSellBlobs = nullptr;
+    sgl::sgui::Label * mLabelTotSellkDiamonds = nullptr;
+    sgl::sgui::Label * mLabelTotSell = nullptr;
+
+    Game * mGame = nullptr;
     Player * mPlayer = nullptr;
 };
 
