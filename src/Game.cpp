@@ -23,6 +23,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/graphic/Window.h>
 #include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StateManager.h>
 
@@ -73,6 +74,11 @@ Game::Game(int argc, char * argv[])
     mAudioMan = sgl::media::AudioManager::Create();
     mAudioMan->SetVolumeMusic(defVolumeMusic);
     mAudioMan->SetVolumeSound(defVolumeSound);
+
+#ifdef DEV_MODE
+    // music OFF by default when developer
+    mAudioMan->GetPlayer()->SetMusicEnabled(false);
+#endif
 
     // -- SGUI Stage --
     mStage = sgl::sgui::Stage::Create();
