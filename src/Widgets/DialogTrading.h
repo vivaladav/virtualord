@@ -56,6 +56,9 @@ private:
     void IncSellQuantity(ResourceType res, sgl::sgui::Label * label);
     void DecSellQuantity(ResourceType res, sgl::sgui::Label * label);
 
+    void Buy();
+    void Sell();
+
 private:
     static const int TRADED_RES = 4;
 
@@ -63,6 +66,8 @@ private:
     std::array<int, TRADED_RES> mSell;
 
     std::array<sgl::sgui::Label *, TRADED_RES> mLabelStock;
+    std::array<sgl::sgui::Label *, TRADED_RES> mLabelBuy;
+    std::array<sgl::sgui::Label *, TRADED_RES> mLabelSell;
 
     sgl::graphic::Image * mBg = nullptr;
     sgl::sgui::AbstractButton * mButtonClose = nullptr;

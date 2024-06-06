@@ -244,7 +244,7 @@ void Player::SetResource(Stat sid, int val)
 
 void Player::SumResource(Stat sid, int val)
 {
-    if(sid >= NUM_PSTATS)
+    if(sid >= NUM_PSTATS || 0 == val)
         return ;
 
     mStats[sid].SumValue(val);

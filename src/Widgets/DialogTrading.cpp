@@ -39,6 +39,8 @@ constexpr int marginQuantity = 20;
 constexpr int dbH = 50;
 constexpr unsigned int colorData = 0xadd4ebff;
 
+const std::string zero4("0000");
+
 // ===== BUTTON =====
 class ButtonDialogTradingClose : public sgl::sgui::ImageButton
 {
@@ -119,6 +121,54 @@ public:
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_click-01.ogg");
+    }
+};
+
+class ButtonBuy : public GameButton
+{
+public:
+    ButtonBuy(sgl::sgui::Widget * parent)
+        : GameButton(SpriteFileDialogTrading,
+                     { ID_DLG_TRADING_BTN_ACT_NORMAL, ID_DLG_TRADING_BTN_ACT_DISABLED,
+                       ID_DLG_TRADING_BTN_ACT_OVER, ID_DLG_TRADING_BTN_ACT_PUSHED,
+                       ID_DLG_TRADING_BTN_ACT_PUSHED }, { 0xe3e6e8ff, 0x454f54ff,
+                       0xf1f2f4ff, 0xabb4baff, 0xc2c2a3ff }, parent)
+    {
+        using namespace sgl::graphic;
+
+        // set label font
+        auto fm = FontManager::Instance();
+        Font * font = fm->GetFont("Lato-Regular.ttf", 18, Font::NORMAL);
+
+        SetLabelFont(font);
+
+        SetLabel("BUY");
+
+        SetShortcutKey(sgl::core::KeyboardEvent::KEY_B);
+    }
+};
+
+class ButtonSell : public GameButton
+{
+public:
+    ButtonSell(sgl::sgui::Widget * parent)
+        : GameButton(SpriteFileDialogTrading,
+                     { ID_DLG_TRADING_BTN_ACT_NORMAL, ID_DLG_TRADING_BTN_ACT_DISABLED,
+                       ID_DLG_TRADING_BTN_ACT_OVER, ID_DLG_TRADING_BTN_ACT_PUSHED,
+                       ID_DLG_TRADING_BTN_ACT_PUSHED }, { 0xe3e6e8ff, 0x454f54ff,
+                       0xf1f2f4ff, 0xabb4baff, 0xc2c2a3ff }, parent)
+    {
+        using namespace sgl::graphic;
+
+        // set label font
+        auto fm = FontManager::Instance();
+        Font * font = fm->GetFont("Lato-Regular.ttf", 18, Font::NORMAL);
+
+        SetLabelFont(font);
+
+        SetLabel("SELL");
+
+        SetShortcutKey(sgl::core::KeyboardEvent::KEY_S);
     }
 };
 
@@ -281,6 +331,20 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     dataY = dbY4 + (dbH - mLabelTotBuy->GetHeight()) / 2;
     mLabelTotBuy->SetPosition(dataX, dataY);
 
+    // BUTTON BUY
+    const int marginBtnR = 20;
+
+    auto btnBuy = new ButtonBuy(this);
+    dataX = hbX2 + hbW2 - btnBuy->GetWidth() - marginBtnR;
+    dataY = dbY4 + (dbH - btnBuy->GetHeight()) / 2;
+    btnBuy->SetPosition(dataX, dataY);
+
+    btnBuy->AddOnClickFunction([this]
+    {
+        Buy();
+        UpdateLabelTotalSpend();
+    });
+
     // -- SELL --
     // ENERGY
     AddSellBlock(hbX3, dbY0, hbW3, RES_ENERGY, fontData);
@@ -310,6 +374,18 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     dataX += icon->GetWidth() + marginIconMoneyR;
     dataY = dbY4 + (dbH - mLabelTotSell->GetHeight()) / 2;
     mLabelTotSell->SetPosition(dataX, dataY);
+
+    // BUTTON SELL
+    auto btnSell = new ButtonSell(this);
+    dataX = hbX3 + hbW3 - btnSell->GetWidth() - marginBtnR;
+    dataY = dbY4 + (dbH - btnSell->GetHeight()) / 2;
+    btnSell->SetPosition(dataX, dataY);
+
+    btnSell->AddOnClickFunction([this]
+    {
+        Sell();
+        UpdateLabelTotalGain();
+    });
 }
 
 void DialogTrading::SetFunctionOnClose(const std::function<void()> & f)
@@ -415,13 +491,14 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, ResourceType res, sgl::g
     dataY = y0 + (dbH - btnPlus->GetHeight()) / 2;
     btnPlus->SetPosition(dataX, dataY);
 
-    const std::string zero4("0000");
     auto label = new sgui::Label(zero4.c_str(), font, this);
     label->SetColor(colorData);
 
     dataX -= marginQuantity + label->GetWidth();
     dataY = y0 + (dbH - label->GetHeight()) / 2;
     label->SetPosition(dataX, dataY);
+
+    mLabelBuy[res] = label;
 
     auto btnMinus = new ButtonDialogTradingMinus(this);
 
@@ -476,13 +553,14 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, ResourceType res, sgl::
     dataY = y0 + (dbH - btnPlus->GetHeight()) / 2;
     btnPlus->SetPosition(dataX, dataY);
 
-    const std::string zero4("0000");
     auto label = new sgui::Label(zero4.c_str(), font, this);
     label->SetColor(colorData);
 
     dataX -= marginQuantity + label->GetWidth();
     dataY = y0 + (dbH - label->GetHeight()) / 2;
     label->SetPosition(dataX, dataY);
+
+    mLabelSell[res] = label;
 
     auto btnMinus = new ButtonDialogTradingMinus(this);
 
@@ -673,6 +751,68 @@ void DialogTrading::DecSellQuantity(ResourceType res, sgl::sgui::Label * label)
     ss.fill(digitsFill);
     ss << mSell[res];
     label->SetText(ss.str().c_str());
+}
+
+void DialogTrading::Buy()
+{
+    // spend money
+    const int spend = GetCurrentSpend();
+    const int money = mPlayer->GetStat(Player::Stat::MONEY).GetIntValue();
+
+    if(money < spend || spend == 0)
+        return ;
+
+    mPlayer->SumResource(Player::Stat::MONEY, -spend);
+
+    // get stuff
+    mPlayer->SumResource(Player::Stat::ENERGY, mBuy[RES_ENERGY]);
+    mPlayer->SumResource(Player::Stat::MATERIAL, mBuy[RES_MATERIAL1]);
+    mPlayer->SumResource(Player::Stat::BLOBS, mBuy[RES_BLOBS]);
+    mPlayer->SumResource(Player::Stat::DIAMONDS, mBuy[RES_DIAMONDS]);
+
+    // reset buy quantities
+    for(unsigned int i = 0; i < NUM_RESOURCES; ++i)
+    {
+        mBuy[i] = 0;
+
+        mLabelBuy[i]->SetText(zero4.c_str());
+    }
+}
+
+void DialogTrading::Sell()
+{
+    // remove stuff
+    const Player::Stat stats[NUM_RESOURCES] =
+    {
+        Player::ENERGY,
+        Player::MATERIAL,
+        Player::DIAMONDS,
+        Player::BLOBS,
+    };
+
+    for(unsigned int i = 0; i < NUM_RESOURCES; ++i)
+    {
+        if(mSell[i] > mPlayer->GetStat(stats[i]).GetIntValue())
+            return ;
+    }
+
+    mPlayer->SumResource(Player::Stat::ENERGY, -mSell[RES_ENERGY]);
+    mPlayer->SumResource(Player::Stat::MATERIAL, -mSell[RES_MATERIAL1]);
+    mPlayer->SumResource(Player::Stat::BLOBS, -mSell[RES_BLOBS]);
+    mPlayer->SumResource(Player::Stat::DIAMONDS, -mSell[RES_DIAMONDS]);
+
+    // get money
+    const int gain = GetCurrentGain();
+
+    mPlayer->SumResource(Player::Stat::MONEY, gain);
+
+    // reset sell quantities
+    for(unsigned int i = 0; i < NUM_RESOURCES; ++i)
+    {
+        mSell[i] = 0;
+
+        mLabelSell[i]->SetText(zero4.c_str());
+    }
 }
 
 } // namespace game
