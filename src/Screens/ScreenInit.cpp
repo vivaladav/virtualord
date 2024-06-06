@@ -411,7 +411,7 @@ void ScreenInit::SetupTextures()
             // BUTTON ACTION
             { 436, 561, 161, 40 },
             { 598, 561, 161, 40 },
-            { 761, 561, 161, 40 },
+            { 760, 561, 161, 40 },
             { 922, 561, 161, 40 },
 
             // BUTTON MINUS
