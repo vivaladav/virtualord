@@ -28,11 +28,16 @@ public:
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
-protected:
+private:
     void HandlePositionChanged() override;
 
-private:
     void SetPositions();
+
+    int GetCurrentSpend() const;
+    void UpdateLabelTotalSpend();
+
+    int GetCurrentGain() const;
+    void UpdateLabelTotalGain();
 
 private:
     sgl::graphic::Image * mBg = nullptr;
@@ -43,17 +48,18 @@ private:
     sgl::sgui::Label * mLabelStockBlobs = nullptr;
     sgl::sgui::Label * mLabelStockDiamonds = nullptr;
 
-    sgl::sgui::Label * mLabelTotBuyEnergy = nullptr;
-    sgl::sgui::Label * mLabelTotBuyMaterial = nullptr;
-    sgl::sgui::Label * mLabelTotBuyBlobs = nullptr;
-    sgl::sgui::Label * mLabelTotBuyDiamonds = nullptr;
     sgl::sgui::Label * mLabelTotBuy = nullptr;
-
-    sgl::sgui::Label * mLabelTotSellEnergy = nullptr;
-    sgl::sgui::Label * mLabelTotSellMaterial = nullptr;
-    sgl::sgui::Label * mLabelTotSellBlobs = nullptr;
-    sgl::sgui::Label * mLabelTotSellkDiamonds = nullptr;
     sgl::sgui::Label * mLabelTotSell = nullptr;
+
+    int mBuyEnergy = 0;
+    int mBuyMaterial = 0;
+    int mBuyBlobs = 0;
+    int mBuyDiamonds = 0;
+
+    int mSellEnergy = 0;
+    int mSellMaterial = 0;
+    int mSellBlobs = 0;
+    int mSellDiamonds = 0;
 
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;

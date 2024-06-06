@@ -26,6 +26,11 @@
 namespace game
 {
 
+constexpr int incBuy = 5;
+constexpr int incSell = 5;
+constexpr int digitsTot = 5;
+constexpr char digitsFill = '0';
+
 // ===== BUTTON =====
 class ButtonDialogTradingClose : public sgl::sgui::ImageButton
 {
@@ -36,6 +41,60 @@ public:
                                    ID_DLG_TRADING_BTN_CLOSE_PUSHED }, SpriteFileDialogTrading, parent)
     {
         SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::AbstractButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-01.ogg");
+    }
+};
+
+class ButtonDialogTradingMinus : public sgl::sgui::ImageButton
+{
+public:
+    ButtonDialogTradingMinus(sgl::sgui::Widget * parent)
+        : sgl::sgui::ImageButton({ ID_DLG_TRADING_BTN_MINUS_NORMAL, ID_DLG_TRADING_BTN_MINUS_DISABLED,
+                                  ID_DLG_TRADING_BTN_MINUS_OVER, ID_DLG_TRADING_BTN_MINUS_PUSHED,
+                                  ID_DLG_TRADING_BTN_MINUS_PUSHED }, SpriteFileDialogTrading, parent)
+    {
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::AbstractButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-01.ogg");
+    }
+};
+
+class ButtonDialogTradingPlus : public sgl::sgui::ImageButton
+{
+public:
+    ButtonDialogTradingPlus(sgl::sgui::Widget * parent)
+        : sgl::sgui::ImageButton({ ID_DLG_TRADING_BTN_PLUS_NORMAL, ID_DLG_TRADING_BTN_PLUS_DISABLED,
+                                  ID_DLG_TRADING_BTN_PLUS_OVER, ID_DLG_TRADING_BTN_PLUS_PUSHED,
+                                  ID_DLG_TRADING_BTN_PLUS_PUSHED }, SpriteFileDialogTrading, parent)
+    {
     }
 
     void HandleMouseOver() override
@@ -268,15 +327,18 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     dataY = dbY3 + (dbH - mLabelStockDiamonds->GetHeight()) / 2;
     mLabelStockDiamonds->SetPosition(dataX, dataY);
 
-    // -- LABELS TOTAL BUY --
+    // -- BUY --
     const int marginIconMoneyL = 20;
     const int marginIconMoneyR = 10;
+    const int marginBtnR = 20;
+    const int marginQuantity = 20;
 
     const int digitsBuy = 3;
-    const int digitsTot = 5;
+    const int digitsQuantity = 4;
     const char digitsFill = '0';
 
     const std::string zero("0");
+    const std::string zero4("0000");
     ss.str(std::string());
     ss.clear();
 
@@ -292,12 +354,82 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     ss.fill(digitsFill);
     ss << g->GetResourcePriceBuy(RES_ENERGY);
 
-    mLabelTotBuyEnergy = new sgui::Label(ss.str().c_str(), fontData, this);
-    mLabelTotBuyEnergy->SetColor(colorData);
+    auto labelCost = new sgui::Label(ss.str().c_str(), fontData, this);
+    labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY0 + (dbH - mLabelTotBuyEnergy->GetHeight()) / 2;
-    mLabelTotBuyEnergy->SetPosition(dataX, dataY);
+    dataY = dbY0 + (dbH - labelCost->GetHeight()) / 2;
+    labelCost->SetPosition(dataX, dataY);
+
+    auto btnPlus = new ButtonDialogTradingPlus(this);
+
+    dataX = hbX2 + hbW2 - marginBtnR - btnPlus->GetWidth();
+    dataY = dbY0 + (dbH - btnPlus->GetHeight()) / 2;
+    btnPlus->SetPosition(dataX, dataY);
+
+    auto labelBuy = new sgui::Label(zero4.c_str(), fontData, this);
+    labelBuy->SetColor(colorData);
+
+    dataX -= marginQuantity + labelBuy->GetWidth();
+    dataY = dbY0 + (dbH - labelBuy->GetHeight()) / 2;
+    labelBuy->SetPosition(dataX, dataY);
+
+    auto btnMinus = new ButtonDialogTradingMinus(this);
+
+    dataX -= marginQuantity + btnMinus->GetWidth();
+    dataY = dbY0 + (dbH - btnMinus->GetHeight()) / 2;
+    btnMinus->SetPosition(dataX, dataY);
+
+    btnPlus->AddOnClickFunction([this, labelBuy]
+    {
+        const int price = mGame->GetResourcePriceBuy(RES_ENERGY);
+        const int currSpend = GetCurrentSpend();
+        const int spend = currSpend + (incBuy * price);
+        const int money = mPlayer->GetStat(Player::Stat::MONEY).GetIntValue();
+
+        if(spend <= money)
+            mBuyEnergy += incBuy;
+        else
+        {
+            const int units = (money - currSpend) / price;
+
+            if(0 == units)
+                return ;
+
+            mBuyEnergy += units;
+        }
+
+        std::ostringstream ss;
+        ss.width(digitsQuantity);
+        ss.fill(digitsFill);
+        ss << mBuyEnergy;
+        labelBuy->SetText(ss.str().c_str());
+
+        UpdateLabelTotalSpend();
+    });
+
+    btnMinus->AddOnClickFunction([this, labelBuy]
+    {
+        const int mod = mBuyEnergy % incBuy;
+
+        if(mod == 0)
+        {
+            if(mBuyEnergy > incBuy)
+                mBuyEnergy -= incBuy;
+            else
+                mBuyEnergy = 0;
+        }
+        else
+            mBuyEnergy -= mod;
+
+        std::ostringstream ss;
+        ss.width(digitsQuantity);
+        ss.fill(digitsFill);
+        ss << mBuyEnergy;
+        labelBuy->SetText(ss.str().c_str());
+
+        UpdateLabelTotalSpend();
+    });
 
     // MATERIAL
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
@@ -313,12 +445,12 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     ss.fill(digitsFill);
     ss << g->GetResourcePriceBuy(RES_MATERIAL1);
 
-    mLabelTotBuyMaterial = new sgui::Label(ss.str().c_str(), fontData, this);
-    mLabelTotBuyMaterial->SetColor(colorData);
+    labelCost = new sgui::Label(ss.str().c_str(), fontData, this);
+    labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY1 + (dbH - mLabelTotBuyMaterial->GetHeight()) / 2;
-    mLabelTotBuyMaterial->SetPosition(dataX, dataY);
+    dataY = dbY1 + (dbH - labelCost->GetHeight()) / 2;
+    labelCost->SetPosition(dataX, dataY);
 
     // BLOBS
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
@@ -334,12 +466,12 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     ss.fill(digitsFill);
     ss << g->GetResourcePriceBuy(RES_BLOBS);
 
-    mLabelTotBuyBlobs = new sgui::Label(ss.str().c_str(), fontData, this);
-    mLabelTotBuyBlobs->SetColor(colorData);
+    labelCost = new sgui::Label(ss.str().c_str(), fontData, this);
+    labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY2 + (dbH - mLabelTotBuyBlobs->GetHeight()) / 2;
-    mLabelTotBuyBlobs->SetPosition(dataX, dataY);
+    dataY = dbY2 + (dbH - labelCost->GetHeight()) / 2;
+    labelCost->SetPosition(dataX, dataY);
 
     // DIAMONDS
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
@@ -355,12 +487,12 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     ss.fill(digitsFill);
     ss << g->GetResourcePriceBuy(RES_DIAMONDS);
 
-    mLabelTotBuyDiamonds = new sgui::Label(ss.str().c_str(), fontData, this);
-    mLabelTotBuyDiamonds->SetColor(colorData);
+    labelCost = new sgui::Label(ss.str().c_str(), fontData, this);
+    labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY3 + (dbH - mLabelTotBuyDiamonds->GetHeight()) / 2;
-    mLabelTotBuyDiamonds->SetPosition(dataX, dataY);
+    dataY = dbY3 + (dbH - labelCost->GetHeight()) / 2;
+    labelCost->SetPosition(dataX, dataY);
 
     // TOTAL BUY
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
@@ -370,20 +502,16 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     dataY = dbY4 + (dbH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
 
-    ss.str(std::string());
-    ss.clear();
-    ss.width(digitsTot);
-    ss.fill(digitsFill);
-    ss << zero;
-
-    mLabelTotBuy = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotBuy = new sgui::Label(fontData, this);
     mLabelTotBuy->SetColor(colorData);
+
+    UpdateLabelTotalSpend();
 
     dataX += icon->GetWidth() + marginIconMoneyR;
     dataY = dbY4 + (dbH - mLabelTotBuy->GetHeight()) / 2;
     mLabelTotBuy->SetPosition(dataX, dataY);
 
-    // -- LABELS TOTAL SELL --
+    // -- SELL --
     ss.str(std::string());
     ss.clear();
 
@@ -399,12 +527,12 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     ss.fill(digitsFill);
     ss << g->GetResourcePriceSell(RES_ENERGY);
 
-    mLabelTotBuyEnergy = new sgui::Label(ss.str().c_str(), fontData, this);
-    mLabelTotBuyEnergy->SetColor(colorData);
+    labelCost = new sgui::Label(ss.str().c_str(), fontData, this);
+    labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY0 + (dbH - mLabelTotBuyEnergy->GetHeight()) / 2;
-    mLabelTotBuyEnergy->SetPosition(dataX, dataY);
+    dataY = dbY0 + (dbH - labelCost->GetHeight()) / 2;
+    labelCost->SetPosition(dataX, dataY);
 
     // MATERIAL
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
@@ -420,12 +548,12 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     ss.fill(digitsFill);
     ss << g->GetResourcePriceSell(RES_MATERIAL1);
 
-    mLabelTotBuyMaterial = new sgui::Label(ss.str().c_str(), fontData, this);
-    mLabelTotBuyMaterial->SetColor(colorData);
+    labelCost = new sgui::Label(ss.str().c_str(), fontData, this);
+    labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY1 + (dbH - mLabelTotBuyMaterial->GetHeight()) / 2;
-    mLabelTotBuyMaterial->SetPosition(dataX, dataY);
+    dataY = dbY1 + (dbH - labelCost->GetHeight()) / 2;
+    labelCost->SetPosition(dataX, dataY);
 
     // BLOBS
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
@@ -441,12 +569,12 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     ss.fill(digitsFill);
     ss << g->GetResourcePriceSell(RES_BLOBS);
 
-    mLabelTotBuyBlobs = new sgui::Label(ss.str().c_str(), fontData, this);
-    mLabelTotBuyBlobs->SetColor(colorData);
+    labelCost = new sgui::Label(ss.str().c_str(), fontData, this);
+    labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY2 + (dbH - mLabelTotBuyBlobs->GetHeight()) / 2;
-    mLabelTotBuyBlobs->SetPosition(dataX, dataY);
+    dataY = dbY2 + (dbH - labelCost->GetHeight()) / 2;
+    labelCost->SetPosition(dataX, dataY);
 
     // DIAMONDS
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
@@ -462,12 +590,12 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     ss.fill(digitsFill);
     ss << g->GetResourcePriceSell(RES_DIAMONDS);
 
-    mLabelTotBuyDiamonds = new sgui::Label(ss.str().c_str(), fontData, this);
-    mLabelTotBuyDiamonds->SetColor(colorData);
+    labelCost = new sgui::Label(ss.str().c_str(), fontData, this);
+    labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY3 + (dbH - mLabelTotBuyDiamonds->GetHeight()) / 2;
-    mLabelTotBuyDiamonds->SetPosition(dataX, dataY);
+    dataY = dbY3 + (dbH - labelCost->GetHeight()) / 2;
+    labelCost->SetPosition(dataX, dataY);
 
     // TOTAL SELL
     tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
@@ -477,14 +605,10 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     dataY = dbY4 + (dbH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
 
-    ss.str(std::string());
-    ss.clear();
-    ss.width(digitsTot);
-    ss.fill(digitsFill);
-    ss << zero;
-
-    mLabelTotSell = new sgui::Label(ss.str().c_str(), fontData, this);
+    mLabelTotSell = new sgui::Label(fontData, this);
     mLabelTotSell->SetColor(colorData);
+
+    UpdateLabelTotalGain();
 
     dataX += icon->GetWidth() + marginIconMoneyR;
     dataY = dbY4 + (dbH - mLabelTotSell->GetHeight()) / 2;
@@ -508,6 +632,46 @@ void DialogTrading::SetPositions()
 
     // BACKGROUND
     mBg->SetPosition(x0, y0);
+}
+
+int DialogTrading::GetCurrentSpend() const
+{
+    return mBuyEnergy * mGame->GetResourcePriceBuy(RES_ENERGY) +
+        mBuyMaterial * mGame->GetResourcePriceBuy(RES_MATERIAL1) +
+        mBuyBlobs * mGame->GetResourcePriceBuy(RES_BLOBS) +
+        mBuyDiamonds * mGame->GetResourcePriceBuy(RES_DIAMONDS);
+}
+
+void DialogTrading::UpdateLabelTotalSpend()
+{
+    const int spend = GetCurrentSpend();
+
+    std::ostringstream ss;
+    ss.width(digitsTot);
+    ss.fill(digitsFill);
+    ss << spend;
+
+    mLabelTotBuy->SetText(ss.str().c_str());
+}
+
+int DialogTrading::GetCurrentGain() const
+{
+    return mSellEnergy * mGame->GetResourcePriceSell(RES_ENERGY) +
+           mSellMaterial * mGame->GetResourcePriceSell(RES_MATERIAL1) +
+           mSellBlobs * mGame->GetResourcePriceSell(RES_BLOBS) +
+           mSellDiamonds * mGame->GetResourcePriceSell(RES_DIAMONDS);
+}
+
+void DialogTrading::UpdateLabelTotalGain()
+{
+    const int spend = GetCurrentGain();
+
+    std::ostringstream ss;
+    ss.width(digitsTot);
+    ss.fill(digitsFill);
+    ss << spend;
+
+    mLabelTotSell->SetText(ss.str().c_str());
 }
 
 } // namespace game

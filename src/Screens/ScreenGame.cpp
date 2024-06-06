@@ -895,6 +895,8 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
             }
         }
     }
+    else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_T)
+        mHUD->ShowDialogTrading();
 }
 
 void ScreenGame::OnMouseButtonUp(sgl::core::MouseButtonEvent & event)
