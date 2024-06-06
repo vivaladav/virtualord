@@ -2,11 +2,16 @@
 
 #include <sgl/sgui/Widget.h>
 
+#include <array>
 #include <functional>
 
 namespace sgl
 {
-    namespace graphic { class Image; }
+    namespace graphic
+    {
+        class Font;
+        class Image;
+    }
     namespace sgui
     {
         class AbstractButton;
@@ -21,6 +26,8 @@ class Game;
 class Player;
 class Screen;
 
+enum ResourceType : unsigned int;
+
 class DialogTrading : public sgl::sgui::Widget
 {
 public:
@@ -29,6 +36,11 @@ public:
     void SetFunctionOnClose(const std::function<void()> & f);
 
 private:
+    void AddResBlock(int x0, int y0, ResourceType res, sgl::graphic::Font * font);
+    void AddStockBlock(int x0, int y0, int bW, ResourceType res, sgl::graphic::Font * font);
+    void AddBuyBlock(int x0, int y0, int bW, ResourceType res, sgl::graphic::Font * font);
+    void AddSellBlock(int x0, int y0, int bW, ResourceType res, sgl::graphic::Font * font);
+
     void HandlePositionChanged() override;
 
     void SetPositions();
@@ -39,27 +51,25 @@ private:
     int GetCurrentGain() const;
     void UpdateLabelTotalGain();
 
+    void IncBuyQuantity(ResourceType res, sgl::sgui::Label * label);
+    void DecBuyQuantity(ResourceType res, sgl::sgui::Label * label);
+    void IncSellQuantity(ResourceType res, sgl::sgui::Label * label);
+    void DecSellQuantity(ResourceType res, sgl::sgui::Label * label);
+
 private:
+    static const int TRADED_RES = 4;
+
+    std::array<int, TRADED_RES> mBuy;
+    std::array<int, TRADED_RES> mSell;
+
+    std::array<sgl::sgui::Label *, TRADED_RES> mLabelStock;
+
     sgl::graphic::Image * mBg = nullptr;
     sgl::sgui::AbstractButton * mButtonClose = nullptr;
-
-    sgl::sgui::Label * mLabelStockEnergy = nullptr;
-    sgl::sgui::Label * mLabelStockMaterial = nullptr;
-    sgl::sgui::Label * mLabelStockBlobs = nullptr;
-    sgl::sgui::Label * mLabelStockDiamonds = nullptr;
 
     sgl::sgui::Label * mLabelTotBuy = nullptr;
     sgl::sgui::Label * mLabelTotSell = nullptr;
 
-    int mBuyEnergy = 0;
-    int mBuyMaterial = 0;
-    int mBuyBlobs = 0;
-    int mBuyDiamonds = 0;
-
-    int mSellEnergy = 0;
-    int mSellMaterial = 0;
-    int mSellBlobs = 0;
-    int mSellDiamonds = 0;
 
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
