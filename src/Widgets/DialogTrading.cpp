@@ -124,52 +124,70 @@ public:
     }
 };
 
-class ButtonBuy : public GameButton
+class ButtonAction : public GameButton
 {
 public:
-    ButtonBuy(sgl::sgui::Widget * parent)
+    ButtonAction(const char * text, const char * textShortcut, int shortcut, sgl::sgui::Widget * parent)
         : GameButton(SpriteFileDialogTrading,
                      { ID_DLG_TRADING_BTN_ACT_NORMAL, ID_DLG_TRADING_BTN_ACT_DISABLED,
                        ID_DLG_TRADING_BTN_ACT_OVER, ID_DLG_TRADING_BTN_ACT_PUSHED,
                        ID_DLG_TRADING_BTN_ACT_PUSHED }, { 0xe3e6e8ff, 0x454f54ff,
                        0xf1f2f4ff, 0xabb4baff, 0xc2c2a3ff }, parent)
     {
-        using namespace sgl::graphic;
+        using namespace sgl;
 
         // set label font
-        auto fm = FontManager::Instance();
-        Font * font = fm->GetFont("Lato-Regular.ttf", 18, Font::NORMAL);
+        auto fm = graphic::FontManager::Instance();
+        graphic::Font * font = fm->GetFont("Lato-Regular.ttf", 18, graphic::Font::NORMAL);
 
         SetLabelFont(font);
 
-        SetLabel("BUY");
+        SetLabel(text);
 
-        SetShortcutKey(sgl::core::KeyboardEvent::KEY_B);
+        // SHORTCUT
+        SetShortcutKey(shortcut);
+
+        const int scbX0 = 147;
+        const int scbY0 = 22;
+        const int scbSize = 14;
+
+        font = fm->GetFont("Lato-Regular.ttf", 12, graphic::Font::NORMAL);
+        mShortcut = new sgui::Label(textShortcut, font, this);
+        mShortcut->SetColor(0xd5daddff);
+
+        const int scX0 = scbX0 + (scbSize - mShortcut->GetWidth()) / 2;
+        const int scY0 = scbY0 + (scbSize - mShortcut->GetHeight()) / 2;
+        mShortcut->SetPosition(scX0, scY0);
     }
-};
 
-class ButtonSell : public GameButton
-{
-public:
-    ButtonSell(sgl::sgui::Widget * parent)
-        : GameButton(SpriteFileDialogTrading,
-                     { ID_DLG_TRADING_BTN_ACT_NORMAL, ID_DLG_TRADING_BTN_ACT_DISABLED,
-                       ID_DLG_TRADING_BTN_ACT_OVER, ID_DLG_TRADING_BTN_ACT_PUSHED,
-                       ID_DLG_TRADING_BTN_ACT_PUSHED }, { 0xe3e6e8ff, 0x454f54ff,
-                       0xf1f2f4ff, 0xabb4baff, 0xc2c2a3ff }, parent)
+    void HandleMouseOver() override
     {
-        using namespace sgl::graphic;
+        sgl::sgui::AbstractButton::HandleMouseOver();
 
-        // set label font
-        auto fm = FontManager::Instance();
-        Font * font = fm->GetFont("Lato-Regular.ttf", 18, Font::NORMAL);
-
-        SetLabelFont(font);
-
-        SetLabel("SELL");
-
-        SetShortcutKey(sgl::core::KeyboardEvent::KEY_S);
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
     }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-01.ogg");
+    }
+
+    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
+    {
+        GameButton::OnStateChanged(state);
+        // update shortcut label alpha
+        const unsigned char alphaEn = 255;
+        const unsigned char alphaDis = 128;
+        const unsigned char alphaLabel = DISABLED == state ? alphaDis : alphaEn;
+        mShortcut->SetAlpha(alphaLabel);
+    }
+
+private:
+    sgl::sgui::Label * mShortcut = nullptr;
 };
 
 // ===== DIALOG =====
@@ -334,7 +352,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     // BUTTON BUY
     const int marginBtnR = 20;
 
-    auto btnBuy = new ButtonBuy(this);
+    auto btnBuy = new ButtonAction("BUY", "B", core::KeyboardEvent::KEY_B, this);
     dataX = hbX2 + hbW2 - btnBuy->GetWidth() - marginBtnR;
     dataY = dbY4 + (dbH - btnBuy->GetHeight()) / 2;
     btnBuy->SetPosition(dataX, dataY);
@@ -376,7 +394,8 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     mLabelTotSell->SetPosition(dataX, dataY);
 
     // BUTTON SELL
-    auto btnSell = new ButtonSell(this);
+    auto btnSell = new ButtonAction("SELL", "S", core::KeyboardEvent::KEY_S, this);
+
     dataX = hbX3 + hbW3 - btnSell->GetWidth() - marginBtnR;
     dataY = dbY4 + (dbH - btnSell->GetHeight()) / 2;
     btnSell->SetPosition(dataX, dataY);
