@@ -4,6 +4,7 @@
 
 #include <array>
 #include <functional>
+#include <vector>
 
 namespace sgl
 {
@@ -32,6 +33,7 @@ class DialogTrading : public sgl::sgui::Widget
 {
 public:
     DialogTrading(Game * g, Player * p);
+    ~DialogTrading();
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
@@ -56,6 +58,8 @@ private:
     void IncSellQuantity(ResourceType res, sgl::sgui::Label * label);
     void DecSellQuantity(ResourceType res, sgl::sgui::Label * label);
 
+    void UpdateStockLabel(unsigned int statId);
+
     void Buy();
     void Sell();
 
@@ -75,9 +79,10 @@ private:
     sgl::sgui::Label * mLabelTotBuy = nullptr;
     sgl::sgui::Label * mLabelTotSell = nullptr;
 
-
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
+
+    std::vector<unsigned int> mCallbackValIds;
 };
 
 } // namespace game

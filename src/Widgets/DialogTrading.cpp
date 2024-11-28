@@ -292,17 +292,43 @@ DialogTrading::DialogTrading(Game * g, Player * p)
 
     auto fontData = fm->GetFont("Lato-Regular.ttf", 20, graphic::Font::NORMAL);
 
+    mCallbackValIds.assign(NUM_RESOURCES, RES_INVALID);
+
     // ENERGY
     AddResBlock(dbX0, dbY0, RES_ENERGY, fontData);
+
+    auto st = Player::Stat::ENERGY;
+    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val)
+    {
+        UpdateStockLabel(val->GetId());
+    });
 
     // MATERIAL
     AddResBlock(dbX0, dbY1, RES_MATERIAL1, fontData);
 
+    st = Player::Stat::MATERIAL;
+    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val)
+    {
+        UpdateStockLabel(val->GetId());
+    });
+
     // BLOBS
     AddResBlock(dbX0, dbY2, RES_BLOBS, fontData);
 
+    st = Player::Stat::BLOBS;
+    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val)
+    {
+        UpdateStockLabel(val->GetId());
+    });
+
     // DIAMONDS
     AddResBlock(dbX0, dbY3, RES_DIAMONDS, fontData);
+
+    st = Player::Stat::DIAMONDS;
+    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val)
+    {
+        UpdateStockLabel(val->GetId());
+    });
 
     // -- LABELS STOCK --
     std::ostringstream ss;
@@ -405,6 +431,25 @@ DialogTrading::DialogTrading(Game * g, Player * p)
         Sell();
         UpdateLabelTotalGain();
     });
+}
+
+DialogTrading::~DialogTrading()
+{
+    // CLEAR OBSERVERS FROM PLAYER STATS
+    auto st = Player::Stat::MONEY;
+    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
+
+    st = Player::Stat::ENERGY;
+    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
+
+    st = Player::Stat::MATERIAL;
+    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
+
+    st = Player::Stat::DIAMONDS;
+    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
+
+    st = Player::Stat::BLOBS;
+    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
 }
 
 void DialogTrading::SetFunctionOnClose(const std::function<void()> & f)
@@ -770,6 +815,43 @@ void DialogTrading::DecSellQuantity(ResourceType res, sgl::sgui::Label * label)
     ss.fill(digitsFill);
     ss << mSell[res];
     label->SetText(ss.str().c_str());
+}
+
+void DialogTrading::UpdateStockLabel(unsigned int statId)
+{
+    using namespace  sgl;
+
+    const ResourceType resources[NUM_RESOURCES] =
+    {
+        RES_BLOBS,
+        RES_DIAMONDS,
+        RES_ENERGY,
+        RES_MATERIAL1
+    };
+
+    const ResourceType res = resources[statId];
+    const StatValue & s = mPlayer->GetStat(static_cast<Player::Stat>(statId));
+
+    auto label = mLabelStock[res];
+
+    const int oldX = label->GetX();
+    const int oldY = label->GetY();
+    const int oldW = label->GetWidth();
+    const int oldH = label->GetHeight();
+
+    // update text
+    std::ostringstream ss;
+    ss << s.GetIntValue() << " / " << s.GetIntMax();
+
+    label->SetText(ss.str().c_str());
+
+    const int newW = label->GetWidth();
+    const int newH = label->GetHeight();
+
+    // reposition
+    const int dataX = oldX + (oldW - newW) / 2;
+    const int dataY = oldY + (oldH - newH) / 2;
+    label->SetPosition(dataX, dataY);
 }
 
 void DialogTrading::Buy()
