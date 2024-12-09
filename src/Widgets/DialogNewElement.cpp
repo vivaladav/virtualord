@@ -353,6 +353,38 @@ public:
 
         static_cast<Image *>(mImage)->SetTexture(texImg);
 
+        // check if image needs to be scaled to fit body
+        const int bodyPad = 0;
+        const int bodyW = mBody->GetWidth() - (bodyPad * 2);
+        const int bodyH = mBody->GetHeight() - (bodyPad * 2);
+        const int imgW = mImage->GetWidth();
+        const int imgH = mImage->GetHeight();
+
+        if(imgW > bodyW || imgH > bodyH)
+        {
+            int newW;
+            int newH;
+
+            if(imgW > imgH)
+            {
+                const float ratio = static_cast<float>(imgH) / static_cast<float>(imgW);
+
+                newW = bodyW;
+                newH = static_cast<int>(bodyW * ratio);
+            }
+            // imgH >= imgW
+            else
+            {
+                const float ratio = static_cast<float>(imgW) / static_cast<float>(imgH);
+
+                newW = static_cast<int>(bodyH * ratio);
+                newH = bodyH;
+            }
+
+            mImage->SetWidth(newW);
+            mImage->SetHeight(newH);
+        }
+
         mHasData = true;
 
         // reset positions
