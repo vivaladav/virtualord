@@ -280,7 +280,8 @@ PanelSelectedObject::PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::s
     mButtonClose->SetPosition(btnCloseX, btnCloseY);
 
     // IMAGE
-    mImg = new sgui::Image(this);
+    mImg = new graphic::Image;
+    RegisterRenderable(mImg);
 
     // TITLE
     const int titleW = 130;
@@ -438,15 +439,41 @@ void PanelSelectedObject::SetObject(GameObject * obj)
     // image too big for the button
     if(imgW >= (imgAreaW - borderTot) || imgH >= (imgAreaH - borderTot))
     {
-        const int visX = (imgW - imgAreaW) / 2 + borderImgArea;
-        const int visY = (imgH - imgAreaH) / 2 + borderImgArea;
-        const int visW = imgAreaW - borderTot;
-        const int visH = imgAreaH - borderTot;
+        // const int visX = (imgW - imgAreaW) / 2 + borderImgArea;
+        // const int visY = (imgH - imgAreaH) / 2 + borderImgArea;
+        // const int visW = imgAreaW - borderTot;
+        // const int visH = imgAreaH - borderTot;
 
-        mImg->SetVisibleArea(visX, visY, visW, visH);
+        // mImg->SetVisibleArea(visX, visY, visW, visH);
+
+        int newW;
+        int newH;
+
+        if(imgW > imgH)
+        {
+            const float ratio = static_cast<float>(imgH) / static_cast<float>(imgW);
+
+            newW = imgAreaW - borderTot;
+            newH = static_cast<int>(newW * ratio);
+        }
+        // imgH >= imgW
+        else
+        {
+            const float ratio = static_cast<float>(imgW) / static_cast<float>(imgH);
+
+            newH = imgAreaH - borderTot;
+            newW = static_cast<int>(newH * ratio);
+        }
+
+        mImg->SetWidth(newW);
+        mImg->SetHeight(newH);
+
+        const int imgX2 = imgAreaX + (imgAreaW - newW) / 2;
+        const int imgY2 = imgAreaY + (imgAreaH - newH) / 2;
+        mImg->SetPosition(imgX2, imgY2);
     }
-    else
-        mImg->ClearVisibleArea();
+    // else
+    //     mImg->ClearVisibleArea();
 
     // STATS
     UpdateStats();
