@@ -43,7 +43,7 @@ Game::Game(int argc, char * argv[])
 {
     using namespace sgl::graphic;
 
-    const std::string title = std::string("Virtueror - v. ") + std::string(VERSION);
+    const std::string title = std::string("Virtualord - v. ") + std::string(VERSION);
     mWin = Window::Create(title.c_str(), 0, 0, this);
     mRenderer = Renderer::Create(mWin, true);
     mRenderer->SetLogicalSize(1920, 1080);

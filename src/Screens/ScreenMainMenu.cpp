@@ -95,7 +95,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     btnWishlist->AddOnClickFunction([]
     {
         utilities::System sys;
-        sys.OpenUrlInBrowser("https://store.steampowered.com/app/1607580/Virtueror_The_Virtual_Conqueror/"
+        sys.OpenUrlInBrowser("https://store.steampowered.com/app/1607580/Virtualord_The_Virtual_Conqueror/"
                              "?utm_source=game&utm_medium=button&utm_campaign=game&utm_content=mainmenu");
     });
 
