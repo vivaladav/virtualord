@@ -439,13 +439,6 @@ void PanelSelectedObject::SetObject(GameObject * obj)
     // image too big for the button
     if(imgW >= (imgAreaW - borderTot) || imgH >= (imgAreaH - borderTot))
     {
-        // const int visX = (imgW - imgAreaW) / 2 + borderImgArea;
-        // const int visY = (imgH - imgAreaH) / 2 + borderImgArea;
-        // const int visW = imgAreaW - borderTot;
-        // const int visH = imgAreaH - borderTot;
-
-        // mImg->SetVisibleArea(visX, visY, visW, visH);
-
         int newW;
         int newH;
 
@@ -472,8 +465,6 @@ void PanelSelectedObject::SetObject(GameObject * obj)
         const int imgY2 = imgAreaY + (imgAreaH - newH) / 2;
         mImg->SetPosition(imgX2, imgY2);
     }
-    // else
-    //     mImg->ClearVisibleArea();
 
     // STATS
     UpdateStats();
