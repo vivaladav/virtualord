@@ -18,7 +18,6 @@
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/GraphicConstants.h>
-#include <sgl/graphic/Image.h>
 #include <sgl/graphic/Renderer.h>
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/graphic/Window.h>
@@ -41,6 +40,11 @@ Game::Game(int argc, char * argv[])
     , mTutorialEnabled(false)
 #endif
 {
+#ifdef DEV_MODE
+    PrintBuildLibs();
+    PrintRuntimeLibs();
+#endif
+
     using namespace sgl::graphic;
 
     const std::string title = std::string("Virtualord - v. ") + std::string(VERSION);
