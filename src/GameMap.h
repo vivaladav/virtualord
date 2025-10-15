@@ -19,6 +19,7 @@ class ControlMap;
 class Game;
 class GameObject;
 class IsoMap;
+class ObjectData;
 class ObjectPath;
 class Player;
 class ScreenGame;
@@ -28,7 +29,6 @@ class WallBuildPath;
 
 struct Cell2D;
 struct GameMapCell;
-struct ObjectData;
 
 enum ResourceType : unsigned int;
 
