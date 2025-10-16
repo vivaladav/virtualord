@@ -26,6 +26,14 @@
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StateManager.h>
 
+#ifdef DEV_MODE
+#include <sgl/core/ModuleCore.h>
+#include <sgl/graphic/ModuleGraphic.h>
+#include <sgl/media/ModuleMedia.h>
+
+#include <iostream>
+#endif
+
 namespace game
 {
 
@@ -40,25 +48,36 @@ Game::Game(int argc, char * argv[])
     , mTutorialEnabled(false)
 #endif
 {
+    using namespace sgl;
+
 #ifdef DEV_MODE
-    PrintBuildLibs();
-    PrintRuntimeLibs();
+    // -- build libraries --
+    core::ModuleCore::PrintBuildLibs();
+    graphic::ModuleGraphic::PrintBuildLibs();
+    media::ModuleMedia::PrintBuildLibs();
+
+    std::cout << std::endl;
+
+    // -- runtime libraries --
+    core::ModuleCore::PrintRuntimeLibs();
+    graphic::ModuleGraphic::PrintRuntimeLibs();
+    media::ModuleMedia::PrintRuntimeLibs();
+
+    std::cout << std::endl;
 #endif
 
-    using namespace sgl::graphic;
-
     const std::string title = std::string("Virtualord - v. ") + std::string(VERSION);
-    mWin = Window::Create(title.c_str(), 0, 0, this);
-    mRenderer = Renderer::Create(mWin, true);
+    mWin = graphic::Window::Create(title.c_str(), 0, 0, this);
+    mRenderer = graphic::Renderer::Create(mWin, true);
     mRenderer->SetLogicalSize(1920, 1080);
-    mWin->SetVideoMode(sgl::graphic::Window::VM_FULLSCREEN);
+    mWin->SetVideoMode(graphic::Window::VM_FULLSCREEN);
 
-    TextureManager::Instance()->SetNewTextureQuality(TextureQuality::BEST);
+    graphic::TextureManager::Instance()->SetNewTextureQuality(graphic::TextureQuality::BEST);
 
-    FontManager::Create();
+    graphic::FontManager::Create();
 
     // -- State Manager --
-    mStateMan = new sgl::utilities::StateManager;
+    mStateMan = new utilities::StateManager;
 
     mStateMan->AddState(new StateFactionSelection(this));
     mStateMan->AddState(new StateGame(this));
@@ -75,7 +94,7 @@ Game::Game(int argc, char * argv[])
     const int defVolumeMusic = 50;
     const int defVolumeSound = 50;
 
-    mAudioMan = sgl::media::AudioManager::Create();
+    mAudioMan = media::AudioManager::Create();
     mAudioMan->SetVolumeMusic(defVolumeMusic);
     mAudioMan->SetVolumeSound(defVolumeSound);
 
@@ -85,13 +104,15 @@ Game::Game(int argc, char * argv[])
 #endif
 
     // -- SGUI Stage --
-    mStage = sgl::sgui::Stage::Create();
+    mStage = sgui::Stage::Create();
     AddKeyboardListener(mStage);
     AddMouseListener(mStage);
 }
 
 Game::~Game()
 {
+    using namespace sgl;
+
     // delete states and screens
     delete mStateMan;
 
@@ -100,14 +121,14 @@ Game::~Game()
 
     ClearPlayers();
 
-    sgl::sgui::Stage::Destroy();
+    sgui::Stage::Destroy();
 
-    sgl::media::AudioManager::Destroy();
+    media::AudioManager::Destroy();
 
-    sgl::graphic::FontManager::Destroy();
+    graphic::FontManager::Destroy();
 
-    sgl::graphic::Renderer::Destroy();
-    sgl::graphic::Window::Destroy();
+    graphic::Renderer::Destroy();
+    graphic::Window::Destroy();
 }
 
 void Game::InitGameData()
