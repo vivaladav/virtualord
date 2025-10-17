@@ -24,6 +24,8 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
                                                            "Create a new worker", this);
     mButtons[BTN_BUILD_UNIT_HOSPITAL] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
                                                                "Create a new medic", this);
+    mButtons[BTN_MISSION_GOALS] = new ObjectActionButton(ObjectActionButton::MISSION_GOALS, "G", KeyboardEvent::KEY_G,
+                                                         "Show mission goals", this);
     mButtons[BTN_MOVE] = new ObjectActionButton(ObjectActionButton::MOVE, "M", KeyboardEvent::KEY_M,
                                                 "Move your unit", this);
     mButtons[BTN_ATTACK] = new ObjectActionButton(ObjectActionButton::ATTACK, "K", KeyboardEvent::KEY_K,
@@ -75,6 +77,7 @@ void PanelObjectActions::SetObject(GameObject * obj)
 
     if(objType == GameObject::TYPE_BASE)
     {
+        mButtons[BTN_MISSION_GOALS]->SetVisible(true);
         mButtons[BTN_BUILD_UNIT_BASE]->SetVisible(true);
     }
     else if(mObj->GetObjectCategory() == GameObject::CAT_UNIT)
