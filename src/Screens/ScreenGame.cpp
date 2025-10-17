@@ -539,6 +539,12 @@ void ScreenGame::CreateUI()
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_HOSPITAL);
     });
 
+    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_MISSION_GOALS,
+    [this, panelObjActions]
+    {
+        mHUD->ShowDialogMissionGoals();
+    });
+
     // UNIT ACTIONS
     // build structure
     panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_STRUCT,

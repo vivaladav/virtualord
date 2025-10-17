@@ -19,6 +19,7 @@
 #include "Widgets/DialogEndMission.h"
 #include "Widgets/DialogExit.h"
 #include "Widgets/DialogExploreTemple.h"
+#include "Widgets/DialogMissionGoals.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/DialogObject.h"
 #include "Widgets/DialogTrading.h"
@@ -229,6 +230,40 @@ void GameHUD::ClearQuickUnitButtonChecked()
 
     if(checked != -1)
         mGroupUnitSel->GetButton(checked)->SetChecked(false);
+}
+
+void GameHUD::ShowDialogMissionGoals()
+{
+    if(mDialogMissionGoals != nullptr)
+        return ;
+
+    mScreen->SetPause(true);
+
+    Game * game = mScreen->GetGame();
+    mDialogMissionGoals = new DialogMissionGoals;
+    mDialogMissionGoals->SetFocus();
+
+    mDialogMissionGoals->SetFunctionOnClose([this]
+    {
+        HideDialogMissionGoals();
+    });
+
+    TemporaryCloseSidePanels();
+
+    // position dialog
+    CenterWidget(mDialogMissionGoals);
+}
+
+void GameHUD::HideDialogMissionGoals()
+{
+    ReopenSidePanels();
+
+    // schedule dialog deletion
+    mDialogMissionGoals->DeleteLater();
+    mDialogMissionGoals = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
 }
 
 void GameHUD::ShowDialogEndMission(bool won)

@@ -77,6 +77,34 @@ enum SpriteIdDialogExploreTemple : unsigned int
     ID_DLG_EXTM_SLIDER_BTN,
 };
 
+// DIALOG MISSION GOALS
+extern const char SpriteFileDialogMissionGoals[];
+
+enum SpriteIdDialogMissionGoals : unsigned int
+{
+    // BACKGROUND
+    ID_DLG_MGOALS_BG_TOP,
+    ID_DLG_MGOALS_BG_BOTTOM,
+
+    // BUTTON CLOSE
+    ID_DLG_MGOALS_BTN_CLOSE_NORMAL,
+    ID_DLG_MGOALS_BTN_CLOSE_DISABLED,
+    ID_DLG_MGOALS_BTN_CLOSE_OVER,
+    ID_DLG_MGOALS_BTN_CLOSE_PUSHED,
+
+    //CHECKBOX
+    ID_DLG_MGOALS_CHECKBOX,
+    ID_DLG_MGOALS_CHECKBOX_CHECKED,
+};
+
+extern const char SpriteFileDialogMissionGoalsExp[];
+
+enum SpriteIdDialogMissionGoalsExp : unsigned int
+{
+    // BACKGROUND
+    ID_DLG_MGOALS_BG_MID,
+};
+
 // NEW ELEMENT DIALOG
 extern const char SpriteFileDialogNewElement[];
 

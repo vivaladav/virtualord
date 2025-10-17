@@ -338,6 +338,42 @@ void ScreenInit::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExploreTemple, rects);
     });
 
+    // DIALOG MISSION GOALS
+    mJobs.emplace_back([this, tm]
+    {
+        std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 1200, 100 },
+            { 0, 101, 1200, 50 },
+
+            // BUTTON CLOSE
+            { 0, 152, 95, 41 },
+            { 96, 152, 95, 41 },
+            { 192, 152, 95, 41 },
+            { 288, 152, 95, 41 },
+
+
+            //CHECKBOX
+            { 384, 152, 24, 24 },
+            { 409, 152, 24, 24 },
+            { 434, 152, 24, 24 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogMissionGoals, rects);
+    });
+
+    mJobs.emplace_back([this, tm]
+    {
+        std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 1200, 10 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogMissionGoalsExp, rects);
+    });
+
     // DIALOG OBJECT
     mJobs.emplace_back([this, tm]
     {

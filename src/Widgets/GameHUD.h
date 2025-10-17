@@ -17,6 +17,7 @@ class CountdownLabel;
 class DialogExit;
 class DialogExploreTemple;
 class DialogExploreTempleOutcome;
+class DialogMissionGoals;
 class DialogNewElement;
 class DialogObject;
 class DialogTrading;
@@ -51,6 +52,9 @@ public:
     const sgl::sgui::ButtonsGroup * GetQuickUnitButtonsGroup() const;
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
+
+    void ShowDialogMissionGoals();
+    void HideDialogMissionGoals();
 
     void ShowDialogEndMission(bool won);
     void ShowDialogExit();
@@ -109,6 +113,7 @@ private:
     DialogExit * mDialogExit = nullptr;
     DialogExploreTemple * mDialogExploreTemple = nullptr;
     DialogExploreTempleOutcome * mDialogExploreTempleOutcome = nullptr;
+    DialogMissionGoals * mDialogMissionGoals = nullptr;
     DialogNewElement * mDialogNewElement = nullptr;
     DialogObject * mDialogObj = nullptr;
     DialogTrading * mDialogTrading = nullptr;
