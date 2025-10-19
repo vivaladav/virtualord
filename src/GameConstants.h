@@ -31,7 +31,7 @@ enum MapLayers : unsigned int
     NUM_LAYERS,
 };
 
-enum MissiongGoal : unsigned int
+enum MissionGoalType : unsigned int
 {
     MG_COLLECT_BLOBS,
     MG_COLLECT_DIAMONDS,

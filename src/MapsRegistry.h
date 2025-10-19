@@ -7,7 +7,7 @@
 namespace game
 {
 
-enum MissiongGoal : unsigned int;
+enum MissionGoalType : unsigned int;
 enum PlayerFaction : unsigned int;
 enum TerritoryStatus : unsigned int;
 
@@ -18,7 +18,7 @@ public:
 
     bool AddMap(unsigned int planetId, const std::string & file, int energy,
                 int material, int diamonds, int blobs, int size, int value,
-                PlayerFaction occupier, TerritoryStatus status, MissiongGoal mission);
+                PlayerFaction occupier, TerritoryStatus status, MissionGoalType mission);
     bool AddUnavailableMap(unsigned int planetId);
 
     int GetNumMaps(unsigned int planetId) const;
@@ -32,7 +32,7 @@ public:
     int GetMapValue(unsigned int planetId, unsigned int index) const;
     PlayerFaction GetMapOccupier(unsigned int planetId, unsigned int index) const;
     TerritoryStatus GetMapStatus(unsigned int planetId, unsigned int index) const;
-    MissiongGoal GetMapMission(unsigned int planetId, unsigned int index) const;
+    MissionGoalType GetMapMission(unsigned int planetId, unsigned int index) const;
 
     void SetMapStatus(unsigned int planetId, unsigned int index, TerritoryStatus status);
     void SetMapOccupier(unsigned int planetId, unsigned int index, PlayerFaction occupier);
@@ -49,7 +49,7 @@ private:
     {
         MapData(const std::string & file, int energy, int material, int diamonds,
                 int blobs, int size, int value, PlayerFaction occupier,
-                TerritoryStatus status, MissiongGoal mission);
+                TerritoryStatus status, MissionGoalType mission);
 
         std::string mFile;
         int mEnergy;
@@ -60,7 +60,7 @@ private:
         int mValue;
         PlayerFaction mOccupier;
         TerritoryStatus mStatus;
-        MissiongGoal mMission;
+        MissionGoalType mMission;
     };
 
     std::unordered_map<unsigned int, std::vector<MapData>> mData;

@@ -44,7 +44,7 @@ class TutorialManager;
 class Unit;
 class WallIndicator;
 
-enum MissiongGoal : unsigned int;
+enum MissionGoalType : unsigned int;
 enum PlayerFaction : unsigned int;
 
 enum ParticlesUpdaterId : unsigned int
@@ -225,7 +225,7 @@ private:
 
     float mTimePlayed = 0.f;
 
-    MissiongGoal mMissionType;
+    MissionGoalType mMissionType;
     unsigned int mMissionTime = 0;
 
     bool mPaused = false;

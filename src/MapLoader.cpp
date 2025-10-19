@@ -50,11 +50,11 @@ void MapLoader::ReadBaseData(std::fstream & fs)
     std::string line;
     std::istringstream ss;
 
-    const int lenTagGoalPrimary = MAP_TAG_GOAL_PRIMARY.length();
-    const int lenTagGoalSecondary = MAP_TAG_GOAL_SECONDARY.length();
-    const int lenTagEndBaseData = MAP_TAG_END_BASE_DATA.length();
-    const int lenTagMapSize = MAP_TAG_MAP_SIZE.length();
-    const int lenTagVersion = MAP_TAG_VERSION.length();
+    const unsigned int lenTagGoalPrimary = MAP_TAG_GOAL_PRIMARY.length();
+    const unsigned int lenTagGoalSecondary = MAP_TAG_GOAL_SECONDARY.length();
+    const unsigned int lenTagEndBaseData = MAP_TAG_END_BASE_DATA.length();
+    const unsigned int lenTagMapSize = MAP_TAG_MAP_SIZE.length();
+    const unsigned int lenTagVersion = MAP_TAG_VERSION.length();
 
     while(std::getline(fs, line))
     {
@@ -89,14 +89,22 @@ void MapLoader::ReadBaseData(std::fstream & fs)
             else
                 ss.ignore(lenTagGoalSecondary);
 
-            // unsigned int mission;
-            // ss >> mission;
-            // mMissionType = static_cast<MissiongGoal>(mission);
+            // goal type
+            unsigned int gt;
+            ss >> gt;
+            auto type = static_cast<MissionGoalType>(gt);
 
-            // if(MG_RESIST_TIME == mMissionType)
-            //     ss >> mMissionTime;
+            // only read quantity data for some goals
+            unsigned int quantity = 0;
 
-            // TODO
+            if(MG_COLLECT_BLOBS == type || MG_COLLECT_DIAMONDS == type ||
+               MG_GAIN_MONEY == type || MG_MINE_MATERIAL == type ||
+               MG_MINE_ENERGY == type || MG_RESIST_TIME == type)
+                ss >> quantity;
+
+            mGoals.emplace_back(type, quantity, primary);
+
+            // TODO remove when completed goals logic
             mMissionType = MG_DESTROY_ENEMY_BASE;
         }
         else if(line.compare(0, lenTagMapSize, MAP_TAG_MAP_SIZE) == 0)

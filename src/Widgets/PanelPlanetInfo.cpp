@@ -120,7 +120,7 @@ void PanelPlanetInfo::ClearData()
 }
 
 void PanelPlanetInfo::SetData(int size, TerritoryStatus status, PlayerFaction faction,
-                              unsigned int value, MissiongGoal mission)
+                              unsigned int value, MissionGoalType mission)
 {
     const bool sizeChanged = size != mSize;
     const bool statusChanged = status != mStatus;
