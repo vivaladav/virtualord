@@ -3,12 +3,19 @@
 #include "GameConstants.h"
 
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 namespace game
 {
 
-const std::string MapLoader::MAP_VERSION("0.1.1");
+const std::string MapLoader::MAP_VERSION("0.2.0");
+
+const std::string MapLoader::MAP_TAG_GOAL_PRIMARY("P");
+const std::string MapLoader::MAP_TAG_GOAL_SECONDARY("S");
+const std::string MapLoader::MAP_TAG_END_BASE_DATA("-----");
+const std::string MapLoader::MAP_TAG_MAP_SIZE("RC");
+const std::string MapLoader::MAP_TAG_VERSION("V");
 
 void MapLoader::Clear()
 {
@@ -43,46 +50,78 @@ void MapLoader::ReadBaseData(std::fstream & fs)
     std::string line;
     std::istringstream ss;
 
-    // reading file version
-    std::getline(fs, line);
-    ss.str(line);
+    const int lenTagGoalPrimary = MAP_TAG_GOAL_PRIMARY.length();
+    const int lenTagGoalSecondary = MAP_TAG_GOAL_SECONDARY.length();
+    const int lenTagEndBaseData = MAP_TAG_END_BASE_DATA.length();
+    const int lenTagMapSize = MAP_TAG_MAP_SIZE.length();
+    const int lenTagVersion = MAP_TAG_VERSION.length();
 
-    ss >> mVer;
-    ss.clear();
-
-    // reading mission data
-    std::getline(fs, line);
-    ss.str(line);
-
-    unsigned int mission;
-    ss >> mission;
-    mMissionType = static_cast<MissionType>(mission);
-
-    if(MISSION_RESIST_TIME == mMissionType)
-        ss >> mMissionTime;
-
-    ss.clear();
-
-    // reading map size
-    std::getline(fs, line);
-    ss.str(line);
-
-    ss >> mRows >> mCols;
-
-    // READ BASE MAP
-    for(unsigned int r = 0; r < mRows; ++r)
+    while(std::getline(fs, line))
     {
-        std::getline(fs, line);
+        // skip comments
+        if(!line.empty() && '#' == line[0])
+            continue;
+
         ss.clear();
         ss.str(line);
 
-        for(unsigned int c = 0; c < mCols; ++c)
+        // reading file version
+        if(line.compare(0, lenTagVersion, MAP_TAG_VERSION) == 0)
         {
-            unsigned int type;
-            ss >> type;
+            ss.ignore(lenTagVersion);
+            ss >> mVer;
 
-            mCellTypes.push_back(type);
+            if(mVer != MAP_VERSION)
+            {
+                std::cout << "[WAR] map file version (" << mVer
+                          << ") is different from current one (" << MAP_VERSION << ")"
+                          << std::endl;
+            }
         }
+        // reading goal
+        else if(line.compare(0, lenTagGoalPrimary, MAP_TAG_GOAL_PRIMARY) == 0 ||
+                line.compare(0, lenTagGoalSecondary, MAP_TAG_GOAL_SECONDARY) == 0)
+        {
+            const bool primary = line.compare(0, lenTagGoalPrimary, MAP_TAG_GOAL_PRIMARY) == 0;
+
+            if(primary)
+                ss.ignore(lenTagGoalPrimary);
+            else
+                ss.ignore(lenTagGoalSecondary);
+
+            // unsigned int mission;
+            // ss >> mission;
+            // mMissionType = static_cast<MissiongGoal>(mission);
+
+            // if(MG_RESIST_TIME == mMissionType)
+            //     ss >> mMissionTime;
+
+            // TODO
+            mMissionType = MG_DESTROY_ENEMY_BASE;
+        }
+        else if(line.compare(0, lenTagMapSize, MAP_TAG_MAP_SIZE) == 0)
+        {
+            ss.ignore(lenTagMapSize);
+            ss >> mRows >> mCols;
+
+            // READ BASE MAP
+            for(unsigned int r = 0; r < mRows; ++r)
+            {
+                std::getline(fs, line);
+                ss.clear();
+                ss.str(line);
+
+                for(unsigned int c = 0; c < mCols; ++c)
+                {
+                    unsigned int type;
+                    ss >> type;
+
+                    mCellTypes.push_back(type);
+                }
+            }
+        }
+        else if(line.compare(0, lenTagEndBaseData, MAP_TAG_END_BASE_DATA) == 0)
+            break;
     }
 }
 

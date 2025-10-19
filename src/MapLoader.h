@@ -11,7 +11,7 @@ namespace game
 class GameMap;
 class IsoMap;
 
-enum MissionType : unsigned int;
+enum MissiongGoal : unsigned int;
 
 struct MapObjectEntry
 {
@@ -28,6 +28,13 @@ class MapLoader
 public:
     static const std::string MAP_VERSION;
 
+    // -- FILE TAGS --
+    static const std::string MAP_TAG_GOAL_PRIMARY;
+    static const std::string MAP_TAG_GOAL_SECONDARY;
+    static const std::string MAP_TAG_END_BASE_DATA;
+    static const std::string MAP_TAG_MAP_SIZE;
+    static const std::string MAP_TAG_VERSION;
+
 public:
     unsigned int GetMapRows() const;
     unsigned int GetMapCols() const;
@@ -39,7 +46,7 @@ public:
     const std::vector<MapObjectEntry> & GetObjectEntries() const;
 
     // Mission data
-    MissionType GetMissionType() const;
+    MissiongGoal GetMissionType() const;
     unsigned int GetMissionTime() const;
 
     void Clear();
@@ -59,7 +66,7 @@ private:
     unsigned int mRows = 0 ;
     unsigned int mCols = 0 ;
 
-    MissionType mMissionType;
+    MissiongGoal mMissionType;
     unsigned int mMissionTime = 0;
 };
 
@@ -73,7 +80,7 @@ inline const std::vector<unsigned int> & MapLoader::GetCellTypes() const { retur
 inline const std::vector<MapObjectEntry> & MapLoader::GetObjectEntries() const { return mObjEntries; }
 
 // Mission data
-inline MissionType MapLoader::GetMissionType() const { return mMissionType; }
+inline MissiongGoal MapLoader::GetMissionType() const { return mMissionType; }
 inline unsigned int MapLoader::GetMissionTime() const { return mMissionTime; }
 
 } // namespace game

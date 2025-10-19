@@ -9,7 +9,7 @@ constexpr int MAX_MAPS_PER_PLANET = 12;
 
 MapsRegistry::MapData::MapData(const std::string & file, int energy, int material, int diamonds,
                                int blobs, int size, int value, PlayerFaction occupier,
-                               TerritoryStatus status, MissionType mission)
+                               TerritoryStatus status, MissiongGoal mission)
     : mFile(file)
     , mEnergy(energy)
     , mMaterial(material)
@@ -37,7 +37,7 @@ bool MapsRegistry::CreatePlanet(unsigned int planetId)
 
 bool MapsRegistry::AddMap(unsigned int planetId, const std::string & file, int energy,
                           int material, int diamonds, int blobs, int size, int value,
-                          PlayerFaction occupier, TerritoryStatus status, MissionType mission)
+                          PlayerFaction occupier, TerritoryStatus status, MissiongGoal mission)
 {
     // planet not found
     if(mData.find(planetId) == mData.end())
@@ -187,7 +187,7 @@ TerritoryStatus MapsRegistry::GetMapStatus(unsigned int planetId, unsigned int i
     return TER_ST_UNKNOWN;
 }
 
-MissionType MapsRegistry::GetMapMission(unsigned int planetId, unsigned int index) const
+MissiongGoal MapsRegistry::GetMapMission(unsigned int planetId, unsigned int index) const
 {
     if(mData.find(planetId) != mData.end())
     {

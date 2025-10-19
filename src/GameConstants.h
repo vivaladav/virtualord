@@ -31,13 +31,18 @@ enum MapLayers : unsigned int
     NUM_LAYERS,
 };
 
-enum MissionType : unsigned int
+enum MissiongGoal : unsigned int
 {
-    MISSION_DESTROY_ENEMY_BASE,
-    MISSION_DESTROY_ALL_ENEMIES,
-    MISSION_RESIST_TIME,
+    MG_COLLECT_BLOBS,
+    MG_COLLECT_DIAMONDS,
+    MG_DESTROY_ENEMY_BASE,
+    MG_DESTROY_ALL_ENEMIES,
+    MG_GAIN_MONEY,
+    MG_MINE_MATERIAL,
+    MG_MINE_ENERGY,
+    MG_RESIST_TIME,
 
-    NUM_MISSION_TYPES,
+    NUM_MISSION_GOALS,
 
     MISSION_COMPLETED,
     MISSION_UNKNOWN
@@ -91,7 +96,7 @@ enum Planets : unsigned int
 };
 
 extern const char * FACTIONS_NAME[NUM_FACTIONS];
-extern const char * MISSIONS_TITLE[NUM_MISSION_TYPES];
+extern const char * MISSION_GOALS_TITLE[NUM_MISSION_GOALS];
 extern const char * PLANETS_NAME[NUM_PLANETS];
 
 } // namespace game

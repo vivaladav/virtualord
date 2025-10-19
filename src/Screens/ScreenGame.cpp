@@ -724,7 +724,7 @@ void ScreenGame::CreateUI()
     });
 
     // MISSION COUNTDOWN
-    if(MISSION_RESIST_TIME == mMissionType)
+    if(MG_RESIST_TIME == mMissionType)
         mHUD->ShowMissionCountdown(mMissionTime);
 
     // set initial focus to Stage
@@ -1529,7 +1529,7 @@ void ScreenGame::UpdateGameEnd()
 
     switch(mMissionType)
     {
-        case MISSION_DESTROY_ENEMY_BASE:
+        case MG_DESTROY_ENEMY_BASE:
         {
             // check if destroyed all enemy bases
             for(Player * p : mAiPlayers)
@@ -1543,7 +1543,7 @@ void ScreenGame::UpdateGameEnd()
         }
         break;
 
-        case MISSION_DESTROY_ALL_ENEMIES:
+        case MG_DESTROY_ALL_ENEMIES:
         {
             // check if destroyed all enemies
             for(Player * p : mAiPlayers)
@@ -1557,7 +1557,7 @@ void ScreenGame::UpdateGameEnd()
         }
         break;
 
-        case MISSION_RESIST_TIME:
+        case MG_RESIST_TIME:
         {
             // check elapsed time
             const unsigned int playedTime = GetPlayTimeInSec();

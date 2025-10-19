@@ -16,7 +16,7 @@ namespace sgl
 namespace game
 {
 
-enum MissionType : unsigned int;
+enum MissiongGoal : unsigned int;
 enum PlayerFaction : unsigned int;
 enum TerritoryStatus : unsigned int;
 
@@ -27,7 +27,7 @@ public:
 
     void ClearData();
     void SetData(int size, TerritoryStatus status, PlayerFaction faction,
-                 unsigned int value, MissionType mission);
+                 unsigned int value, MissiongGoal mission);
 
 private:
     void HandlePositionChanged() override;
@@ -63,7 +63,7 @@ private:
     int mValue = 0;
     PlayerFaction mOccupier;
     TerritoryStatus mStatus;
-    MissionType mMission;
+    MissiongGoal mMission;
 };
 
 } // namespace game

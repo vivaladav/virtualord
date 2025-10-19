@@ -120,7 +120,7 @@ void PanelPlanetInfo::ClearData()
 }
 
 void PanelPlanetInfo::SetData(int size, TerritoryStatus status, PlayerFaction faction,
-                              unsigned int value, MissionType mission)
+                              unsigned int value, MissiongGoal mission)
 {
     const bool sizeChanged = size != mSize;
     const bool statusChanged = status != mStatus;
@@ -357,8 +357,8 @@ void PanelPlanetInfo::UpdateMissionType()
     graphic::Font * fntData = fm->GetFont(fileFont, WidgetsConstants::FontSizePlanetMapText,
                                          graphic::Font::NORMAL);
 
-    if(mMission < NUM_MISSION_TYPES)
-        mLabelMission = new graphic::Text(MISSIONS_TITLE[mMission], fntData);
+    if(mMission < NUM_MISSION_GOALS)
+        mLabelMission = new graphic::Text(MISSION_GOALS_TITLE[mMission], fntData);
     else if(MISSION_COMPLETED == mMission)
         mLabelMission = new graphic::Text("-", fntData);
     // UNKNOWN
