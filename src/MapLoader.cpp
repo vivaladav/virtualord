@@ -2,7 +2,6 @@
 
 #include "GameConstants.h"
 
-#include <fstream>
 #include <iostream>
 #include <sstream>
 
@@ -20,15 +19,23 @@ const std::string MapLoader::MAP_TAG_MAP_SIZE("RC");
 const std::string MapLoader::MAP_TAG_VERSION("V");
 const unsigned int LEN_SIMPLE_TAG = 1;
 
+MapLoader::MapLoader()
+    : mCategory(MC_UNKNOWN)
+{
+}
+
 void MapLoader::Clear()
 {
     mObjEntries.clear();
     mCellTypes.clear();
+    mGoals.clear();
 
     mVer.clear();
 
     mRows = 0 ;
     mCols = 0 ;
+
+    mCategory = MC_UNKNOWN;
 }
 
 bool MapLoader::Load(const std::string & filename)
@@ -131,9 +138,6 @@ void MapLoader::ReadHeader(std::fstream & fs)
                 ss >> quantity;
 
             mGoals.emplace_back(type, quantity, primary);
-
-            // TODO remove when completed goals logic
-            mMissionType = MG_DESTROY_ENEMY_BASE;
         }
         else if(line.compare(0, lenTagMapSize, MAP_TAG_MAP_SIZE) == 0)
         {

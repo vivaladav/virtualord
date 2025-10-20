@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Cell2D.h"
+#include "MissionGoal.h"
 #include "Screen.h"
 #include "GameObjects/GameObjectAction.h"
 #include "GameObjects/GameObjectTypes.h"
@@ -121,6 +122,7 @@ private:
     void FinalizeObjectAction(const GameObjectAction & action, bool successful);
 
     void UpdateGameEnd();
+    bool CheckIfGoalCompleted(MissionGoal & g);
     void HandleGameOver();
     void HandleGameWon();
     void AssignMapToFaction(PlayerFaction faction);
@@ -192,6 +194,8 @@ private:
     std::vector<GameObjectAction> mObjActions;
     std::vector<GameObjectAction> mObjActionsToDo;
 
+    std::vector<MissionGoal> mMissionGoals;
+
     CameraMapController * mCamController = nullptr;
 
     unsigned int mIdOnSettingsChanged = 0;
@@ -225,9 +229,7 @@ private:
 
     float mTimePlayed = 0.f;
 
-    MissionGoalType mMissionType;
-    unsigned int mMissionTime = 0;
-
+    bool mMapCompleted = false;
     bool mPaused = false;
 };
 

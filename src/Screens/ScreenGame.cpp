@@ -723,9 +723,15 @@ void ScreenGame::CreateUI()
         CancelObjectAction(selObj);
     });
 
-    // MISSION COUNTDOWN
-    if(MG_RESIST_TIME == mMissionType)
-        mHUD->ShowMissionCountdown(mMissionTime);
+    // MISSION COUNTDOWN if needed by primary goal
+    for(const MissionGoal & g : mMissionGoals)
+    {
+        if(g.IsPrimary() && MG_RESIST_TIME == g.GetType())
+        {
+            mHUD->ShowMissionCountdown(g.GetQuantity());
+            break;
+        }
+    }
 
     // set initial focus to Stage
     sgl::sgui::Stage::Instance()->SetFocus();
@@ -831,8 +837,7 @@ void ScreenGame::LoadMapFile()
     }
 
     // get mission data
-    mMissionType = ml.GetMissionType();
-    mMissionTime = ml.GetMissionTime();
+    mMissionGoals = ml.GetMissionGoals();
 }
 
 void ScreenGame::OnKeyDown(sgl::core::KeyboardEvent & event)
@@ -1520,14 +1525,38 @@ void ScreenGame::FinalizeObjectAction(const GameObjectAction & action, bool succ
 
 void ScreenGame::UpdateGameEnd()
 {
-    // check if player has base
+    // check if player has base for instant GAME OVER
     if(CheckGameOverForLocalPlayer())
     {
         mHUD->ShowDialogEndMission(false);
         return ;
     }
 
-    switch(mMissionType)
+    // check goals
+    unsigned int primaryGoals = 0;
+    unsigned int completedPrimaryGoals = 0;
+
+    for(MissionGoal & g : mMissionGoals)
+    {
+        if(g.IsPrimary())
+            ++primaryGoals;
+
+        const bool completed = CheckIfGoalCompleted(g);
+
+        if(completed && g.IsPrimary())
+                ++completedPrimaryGoals;
+    }
+
+    if(completedPrimaryGoals == primaryGoals)
+        mMapCompleted = true;
+}
+
+bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
+{
+    if(g.IsCompleted())
+        return true;
+
+    switch(g.GetType())
     {
         case MG_DESTROY_ENEMY_BASE:
         {
@@ -1535,11 +1564,8 @@ void ScreenGame::UpdateGameEnd()
             for(Player * p : mAiPlayers)
             {
                 if(p->HasStructure(GameObject::TYPE_BASE))
-                    return ;
+                return false;
             }
-
-            // no base found -> END
-            mHUD->ShowDialogEndMission(true);
         }
         break;
 
@@ -1549,11 +1575,8 @@ void ScreenGame::UpdateGameEnd()
             for(Player * p : mAiPlayers)
             {
                 if(p->GetNumObjects() > 0)
-                    return ;
+                    return false;
             }
-
-            // no enemy found -> END
-            mHUD->ShowDialogEndMission(true);
         }
         break;
 
@@ -1562,17 +1585,21 @@ void ScreenGame::UpdateGameEnd()
             // check elapsed time
             const unsigned int playedTime = GetPlayTimeInSec();
 
-            if(playedTime >= mMissionTime)
-            {
-                mHUD->HideMissionCountdown();
-                mHUD->ShowDialogEndMission(true);
-            }
+            if(playedTime < g.GetQuantity())
+                return false;
+
+            mHUD->HideMissionCountdown();
         }
         break;
 
         default:
+            return false;
         break;
     }
+
+    g.SetCompleted();
+
+    return true;
 }
 
 void ScreenGame::HandleGameOver()

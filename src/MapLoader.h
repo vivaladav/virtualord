@@ -3,6 +3,7 @@
 #include "MissionGoal.h"
 #include "GameObjects/GameObjectTypes.h"
 
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,6 @@ namespace game
 
 class GameMap;
 class IsoMap;
-class MissionGoal;
 
 enum MissionCategory : unsigned int;
 enum MissionGoalType : unsigned int;
@@ -42,6 +42,8 @@ public:
     static const std::string MAP_TAG_VERSION;
 
 public:
+    MapLoader();
+
     unsigned int GetMapRows() const;
     unsigned int GetMapCols() const;
 
@@ -54,10 +56,6 @@ public:
     // Mission data
     MissionCategory GetMissionCategory();
     const std::vector<MissionGoal> & GetMissionGoals() const;
-
-    // TODO remove once goal logic is completed
-    MissionGoalType GetMissionType() const;
-    unsigned int GetMissionTime() const;
 
     void Clear();
 
@@ -79,10 +77,6 @@ private:
 
     unsigned int mRows = 0 ;
     unsigned int mCols = 0 ;
-
-    // TODO remove once goal logic is completed
-    MissionGoalType mMissionType;
-    unsigned int mMissionTime = 0;
 };
 
 inline unsigned int MapLoader::GetMapRows() const { return mRows; }
@@ -96,9 +90,5 @@ inline const std::vector<MapObjectEntry> & MapLoader::GetObjectEntries() const {
 
 inline MissionCategory MapLoader::GetMissionCategory() { return mCategory; }
 inline const std::vector<MissionGoal> & MapLoader::GetMissionGoals() const { return mGoals; }
-
-// Mission data
-inline MissionGoalType MapLoader::GetMissionType() const { return mMissionType; }
-inline unsigned int MapLoader::GetMissionTime() const { return mMissionTime; }
 
 } // namespace game
