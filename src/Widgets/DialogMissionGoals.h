@@ -8,7 +8,11 @@
 
 namespace sgl
 {
-    namespace graphic { class Image; }
+    namespace graphic
+    {
+        class Image;
+        class Texture;
+    }
     namespace sgui
     {
         class AbstractButton;
@@ -26,10 +30,11 @@ public:
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
-protected:
+private:
+    sgl::sgui::Widget * CreateGoalEntry(unsigned int goalInd, sgl::graphic::Texture * texBg);
+
     void HandlePositionChanged() override;
 
-private:
     void SetPositions();
 
 private:

@@ -136,10 +136,11 @@ DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals)
     const int marginRowV = 5;
     const int headerGoalH = 20;
     const int marginHeaderGoalH = 20;
-    const int marginGoalsGroupH = 45;
+    const int marginGoalsGroupH = 40;
     const int marginGoals2GroupH = 35;
     const int endButtonAreaH = 65;
 
+    const unsigned int numGoals = mGoals.size();
     unsigned int numPrimaryGoals = 0;
     unsigned int numPrimaryGoalsCompleted = 0;
     unsigned int numSecondaryGoals = 0;
@@ -228,13 +229,16 @@ DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals)
 
         contentY += labelHeader->GetHeight() + marginHeaderGoalH;
 
-        for(unsigned int n = 0; n < numPrimaryGoals; ++n)
+        for(unsigned int n = 0; n < numGoals; ++n)
         {
-            tex = 0 == (n % 2) ? texRow1 : texRow2;
-            auto rowBg = new sgui::Image(tex, this);
-            rowBg->SetPosition(contentX, contentY);
+            if(!mGoals[n].IsPrimary())
+                continue;
 
-            contentY += rowBg->GetHeight() + marginRowV;
+            tex = 0 == (n % 2) ? texRow1 : texRow2;
+            auto row = CreateGoalEntry(n, tex);
+            row->SetPosition(contentX, contentY);
+
+            contentY += row->GetHeight() + marginRowV;
         }
     }
 
@@ -249,13 +253,16 @@ DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals)
 
         contentY += labelHeader->GetHeight() + marginHeaderGoalH;
 
-        for(unsigned int n = 0; n < numSecondaryGoals; ++n)
+        for(unsigned int n = 0; n < numGoals; ++n)
         {
-            tex = 0 == (n % 2) ? texRow1 : texRow2;
-            auto rowBg = new sgui::Image(tex, this);
-            rowBg->SetPosition(contentX, contentY);
+            if(mGoals[n].IsPrimary())
+                continue;
 
-            contentY += rowBg->GetHeight() + marginRowV;
+            tex = 0 == (n % 2) ? texRow1 : texRow2;
+            auto row = CreateGoalEntry(n, tex);
+            row->SetPosition(contentX, contentY);
+
+            contentY += row->GetHeight() + marginRowV;
         }
 
         contentY += marginGoals2GroupH;
@@ -272,6 +279,51 @@ void DialogMissionGoals::SetFunctionOnClose(const std::function<void()> & f)
 {
     mBtnClose->AddOnClickFunction(f);
 }
+
+sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
+                                                        sgl::graphic::Texture * texBg)
+{
+    using namespace sgl;
+
+    const MissionGoal & g = mGoals[goalInd];
+
+    auto fm = graphic::FontManager::Instance();
+    const char * fileFont = "Lato-Regular.ttf";
+
+    const int paddingL = 20;
+    const int paddingT = 10;
+
+    int contX = paddingL;
+    int contY = paddingT;
+
+    // body
+    auto bg = new sgui::Image(texBg, this);
+
+    // checkbox
+    const int marginCheckboxR = 10;
+
+    auto tm = graphic::TextureManager::Instance();
+    const unsigned int texId = g.IsCompleted() ? ID_DLG_MGOALS_CHECKBOX_CHECKED :
+                                                 ID_DLG_MGOALS_CHECKBOX_NORMAL;
+    auto texCheckbox = tm->GetSprite(SpriteFileDialogMissionGoals, texId);
+
+    auto checkbox = new sgui::Image(texCheckbox, bg);
+    checkbox->SetPosition(contX, contY);
+
+    contX += checkbox->GetWidth() + marginCheckboxR;
+
+    // description
+    const int sizeDesc = 20;
+    const unsigned int colorDesc = 0x8cbfd9ff;
+
+    auto font = fm->GetFont(fileFont, sizeDesc, graphic::Font::NORMAL);
+    auto labelDesc = new sgui::Label(g.GetDescription().c_str(), font, bg);
+    labelDesc->SetColor(colorDesc);
+    labelDesc->SetPosition(contX, contY);
+
+    return bg;
+}
+
 
 void DialogMissionGoals::HandlePositionChanged()
 {
