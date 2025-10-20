@@ -50,6 +50,21 @@ bool MapLoader::Load(const std::string & filename)
     return true;
 }
 
+bool MapLoader::LoadHeader(const std::string & filename)
+{
+    // open map file
+    std::fstream fs(filename);
+
+    if(!fs.is_open())
+        return false;
+
+    ReadHeader(fs);
+
+    fs.close();
+
+    return true;
+}
+
 void MapLoader::ReadHeader(std::fstream & fs)
 {
     std::string line;
@@ -103,7 +118,7 @@ void MapLoader::ReadHeader(std::fstream & fs)
             ss >> primary;
 
             // goal type
-            unsigned int gt = MISSION_UNKNOWN;
+            unsigned int gt = MG_UNKNOWN;
             ss >> gt;
             auto type = static_cast<MissionGoalType>(gt);
 

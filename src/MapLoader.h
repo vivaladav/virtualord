@@ -62,6 +62,7 @@ public:
     void Clear();
 
     bool Load(const std::string & filename);
+    bool LoadHeader(const std::string & filename);
 
 private:
     void ReadHeader(std::fstream & fs);
@@ -93,6 +94,7 @@ inline const std::vector<unsigned int> & MapLoader::GetCellTypes() const { retur
 
 inline const std::vector<MapObjectEntry> & MapLoader::GetObjectEntries() const { return mObjEntries; }
 
+inline MissionCategory MapLoader::GetMissionCategory() { return mCategory; }
 inline const std::vector<MissionGoal> & MapLoader::GetMissionGoals() const { return mGoals; }
 
 // Mission data
