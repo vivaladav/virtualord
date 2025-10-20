@@ -232,7 +232,7 @@ void GameHUD::ClearQuickUnitButtonChecked()
         mGroupUnitSel->GetButton(checked)->SetChecked(false);
 }
 
-void GameHUD::ShowDialogMissionGoals()
+void GameHUD::ShowDialogMissionGoals(const std::vector<MissionGoal> & goals)
 {
     if(mDialogMissionGoals != nullptr)
         return ;
@@ -240,7 +240,7 @@ void GameHUD::ShowDialogMissionGoals()
     mScreen->SetPause(true);
 
     Game * game = mScreen->GetGame();
-    mDialogMissionGoals = new DialogMissionGoals;
+    mDialogMissionGoals = new DialogMissionGoals(goals);
     mDialogMissionGoals->SetFocus();
 
     mDialogMissionGoals->SetFunctionOnClose([this]

@@ -343,21 +343,34 @@ void ScreenInit::SetupTextures()
     {
         std::vector<sgl::core::Rectd> rects
         {
-            // BACKGROUND
-            { 0, 0, 1200, 100 },
-            { 0, 101, 1200, 50 },
+            // BACKGROUNDS
+            { 0, 0, 1280, 95 },
+            { 0, 96, 1280, 50 },
+            { 0, 237, 1200, 80 },
+            { 0, 318, 1200, 80 },
+
+            // BUTTON COLLECT
+            { 0, 147, 220, 44 },
+            { 221, 147, 220, 44 },
+            { 0, 192, 220, 44 },
+            { 221, 192, 220, 44 },
 
             // BUTTON CLOSE
-            { 0, 152, 95, 41 },
-            { 96, 152, 95, 41 },
-            { 192, 152, 95, 41 },
-            { 288, 152, 95, 41 },
+            { 1084, 147, 95, 41 },
+            { 1180, 147, 95, 41 },
+            { 1084, 189, 95, 41 },
+            { 1180, 189, 95, 41 },
 
+            // BUTTON END MISSION
+            { 442, 147, 320, 44 },
+            { 763, 147, 320, 44 },
+            { 442, 192, 320, 44 },
+            { 763, 192, 320, 44 },
 
             //CHECKBOX
-            { 384, 152, 24, 24 },
-            { 409, 152, 24, 24 },
-            { 434, 152, 24, 24 },
+            { 1201, 237, 24, 24 },
+            { 1201, 262, 24, 24 },
+            { 1201, 287, 24, 24 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogMissionGoals, rects);
@@ -368,7 +381,7 @@ void ScreenInit::SetupTextures()
         std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUND
-            { 0, 0, 1200, 10 },
+            { 0, 0, 1280, 10 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogMissionGoalsExp, rects);

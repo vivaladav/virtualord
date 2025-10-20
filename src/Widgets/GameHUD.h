@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MissionGoal.h"
 #include <sgl/sgui/Widget.h>
 
 namespace sgl
@@ -24,6 +25,7 @@ class DialogTrading;
 class GameMapProgressBar;
 class GameObject;
 class MiniMap;
+class MissionGoal;
 class PanelObjectActions;
 class PanelResources;
 class PanelSelectedObject;
@@ -53,7 +55,7 @@ public:
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
 
-    void ShowDialogMissionGoals();
+    void ShowDialogMissionGoals(const std::vector<MissionGoal> & goals);
     void HideDialogMissionGoals();
 
     void ShowDialogEndMission(bool won);

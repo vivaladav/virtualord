@@ -57,16 +57,118 @@ private:
     }
 };
 
+// ====== BUTTON CLOSE =====
+class ButtonEndMission : public sgl::sgui::ImageButton
+{
+public:
+    ButtonEndMission(sgl::sgui::Widget * parent)
+        : sgl::sgui::ImageButton({
+                                     ID_DLG_MGOALS_BTN_END_NORMAL,
+                                     ID_DLG_MGOALS_BTN_END_DISABLED,
+                                     ID_DLG_MGOALS_BTN_END_OVER,
+                                     ID_DLG_MGOALS_BTN_END_PUSHED,
+                                     ID_DLG_MGOALS_BTN_END_NORMAL
+                                 },
+                                 SpriteFileDialogMissionGoals, parent)
+    {
+        using namespace sgl;
+
+        auto fm = graphic::FontManager::Instance();
+        const char * fileFont = "Lato-Regular.ttf";
+        const int sizeTitle = 18;
+
+        auto font = fm->GetFont(fileFont, sizeTitle, graphic::Font::NORMAL);
+        SetLabelFont(font);
+
+        SetLabel("END MISSION");
+    }
+
+private:
+    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
+    {
+        sgl::sgui::ImageButton::OnStateChanged(state);
+
+        const unsigned int colorsLabel[NUM_VISUAL_STATES] =
+        {
+            0xd7f4deff,
+            0x436f4dff,
+            0xebf9eeff,
+            0xc3eeceff,
+            0xc3eeceff
+        };
+
+        SetLabelColor(colorsLabel[state]);
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::AbstractButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-02.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-02.ogg");
+    }
+};
+
 // ===== DIALOG =====
-DialogMissionGoals::DialogMissionGoals()
+DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals)
+    : mGoals(goals)
 {
     using namespace sgl;
 
     auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
 
-    // TODO define based on content
-    const int contentH = 100;
+    // -- define content height based on goals --
+    int contentH = 0;
+
+    graphic::Texture * texRow1 = tm->GetSprite(SpriteFileDialogMissionGoals, ID_DLG_MGOALS_BG_ROW1);
+    graphic::Texture * texRow2 = tm->GetSprite(SpriteFileDialogMissionGoals, ID_DLG_MGOALS_BG_ROW2);
+
+    const int rowH = texRow1->GetHeight();
+    const int marginRowV = 5;
+    const int headerGoalH = 20;
+    const int marginHeaderGoalH = 20;
+    const int marginGoalsGroupH = 45;
+    const int marginGoals2GroupH = 35;
+    const int endButtonAreaH = 65;
+
+    unsigned int numPrimaryGoals = 0;
+    unsigned int numPrimaryGoalsCompleted = 0;
+    unsigned int numSecondaryGoals = 0;
+
+    for(const MissionGoal & g : mGoals)
+    {
+        if(g.IsPrimary())
+        {
+            ++numPrimaryGoals;
+
+            if(g.IsCompleted())
+                ++numPrimaryGoalsCompleted;
+        }
+        else
+            ++numSecondaryGoals;
+    }
+
+    if(numPrimaryGoals > 0)
+        contentH += headerGoalH + marginHeaderGoalH;
+    if(numSecondaryGoals > 0)
+    {
+        contentH += headerGoalH + marginHeaderGoalH;
+        contentH += marginGoalsGroupH;
+    }
+
+    const int contentGoalsH = (numPrimaryGoals + numSecondaryGoals) * (rowH + marginRowV);
+    contentH += contentGoalsH;
+
+    contentH += endButtonAreaH;
 
     // BACKGROUND
     graphic::Texture * tex = tm->GetSprite(SpriteFileDialogMissionGoals, ID_DLG_MGOALS_BG_TOP);
@@ -98,15 +200,72 @@ DialogMissionGoals::DialogMissionGoals()
     const int marginL = 40;
 
     // TITLE
+    const char * fileFont = "Lato-Regular.ttf";
     const unsigned int colorTitle = 0xf1f3f4ff;
+    const int sizeTitle = 28;
     const int marginTitleT = 14;
 
-    auto font = fm->GetFont("Lato-Regular.ttf", 28, sgl::graphic::Font::NORMAL);
+    auto font = fm->GetFont(fileFont, sizeTitle, graphic::Font::NORMAL);
     mTitle = new sgui::Label("MISSION GOALS", font, this);
     mTitle->SetColor(colorTitle);
 
     const int titleX = (w - mTitle->GetWidth()) / 2;
     mTitle->SetPosition(titleX, marginTitleT);
+
+    int contentX = marginL;
+    int contentY = mBgTop->GetHeight();
+
+    // PRIMARY GOALS
+    const unsigned int colorHeader = 0xdbe9f0ff;
+    const int sizeHeader = 24;
+
+    if(numPrimaryGoals > 0)
+    {
+        auto font = fm->GetFont(fileFont, sizeHeader, graphic::Font::NORMAL);
+        auto labelHeader = new sgui::Label("PRIMARY GOALS", font, this);
+        labelHeader->SetColor(colorHeader);
+        labelHeader->SetPosition(contentX, contentY);
+
+        contentY += labelHeader->GetHeight() + marginHeaderGoalH;
+
+        for(unsigned int n = 0; n < numPrimaryGoals; ++n)
+        {
+            tex = 0 == (n % 2) ? texRow1 : texRow2;
+            auto rowBg = new sgui::Image(tex, this);
+            rowBg->SetPosition(contentX, contentY);
+
+            contentY += rowBg->GetHeight() + marginRowV;
+        }
+    }
+
+    if(numSecondaryGoals > 0)
+    {
+        contentY += marginGoalsGroupH;
+
+        auto font = fm->GetFont(fileFont, sizeHeader, graphic::Font::NORMAL);
+        auto labelHeader = new sgui::Label("SECONDARY GOALS", font, this);
+        labelHeader->SetColor(colorHeader);
+        labelHeader->SetPosition(contentX, contentY);
+
+        contentY += labelHeader->GetHeight() + marginHeaderGoalH;
+
+        for(unsigned int n = 0; n < numSecondaryGoals; ++n)
+        {
+            tex = 0 == (n % 2) ? texRow1 : texRow2;
+            auto rowBg = new sgui::Image(tex, this);
+            rowBg->SetPosition(contentX, contentY);
+
+            contentY += rowBg->GetHeight() + marginRowV;
+        }
+
+        contentY += marginGoals2GroupH;
+    }
+
+    mBtnEnd = new ButtonEndMission(this);
+    contentX = (w - mBtnEnd->GetWidth()) / 2;
+    mBtnEnd->SetPosition(contentX, contentY);
+
+    mBtnEnd->SetEnabled(numPrimaryGoalsCompleted == numPrimaryGoals);
 }
 
 void DialogMissionGoals::SetFunctionOnClose(const std::function<void()> & f)
