@@ -35,8 +35,7 @@ public:
     // -- FILE TAGS --
     static const std::string MAP_TAG_CATEGORY;
     static const std::string MAP_TAG_COMMENT;
-    static const std::string MAP_TAG_GOAL_PRIMARY;
-    static const std::string MAP_TAG_GOAL_SECONDARY;
+    static const std::string MAP_TAG_GOAL;
     static const std::string MAP_TAG_END_HEADER;
     static const std::string MAP_TAG_END_MAP;
     static const std::string MAP_TAG_MAP_SIZE;

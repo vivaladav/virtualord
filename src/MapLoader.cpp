@@ -9,12 +9,11 @@
 namespace game
 {
 
-const std::string MapLoader::MAP_VERSION("0.2.0");
+const std::string MapLoader::MAP_VERSION("0.2.2");
 
 const std::string MapLoader::MAP_TAG_CATEGORY("C");
 const std::string MapLoader::MAP_TAG_COMMENT("#");
-const std::string MapLoader::MAP_TAG_GOAL_PRIMARY("P");
-const std::string MapLoader::MAP_TAG_GOAL_SECONDARY("S");
+const std::string MapLoader::MAP_TAG_GOAL("G");
 const std::string MapLoader::MAP_TAG_END_HEADER("--1--");
 const std::string MapLoader::MAP_TAG_END_MAP("--2--");
 const std::string MapLoader::MAP_TAG_MAP_SIZE("RC");
@@ -84,25 +83,24 @@ void MapLoader::ReadHeader(std::fstream & fs)
 #endif
             }
         }
-        // reading goal
+        // reading category
         else if(line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_CATEGORY) == 0)
         {
+            ss.ignore(LEN_SIMPLE_TAG);
+
             // goal type
             unsigned int cat = MC_UNKNOWN;
             ss >> cat;
             mCategory = static_cast<MissionCategory>(cat);
         }
         // reading goal
-        else if(line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_GOAL_PRIMARY) == 0 ||
-                line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_GOAL_SECONDARY) == 0)
+        else if(line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_GOAL) == 0)
         {
-            // check if primary or secomndary goal
-            const bool primary = line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_GOAL_PRIMARY) == 0;
+            ss.ignore(LEN_SIMPLE_TAG);
 
-            if(primary)
-                ss.ignore(LEN_SIMPLE_TAG);
-            else
-                ss.ignore(LEN_SIMPLE_TAG);
+            // check if primary or secondary goal
+            bool primary = false;
+            ss >> primary;
 
             // goal type
             unsigned int gt = MISSION_UNKNOWN;

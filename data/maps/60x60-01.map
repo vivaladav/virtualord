@@ -1,8 +1,9 @@
 # VERSION
-V 0.2.1
+V 0.2.2
 # GOALS
 C 2
-P 2
+G 1 2
+G 0 4 20000
 # MAP
 RC 60 60
 --1--
