@@ -1,9 +1,26 @@
 #pragma once
 
+#include <string>
+
 namespace game
 {
 
-enum MissionGoalType : unsigned int;
+// mission goal types identify different sub-goals of a mission
+enum MissionGoalType : unsigned int
+{
+    MG_COLLECT_BLOBS,
+    MG_COLLECT_DIAMONDS,
+    MG_DESTROY_ENEMY_BASE,
+    MG_DESTROY_ALL_ENEMIES,
+    MG_GAIN_MONEY,
+    MG_MINE_MATERIAL,
+    MG_MINE_ENERGY,
+    MG_RESIST_TIME,
+
+    NUM_MISSION_GOALS,
+
+    MG_UNKNOWN
+};
 
 class MissionGoal
 {
@@ -19,6 +36,13 @@ public:
 
     bool IsCompleted() const;
     bool IsPrimary() const;
+
+    std::string GetDescription() const;
+
+private:
+    static const std::string TAG_VALUE;
+    static const std::string TITLE[NUM_MISSION_GOALS];
+    static const std::string DESCRIPTION[NUM_MISSION_GOALS];
 
 private:
     static unsigned int num;

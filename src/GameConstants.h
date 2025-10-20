@@ -48,23 +48,6 @@ enum MissionCategory : unsigned int
     MC_UNKNOWN
 };
 
-// mission goal types identify different sub-goals of a mission
-enum MissionGoalType : unsigned int
-{
-    MG_COLLECT_BLOBS,
-    MG_COLLECT_DIAMONDS,
-    MG_DESTROY_ENEMY_BASE,
-    MG_DESTROY_ALL_ENEMIES,
-    MG_GAIN_MONEY,
-    MG_MINE_MATERIAL,
-    MG_MINE_ENERGY,
-    MG_RESIST_TIME,
-
-    NUM_MISSION_GOALS,
-
-    MG_UNKNOWN
-};
-
 enum PlayerFaction : unsigned int
 {
     FACTION_1,
@@ -114,7 +97,6 @@ enum Planets : unsigned int
 
 extern const char * FACTIONS_NAME[NUM_FACTIONS];
 extern const char * MISSION_CATEGORY_TITLE[NUM_MISSION_CATEGORIES];
-extern const char * MISSION_GOALS_TITLE[NUM_MISSION_GOALS];
 extern const char * PLANETS_NAME[NUM_PLANETS];
 
 } // namespace game
