@@ -31,6 +31,21 @@ enum MapLayers : unsigned int
     NUM_LAYERS,
 };
 
+// mission category represents the main goal of a mission
+enum MissionCategory : unsigned int
+{
+    MC_COLLECTION,      // collect resources
+    MC_CONSTRUCTION,    // build something
+    MC_DESTRUCTION,     // destroy enemies
+    MC_PRODUCTION,      // produce resources
+    MC_RESCUE,          // rescue something
+    MC_RESISTANCE,      // hold for some time
+
+    NUM_MISSION_CATEGORIES,
+    MC_UNKNOWN
+};
+
+// mission goal types identify different sub-goals of a mission
 enum MissionGoalType : unsigned int
 {
     MG_COLLECT_BLOBS,

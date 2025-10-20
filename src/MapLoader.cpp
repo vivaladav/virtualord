@@ -11,11 +11,15 @@ namespace game
 
 const std::string MapLoader::MAP_VERSION("0.2.0");
 
+const std::string MapLoader::MAP_TAG_CATEGORY("C");
+const std::string MapLoader::MAP_TAG_COMMENT("#");
 const std::string MapLoader::MAP_TAG_GOAL_PRIMARY("P");
 const std::string MapLoader::MAP_TAG_GOAL_SECONDARY("S");
-const std::string MapLoader::MAP_TAG_END_BASE_DATA("-----");
+const std::string MapLoader::MAP_TAG_END_HEADER("--1--");
+const std::string MapLoader::MAP_TAG_END_MAP("--2--");
 const std::string MapLoader::MAP_TAG_MAP_SIZE("RC");
 const std::string MapLoader::MAP_TAG_VERSION("V");
+const unsigned int LEN_SIMPLE_TAG = 1;
 
 void MapLoader::Clear()
 {
@@ -36,7 +40,9 @@ bool MapLoader::Load(const std::string & filename)
     if(!fs.is_open())
         return false;
 
-    ReadBaseData(fs);
+    ReadHeader(fs);
+
+    ReadMap(fs);
 
     ReadObjectsData(fs);
 
@@ -45,52 +51,61 @@ bool MapLoader::Load(const std::string & filename)
     return true;
 }
 
-void MapLoader::ReadBaseData(std::fstream & fs)
+void MapLoader::ReadHeader(std::fstream & fs)
 {
     std::string line;
     std::istringstream ss;
 
-    const unsigned int lenTagGoalPrimary = MAP_TAG_GOAL_PRIMARY.length();
-    const unsigned int lenTagGoalSecondary = MAP_TAG_GOAL_SECONDARY.length();
-    const unsigned int lenTagEndBaseData = MAP_TAG_END_BASE_DATA.length();
+    const unsigned int lenTagEndHeader = MAP_TAG_END_HEADER.length();
     const unsigned int lenTagMapSize = MAP_TAG_MAP_SIZE.length();
-    const unsigned int lenTagVersion = MAP_TAG_VERSION.length();
 
     while(std::getline(fs, line))
     {
         // skip comments
-        if(!line.empty() && '#' == line[0])
+        if(!line.empty() && line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_COMMENT) == 0)
             continue;
 
         ss.clear();
         ss.str(line);
 
         // reading file version
-        if(line.compare(0, lenTagVersion, MAP_TAG_VERSION) == 0)
+        if(line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_VERSION) == 0)
         {
-            ss.ignore(lenTagVersion);
+            ss.ignore(LEN_SIMPLE_TAG);
             ss >> mVer;
 
+            // map version doesn't match expected one
             if(mVer != MAP_VERSION)
             {
+#ifdef DEV_MODE
                 std::cout << "[WAR] map file version (" << mVer
                           << ") is different from current one (" << MAP_VERSION << ")"
                           << std::endl;
+#endif
             }
         }
         // reading goal
-        else if(line.compare(0, lenTagGoalPrimary, MAP_TAG_GOAL_PRIMARY) == 0 ||
-                line.compare(0, lenTagGoalSecondary, MAP_TAG_GOAL_SECONDARY) == 0)
+        else if(line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_CATEGORY) == 0)
         {
-            const bool primary = line.compare(0, lenTagGoalPrimary, MAP_TAG_GOAL_PRIMARY) == 0;
+            // goal type
+            unsigned int cat = MC_UNKNOWN;
+            ss >> cat;
+            mCategory = static_cast<MissionCategory>(cat);
+        }
+        // reading goal
+        else if(line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_GOAL_PRIMARY) == 0 ||
+                line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_GOAL_SECONDARY) == 0)
+        {
+            // check if primary or secomndary goal
+            const bool primary = line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_GOAL_PRIMARY) == 0;
 
             if(primary)
-                ss.ignore(lenTagGoalPrimary);
+                ss.ignore(LEN_SIMPLE_TAG);
             else
-                ss.ignore(lenTagGoalSecondary);
+                ss.ignore(LEN_SIMPLE_TAG);
 
             // goal type
-            unsigned int gt;
+            unsigned int gt = MISSION_UNKNOWN;
             ss >> gt;
             auto type = static_cast<MissionGoalType>(gt);
 
@@ -111,27 +126,59 @@ void MapLoader::ReadBaseData(std::fstream & fs)
         {
             ss.ignore(lenTagMapSize);
             ss >> mRows >> mCols;
-
-            // READ BASE MAP
-            for(unsigned int r = 0; r < mRows; ++r)
-            {
-                std::getline(fs, line);
-                ss.clear();
-                ss.str(line);
-
-                for(unsigned int c = 0; c < mCols; ++c)
-                {
-                    unsigned int type;
-                    ss >> type;
-
-                    mCellTypes.push_back(type);
-                }
-            }
         }
-        else if(line.compare(0, lenTagEndBaseData, MAP_TAG_END_BASE_DATA) == 0)
+        else if(line.compare(0, lenTagEndHeader, MAP_TAG_END_HEADER) == 0)
             break;
     }
 }
+
+void MapLoader::ReadMap(std::fstream & fs)
+{
+    const unsigned int lenTagEndMap = MAP_TAG_END_MAP.length();
+
+    std::string line;
+    std::istringstream ss;
+
+    unsigned int rows = 0;
+
+    // READ MAP
+    while(std::getline(fs, line))
+    {
+        // skip comments
+        if(!line.empty() && line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_COMMENT) == 0)
+            continue;
+
+        // exit when read end tag
+        if(line.compare(0, lenTagEndMap, MAP_TAG_END_MAP) == 0)
+            break;
+
+        // good row
+        ++rows;
+
+        // reading too may rows !?
+        if(rows > mRows)
+        {
+#ifdef DEV_MODE
+            std::cout << "[WAR] rows (" << rows << ") are more than expected (" << mRows << ")"
+                      << std::endl;
+#endif
+            break;
+        }
+
+        ss.clear();
+        ss.str(line);
+
+        // parse row
+        for(unsigned int c = 0; c < mCols; ++c)
+        {
+            unsigned int type;
+            ss >> type;
+
+            mCellTypes.push_back(type);
+        }
+    }
+}
+
 
 void MapLoader::ReadObjectsData(std::fstream & fs)
 {
@@ -142,7 +189,7 @@ void MapLoader::ReadObjectsData(std::fstream & fs)
     while(std::getline(fs, line))
     {
         // skip comments
-        if(!line.empty() && '#' == line[0])
+        if(!line.empty() && line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_COMMENT) == 0)
             continue;
 
         ss.clear();

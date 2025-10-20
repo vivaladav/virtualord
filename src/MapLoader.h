@@ -13,6 +13,7 @@ class GameMap;
 class IsoMap;
 class MissionGoal;
 
+enum MissionCategory : unsigned int;
 enum MissionGoalType : unsigned int;
 
 // structure used to define GameObjects to create
@@ -32,9 +33,12 @@ public:
     static const std::string MAP_VERSION;
 
     // -- FILE TAGS --
+    static const std::string MAP_TAG_CATEGORY;
+    static const std::string MAP_TAG_COMMENT;
     static const std::string MAP_TAG_GOAL_PRIMARY;
     static const std::string MAP_TAG_GOAL_SECONDARY;
-    static const std::string MAP_TAG_END_BASE_DATA;
+    static const std::string MAP_TAG_END_HEADER;
+    static const std::string MAP_TAG_END_MAP;
     static const std::string MAP_TAG_MAP_SIZE;
     static const std::string MAP_TAG_VERSION;
 
@@ -48,31 +52,35 @@ public:
 
     const std::vector<MapObjectEntry> & GetObjectEntries() const;
 
+    // Mission data
+    MissionCategory GetMissionCategory();
     const std::vector<MissionGoal> & GetMissionGoals() const;
 
-    // Mission data
+    // TODO remove once goal logic is completed
     MissionGoalType GetMissionType() const;
     unsigned int GetMissionTime() const;
 
     void Clear();
 
-public:
     bool Load(const std::string & filename);
 
 private:
-    void ReadBaseData(std::fstream & fs);
+    void ReadHeader(std::fstream & fs);
+    void ReadMap(std::fstream & fs);
     void ReadObjectsData(std::fstream & fs);
 
 private:
     std::vector<MapObjectEntry> mObjEntries;
     std::vector<unsigned int> mCellTypes;
     std::vector<MissionGoal> mGoals;
+    MissionCategory mCategory;
 
     std::string mVer;
 
     unsigned int mRows = 0 ;
     unsigned int mCols = 0 ;
 
+    // TODO remove once goal logic is completed
     MissionGoalType mMissionType;
     unsigned int mMissionTime = 0;
 };
