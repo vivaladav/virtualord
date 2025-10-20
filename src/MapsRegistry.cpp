@@ -1,15 +1,17 @@
 #include "MapsRegistry.h"
 
 #include "GameConstants.h"
+#include "MapLoader.h"
 
 namespace game
 {
 
 constexpr int MAX_MAPS_PER_PLANET = 12;
 
+// == MAP DATA ==
 MapsRegistry::MapData::MapData(const std::string & file, int energy, int material, int diamonds,
                                int blobs, int size, int value, PlayerFaction occupier,
-                               TerritoryStatus status, MissionGoalType mission)
+                               TerritoryStatus status, MissionCategory mission)
     : mFile(file)
     , mEnergy(energy)
     , mMaterial(material)
@@ -23,6 +25,7 @@ MapsRegistry::MapData::MapData(const std::string & file, int energy, int materia
 {
 }
 
+// == MAPS REGISTRY ==
 bool MapsRegistry::CreatePlanet(unsigned int planetId)
 {
     // planet already added
@@ -37,14 +40,21 @@ bool MapsRegistry::CreatePlanet(unsigned int planetId)
 
 bool MapsRegistry::AddMap(unsigned int planetId, const std::string & file, int energy,
                           int material, int diamonds, int blobs, int size, int value,
-                          PlayerFaction occupier, TerritoryStatus status, MissionGoalType mission)
+                          PlayerFaction occupier, TerritoryStatus status)
 {
     // planet not found
     if(mData.find(planetId) == mData.end())
         return false;
 
-    mData[planetId].emplace_back(file, energy, material, diamonds,
-                                 blobs, size, value, occupier, status, mission);
+    // load data from header
+    MapLoader ml;
+    ml.LoadHeader(file);
+
+    const MissionCategory mission = ml.GetMissionCategory();
+
+    // store data
+    mData[planetId].emplace_back(file, energy, material, diamonds, blobs,
+                                 size, value, occupier, status, mission);
 
     return true;
 }
@@ -56,7 +66,7 @@ bool MapsRegistry::AddUnavailableMap(unsigned int planetId)
         return false;
 
     mData[planetId].emplace_back(std::string(), 0, 0, 0, 0, 0, 0,
-                                 NO_FACTION, TER_ST_UNAVAILABLE, MISSION_UNKNOWN);
+                                 NO_FACTION, TER_ST_UNAVAILABLE, MC_UNKNOWN);
 
     return true;
 }
@@ -187,7 +197,7 @@ TerritoryStatus MapsRegistry::GetMapStatus(unsigned int planetId, unsigned int i
     return TER_ST_UNKNOWN;
 }
 
-MissionGoalType MapsRegistry::GetMapMission(unsigned int planetId, unsigned int index) const
+MissionCategory MapsRegistry::GetMapMission(unsigned int planetId, unsigned int index) const
 {
     if(mData.find(planetId) != mData.end())
     {
@@ -197,7 +207,7 @@ MissionGoalType MapsRegistry::GetMapMission(unsigned int planetId, unsigned int 
             return data[index].mMission;
     }
 
-    return MISSION_UNKNOWN;
+    return MC_UNKNOWN;
 }
 
 void MapsRegistry::SetMapStatus(unsigned int planetId, unsigned int index, TerritoryStatus status)

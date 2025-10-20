@@ -42,6 +42,9 @@ enum MissionCategory : unsigned int
     MC_RESISTANCE,      // hold for some time
 
     NUM_MISSION_CATEGORIES,
+
+    MISSION_COMPLETED,
+
     MC_UNKNOWN
 };
 
@@ -59,8 +62,7 @@ enum MissionGoalType : unsigned int
 
     NUM_MISSION_GOALS,
 
-    MISSION_COMPLETED,
-    MISSION_UNKNOWN
+    MG_UNKNOWN
 };
 
 enum PlayerFaction : unsigned int
@@ -111,6 +113,7 @@ enum Planets : unsigned int
 };
 
 extern const char * FACTIONS_NAME[NUM_FACTIONS];
+extern const char * MISSION_CATEGORY_TITLE[NUM_MISSION_CATEGORIES];
 extern const char * MISSION_GOALS_TITLE[NUM_MISSION_GOALS];
 extern const char * PLANETS_NAME[NUM_PLANETS];
 

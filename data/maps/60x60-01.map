@@ -1,7 +1,8 @@
 # VERSION
 V 0.2.2
 # GOALS
-C 2
+C 5
+G 1 7 300
 G 1 2
 G 0 4 20000
 # MAP

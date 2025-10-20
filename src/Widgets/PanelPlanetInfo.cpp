@@ -24,7 +24,7 @@ PanelPlanetInfo::PanelPlanetInfo()
     : sgl::sgui::Widget(nullptr)
     , mOccupier(NO_FACTION)
     , mStatus(TER_ST_UNKNOWN)
-    , mMission(MISSION_UNKNOWN)
+    , mMission(MC_UNKNOWN)
 {
     using namespace sgl;
 
@@ -120,7 +120,7 @@ void PanelPlanetInfo::ClearData()
 }
 
 void PanelPlanetInfo::SetData(int size, TerritoryStatus status, PlayerFaction faction,
-                              unsigned int value, MissionGoalType mission)
+                              unsigned int value, MissionCategory mission)
 {
     const bool sizeChanged = size != mSize;
     const bool statusChanged = status != mStatus;
@@ -357,8 +357,8 @@ void PanelPlanetInfo::UpdateMissionType()
     graphic::Font * fntData = fm->GetFont(fileFont, WidgetsConstants::FontSizePlanetMapText,
                                          graphic::Font::NORMAL);
 
-    if(mMission < NUM_MISSION_GOALS)
-        mLabelMission = new graphic::Text(MISSION_GOALS_TITLE[mMission], fntData);
+    if(mMission < NUM_MISSION_CATEGORIES)
+        mLabelMission = new graphic::Text(MISSION_CATEGORY_TITLE[mMission], fntData);
     else if(MISSION_COMPLETED == mMission)
         mLabelMission = new graphic::Text("-", fntData);
     // UNKNOWN

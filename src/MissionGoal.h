@@ -15,6 +15,9 @@ public:
     MissionGoalType GetType() const;
     unsigned int GetQuantity() const;
 
+    void SetCompleted();
+
+    bool IsCompleted() const;
     bool IsPrimary() const;
 
 private:
@@ -25,6 +28,7 @@ private:
     MissionGoalType mType;
     unsigned int mQuantity;
 
+    bool mCompleted = false;
     bool mPrimary;
 };
 
@@ -32,6 +36,10 @@ inline unsigned int MissionGoal::GetId() const { return mId; }
 
 inline MissionGoalType MissionGoal::GetType() const { return mType; }
 inline unsigned int MissionGoal::GetQuantity() const { return mQuantity; }
+
+inline void MissionGoal::SetCompleted() { mCompleted = true; }
+
+inline bool MissionGoal::IsCompleted() const { return mCompleted; }
 
 inline bool MissionGoal::IsPrimary() const { return mPrimary; }
 
