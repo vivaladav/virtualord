@@ -43,6 +43,14 @@ MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool prima
 {
 }
 
+void MissionGoal::SetRewardCollected()
+{
+    if(mRewardCollected)
+        return ;
+
+    mRewardCollected = true;
+}
+
 std::string MissionGoal::GetDescription() const
 {
     if(mType == MG_UNKNOWN)

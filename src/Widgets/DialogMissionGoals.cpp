@@ -57,7 +57,7 @@ private:
     }
 };
 
-// ====== BUTTON CLOSE =====
+// ====== BUTTON END =====
 class ButtonEndMission : public sgl::sgui::ImageButton
 {
 public:
@@ -96,6 +96,66 @@ private:
             0xc3eeceff,
             0xc3eeceff
         };
+
+        SetLabelColor(colorsLabel[state]);
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::AbstractButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-02.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-02.ogg");
+    }
+};
+
+// ====== BUTTON COLLECT =====
+class ButtonCollect : public sgl::sgui::ImageButton
+{
+public:
+    ButtonCollect(sgl::sgui::Widget * parent)
+        : sgl::sgui::ImageButton({
+                                     ID_DLG_MGOALS_BTN_COLLECT_NORMAL,
+                                     ID_DLG_MGOALS_BTN_COLLECT_DISABLED,
+                                     ID_DLG_MGOALS_BTN_COLLECT_OVER,
+                                     ID_DLG_MGOALS_BTN_COLLECT_PUSHED,
+                                     ID_DLG_MGOALS_BTN_COLLECT_NORMAL
+                                 },
+                                 SpriteFileDialogMissionGoals, parent)
+    {
+        using namespace sgl;
+
+        auto fm = graphic::FontManager::Instance();
+        const char * fileFont = "Lato-Regular.ttf";
+        const int size = 18;
+
+        auto font = fm->GetFont(fileFont, size, graphic::Font::NORMAL);
+        SetLabelFont(font);
+
+        SetLabel("COLLECT");
+    }
+
+private:
+    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
+    {
+        sgl::sgui::ImageButton::OnStateChanged(state);
+
+        const unsigned int colorsLabel[NUM_VISUAL_STATES] =
+            {
+                0xc3dfeeff,
+                0x4d6673ff,
+                0xebf4f9ff,
+                0xc3dfeeff,
+                0xc3dfeeff
+            };
 
         SetLabelColor(colorsLabel[state]);
     }
@@ -290,10 +350,10 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     auto fm = graphic::FontManager::Instance();
     const char * fileFont = "Lato-Regular.ttf";
 
-    const int paddingL = 20;
+    const int paddingH = 20;
     const int paddingT = 10;
 
-    int contX = paddingL;
+    int contX = paddingH;
     int contY = paddingT;
 
     // body
@@ -360,13 +420,47 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     contX += labelHeader->GetWidth() + marginHeaderH;
 
-    labelData = new sgui::Label("?", font2, bg);
+    if(g.IsRewardCollected())
+        labelData = new sgui::Label("-", font2, bg);
+    else
+    {
+        labelData = new sgui::Label("TODO", font2, bg);
+    }
+
     labelData->SetColor(colorData);
     labelData->SetPosition(contX, contY);
 
+    // REWARD COLLECTION
+    const int paddingCenterToR = 120;
+
+    // collected -> label
+    if(g.IsRewardCollected())
+    {
+        const unsigned int colorCollected = 0x67e486ff;
+        const int sizeCollected = 22;
+        font = fm->GetFont(fileFont, sizeDesc, graphic::Font::NORMAL);
+
+        labelData = new sgui::Label("COLLECTED", font, bg);
+        labelData->SetColor(colorCollected);
+
+        contX = bg->GetWidth() - paddingCenterToR - (labelData->GetWidth() / 2);
+        contY = (bg->GetHeight() - labelData->GetHeight()) / 2;
+        labelData->SetPosition(contX, contY);
+    }
+    // not collected yet -> button
+    else
+    {
+        auto btn = new ButtonCollect(bg);
+
+        contX = bg->GetWidth() - paddingCenterToR - (btn->GetWidth() / 2);
+        contY = (bg->GetHeight() - btn->GetHeight()) / 2;
+        btn->SetPosition(contX, contY);
+
+        btn->SetEnabled(g.IsCompleted());
+    }
+
     return bg;
 }
-
 
 void DialogMissionGoals::HandlePositionChanged()
 {

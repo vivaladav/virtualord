@@ -30,20 +30,27 @@ public :
 public:
     MissionGoal(MissionGoalType type, unsigned int quantity, bool primary);
 
+    // ATTRIBUTES
     unsigned int GetId() const;
 
     MissionGoalType GetType() const;
     unsigned int GetQuantity() const;
 
+    bool IsPrimary() const;
+
+    // PROGRESS
     int GetProgress() const;
     bool IsProgressUnknown() const;
     void SetProgress(int p);
 
+    bool IsCompleted() const;
     void SetCompleted();
 
-    bool IsCompleted() const;
-    bool IsPrimary() const;
+    // REWARD
+    bool IsRewardCollected() const;
+    void SetRewardCollected();
 
+    // STRINGS
     std::string GetDescription() const;
 
 private:
@@ -62,14 +69,19 @@ private:
     int mProgress = PROGRESS_UNKNOWN;
 
     bool mCompleted = false;
+    bool mRewardCollected = false;
     bool mPrimary;
 };
 
+// ATTRIBUTES
 inline unsigned int MissionGoal::GetId() const { return mId; }
 
 inline MissionGoalType MissionGoal::GetType() const { return mType; }
 inline unsigned int MissionGoal::GetQuantity() const { return mQuantity; }
 
+inline bool MissionGoal::IsPrimary() const { return mPrimary; }
+
+// PROGRESS
 inline int MissionGoal::GetProgress() const { return mProgress; }
 inline bool MissionGoal::IsProgressUnknown() const { return mProgress == PROGRESS_UNKNOWN; }
 inline void MissionGoal::SetProgress(int p) { mProgress = p;  }
@@ -78,6 +90,7 @@ inline void MissionGoal::SetCompleted() { mCompleted = true; }
 
 inline bool MissionGoal::IsCompleted() const { return mCompleted; }
 
-inline bool MissionGoal::IsPrimary() const { return mPrimary; }
+// REWARD
+inline bool MissionGoal::IsRewardCollected() const { return mRewardCollected; }
 
 } // namespace game
