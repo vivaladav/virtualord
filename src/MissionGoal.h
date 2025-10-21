@@ -24,6 +24,9 @@ enum MissionGoalType : unsigned int
 
 class MissionGoal
 {
+public :
+    static const int PROGRESS_UNKNOWN = -1;
+
 public:
     MissionGoal(MissionGoalType type, unsigned int quantity, bool primary);
 
@@ -31,6 +34,10 @@ public:
 
     MissionGoalType GetType() const;
     unsigned int GetQuantity() const;
+
+    int GetProgress() const;
+    bool IsProgressUnknown() const;
+    void SetProgress(int p);
 
     void SetCompleted();
 
@@ -52,6 +59,8 @@ private:
     MissionGoalType mType;
     unsigned int mQuantity;
 
+    int mProgress = PROGRESS_UNKNOWN;
+
     bool mCompleted = false;
     bool mPrimary;
 };
@@ -60,6 +69,10 @@ inline unsigned int MissionGoal::GetId() const { return mId; }
 
 inline MissionGoalType MissionGoal::GetType() const { return mType; }
 inline unsigned int MissionGoal::GetQuantity() const { return mQuantity; }
+
+inline int MissionGoal::GetProgress() const { return mProgress; }
+inline bool MissionGoal::IsProgressUnknown() const { return mProgress == PROGRESS_UNKNOWN; }
+inline void MissionGoal::SetProgress(int p) { mProgress = p;  }
 
 inline void MissionGoal::SetCompleted() { mCompleted = true; }
 

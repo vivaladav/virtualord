@@ -75,9 +75,9 @@ public:
 
         auto fm = graphic::FontManager::Instance();
         const char * fileFont = "Lato-Regular.ttf";
-        const int sizeTitle = 18;
+        const int size = 18;
 
-        auto font = fm->GetFont(fileFont, sizeTitle, graphic::Font::NORMAL);
+        auto font = fm->GetFont(fileFont, size, graphic::Font::NORMAL);
         SetLabelFont(font);
 
         SetLabel("END MISSION");
@@ -299,7 +299,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     // body
     auto bg = new sgui::Image(texBg, this);
 
-    // checkbox
+    // CHECKBOX
     const int marginCheckboxR = 10;
 
     auto tm = graphic::TextureManager::Instance();
@@ -312,14 +312,57 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     contX += checkbox->GetWidth() + marginCheckboxR;
 
-    // description
+    // DESCRIPTION
     const int sizeDesc = 20;
-    const unsigned int colorDesc = 0x8cbfd9ff;
+    const unsigned int colorData = 0x8cbfd9ff;
 
     auto font = fm->GetFont(fileFont, sizeDesc, graphic::Font::NORMAL);
     auto labelDesc = new sgui::Label(g.GetDescription().c_str(), font, bg);
-    labelDesc->SetColor(colorDesc);
+    labelDesc->SetColor(colorData);
     labelDesc->SetPosition(contX, contY);
+
+    // PROGRESS
+    const int marginDescV = 10;
+    const int marginHeaderH = 30;
+    const int marginDataH = 100;
+
+    contY += labelDesc->GetHeight() + marginDescV;
+
+    const int size2 = 18;
+    const unsigned int colorHeader = 0xdbe9f0ff;
+
+    auto font2 = fm->GetFont(fileFont, size2, graphic::Font::NORMAL);
+    auto labelHeader = new sgui::Label("PROGRESS", font2, bg);
+    labelHeader->SetColor(colorHeader);
+    labelHeader->SetPosition(contX, contY);
+
+    contX += labelHeader->GetWidth() + marginHeaderH;
+
+    std::ostringstream os;
+
+    if(g.IsCompleted())
+        os << "100%";
+    else if(g.IsProgressUnknown())
+        os << "?";
+    else
+        os << g.GetProgress() << "%";
+
+    auto labelData = new sgui::Label(os.str().c_str(), font2, bg);
+    labelData->SetColor(colorData);
+    labelData->SetPosition(contX, contY);
+
+    contX += labelData->GetWidth() + marginDataH;
+
+    // REWARD
+    labelHeader = new sgui::Label("REWARD", font2, bg);
+    labelHeader->SetColor(colorHeader);
+    labelHeader->SetPosition(contX, contY);
+
+    contX += labelHeader->GetWidth() + marginHeaderH;
+
+    labelData = new sgui::Label("?", font2, bg);
+    labelData->SetColor(colorData);
+    labelData->SetPosition(contX, contY);
 
     return bg;
 }
