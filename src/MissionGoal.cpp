@@ -39,6 +39,7 @@ MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool prima
     : mId(++num)
     , mType(type)
     , mQuantity(quantity)
+    , mRewards({})
     , mPrimary(primary)
 {
 }
@@ -49,6 +50,8 @@ void MissionGoal::SetRewardCollected()
         return ;
 
     mRewardCollected = true;
+
+    mRewards = {};
 }
 
 std::string MissionGoal::GetDescription() const

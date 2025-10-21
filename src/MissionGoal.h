@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <string>
 
 namespace game
@@ -20,6 +21,17 @@ enum MissionGoalType : unsigned int
     NUM_MISSION_GOALS,
 
     MG_UNKNOWN
+};
+
+enum MissionReward : unsigned int
+{
+    MR_BLOBS,
+    MR_DIAMONDS,
+    MR_ENERGY,
+    MR_MATERIAL,
+    MR_MONEY,
+
+    NUM_MISSION_REWARDS
 };
 
 class MissionGoal
@@ -49,6 +61,8 @@ public:
     // REWARD
     bool IsRewardCollected() const;
     void SetRewardCollected();
+    int GetRewardByType(MissionReward r) const;
+    void SetRewardByType(MissionReward r, int val);
 
     // STRINGS
     std::string GetDescription() const;
@@ -67,6 +81,8 @@ private:
     unsigned int mQuantity;
 
     int mProgress = PROGRESS_UNKNOWN;
+
+    std::array<int, NUM_MISSION_REWARDS> mRewards;
 
     bool mCompleted = false;
     bool mRewardCollected = false;
@@ -92,5 +108,19 @@ inline bool MissionGoal::IsCompleted() const { return mCompleted; }
 
 // REWARD
 inline bool MissionGoal::IsRewardCollected() const { return mRewardCollected; }
+
+inline int MissionGoal::GetRewardByType(MissionReward r) const
+{
+    if(r < NUM_MISSION_REWARDS)
+        return mRewards[r];
+    else
+        return 0;
+}
+
+inline void MissionGoal::SetRewardByType(MissionReward r, int val)
+{
+    if(r < NUM_MISSION_REWARDS)
+        mRewards[r] = val;
+}
 
 } // namespace game

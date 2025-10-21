@@ -171,6 +171,10 @@ private:
 
     void UpdateCurrentCell();
 
+    // MISSION GOALS
+    void SetMissionRewards();
+
+    // TURN
     void EndTurn();
 
     // SFX

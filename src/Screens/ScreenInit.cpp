@@ -371,6 +371,13 @@ void ScreenInit::SetupTextures()
             { 1201, 237, 24, 24 },
             { 1201, 262, 24, 24 },
             { 1201, 287, 24, 24 },
+
+            // ICONS REWARD
+            { 1226, 237, 24, 24},
+            { 1226, 262, 24, 24},
+            { 1226, 287, 24, 24},
+            { 1251, 237, 24, 24},
+            { 1251, 262, 24, 24},
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogMissionGoals, rects);

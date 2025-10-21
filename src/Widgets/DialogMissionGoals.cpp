@@ -17,6 +17,7 @@
 #include <sgl/sgui/Label.h>
 
 #include <cmath>
+#include <iomanip>
 #include <sstream>
 
 namespace game
@@ -383,7 +384,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     // PROGRESS
     const int marginDescV = 10;
-    const int marginHeaderH = 30;
+    const int marginHeaderH = 20;
     const int marginDataH = 100;
 
     contY += labelDesc->GetHeight() + marginDescV;
@@ -420,15 +421,62 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     contX += labelHeader->GetWidth() + marginHeaderH;
 
+    // collected
     if(g.IsRewardCollected())
+    {
         labelData = new sgui::Label("-", font2, bg);
+        labelData->SetColor(colorData);
+        labelData->SetPosition(contX, contY);
+    }
+    // not collected yet
     else
     {
-        labelData = new sgui::Label("TODO", font2, bg);
-    }
+        const int rewardMargin = 5;
+        const int rewardMarginIcon = 30;
 
-    labelData->SetColor(colorData);
-    labelData->SetPosition(contX, contY);
+        const unsigned int iconIds[NUM_MISSION_REWARDS] =
+        {
+            ID_DLG_MGOALS_ICON_BLOBS,
+            ID_DLG_MGOALS_ICON_DIAMONDS,
+            ID_DLG_MGOALS_ICON_ENERGY,
+            ID_DLG_MGOALS_ICON_MATERIAL,
+            ID_DLG_MGOALS_ICON_MONEY,
+        };
+
+        for(unsigned int r = 0; r < NUM_MISSION_REWARDS; ++r)
+        {
+            const int reward = g.GetRewardByType(static_cast<MissionReward>(r));
+
+            // no reward for this type
+            if(reward <= 0)
+                continue;
+
+            os.clear();
+            os.str(std::string());
+
+            if(reward > 1000)
+            {
+                float val = static_cast<float>(reward) / 1000.f;
+
+                os << std::setprecision(2) << val << "K";
+            }
+            else
+                os << reward;
+
+            labelData = new sgui::Label(os.str().c_str(), font2, bg);
+            labelData->SetColor(colorData);
+            labelData->SetPosition(contX, contY);
+
+            contX += labelData->GetWidth() + rewardMargin;
+
+            auto texIcon = tm->GetSprite(SpriteFileDialogMissionGoals, iconIds[r]);
+            auto icon = new sgui::Image(texIcon, bg);
+            icon->SetPosition(contX, contY + ((labelData->GetHeight() - icon->GetHeight()) / 2));
+
+            contX += icon->GetWidth() + rewardMarginIcon;
+
+        }
+    }
 
     // REWARD COLLECTION
     const int paddingCenterToR = 120;

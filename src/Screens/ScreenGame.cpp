@@ -838,6 +838,7 @@ void ScreenGame::LoadMapFile()
 
     // get mission data
     mMissionGoals = ml.GetMissionGoals();
+    SetMissionRewards();
 }
 
 void ScreenGame::OnKeyDown(sgl::core::KeyboardEvent & event)
@@ -3191,6 +3192,117 @@ void ScreenGame::UpdateCurrentCell()
 
     if(sel != nullptr && sel->GetObjectCategory() == GameObject::CAT_UNIT)
         ShowActiveIndicators(static_cast<Unit *>(sel), cell);
+}
+
+void ScreenGame::SetMissionRewards()
+{
+    for(MissionGoal & g : mMissionGoals)
+    {
+        switch (g.GetType())
+        {
+            case MG_COLLECT_BLOBS:
+            {
+                const int divDiamonds = 10;
+                const int diamonds = g.GetQuantity() / divDiamonds;
+                g.SetRewardByType(MR_DIAMONDS, diamonds);
+
+                const int multMoney = 5;
+                const int money = g.GetQuantity() * multMoney;
+                g.SetRewardByType(MR_MONEY, money);
+            }
+            break;
+
+            case MG_COLLECT_DIAMONDS:
+            {
+                const int divBlobs = 10;
+                const int blobs = g.GetQuantity() / divBlobs;
+                g.SetRewardByType(MR_BLOBS, blobs);
+
+                const int multMoney = 5;
+                const int money = g.GetQuantity() * multMoney;
+                g.SetRewardByType(MR_MONEY, money);
+            }
+            break;
+
+            case MG_DESTROY_ENEMY_BASE:
+            {
+                const int money = 10000;
+
+                g.SetRewardByType(MR_MONEY, money);
+            }
+            break;
+
+            case MG_DESTROY_ALL_ENEMIES:
+            {
+                const int money = 15000;
+
+                g.SetRewardByType(MR_MONEY, money);
+            }
+            break;
+
+            case MG_GAIN_MONEY:
+            {
+                const int divBlobs = 100;
+                const int blobs = g.GetQuantity() / divBlobs;
+                g.SetRewardByType(MR_BLOBS, blobs);
+
+                const int divDiamonds = 100;
+                const int diamonds = g.GetQuantity() / divDiamonds;
+                g.SetRewardByType(MR_DIAMONDS, diamonds);
+
+                const int divEnergy = 50;
+                const int energy = g.GetQuantity() / divEnergy;
+                g.SetRewardByType(MR_ENERGY, energy);
+
+                const int divMaterial = 10;
+                const int material = g.GetQuantity() / divMaterial;
+                g.SetRewardByType(MR_MATERIAL, material);
+            }
+            break;
+
+            case MG_MINE_MATERIAL:
+            {
+                const int divEnergy = 10;
+                const int energy = g.GetQuantity() / divEnergy;
+                g.SetRewardByType(MR_ENERGY, energy);
+
+                const int divMoney = 2;
+                const int money = g.GetQuantity() / divMoney;
+                g.SetRewardByType(MR_MONEY, money);
+            }
+            break;
+
+            case MG_MINE_ENERGY:
+            {
+                const int divMaterial = 10;
+                const int material = g.GetQuantity() / divMaterial;
+                g.SetRewardByType(MR_MATERIAL, material);
+
+                const int divMoney = 2;
+                const int money = g.GetQuantity() / divMoney;
+                g.SetRewardByType(MR_MONEY, money);
+            }
+            break;
+
+            case MG_RESIST_TIME:
+            {
+                const int blobs = g.GetQuantity();
+                g.SetRewardByType(MR_BLOBS, blobs);
+
+                const int diamonds = g.GetQuantity();
+                g.SetRewardByType(MR_DIAMONDS, diamonds);
+
+                const int multMoney = 100;
+                const int money = g.GetQuantity() * multMoney;
+                g.SetRewardByType(MR_MONEY, money);
+            }
+            break;
+
+            default:
+                std::cout << "[WAR] Mission Goal type unknown: " << g.GetType() << std::endl;
+            break;
+        }
+    }
 }
 
 void ScreenGame::EndTurn()
