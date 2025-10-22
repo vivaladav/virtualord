@@ -346,6 +346,11 @@ void DialogMissionGoals::SetFunctionOnClose(const std::function<void()> & f)
     mBtnClose->AddOnClickFunction(f);
 }
 
+void DialogMissionGoals::SetFunctionOnEnd(const std::function<void()> & f)
+{
+    mBtnEnd->AddOnClickFunction(f);
+}
+
 sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
                                                         sgl::graphic::Texture * texBg)
 {

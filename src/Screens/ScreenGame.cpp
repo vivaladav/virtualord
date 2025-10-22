@@ -1731,15 +1731,11 @@ void ScreenGame::HandleGameOver()
     }
 
     // assign territory to winner
-    AssignWinningResources(mAiPlayers[winner]);
     AssignMapToFaction(mAiPlayers[winner]->GetFaction());
 }
 
 void ScreenGame::HandleGameWon()
 {
-    Game * game = GetGame();
-
-    AssignWinningResources(mLocalPlayer);
     AssignMapToFaction(mLocalPlayer->GetFaction());
 }
 
@@ -1758,54 +1754,6 @@ void ScreenGame::AssignMapToFaction(PlayerFaction faction)
         mapReg->SetMapMissionCompleted(planet, territory);
 
     game->RequestNextActiveState(StateId::PLANET_MAP);
-}
-
-void ScreenGame::AssignWinningResources(Player * player)
-{
-    const std::vector<GameObject *> & objs = mGameMap->GetObjects();
-
-    const int bonusEnergy = 10;
-    const int bonusMaterial = 25;
-    const int bonusBlobs = 1;
-    const int bonusDiamonds = 1;
-
-    int energy = 0;
-    int material = 0;
-    int blobs = 0;
-    int diamonds = 0;
-
-    // assign energy and material
-    for(GameObject * obj : objs)
-    {
-        const GameObjectTypeId type = obj->GetObjectType();
-
-        if(type == GameObject::TYPE_RES_GEN_ENERGY)
-            energy += bonusEnergy;
-        else if(type == GameObject::TYPE_RES_GEN_MATERIAL)
-            material += bonusMaterial;
-    }
-
-    player->SumResource(Player::ENERGY, energy);
-    player->SumResource(Player::MATERIAL, material);
-
-    // assign blobs and diamonds
-    const std::vector<GameMapCell> & cells = mGameMap->GetCells();
-    const unsigned int rows = mGameMap->GetNumRows();
-    const unsigned int cols = mGameMap->GetNumCols();
-
-    for(const GameMapCell & cell : cells)
-    {
-        const CellTypes t = cell.basicType;
-
-        // create collectable generators
-        if(t == BLOBS_SOURCE)
-            blobs += bonusBlobs;
-        else if(t == DIAMONDS_SOURCE)
-            diamonds += bonusDiamonds;
-    }
-
-    player->SumResource(Player::BLOBS, blobs);
-    player->SumResource(Player::DIAMONDS, diamonds);
 }
 
 bool ScreenGame::CheckGameOverForLocalPlayer()

@@ -29,6 +29,7 @@ public:
     DialogMissionGoals(ScreenGame * screen);
 
     void SetFunctionOnClose(const std::function<void()> & f);
+    void SetFunctionOnEnd(const std::function<void()> & f);
 
 private:
     sgl::sgui::Widget * CreateGoalEntry(unsigned int goalInd, sgl::graphic::Texture * texBg);

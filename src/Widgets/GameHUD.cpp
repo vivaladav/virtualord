@@ -248,6 +248,19 @@ void GameHUD::ShowDialogMissionGoals()
         HideDialogMissionGoals();
     });
 
+    mDialogMissionGoals->SetFunctionOnEnd([this]
+    {
+        // hide dialog
+        mDialogMissionGoals->SetVisible(false);
+
+        // schedule dialog deletion
+        mDialogMissionGoals->DeleteLater();
+        mDialogMissionGoals = nullptr;
+
+        // show dialog game won
+        ShowDialogEndMission(true);
+    });
+
     TemporaryCloseSidePanels();
 
     // position dialog

@@ -130,7 +130,6 @@ private:
     void HandleGameOver();
     void HandleGameWon();
     void AssignMapToFaction(PlayerFaction faction);
-    void AssignWinningResources(Player * player);
     bool CheckGameOverForLocalPlayer();
 
     int CellToIndex(const Cell2D & cell) const;
