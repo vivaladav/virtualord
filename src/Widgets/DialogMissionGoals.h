@@ -11,11 +11,8 @@ namespace sgl
         class Image;
         class Texture;
     }
-    namespace sgui
-    {
-        class AbstractButton;
-        class Label;
-    }
+
+    namespace sgui { class AbstractButton; }
 }
 
 namespace game
@@ -47,8 +44,6 @@ private:
 
     sgl::sgui::AbstractButton * mBtnClose = nullptr;
     sgl::sgui::AbstractButton * mBtnEnd = nullptr;
-
-    sgl::sgui::Label * mTitle = nullptr;
 
     ScreenGame * mScreen = nullptr;
 };

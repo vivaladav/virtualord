@@ -271,11 +271,11 @@ DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
     const int marginTitleT = 14;
 
     auto font = fm->GetFont(fileFont, sizeTitle, graphic::Font::NORMAL);
-    mTitle = new sgui::Label("MISSION GOALS", font, this);
-    mTitle->SetColor(colorTitle);
+    auto title = new sgui::Label("MISSION GOALS", font, this);
+    title->SetColor(colorTitle);
 
-    const int titleX = (w - mTitle->GetWidth()) / 2;
-    mTitle->SetPosition(titleX, marginTitleT);
+    const int titleX = (w - title->GetWidth()) / 2;
+    title->SetPosition(titleX, marginTitleT);
 
     int contentX = marginL;
     int contentY = mBgTop->GetHeight();
