@@ -987,15 +987,15 @@ void ScreenGame::UpdateAI(float delta)
         return ;
 
     std::cout << "\n----- ScreenGame::UpdateAI " << turnAI << " -----\n"
-              << "MONEY: " << player->GetStat(Player::MONEY).GetIntValue()
-              << " - ENERGY: " << player->GetStat(Player::ENERGY).GetIntValue() << " / "
-              << player->GetStat(Player::ENERGY).GetIntMax()
-              << " - MATERIAL: " << player->GetStat(Player::MATERIAL).GetIntValue() << "/"
-              << player->GetStat(Player::MATERIAL).GetIntMax()
-              << " - BLOBS: " << player->GetStat(Player::BLOBS).GetIntValue() << "/"
-              << player->GetStat(Player::BLOBS).GetIntMax()
-              << " - DIAMONDS: " << player->GetStat(Player::DIAMONDS).GetIntValue() << "/"
-              << player->GetStat(Player::DIAMONDS).GetIntMax()
+              << "MONEY: " << player->GetStat(Player::MONEY).GetValue()
+              << " - ENERGY: " << player->GetStat(Player::ENERGY).GetValue() << " / "
+              << player->GetStat(Player::ENERGY).GetMax()
+              << " - MATERIAL: " << player->GetStat(Player::MATERIAL).GetValue() << "/"
+              << player->GetStat(Player::MATERIAL).GetMax()
+              << " - BLOBS: " << player->GetStat(Player::BLOBS).GetValue() << "/"
+              << player->GetStat(Player::BLOBS).GetMax()
+              << " - DIAMONDS: " << player->GetStat(Player::DIAMONDS).GetValue() << "/"
+              << player->GetStat(Player::DIAMONDS).GetMax()
               << std::endl;
 
     // no more turn energy -> end turn

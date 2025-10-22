@@ -51,7 +51,7 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     const StatValue & money = player->GetStat(st);
     tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_MONEY);
     auto srd = new SimpleResourceDisplay(tex, numDigitsMoney, this);
-    srd->SetValue(money.GetIntValue());
+    srd->SetValue(money.GetValue());
     srd->SetPosition(slotX + (slotW - srd->GetWidth()) * 0.5f, (GetHeight() - srd->GetHeight()) * 0.5f);
 
     if(mGameMap)
@@ -68,9 +68,9 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     else
         AssignSimpleTooltip(srd, "MONEY");
 
-    mCallbackValIds[st] = player->AddOnResourceChanged(st, [srd](const StatValue * val)
+    mCallbackValIds[st] = player->AddOnResourceChanged(st, [srd](const StatValue *, int, int newVal)
     {
-        srd->SetValue(val->GetIntValue());
+        srd->SetValue(newVal);
     });
 
     slotX += slotW;
@@ -80,8 +80,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     const StatValue & energy = player->GetStat(st);
     tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_ENERGY);
     auto rd = new ResourceDisplay(tex, numDigits, this);
-    rd->SetValueMinMax(energy.GetIntMin(), energy.GetIntMax());
-    rd->SetValue(energy.GetIntValue());
+    rd->SetValueMinMax(energy.GetMin(), energy.GetMax());
+    rd->SetValue(energy.GetValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
     if(mGameMap)
@@ -98,13 +98,13 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     else
         AssignSimpleTooltip(rd, "ENERGY");
 
-    mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
+    mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue *, int, int newVal)
     {
-        rd->SetValue(val->GetIntValue());
+        rd->SetValue(newVal);
     });
     mCallbackRangeIds[st] = player->AddOnResourceRangeChanged(st, [rd](const StatValue * val)
     {
-        rd->SetValueMinMax(val->GetIntMin(), val->GetIntMax());
+        rd->SetValueMinMax(val->GetMin(), val->GetMax());
     });
 
     slotX += slotW;
@@ -114,8 +114,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     const StatValue & material = player->GetStat(st);
     tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_MATERIAL);
     rd = new ResourceDisplay(tex, numDigits, this);
-    rd->SetValueMinMax(material.GetIntMin(), material.GetIntMax());
-    rd->SetValue(material.GetIntValue());
+    rd->SetValueMinMax(material.GetMin(), material.GetMax());
+    rd->SetValue(material.GetValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
     if(mGameMap)
@@ -132,13 +132,13 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     else
         AssignSimpleTooltip(rd, "MATERIAL");
 
-    mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
+    mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue *, int, int newVal)
     {
-        rd->SetValue(val->GetIntValue());
+        rd->SetValue(newVal);
     });
     mCallbackRangeIds[st] = player->AddOnResourceRangeChanged(st, [rd](const StatValue * val)
     {
-        rd->SetValueMinMax(val->GetIntMin(), val->GetIntMax());
+        rd->SetValueMinMax(val->GetMin(), val->GetMax());
     });
 
     slotX += slotW;
@@ -148,8 +148,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     const StatValue & diamonds = player->GetStat(st);
     tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_DIAMOND);
     rd = new ResourceDisplay(tex, numDigits, this);
-    rd->SetValueMinMax(diamonds.GetIntMin(), diamonds.GetIntMax());
-    rd->SetValue(diamonds.GetIntValue());
+    rd->SetValueMinMax(diamonds.GetMin(), diamonds.GetMax());
+    rd->SetValue(diamonds.GetValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
     if(mGameMap)
@@ -166,13 +166,13 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     else
         AssignSimpleTooltip(rd, "DIAMONDS");
 
-    mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
+    mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue *, int, int newVal)
     {
-        rd->SetValue(val->GetIntValue());
+        rd->SetValue(newVal);
     });
     mCallbackRangeIds[st] = player->AddOnResourceRangeChanged(st, [rd](const StatValue * val)
     {
-        rd->SetValueMinMax(val->GetIntMin(), val->GetIntMax());
+        rd->SetValueMinMax(val->GetMin(), val->GetMax());
     });
 
     slotX += slotW;
@@ -182,8 +182,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     const StatValue & blobs = player->GetStat(st);
     tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_BLOB);
     rd = new ResourceDisplay(tex, numDigits, this);
-    rd->SetValueMinMax(blobs.GetIntMin(), blobs.GetIntMax());
-    rd->SetValue(blobs.GetIntValue());
+    rd->SetValueMinMax(blobs.GetMin(), blobs.GetMax());
+    rd->SetValue(blobs.GetValue());
     rd->SetPosition(slotX + (slotW - rd->GetWidth()) * 0.5f, (GetHeight() - rd->GetHeight()) * 0.5f);
 
     if(mGameMap)
@@ -200,13 +200,13 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     else
         AssignSimpleTooltip(rd, "BLOBS");
 
-    mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val)
+    mCallbackValIds[st] = player->AddOnResourceChanged(st, [rd](const StatValue * val, int, int newVal)
     {
-        rd->SetValue(val->GetIntValue());
+        rd->SetValue(newVal);
     });
     mCallbackRangeIds[st] = player->AddOnResourceRangeChanged(st, [rd](const StatValue * val)
     {
-        rd->SetValueMinMax(val->GetIntMin(), val->GetIntMax());
+        rd->SetValueMinMax(val->GetMin(), val->GetMax());
     });
 }
 

@@ -92,7 +92,8 @@ public:
     void SetResourceMax(Stat sid, int val);
     void SumResourceMax(Stat sid, int val);
     void SetOnResourcesChanged(const std::function<void()> & f);
-    unsigned int AddOnResourceChanged(Stat sid, const std::function<void(const StatValue *)> & f);
+    unsigned int AddOnResourceChanged(Stat sid, const std::function<void(const StatValue *,
+                                                                         int, int)> & f);
     unsigned int AddOnResourceRangeChanged(Stat sid, const std::function<void(const StatValue *)> & f);
     void RemoveOnResourceChanged(Stat sid, unsigned int funId);
     void RemoveOnResourceRangeChanged(Stat sid, unsigned int funId);
@@ -247,7 +248,7 @@ inline const StatValue & Player::GetStat(Stat sid)
 inline bool Player::HasEnough(Stat sid, int val)
 {
     if(sid < NUM_PSTATS)
-        return val <= mStats[sid].GetIntValue();
+        return val <= mStats[sid].GetValue();
     else
         return false;
 }

@@ -265,7 +265,7 @@ void Player::SumResourceMax(Stat sid, int val)
     if(sid >= NUM_PSTATS)
         return ;
 
-    const int max = mStats[sid].GetIntMax();
+    const int max = mStats[sid].GetMax();
     int newMax = max + val;
 
     if(newMax < 0)
@@ -274,7 +274,8 @@ void Player::SumResourceMax(Stat sid, int val)
     mStats[sid].SetMax(newMax);
 }
 
-unsigned int Player::AddOnResourceChanged(Stat sid, const std::function<void(const StatValue *)> & f)
+unsigned int Player::AddOnResourceChanged(Stat sid, const std::function<void (const StatValue *,
+                                                                              int, int)> & f)
 {
     if(sid >= NUM_PSTATS)
         return 0;

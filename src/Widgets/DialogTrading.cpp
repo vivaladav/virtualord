@@ -298,7 +298,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddResBlock(dbX0, dbY0, RES_ENERGY, fontData);
 
     auto st = Player::Stat::ENERGY;
-    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val)
+    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
     {
         UpdateStockLabel(val->GetId());
     });
@@ -307,7 +307,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddResBlock(dbX0, dbY1, RES_MATERIAL1, fontData);
 
     st = Player::Stat::MATERIAL;
-    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val)
+    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
     {
         UpdateStockLabel(val->GetId());
     });
@@ -316,7 +316,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddResBlock(dbX0, dbY2, RES_BLOBS, fontData);
 
     st = Player::Stat::BLOBS;
-    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val)
+    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
     {
         UpdateStockLabel(val->GetId());
     });
@@ -325,7 +325,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddResBlock(dbX0, dbY3, RES_DIAMONDS, fontData);
 
     st = Player::Stat::DIAMONDS;
-    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val)
+    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
     {
         UpdateStockLabel(val->GetId());
     });
@@ -511,7 +511,7 @@ void DialogTrading::AddStockBlock(int x0, int y0, int bW, ResourceType res, sgl:
     const StatValue & s = mPlayer->GetStat(stats[res]);
 
     std::ostringstream ss;
-    ss << s.GetIntValue() << " / " << s.GetIntMax();
+    ss << s.GetValue() << " / " << s.GetMax();
 
     auto label = new sgui::Label(ss.str().c_str(), font, this);
     label->SetColor(colorData);
@@ -712,8 +712,8 @@ void DialogTrading::IncBuyQuantity(ResourceType res, sgl::sgui::Label * label)
     };
 
     const StatValue & s = mPlayer->GetStat(stats[res]);
-    const int capacity = s.GetIntMax();
-    const int owned = s.GetIntValue();
+    const int capacity = s.GetMax();
+    const int owned = s.GetValue();
 
     // no more capacity to buy
     if(owned == capacity)
@@ -722,7 +722,7 @@ void DialogTrading::IncBuyQuantity(ResourceType res, sgl::sgui::Label * label)
     const int price = mGame->GetResourcePriceBuy(res);
     const int currSpend = GetCurrentSpend();
     const int spend = currSpend + (incBuy * price);
-    const int money = mPlayer->GetStat(Player::Stat::MONEY).GetIntValue();
+    const int money = mPlayer->GetStat(Player::Stat::MONEY).GetValue();
 
     int inc = incBuy;
 
@@ -779,7 +779,7 @@ void DialogTrading::IncSellQuantity(ResourceType res, sgl::sgui::Label * label)
         Player::BLOBS,
     };
 
-    const int owned = mPlayer->GetStat(stats[res]).GetIntValue();
+    const int owned = mPlayer->GetStat(stats[res]).GetValue();
 
     if(0 == owned)
         return ;
@@ -841,7 +841,7 @@ void DialogTrading::UpdateStockLabel(unsigned int statId)
 
     // update text
     std::ostringstream ss;
-    ss << s.GetIntValue() << " / " << s.GetIntMax();
+    ss << s.GetValue() << " / " << s.GetMax();
 
     label->SetText(ss.str().c_str());
 
@@ -858,7 +858,7 @@ void DialogTrading::Buy()
 {
     // spend money
     const int spend = GetCurrentSpend();
-    const int money = mPlayer->GetStat(Player::Stat::MONEY).GetIntValue();
+    const int money = mPlayer->GetStat(Player::Stat::MONEY).GetValue();
 
     if(money < spend || spend == 0)
         return ;
@@ -893,7 +893,7 @@ void DialogTrading::Sell()
 
     for(unsigned int i = 0; i < NUM_RESOURCES; ++i)
     {
-        if(mSell[i] > mPlayer->GetStat(stats[i]).GetIntValue())
+        if(mSell[i] > mPlayer->GetStat(stats[i]).GetValue())
             return ;
     }
 

@@ -1173,30 +1173,30 @@ void GameMap::HandleTempleExplorationOutcome(unsigned int outcome, Player * p, T
             case Temple::EXP_REW_MULT10_MONEY:
             {
                 const int mult = 10;
-                p->SetResource(Player::Stat::MONEY, money.GetIntValue() * mult);
+                p->SetResource(Player::Stat::MONEY, money.GetValue() * mult);
             }
             break;
 
             case Temple::EXP_REW_MAX_RES_ENE_MAT:
             {
-                p->SetResource(Player::Stat::ENERGY, energy.GetIntMax());
-                p->SetResource(Player::Stat::MATERIAL, material.GetIntMax());
+                p->SetResource(Player::Stat::ENERGY, energy.GetMax());
+                p->SetResource(Player::Stat::MATERIAL, material.GetMax());
             }
             break;
 
             case Temple::EXP_REW_MAX_RES_BLO_DIA:
             {
-                p->SetResource(Player::Stat::BLOBS, blobs.GetIntMax());
-                p->SetResource(Player::Stat::DIAMONDS, diamonds.GetIntMax());
+                p->SetResource(Player::Stat::BLOBS, blobs.GetMax());
+                p->SetResource(Player::Stat::DIAMONDS, diamonds.GetMax());
             }
             break;
 
             case Temple::EXP_REW_MAX_RESOURCES:
             {
-                p->SetResource(Player::Stat::ENERGY, energy.GetIntMax());
-                p->SetResource(Player::Stat::MATERIAL, material.GetIntMax());
-                p->SetResource(Player::Stat::BLOBS, blobs.GetIntMax());
-                p->SetResource(Player::Stat::DIAMONDS, diamonds.GetIntMax());
+                p->SetResource(Player::Stat::ENERGY, energy.GetMax());
+                p->SetResource(Player::Stat::MATERIAL, material.GetMax());
+                p->SetResource(Player::Stat::BLOBS, blobs.GetMax());
+                p->SetResource(Player::Stat::DIAMONDS, diamonds.GetMax());
             }
             break;
 
