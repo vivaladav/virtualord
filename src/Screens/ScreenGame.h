@@ -96,6 +96,8 @@ public:
     bool GetPaused() const;
     void SetPause(bool paused);
 
+    // MISSION GOALS
+    const std::vector<MissionGoal> & GetMissionGoals() const;
     void CollectMissionGoalReward(unsigned int index);
 
     // TURN SYSTEM
@@ -255,6 +257,11 @@ inline void ScreenGame::SetObjectActionFailed(GameObject * obj)
 inline GameHUD * ScreenGame::GetHUD() const { return mHUD; }
 
 inline bool ScreenGame::GetPaused() const { return mPaused; }
+
+inline const std::vector<MissionGoal> & ScreenGame::GetMissionGoals() const
+{
+    return mMissionGoals;
+}
 
 inline bool ScreenGame::IsCurrentTurnLocal() const { return mActivePlayerIdx == 0; }
 

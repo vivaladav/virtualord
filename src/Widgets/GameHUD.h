@@ -55,7 +55,7 @@ public:
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
 
-    void ShowDialogMissionGoals(const std::vector<MissionGoal> & goals);
+    void ShowDialogMissionGoals();
     void HideDialogMissionGoals();
 
     void ShowDialogEndMission(bool won);

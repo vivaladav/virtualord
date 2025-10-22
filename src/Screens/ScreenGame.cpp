@@ -585,7 +585,7 @@ void ScreenGame::CreateUI()
     panelObjActions->SetButtonFunction(PanelObjectActions::BTN_MISSION_GOALS,
     [this, panelObjActions]
     {
-        mHUD->ShowDialogMissionGoals(mMissionGoals);
+        mHUD->ShowDialogMissionGoals();
     });
 
     // UNIT ACTIONS

@@ -1,5 +1,6 @@
 #include "Widgets/DialogMissionGoals.h"
 
+#include "MissionGoal.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/GameUIData.h"
 
@@ -179,11 +180,12 @@ private:
 };
 
 // ===== DIALOG =====
-DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals, ScreenGame * screen)
-    : mGoals(goals)
-    , mScreen(screen)
+DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
+    : mScreen(screen)
 {
     using namespace sgl;
+
+    const std::vector<MissionGoal> & goals = mScreen->GetMissionGoals();
 
     auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
@@ -202,12 +204,12 @@ DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals, S
     const int marginGoals2GroupH = 35;
     const int endButtonAreaH = 65;
 
-    const unsigned int numGoals = mGoals.size();
+    const unsigned int numGoals = goals.size();
     unsigned int numPrimaryGoals = 0;
     unsigned int numPrimaryGoalsCompleted = 0;
     unsigned int numSecondaryGoals = 0;
 
-    for(const MissionGoal & g : mGoals)
+    for(const MissionGoal & g : goals)
     {
         if(g.IsPrimary())
         {
@@ -293,7 +295,7 @@ DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals, S
 
         for(unsigned int n = 0; n < numGoals; ++n)
         {
-            if(!mGoals[n].IsPrimary())
+            if(!goals[n].IsPrimary())
                 continue;
 
             tex = 0 == (n % 2) ? texRow1 : texRow2;
@@ -304,6 +306,7 @@ DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals, S
         }
     }
 
+    // SECONDARY GOALS
     if(numSecondaryGoals > 0)
     {
         contentY += marginGoalsGroupH;
@@ -317,7 +320,7 @@ DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals, S
 
         for(unsigned int n = 0; n < numGoals; ++n)
         {
-            if(mGoals[n].IsPrimary())
+            if(goals[n].IsPrimary())
                 continue;
 
             tex = 0 == (n % 2) ? texRow1 : texRow2;
@@ -330,11 +333,12 @@ DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals, S
         contentY += marginGoals2GroupH;
     }
 
+    // BUTTON END MISSION
     mBtnEnd = new ButtonEndMission(this);
     contentX = (w - mBtnEnd->GetWidth()) / 2;
     mBtnEnd->SetPosition(contentX, contentY);
 
-    mBtnEnd->SetEnabled(numPrimaryGoalsCompleted == numPrimaryGoals);
+    CheckIfEndAllowed();
 }
 
 void DialogMissionGoals::SetFunctionOnClose(const std::function<void()> & f)
@@ -347,7 +351,8 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 {
     using namespace sgl;
 
-    const MissionGoal & g = mGoals[goalInd];
+    const std::vector<MissionGoal> & goals = mScreen->GetMissionGoals();
+    const MissionGoal & g = goals[goalInd];
 
     auto fm = graphic::FontManager::Instance();
     const char * fileFont = "Lato-Regular.ttf";
@@ -475,7 +480,6 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
             icon->SetPosition(contX, contY + ((labelData->GetHeight() - icon->GetHeight()) / 2));
 
             contX += icon->GetWidth() + rewardMarginIcon;
-
         }
     }
 
@@ -513,10 +517,29 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
             btn->SetVisible(false);
             labelData->SetVisible(true);
+
+            CheckIfEndAllowed();
         });
     }
 
     return bg;
+}
+
+void DialogMissionGoals::CheckIfEndAllowed()
+{
+    const std::vector<MissionGoal> & goals = mScreen->GetMissionGoals();
+
+    for(const MissionGoal & g : goals)
+    {
+        if(g.IsPrimary() && !g.IsRewardCollected())
+        {
+            mBtnEnd->SetEnabled(false);
+            return ;
+        }
+    }
+
+    // enable END if all primary goals are completed and collected
+    mBtnEnd->SetEnabled(true);
 }
 
 void DialogMissionGoals::HandlePositionChanged()
