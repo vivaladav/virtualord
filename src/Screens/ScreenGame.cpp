@@ -224,6 +224,7 @@ ScreenGame::~ScreenGame()
 
     game->RemoveOnSettingsChangedFunction(mIdOnSettingsChanged);
 
+    delete mPathfinder;
     delete mPartMan;
 
     for(auto ind : mAttIndicators)
