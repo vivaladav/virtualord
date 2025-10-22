@@ -23,10 +23,12 @@ namespace sgl
 namespace game
 {
 
+class ScreenGame;
+
 class DialogMissionGoals : public sgl::sgui::Widget
 {
 public:
-    DialogMissionGoals(const std::vector<MissionGoal> & goals);
+    DialogMissionGoals(const std::vector<MissionGoal> & goals, ScreenGame * screen);
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
@@ -48,6 +50,8 @@ private:
     sgl::sgui::AbstractButton * mBtnEnd = nullptr;
 
     sgl::sgui::Label * mTitle = nullptr;
+
+    ScreenGame * mScreen = nullptr;
 };
 
 } // namespace game

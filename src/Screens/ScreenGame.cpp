@@ -452,6 +452,45 @@ void ScreenGame::SetPause(bool paused)
     }
 }
 
+void ScreenGame::CollectMissionGoalReward(unsigned int index)
+{
+    if(index >= mMissionGoals.size())
+        return ;
+
+    MissionGoal & g = mMissionGoals[index];
+
+    if(g.IsRewardCollected())
+        return ;
+
+    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
+    {
+        Player::BLOBS,
+        Player::DIAMONDS,
+        Player::ENERGY,
+        Player::MATERIAL,
+        Player::MONEY
+    };
+
+    const MissionReward rewardIds[NUM_MISSION_REWARDS] =
+    {
+        MR_BLOBS,
+        MR_DIAMONDS,
+        MR_ENERGY,
+        MR_MATERIAL,
+        MR_MONEY,
+    };
+
+    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
+    {
+        const int reward = g.GetRewardByType(rewardIds[i]);
+
+        if(reward > 0)
+            mLocalPlayer->SumResource(resourceIds[i], reward);
+    }
+
+    g.SetRewardCollected();
+}
+
 void ScreenGame::OnApplicationQuit(sgl::core::ApplicationEvent & event)
 {
     mHUD->ShowDialogExit();
@@ -3391,7 +3430,7 @@ void ScreenGame::TrackResourcesForGoals()
         Player::MONEY
     };
 
-    const unsigned int rewardIds[NUM_MISSION_REWARDS] =
+    const MissionReward rewardIds[NUM_MISSION_REWARDS] =
     {
         MR_BLOBS,
         MR_DIAMONDS,

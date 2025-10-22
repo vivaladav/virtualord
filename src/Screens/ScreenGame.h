@@ -96,6 +96,8 @@ public:
     bool GetPaused() const;
     void SetPause(bool paused);
 
+    void CollectMissionGoalReward(unsigned int index);
+
     // TURN SYSTEM
     bool IsCurrentTurnLocal() const;
 

@@ -1,6 +1,6 @@
 #include "Widgets/DialogMissionGoals.h"
 
-#include "Game.h"
+#include "Screens/ScreenGame.h"
 #include "Widgets/GameUIData.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
@@ -179,8 +179,9 @@ private:
 };
 
 // ===== DIALOG =====
-DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals)
+DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals, ScreenGame * screen)
     : mGoals(goals)
+    , mScreen(screen)
 {
     using namespace sgl;
 
@@ -481,22 +482,22 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     // REWARD COLLECTION
     const int paddingCenterToR = 120;
 
-    // collected -> label
-    if(g.IsRewardCollected())
-    {
-        const unsigned int colorCollected = 0x67e486ff;
-        const int sizeCollected = 22;
-        font = fm->GetFont(fileFont, sizeDesc, graphic::Font::NORMAL);
+    // label collected
+    const unsigned int colorCollected = 0x67e486ff;
+    const int sizeCollected = 22;
+    font = fm->GetFont(fileFont, sizeDesc, graphic::Font::NORMAL);
 
-        labelData = new sgui::Label("COLLECTED", font, bg);
-        labelData->SetColor(colorCollected);
+    labelData = new sgui::Label("COLLECTED", font, bg);
+    labelData->SetColor(colorCollected);
 
-        contX = bg->GetWidth() - paddingCenterToR - (labelData->GetWidth() / 2);
-        contY = (bg->GetHeight() - labelData->GetHeight()) / 2;
-        labelData->SetPosition(contX, contY);
-    }
+    contX = bg->GetWidth() - paddingCenterToR - (labelData->GetWidth() / 2);
+    contY = (bg->GetHeight() - labelData->GetHeight()) / 2;
+    labelData->SetPosition(contX, contY);
+
+    labelData->SetVisible(g.IsRewardCollected());
+
     // not collected yet -> button
-    else
+    if(!g.IsRewardCollected())
     {
         auto btn = new ButtonCollect(bg);
 
@@ -505,6 +506,14 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
         btn->SetPosition(contX, contY);
 
         btn->SetEnabled(g.IsCompleted());
+
+        btn->AddOnClickFunction([this, btn, labelData, goalInd]
+        {
+            mScreen->CollectMissionGoalReward(goalInd);
+
+            btn->SetVisible(false);
+            labelData->SetVisible(true);
+        });
     }
 
     return bg;

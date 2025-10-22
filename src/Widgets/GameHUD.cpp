@@ -240,7 +240,7 @@ void GameHUD::ShowDialogMissionGoals(const std::vector<MissionGoal> & goals)
     mScreen->SetPause(true);
 
     Game * game = mScreen->GetGame();
-    mDialogMissionGoals = new DialogMissionGoals(goals);
+    mDialogMissionGoals = new DialogMissionGoals(goals, mScreen);
     mDialogMissionGoals->SetFocus();
 
     mDialogMissionGoals->SetFunctionOnClose([this]
