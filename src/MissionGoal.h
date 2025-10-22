@@ -14,8 +14,8 @@ enum MissionGoalType : unsigned int
     MG_DESTROY_ENEMY_BASE,
     MG_DESTROY_ALL_ENEMIES,
     MG_GAIN_MONEY,
-    MG_MINE_MATERIAL,
     MG_MINE_ENERGY,
+    MG_MINE_MATERIAL,
     MG_RESIST_TIME,
 
     NUM_MISSION_GOALS,
@@ -102,7 +102,11 @@ inline int MissionGoal::GetProgress() const { return mProgress; }
 inline bool MissionGoal::IsProgressUnknown() const { return mProgress == PROGRESS_UNKNOWN; }
 inline void MissionGoal::SetProgress(int p) { mProgress = p;  }
 
-inline void MissionGoal::SetCompleted() { mCompleted = true; }
+inline void MissionGoal::SetCompleted()
+{
+    mCompleted = true;
+    mProgress = 100;
+}
 
 inline bool MissionGoal::IsCompleted() const { return mCompleted; }
 

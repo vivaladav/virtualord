@@ -127,6 +127,8 @@ ScreenGame::ScreenGame(Game * game)
 
     LoadMapFile();
 
+    TrackResourcesForGoals();
+
     // center map on screen
     const int mapH = mIsoMap->GetHeight();
 
@@ -208,6 +210,8 @@ ScreenGame::ScreenGame(Game * game)
 
 ScreenGame::~ScreenGame()
 {
+    ClearResourcesTracking();
+
     // clear Players
     Game * game = GetGame();
 
@@ -839,6 +843,8 @@ void ScreenGame::LoadMapFile()
     // get mission data
     mMissionGoals = ml.GetMissionGoals();
     SetMissionRewards();
+
+
 }
 
 void ScreenGame::OnKeyDown(sgl::core::KeyboardEvent & event)
@@ -1533,6 +1539,10 @@ void ScreenGame::UpdateGameEnd()
         return ;
     }
 
+    // map already completed
+    if(mMapCompleted)
+        return ;
+
     // check goals
     unsigned int primaryGoals = 0;
     unsigned int completedPrimaryGoals = 0;
@@ -1545,7 +1555,7 @@ void ScreenGame::UpdateGameEnd()
         const bool completed = CheckIfGoalCompleted(g);
 
         if(completed && g.IsPrimary())
-                ++completedPrimaryGoals;
+            ++completedPrimaryGoals;
     }
 
     if(completedPrimaryGoals == primaryGoals)
@@ -1559,6 +1569,28 @@ bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
 
     switch(g.GetType())
     {
+        case MG_COLLECT_BLOBS:
+        {
+            if(mResourcesGained[MR_BLOBS] < g.GetQuantity())
+            {
+                g.SetProgress(mResourcesGained[MR_BLOBS] * 100 / g.GetQuantity());
+
+                return false;
+            }
+        }
+        break;
+
+        case MG_COLLECT_DIAMONDS:
+        {
+            if(mResourcesGained[MR_DIAMONDS] < g.GetQuantity())
+            {
+                g.SetProgress(mResourcesGained[MR_DIAMONDS] * 100 / g.GetQuantity());
+
+                return false;
+            }
+        }
+        break;
+
         case MG_DESTROY_ENEMY_BASE:
         {
             // check if destroyed all enemy bases
@@ -1581,13 +1613,50 @@ bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
         }
         break;
 
+        case MG_GAIN_MONEY:
+        {
+            if(mResourcesGained[MR_MONEY] < g.GetQuantity())
+            {
+                g.SetProgress(mResourcesGained[MR_MONEY] * 100 / g.GetQuantity());
+
+                return false;
+            }
+        }
+        break;
+
+        case MG_MINE_ENERGY:
+        {
+            if(mResourcesGained[MR_ENERGY] < g.GetQuantity())
+            {
+                g.SetProgress(mResourcesGained[MR_ENERGY] * 100 / g.GetQuantity());
+
+                return false;
+            }
+        }
+        break;
+
+        case MG_MINE_MATERIAL:
+        {
+            if(mResourcesGained[MR_MATERIAL] < g.GetQuantity())
+            {
+                g.SetProgress(mResourcesGained[MR_MATERIAL] * 100 / g.GetQuantity());
+
+                return false;
+            }
+        }
+        break;
+
         case MG_RESIST_TIME:
         {
             // check elapsed time
             const unsigned int playedTime = GetPlayTimeInSec();
 
             if(playedTime < g.GetQuantity())
+            {
+                g.SetProgress(playedTime * 100 / g.GetQuantity());
+
                 return false;
+            }
 
             mHUD->HideMissionCountdown();
         }
@@ -3196,6 +3265,10 @@ void ScreenGame::UpdateCurrentCell()
 
 void ScreenGame::SetMissionRewards()
 {
+    // init support data
+    mResourcesGained.resize(NUM_MISSION_REWARDS, 0);
+
+    // set rewards for all goals
     for(MissionGoal & g : mMissionGoals)
     {
         switch (g.GetType())
@@ -3302,6 +3375,62 @@ void ScreenGame::SetMissionRewards()
                 std::cout << "[WAR] Mission Goal type unknown: " << g.GetType() << std::endl;
             break;
         }
+    }
+}
+
+void ScreenGame::TrackResourcesForGoals()
+{
+    mResourceTrackers.resize(NUM_MISSION_REWARDS, 0);
+
+    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
+    {
+        Player::BLOBS,
+        Player::DIAMONDS,
+        Player::ENERGY,
+        Player::MATERIAL,
+        Player::MONEY
+    };
+
+    const unsigned int rewardIds[NUM_MISSION_REWARDS] =
+    {
+        MR_BLOBS,
+        MR_DIAMONDS,
+        MR_ENERGY,
+        MR_MATERIAL,
+        MR_MONEY,
+    };
+
+    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
+    {
+        const Player::Stat resId = resourceIds[i];
+        const unsigned int rewId = rewardIds[i];
+
+        mResourceTrackers[rewId] = mLocalPlayer->AddOnResourceChanged(resId,
+            [this, rewId](const StatValue *, int oldVal, int newVal)
+            {
+                if(newVal > oldVal)
+                    mResourcesGained[rewId] += newVal - oldVal;
+            });
+    }
+}
+
+void ScreenGame::ClearResourcesTracking()
+{
+    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
+    {
+        Player::BLOBS,
+        Player::DIAMONDS,
+        Player::ENERGY,
+        Player::MATERIAL,
+        Player::MONEY
+    };
+
+    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
+    {
+        const Player::Stat resId = resourceIds[i];
+        const int funId = mResourceTrackers[i];
+
+        mLocalPlayer->RemoveOnResourceChanged(resId, funId);
     }
 }
 

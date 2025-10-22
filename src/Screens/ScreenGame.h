@@ -173,6 +173,8 @@ private:
 
     // MISSION GOALS
     void SetMissionRewards();
+    void TrackResourcesForGoals();
+    void ClearResourcesTracking();
 
     // TURN
     void EndTurn();
@@ -199,6 +201,8 @@ private:
     std::vector<GameObjectAction> mObjActionsToDo;
 
     std::vector<MissionGoal> mMissionGoals;
+    std::vector<int> mResourcesGained;
+    std::vector<unsigned int> mResourceTrackers;
 
     CameraMapController * mCamController = nullptr;
 
