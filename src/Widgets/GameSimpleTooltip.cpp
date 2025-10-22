@@ -17,8 +17,6 @@ namespace
 namespace game
 {
 
-class Game;
-
 GameSimpleTooltip::GameSimpleTooltip(const char * text)
 {
     using namespace sgl;

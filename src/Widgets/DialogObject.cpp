@@ -27,10 +27,10 @@ namespace game
 {
 
 // ====== BUTTON CLOSE =====
-class ButtonClose : public sgl::sgui::ImageButton
+class ButtonCloseDO : public sgl::sgui::ImageButton
 {
 public:
-    ButtonClose(sgl::sgui::Widget * parent)
+    ButtonCloseDO(sgl::sgui::Widget * parent)
         : sgl::sgui::ImageButton({
                                     ID_DLG_OBJ_BTN_CLOSE_NORMAL,
                                     ID_DLG_OBJ_BTN_CLOSE_NORMAL,
@@ -234,7 +234,7 @@ DialogObject::DialogObject(const ObjectsDataRegistry * odr)
     SetSize(w, h);
 
     // BUTTON CLOSE
-    mBtnClose = new ButtonClose(this);
+    mBtnClose = new ButtonCloseDO(this);
 
     const int buttonX = w - mBtnClose->GetWidth();
     const int buttonY = 0;

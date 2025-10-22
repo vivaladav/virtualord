@@ -25,11 +25,6 @@ namespace sgl
 namespace game
 {
 
-class ButtonBuild;
-class ButtonClose;
-class ButtonLeft;
-class ButtonRight;
-class ButtonSlot;
 class ObjectsDataRegistry;
 class ObjectVisualAttribute;
 class Player;
@@ -95,10 +90,10 @@ private:
     sgl::sgui::TextArea * mDescription = nullptr;
     sgl::sgui::Label * mCategory = nullptr;
 
-    ButtonBuild * mBtnBuild = nullptr;
-    ButtonClose * mBtnClose = nullptr;
-    ButtonLeft * mBtnLeft = nullptr;
-    ButtonRight * mBtnRight = nullptr;
+    sgl::sgui::AbstractButton * mBtnBuild = nullptr;
+    sgl::sgui::AbstractButton * mBtnClose = nullptr;
+    sgl::sgui::AbstractButton * mBtnLeft = nullptr;
+    sgl::sgui::AbstractButton * mBtnRight = nullptr;
 
     sgl::sgui::AbstractButtonsGroup * mButtonsStructures = nullptr;
 

@@ -24,10 +24,10 @@ namespace game
 {
 
 // ====== BUTTON CLOSE =====
-class ButtonClose : public sgl::sgui::ImageButton
+class ButtonCloseDMG : public sgl::sgui::ImageButton
 {
 public:
-    ButtonClose(sgl::sgui::Widget * parent)
+    ButtonCloseDMG(sgl::sgui::Widget * parent)
         : sgl::sgui::ImageButton({
                                     ID_DLG_MGOALS_BTN_CLOSE_NORMAL,
                                     ID_DLG_MGOALS_BTN_CLOSE_DISABLED,
@@ -252,7 +252,7 @@ DialogMissionGoals::DialogMissionGoals(const std::vector<MissionGoal> & goals)
     SetSize(w, h);
 
     // BUTTON CLOSE
-    mBtnClose = new ButtonClose(this);
+    mBtnClose = new ButtonCloseDMG(this);
 
     const int buttonX = w - mBtnClose->GetWidth();
     const int buttonY = 0;

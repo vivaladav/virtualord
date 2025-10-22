@@ -98,10 +98,10 @@ private:
 
 // ===== BUTTON CLOSE =====
 
-class ButtonClose : public sgl::sgui::AbstractButton
+class ButtonCloseDNE : public sgl::sgui::AbstractButton
 {
 public:
-    ButtonClose(sgl::sgui::Widget * parent)
+    ButtonCloseDNE(sgl::sgui::Widget * parent)
         : AbstractButton(parent)
         , mBody(new sgl::graphic::Image)
     {
@@ -577,7 +577,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     SetSize(w, h);
 
     // CLOSE BUTTON
-    mBtnClose = new ButtonClose(this);
+    mBtnClose = new ButtonCloseDNE(this);
     mBtnClose->SetX(GetWidth() - mBtnClose->GetWidth());
 
     // TITLE
