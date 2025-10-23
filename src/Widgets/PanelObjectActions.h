@@ -48,6 +48,7 @@ public:
 
     void ClearObject();
     void SetObject(GameObject * obj);
+    bool HasObjectSet() const;
 
     void SetButtonFunction(Button btnId, const std::function<void()> & f);
 
@@ -60,5 +61,7 @@ private:
 
     GameObject * mObj = nullptr;
 };
+
+inline bool PanelObjectActions::HasObjectSet() const { return mObj != nullptr; }
 
 } // namespace game

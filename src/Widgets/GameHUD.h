@@ -96,8 +96,8 @@ private:
     void ClosePanelSelectedObject();
     void OpenPanelSelectedObject();
 
-    void TemporaryCloseSidePanels();
-    void ReopenSidePanels();
+    void TemporaryClosePanels();
+    void ReopenPanels();
 
     GameMapProgressBar * CreateProgressBar(float time, PlayerFaction faction);
 
