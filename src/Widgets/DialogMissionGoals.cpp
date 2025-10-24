@@ -3,6 +3,7 @@
 #include "MissionGoal.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/GameUIData.h"
+#include "Widgets/ProgressBarObjectVisualStat.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
@@ -410,20 +411,24 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     contX += labelHeader->GetWidth() + marginHeaderH;
 
-    std::ostringstream os;
+    if(g.IsProgressUnknown())
+    {
+        auto labelData = new sgui::Label("?", font2, bg);
+        labelData->SetColor(colorData);
+        labelData->SetPosition(contX, contY);
 
-    if(g.IsCompleted())
-        os << "100%";
-    else if(g.IsProgressUnknown())
-        os << "?";
+        contX += labelData->GetWidth() + marginDataH;
+    }
     else
-        os << g.GetProgress() << "%";
+    {
+        const float min = 0.f;
+        const float max = 100.f;
+        auto pb = new ProgressBarObjectVisualStat(min, max, bg);
+        pb->SetValue(g.GetProgress());
+        pb->SetPosition(contX, contY + (labelHeader->GetHeight() - pb->GetHeight()) / 2);
 
-    auto labelData = new sgui::Label(os.str().c_str(), font2, bg);
-    labelData->SetColor(colorData);
-    labelData->SetPosition(contX, contY);
-
-    contX += labelData->GetWidth() + marginDataH;
+        contX += pb->GetWidth() + marginDataH;
+    }
 
     // REWARD
     labelHeader = new sgui::Label("REWARD", font2, bg);
@@ -435,7 +440,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     // collected
     if(g.IsRewardCollected())
     {
-        labelData = new sgui::Label("-", font2, bg);
+        auto labelData = new sgui::Label("-", font2, bg);
         labelData->SetColor(colorData);
         labelData->SetPosition(contX, contY);
     }
@@ -462,10 +467,9 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
             if(reward <= 0)
                 continue;
 
-            os.clear();
-            os.str(std::string());
+            std::ostringstream os;
 
-            if(reward > 1000)
+            if(reward >= 1000)
             {
                 float val = static_cast<float>(reward) / 1000.f;
 
@@ -474,7 +478,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
             else
                 os << reward;
 
-            labelData = new sgui::Label(os.str().c_str(), font2, bg);
+            auto labelData = new sgui::Label(os.str().c_str(), font2, bg);
             labelData->SetColor(colorData);
             labelData->SetPosition(contX, contY);
 
@@ -496,7 +500,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     const int sizeCollected = 22;
     font = fm->GetFont(fileFont, sizeDesc, graphic::Font::NORMAL);
 
-    labelData = new sgui::Label("COLLECTED", font, bg);
+    auto labelData = new sgui::Label("COLLECTED", font, bg);
     labelData->SetColor(colorCollected);
 
     contX = bg->GetWidth() - paddingCenterToR - (labelData->GetWidth() / 2);
