@@ -44,8 +44,8 @@ add_executable(
     src/IsoMap.cpp
     src/IsoObject.h
     src/IsoObject.cpp
-    src/MapLoader.h
-    src/MapLoader.cpp
+    src/MapIO.h
+    src/MapIO.cpp
     src/MapsRegistry.h
     src/MapsRegistry.cpp
     src/MissionGoal.h

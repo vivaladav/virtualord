@@ -1,7 +1,7 @@
 #include "MapsRegistry.h"
 
 #include "GameConstants.h"
-#include "MapLoader.h"
+#include "MapIO.h"
 
 namespace game
 {

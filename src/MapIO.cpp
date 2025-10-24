@@ -1,4 +1,4 @@
-#include "MapLoader.h"
+#include "MapIO.h"
 
 #include "GameConstants.h"
 #include "GameMapCell.h"

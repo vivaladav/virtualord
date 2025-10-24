@@ -7,7 +7,7 @@
 #include "GameMap.h"
 #include "IsoLayer.h"
 #include "IsoMap.h"
-#include "MapLoader.h"
+#include "MapIO.h"
 #include "MapsRegistry.h"
 #include "Player.h"
 #include "AI/ConquerPath.h"
