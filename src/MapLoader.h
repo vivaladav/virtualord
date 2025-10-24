@@ -11,10 +11,11 @@ namespace game
 {
 
 class GameMap;
+class GameMapCell;
+class GameObject;
 class IsoMap;
 
 enum MissionCategory : unsigned int;
-enum MissionGoalType : unsigned int;
 
 // structure used to define GameObjects to create
 struct MapObjectEntry
@@ -31,15 +32,6 @@ class MapLoader
 {
 public:
     static const std::string MAP_VERSION;
-
-    // -- FILE TAGS --
-    static const std::string MAP_TAG_CATEGORY;
-    static const std::string MAP_TAG_COMMENT;
-    static const std::string MAP_TAG_GOAL;
-    static const std::string MAP_TAG_END_HEADER;
-    static const std::string MAP_TAG_END_MAP;
-    static const std::string MAP_TAG_MAP_SIZE;
-    static const std::string MAP_TAG_VERSION;
 
 public:
     MapLoader();
@@ -62,10 +54,24 @@ public:
     bool Load(const std::string & filename);
     bool LoadHeader(const std::string & filename);
 
+    bool Save(const std::string & filename, const std::vector<GameMapCell> & cells,
+              std::vector<GameObject *> objects, const std::vector<MissionGoal> & goals,
+              MissionCategory category, int rows, int cols);
+
 private:
     void ReadHeader(std::fstream & fs);
     void ReadMap(std::fstream & fs);
     void ReadObjectsData(std::fstream & fs);
+
+private:
+    // -- FILE TAGS --
+    static const std::string MAP_TAG_CATEGORY;
+    static const std::string MAP_TAG_COMMENT;
+    static const std::string MAP_TAG_GOAL;
+    static const std::string MAP_TAG_END_HEADER;
+    static const std::string MAP_TAG_END_MAP;
+    static const std::string MAP_TAG_MAP_SIZE;
+    static const std::string MAP_TAG_VERSION;
 
 private:
     std::vector<MapObjectEntry> mObjEntries;

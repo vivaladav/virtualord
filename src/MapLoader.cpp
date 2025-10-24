@@ -1,6 +1,8 @@
 #include "MapLoader.h"
 
 #include "GameConstants.h"
+#include "GameMapCell.h"
+#include "GameObjects/GameObject.h"
 
 #include <iostream>
 #include <sstream>
@@ -67,6 +69,75 @@ bool MapLoader::LoadHeader(const std::string & filename)
 
     ReadHeader(fs);
 
+    fs.close();
+
+    return true;
+}
+
+bool MapLoader::Save(const std::string & filename, const std::vector<GameMapCell> & cells,
+                     std::vector<GameObject *> objects, const std::vector<MissionGoal> & goals,
+                     MissionCategory category, int rows, int cols)
+{
+    // no data to save -> EXIT
+    if(0 == rows || 0 == cols)
+        return false;
+
+    // open map file
+    std::ofstream fs(filename, std::ios::out | std::ios::trunc);
+
+    // ERROR failed to open file -> EXIT
+    if(!fs.is_open())
+        return false;
+
+    // save current map version
+    fs << "# ===== VERSION =====\n";
+    fs << MAP_TAG_VERSION << " " << MapLoader::MAP_VERSION << "\n";
+
+    // mission goals
+    fs << "# ====== GOALS =====\n";
+    fs << MAP_TAG_CATEGORY << " " << category << "\n";
+
+    for(const MissionGoal & g : goals)
+        fs << MAP_TAG_GOAL << " " << g.IsPrimary() << " "
+           << g.GetType() << " " << g.GetQuantity() << "\n";
+
+    // save map size
+    fs << "# ====== MAP =====\n";
+    fs << MAP_TAG_MAP_SIZE << " " << rows << " " << cols << "\n";
+
+    // save header end tag
+    fs << MAP_TAG_END_HEADER << "\n";
+
+    // save cells type
+    for(unsigned int r = 0; r < rows; ++r)
+    {
+        const unsigned int ind0 = r * cols;
+
+        for(unsigned int c = 0; c < cols - 1; ++c)
+        {
+            const unsigned int ind = ind0 + c;
+            fs << cells[ind].currType << " ";
+        }
+
+        const unsigned int ind = ind0 + (cols - 1);
+        fs << cells[ind].currType << "\n";
+    }
+
+    // save map end tag
+    fs << MAP_TAG_END_MAP << "\n";
+
+    // save objects
+    fs << "# ====== OBJECTS =====\n";
+    for(const GameObject * obj : objects)
+    {
+        fs << MapLayers::OBJECTS1 << " "
+           << obj->GetObjectTypeStr() << " "
+           << obj->GetObjectVariant() << " "
+           << obj->GetFaction() << " "
+           << obj->GetRow0() << " " << obj->GetCol0() << "\n";
+    }
+
+    // finalize file
     fs.close();
 
     return true;
