@@ -10,14 +10,15 @@ constexpr int MAX_MAPS_PER_PLANET = 12;
 
 // == MAP DATA ==
 MapsRegistry::MapData::MapData(const std::string & file, int energy, int material, int diamonds,
-                               int blobs, int size, int value, PlayerFaction occupier,
-                               TerritoryStatus status, MissionCategory mission)
+                               int blobs, unsigned int rows, unsigned int cols, int value,
+                               PlayerFaction occupier, TerritoryStatus status, MissionCategory mission)
     : mFile(file)
     , mEnergy(energy)
     , mMaterial(material)
     , mDiamonds(diamonds)
     , mBlobs(blobs)
-    , mSize(size)
+    , mRows(rows)
+    , mCols(cols)
     , mValue(value)
     , mOccupier(occupier)
     , mStatus(status)
@@ -39,7 +40,7 @@ bool MapsRegistry::CreatePlanet(unsigned int planetId)
 }
 
 bool MapsRegistry::AddMap(unsigned int planetId, const std::string & file, int energy,
-                          int material, int diamonds, int blobs, int size, int value,
+                          int material, int diamonds, int blobs, int value,
                           PlayerFaction occupier, TerritoryStatus status)
 {
     // planet not found
@@ -51,10 +52,12 @@ bool MapsRegistry::AddMap(unsigned int planetId, const std::string & file, int e
     ml.LoadHeader(file);
 
     const MissionCategory mission = ml.GetMissionCategory();
+    const unsigned int rows = ml.GetMapRows();
+    const unsigned int cols = ml.GetMapCols();
 
     // store data
     mData[planetId].emplace_back(file, energy, material, diamonds, blobs,
-                                 size, value, occupier, status, mission);
+                                 rows, cols, value, occupier, status, mission);
 
     return true;
 }
@@ -65,7 +68,7 @@ bool MapsRegistry::AddUnavailableMap(unsigned int planetId)
     if(mData.find(planetId) == mData.end())
         return false;
 
-    mData[planetId].emplace_back(std::string(), 0, 0, 0, 0, 0, 0,
+    mData[planetId].emplace_back(std::string(), 0, 0, 0, 0, 0, 0, 0,
                                  NO_FACTION, TER_ST_UNAVAILABLE, MC_UNKNOWN);
 
     return true;
@@ -145,17 +148,30 @@ int MapsRegistry::GetMapBlobs(unsigned int planetId, unsigned int index) const
     return 0;
 }
 
-int MapsRegistry::GetMapSize(unsigned int planetId, unsigned int index) const
+int MapsRegistry::GetMapRows(unsigned int planetId, unsigned int index) const
 {
-    if(mData.find(planetId) != mData.end())
-    {
-        const auto & data = mData.at(planetId);
+    if(mData.find(planetId) == mData.end())
+        return 0;
 
-        if(index < data.size())
-            return data[index].mSize;
-    }
+    const auto & data = mData.at(planetId);
 
-    return 0;
+    if(index < data.size())
+        return data[index].mRows;
+    else
+        return 0;
+}
+
+int MapsRegistry::GetMapCols(unsigned int planetId, unsigned int index) const
+{
+    if(mData.find(planetId) == mData.end())
+        return 0;
+
+    const auto & data = mData.at(planetId);
+
+    if(index < data.size())
+        return data[index].mCols;
+    else
+        return 0;
 }
 
 int MapsRegistry::GetMapValue(unsigned int planetId, unsigned int index) const

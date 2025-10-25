@@ -17,7 +17,7 @@ public:
     bool CreatePlanet(unsigned int planetId);
 
     bool AddMap(unsigned int planetId, const std::string & file, int energy,
-                int material, int diamonds, int blobs, int size, int value,
+                int material, int diamonds, int blobs, int value,
                 PlayerFaction occupier, TerritoryStatus status);
     bool AddUnavailableMap(unsigned int planetId);
 
@@ -28,7 +28,8 @@ public:
     int GetMapMaterial(unsigned int planetId, unsigned int index) const;
     int GetMapDiamonds(unsigned int planetId, unsigned int index) const;
     int GetMapBlobs(unsigned int planetId, unsigned int index) const;
-    int GetMapSize(unsigned int planetId, unsigned int index) const;
+    int GetMapRows(unsigned int planetId, unsigned int index) const;
+    int GetMapCols(unsigned int planetId, unsigned int index) const;
     int GetMapValue(unsigned int planetId, unsigned int index) const;
     PlayerFaction GetMapOccupier(unsigned int planetId, unsigned int index) const;
     TerritoryStatus GetMapStatus(unsigned int planetId, unsigned int index) const;
@@ -48,15 +49,16 @@ private:
     struct MapData
     {
         MapData(const std::string & file, int energy, int material, int diamonds,
-                int blobs, int size, int value, PlayerFaction occupier,
-                TerritoryStatus status, MissionCategory mission);
+                int blobs, unsigned int rows, unsigned int cols, int value,
+                PlayerFaction occupier, TerritoryStatus status, MissionCategory mission);
 
         std::string mFile;
         int mEnergy;
         int mMaterial;
         int mDiamonds;
         int mBlobs;
-        int mSize;
+        unsigned int mRows;
+        unsigned int mCols;
         int mValue;
         PlayerFaction mOccupier;
         TerritoryStatus mStatus;

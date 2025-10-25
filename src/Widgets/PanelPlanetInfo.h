@@ -26,8 +26,8 @@ public:
     PanelPlanetInfo();
 
     void ClearData();
-    void SetData(int size, TerritoryStatus status, PlayerFaction faction,
-                 unsigned int value, MissionCategory mission);
+    void SetData(unsigned int rows, unsigned int cols, TerritoryStatus status,
+                 PlayerFaction faction, unsigned int value, MissionCategory mission);
 
 private:
     void HandlePositionChanged() override;
@@ -59,7 +59,8 @@ private:
 
     sgl::graphic::Image * mBg = nullptr;
 
-    int mSize = 0;
+    unsigned int mRows = 0;
+    unsigned int mCols = 0;
     int mValue = 0;
     PlayerFaction mOccupier;
     TerritoryStatus mStatus;

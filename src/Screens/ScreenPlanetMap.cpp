@@ -139,20 +139,20 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
                                          ShowInfo(ind);
                                      else if(status == TER_ST_OCCUPIED_UNEXPLORED)
                                      {
-                                         const int size = 0;
+                                         const unsigned int size = 0;
                                          const int value = 0;
 
                                          mPanelInfo->SetEnabled(true);
-                                         mPanelInfo->SetData(size, status, occupier, value, MC_UNKNOWN);
+                                         mPanelInfo->SetData(size, size, status, occupier, value, MC_UNKNOWN);
                                      }
                                      else
                                      {
-                                         const int size = 0;
+                                         const unsigned int size = 0;
                                          const int value = 0;
 
                                          mPanelResources->SetEnabled(false);
 
-                                         mPanelInfo->SetData(size, status, occupier, value, MC_UNKNOWN);
+                                         mPanelInfo->SetData(size, size, status, occupier, value, MC_UNKNOWN);
                                      }
 
                                      mPanelExplore->ShowAction();
@@ -238,11 +238,11 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
                 mapReg->SetMapStatus(planetId, territory, TER_ST_OCCUPIED_UNEXPLORED);
 
                 // PANEL INFO
-                const int size = 0;
+                const unsigned int size = 0;
                 const int value = 0;
 
                 mPanelInfo->SetEnabled(true);
-                mPanelInfo->SetData(size, TER_ST_OCCUPIED_UNEXPLORED, occupier, value, MC_UNKNOWN);
+                mPanelInfo->SetData(size, size, TER_ST_OCCUPIED_UNEXPLORED, occupier, value, MC_UNKNOWN);
             }
 
             mPanelExplore->ShowResult(res);
@@ -378,12 +378,12 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
             // PANEL INFO
             if(status == TER_ST_OCCUPIED_UNEXPLORED)
             {
-                const int size = 0;
+                const unsigned int size = 0;
                 const int value = 0;
 
                 mPanelInfo->SetEnabled(true);
 
-                mPanelInfo->SetData(size, status, faction, value, MC_UNKNOWN);
+                mPanelInfo->SetData(size, size, status, faction, value, MC_UNKNOWN);
             }
         }
 
@@ -518,14 +518,15 @@ void ScreenPlanetMap::ShowInfo(int territory)
     mPanelResources->SetResourceValue(RES_DIAMONDS, mapReg->GetMapDiamonds(planetId, territory));
 
     // PANEL INFO
-    const int size = mapReg->GetMapSize(planetId, territory);
+    const int rows = mapReg->GetMapRows(planetId, territory);
+    const int cols = mapReg->GetMapCols(planetId, territory);
     const int value = mapReg->GetMapValue(planetId, territory);
     const PlayerFaction occupier = mapReg->GetMapOccupier(planetId, territory);
     const TerritoryStatus status = mapReg->GetMapStatus(planetId, territory);
     const MissionCategory mission = mapReg->GetMapMission(planetId, territory);
 
     mPanelInfo->SetEnabled(true);
-    mPanelInfo->SetData(size, status, occupier, value, mission);
+    mPanelInfo->SetData(rows, cols, status, occupier, value, mission);
 }
 
 bool ScreenPlanetMap::TryToConquerTerritory(int index)
