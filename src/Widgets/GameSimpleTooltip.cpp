@@ -2,6 +2,7 @@
 
 #include "GameUIData.h"
 
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/Image.h>
@@ -29,7 +30,7 @@ GameSimpleTooltip::GameSimpleTooltip(const char * text)
 
     // BACKGROUND
     graphic::Texture * tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_LEFT);
-    tex->SetScaleMode(0);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
 
     mBgLeft = new graphic::Image(tex);
     RegisterRenderable(mBgLeft);

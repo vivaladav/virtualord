@@ -13,6 +13,7 @@
 #include <sgl/graphic/DummyRenderable.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Text.h>
 #include <sgl/graphic/Texture.h>
@@ -557,18 +558,18 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
     // BACKGROUND
     graphic::Texture * tex = tm->GetSprite(SpriteFileDialogNewElementExp, IND_DLG_NEWE_BG_TOP);
-    tex->SetScaleMode(0);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
     mBgTop = new graphic::Image(tex);
     RegisterRenderable(mBgTop);
 
     tex = tm->GetSprite(SpriteFileDialogNewElementExp, IND_DLG_NEWE_BG_MID);
-    tex->SetScaleMode(0);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
     mBgMid = new graphic::Image(tex);
     mBgMid->SetHeight(midBgH);
     RegisterRenderable(mBgMid);
 
     tex = tm->GetSprite(SpriteFileDialogNewElementExp, IND_DLG_NEWE_BG_BTM);
-    tex->SetScaleMode(0);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
     mBgBtm = new graphic::Image(tex);
     RegisterRenderable(mBgBtm);
 

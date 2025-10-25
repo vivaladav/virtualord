@@ -8,6 +8,7 @@
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Text.h>
 #include <sgl/graphic/Texture.h>
@@ -246,7 +247,7 @@ DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
     RegisterRenderable(mBgBot);
 
     tex = tm->GetSprite(SpriteFileDialogMissionGoalsExp, ID_DLG_MGOALS_BG_MID);
-    tex->SetScaleMode(0);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
     mBgMid = new graphic::Image(tex);
     mBgMid->SetHeight(contentH);
     RegisterRenderable(mBgMid);

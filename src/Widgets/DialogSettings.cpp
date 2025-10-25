@@ -8,6 +8,7 @@
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Renderer.h>
 #include <sgl/graphic/Text.h>
@@ -361,7 +362,7 @@ public:
         RegisterRenderable(mImgBot);
 
         tex = tm->GetSprite(SpriteFileSettingsExp, IND_SET_PANEL2_MID);
-        tex->SetScaleMode(0);
+        tex->SetScaleMode(graphic::TSCALE_NEAREST);
         mImgMid = new graphic::Image(tex);
         mImgMid->SetHeight(h - mImgTop->GetHeight() - mImgBot->GetHeight());
         RegisterRenderable(mImgMid);

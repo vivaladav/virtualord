@@ -7,6 +7,7 @@
 #include <sgl/core/event/MouseButtonEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
@@ -53,7 +54,7 @@ PanelInfoTutorial::PanelInfoTutorial(int w, int h)
     for(unsigned int ind = BGPART_TL; ind < NUM_BGPARTS; ++ind)
     {
         tex = tm->GetSprite(SpriteFileTutorialExp, texIds[ind]);
-        tex->SetScaleMode(0);
+        tex->SetScaleMode(graphic::TSCALE_NEAREST);
 
         mBgParts[ind] = new graphic::Image(tex);
         RegisterRenderable(mBgParts[ind]);
