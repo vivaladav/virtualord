@@ -53,7 +53,7 @@ const ObjectData ObjectData::NullObj({}, {}, {}, nullptr, GameObject::TYPE_NULL,
 
 unsigned int ObjectData::GetIconTexId(PlayerFaction f) const
 {
-    if(f < NUM_FACTIONS)
+    if(f < mIconTexIds.size())
         return mIconTexIds[f];
     else
         return mIconTexIds.back();
