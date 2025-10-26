@@ -35,6 +35,8 @@
 #include <sgl/graphic/Renderer.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/ButtonsGroup.h>
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/Stage.h>
@@ -546,6 +548,10 @@ void GameHUD::ShowGoalCompletedIcon()
     const int y = isoObj->GetY() + (isoObj->GetHeight() - mGoalCompletedIcon->GetHeight()) / 2;
 
     mGoalCompletedIcon->SetPosition(x, y);
+
+    // play sound
+    auto player = media::AudioManager::Instance()->GetPlayer();
+    player->PlaySound("UI/goal_completed.ogg");
 }
 
 void GameHUD::HideGoalCompletedIcon()
