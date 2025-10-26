@@ -4,6 +4,7 @@
 #include "ControlMap.h"
 #include "Game.h"
 #include "GameMap.h"
+#include "GameUIData.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
 #include "Player.h"
@@ -30,8 +31,12 @@
 #include "Widgets/PanelSelectedObject.h"
 #include "Widgets/PanelTurnControl.h"
 
+#include <sgl/graphic/Camera.h>
 #include <sgl/graphic/Renderer.h>
+#include <sgl/graphic/Texture.h>
+#include <sgl/graphic/TextureManager.h>
 #include <sgl/sgui/ButtonsGroup.h>
+#include <sgl/sgui/Image.h>
 #include <sgl/sgui/Stage.h>
 
 namespace game
@@ -507,6 +512,46 @@ void GameHUD::HideMissionCountdown()
 {
     delete mCountdownLabel;
     mCountdownLabel = nullptr;
+}
+
+void GameHUD::ShowGoalCompletedIcon()
+{
+    using namespace sgl;
+
+    // icon already visible
+    if(mGoalCompletedIcon != nullptr)
+        return ;
+
+    const Player * p = mScreen->GetGame()->GetLocalPlayer();
+    const PlayerFaction pf = p->GetFaction();
+    const auto bases = p->GetStructuresByType(GameObject::TYPE_BASE);
+
+    // this shouldn't happen
+    if(bases.empty())
+        return ;
+
+    // create icon
+    auto tm = graphic::TextureManager::Instance();
+    auto tex = tm->GetSprite(SpriteFileGameUI, ID_GAMEUI_GOAL_F1 + pf);
+
+    mGoalCompletedIcon = new sgui::Image(tex, this);
+    // set camera to default to follow screen
+    mGoalCompletedIcon->SetCamera(graphic::Camera::GetDefaultCamera());
+
+    // position icon over base
+    const Structure * base = bases[0];
+    const IsoObject * isoObj = base->GetIsoObject();
+
+    const int x = isoObj->GetX() + (isoObj->GetWidth() - mGoalCompletedIcon->GetWidth()) / 2;
+    const int y = isoObj->GetY() + (isoObj->GetHeight() - mGoalCompletedIcon->GetHeight()) / 2;
+
+    mGoalCompletedIcon->SetPosition(x, y);
+}
+
+void GameHUD::HideGoalCompletedIcon()
+{
+    delete mGoalCompletedIcon;
+    mGoalCompletedIcon = nullptr;
 }
 
 void GameHUD::HidePanelSelectedObject()

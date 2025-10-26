@@ -127,6 +127,7 @@ private:
 
     void UpdateGameEnd();
     bool CheckIfGoalCompleted(MissionGoal & g);
+    void UpdateGoalCompletedIcon();
     void HandleGameOver();
     void HandleGameWon();
     void AssignMapToFaction(PlayerFaction faction);

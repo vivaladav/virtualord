@@ -282,6 +282,17 @@ enum SpriteIdDialogTrading : unsigned int
 };
 
 // FACTION SELECTION DIALOG
+extern const char SpriteFileGameUI[];
+
+enum SpriteIdGameUI : unsigned int
+{
+    // GOAL COMPLETED
+    ID_GAMEUI_GOAL_F1,
+    ID_GAMEUI_GOAL_F2,
+    ID_GAMEUI_GOAL_F3,
+};
+
+// FACTION SELECTION DIALOG
 extern const char SpriteFileFactionSelection[];
 
 enum SpriteIdFactionSelection : unsigned int

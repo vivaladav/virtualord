@@ -490,6 +490,8 @@ void ScreenGame::CollectMissionGoalReward(unsigned int index)
     }
 
     g.SetRewardCollected();
+
+    UpdateGoalCompletedIcon();
 }
 
 void ScreenGame::OnApplicationQuit(sgl::core::ApplicationEvent & event)
@@ -1594,8 +1596,14 @@ void ScreenGame::UpdateGameEnd()
 
         const bool completed = CheckIfGoalCompleted(g);
 
-        if(completed && g.IsPrimary())
-            ++completedPrimaryGoals;
+        if(completed)
+        {
+            if(g.IsPrimary())
+                ++completedPrimaryGoals;
+
+            if(!g.IsRewardCollected())
+                mHUD->ShowGoalCompletedIcon();
+        }
     }
 
     if(completedPrimaryGoals == primaryGoals)
@@ -1710,6 +1718,18 @@ bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
     g.SetCompleted();
 
     return true;
+}
+
+void ScreenGame::UpdateGoalCompletedIcon()
+{
+    for(MissionGoal & g : mMissionGoals)
+    {
+        // there's still some reward to collect -> do not hide
+        if(g.IsCompleted() && !g.IsRewardCollected())
+            return;
+    }
+
+    mHUD->HideGoalCompletedIcon();
 }
 
 void ScreenGame::HandleGameOver()

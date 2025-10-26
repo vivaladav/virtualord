@@ -486,6 +486,20 @@ void ScreenInit::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogTrading, rects);
     });
 
+    // GAME UI
+    mJobs.emplace_back([this, tm]
+    {
+        std::vector<sgl::core::Rectd> rects
+        {
+            // GOAL COMPLETED
+            { 0, 0, 72, 72 },
+            { 73, 0, 72, 72 },
+            { 146, 0, 72, 72 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUI, rects);
+    });
+
     // MAIN MENU
     mJobs.emplace_back([this, tm]
     {

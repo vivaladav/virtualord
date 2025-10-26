@@ -1,11 +1,14 @@
 #pragma once
 
-#include "MissionGoal.h"
 #include <sgl/sgui/Widget.h>
 
 namespace sgl
 {
-    namespace sgui { class ButtonsGroup; }
+    namespace sgui
+    {
+        class ButtonsGroup;
+        class Image;
+    }
 }
 
 namespace game
@@ -69,6 +72,9 @@ public:
     void ShowMissionCountdown(int secs);
     void HideMissionCountdown();
 
+    void ShowGoalCompletedIcon();
+    void HideGoalCompletedIcon();
+
     void HidePanelSelectedObject();
     void ShowPanelSelectedObject(GameObject * obj);
     const PanelSelectedObject * GetPanelSelectedObject() const;
@@ -122,6 +128,8 @@ private:
 
     PanelSelectedObject * mPanelSelObj = nullptr;
     ButtonPanelSelectedObject * mButtonPanelSelObj = nullptr;
+
+    sgl::sgui::Image * mGoalCompletedIcon = nullptr;
 
     ScreenGame * mScreen = nullptr;
 };
