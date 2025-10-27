@@ -208,11 +208,6 @@ void GameHUD::ShowPanelObjectActions(GameObject * obj)
     mPanelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
 }
 
-const sgl::sgui::ButtonsGroup * GameHUD::GetQuickUnitButtonsGroup() const
-{
-    return mGroupUnitSel;
-}
-
 void GameHUD::SetQuickUnitButtonChecked(GameObject * obj)
 {
     // check corresponding quick unit selection button
@@ -250,12 +245,12 @@ void GameHUD::ShowDialogMissionGoals()
     mDialogMissionGoals = new DialogMissionGoals(mScreen);
     mDialogMissionGoals->SetFocus();
 
-    mDialogMissionGoals->SetFunctionOnClose([this]
+    mDialogMissionGoals->AddFunctionOnClose([this]
     {
         HideDialogMissionGoals();
     });
 
-    mDialogMissionGoals->SetFunctionOnEnd([this]
+    mDialogMissionGoals->AddFunctionOnEnd([this]
     {
         // hide dialog
         mDialogMissionGoals->SetVisible(false);

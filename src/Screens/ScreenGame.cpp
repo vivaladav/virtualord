@@ -45,6 +45,8 @@
 #include "Tutorial/StepGameEnergyRegeneration.h"
 #include "Tutorial/StepGameIntro.h"
 #include "Tutorial/StepGameMapNavigation.h"
+#include "Tutorial/StepGameMissionGoalsIcon.h"
+#include "Tutorial/StepGameMissionGoalsDialog.h"
 #include "Tutorial/StepGameMoveCamera.h"
 #include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameStructConnected.h"
@@ -567,25 +569,25 @@ void ScreenGame::CreateUI()
     PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
 
     // create new unit
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BARRACKS,
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BARRACKS,
         [this, panelObjActions]
     {
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_BARRACKS);
     });
 
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE,
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE,
         [this, panelObjActions]
     {
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_BASE);
     });
 
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_HOSPITAL,
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_HOSPITAL,
         [this, panelObjActions]
     {
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_HOSPITAL);
     });
 
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_MISSION_GOALS,
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_MISSION_GOALS,
     [this, panelObjActions]
     {
         mHUD->ShowDialogMissionGoals();
@@ -593,7 +595,7 @@ void ScreenGame::CreateUI()
 
     // UNIT ACTIONS
     // build structure
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_STRUCT,
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_STRUCT,
         [this, panelObjActions]
     {
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_STRUCTURES);
@@ -602,7 +604,7 @@ void ScreenGame::CreateUI()
     });
 
     // build wall
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_BUILD_WALL, [this]
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_WALL, [this]
     {
         auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::BUILD_WALL);
@@ -615,7 +617,7 @@ void ScreenGame::CreateUI()
     });
 
     // attack
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_ATTACK, [this]
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_ATTACK, [this]
     {
         auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::ATTACK);
@@ -628,7 +630,7 @@ void ScreenGame::CreateUI()
     });
 
     // heal
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_HEAL_HOSPITAL, [this]
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_HEAL_HOSPITAL, [this]
     {
         auto hospital = static_cast<Hospital *>(mLocalPlayer->GetSelectedObject());
         hospital->SetActiveAction(GameObjectActionType::HEAL);
@@ -640,7 +642,7 @@ void ScreenGame::CreateUI()
         ShowHealingIndicators(hospital, range);
     });
 
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_HEAL_UNIT, [this]
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_HEAL_UNIT, [this]
     {
         auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::HEAL);
@@ -653,7 +655,7 @@ void ScreenGame::CreateUI()
     });
 
     // conquer
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, [this]
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, [this]
     {
         auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::CONQUER_CELL);
@@ -666,7 +668,7 @@ void ScreenGame::CreateUI()
     });
 
     // move
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_MOVE, [this]
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_MOVE, [this]
     {
         auto unit = static_cast<Unit *>(mLocalPlayer->GetSelectedObject());
         unit->SetActiveAction(GameObjectActionType::MOVE);
@@ -677,7 +679,7 @@ void ScreenGame::CreateUI()
     });
 
     // WALL GATE
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_OPEN_GATE,
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_OPEN_GATE,
                                        [this, panelObjActions]
     {
         // open gate
@@ -700,7 +702,7 @@ void ScreenGame::CreateUI()
         sgl::sgui::Stage::Instance()->SetFocus();
     });
 
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_CLOSE_GATE,
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_CLOSE_GATE,
                                        [this, panelObjActions]
     {
         // close gate
@@ -724,14 +726,14 @@ void ScreenGame::CreateUI()
     });
 
     // TRADING POST
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_TRADE, [this]
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_TRADE, [this]
     {
         mHUD->ShowDialogTrading();
     });
 
     // GENERIC ACTIONS
     // upgrade
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_UPGRADE, [this]
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_UPGRADE, [this]
     {
         // TODO
 
@@ -739,7 +741,7 @@ void ScreenGame::CreateUI()
     });
 
     // cancel
-    panelObjActions->SetButtonFunction(PanelObjectActions::BTN_CANCEL,
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_CANCEL,
                                        [this, panelObjActions]
     {
         GameObject * selObj = mLocalPlayer->GetSelectedObject();
@@ -801,6 +803,10 @@ void ScreenGame::CreateTutorial()
     mTutMan->AddStep(new StepGameBase(local->GetBase()));
     mTutMan->AddStep(new StepDelay(0.5f));
     mTutMan->AddStep(new StepGameBaseFeatures(panelObj, panelActions));
+    mTutMan->AddStep(new StepGameMissionGoalsIcon(panelActions));
+    mTutMan->AddStep(new StepDelay(0.5f));
+    mTutMan->AddStep(new StepGameMissionGoalsDialog(mHUD));
+    mTutMan->AddStep(new StepDelay(0.5f));
     mTutMan->AddStep(new StepGameBaseBuildUnitIcon(panelActions));
     mTutMan->AddStep(new StepDelay(0.5f));
     mTutMan->AddStep(new StepGameBaseBuildUnit(mHUD));

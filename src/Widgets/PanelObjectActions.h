@@ -50,7 +50,8 @@ public:
     void SetObject(GameObject * obj);
     bool HasObjectSet() const;
 
-    void SetButtonFunction(Button btnId, const std::function<void()> & f);
+    unsigned int AddButtonFunction(Button btnId, const std::function<void()> & f);
+    void RemoveButtonFunction(Button btnId, unsigned int funId);
 
     void SetActionsEnabled(bool val);
 

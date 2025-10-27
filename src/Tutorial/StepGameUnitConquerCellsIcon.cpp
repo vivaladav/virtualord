@@ -49,7 +49,7 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
 
                         });
 
-    panel->SetButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, [this]
+    panel->AddButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, [this]
     {
         SetDone();
     });

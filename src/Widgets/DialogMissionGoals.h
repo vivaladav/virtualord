@@ -25,8 +25,13 @@ class DialogMissionGoals : public sgl::sgui::Widget
 public:
     DialogMissionGoals(ScreenGame * screen);
 
-    void SetFunctionOnClose(const std::function<void()> & f);
-    void SetFunctionOnEnd(const std::function<void()> & f);
+    const sgl::sgui::AbstractButton * GetButtonClose() const;
+    const sgl::sgui::AbstractButton * GetButtonEnd() const;
+
+    unsigned int AddFunctionOnClose(const std::function<void()> & f);
+    void RemoveFunctionOnClose(unsigned int funId);
+    unsigned int AddFunctionOnEnd(const std::function<void()> & f);
+    void RemoveFunctionOnEnd(unsigned int funId);
 
 private:
     sgl::sgui::Widget * CreateGoalEntry(unsigned int goalInd, sgl::graphic::Texture * texBg);
@@ -47,5 +52,16 @@ private:
 
     ScreenGame * mScreen = nullptr;
 };
+
+inline const sgl::sgui::AbstractButton * DialogMissionGoals::GetButtonClose() const
+{
+    return mBtnClose;
+}
+
+inline const sgl::sgui::AbstractButton * DialogMissionGoals::GetButtonEnd() const
+{
+    return mBtnEnd;
+}
+
 
 } // namespace game

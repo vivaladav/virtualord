@@ -222,6 +222,10 @@ add_executable(
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/StepGameMapNavigation.h
     src/Tutorial/StepGameMapNavigation.cpp
+    src/Tutorial/StepGameMissionGoalsIcon.h
+    src/Tutorial/StepGameMissionGoalsIcon.cpp
+    src/Tutorial/StepGameMissionGoalsDialog.h
+    src/Tutorial/StepGameMissionGoalsDialog.cpp
     src/Tutorial/StepGameMoveCamera.h
     src/Tutorial/StepGameMoveCamera.cpp
     src/Tutorial/StepGameMoveUnit.h

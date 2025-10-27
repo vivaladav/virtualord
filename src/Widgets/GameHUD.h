@@ -58,6 +58,7 @@ public:
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
 
+    DialogMissionGoals * GetDialogMissionGoals() const;
     void ShowDialogMissionGoals();
     void HideDialogMissionGoals();
 
@@ -135,6 +136,13 @@ private:
 };
 
 inline MiniMap * GameHUD::GetMinimap() const { return mMiniMap; }
+
+inline const sgl::sgui::ButtonsGroup * GameHUD::GetQuickUnitButtonsGroup() const
+{
+    return mGroupUnitSel;
+}
+
+inline DialogMissionGoals * GameHUD::GetDialogMissionGoals() const { return mDialogMissionGoals; }
 
 inline DialogNewElement * GameHUD::GetDialogNewElement() { return mDialogNewElement; }
 

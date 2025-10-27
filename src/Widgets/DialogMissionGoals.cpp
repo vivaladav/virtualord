@@ -343,14 +343,24 @@ DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
     CheckIfEndAllowed();
 }
 
-void DialogMissionGoals::SetFunctionOnClose(const std::function<void()> & f)
+unsigned int DialogMissionGoals::AddFunctionOnClose(const std::function<void()> & f)
 {
-    mBtnClose->AddOnClickFunction(f);
+    return mBtnClose->AddOnClickFunction(f);
 }
 
-void DialogMissionGoals::SetFunctionOnEnd(const std::function<void()> & f)
+void DialogMissionGoals::RemoveFunctionOnClose(unsigned int funId)
 {
-    mBtnEnd->AddOnClickFunction(f);
+    mBtnClose->RemoveClickFunction(funId);
+}
+
+unsigned int DialogMissionGoals::AddFunctionOnEnd(const std::function<void()> & f)
+{
+    return mBtnEnd->AddOnClickFunction(f);
+}
+
+void DialogMissionGoals::RemoveFunctionOnEnd(unsigned int funId)
+{
+    mBtnEnd->RemoveClickFunction(funId);
 }
 
 sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,

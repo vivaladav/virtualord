@@ -164,10 +164,18 @@ void PanelObjectActions::SetObject(GameObject * obj)
     SetPosition(panelX, panelY);
 }
 
-void PanelObjectActions::SetButtonFunction(Button btnId, const std::function<void()> & f)
+unsigned int PanelObjectActions::AddButtonFunction(Button btnId, const std::function<void()> & f)
 {
     if(btnId < NUM_BUTTONS)
-        mButtons[btnId]->AddOnClickFunction(f);
+       return mButtons[btnId]->AddOnClickFunction(f);
+    else
+        return 0;
+}
+
+void PanelObjectActions::RemoveButtonFunction(Button btnId, unsigned int funId)
+{
+    if(btnId < NUM_BUTTONS)
+       mButtons[btnId]->RemoveClickFunction(funId);
 }
 
 void PanelObjectActions::SetActionsEnabled(bool val)

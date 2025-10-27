@@ -1,4 +1,4 @@
-#include "Tutorial/StepGameBaseBuildUnitIcon.h"
+#include "Tutorial/StepGameMissionGoalsIcon.h"
 
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/PanelObjectActions.h"
@@ -11,7 +11,8 @@
 namespace game
 {
 
-StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
+StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel)
+    : mPanelActions(panel)
 {
     // CLICK FILTER
     mClickFilter = new PanelClickFilter;
@@ -29,15 +30,13 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
     mInfo->SetVisible(false);
     mInfo->SetPosition(300, 550);
 
-    mInfo->AddInfoEntry("You can also create worker units with your base.",
+    mInfo->AddInfoEntry("For example you can check your missions goals from here.",
                         colorTutorialText, 4.f, true, false);
-    mInfo->AddInfoEntry("Let's create a new one now.",
-                        colorTutorialText, 3.f, true, false);
-    mInfo->AddInfoEntry("Click this button to open the new units dialog.",
+    mInfo->AddInfoEntry("Click this button to open the mission goals dialog.",
                         colorTutorialTextAction, 0.f, false, false, [this, panel]
                         {
                             // FOCUS
-                            auto btn = panel->GetButton(PanelObjectActions::BTN_BUILD_UNIT_BASE);
+                            auto btn = panel->GetButton(PanelObjectActions::BTN_MISSION_GOALS);
 
                             const int padding = 10;
                             const int fX = panel->GetX() + btn->GetX() - padding;
@@ -50,23 +49,24 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
 
                             // CLICK FILTER
                             mClickFilter->SetScreenClickableArea(fX, fY, fW, fH);
-
                         });
 
-    panel->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, [this]
+    mClickId = panel->AddButtonFunction(PanelObjectActions::BTN_MISSION_GOALS, [this]
     {
         SetDone();
     });
 }
 
-StepGameBaseBuildUnitIcon::~StepGameBaseBuildUnitIcon()
+StepGameMissionGoalsIcon::~StepGameMissionGoalsIcon()
 {
+    mPanelActions->RemoveButtonFunction(PanelObjectActions::BTN_MISSION_GOALS, mClickId);
+
     delete mClickFilter;
     delete mFocusArea;
     delete mInfo;
 }
 
-void StepGameBaseBuildUnitIcon::OnStart()
+void StepGameMissionGoalsIcon::OnStart()
 {
     // CLICK FILTER
     mClickFilter->SetEnabled(true);
