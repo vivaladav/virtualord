@@ -21,6 +21,7 @@ const std::string MissionGoal::TITLE[NUM_MISSION_GOALS] =
     "MINE ENERGY",
     "MINE MATERIAL",
     "WAIT AND HOLD",
+    "COMPLETE THE TUTORIAL"
 };
 
 const std::string MissionGoal::DESCRIPTION[NUM_MISSION_GOALS] =
@@ -33,6 +34,7 @@ const std::string MissionGoal::DESCRIPTION[NUM_MISSION_GOALS] =
     "MINE %VAL% UNITS OF ENERGY",
     "MINE %VAL% UNITS OF MATERIAL",
     "WAIT AND HOLD FOR %VAL% MINUTES",
+    "FOLLOW AND PLAY EVERY STEP OF THE TUTORIAL FOR THIS MAP"
 };
 
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool primary)

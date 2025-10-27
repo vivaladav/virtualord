@@ -17,6 +17,7 @@ enum MissionGoalType : unsigned int
     MG_MINE_ENERGY,
     MG_MINE_MATERIAL,
     MG_RESIST_TIME,
+    MG_COMPLETE_TUTORIAL,
 
     NUM_MISSION_GOALS,
 

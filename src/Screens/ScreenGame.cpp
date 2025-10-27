@@ -1710,6 +1710,21 @@ bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
         }
         break;
 
+        case MG_COMPLETE_TUTORIAL:
+        {
+            if(mTutMan != nullptr)
+            {
+                if(!mTutMan->AreAllStepsDone())
+                {
+                    g.SetProgress(mTutMan->GetNumStepsDone() * 100 / mTutMan->GetNumStepsAtStart());
+                    return false;
+                }
+            }
+            else
+                return false;
+        }
+        break;
+
         default:
             return false;
         break;
@@ -3376,6 +3391,22 @@ void ScreenGame::SetMissionRewards()
                 const int multMoney = 100;
                 const int money = g.GetQuantity() * multMoney;
                 g.SetRewardByType(MR_MONEY, money);
+            }
+            break;
+
+            case MG_COMPLETE_TUTORIAL:
+            {
+                const int blobs = 25;
+                g.SetRewardByType(MR_BLOBS, blobs);
+
+                const int diamonds = 25;
+                g.SetRewardByType(MR_DIAMONDS, diamonds);
+
+                const int energy = 100;
+                g.SetRewardByType(MR_ENERGY, energy);
+
+                const int material = 100;
+                g.SetRewardByType(MR_MATERIAL, material);
             }
             break;
 
