@@ -417,8 +417,6 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
         auto labelData = new sgui::Label("?", font2, bg);
         labelData->SetColor(colorData);
         labelData->SetPosition(contX, contY);
-
-        contX += labelData->GetWidth() + marginDataH;
     }
     else
     {
@@ -427,11 +425,12 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
         auto pb = new ProgressBarObjectVisualStat(min, max, bg);
         pb->SetValue(g.GetProgress());
         pb->SetPosition(contX, contY + (labelHeader->GetHeight() - pb->GetHeight()) / 2);
-
-        contX += pb->GetWidth() + marginDataH;
     }
 
     // REWARD
+    const int rewardX0 = 415;
+    contX = rewardX0;
+
     labelHeader = new sgui::Label("REWARD", font2, bg);
     labelHeader->SetColor(colorHeader);
     labelHeader->SetPosition(contX, contY);
