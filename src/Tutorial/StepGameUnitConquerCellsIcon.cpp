@@ -49,7 +49,7 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
 
                         });
 
-    panel->AddButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, [this]
+    mClickId = panel->AddButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, [this]
     {
         SetDone();
     });
@@ -57,6 +57,8 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
 
 StepGameUnitConquerCellsIcon::~StepGameUnitConquerCellsIcon()
 {
+    mPanelActions->RemoveButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, mClickId);
+
     delete mClickFilter;
     delete mFocusArea;
     delete mInfo;

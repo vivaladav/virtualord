@@ -12,6 +12,7 @@ namespace game
 {
 
 StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
+    : mPanelActions(panel)
 {
     // CLICK FILTER
     mClickFilter = new PanelClickFilter;
@@ -53,7 +54,7 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
 
                         });
 
-    panel->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, [this]
+    mClickId = panel->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, [this]
     {
         SetDone();
     });
@@ -61,6 +62,8 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
 
 StepGameBaseBuildUnitIcon::~StepGameBaseBuildUnitIcon()
 {
+    mPanelActions->RemoveButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, mClickId);
+
     delete mClickFilter;
     delete mFocusArea;
     delete mInfo;
