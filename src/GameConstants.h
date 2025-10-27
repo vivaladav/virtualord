@@ -95,6 +95,27 @@ enum Planets : unsigned int
     PLANET_UNKNOWN
 };
 
+enum TutorialId : unsigned int
+{
+    TUTORIAL_PLANET_MAP,
+    TUTORIAL_MISSION_INTRO,
+
+    NUM_TUTORIALS,
+
+    TUTORIAL_UNKNOWN
+};
+
+enum TutorialState : unsigned int
+{
+    TS_TODO,
+    TS_IN_PROGRESS,
+    TS_DONE,
+
+    NUM_TUTORIAL_STATES,
+
+    TS_UNKNOWN
+};
+
 extern const char * FACTIONS_NAME[NUM_FACTIONS];
 extern const char * MISSION_CATEGORY_TITLE[NUM_MISSION_CATEGORIES];
 extern const char * PLANETS_NAME[NUM_PLANETS];

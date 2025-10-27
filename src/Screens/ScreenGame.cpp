@@ -201,7 +201,7 @@ ScreenGame::ScreenGame(Game * game)
     InitMusic();
 
     // TUTORIAL
-    if(game->IsTutorialEnabled())
+    if(game->IsTutorialEnabled() && game->GetTutorialState(TUTORIAL_MISSION_INTRO) == TS_TODO)
         CreateTutorial();
 
     // record start time
@@ -271,8 +271,8 @@ void ScreenGame::Update(float delta)
     if(mPaused)
     {
         // only continue the tutorial if paused
-        if(game->IsTutorialEnabled())
-            mTutMan->Update(delta);
+        if(mTutMan != nullptr)
+            UpdateTutorial(delta);
 
         return ;
     }
@@ -313,12 +313,12 @@ void ScreenGame::Update(float delta)
     if(!mAiPlayers.empty())
          UpdateAI(delta);
 
+    // TUTORIAL
+    if(mTutMan != nullptr)
+        UpdateTutorial(delta);
+
     // check game end
     UpdateGameEnd();
-
-    // TUTORIAL
-    if(game->IsTutorialEnabled())
-        mTutMan->Update(delta);
 }
 
 void ScreenGame::Render()
@@ -785,7 +785,8 @@ void ScreenGame::CreateUI()
 
 void ScreenGame::CreateTutorial()
 {
-    Player * local = GetGame()->GetLocalPlayer();
+    Game * game = GetGame();
+    Player * local = game->GetLocalPlayer();
 
     auto panelActions = mHUD->GetPanelObjectActions();
     auto panelObj = mHUD->GetPanelSelectedObject();
@@ -832,7 +833,22 @@ void ScreenGame::CreateTutorial()
 
     mTutMan->AddStep(new StepGameMapNavigation);
 
+    game->SetTutorialState(TUTORIAL_MISSION_INTRO, TS_IN_PROGRESS);
+
     mTutMan->Start();
+}
+
+void ScreenGame::UpdateTutorial(float delta)
+{
+    mTutMan->Update(delta);
+
+    if(mTutMan->AreAllStepsDone())
+    {
+        GetGame()->SetTutorialState(TUTORIAL_MISSION_INTRO, TS_DONE);
+
+        delete mTutMan;
+        mTutMan = nullptr;
+    }
 }
 
 void ScreenGame::LoadMapFile()
@@ -1712,9 +1728,11 @@ bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
 
         case MG_COMPLETE_TUTORIAL:
         {
-            if(mTutMan != nullptr)
+            Game * game = GetGame();
+
+            if(game->IsTutorialEnabled())
             {
-                if(!mTutMan->AreAllStepsDone())
+                if(game->GetTutorialState(TUTORIAL_MISSION_INTRO) != TS_DONE)
                 {
                     g.SetProgress(mTutMan->GetNumStepsDone() * 100 / mTutMan->GetNumStepsAtStart());
                     return false;

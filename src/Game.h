@@ -34,6 +34,8 @@ enum Planets : unsigned int;
 enum PlayerFaction : unsigned int;
 enum ResourceType : unsigned int;
 enum StateId : int;
+enum TutorialId : unsigned int;
+enum TutorialState : unsigned int;
 
 enum Difficulty : unsigned int
 {
@@ -103,6 +105,10 @@ public:
     unsigned int AddOnSettingsChangedFunction(const std::function<void()> & f);
     void RemoveOnSettingsChangedFunction(unsigned int fId);
 
+    // -- tutorial --
+    TutorialState GetTutorialState(TutorialId tut);
+    void SetTutorialState(TutorialId tut, TutorialState state);
+
 private:
     void NotifyOnSettingsChanged();
 
@@ -112,6 +118,8 @@ private:
     std::vector<Player *> mPlayers;
 
     std::map<unsigned int, std::function<void()>> mOnSettingsChanged;
+
+    std::vector<TutorialState> mTutorialsState;
 
     sgl::graphic::Renderer * mRenderer = nullptr;
     sgl::graphic::Window * mWin = nullptr;

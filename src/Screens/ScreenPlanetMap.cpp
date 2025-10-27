@@ -429,7 +429,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     sgl::media::AudioManager::Instance()->GetPlayer()->PlayMusic("game/music_01.ogg");
 
     // TUTORIAL
-    if(game->IsTutorialEnabled())
+    if(game->IsTutorialEnabled() && game->GetTutorialState(TUTORIAL_PLANET_MAP) == TS_TODO)
         CreateTutorial();
 }
 
@@ -442,17 +442,23 @@ ScreenPlanetMap::~ScreenPlanetMap()
     auto stage = sgl::sgui::Stage::Instance();
 
     stage->ClearWidgets();
-
-    delete mTutMan;
 }
 
 void ScreenPlanetMap::Update(float delta)
 {
-    Game * game = GetGame();
-
     // TUTORIAL
-    if(game->IsTutorialEnabled())
+    if(mTutMan != nullptr)
+    {
         mTutMan->Update(delta);
+
+        if(mTutMan->AreAllStepsDone())
+        {
+            GetGame()->SetTutorialState(TUTORIAL_PLANET_MAP, TS_DONE);
+
+            delete mTutMan;
+            mTutMan = nullptr;
+        }
+    }
 }
 
 void ScreenPlanetMap::Render()
@@ -462,7 +468,8 @@ void ScreenPlanetMap::Render()
 
 void ScreenPlanetMap::CreateTutorial()
 {
-    Player * local = GetGame()->GetLocalPlayer();
+    Game * game = GetGame();
+    Player * local = game->GetLocalPlayer();
 
     mTutMan = new TutorialManager;
     mTutMan->AddStep(new StepDelay(1.f));
@@ -481,6 +488,9 @@ void ScreenPlanetMap::CreateTutorial()
     mTutMan->AddStep(new StepPlanetMapConquerTerritory(mPanelActions));
     mTutMan->AddStep(new StepDelay(0.5f));
     mTutMan->AddStep(new StepPlanetMapConquerTerritoryStart(mPanelConquer));
+
+    game->SetTutorialState(TUTORIAL_PLANET_MAP, TS_IN_PROGRESS);
+
     mTutMan->Start();
 }
 

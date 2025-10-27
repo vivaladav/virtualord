@@ -115,6 +115,7 @@ private:
     void CreateUI();
 
     void CreateTutorial();
+    void UpdateTutorial(float delta);
 
     void LoadMapFile();
 

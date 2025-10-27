@@ -36,7 +36,6 @@ void TutorialManager::FinalizeStep()
     mCurrStep->OnEnd();
 
     delete mCurrStep;
-
     mCurrStep = nullptr;
 
     ++mStepsDone;
