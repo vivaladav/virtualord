@@ -1580,6 +1580,9 @@ void ScreenGame::FinalizeObjectAction(const GameObjectAction & action, bool succ
     if(obj->GetFaction() == mLocalPlayer->GetFaction())
         mHUD->SetLocalActionsEnabled(true);
 
+    if(obj->IsFactionLocal())
+        ClearCellOverlays();
+
     // reset object's active action to default
     obj->SetActiveActionToDefault();
     // reset current action to idle
