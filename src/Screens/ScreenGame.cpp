@@ -76,6 +76,7 @@
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/Stage.h>
 
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -205,9 +206,6 @@ ScreenGame::ScreenGame(Game * game)
     // TUTORIAL
     if(game->IsTutorialEnabled() && game->GetTutorialState(TUTORIAL_MISSION_INTRO) == TS_TODO)
         CreateTutorial();
-
-    // record start time
-    mTimeStart = std::chrono::steady_clock::now();
 }
 
 ScreenGame::~ScreenGame()
@@ -259,10 +257,7 @@ ScreenGame::~ScreenGame()
 
 unsigned int ScreenGame::GetPlayTimeInSec() const
 {
-    const auto now = std::chrono::steady_clock::now();
-    const std::chrono::duration<double> played = now - mTimeStart;
-
-    return played.count();
+    return std::roundf(mTimePlayed);
 }
 
 void ScreenGame::Update(float delta)

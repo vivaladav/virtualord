@@ -8,7 +8,6 @@
 
 #include <sgl/core/Point.h>
 
-#include <chrono>
 #include <functional>
 #include <unordered_map>
 #include <vector>
@@ -214,8 +213,6 @@ private:
     unsigned int mIdOnSettingsChanged = 0;
 
     sgl::graphic::ParticlesManager * mPartMan = nullptr;
-
-    std::chrono::time_point<std::chrono::steady_clock> mTimeStart;
 
     // UI
     GameHUD * mHUD = nullptr;
