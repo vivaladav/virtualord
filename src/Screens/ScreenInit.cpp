@@ -515,6 +515,8 @@ void ScreenInit::SetupTextures()
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileMainMenu, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], "UI/main_menu_build_badge.png");
     });
 
     // MAIN MENU BUTTONS

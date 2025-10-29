@@ -19,6 +19,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/sgui/Image.h>
 #include <sgl/sgui/Label.h>
 #include <sgl/sgui/PushButton.h>
 #include <sgl/sgui/Stage.h>
@@ -48,6 +49,10 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     auto tex = tm->GetTexture("main_menu_bg.png");
 
     mBg = new graphic::Image(tex);
+
+    // -- BUILD BADGE --
+    auto bb = new sgui::Image("UI/main_menu_build_badge.png");
+    bb->SetX(screenW - bb->GetWidth());
 
     // -- BUTTON NEW GAME --
     ButtonMainMenu * button = new ButtonMainMenu("NEW GAME", panelButtons);
