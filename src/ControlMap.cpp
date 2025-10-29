@@ -146,6 +146,12 @@ ControlMap::ControlMap(IsoLayer * layer, Player * localPlayer)
     mTypesMap[ind] = IND_INF_AREA_CONN_T_F1;
 }
 
+ControlMap::~ControlMap()
+{
+    for(IsoObject * o : mMarkers)
+        delete o;
+}
+
 void ControlMap::SetSize(unsigned int rows, unsigned int cols)
 {
     const unsigned int size = rows * cols;

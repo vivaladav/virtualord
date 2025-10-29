@@ -16,6 +16,7 @@ class ControlMap
 {
 public:
     ControlMap(IsoLayer * layer, Player * localPlayer);
+    ~ControlMap();
     void SetSize(unsigned int rows, unsigned int cols);
 
     void AddControlPointsForCell(unsigned int r, unsigned int c, PlayerFaction faction);
