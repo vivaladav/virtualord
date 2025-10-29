@@ -228,9 +228,11 @@ void ScreenMainMenu::OnKeyUp(sgl::core::KeyboardEvent & event)
 {
     const int key = event.GetKey();
 
+#ifdef DEV_MODE
     // CTRL-T -> open test screen
     if(key == sgl::core::KeyboardEvent::KEY_T && event.IsModCtrlDown())
         GetGame()->RequestNextActiveState(StateId::TEST);
+#endif
 }
 
 void ScreenMainMenu::Update(float update)

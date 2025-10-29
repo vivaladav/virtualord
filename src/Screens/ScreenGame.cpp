@@ -934,6 +934,7 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
         if(event.IsModShiftDown())
             CenterCameraOverPlayerBase();
     }
+#ifdef DEV_MODE
     // DEBUG: ALT + U -> toggle UI
     else if(event.IsModAltDown() && key == KeyboardEvent::KEY_U)
         mHUD->SetVisible(!mHUD->IsVisible());
@@ -951,7 +952,7 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
             mGameMap->ApplyVisibility(mLocalPlayer);
         }
     }
-    // DEBUG: end mission dialog
+    // DEBUG: end mission dialog win/lose
     else if(event.IsModCtrlDown() && key == KeyboardEvent::KEY_W)
         mHUD->ShowDialogEndMission(true);
     else if(event.IsModCtrlDown() && key == KeyboardEvent::KEY_L)
@@ -972,8 +973,10 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
             }
         }
     }
+    // DEBUG: show dialog trading
     else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_T)
         mHUD->ShowDialogTrading();
+#endif
 }
 
 void ScreenGame::OnMouseButtonUp(sgl::core::MouseButtonEvent & event)

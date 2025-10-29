@@ -50,7 +50,7 @@ Game::Game(int argc, char * argv[])
 {
     using namespace sgl;
 
-#ifdef DEV_MODE
+#ifdef DEBUG
     // -- build libraries --
     core::ModuleCore::PrintBuildLibs();
     graphic::ModuleGraphic::PrintBuildLibs();
