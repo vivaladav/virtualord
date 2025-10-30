@@ -10,7 +10,7 @@
 namespace game
 {
 
-const std::string MapIO::MAP_VERSION("0.2.2");
+const std::string MapIO::MAP_VERSION("0.2.3");
 
 const std::string MapIO::MAP_TAG_CATEGORY("C");
 const std::string MapIO::MAP_TAG_COMMENT("#");
@@ -99,7 +99,7 @@ bool MapIO::Save(const std::string & filename, const std::vector<GameMapCell> & 
 
     for(const MissionGoal & g : goals)
         fs << MAP_TAG_GOAL << " " << g.IsPrimary() << " "
-           << g.GetType() << " " << g.GetQuantity() << "\n";
+           << MissionGoal::GeTypeString(g.GetType()) << " " << g.GetQuantity() << "\n";
 
     // save map size
     fs << "# ====== MAP =====\n";
@@ -196,17 +196,13 @@ void MapIO::ReadHeader(std::fstream & fs)
             ss >> primary;
 
             // goal type
-            unsigned int gt = MG_UNKNOWN;
+            std::string gt;
             ss >> gt;
-            auto type = static_cast<MissionGoalType>(gt);
+            const std::size_t type = std::hash<std::string>{}(gt);
 
-            // only read quantity data for some goals
+            // quantity data
             unsigned int quantity = 0;
-
-            if(MG_COLLECT_BLOBS == type || MG_COLLECT_DIAMONDS == type ||
-               MG_GAIN_MONEY == type || MG_MINE_MATERIAL == type ||
-               MG_MINE_ENERGY == type || MG_RESIST_TIME == type)
-                ss >> quantity;
+            ss >> quantity;
 
             mGoals.emplace_back(type, quantity, primary);
         }

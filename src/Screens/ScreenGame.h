@@ -44,7 +44,6 @@ class TutorialManager;
 class Unit;
 class WallIndicator;
 
-enum MissionGoalType : unsigned int;
 enum PlayerFaction : unsigned int;
 
 enum ParticlesUpdaterId : unsigned int

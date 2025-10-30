@@ -769,7 +769,7 @@ void ScreenGame::CreateUI()
     // MISSION COUNTDOWN if needed by primary goal
     for(const MissionGoal & g : mMissionGoals)
     {
-        if(g.IsPrimary() && MG_RESIST_TIME == g.GetType())
+        if(g.IsPrimary() && g.GetType() == MissionGoal::TYPE_RESIST_TIME)
         {
             mHUD->ShowMissionCountdown(g.GetQuantity());
             break;
@@ -1638,122 +1638,102 @@ bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
     if(g.IsCompleted())
         return true;
 
-    switch(g.GetType())
+    const auto gt = g.GetType();
+
+    if(gt == MissionGoal::TYPE_COLLECT_BLOBS)
     {
-        case MG_COLLECT_BLOBS:
+        if(mResourcesGained[MR_BLOBS] < g.GetQuantity())
         {
-            if(mResourcesGained[MR_BLOBS] < g.GetQuantity())
-            {
-                g.SetProgress(mResourcesGained[MR_BLOBS] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[MR_BLOBS] * 100 / g.GetQuantity());
 
-                return false;
-            }
-        }
-        break;
-
-        case MG_COLLECT_DIAMONDS:
-        {
-            if(mResourcesGained[MR_DIAMONDS] < g.GetQuantity())
-            {
-                g.SetProgress(mResourcesGained[MR_DIAMONDS] * 100 / g.GetQuantity());
-
-                return false;
-            }
-        }
-        break;
-
-        case MG_DESTROY_ENEMY_BASE:
-        {
-            // check if destroyed all enemy bases
-            for(Player * p : mAiPlayers)
-            {
-                if(p->HasStructure(GameObject::TYPE_BASE))
-                return false;
-            }
-        }
-        break;
-
-        case MG_DESTROY_ALL_ENEMIES:
-        {
-            // check if destroyed all enemies
-            for(Player * p : mAiPlayers)
-            {
-                if(p->GetNumObjects() > 0)
-                    return false;
-            }
-        }
-        break;
-
-        case MG_GAIN_MONEY:
-        {
-            if(mResourcesGained[MR_MONEY] < g.GetQuantity())
-            {
-                g.SetProgress(mResourcesGained[MR_MONEY] * 100 / g.GetQuantity());
-
-                return false;
-            }
-        }
-        break;
-
-        case MG_MINE_ENERGY:
-        {
-            if(mResourcesGained[MR_ENERGY] < g.GetQuantity())
-            {
-                g.SetProgress(mResourcesGained[MR_ENERGY] * 100 / g.GetQuantity());
-
-                return false;
-            }
-        }
-        break;
-
-        case MG_MINE_MATERIAL:
-        {
-            if(mResourcesGained[MR_MATERIAL] < g.GetQuantity())
-            {
-                g.SetProgress(mResourcesGained[MR_MATERIAL] * 100 / g.GetQuantity());
-
-                return false;
-            }
-        }
-        break;
-
-        case MG_RESIST_TIME:
-        {
-            // check elapsed time
-            const unsigned int playedTime = GetPlayTimeInSec();
-
-            if(playedTime < g.GetQuantity())
-            {
-                g.SetProgress(playedTime * 100 / g.GetQuantity());
-
-                return false;
-            }
-
-            mHUD->HideMissionCountdown();
-        }
-        break;
-
-        case MG_COMPLETE_TUTORIAL:
-        {
-            Game * game = GetGame();
-
-            if(game->IsTutorialEnabled())
-            {
-                if(game->GetTutorialState(TUTORIAL_MISSION_INTRO) != TS_DONE)
-                {
-                    g.SetProgress(mTutMan->GetNumStepsDone() * 100 / mTutMan->GetNumStepsAtStart());
-                    return false;
-                }
-            }
-            else
-                return false;
-        }
-        break;
-
-        default:
             return false;
-        break;
+        }
     }
+    else if(gt == MissionGoal::TYPE_COLLECT_DIAMONDS)
+    {
+        if(mResourcesGained[MR_DIAMONDS] < g.GetQuantity())
+        {
+            g.SetProgress(mResourcesGained[MR_DIAMONDS] * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_COMPLETE_TUTORIAL)
+    {
+        Game * game = GetGame();
+
+        if(game->IsTutorialEnabled())
+        {
+            if(game->GetTutorialState(TUTORIAL_MISSION_INTRO) != TS_DONE)
+            {
+                g.SetProgress(mTutMan->GetNumStepsDone() * 100 / mTutMan->GetNumStepsAtStart());
+                return false;
+            }
+        }
+        else
+            return false;
+    }
+    else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_BASE)
+    {
+        // check if destroyed all enemy bases
+        for(Player * p : mAiPlayers)
+        {
+            if(p->HasStructure(GameObject::TYPE_BASE))
+                return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_DESTROY_ALL_ENEMIES)
+    {
+        // check if destroyed all enemies
+        for(Player * p : mAiPlayers)
+        {
+            if(p->GetNumObjects() > 0)
+                return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_GAIN_MONEY)
+    {
+        if(mResourcesGained[MR_MONEY] < g.GetQuantity())
+        {
+            g.SetProgress(mResourcesGained[MR_MONEY] * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_MINE_ENERGY)
+    {
+        if(mResourcesGained[MR_ENERGY] < g.GetQuantity())
+        {
+            g.SetProgress(mResourcesGained[MR_ENERGY] * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_MINE_MATERIAL)
+    {
+        if(mResourcesGained[MR_MATERIAL] < g.GetQuantity())
+        {
+            g.SetProgress(mResourcesGained[MR_MATERIAL] * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_RESIST_TIME)
+    {
+        // check elapsed time
+        const unsigned int playedTime = GetPlayTimeInSec();
+
+        if(playedTime < g.GetQuantity())
+        {
+            g.SetProgress(playedTime * 100 / g.GetQuantity());
+
+            return false;
+        }
+
+        mHUD->HideMissionCountdown();
+    }
+    else
+        return false;
 
     g.SetCompleted();
 
@@ -3319,126 +3299,106 @@ void ScreenGame::SetMissionRewards()
     // set rewards for all goals
     for(MissionGoal & g : mMissionGoals)
     {
-        switch (g.GetType())
+        const auto gt = g.GetType();
+
+        if(gt == MissionGoal::TYPE_COLLECT_BLOBS)
         {
-            case MG_COLLECT_BLOBS:
-            {
-                const int divDiamonds = 10;
-                const int diamonds = g.GetQuantity() / divDiamonds;
-                g.SetRewardByType(MR_DIAMONDS, diamonds);
+            const int divDiamonds = 10;
+            const int diamonds = g.GetQuantity() / divDiamonds;
+            g.SetRewardByType(MR_DIAMONDS, diamonds);
 
-                const int multMoney = 5;
-                const int money = g.GetQuantity() * multMoney;
-                g.SetRewardByType(MR_MONEY, money);
-            }
-            break;
-
-            case MG_COLLECT_DIAMONDS:
-            {
-                const int divBlobs = 10;
-                const int blobs = g.GetQuantity() / divBlobs;
-                g.SetRewardByType(MR_BLOBS, blobs);
-
-                const int multMoney = 5;
-                const int money = g.GetQuantity() * multMoney;
-                g.SetRewardByType(MR_MONEY, money);
-            }
-            break;
-
-            case MG_DESTROY_ENEMY_BASE:
-            {
-                const int money = 10000;
-
-                g.SetRewardByType(MR_MONEY, money);
-            }
-            break;
-
-            case MG_DESTROY_ALL_ENEMIES:
-            {
-                const int money = 15000;
-
-                g.SetRewardByType(MR_MONEY, money);
-            }
-            break;
-
-            case MG_GAIN_MONEY:
-            {
-                const int divBlobs = 100;
-                const int blobs = g.GetQuantity() / divBlobs;
-                g.SetRewardByType(MR_BLOBS, blobs);
-
-                const int divDiamonds = 100;
-                const int diamonds = g.GetQuantity() / divDiamonds;
-                g.SetRewardByType(MR_DIAMONDS, diamonds);
-
-                const int divEnergy = 50;
-                const int energy = g.GetQuantity() / divEnergy;
-                g.SetRewardByType(MR_ENERGY, energy);
-
-                const int divMaterial = 10;
-                const int material = g.GetQuantity() / divMaterial;
-                g.SetRewardByType(MR_MATERIAL, material);
-            }
-            break;
-
-            case MG_MINE_MATERIAL:
-            {
-                const int divEnergy = 10;
-                const int energy = g.GetQuantity() / divEnergy;
-                g.SetRewardByType(MR_ENERGY, energy);
-
-                const int divMoney = 2;
-                const int money = g.GetQuantity() / divMoney;
-                g.SetRewardByType(MR_MONEY, money);
-            }
-            break;
-
-            case MG_MINE_ENERGY:
-            {
-                const int divMaterial = 10;
-                const int material = g.GetQuantity() / divMaterial;
-                g.SetRewardByType(MR_MATERIAL, material);
-
-                const int divMoney = 2;
-                const int money = g.GetQuantity() / divMoney;
-                g.SetRewardByType(MR_MONEY, money);
-            }
-            break;
-
-            case MG_RESIST_TIME:
-            {
-                const int blobs = g.GetQuantity();
-                g.SetRewardByType(MR_BLOBS, blobs);
-
-                const int diamonds = g.GetQuantity();
-                g.SetRewardByType(MR_DIAMONDS, diamonds);
-
-                const int multMoney = 100;
-                const int money = g.GetQuantity() * multMoney;
-                g.SetRewardByType(MR_MONEY, money);
-            }
-            break;
-
-            case MG_COMPLETE_TUTORIAL:
-            {
-                const int blobs = 25;
-                g.SetRewardByType(MR_BLOBS, blobs);
-
-                const int diamonds = 25;
-                g.SetRewardByType(MR_DIAMONDS, diamonds);
-
-                const int energy = 100;
-                g.SetRewardByType(MR_ENERGY, energy);
-
-                const int material = 100;
-                g.SetRewardByType(MR_MATERIAL, material);
-            }
-            break;
-
-            default:
-                std::cout << "[WAR] Mission Goal type unknown: " << g.GetType() << std::endl;
-            break;
+            const int multMoney = 5;
+            const int money = g.GetQuantity() * multMoney;
+            g.SetRewardByType(MR_MONEY, money);
         }
+        else if(gt == MissionGoal::TYPE_COLLECT_DIAMONDS)
+        {
+            const int divBlobs = 10;
+            const int blobs = g.GetQuantity() / divBlobs;
+            g.SetRewardByType(MR_BLOBS, blobs);
+
+            const int multMoney = 5;
+            const int money = g.GetQuantity() * multMoney;
+            g.SetRewardByType(MR_MONEY, money);
+        }
+        else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_BASE)
+        {
+            const int money = 10000;
+
+            g.SetRewardByType(MR_MONEY, money);
+        }
+        else if(gt == MissionGoal::TYPE_DESTROY_ALL_ENEMIES)
+        {
+            const int money = 15000;
+
+            g.SetRewardByType(MR_MONEY, money);
+        }
+        else if(gt == MissionGoal::TYPE_GAIN_MONEY)
+        {
+            const int divBlobs = 100;
+            const int blobs = g.GetQuantity() / divBlobs;
+            g.SetRewardByType(MR_BLOBS, blobs);
+
+            const int divDiamonds = 100;
+            const int diamonds = g.GetQuantity() / divDiamonds;
+            g.SetRewardByType(MR_DIAMONDS, diamonds);
+
+            const int divEnergy = 50;
+            const int energy = g.GetQuantity() / divEnergy;
+            g.SetRewardByType(MR_ENERGY, energy);
+
+            const int divMaterial = 10;
+            const int material = g.GetQuantity() / divMaterial;
+            g.SetRewardByType(MR_MATERIAL, material);
+        }
+        else if(gt == MissionGoal::TYPE_MINE_MATERIAL)
+        {
+            const int divEnergy = 10;
+            const int energy = g.GetQuantity() / divEnergy;
+            g.SetRewardByType(MR_ENERGY, energy);
+
+            const int divMoney = 2;
+            const int money = g.GetQuantity() / divMoney;
+            g.SetRewardByType(MR_MONEY, money);
+        }
+        else if(gt == MissionGoal::TYPE_MINE_ENERGY)
+        {
+            const int divMaterial = 10;
+            const int material = g.GetQuantity() / divMaterial;
+            g.SetRewardByType(MR_MATERIAL, material);
+
+            const int divMoney = 2;
+            const int money = g.GetQuantity() / divMoney;
+            g.SetRewardByType(MR_MONEY, money);
+        }
+        else if(gt == MissionGoal::TYPE_RESIST_TIME)
+        {
+            const int blobs = g.GetQuantity();
+            g.SetRewardByType(MR_BLOBS, blobs);
+
+            const int diamonds = g.GetQuantity();
+            g.SetRewardByType(MR_DIAMONDS, diamonds);
+
+            const int multMoney = 100;
+            const int money = g.GetQuantity() * multMoney;
+            g.SetRewardByType(MR_MONEY, money);
+        }
+        else if(gt == MissionGoal::TYPE_COMPLETE_TUTORIAL)
+        {
+            const int blobs = 25;
+            g.SetRewardByType(MR_BLOBS, blobs);
+
+            const int diamonds = 25;
+            g.SetRewardByType(MR_DIAMONDS, diamonds);
+
+            const int energy = 100;
+            g.SetRewardByType(MR_ENERGY, energy);
+
+            const int material = 100;
+            g.SetRewardByType(MR_MATERIAL, material);
+        }
+        else
+            std::cout << "[WAR] Mission Goal type unknown: " << g.GetType() << std::endl;
     }
 }
 

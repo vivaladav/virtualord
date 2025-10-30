@@ -2,27 +2,10 @@
 
 #include <array>
 #include <string>
+#include <unordered_map>
 
 namespace game
 {
-
-// mission goal types identify different sub-goals of a mission
-enum MissionGoalType : unsigned int
-{
-    MG_COLLECT_BLOBS,
-    MG_COLLECT_DIAMONDS,
-    MG_DESTROY_ENEMY_BASE,
-    MG_DESTROY_ALL_ENEMIES,
-    MG_GAIN_MONEY,
-    MG_MINE_ENERGY,
-    MG_MINE_MATERIAL,
-    MG_RESIST_TIME,
-    MG_COMPLETE_TUTORIAL,
-
-    NUM_MISSION_GOALS,
-
-    MG_UNKNOWN
-};
 
 enum MissionReward : unsigned int
 {
@@ -35,10 +18,26 @@ enum MissionReward : unsigned int
     NUM_MISSION_REWARDS
 };
 
+typedef std::size_t MissionGoalType;
+
 class MissionGoal
 {
 public :
     static const int PROGRESS_UNKNOWN = -1;
+
+    // -- MISSION TYPE --
+    static const MissionGoalType TYPE_NULL;
+    static const MissionGoalType TYPE_COLLECT_BLOBS;
+    static const MissionGoalType TYPE_COLLECT_DIAMONDS;
+    static const MissionGoalType TYPE_COMPLETE_TUTORIAL;
+    static const MissionGoalType TYPE_DESTROY_ENEMY_BASE;
+    static const MissionGoalType TYPE_DESTROY_ALL_ENEMIES;
+    static const MissionGoalType TYPE_GAIN_MONEY;
+    static const MissionGoalType TYPE_MINE_ENERGY;
+    static const MissionGoalType TYPE_MINE_MATERIAL;
+    static const MissionGoalType TYPE_RESIST_TIME;
+
+    static const std::string & GeTypeString(MissionGoalType t);
 
 public:
     MissionGoal(MissionGoalType type, unsigned int quantity, bool primary);
@@ -66,12 +65,25 @@ public:
     void SetRewardByType(MissionReward r, int val);
 
     // STRINGS
-    std::string GetDescription() const;
+    const std::string GetDescription() const;
 
 private:
+    // -- MISSION TYPE STRINGS --
+    static const std::string STR_NULL;
+    static const std::string STR_COLLECT_BLOBS;
+    static const std::string STR_COLLECT_DIAMONDS;
+    static const std::string STR_COMPLETE_TUTORIAL;
+    static const std::string STR_DESTROY_ENEMY_BASE;
+    static const std::string STR_DESTROY_ALL_ENEMIES;
+    static const std::string STR_GAIN_MONEY;
+    static const std::string STR_MINE_ENERGY;
+    static const std::string STR_MINE_MATERIAL;
+    static const std::string STR_RESIST_TIME;
+
     static const std::string TAG_VALUE;
-    static const std::string TITLE[NUM_MISSION_GOALS];
-    static const std::string DESCRIPTION[NUM_MISSION_GOALS];
+    static const std::unordered_map<MissionGoalType, std::string> TITLE;
+    static const std::unordered_map<MissionGoalType, std::string> DESCRIPTION;
+    static const std::unordered_map<MissionGoalType, std::string> STRINGS;
 
 private:
     static unsigned int num;
