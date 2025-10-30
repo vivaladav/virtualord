@@ -856,11 +856,11 @@ void ScreenGame::LoadMapFile()
 {
     const std::string & mapFile = GetGame()->GetCurrentMapFile();
 
-    MapLoader ml;
-    ml.Load(mapFile);
+    MapIO mio;
+    mio.Load(mapFile);
 
-    const unsigned int rows = ml.GetMapRows();
-    const unsigned int cols = ml.GetMapCols();
+    const unsigned int rows = mio.GetMapRows();
+    const unsigned int cols = mio.GetMapCols();
 
     // update iso map
     mIsoMap->SetSize(rows, cols, true);
@@ -868,7 +868,7 @@ void ScreenGame::LoadMapFile()
     // update game map
     mGameMap->SetSize(rows, cols);
 
-    const std::vector<unsigned int> & cells = ml.GetCellTypes();
+    const std::vector<unsigned int> & cells = mio.GetCellTypes();
 
     for(unsigned int r = 0; r < rows; ++r)
     {
@@ -889,7 +889,7 @@ void ScreenGame::LoadMapFile()
     }
 
     // create objects
-    const std::vector<MapObjectEntry> & objEntries = ml.GetObjectEntries();
+    const std::vector<MapObjectEntry> & objEntries = mio.GetObjectEntries();
     const unsigned int numEntries = objEntries.size();
 
     for(unsigned int i = 0; i < numEntries; ++i)
@@ -900,7 +900,7 @@ void ScreenGame::LoadMapFile()
     }
 
     // get mission data
-    mMissionGoals = ml.GetMissionGoals();
+    mMissionGoals = mio.GetMissionGoals();
     SetMissionRewards();
 
 

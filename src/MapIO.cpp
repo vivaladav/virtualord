@@ -10,23 +10,23 @@
 namespace game
 {
 
-const std::string MapLoader::MAP_VERSION("0.2.2");
+const std::string MapIO::MAP_VERSION("0.2.2");
 
-const std::string MapLoader::MAP_TAG_CATEGORY("C");
-const std::string MapLoader::MAP_TAG_COMMENT("#");
-const std::string MapLoader::MAP_TAG_GOAL("G");
-const std::string MapLoader::MAP_TAG_END_HEADER("--1--");
-const std::string MapLoader::MAP_TAG_END_MAP("--2--");
-const std::string MapLoader::MAP_TAG_MAP_SIZE("RC");
-const std::string MapLoader::MAP_TAG_VERSION("V");
+const std::string MapIO::MAP_TAG_CATEGORY("C");
+const std::string MapIO::MAP_TAG_COMMENT("#");
+const std::string MapIO::MAP_TAG_GOAL("G");
+const std::string MapIO::MAP_TAG_END_HEADER("--1--");
+const std::string MapIO::MAP_TAG_END_MAP("--2--");
+const std::string MapIO::MAP_TAG_MAP_SIZE("RC");
+const std::string MapIO::MAP_TAG_VERSION("V");
 const unsigned int LEN_SIMPLE_TAG = 1;
 
-MapLoader::MapLoader()
+MapIO::MapIO()
     : mCategory(MC_UNKNOWN)
 {
 }
 
-void MapLoader::Clear()
+void MapIO::Clear()
 {
     mObjEntries.clear();
     mCellTypes.clear();
@@ -40,7 +40,7 @@ void MapLoader::Clear()
     mCategory = MC_UNKNOWN;
 }
 
-bool MapLoader::Load(const std::string & filename)
+bool MapIO::Load(const std::string & filename)
 {
     // open map file
     std::fstream fs(filename);
@@ -59,7 +59,7 @@ bool MapLoader::Load(const std::string & filename)
     return true;
 }
 
-bool MapLoader::LoadHeader(const std::string & filename)
+bool MapIO::LoadHeader(const std::string & filename)
 {
     // open map file
     std::fstream fs(filename);
@@ -74,7 +74,7 @@ bool MapLoader::LoadHeader(const std::string & filename)
     return true;
 }
 
-bool MapLoader::Save(const std::string & filename, const std::vector<GameMapCell> & cells,
+bool MapIO::Save(const std::string & filename, const std::vector<GameMapCell> & cells,
                      std::vector<GameObject *> objects, const std::vector<MissionGoal> & goals,
                      MissionCategory category, int rows, int cols)
 {
@@ -91,7 +91,7 @@ bool MapLoader::Save(const std::string & filename, const std::vector<GameMapCell
 
     // save current map version
     fs << "# ===== VERSION =====\n";
-    fs << MAP_TAG_VERSION << " " << MapLoader::MAP_VERSION << "\n";
+    fs << MAP_TAG_VERSION << " " << MapIO::MAP_VERSION << "\n";
 
     // mission goals
     fs << "# ====== GOALS =====\n";
@@ -143,7 +143,7 @@ bool MapLoader::Save(const std::string & filename, const std::vector<GameMapCell
     return true;
 }
 
-void MapLoader::ReadHeader(std::fstream & fs)
+void MapIO::ReadHeader(std::fstream & fs)
 {
     std::string line;
     std::istringstream ss;
@@ -220,7 +220,7 @@ void MapLoader::ReadHeader(std::fstream & fs)
     }
 }
 
-void MapLoader::ReadMap(std::fstream & fs)
+void MapIO::ReadMap(std::fstream & fs)
 {
     const unsigned int lenTagEndMap = MAP_TAG_END_MAP.length();
 
@@ -268,7 +268,7 @@ void MapLoader::ReadMap(std::fstream & fs)
 }
 
 
-void MapLoader::ReadObjectsData(std::fstream & fs)
+void MapIO::ReadObjectsData(std::fstream & fs)
 {
     std::string line;
     std::istringstream ss;

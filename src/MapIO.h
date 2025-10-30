@@ -28,13 +28,13 @@ struct MapObjectEntry
     unsigned int c0;
 };
 
-class MapLoader
+class MapIO
 {
 public:
     static const std::string MAP_VERSION;
 
 public:
-    MapLoader();
+    MapIO();
 
     unsigned int GetMapRows() const;
     unsigned int GetMapCols() const;
@@ -85,16 +85,16 @@ private:
     unsigned int mCols = 0 ;
 };
 
-inline unsigned int MapLoader::GetMapRows() const { return mRows; }
-inline unsigned int MapLoader::GetMapCols() const { return mCols; }
+inline unsigned int MapIO::GetMapRows() const { return mRows; }
+inline unsigned int MapIO::GetMapCols() const { return mCols; }
 
-inline const std::string &  MapLoader::GetMapVersion() const { return mVer; }
+inline const std::string &  MapIO::GetMapVersion() const { return mVer; }
 
-inline const std::vector<unsigned int> & MapLoader::GetCellTypes() const { return mCellTypes; }
+inline const std::vector<unsigned int> & MapIO::GetCellTypes() const { return mCellTypes; }
 
-inline const std::vector<MapObjectEntry> & MapLoader::GetObjectEntries() const { return mObjEntries; }
+inline const std::vector<MapObjectEntry> & MapIO::GetObjectEntries() const { return mObjEntries; }
 
-inline MissionCategory MapLoader::GetMissionCategory() { return mCategory; }
-inline const std::vector<MissionGoal> & MapLoader::GetMissionGoals() const { return mGoals; }
+inline MissionCategory MapIO::GetMissionCategory() { return mCategory; }
+inline const std::vector<MissionGoal> & MapIO::GetMissionGoals() const { return mGoals; }
 
 } // namespace game

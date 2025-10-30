@@ -48,12 +48,12 @@ bool MapsRegistry::AddMap(unsigned int planetId, const std::string & file, int e
         return false;
 
     // load data from header
-    MapLoader ml;
-    ml.LoadHeader(file);
+    MapIO mio;
+    mio.LoadHeader(file);
 
-    const MissionCategory mission = ml.GetMissionCategory();
-    const unsigned int rows = ml.GetMapRows();
-    const unsigned int cols = ml.GetMapCols();
+    const MissionCategory mission = mio.GetMissionCategory();
+    const unsigned int rows = mio.GetMapRows();
+    const unsigned int cols = mio.GetMapCols();
 
     // store data
     mData[planetId].emplace_back(file, energy, material, diamonds, blobs,
