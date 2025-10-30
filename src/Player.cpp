@@ -1,5 +1,9 @@
 #include "Player.h"
 
+#ifdef DEV_MODE
+#include "Game.h"
+#endif
+
 #include "GameConstants.h"
 #include "GameMapCell.h"
 #include "AI/PlayerAI.h"
@@ -422,6 +426,18 @@ void Player::AdjustTurnMaxEnergy()
         mOnTurnEnergyChanged();
 }
 
+void Player::ResetTurnEnergy()
+{
+    mTurnEnergy = mTurnMaxEnergy;
+
+#ifdef DEV_MODE
+    if(Game::GOD_MODE && IsLocal())
+        mTurnEnergy = mTurnMaxEnergy * 5.f;
+#endif
+
+    mOnTurnEnergyChanged();
+}
+
 void Player::SumTurnEnergy(float val)
 {
     const float oldVal = mTurnEnergy;
@@ -434,6 +450,11 @@ void Player::SumTurnEnergy(float val)
         mTurnEnergy = mTurnMaxEnergy;
     else if(mTurnEnergy < minEnergy)
         mTurnEnergy = minEnergy;
+
+#ifdef DEV_MODE
+    if(Game::GOD_MODE && IsLocal())
+        mTurnEnergy = oldVal + val;
+#endif
 
     const float diff = std::fabs(mTurnEnergy - oldVal);
 

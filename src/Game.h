@@ -48,6 +48,11 @@ enum Difficulty : unsigned int
 
 class Game : public sgl::core::Application
 {
+#ifdef DEV_MODE
+public:
+    static bool GOD_MODE;
+#endif
+
 public:
     Game(int argc, char * argv[]);
     ~Game();

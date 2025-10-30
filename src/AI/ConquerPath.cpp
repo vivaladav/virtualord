@@ -149,7 +149,12 @@ bool ConquerPath::InitNextConquest()
 
     // TODO get conquer time from unit
     constexpr float TIME_CONQ_CELL = 1.f;
+
+#ifdef DEV_MODE
+    float timeConquest = Game::GOD_MODE ? 0.1f : TIME_CONQ_CELL;
+#else
     float timeConquest = TIME_CONQ_CELL;
+#endif
 
     if(!player->IsLocal() && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
         timeConquest = TIME_AI_MIN;

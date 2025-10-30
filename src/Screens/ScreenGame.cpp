@@ -87,10 +87,8 @@ namespace game
 
 // NOTE these will be replaced by dynamic values soon
 constexpr float TIME_NEW_UNIT = 2.f;
-constexpr float TIME_CONQ_RES_GEN = 2.f;
-constexpr float TIME_UPG_UNIT = 5.f;
+constexpr float TIME_CONQUEST = 2.f;
 
-constexpr float TIME_ENERGY_USE = 8.f;
 constexpr float TIME_AUTO_END_TURN = 2.f;
 
 ScreenGame::ScreenGame(Game * game)
@@ -1828,7 +1826,12 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
 
     // create and init progress bar
     // TODO get time from generator
+
+#ifdef DEV_MODE
+    float timeBuild = Game::GOD_MODE ? 0.1f : TIME_NEW_UNIT;
+#else
     float timeBuild = TIME_NEW_UNIT;
+#endif
 
     // special time for invisible AI
     if(!player->IsLocal() && !mGameMap->IsObjectVisibleToLocalPlayer(gen))
@@ -1898,7 +1901,12 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
 
     // create and init progress bar
     // TODO get time from unit
-    float timeConquest = TIME_CONQ_RES_GEN;
+
+#ifdef DEV_MODE
+    float timeConquest = Game::GOD_MODE ? 0.1f : TIME_CONQUEST;
+#else
+    float timeConquest = TIME_CONQUEST;
+#endif
 
     // special time for invisible AI
     if(!player->IsLocal() && !mGameMap->IsObjectVisibleToLocalPlayer(target))
@@ -1958,7 +1966,7 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
 
     // create and init progress bar
     // TODO get time from unit
-    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(cellTarget, TIME_CONQ_RES_GEN, player->GetFaction());
+    GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(cellTarget, TIME_CONQUEST, player->GetFaction());
 
     pb->AddFunctionOnCompleted([this, unit, cellTarget, player, st]
     {

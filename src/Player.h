@@ -281,11 +281,7 @@ inline bool Player::HasSelectedObject() const { return mSelObj != nullptr; }
 
 inline float Player::GetTurnEnergy() const { return mTurnEnergy; }
 inline float Player::GetTurnMaxEnergy() const { return mTurnMaxEnergy; }
-inline void Player::ResetTurnEnergy()
-{
-    mTurnEnergy = mTurnMaxEnergy;
-    mOnTurnEnergyChanged();
-}
+
 inline void Player::SetOnTurnEnergyChanged(const std::function<void()> & f)
 {
     mOnTurnEnergyChanged = f;

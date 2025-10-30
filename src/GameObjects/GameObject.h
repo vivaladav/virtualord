@@ -402,7 +402,6 @@ inline int GameObject::GetExperienceToNextLevel() const { return mExpToNextLvl; 
 inline int GameObject::GetExperienceLevel() const { return mExpLevel; }
 inline int GameObject::GetMaxExperienceLevel() const { return 10; }
 
-inline float GameObject::GetSpeed() const { return mSpeed; }
 inline void GameObject::SetSpeed(float speed) { mSpeed = speed; }
 
 inline void GameObject::SetRegPower(float val)

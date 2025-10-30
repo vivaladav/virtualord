@@ -398,6 +398,11 @@ void GameObject::SetEnergy(float val)
     else if(mEnergy < 0.f)
         mEnergy = 0.f;
 
+#ifdef DEV_MODE
+    if(Game::GOD_MODE && IsFactionLocal())
+        mEnergy = val;
+#endif
+
     const float diff = std::fabs(mEnergy - oldEn);
 
     if(diff > minDelta)
@@ -482,6 +487,16 @@ void GameObject::RemoveFunctionOnValueChanged(unsigned int fId)
 
     if(it != mOnValueChanged.end())
         mOnValueChanged.erase(it);
+}
+
+float GameObject::GetSpeed() const
+{
+#ifdef DEV_MODE
+    if(Game::GOD_MODE && IsFactionLocal())
+        return mSpeed * 10.f;
+#endif
+
+    return mSpeed;
 }
 
 void GameObject::Hit(float damage, PlayerFaction attacker)
@@ -673,6 +688,11 @@ void GameObject::RestoreTurnEnergy()
     const float energy = std::roundf(baseEnergy + prevEnergy + newEnergy);
 
     SumEnergy(energy);
+
+#ifdef DEV_MODE
+    if(Game::GOD_MODE && IsFactionLocal())
+        SetEnergy(mMaxEnergy * 5);
+#endif
 }
 
 } // namespace game

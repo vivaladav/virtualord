@@ -9,6 +9,10 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
+#ifdef DEV_MODE
+#include <iostream>
+#endif
+
 namespace game
 {
 
@@ -66,6 +70,12 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
             p->SumResource(Player::Stat::BLOBS, -10);
             p->SumResource(Player::Stat::DIAMONDS, -10);
         }
+    }
+    // switch GOD MODE
+    else if(key == KeyboardEvent::KEY_G && event.IsModAltDown())
+    {
+        Game::GOD_MODE = !Game::GOD_MODE;
+        std::cout << "GOD MODE: " << (Game::GOD_MODE ? "ON" : "OFF") << std::endl;
     }
 #endif
 

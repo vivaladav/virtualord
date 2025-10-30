@@ -37,6 +37,10 @@
 namespace game
 {
 
+#ifdef DEV_MODE
+bool Game::GOD_MODE = false;
+#endif
+
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
     , mMapsReg(new MapsRegistry)

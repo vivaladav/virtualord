@@ -101,10 +101,16 @@ bool WallBuildPath::InitNextBuild()
     layerOverlay->ClearObject(mIndicators[mNextCell - 1]);
 
     // TODO get conquer time from unit
-    constexpr float TIME_BUILD = 2.f;
+    constexpr float TIME_BUILD = 0.1f;
+
+#ifdef DEV_MODE
+    float timeBuild = Game::GOD_MODE ? 0.1f : TIME_BUILD;
+#else
+    float timeBuild = TIME_BUILD;
+#endif
 
     GameHUD * HUD = mScreen->GetHUD();
-    mProgressBar = HUD->CreateProgressBarInCell(nextCell, TIME_BUILD, player->GetFaction());
+    mProgressBar = HUD->CreateProgressBarInCell(nextCell, timeBuild, player->GetFaction());
 
     mProgressBar->AddFunctionOnCompleted([this, nextCell, player, layerOverlay]
     {
