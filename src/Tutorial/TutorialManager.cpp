@@ -7,6 +7,12 @@ namespace game
 
 void TutorialManager::Start()
 {
+    // already started
+    if(mStepsAtStart > 0)
+        return ;
+
+    mStepsAtStart = mSteps.size();
+
     StartNextStep();
 }
 
@@ -30,8 +36,9 @@ void TutorialManager::FinalizeStep()
     mCurrStep->OnEnd();
 
     delete mCurrStep;
-
     mCurrStep = nullptr;
+
+    ++mStepsDone;
 }
 
 void TutorialManager::StartNextStep()

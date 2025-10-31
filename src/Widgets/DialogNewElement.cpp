@@ -13,6 +13,7 @@
 #include <sgl/graphic/DummyRenderable.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Text.h>
 #include <sgl/graphic/Texture.h>
@@ -98,10 +99,10 @@ private:
 
 // ===== BUTTON CLOSE =====
 
-class ButtonClose : public sgl::sgui::AbstractButton
+class ButtonCloseDNE : public sgl::sgui::AbstractButton
 {
 public:
-    ButtonClose(sgl::sgui::Widget * parent)
+    ButtonCloseDNE(sgl::sgui::Widget * parent)
         : AbstractButton(parent)
         , mBody(new sgl::graphic::Image)
     {
@@ -353,6 +354,38 @@ public:
 
         static_cast<Image *>(mImage)->SetTexture(texImg);
 
+        // check if image needs to be scaled to fit body
+        const int bodyPad = 0;
+        const int bodyW = mBody->GetWidth() - (bodyPad * 2);
+        const int bodyH = mBody->GetHeight() - (bodyPad * 2);
+        const int imgW = mImage->GetWidth();
+        const int imgH = mImage->GetHeight();
+
+        if(imgW > bodyW || imgH > bodyH)
+        {
+            int newW;
+            int newH;
+
+            if(imgW > imgH)
+            {
+                const float ratio = static_cast<float>(imgH) / static_cast<float>(imgW);
+
+                newW = bodyW;
+                newH = static_cast<int>(bodyW * ratio);
+            }
+            // imgH >= imgW
+            else
+            {
+                const float ratio = static_cast<float>(imgW) / static_cast<float>(imgH);
+
+                newW = static_cast<int>(bodyH * ratio);
+                newH = bodyH;
+            }
+
+            mImage->SetWidth(newW);
+            mImage->SetHeight(newH);
+        }
+
         mHasData = true;
 
         // reset positions
@@ -525,18 +558,18 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
     // BACKGROUND
     graphic::Texture * tex = tm->GetSprite(SpriteFileDialogNewElementExp, IND_DLG_NEWE_BG_TOP);
-    tex->SetScaleMode(0);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
     mBgTop = new graphic::Image(tex);
     RegisterRenderable(mBgTop);
 
     tex = tm->GetSprite(SpriteFileDialogNewElementExp, IND_DLG_NEWE_BG_MID);
-    tex->SetScaleMode(0);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
     mBgMid = new graphic::Image(tex);
     mBgMid->SetHeight(midBgH);
     RegisterRenderable(mBgMid);
 
     tex = tm->GetSprite(SpriteFileDialogNewElementExp, IND_DLG_NEWE_BG_BTM);
-    tex->SetScaleMode(0);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
     mBgBtm = new graphic::Image(tex);
     RegisterRenderable(mBgBtm);
 
@@ -545,7 +578,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     SetSize(w, h);
 
     // CLOSE BUTTON
-    mBtnClose = new ButtonClose(this);
+    mBtnClose = new ButtonCloseDNE(this);
     mBtnClose->SetX(GetWidth() - mBtnClose->GetWidth());
 
     // TITLE

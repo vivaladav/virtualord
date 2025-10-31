@@ -9,6 +9,10 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
+#ifdef DEV_MODE
+#include <iostream>
+#endif
+
 namespace game
 {
 
@@ -21,14 +25,18 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
 
     Game * game = mScreen->GetGame();
 
+#ifdef DEV_MODE
     // SHIFT-ESC -> EXIT
     if(key == KeyboardEvent::KEY_ESCAPE && event.IsModShiftDown())
         game->Exit();
+#endif
 
     // -- WINDOW --
-    else if(key == KeyboardEvent::KEY_F && event.IsModShiftDown())
+    if(key == KeyboardEvent::KEY_F && event.IsModAltDown())
         Window::Instance()->SwitchFullscreen();
-    else if(key == KeyboardEvent::KEY_F1)
+
+#ifdef DEV_MODE
+    if(key == KeyboardEvent::KEY_F1)
         Window::Instance()->SetSize(1280, 720);
     else if(key == KeyboardEvent::KEY_F2)
         Window::Instance()->SetSize(1600, 900);
@@ -63,6 +71,13 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
             p->SumResource(Player::Stat::DIAMONDS, -10);
         }
     }
+    // switch GOD MODE
+    else if(key == KeyboardEvent::KEY_G && event.IsModAltDown())
+    {
+        Game::GOD_MODE = !Game::GOD_MODE;
+        std::cout << "GOD MODE: " << (Game::GOD_MODE ? "ON" : "OFF") << std::endl;
+    }
+#endif
 
     // -- AUDIO --
     else if(event.IsModAltDown())

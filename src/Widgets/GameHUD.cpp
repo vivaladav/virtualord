@@ -4,6 +4,7 @@
 #include "ControlMap.h"
 #include "Game.h"
 #include "GameMap.h"
+#include "GameUIData.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
 #include "Player.h"
@@ -19,17 +20,25 @@
 #include "Widgets/DialogEndMission.h"
 #include "Widgets/DialogExit.h"
 #include "Widgets/DialogExploreTemple.h"
-#include "Widgets/DialogObject.h"
-#include "Widgets/GameMapProgressBar.h"
+#include "Widgets/DialogMissionGoals.h"
 #include "Widgets/DialogNewElement.h"
+#include "Widgets/DialogObject.h"
+#include "Widgets/DialogTrading.h"
+#include "Widgets/GameMapProgressBar.h"
 #include "Widgets/MiniMap.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/PanelResources.h"
 #include "Widgets/PanelSelectedObject.h"
 #include "Widgets/PanelTurnControl.h"
 
+#include <sgl/graphic/Camera.h>
 #include <sgl/graphic/Renderer.h>
+#include <sgl/graphic/Texture.h>
+#include <sgl/graphic/TextureManager.h>
+#include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/ButtonsGroup.h>
+#include <sgl/sgui/Image.h>
 #include <sgl/sgui/Stage.h>
 
 namespace game
@@ -58,7 +67,7 @@ GameHUD::GameHUD(ScreenGame * screen)
     });
 
     // TOP RESOURCE BAR
-    mPanelRes = new PanelResources(player, this);
+    mPanelRes = new PanelResources(player, mScreen->mGameMap, this);
     mPanelRes->SetX((rendW - mPanelRes->GetWidth()) / 2);
 
     // MINIMAP
@@ -199,11 +208,6 @@ void GameHUD::ShowPanelObjectActions(GameObject * obj)
     mPanelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
 }
 
-const sgl::sgui::ButtonsGroup * GameHUD::GetQuickUnitButtonsGroup() const
-{
-    return mGroupUnitSel;
-}
-
 void GameHUD::SetQuickUnitButtonChecked(GameObject * obj)
 {
     // check corresponding quick unit selection button
@@ -228,6 +232,53 @@ void GameHUD::ClearQuickUnitButtonChecked()
 
     if(checked != -1)
         mGroupUnitSel->GetButton(checked)->SetChecked(false);
+}
+
+void GameHUD::ShowDialogMissionGoals()
+{
+    if(mDialogMissionGoals != nullptr)
+        return ;
+
+    mScreen->SetPause(true);
+
+    Game * game = mScreen->GetGame();
+    mDialogMissionGoals = new DialogMissionGoals(mScreen);
+    mDialogMissionGoals->SetFocus();
+
+    mDialogMissionGoals->AddFunctionOnClose([this]
+    {
+        HideDialogMissionGoals();
+    });
+
+    mDialogMissionGoals->AddFunctionOnEnd([this]
+    {
+        // hide dialog
+        mDialogMissionGoals->SetVisible(false);
+
+        // schedule dialog deletion
+        mDialogMissionGoals->DeleteLater();
+        mDialogMissionGoals = nullptr;
+
+        // show dialog game won
+        ShowDialogEndMission(true);
+    });
+
+    TemporaryClosePanels();
+
+    // position dialog
+    CenterWidget(mDialogMissionGoals);
+}
+
+void GameHUD::HideDialogMissionGoals()
+{
+    ReopenPanels();
+
+    // schedule dialog deletion
+    mDialogMissionGoals->DeleteLater();
+    mDialogMissionGoals = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
 }
 
 void GameHUD::ShowDialogEndMission(bool won)
@@ -273,7 +324,7 @@ void GameHUD::ShowDialogExit()
 
     mDialogExit->SetFunctionOnShowingDialogSettings([this]
     {
-        TemporaryCloseSidePanels();
+        TemporaryClosePanels();
 
         // keep game paused
         mScreen->SetPause(true);
@@ -281,7 +332,7 @@ void GameHUD::ShowDialogExit()
 
     mDialogExit->SetFunctionOnHidingDialogSettings([this]
     {
-        ReopenSidePanels();
+        ReopenPanels();
 
         // un-pause game
         mScreen->SetPause(false);
@@ -289,7 +340,7 @@ void GameHUD::ShowDialogExit()
 
     mDialogExit->SetFunctionOnClose([this]
     {
-        ReopenSidePanels();
+        ReopenPanels();
 
         // schedule dialog deletion
         mDialogExit->DeleteLater();
@@ -299,7 +350,7 @@ void GameHUD::ShowDialogExit()
         mScreen->SetPause(false);
     });
 
-    TemporaryCloseSidePanels();
+    TemporaryClosePanels();
 
     // position dialog
     CenterWidget(mDialogExit);
@@ -338,7 +389,7 @@ void GameHUD::ShowDialogExploreTemple(Player * player, Temple * temple)
         });
     });
 
-    TemporaryCloseSidePanels();
+    TemporaryClosePanels();
 
     // position dialog
     CenterWidget(mDialogExploreTemple);
@@ -349,7 +400,7 @@ void GameHUD::HideDialogExploreTemple()
     if(nullptr == mDialogExploreTemple)
         return ;
 
-    ReopenSidePanels();
+    ReopenPanels();
 
     // delete dialog
     mDialogExploreTemple->DeleteLater();
@@ -411,7 +462,7 @@ void GameHUD::ShowDialogNewElement(unsigned int type)
         });
     }
 
-    TemporaryCloseSidePanels();
+    TemporaryClosePanels();
 
     // position dialog
     CenterWidget(mDialogNewElement);
@@ -423,7 +474,7 @@ void GameHUD::HideDialogNewElement()
     if(nullptr == mDialogNewElement)
         return ;
 
-    ReopenSidePanels();
+    ReopenPanels();
 
     // schedule dialog deletion
     mDialogNewElement->DeleteLater();
@@ -460,6 +511,50 @@ void GameHUD::HideMissionCountdown()
     mCountdownLabel = nullptr;
 }
 
+void GameHUD::ShowGoalCompletedIcon()
+{
+    using namespace sgl;
+
+    // icon already visible
+    if(mGoalCompletedIcon != nullptr)
+        return ;
+
+    const Player * p = mScreen->GetGame()->GetLocalPlayer();
+    const PlayerFaction pf = p->GetFaction();
+    const auto bases = p->GetStructuresByType(GameObject::TYPE_BASE);
+
+    // this shouldn't happen
+    if(bases.empty())
+        return ;
+
+    // create icon
+    auto tm = graphic::TextureManager::Instance();
+    auto tex = tm->GetSprite(SpriteFileGameUI, ID_GAMEUI_GOAL_F1 + pf);
+
+    mGoalCompletedIcon = new sgui::Image(tex, this);
+    // set camera to default to follow screen
+    mGoalCompletedIcon->SetCamera(graphic::Camera::GetDefaultCamera());
+
+    // position icon over base
+    const Structure * base = bases[0];
+    const IsoObject * isoObj = base->GetIsoObject();
+
+    const int x = isoObj->GetX() + (isoObj->GetWidth() - mGoalCompletedIcon->GetWidth()) / 2;
+    const int y = isoObj->GetY() + (isoObj->GetHeight() - mGoalCompletedIcon->GetHeight()) / 2;
+
+    mGoalCompletedIcon->SetPosition(x, y);
+
+    // play sound
+    auto player = media::AudioManager::Instance()->GetPlayer();
+    player->PlaySound("UI/goal_completed.ogg");
+}
+
+void GameHUD::HideGoalCompletedIcon()
+{
+    delete mGoalCompletedIcon;
+    mGoalCompletedIcon = nullptr;
+}
+
 void GameHUD::HidePanelSelectedObject()
 {
     mButtonPanelSelObj->SetVisible(false);
@@ -486,6 +581,40 @@ void GameHUD::ShowTurnControlTextEnemyTurn()
 void GameHUD::ShowTurnControlTextGamePaused()
 {
     mPanelTurnCtrl->ShowText("- GAME PAUSED -");
+}
+
+void GameHUD::ShowDialogTrading()
+{
+    if(mDialogTrading != nullptr)
+        return ;
+
+    mScreen->SetPause(true);
+
+    Game * game = mScreen->GetGame();
+    mDialogTrading = new DialogTrading(game, game->GetLocalPlayer());
+    mDialogTrading->SetFocus();
+
+    mDialogTrading->SetFunctionOnClose([this]
+    {
+        HideDialogTrading();
+    });
+
+    TemporaryClosePanels();
+
+    // position dialog
+    CenterWidget(mDialogTrading);
+}
+
+void GameHUD::HideDialogTrading()
+{
+    ReopenPanels();
+
+    // schedule dialog deletion
+    mDialogTrading->DeleteLater();
+    mDialogTrading = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
 }
 
 void GameHUD::SetLocalActionsEnabled(bool enabled)
@@ -527,7 +656,7 @@ void GameHUD::HideDialogExploreTempleOutcome()
     if(nullptr == mDialogExploreTempleOutcome)
         return ;
 
-    ReopenSidePanels();
+    ReopenPanels();
 
     // schedule dialog deletion
     mDialogExploreTempleOutcome->DeleteLater();
@@ -567,7 +696,7 @@ void GameHUD::ShowDialogExploreTempleOutcome(Player * player, Temple * temple)
         mScreen->mGameMap->HandleTempleExplorationOutcome(outcome, player, temple);
     });
 
-    TemporaryCloseSidePanels();
+    TemporaryClosePanels();
 
     // position dialog
     CenterWidget(mDialogExploreTempleOutcome);
@@ -578,7 +707,7 @@ void GameHUD::HideDialogObject()
     // hide dialog
     mDialogObj->SetVisible(false);
 
-    ReopenSidePanels();
+    ReopenPanels();
 
     sgl::sgui::Stage::Instance()->SetFocus();
 
@@ -596,7 +725,7 @@ void GameHUD::ShowDialogObject(GameObject * obj)
     mDialogObj->SetVisible(true);
     mDialogObj->SetFocus();
 
-    TemporaryCloseSidePanels();
+    TemporaryClosePanels();
 }
 
 void GameHUD::ClosePanelMinimap()
@@ -623,22 +752,28 @@ void GameHUD::OpenPanelSelectedObject()
     mPanelSelObj->SetVisible(true);
 }
 
-void GameHUD::TemporaryCloseSidePanels()
+void GameHUD::TemporaryClosePanels()
 {
     if(mPanelSelObj->IsVisible())
         ClosePanelSelectedObject();
 
     if(mMiniMap->IsVisible())
         ClosePanelMinimap();
+
+    if(mPanelObjActions->IsVisible())
+        mPanelObjActions->SetVisible(false);
 }
 
-void GameHUD::ReopenSidePanels()
+void GameHUD::ReopenPanels()
 {
     if(mButtonPanelSelObj->IsVisible())
         OpenPanelSelectedObject();
 
     if(mButtonMinimap->IsVisible())
         OpenPanelMinimap();
+
+    if(mPanelObjActions->HasObjectSet())
+        mPanelObjActions->SetVisible(true);
 }
 
 GameMapProgressBar * GameHUD::CreateProgressBar(float time, PlayerFaction faction)

@@ -4,7 +4,11 @@
 
 namespace sgl
 {
-    namespace sgui { class ButtonsGroup; }
+    namespace sgui
+    {
+        class ButtonsGroup;
+        class Image;
+    }
 }
 
 namespace game
@@ -17,11 +21,14 @@ class CountdownLabel;
 class DialogExit;
 class DialogExploreTemple;
 class DialogExploreTempleOutcome;
+class DialogMissionGoals;
 class DialogNewElement;
 class DialogObject;
+class DialogTrading;
 class GameMapProgressBar;
 class GameObject;
 class MiniMap;
+class MissionGoal;
 class PanelObjectActions;
 class PanelResources;
 class PanelSelectedObject;
@@ -51,6 +58,10 @@ public:
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
 
+    DialogMissionGoals * GetDialogMissionGoals() const;
+    void ShowDialogMissionGoals();
+    void HideDialogMissionGoals();
+
     void ShowDialogEndMission(bool won);
     void ShowDialogExit();
     void ShowDialogExploreTemple(Player * player, Temple * temple);
@@ -62,6 +73,9 @@ public:
     void ShowMissionCountdown(int secs);
     void HideMissionCountdown();
 
+    void ShowGoalCompletedIcon();
+    void HideGoalCompletedIcon();
+
     void HidePanelSelectedObject();
     void ShowPanelSelectedObject(GameObject * obj);
     const PanelSelectedObject * GetPanelSelectedObject() const;
@@ -70,6 +84,9 @@ public:
     void ShowTurnControlTextEnemyTurn();
     void ShowTurnControlTextGamePaused();
     const PanelTurnControl * GetPanelTurnControl() const;
+
+    void ShowDialogTrading();
+    void HideDialogTrading();
 
     void SetLocalActionsEnabled(bool enabled);
 
@@ -86,8 +103,8 @@ private:
     void ClosePanelSelectedObject();
     void OpenPanelSelectedObject();
 
-    void TemporaryCloseSidePanels();
-    void ReopenSidePanels();
+    void TemporaryClosePanels();
+    void ReopenPanels();
 
     GameMapProgressBar * CreateProgressBar(float time, PlayerFaction faction);
 
@@ -105,16 +122,27 @@ private:
     DialogExit * mDialogExit = nullptr;
     DialogExploreTemple * mDialogExploreTemple = nullptr;
     DialogExploreTempleOutcome * mDialogExploreTempleOutcome = nullptr;
+    DialogMissionGoals * mDialogMissionGoals = nullptr;
     DialogNewElement * mDialogNewElement = nullptr;
     DialogObject * mDialogObj = nullptr;
+    DialogTrading * mDialogTrading = nullptr;
 
     PanelSelectedObject * mPanelSelObj = nullptr;
     ButtonPanelSelectedObject * mButtonPanelSelObj = nullptr;
+
+    sgl::sgui::Image * mGoalCompletedIcon = nullptr;
 
     ScreenGame * mScreen = nullptr;
 };
 
 inline MiniMap * GameHUD::GetMinimap() const { return mMiniMap; }
+
+inline const sgl::sgui::ButtonsGroup * GameHUD::GetQuickUnitButtonsGroup() const
+{
+    return mGroupUnitSel;
+}
+
+inline DialogMissionGoals * GameHUD::GetDialogMissionGoals() const { return mDialogMissionGoals; }
 
 inline DialogNewElement * GameHUD::GetDialogNewElement() { return mDialogNewElement; }
 

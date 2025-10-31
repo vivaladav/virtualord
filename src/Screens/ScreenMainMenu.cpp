@@ -19,6 +19,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/sgui/Image.h>
 #include <sgl/sgui/Label.h>
 #include <sgl/sgui/PushButton.h>
 #include <sgl/sgui/Stage.h>
@@ -48,6 +49,10 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     auto tex = tm->GetTexture("main_menu_bg.png");
 
     mBg = new graphic::Image(tex);
+
+    // -- BUILD BADGE --
+    auto bb = new sgui::Image("UI/main_menu_build_badge.png");
+    bb->SetX(screenW - bb->GetWidth());
 
     // -- BUTTON NEW GAME --
     ButtonMainMenu * button = new ButtonMainMenu("NEW GAME", panelButtons);
@@ -95,7 +100,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     btnWishlist->AddOnClickFunction([]
     {
         utilities::System sys;
-        sys.OpenUrlInBrowser("https://store.steampowered.com/app/1607580/Virtueror_The_Virtual_Conqueror/"
+        sys.OpenUrlInBrowser("https://store.steampowered.com/app/1607580/Virtualord_The_Virtual_Conqueror/"
                              "?utm_source=game&utm_medium=button&utm_campaign=game&utm_content=mainmenu");
     });
 
@@ -180,6 +185,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     const std::string strBuild = std::string(VERSION_BRANCH) + std::string("-") +
                                  std::string(VERSION_NUM) + strBuildType + std::string("-") +
                                  std::string(VERSION_SHORT_HASH);
+
     auto labelBuild = new sgui::Label(strBuild.c_str(), fnt);
     labelBuild->SetColor(colorVersion);
 
@@ -190,6 +196,19 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     const int labelVerX = screenW - labelVer->GetWidth() - marginLabelH;
     const int labelVerY = labelBuildY - labelVer->GetHeight();
     labelVer->SetPosition(labelVerX, labelVerY);
+
+#ifdef DEV_MODE
+    // SHOW DEV MODE LABEL
+    graphic::Font * fntBold = fm->GetFont("Lato-Bold.ttf", 20, graphic::Font::NORMAL);
+
+    const unsigned int colorDev = 0xf66455ff;
+    auto labelDEV = new sgui::Label("DEVELOPER MODE", fntBold);
+    labelDEV->SetColor(colorDev);
+
+    const int labelDevX = screenW - labelDEV->GetWidth() - marginLabelH;
+    const int labelDevY = labelVerY - labelDEV->GetHeight();
+    labelDEV->SetPosition(labelDevX, labelDevY);
+#endif
 
     // makes sure game data is cleared before starting something new
     game->ClearGameData();
@@ -209,9 +228,11 @@ void ScreenMainMenu::OnKeyUp(sgl::core::KeyboardEvent & event)
 {
     const int key = event.GetKey();
 
+#ifdef DEV_MODE
     // CTRL-T -> open test screen
     if(key == sgl::core::KeyboardEvent::KEY_T && event.IsModCtrlDown())
         GetGame()->RequestNextActiveState(StateId::TEST);
+#endif
 }
 
 void ScreenMainMenu::Update(float update)
@@ -266,7 +287,7 @@ void ScreenMainMenu::CreateChangelog()
 
     // CONTENT
     const unsigned int colorContent = 0xb8ced9ff;
-    const int contentW = 385;
+    const int contentW = 390;
     const int paddingV = 25;
 
     auto fm = graphic::FontManager::Instance();
@@ -277,37 +298,28 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.2.0 - \"xxx\"", font, content);
+    auto title = new sgui::Label("0.3.0 - \"A New Beginning\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
     contY += title->GetHeight() + paddingV;
 
+    // CONTENT NOTE
+    auto textNewFeat = new sgui::TextArea(contentW, 0, font, true, content);
+    textNewFeat->SetText("this is the first version of Virtualord, hence the changelog "
+                         "has been cleared.\n"
+                         "It will be updated in the future when new versions of the "
+                         "game are released.");
+    textNewFeat->SetPosition(contX, contY);
+    textNewFeat->SetColor(colorContent);
+
+    // NOTE commented out for future reference/usage
+    /*
     // CONTENT BLOCK: NEW FEATURES
     const int minBlockH = 0;
 
     auto textNewFeat = new sgui::TextArea(contentW, minBlockH, font, true, content);
     textNewFeat->SetText("NEW FEATURES\n"
-                         "- Changed game from RTS to TBS!\n"
-                         "- Added option for disabling edge map scrolling.\n"
-                         "- Scrollable areas can be scrolled with mouse wheel.\n"
-                         "- New map object: loot box.\n"
-                         "- New map object: abandoned temple.\n"
-                         "- New map object: barracks.\n"
-                         "- New map object: hospital.\n"
-                         "- New map object: research center.\n"
-                         "- New map object: bunker.\n"
-                         "- New unit: medic.\n"
-                         "- New unit action: healing.\n"
-                         "- Trees now can grow into surrounding cells.\n"
-                         "- Missions can be completed and that reflects on the planet map.\n"
-                         "- Enemy units will shoot yours.\n"
-                         "- Map dragging in mission screen and related options in settings.\n"
-                         "- Added selected object panel in mission.\n"
-                         "- Added object dialog in mission.\n"
-                         "- Game objects gain experience by doing things.\n"
-                         "- AI can build structures.\n"
-                         "- Blinking icon appears on top of structures if not linked to base.\n"
                         );
     textNewFeat->SetPosition(contX, contY);
     textNewFeat->SetColor(colorContent);
@@ -317,9 +329,6 @@ void ScreenMainMenu::CreateChangelog()
     // CONTENT BLOCK: IMPROVEMENTS
     auto textImpr = new sgui::TextArea(contentW, minBlockH, font, true, content);
     textImpr->SetText("IMPROVEMENTS\n"
-                      "- New structure dialog now groups structures by category.\n"
-                      "- MiniMap now requires a connected radar station to work.\n"
-                      "- Added more tooltips to game UI.\n"
                      );
     textImpr->SetPosition(contX, contY);
     textImpr->SetColor(colorContent);
@@ -329,13 +338,6 @@ void ScreenMainMenu::CreateChangelog()
     // CONTENT BLOCK: CHANGES
     auto textChange = new sgui::TextArea(contentW, minBlockH, font, true, content);
     textChange->SetText("CHANGES\n"
-                        "- Map scrolling with W,A,S,D instead than arrows.\n"
-                        "- Units move along the planned path while conquering cells.\n"
-                        "- Units move along the planned path while building walls.\n"
-                        "- Planet screen redesigned.\n"
-                        "- Minimap bigger and minor redesign to match selected object panel.\n"
-                        "- Base generates a bit of power and material each turn.\n"
-                        "- Base can only build workers, whereas barracks build soldiers.\n"
                      );
     textChange->SetPosition(contX, contY);
     textChange->SetColor(colorContent);
@@ -345,12 +347,10 @@ void ScreenMainMenu::CreateChangelog()
     // CONTENT BLOCK: FIXES
     auto textFix = new sgui::TextArea(contentW, minBlockH, font, true, content);
     textFix->SetText("FIXES\n"
-                     "- Action panel re-enabled randomly by any unit.\n"
-                     "- Moving unit conquering structrure after action is cancelled.\n"
-                     "- Several minor fixes.\n"
                     );
     textFix->SetPosition(contX, contY);
     textFix->SetColor(colorContent);
+    */
 
     // set content
     mDialogChangelog->SetContent(content);

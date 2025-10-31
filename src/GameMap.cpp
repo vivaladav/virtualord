@@ -32,6 +32,7 @@
 #include "GameObjects/ResourceStorage.h"
 #include "GameObjects/SceneObject.h"
 #include "GameObjects/Temple.h"
+#include "GameObjects/TradingPost.h"
 #include "GameObjects/Trees.h"
 #include "GameObjects/Unit.h"
 #include "GameObjects/Wall.h"
@@ -470,6 +471,8 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new DefensiveTower(data);
     else if(GameObject::TYPE_BUNKER == type)
         o2a.obj = new Bunker(data);
+    else if(GameObject::TYPE_TRADING_POST == type)
+        o2a.obj = new TradingPost(data);
     else if(GameObject::TYPE_WALL == type)
         o2a.obj = new Wall(variant);
     else if(GameObject::TYPE_WALL_GATE == type)
@@ -486,7 +489,9 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
             faction = o2a.owner->GetFaction();
         }
 
-        o2a.obj = new Base;
+
+        auto b = new Base;
+        o2a.obj = b;
 
         // base cells update
         for(unsigned int r = o2a.r1; r <= r0; ++r)
@@ -503,7 +508,7 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
             }
         }
 
-        o2a.owner->SetBase(o2a.obj);
+        o2a.owner->SetBase(b);
         o2a.owner->SumCells(rows * cols);
     }
     else if(GameObject::TYPE_PRACTICE_TARGET == type)
@@ -1168,30 +1173,30 @@ void GameMap::HandleTempleExplorationOutcome(unsigned int outcome, Player * p, T
             case Temple::EXP_REW_MULT10_MONEY:
             {
                 const int mult = 10;
-                p->SetResource(Player::Stat::MONEY, money.GetIntValue() * mult);
+                p->SetResource(Player::Stat::MONEY, money.GetValue() * mult);
             }
             break;
 
             case Temple::EXP_REW_MAX_RES_ENE_MAT:
             {
-                p->SetResource(Player::Stat::ENERGY, energy.GetIntMax());
-                p->SetResource(Player::Stat::MATERIAL, material.GetIntMax());
+                p->SetResource(Player::Stat::ENERGY, energy.GetMax());
+                p->SetResource(Player::Stat::MATERIAL, material.GetMax());
             }
             break;
 
             case Temple::EXP_REW_MAX_RES_BLO_DIA:
             {
-                p->SetResource(Player::Stat::BLOBS, blobs.GetIntMax());
-                p->SetResource(Player::Stat::DIAMONDS, diamonds.GetIntMax());
+                p->SetResource(Player::Stat::BLOBS, blobs.GetMax());
+                p->SetResource(Player::Stat::DIAMONDS, diamonds.GetMax());
             }
             break;
 
             case Temple::EXP_REW_MAX_RESOURCES:
             {
-                p->SetResource(Player::Stat::ENERGY, energy.GetIntMax());
-                p->SetResource(Player::Stat::MATERIAL, material.GetIntMax());
-                p->SetResource(Player::Stat::BLOBS, blobs.GetIntMax());
-                p->SetResource(Player::Stat::DIAMONDS, diamonds.GetIntMax());
+                p->SetResource(Player::Stat::ENERGY, energy.GetMax());
+                p->SetResource(Player::Stat::MATERIAL, material.GetMax());
+                p->SetResource(Player::Stat::BLOBS, blobs.GetMax());
+                p->SetResource(Player::Stat::DIAMONDS, diamonds.GetMax());
             }
             break;
 
@@ -2417,6 +2422,11 @@ bool GameMap::IsAreaFree(int brR, int brC, int rows, int cols)
 
 void GameMap::OnNewTurn(PlayerFaction faction)
 {
+    // assign money to faction based on map influence
+    const int money = GetFactionMoneyPerTurn(faction);
+    auto p = mGame->GetPlayerByFaction(faction);
+    p->SumResource(Player::MONEY, money);
+
     // notify all objects
     for(GameObject * obj : mObjects)
         obj->OnNewTurn(faction);
@@ -2424,6 +2434,14 @@ void GameMap::OnNewTurn(PlayerFaction faction)
     // notify all generators
     for(CollectableGenerator * cg : mCollGen)
         cg->OnNewTurn();
+}
+
+int GameMap::GetFactionMoneyPerTurn(PlayerFaction faction)
+{
+    const int perc = mControlMap->GetPercentageControlledByFaction(faction);
+    const int maxMoney = 1000 / 100;
+
+    return maxMoney * perc;
 }
 
 void GameMap::Update(float delta)

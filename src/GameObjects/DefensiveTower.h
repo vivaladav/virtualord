@@ -5,7 +5,7 @@
 namespace game
 {
 
-struct ObjectData;
+class ObjectData;
 
 class DefensiveTower : public Structure
 {

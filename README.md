@@ -1,7 +1,7 @@
-# VIRTUEROR - THE VIRTUAL CONQUEROR
-![Virtueror - The Virtual Conqueror](https://i.imgur.com/2j1Ob3l.jpg)
+# VIRTUALORD - THE VIRTUAL CONQUEROR
+![Virtualord - The Virtual Conqueror](https://i.imgur.com/2j1Ob3l.jpg)
 
-An isometric Real Time Strategy game with 4x and RPG elements for PC (Linux and Windows).
+An isometric Turn Based Strategy game with 4X and RPG elements for PC (Linux and Windows).
 
 Code here on GitHub is usually updated once a month, when I publish a new dev log.
 
@@ -15,7 +15,7 @@ If you want to influence the development and to know more about what's happening
 [![Join us on Discord](https://cdn.akamai.steamstatic.com/steam/apps/1607580/extras/join_discord.png?t=1643724257)](https://discord.gg/pdEPr7efQX)
 
 You can also follow all the less frequent updates on social media:
-- [Newsletter](https://virtueror.com)
+- [Website](https://virtualord.com)
 - [Twitter](https://twitter.com/vivaladev)
 - [Youtube](https://www.youtube.com/channel/UCUYD1ElkmiIklQRemVGxarw).
 - [Linkedin](https://www.linkedin.com/company/vivaladev)
@@ -25,6 +25,6 @@ You can also follow all the less frequent updates on social media:
 ## Current status
 Early development, not playable yet.
 
-![Virtueror, red faction](https://i.imgur.com/cQ2SYwG.png)
-![Virtueror, green faction](https://i.imgur.com/KICzqh7.png)
-![Virtueror, blue faction](https://i.imgur.com/skhKynO.png)
+![Virtualord, red faction](https://i.imgur.com/cQ2SYwG.png)
+![Virtualord, green faction](https://i.imgur.com/KICzqh7.png)
+![Virtualord, blue faction](https://i.imgur.com/skhKynO.png)

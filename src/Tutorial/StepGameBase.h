@@ -5,6 +5,7 @@
 namespace game
 {
 
+class Base;
 class FocusArea;
 class GameObject;
 class PanelClickFilter;
@@ -13,7 +14,7 @@ class PanelInfoTutorial;
 class StepGameBase : public TutorialStep
 {
 public:
-    StepGameBase(const GameObject * b);
+    StepGameBase(const Base * b);
     ~StepGameBase();
 
     void OnStart() override;
@@ -25,7 +26,7 @@ private:
     PanelClickFilter * mClickFilter = nullptr;
     PanelInfoTutorial * mInfo = nullptr;
 
-    const GameObject * mBase = nullptr;
+    const Base * mBase = nullptr;
 
     bool mCheckBaseSelected = false;
 };

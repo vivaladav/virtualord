@@ -24,7 +24,7 @@ PanelPlanetInfo::PanelPlanetInfo()
     : sgl::sgui::Widget(nullptr)
     , mOccupier(NO_FACTION)
     , mStatus(TER_ST_UNKNOWN)
-    , mMission(MISSION_UNKNOWN)
+    , mMission(MC_UNKNOWN)
 {
     using namespace sgl;
 
@@ -107,7 +107,8 @@ void PanelPlanetInfo::ClearData()
         return ;
 
     mValue = 0;
-    mSize = 0;
+    mRows = 0;
+    mCols = 0;
     mStatus = TER_ST_UNKNOWN;
     mOccupier = NO_FACTION;
 
@@ -119,17 +120,18 @@ void PanelPlanetInfo::ClearData()
     UpdatePositions();
 }
 
-void PanelPlanetInfo::SetData(int size, TerritoryStatus status, PlayerFaction faction,
-                              unsigned int value, MissionType mission)
+void PanelPlanetInfo::SetData(unsigned int rows, unsigned int cols, TerritoryStatus status,
+                              PlayerFaction faction, unsigned int value, MissionCategory mission)
 {
-    const bool sizeChanged = size != mSize;
+    const bool sizeChanged = rows != mRows || cols != mCols;
     const bool statusChanged = status != mStatus;
     const bool factionChanged = faction != mOccupier;
     const bool valueChanged = value != mValue;
     const bool missionChanged = mission != mMission;
 
     mValue = value;
-    mSize = size;
+    mRows = rows;
+    mCols = cols;
     mStatus = status;
     mOccupier = faction;
     mMission = mission;
@@ -253,10 +255,10 @@ void PanelPlanetInfo::UpdateTerritorySize()
     graphic::Font * fntData = fm->GetFont(fileFont, WidgetsConstants::FontSizePlanetMapText,
                                           graphic::Font::NORMAL);
 
-    if(mSize > 0)
+    if(mRows > 0 && mCols > 0)
     {
         std::ostringstream s;
-        s << mSize << "x" << mSize;
+        s << mRows << "x" << mCols;
 
         mLabelSize = new graphic::Text(s.str().c_str(), fntData);
     }
@@ -357,8 +359,8 @@ void PanelPlanetInfo::UpdateMissionType()
     graphic::Font * fntData = fm->GetFont(fileFont, WidgetsConstants::FontSizePlanetMapText,
                                          graphic::Font::NORMAL);
 
-    if(mMission < NUM_MISSION_TYPES)
-        mLabelMission = new graphic::Text(MISSIONS_TITLE[mMission], fntData);
+    if(mMission < NUM_MISSION_CATEGORIES)
+        mLabelMission = new graphic::Text(MISSION_CATEGORY_TITLE[mMission], fntData);
     else if(MISSION_COMPLETED == mMission)
         mLabelMission = new graphic::Text("-", fntData);
     // UNKNOWN

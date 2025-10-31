@@ -25,6 +25,7 @@ public:
         BTN_BUILD_UNIT_BARRACKS,
         BTN_BUILD_UNIT_BASE,
         BTN_BUILD_UNIT_HOSPITAL,
+        BTN_MISSION_GOALS,
         BTN_MOVE,
         BTN_ATTACK,
         BTN_HEAL_HOSPITAL,
@@ -35,6 +36,7 @@ public:
         BTN_UPGRADE,
         BTN_OPEN_GATE,
         BTN_CLOSE_GATE,
+        BTN_TRADE,
         BTN_CANCEL,
 
         NUM_BUTTONS
@@ -46,8 +48,10 @@ public:
 
     void ClearObject();
     void SetObject(GameObject * obj);
+    bool HasObjectSet() const;
 
-    void SetButtonFunction(Button btnId, const std::function<void()> & f);
+    unsigned int AddButtonFunction(Button btnId, const std::function<void()> & f);
+    void RemoveButtonFunction(Button btnId, unsigned int funId);
 
     void SetActionsEnabled(bool val);
 
@@ -58,5 +62,7 @@ private:
 
     GameObject * mObj = nullptr;
 };
+
+inline bool PanelObjectActions::HasObjectSet() const { return mObj != nullptr; }
 
 } // namespace game

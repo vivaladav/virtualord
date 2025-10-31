@@ -25,11 +25,13 @@ public:
         CONQUER_CELL,
         BUILD_WALL,
         BUILD_STRUCT,
+        MISSION_GOALS,
         UPGRADE,
         OPEN_GATE,
         CLOSE_GATE,
         CANCEL,
         HEAL,
+        TRADE,
 
         NUM_ACTION_ICONS
     };

@@ -44,7 +44,7 @@ private:
 
     sgl::sgui::ImageButton * mButtonClose = nullptr;
 
-    sgl::sgui::Image * mImg = nullptr;
+    sgl::graphic::Image * mImg = nullptr;
     sgl::sgui::TextArea * mTitle = nullptr;
     sgl::sgui::Image * mBarLvl = nullptr;
 

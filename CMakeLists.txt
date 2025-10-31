@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5.1)
 
-project(virtueror LANGUAGES CXX VERSION 0.2.0)
+project(virtualord LANGUAGES CXX VERSION 0.2.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -10,7 +10,9 @@ add_compile_definitions($<$<PLATFORM_ID:Linux>:LINUX=1>
                         $<$<PLATFORM_ID:Windows>:WINDOWS=1>
                         $<$<CONFIG:Debug>:DEBUG=1>
                         $<$<CONFIG:Release>:RELEASE=1>
-                        $<$<CONFIG:RelWithDebInfo>:RELEASE=1>)
+                        $<$<CONFIG:RelWithDebInfo>:RELEASE=1>
+                        $<$<BOOL:${DEV_MODE}>:DEV_MODE=1>
+                        )
 
 # include internal libraries
 add_subdirectory(lib)
@@ -42,10 +44,12 @@ add_executable(
     src/IsoMap.cpp
     src/IsoObject.h
     src/IsoObject.cpp
-    src/MapLoader.h
-    src/MapLoader.cpp
+    src/MapIO.h
+    src/MapIO.cpp
     src/MapsRegistry.h
     src/MapsRegistry.cpp
+    src/MissionGoal.h
+    src/MissionGoal.cpp
     src/Player.h
     src/Player.cpp
     src/StatValue.h
@@ -111,6 +115,8 @@ add_executable(
     src/GameObjects/Structure.cpp
     src/GameObjects/Temple.h
     src/GameObjects/Temple.cpp
+    src/GameObjects/TradingPost.h
+    src/GameObjects/TradingPost.cpp
     src/GameObjects/Trees.h
     src/GameObjects/Trees.cpp
     src/GameObjects/Unit.h
@@ -216,6 +222,10 @@ add_executable(
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/StepGameMapNavigation.h
     src/Tutorial/StepGameMapNavigation.cpp
+    src/Tutorial/StepGameMissionGoalsIcon.h
+    src/Tutorial/StepGameMissionGoalsIcon.cpp
+    src/Tutorial/StepGameMissionGoalsDialog.h
+    src/Tutorial/StepGameMissionGoalsDialog.cpp
     src/Tutorial/StepGameMoveCamera.h
     src/Tutorial/StepGameMoveCamera.cpp
     src/Tutorial/StepGameMoveUnit.h
@@ -297,12 +307,16 @@ add_executable(
     src/Widgets/DialogExit.cpp
     src/Widgets/DialogExploreTemple.h
     src/Widgets/DialogExploreTemple.cpp
+    src/Widgets/DialogMissionGoals.h
+    src/Widgets/DialogMissionGoals.cpp
     src/Widgets/DialogNewElement.h
     src/Widgets/DialogNewElement.cpp
     src/Widgets/DialogObject.h
     src/Widgets/DialogObject.cpp
     src/Widgets/DialogSettings.h
     src/Widgets/DialogSettings.cpp
+    src/Widgets/DialogTrading.h
+    src/Widgets/DialogTrading.cpp
     src/Widgets/DigitsDisplay.h
     src/Widgets/DigitsDisplay.cpp
     src/Widgets/GameButton.h
@@ -355,6 +369,8 @@ add_executable(
     src/Widgets/ProgressBarTurnEnergy.cpp
     src/Widgets/ResourceDisplay.h
     src/Widgets/ResourceDisplay.cpp
+    src/Widgets/ResourceTooltip.h
+    src/Widgets/ResourceTooltip.cpp
     src/Widgets/SimpleResourceDisplay.h
     src/Widgets/SimpleResourceDisplay.cpp
     src/Widgets/WidgetsConstants.h

@@ -22,6 +22,9 @@ private:
     FocusArea * mFocusArea = nullptr;
     PanelClickFilter * mClickFilter = nullptr;
     PanelInfoTutorial * mInfo = nullptr;
+    PanelObjectActions * mPanelActions = nullptr;
+
+    unsigned int mClickId = 0;
 };
 
 } // namespace game

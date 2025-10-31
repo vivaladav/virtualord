@@ -3,6 +3,7 @@
 #include "GameConstants.h"
 #include "GameMap.h"
 #include "Player.h"
+#include "GameObjects/Base.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "GameObjects/ResourceGenerator.h"
 #include "GameObjects/Structure.h"
@@ -402,10 +403,10 @@ void PlayerAI::AddActionBaseCreateUnit(Structure * base)
     std::vector<GameObjectTypeId> types { GameObject::TYPE_UNIT_WORKER1 };
     const unsigned int numTypes = types.size();
 
-    const int energy = mPlayer->GetStat(Player::ENERGY).GetIntValue();
-    const int material = mPlayer->GetStat(Player::MATERIAL).GetIntValue();
-    const int blobs = mPlayer->GetStat(Player::BLOBS).GetIntValue();
-    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetIntValue();
+    const int energy = mPlayer->GetStat(Player::ENERGY).GetValue();
+    const int material = mPlayer->GetStat(Player::MATERIAL).GetValue();
+    const int blobs = mPlayer->GetStat(Player::BLOBS).GetValue();
+    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetValue();
 
     unsigned int bestInd = numTypes;
     int bestPriority = mMinPriority;
@@ -585,7 +586,7 @@ void PlayerAI::AddActionUnitAttackTrees(Unit * u)
 
     const unsigned int numTrees = mTrees.size();
     const int maxDist = mGm->GetNumRows() * mGm->GetNumCols();
-    const GameObject * base = mPlayer->GetBase();
+    const Base * base = mPlayer->GetBase();
 
     if(nullptr == base)
         return ;
@@ -773,8 +774,8 @@ void PlayerAI::AddActionUnitBuildResourceGenerator(Unit * u, ResourceType resTyp
 
     const StatValue & res = mPlayer->GetStat(ps[resType]);
 
-    const int resCur = res.GetIntValue();
-    const int resMax = res.GetIntMax();
+    const int resCur = res.GetValue();
+    const int resMax = res.GetMax();
 
     const float bonusGen = -35.f;
     priority += std::roundf(bonusGen * resCur / resMax);
@@ -827,8 +828,8 @@ void PlayerAI::AddActionUnitBuildResourceStorage(Unit * u, ResourceType resType,
 
     const StatValue & res = mPlayer->GetStat(ps[resType]);
 
-    const int resCur = res.GetIntValue();
-    const int resMax = res.GetIntMax();
+    const int resCur = res.GetValue();
+    const int resMax = res.GetMax();
     const int resSto = resMax - resCur;
 
     const float bonusStorage = -25.f;
@@ -974,7 +975,7 @@ void PlayerAI::AddActionUnitCollectBlobs(Unit * u)
     // decrease priority based on owned blobs
     const float decBlobs = -30.f;
     const StatValue & blobs = mPlayer->GetStat(Player::BLOBS);
-    priority += std::roundf(decBlobs * blobs.GetIntValue() / blobs.GetIntMax());
+    priority += std::roundf(decBlobs * blobs.GetValue() / blobs.GetMax());
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -25.f;
@@ -1044,7 +1045,7 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
     // decrease priority based on owned diamonds
     const float decDiamonds = -30.f;
     const StatValue & diamonds = mPlayer->GetStat(Player::DIAMONDS);
-    priority += std::roundf(decDiamonds * diamonds.GetIntValue() / diamonds.GetIntMax());
+    priority += std::roundf(decDiamonds * diamonds.GetValue() / diamonds.GetMax());
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -25.f;
@@ -1334,7 +1335,7 @@ void PlayerAI::AddActionUnitConquestResGen(Unit * u, ResourceType type)
 
     // bonus resource availability level
     const float bonusRes = -25.f;
-    priority += std::roundf(bonusRes * stat.GetIntValue() / stat.GetIntMax());
+    priority += std::roundf(bonusRes * stat.GetValue() / stat.GetMax());
 
     // action is already not doable
     if(priority < mMinPriority)
@@ -1491,10 +1492,10 @@ bool PlayerAI::HasPlayerResourcesToBuild(GameObjectTypeId t) const
     const ObjectData & data = mDataReg->GetObjectData(t);
     const auto & costs = data.GetCosts();
 
-    const int energy = mPlayer->GetStat(Player::ENERGY).GetIntValue();
-    const int material = mPlayer->GetStat(Player::MATERIAL).GetIntValue();
-    const int blobs = mPlayer->GetStat(Player::BLOBS).GetIntValue();
-    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetIntValue();
+    const int energy = mPlayer->GetStat(Player::ENERGY).GetValue();
+    const int material = mPlayer->GetStat(Player::MATERIAL).GetValue();
+    const int blobs = mPlayer->GetStat(Player::BLOBS).GetValue();
+    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetValue();
 
     // not enough resources to build
     return energy >= costs[RES_ENERGY] && material >= costs[RES_MATERIAL1] &&
@@ -1508,10 +1509,10 @@ int PlayerAI::GetPriorityBonusStructureBuildCost(GameObjectTypeId t, float bonus
     const ObjectData & data = mDataReg->GetObjectData(t);
     const auto & costs = data.GetCosts();
 
-    const int energy = mPlayer->GetStat(Player::ENERGY).GetIntValue();
-    const int material = mPlayer->GetStat(Player::MATERIAL).GetIntValue();
-    const int blobs = mPlayer->GetStat(Player::BLOBS).GetIntValue();
-    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetIntValue();
+    const int energy = mPlayer->GetStat(Player::ENERGY).GetValue();
+    const int material = mPlayer->GetStat(Player::MATERIAL).GetValue();
+    const int blobs = mPlayer->GetStat(Player::BLOBS).GetValue();
+    const int diamonds = mPlayer->GetStat(Player::DIAMONDS).GetValue();
 
     float b = 0.f;
 

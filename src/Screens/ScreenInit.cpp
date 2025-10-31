@@ -266,6 +266,7 @@ void ScreenInit::SetupSFX()
         am->CreateSound(packageSoundsUI, "UI/dialog_close-02.ogg");
         am->CreateSound(packageSoundsUI, "UI/dialog_open-01.ogg");
         am->CreateSound(packageSoundsUI, "UI/dialog_open-02.ogg");
+        am->CreateSound(packageSoundsUI, "UI/goal_completed.ogg");
     });
 }
 
@@ -338,6 +339,62 @@ void ScreenInit::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExploreTemple, rects);
     });
 
+    // DIALOG MISSION GOALS
+    mJobs.emplace_back([this, tm]
+    {
+        std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUNDS
+            { 0, 0, 1280, 95 },
+            { 0, 96, 1280, 50 },
+            { 0, 237, 1200, 80 },
+            { 0, 318, 1200, 80 },
+
+            // BUTTON COLLECT
+            { 0, 147, 220, 44 },
+            { 221, 147, 220, 44 },
+            { 0, 192, 220, 44 },
+            { 221, 192, 220, 44 },
+
+            // BUTTON CLOSE
+            { 1084, 147, 95, 41 },
+            { 1180, 147, 95, 41 },
+            { 1084, 189, 95, 41 },
+            { 1180, 189, 95, 41 },
+
+            // BUTTON END MISSION
+            { 442, 147, 320, 44 },
+            { 763, 147, 320, 44 },
+            { 442, 192, 320, 44 },
+            { 763, 192, 320, 44 },
+
+            //CHECKBOX
+            { 1201, 237, 24, 24 },
+            { 1201, 262, 24, 24 },
+            { 1201, 287, 24, 24 },
+
+            // ICONS REWARD
+            { 1226, 237, 24, 24},
+            { 1226, 262, 24, 24},
+            { 1226, 287, 24, 24},
+            { 1251, 237, 24, 24},
+            { 1251, 262, 24, 24},
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogMissionGoals, rects);
+    });
+
+    mJobs.emplace_back([this, tm]
+    {
+        std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 1280, 10 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogMissionGoalsExp, rects);
+    });
+
     // DIALOG OBJECT
     mJobs.emplace_back([this, tm]
     {
@@ -388,6 +445,62 @@ void ScreenInit::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogObject, rects);
     });
 
+    // DIALOG TRADING
+    mJobs.emplace_back([this, tm]
+    {
+        std::vector<sgl::core::Rectd> rects
+        {
+            // DIALOG
+            { 0, 0, 1340, 560 },
+
+            // BUTTON CLOSE
+            { 0, 561, 100, 40 },
+            { 101, 561, 100, 40 },
+            { 202, 561, 100, 40 },
+
+            // ICONS
+            { 303, 561, 24, 24 },
+            { 328, 561, 26, 26 },
+            { 355, 561, 26, 26 },
+            { 382, 561, 26, 26 },
+            { 409, 561, 26, 26 },
+
+            // BUTTON ACTION
+            { 436, 561, 161, 40 },
+            { 598, 561, 161, 40 },
+            { 760, 561, 161, 40 },
+            { 922, 561, 161, 40 },
+
+            // BUTTON MINUS
+            { 1341, 0, 40, 34 },
+            { 1341, 35, 40, 34 },
+            { 1341, 70, 40, 34 },
+            { 1341, 105, 40, 34 },
+
+            // BUTTON PLUS
+            { 1341, 140, 40, 34 },
+            { 1341, 175, 40, 34 },
+            { 1341, 210, 40, 34 },
+            { 1341, 245, 40, 34 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogTrading, rects);
+    });
+
+    // GAME UI
+    mJobs.emplace_back([this, tm]
+    {
+        std::vector<sgl::core::Rectd> rects
+        {
+            // GOAL COMPLETED
+            { 0, 0, 72, 72 },
+            { 73, 0, 72, 72 },
+            { 146, 0, 72, 72 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUI, rects);
+    });
+
     // MAIN MENU
     mJobs.emplace_back([this, tm]
     {
@@ -402,6 +515,8 @@ void ScreenInit::SetupTextures()
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileMainMenu, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], "UI/main_menu_build_badge.png");
     });
 
     // MAIN MENU BUTTONS
@@ -1055,6 +1170,15 @@ void ScreenInit::SetupTextures()
             { 1067, 1594, 96, 55 },
             { 1164, 1594, 96, 55 },
             { 1261, 1594, 96, 55 },
+            // TRADING POST
+            { 1646, 0, 288, 144 },
+            { 1646, 145, 288, 144 },
+            { 1646, 290, 288, 144 },
+            { 1646, 435, 288, 144 },
+            { 1646, 580, 288, 144 },
+            { 1646, 725, 288, 144 },
+            { 1646, 870, 288, 144 },
+            { 1646, 1015, 288, 144 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileStructures, rects);
@@ -1381,11 +1505,13 @@ void ScreenInit::SetupTextures()
             { 159, 74, 52, 52 },
             { 212, 74, 52, 52 },
             { 265, 74, 52, 52 },
+            { 318, 74, 52, 52 },
             { 0, 127, 52, 52 },
             { 53, 127, 52, 52 },
             { 106, 127, 52, 52 },
             { 159, 127, 52, 52 },
             { 212, 127, 52, 52 },
+            { 265, 127, 52, 52 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileObjActionButton, rects);
@@ -1503,13 +1629,22 @@ void ScreenInit::SetupTextures()
     {
         const std::vector<sgl::core::Rectd> rects
         {
-            // SIMPLE TOOLTIP
-            { 0, 0, 20, 32 },
-            { 21, 0, 20, 32 },
-            { 42, 0, 20, 32 }
+            // RESOURCE BAR TOOLTIP
+            { 0, 0, 250, 155 }
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileTooltips, rects);
+
+        // EXPANDABLE TEXTURE
+        const std::vector<sgl::core::Rectd> rectsExp
+            {
+                // SIMPLE TOOLTIP
+                { 0, 0, 20, 32 },
+                { 0, 33, 20, 32 },
+                { 0, 66, 20, 32 },
+            };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_OTHERS], SpriteFileTooltipsExp, rectsExp);
     });
 
     // QUICK UNIT SELECTION

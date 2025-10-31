@@ -21,6 +21,7 @@ enum ObjClass : unsigned int
     OCS_STORAGE,
     OCS_TARGET,
     OCS_TOWER,
+    OCS_TRADING,
     OCS_WALL,
     OCS_WALL_GATE,
 

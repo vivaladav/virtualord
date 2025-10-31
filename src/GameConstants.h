@@ -31,16 +31,21 @@ enum MapLayers : unsigned int
     NUM_LAYERS,
 };
 
-enum MissionType : unsigned int
+// mission category represents the main goal of a mission
+enum MissionCategory : unsigned int
 {
-    MISSION_DESTROY_ENEMY_BASE,
-    MISSION_DESTROY_ALL_ENEMIES,
-    MISSION_RESIST_TIME,
+    MC_COLLECTION,      // collect resources
+    MC_CONSTRUCTION,    // build something
+    MC_DESTRUCTION,     // destroy enemies
+    MC_PRODUCTION,      // produce resources
+    MC_RESCUE,          // rescue something
+    MC_RESISTANCE,      // hold for some time
 
-    NUM_MISSION_TYPES,
+    NUM_MISSION_CATEGORIES,
 
     MISSION_COMPLETED,
-    MISSION_UNKNOWN
+
+    MC_UNKNOWN
 };
 
 enum PlayerFaction : unsigned int
@@ -90,8 +95,29 @@ enum Planets : unsigned int
     PLANET_UNKNOWN
 };
 
+enum TutorialId : unsigned int
+{
+    TUTORIAL_PLANET_MAP,
+    TUTORIAL_MISSION_INTRO,
+
+    NUM_TUTORIALS,
+
+    TUTORIAL_UNKNOWN
+};
+
+enum TutorialState : unsigned int
+{
+    TS_TODO,
+    TS_IN_PROGRESS,
+    TS_DONE,
+
+    NUM_TUTORIAL_STATES,
+
+    TS_UNKNOWN
+};
+
 extern const char * FACTIONS_NAME[NUM_FACTIONS];
-extern const char * MISSIONS_TITLE[NUM_MISSION_TYPES];
+extern const char * MISSION_CATEGORY_TITLE[NUM_MISSION_CATEGORIES];
 extern const char * PLANETS_NAME[NUM_PLANETS];
 
 } // namespace game

@@ -24,6 +24,8 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
                                                            "Create a new worker", this);
     mButtons[BTN_BUILD_UNIT_HOSPITAL] = new ObjectActionButton(ObjectActionButton::UNITS, "U", KeyboardEvent::KEY_U,
                                                                "Create a new medic", this);
+    mButtons[BTN_MISSION_GOALS] = new ObjectActionButton(ObjectActionButton::MISSION_GOALS, "G", KeyboardEvent::KEY_G,
+                                                         "Show mission goals", this);
     mButtons[BTN_MOVE] = new ObjectActionButton(ObjectActionButton::MOVE, "M", KeyboardEvent::KEY_M,
                                                 "Move your unit", this);
     mButtons[BTN_ATTACK] = new ObjectActionButton(ObjectActionButton::ATTACK, "K", KeyboardEvent::KEY_K,
@@ -44,6 +46,9 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
                                                      "Open the gate", this);
     mButtons[BTN_CLOSE_GATE] = new ObjectActionButton(ObjectActionButton::CLOSE_GATE, "G", KeyboardEvent::KEY_G,
                                                       "Close the gate", this);
+    mButtons[BTN_TRADE] = new ObjectActionButton(ObjectActionButton::TRADE, "T", KeyboardEvent::KEY_T,
+                                                      "Trade your resources", this);
+
     mButtons[BTN_CANCEL] = new ObjectActionButton(ObjectActionButton::CANCEL, "X", KeyboardEvent::KEY_X,
                                                   "Cancel current action", this);
 }
@@ -72,6 +77,7 @@ void PanelObjectActions::SetObject(GameObject * obj)
 
     if(objType == GameObject::TYPE_BASE)
     {
+        mButtons[BTN_MISSION_GOALS]->SetVisible(true);
         mButtons[BTN_BUILD_UNIT_BASE]->SetVisible(true);
     }
     else if(mObj->GetObjectCategory() == GameObject::CAT_UNIT)
@@ -109,6 +115,13 @@ void PanelObjectActions::SetObject(GameObject * obj)
             mButtons[BTN_BUILD_UNIT_HOSPITAL]->SetVisible(true);
             mButtons[BTN_HEAL_HOSPITAL]->SetVisible(true);
         }
+        else
+            mButtons[BTN_CANCEL]->SetVisible(false);
+    }
+    else if(objType == GameObject::TYPE_TRADING_POST)
+    {
+        if(obj->IsLinked())
+            mButtons[BTN_TRADE]->SetVisible(true);
         else
             mButtons[BTN_CANCEL]->SetVisible(false);
     }
@@ -151,10 +164,18 @@ void PanelObjectActions::SetObject(GameObject * obj)
     SetPosition(panelX, panelY);
 }
 
-void PanelObjectActions::SetButtonFunction(Button btnId, const std::function<void()> & f)
+unsigned int PanelObjectActions::AddButtonFunction(Button btnId, const std::function<void()> & f)
 {
     if(btnId < NUM_BUTTONS)
-        mButtons[btnId]->AddOnClickFunction(f);
+       return mButtons[btnId]->AddOnClickFunction(f);
+    else
+        return 0;
+}
+
+void PanelObjectActions::RemoveButtonFunction(Button btnId, unsigned int funId)
+{
+    if(btnId < NUM_BUTTONS)
+       mButtons[btnId]->RemoveClickFunction(funId);
 }
 
 void PanelObjectActions::SetActionsEnabled(bool val)

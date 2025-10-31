@@ -33,6 +33,7 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
     mFocusArea = new FocusArea;
     mFocusArea->SetScreenArea(fX, fY, fW, fH);
     mFocusArea->SetCornersColor(colorTutorialFocusAction);
+    mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
     const int fX1 = panelInfo->GetX() + padding;
@@ -43,6 +44,7 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
     mFocusInfo = new FocusArea;
     mFocusInfo->SetScreenArea(fX1, fY1, fW1, fH1);
     mFocusInfo->SetCornersColor(colorTutorialFocusElement);
+    mFocusInfo->SetBlinking(true);
     mFocusInfo->SetVisible(false);
 
     const int fX2 = panelResources->GetX() + padding;
@@ -53,6 +55,7 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
     mFocusResources = new FocusArea;
     mFocusResources->SetScreenArea(fX2, fY2, fW2, fH2);
     mFocusResources->SetCornersColor(colorTutorialFocusElement);
+    mFocusResources->SetBlinking(true);
     mFocusResources->SetVisible(false);
 
     // INFO
@@ -70,7 +73,6 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
 
                             mFocusInfo->SetVisible(false);
                             mFocusResources->SetVisible(false);
-
                             mFocusArea->SetVisible(true);
                         });
 

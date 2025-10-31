@@ -132,7 +132,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     RegisterRenderable(mHeaderInvest);
 
     // MONEY
-    const int playerMoney = player->GetStat(Player::Stat::MONEY).GetIntValue();
+    const int playerMoney = player->GetStat(Player::Stat::MONEY).GetValue();
     const int maxTempleMoney = temple->GetMaxInvestableMoney();
     const int maxMoney =  playerMoney < maxTempleMoney ? playerMoney : maxTempleMoney;
 
@@ -161,7 +161,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     });
 
     // MATERIAL
-    const int playerMaterial = player->GetStat(Player::Stat::MATERIAL).GetIntValue();
+    const int playerMaterial = player->GetStat(Player::Stat::MATERIAL).GetValue();
     const int maxTempleMaterial = temple->GetMaxInvestableMaterial();
     const int maxMaterial =  playerMaterial < maxTempleMaterial ? playerMaterial : maxTempleMaterial;
 
@@ -190,7 +190,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     });
 
     // BLOBS
-    const int playerBlobs = player->GetStat(Player::Stat::BLOBS).GetIntValue();
+    const int playerBlobs = player->GetStat(Player::Stat::BLOBS).GetValue();
     const int maxTempleBlobs = temple->GetMaxInvestableBlobs();
     const int maxBlobs =  playerBlobs < maxTempleBlobs ? playerBlobs : maxTempleBlobs;
 
@@ -219,7 +219,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     });
 
     // DIAMONDS
-    const int playerDiamonds = player->GetStat(Player::Stat::DIAMONDS).GetIntValue();
+    const int playerDiamonds = player->GetStat(Player::Stat::DIAMONDS).GetValue();
     const int maxTempleDiamonds = temple->GetMaxInvestableBlobs();
     const int maxDiamonds =  playerDiamonds < maxTempleDiamonds ? playerDiamonds : maxTempleDiamonds;
 

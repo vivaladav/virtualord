@@ -32,7 +32,10 @@ class Player;
 
 enum Planets : unsigned int;
 enum PlayerFaction : unsigned int;
+enum ResourceType : unsigned int;
 enum StateId : int;
+enum TutorialId : unsigned int;
+enum TutorialState : unsigned int;
 
 enum Difficulty : unsigned int
 {
@@ -45,6 +48,11 @@ enum Difficulty : unsigned int
 
 class Game : public sgl::core::Application
 {
+#ifdef DEV_MODE
+public:
+    static bool GOD_MODE;
+#endif
+
 public:
     Game(int argc, char * argv[]);
     ~Game();
@@ -57,6 +65,9 @@ public:
     void SetCurrentTerritory(unsigned int territory);
     Planets GetCurrentPlanet() const;
     void SetCurrentPlanet(Planets planet);
+
+    int GetResourcePriceBuy(ResourceType t) const;
+    int GetResourcePriceSell(ResourceType t) const;
 
     void SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
@@ -99,6 +110,10 @@ public:
     unsigned int AddOnSettingsChangedFunction(const std::function<void()> & f);
     void RemoveOnSettingsChangedFunction(unsigned int fId);
 
+    // -- tutorial --
+    TutorialState GetTutorialState(TutorialId tut);
+    void SetTutorialState(TutorialId tut, TutorialState state);
+
 private:
     void NotifyOnSettingsChanged();
 
@@ -108,6 +123,8 @@ private:
     std::vector<Player *> mPlayers;
 
     std::map<unsigned int, std::function<void()>> mOnSettingsChanged;
+
+    std::vector<TutorialState> mTutorialsState;
 
     sgl::graphic::Renderer * mRenderer = nullptr;
     sgl::graphic::Window * mWin = nullptr;

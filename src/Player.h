@@ -11,6 +11,7 @@
 namespace game
 {
 
+class Base;
 class GameObject;
 class PlayerAI;
 class ResourceGenerator;
@@ -80,8 +81,8 @@ public:
 
     int GetPlayerId() const;
 
-    const GameObject * GetBase() const;
-    void SetBase(const GameObject * b);
+    const Base * GetBase() const;
+    void SetBase(const Base * b);
 
     // stats
     const StatValue & GetStat(Stat sid);
@@ -91,7 +92,8 @@ public:
     void SetResourceMax(Stat sid, int val);
     void SumResourceMax(Stat sid, int val);
     void SetOnResourcesChanged(const std::function<void()> & f);
-    unsigned int AddOnResourceChanged(Stat sid, const std::function<void(const StatValue *)> & f);
+    unsigned int AddOnResourceChanged(Stat sid, const std::function<void(const StatValue *,
+                                                                         int, int)> & f);
     unsigned int AddOnResourceRangeChanged(Stat sid, const std::function<void(const StatValue *)> & f);
     void RemoveOnResourceChanged(Stat sid, unsigned int funId);
     void RemoveOnResourceRangeChanged(Stat sid, unsigned int funId);
@@ -100,7 +102,7 @@ public:
     void SumCells(int val);
     void SetOnNumCellsChanged(const std::function<void(int)> & f);
 
-    int GetEnergyUse() const;
+    int GetMoneySpentPerTurn() const;
 
     void SetOnNumUnitsChanged(const std::function<void()> & f);
 
@@ -123,6 +125,7 @@ public:
     void RemoveResourceGenerator(ResourceGenerator * gen);
 
     int GetResourceProduction(ResourceType type) const;
+    int GetResourceConsumption(ResourceType type) const;
     void UpdateResources();
 
     void HandleCollectable(GameObject * obj);
@@ -172,7 +175,7 @@ private:
 
     GameObject * mSelObj = nullptr;
 
-    const GameObject * mBase = nullptr;
+    const Base * mBase = nullptr;
 
     int mPlayerId;
 
@@ -231,8 +234,8 @@ inline const std::string & Player::GetName() const { return mName; }
 
 inline int Player::GetPlayerId() const { return mPlayerId; }
 
-inline const GameObject * Player::GetBase() const { return mBase; }
-inline void Player::SetBase(const GameObject * b) { mBase = b; }
+inline const Base * Player::GetBase() const { return mBase; }
+inline void Player::SetBase(const Base * b) { mBase = b; }
 
 inline const StatValue & Player::GetStat(Stat sid)
 {
@@ -245,7 +248,7 @@ inline const StatValue & Player::GetStat(Stat sid)
 inline bool Player::HasEnough(Stat sid, int val)
 {
     if(sid < NUM_PSTATS)
-        return val <= mStats[sid].GetIntValue();
+        return val <= mStats[sid].GetValue();
     else
         return false;
 }
@@ -278,11 +281,7 @@ inline bool Player::HasSelectedObject() const { return mSelObj != nullptr; }
 
 inline float Player::GetTurnEnergy() const { return mTurnEnergy; }
 inline float Player::GetTurnMaxEnergy() const { return mTurnMaxEnergy; }
-inline void Player::ResetTurnEnergy()
-{
-    mTurnEnergy = mTurnMaxEnergy;
-    mOnTurnEnergyChanged();
-}
+
 inline void Player::SetOnTurnEnergyChanged(const std::function<void()> & f)
 {
     mOnTurnEnergyChanged = f;

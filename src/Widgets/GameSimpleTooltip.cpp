@@ -2,6 +2,7 @@
 
 #include "GameUIData.h"
 
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/Image.h>
@@ -17,8 +18,6 @@ namespace
 namespace game
 {
 
-class Game;
-
 GameSimpleTooltip::GameSimpleTooltip(const char * text)
 {
     using namespace sgl;
@@ -30,17 +29,17 @@ GameSimpleTooltip::GameSimpleTooltip(const char * text)
     const int marginT = 8;
 
     // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileTooltips, IND_TOOLTIP_SIMPLE_LEFT);
-    tex->SetScaleMode(0);
+    graphic::Texture * tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_LEFT);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
 
     mBgLeft = new graphic::Image(tex);
     RegisterRenderable(mBgLeft);
 
-    tex = tm->GetSprite(SpriteFileTooltips, IND_TOOLTIP_SIMPLE_CONT);
+    tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_CONT);
     mBgCont = new graphic::Image(tex);
     RegisterRenderable(mBgCont);
 
-    tex = tm->GetSprite(SpriteFileTooltips, IND_TOOLTIP_SIMPLE_RIGHT);
+    tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_RIGHT);
     mBgRight = new graphic::Image(tex);
     RegisterRenderable(mBgRight);
 

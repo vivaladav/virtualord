@@ -12,6 +12,7 @@ namespace game
 {
 
 StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
+    : mPanelActions(panel)
 {
     // CLICK FILTER
     mClickFilter = new PanelClickFilter;
@@ -29,7 +30,7 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
     mInfo->SetVisible(false);
     mInfo->SetPosition(300, 550);
 
-    mInfo->AddInfoEntry("For example you can create worker units with your base.",
+    mInfo->AddInfoEntry("You can also create worker units with your base.",
                         colorTutorialText, 4.f, true, false);
     mInfo->AddInfoEntry("Let's create a new one now.",
                         colorTutorialText, 3.f, true, false);
@@ -53,7 +54,7 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
 
                         });
 
-    panel->SetButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, [this]
+    mClickId = panel->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, [this]
     {
         SetDone();
     });
@@ -61,6 +62,8 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
 
 StepGameBaseBuildUnitIcon::~StepGameBaseBuildUnitIcon()
 {
+    mPanelActions->RemoveButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, mClickId);
+
     delete mClickFilter;
     delete mFocusArea;
     delete mInfo;

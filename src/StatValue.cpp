@@ -1,6 +1,5 @@
 #include "StatValue.h"
 
-#include <cmath>
 #include <limits>
 
 namespace game
@@ -8,41 +7,23 @@ namespace game
 
 StatValue::StatValue(unsigned int statId, int val)
     : mId(statId)
-    , mData(val)
+    , mValue(val)
     , mMin(std::numeric_limits<int>::min())
     , mMax(std::numeric_limits<int>::max())
 {
 }
 
-StatValue::StatValue(unsigned int statId, float val)
-    : mId(statId)
-    , mData(val)
-    , mMin(std::numeric_limits<float>::min())
-    , mMax(std::numeric_limits<float>::max())
-{
-}
-
 void StatValue::SetMin(int min)
 {
-    mMin.d = min;
+    mMin = min;
 
-    if(mData.d < mMin.d)
+    if(mValue < mMin)
     {
-        mData.d = mMin.d;
-        NotifyObserversValue();
-    }
+        const int oldValue = mValue;
+        mValue = mMin;
 
-    NotifyObserversRange();
-}
-
-void StatValue::SetMin(float min)
-{
-    mMin.f = min;
-
-    if(mData.f < mMin.f)
-    {
-        mData.f = mMin.f;
-        NotifyObserversValue();
+        if(oldValue != mValue)
+            NotifyObserversValue(oldValue, mValue);
     }
 
     NotifyObserversRange();
@@ -50,25 +31,15 @@ void StatValue::SetMin(float min)
 
 void StatValue::SetMax(int max)
 {
-    mMax.d = max;
+    mMax = max;
 
-    if(mData.d > mMax.d)
+    if(mValue > mMax)
     {
-        mData.d = mMax.d;
-        NotifyObserversValue();
-    }
+        const int oldValue = mValue;
+        mValue = mMax;
 
-    NotifyObserversRange();
-}
-
-void StatValue::SetMax(float max)
-{
-    mMax.f = max;
-
-    if(mData.f > mMax.f)
-    {
-        mData.f = mMax.f;
-        NotifyObserversValue();
+        if(oldValue != mValue)
+            NotifyObserversValue(oldValue, mValue);
     }
 
     NotifyObserversRange();
@@ -77,54 +48,34 @@ void StatValue::SetMax(float max)
 void StatValue::SetValue(int val)
 {
     // same value -> exit
-    if(val == mData.d)
+    if(val == mValue)
         return ;
 
-    mData.d = val;
+    const int oldValue = mValue;
 
-    NotifyObserversValue();
-}
+    mValue = val;
 
-void StatValue::SetValue(float val)
-{
-    const float delta = 0.0001f;
-
-    // almost same value -> exit
-    if(std::fabs(mData.f - val) < delta)
-        return ;
-
-    mData.d = val;
-
-    NotifyObserversValue();
+    NotifyObserversValue(oldValue, mValue);
 }
 
 void StatValue::SumValue(int val)
 {
-    mData.d += val;
+    const int oldValue = mValue;
+
+    mValue += val;
 
     // clamp data
-    if(mData.d < mMin.d)
-        mData.d = mMin.d;
-    else if(mData.d > mMax.d)
-        mData.d = mMax.d;
+    if(mValue < mMin)
+        mValue = mMin;
+    else if(mValue > mMax)
+        mValue = mMax;
 
-    NotifyObserversValue();
+    if(oldValue != mValue)
+        NotifyObserversValue(oldValue, mValue);
 }
 
-void StatValue::SumValue(float val)
-{
-    mData.f += val;
-
-    // clamp data
-    if(mData.f < mMin.f)
-        mData.f = mMin.f;
-    else if(mData.f > mMax.f)
-        mData.f = mMax.f;
-
-    NotifyObserversValue();
-}
-
-unsigned int StatValue::AddOnValueChanged(const std::function<void(const StatValue *)> & f)
+unsigned int StatValue::AddOnValueChanged(const std::function<void(const StatValue *,
+                                                                   int oldVal, int newVal)> & f)
 {
     static unsigned int num = 0;
 
@@ -133,7 +84,7 @@ unsigned int StatValue::AddOnValueChanged(const std::function<void(const StatVal
     return num;
 }
 
-unsigned int StatValue::AddOnRangeChanged(const std::function<void(const StatValue *)> & f)
+unsigned int StatValue::AddOnRangeChanged(const std::function<void (const StatValue *)> & f)
 {
     static unsigned int num = 0;
 
@@ -158,10 +109,10 @@ void StatValue::RemoveOnRangeChanged(unsigned int funId)
         mCallbacksRange.erase(it);
 }
 
-void StatValue::NotifyObserversValue()
+void StatValue::NotifyObserversValue(int oldVal, int newVal)
 {
     for(auto & it : mCallbacksVal)
-        it.second(this);
+        it.second(this, oldVal, newVal);
 }
 
 void StatValue::NotifyObserversRange()

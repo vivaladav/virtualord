@@ -1,7 +1,7 @@
 #include "Tutorial/StepGameBase.h"
 
 #include "IsoObject.h"
-#include "GameObjects/GameObject.h"
+#include "GameObjects/Base.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -10,7 +10,7 @@
 namespace game
 {
 
-StepGameBase::StepGameBase(const GameObject * b)
+StepGameBase::StepGameBase(const Base * b)
     : mBase(b)
 {
     // CLICK FILTER

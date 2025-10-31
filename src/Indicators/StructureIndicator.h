@@ -14,7 +14,7 @@ namespace sgl
 namespace game
 {
 
-struct ObjectData;
+class ObjectData;
 
 enum PlayerFaction : unsigned int;
 

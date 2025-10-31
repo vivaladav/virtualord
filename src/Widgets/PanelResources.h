@@ -2,24 +2,24 @@
 
 #include <sgl/sgui/Widget.h>
 
-#include <functional>
-#include <string>
 #include <vector>
 
 namespace sgl
 {
     namespace graphic { class Image; }
-    namespace sgui { class Label; }
 }
 
 namespace game
 {
 
+class GameMap;
 class Player;
+class ResourceTooltip;
 
 class PanelResources : public sgl::sgui::Widget
 {
 public:
+    PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget * parent);
     PanelResources(Player * player, sgl::sgui::Widget * parent);
     ~PanelResources();
 
@@ -28,12 +28,15 @@ private:
 
     void SetBg();
 
-    void AssignTooltip(sgl::sgui::Widget * target, const char * text);
+    ResourceTooltip * AssignResourceTooltip(sgl::sgui::Widget * target, const char * text);
+    void AssignSimpleTooltip(sgl::sgui::Widget * target, const char * text);
+    void SetTooltip(sgl::sgui::Widget * tt, sgl::sgui::Widget * target, int showingMs);
 
 private:
     sgl::graphic::Image * mBg = nullptr;
 
     Player * mPlayer = nullptr;
+    GameMap * mGameMap = nullptr;
 
     std::vector<unsigned int> mCallbackValIds;
     std::vector<unsigned int> mCallbackRangeIds;

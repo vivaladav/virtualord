@@ -18,16 +18,28 @@
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/GraphicConstants.h>
-#include <sgl/graphic/Image.h>
 #include <sgl/graphic/Renderer.h>
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/graphic/Window.h>
 #include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StateManager.h>
 
+#ifdef DEV_MODE
+#include <sgl/core/ModuleCore.h>
+#include <sgl/graphic/ModuleGraphic.h>
+#include <sgl/media/ModuleMedia.h>
+
+#include <iostream>
+#endif
+
 namespace game
 {
+
+#ifdef DEV_MODE
+bool Game::GOD_MODE = false;
+#endif
 
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
@@ -35,21 +47,41 @@ Game::Game(int argc, char * argv[])
     , mObjsRegistry(new ObjectsDataRegistry)
     , mLocalFaction(NO_FACTION)
     , mCurrPlanet(PLANET_UNKNOWN)
+#ifdef DEV_MODE
+    // tutorial disabled in DEV MODE
+    , mTutorialEnabled(false)
+#endif
 {
-    using namespace sgl::graphic;
+    using namespace sgl;
 
-    const std::string title = std::string("Virtueror - v. ") + std::string(VERSION);
-    mWin = Window::Create(title.c_str(), 0, 0, this);
-    mRenderer = Renderer::Create(mWin, true);
+#ifdef DEBUG
+    // -- build libraries --
+    core::ModuleCore::PrintBuildLibs();
+    graphic::ModuleGraphic::PrintBuildLibs();
+    media::ModuleMedia::PrintBuildLibs();
+
+    std::cout << std::endl;
+
+    // -- runtime libraries --
+    core::ModuleCore::PrintRuntimeLibs();
+    graphic::ModuleGraphic::PrintRuntimeLibs();
+    media::ModuleMedia::PrintRuntimeLibs();
+
+    std::cout << std::endl;
+#endif
+
+    const std::string title = std::string("Virtualord - v. ") + std::string(VERSION);
+    mWin = graphic::Window::Create(title.c_str(), 0, 0, this);
+    mRenderer = graphic::Renderer::Create(mWin, true);
     mRenderer->SetLogicalSize(1920, 1080);
-    mWin->SetVideoMode(sgl::graphic::Window::VM_FULLSCREEN);
+    mWin->SetVideoMode(graphic::Window::VM_FULLSCREEN);
 
-    TextureManager::Instance()->SetNewTextureQuality(TextureQuality::BEST);
+    graphic::TextureManager::Instance()->SetNewTextureQuality(graphic::TextureQuality::BEST);
 
-    FontManager::Create();
+    graphic::FontManager::Create();
 
     // -- State Manager --
-    mStateMan = new sgl::utilities::StateManager;
+    mStateMan = new utilities::StateManager;
 
     mStateMan->AddState(new StateFactionSelection(this));
     mStateMan->AddState(new StateGame(this));
@@ -66,18 +98,28 @@ Game::Game(int argc, char * argv[])
     const int defVolumeMusic = 50;
     const int defVolumeSound = 50;
 
-    mAudioMan = sgl::media::AudioManager::Create();
+    mAudioMan = media::AudioManager::Create();
     mAudioMan->SetVolumeMusic(defVolumeMusic);
     mAudioMan->SetVolumeSound(defVolumeSound);
 
+#ifdef DEV_MODE
+    // music OFF by default when developer
+    mAudioMan->GetPlayer()->SetMusicEnabled(false);
+#endif
+
     // -- SGUI Stage --
-    mStage = sgl::sgui::Stage::Create();
+    mStage = sgui::Stage::Create();
     AddKeyboardListener(mStage);
     AddMouseListener(mStage);
+
+    // -- TUTORIAL --
+    mTutorialsState.resize(NUM_TUTORIALS, TS_TODO);
 }
 
 Game::~Game()
 {
+    using namespace sgl;
+
     // delete states and screens
     delete mStateMan;
 
@@ -86,14 +128,14 @@ Game::~Game()
 
     ClearPlayers();
 
-    sgl::sgui::Stage::Destroy();
+    sgui::Stage::Destroy();
 
-    sgl::media::AudioManager::Destroy();
+    media::AudioManager::Destroy();
 
-    sgl::graphic::FontManager::Destroy();
+    graphic::FontManager::Destroy();
 
-    sgl::graphic::Renderer::Destroy();
-    sgl::graphic::Window::Destroy();
+    graphic::Renderer::Destroy();
+    graphic::Window::Destroy();
 }
 
 void Game::InitGameData()
@@ -101,19 +143,19 @@ void Game::InitGameData()
     // -- MAPS --
     // PLANET 1
     mMapsReg->CreatePlanet(PLANET_1);
-    //               planetId, file, energy, material, diamonds, blobs, size, value, occupier, status
-    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", 5, 4, 2, 2, 80, 3, NO_FACTION, TER_ST_UNEXPLORED, MISSION_DESTROY_ENEMY_BASE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", 2, 2, 1, 1, 40, 2, NO_FACTION, TER_ST_UNEXPLORED, MISSION_RESIST_TIME);
-    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", 4, 4, 2, 2, 60, 3, NO_FACTION, TER_ST_UNREACHABLE, MISSION_DESTROY_ENEMY_BASE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", 1, 2, 1, 1, 20, 1, NO_FACTION, TER_ST_UNREACHABLE, MISSION_DESTROY_ENEMY_BASE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", 5, 4, 2, 2, 80, 3, NO_FACTION, TER_ST_UNREACHABLE, MISSION_DESTROY_ENEMY_BASE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", 2, 2, 1, 1, 40, 2, NO_FACTION, TER_ST_UNREACHABLE, MISSION_DESTROY_ENEMY_BASE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", 4, 4, 2, 2, 60, 3, NO_FACTION, TER_ST_UNREACHABLE, MISSION_DESTROY_ENEMY_BASE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", 1, 2, 1, 1, 20, 1, NO_FACTION, TER_ST_UNREACHABLE, MISSION_DESTROY_ENEMY_BASE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", 1, 2, 1, 1, 20, 1, NO_FACTION, TER_ST_UNREACHABLE, MISSION_DESTROY_ENEMY_BASE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", 2, 2, 1, 1, 40, 2, NO_FACTION, TER_ST_UNREACHABLE, MISSION_DESTROY_ENEMY_BASE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", 4, 4, 2, 2, 60, 3, NO_FACTION, TER_ST_UNEXPLORED, MISSION_DESTROY_ALL_ENEMIES);
-    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", 5, 4, 2, 2, 80, 3, NO_FACTION, TER_ST_UNEXPLORED, MISSION_DESTROY_ENEMY_BASE);
+    //               planetId, file, energy, material, diamonds, blobs, value, occupier, status
+    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", 5, 4, 2, 2, 3, NO_FACTION, TER_ST_UNEXPLORED);
+    mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", 2, 2, 1, 1, 2, NO_FACTION, TER_ST_UNEXPLORED);
+    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", 4, 4, 2, 2, 3, NO_FACTION, TER_ST_UNREACHABLE);
+    mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", 1, 2, 1, 1, 1, NO_FACTION, TER_ST_UNREACHABLE);
+    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", 5, 4, 2, 2, 3, NO_FACTION, TER_ST_UNREACHABLE);
+    mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", 2, 2, 1, 1, 2, NO_FACTION, TER_ST_UNREACHABLE);
+    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", 4, 4, 2, 2, 3, NO_FACTION, TER_ST_UNREACHABLE);
+    mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", 1, 2, 1, 1, 1, NO_FACTION, TER_ST_UNREACHABLE);
+    mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", 1, 2, 1, 1, 1, NO_FACTION, TER_ST_UNREACHABLE);
+    mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", 2, 2, 1, 1, 2, NO_FACTION, TER_ST_UNREACHABLE);
+    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", 4, 4, 2, 2, 3, NO_FACTION, TER_ST_UNEXPLORED);
+    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", 5, 4, 2, 2, 3, NO_FACTION, TER_ST_UNEXPLORED);
 }
 
 void Game::ClearGameData()
@@ -126,6 +168,42 @@ void Game::ClearGameData()
 const std::string & Game::GetCurrentMapFile() const
 {
     return mMapsReg->GetMapFile(mCurrPlanet, mCurrTerritory);
+}
+
+int Game::GetResourcePriceBuy(ResourceType t) const
+{
+    // TODO make it change depending on territory/planet
+
+    const int price[NUM_RESOURCES] =
+    {
+        60,
+        70,
+        120,
+        170
+    };
+
+    if(t < NUM_RESOURCES)
+        return price[t];
+    else
+        return 0;
+}
+
+int Game::GetResourcePriceSell(ResourceType t) const
+{
+    // TODO make it change depending on territory/planet
+
+    const int price[NUM_RESOURCES] =
+    {
+        50,
+        60,
+        100,
+        150
+    };
+
+    if(t < NUM_RESOURCES)
+        return price[t];
+    else
+        return 0;
 }
 
 void Game::RequestNextActiveState(StateId sid) { mStateMan->RequestNextActiveState(sid); }
@@ -176,6 +254,20 @@ void Game::RemoveOnSettingsChangedFunction(unsigned int fId)
 
     if(it != mOnSettingsChanged.end())
         mOnSettingsChanged.erase(it);
+}
+
+TutorialState Game::GetTutorialState(TutorialId tut)
+{
+    if(tut < NUM_TUTORIALS)
+        return mTutorialsState[tut];
+    else
+        return TS_UNKNOWN;
+}
+
+void Game::SetTutorialState(TutorialId tut, TutorialState state)
+{
+    if(tut < NUM_TUTORIALS)
+        mTutorialsState[tut] = state;
 }
 
 void Game::NotifyOnSettingsChanged()

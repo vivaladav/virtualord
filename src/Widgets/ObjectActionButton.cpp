@@ -44,12 +44,17 @@ ObjectActionButton::ObjectActionButton(ActionIcon icon, const char * shortcut, i
         IND_BUTTON_ICON_CONQUER_CELL,
         IND_BUTTON_ICON_BUILD_WALL,
         IND_BUTTON_ICON_BUILD_STRUCT,
+        IND_BUTTON_ICON_MISSION_GOALS,
         IND_BUTTON_ICON_UPGRADE,
         IND_BUTTON_ICON_OPEN_GATE,
         IND_BUTTON_ICON_CLOSE_GATE,
         IND_BUTTON_ICON_CANCEL,
         IND_BUTTON_ICON_HEAL,
+        IND_BUTTON_ICON_TRADE,
     };
+
+    static_assert(NUM_ACTION_ICONS == (sizeof(texId) / sizeof(SpriteIdObjActionButton)),
+                  "ERROR: wrong number of elements in ObjectActionButton::texId");
 
     tex = tm->GetSprite(SpriteFileObjActionButton, texId[icon]);
     mIcon->SetTexture(tex);

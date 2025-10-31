@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Cell2D.h"
+#include "MissionGoal.h"
 #include "Screen.h"
 #include "GameObjects/GameObjectAction.h"
 #include "GameObjects/GameObjectTypes.h"
 
 #include <sgl/core/Point.h>
 
-#include <chrono>
 #include <functional>
 #include <unordered_map>
 #include <vector>
@@ -44,7 +44,6 @@ class TutorialManager;
 class Unit;
 class WallIndicator;
 
-enum MissionType : unsigned int;
 enum PlayerFaction : unsigned int;
 
 enum ParticlesUpdaterId : unsigned int
@@ -95,6 +94,10 @@ public:
     bool GetPaused() const;
     void SetPause(bool paused);
 
+    // MISSION GOALS
+    const std::vector<MissionGoal> & GetMissionGoals() const;
+    void CollectMissionGoalReward(unsigned int index);
+
     // TURN SYSTEM
     bool IsCurrentTurnLocal() const;
 
@@ -110,6 +113,7 @@ private:
     void CreateUI();
 
     void CreateTutorial();
+    void UpdateTutorial(float delta);
 
     void LoadMapFile();
 
@@ -121,10 +125,11 @@ private:
     void FinalizeObjectAction(const GameObjectAction & action, bool successful);
 
     void UpdateGameEnd();
+    bool CheckIfGoalCompleted(MissionGoal & g);
+    void UpdateGoalCompletedIcon();
     void HandleGameOver();
     void HandleGameWon();
     void AssignMapToFaction(PlayerFaction faction);
-    void AssignWinningResources(Player * player);
     bool CheckGameOverForLocalPlayer();
 
     int CellToIndex(const Cell2D & cell) const;
@@ -169,6 +174,12 @@ private:
 
     void UpdateCurrentCell();
 
+    // MISSION GOALS
+    void SetMissionRewards();
+    void TrackResourcesForGoals();
+    void ClearResourcesTracking();
+
+    // TURN
     void EndTurn();
 
     // SFX
@@ -192,13 +203,15 @@ private:
     std::vector<GameObjectAction> mObjActions;
     std::vector<GameObjectAction> mObjActionsToDo;
 
+    std::vector<MissionGoal> mMissionGoals;
+    std::vector<int> mResourcesGained;
+    std::vector<unsigned int> mResourceTrackers;
+
     CameraMapController * mCamController = nullptr;
 
     unsigned int mIdOnSettingsChanged = 0;
 
     sgl::graphic::ParticlesManager * mPartMan = nullptr;
-
-    std::chrono::time_point<std::chrono::steady_clock> mTimeStart;
 
     // UI
     GameHUD * mHUD = nullptr;
@@ -225,9 +238,7 @@ private:
 
     float mTimePlayed = 0.f;
 
-    MissionType mMissionType;
-    unsigned int mMissionTime = 0;
-
+    bool mMapCompleted = false;
     bool mPaused = false;
 };
 
@@ -243,6 +254,11 @@ inline void ScreenGame::SetObjectActionFailed(GameObject * obj)
 inline GameHUD * ScreenGame::GetHUD() const { return mHUD; }
 
 inline bool ScreenGame::GetPaused() const { return mPaused; }
+
+inline const std::vector<MissionGoal> & ScreenGame::GetMissionGoals() const
+{
+    return mMissionGoals;
+}
 
 inline bool ScreenGame::IsCurrentTurnLocal() const { return mActivePlayerIdx == 0; }
 
