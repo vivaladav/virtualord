@@ -12,7 +12,7 @@ public:
     static constexpr unsigned int colorPlanetMapLackRes = 0xcc8b85ff;
     static constexpr int FontSizePlanetMapTitle = 28;
     static constexpr int FontSizePlanetMapHeader = 24;
-    static constexpr int FontSizePlanetMapText = 20;
+    static constexpr int FontSizePlanetMapText = 22;
 };
 
 } // namespace game
