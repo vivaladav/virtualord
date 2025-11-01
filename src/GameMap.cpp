@@ -958,10 +958,10 @@ void GameMap::BuildWall(const Cell2D & cell, Player * player, GameObjectTypeId p
     // propagate effects of conquest
     UpdateInfluencedCells(cell.row, cell.col);
 
-    UpdateLinkedCells(player);
-
     // add object wall
     CreateObject(OBJECTS2, GameObject::TYPE_WALL, planned, player->GetFaction(), cell.row, cell.col, true);
+
+    UpdateLinkedCells(player);
 
     // update minimap
     if(IsCellVisibleToLocalPlayer(cell.row, cell.col))
