@@ -1,5 +1,7 @@
 #include "MissionGoal.h"
 
+#include "GameConstants.h"
+
 #include <cstddef>
 #include <sstream>
 
@@ -85,6 +87,22 @@ MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool prima
     , mRewards({})
     , mPrimary(primary)
 {
+}
+
+MissionCategory MissionGoal::GetCategory() const
+{
+    if(mType == TYPE_DESTROY_ALL_ENEMIES || mType == TYPE_DESTROY_ENEMY_BASE)
+        return MC_DESTRUCTION;
+    else if(mType == TYPE_RESIST_TIME)
+        return MC_RESISTANCE;
+    else if(mType == TYPE_COLLECT_BLOBS || mType == TYPE_COLLECT_DIAMONDS)
+        return MC_COLLECTION;
+    else if(mType == TYPE_GAIN_MONEY || mType == TYPE_MINE_ENERGY || mType == TYPE_MINE_MATERIAL)
+        return MC_PRODUCTION;
+    else if(mType == TYPE_COMPLETE_TUTORIAL)
+        return MC_TUTORIAL;
+    else
+        return MC_UNKNOWN;
 }
 
 const std::string & MissionGoal::GeTypeString(MissionGoalType t)

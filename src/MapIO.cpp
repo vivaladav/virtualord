@@ -10,9 +10,8 @@
 namespace game
 {
 
-const std::string MapIO::MAP_VERSION("0.2.3");
+const std::string MapIO::MAP_VERSION("0.2.4");
 
-const std::string MapIO::MAP_TAG_CATEGORY("C");
 const std::string MapIO::MAP_TAG_COMMENT("#");
 const std::string MapIO::MAP_TAG_GOAL("G");
 const std::string MapIO::MAP_TAG_END_HEADER("--1--");
@@ -95,7 +94,6 @@ bool MapIO::Save(const std::string & filename, const std::vector<GameMapCell> & 
 
     // mission goals
     fs << "# ====== GOALS =====\n";
-    fs << MAP_TAG_CATEGORY << " " << category << "\n";
 
     for(const MissionGoal & g : goals)
         fs << MAP_TAG_GOAL << " " << g.IsPrimary() << " "
@@ -176,16 +174,6 @@ void MapIO::ReadHeader(std::fstream & fs)
 #endif
             }
         }
-        // reading category
-        else if(line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_CATEGORY) == 0)
-        {
-            ss.ignore(LEN_SIMPLE_TAG);
-
-            // goal type
-            unsigned int cat = MC_UNKNOWN;
-            ss >> cat;
-            mCategory = static_cast<MissionCategory>(cat);
-        }
         // reading goal
         else if(line.compare(0, LEN_SIMPLE_TAG, MAP_TAG_GOAL) == 0)
         {
@@ -204,7 +192,12 @@ void MapIO::ReadHeader(std::fstream & fs)
             unsigned int quantity = 0;
             ss >> quantity;
 
+            // store goal
             mGoals.emplace_back(type, quantity, primary);
+
+            // assign category based on first primary goal
+            if(primary && MC_UNKNOWN == mCategory)
+                mCategory = mGoals[mGoals.size() - 1].GetCategory();
         }
         else if(line.compare(0, lenTagMapSize, MAP_TAG_MAP_SIZE) == 0)
         {

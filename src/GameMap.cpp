@@ -958,10 +958,10 @@ void GameMap::BuildWall(const Cell2D & cell, Player * player, GameObjectTypeId p
     // propagate effects of conquest
     UpdateInfluencedCells(cell.row, cell.col);
 
-    UpdateLinkedCells(player);
-
     // add object wall
     CreateObject(OBJECTS2, GameObject::TYPE_WALL, planned, player->GetFaction(), cell.row, cell.col, true);
+
+    UpdateLinkedCells(player);
 
     // update minimap
     if(IsCellVisibleToLocalPlayer(cell.row, cell.col))
@@ -2624,9 +2624,9 @@ void GameMap::UpdateLinkedCells(Player * player)
             objsLink[currCell.objBottom] = true;
 
         // add TOP
-        unsigned int r = currCell.row - 1;
+        int r = currCell.row - 1;
 
-        if(r < mRows)
+        if(r >= 0)
         {
             const unsigned int ind = currInd - mCols;
 
@@ -2646,9 +2646,9 @@ void GameMap::UpdateLinkedCells(Player * player)
         }
 
         // add LEFT
-        unsigned int c = currCell.col - 1;
+        int c = currCell.col - 1;
 
-        if(c < mCols)
+        if(c >= 0)
         {
             const unsigned int ind = currInd - 1;
 
@@ -2691,6 +2691,7 @@ void GameMap::UpdateLinkedCells(Player * player)
 
     for(GameObject * obj : structures)
     {
+        // linked status changed
         if(obj->IsLinked() != objsLink[obj])
         {
             obj->SetLinked(objsLink[obj]);
@@ -2704,6 +2705,12 @@ void GameMap::UpdateLinkedCells(Player * player)
                 if(obj->GetObjectType() == GameObject::TYPE_RADAR_STATION)
                     radarLinked = true;
             }
+        }
+        // linked status unchanged
+        else
+        {
+            if(obj->IsLinked() && obj->GetObjectType() == GameObject::TYPE_RADAR_STATION)
+                radarLinked = true;
         }
     }
 

@@ -49,11 +49,13 @@ PanelPlanetInfo::PanelPlanetInfo()
     RegisterRenderable(mTitle);
 
     // -- DATA --
+    graphic::Font * fntHeader = fm->GetFont(fileFont, WidgetsConstants::FontSizePlanetMapHeader,
+                                         graphic::Font::NORMAL);
     graphic::Font * fntData = fm->GetFont(fileFont, WidgetsConstants::FontSizePlanetMapText,
                                           graphic::Font::NORMAL);
 
     // LINE SIZE
-    mHeaderSize = new graphic::Text("SIZE", fntData);
+    mHeaderSize = new graphic::Text("SIZE", fntHeader);
     mHeaderSize->SetColor(WidgetsConstants::colorPlanetMapHeader);
     RegisterRenderable(mHeaderSize);
 
@@ -62,7 +64,7 @@ PanelPlanetInfo::PanelPlanetInfo()
     RegisterRenderable(mLabelSize);
 
     // LINE STATUS
-    mHeaderStatus = new graphic::Text("STATUS", fntData);
+    mHeaderStatus = new graphic::Text("STATUS", fntHeader);
     mHeaderStatus->SetColor(WidgetsConstants::colorPlanetMapHeader);
     RegisterRenderable(mHeaderStatus);
 
@@ -71,7 +73,7 @@ PanelPlanetInfo::PanelPlanetInfo()
     RegisterRenderable(mLabelStatus);
 
     // LINE VALUE
-    mHeaderValue = new graphic::Text("VALUE", fntData);
+    mHeaderValue = new graphic::Text("VALUE", fntHeader);
     mHeaderValue->SetColor(WidgetsConstants::colorPlanetMapHeader);
     RegisterRenderable(mHeaderValue);
 
@@ -80,7 +82,7 @@ PanelPlanetInfo::PanelPlanetInfo()
     RegisterRenderable(mBarValue);
 
     // LINE OCCUPIER
-    mHeaderOccupier = new graphic::Text("OCCUPIER", fntData);
+    mHeaderOccupier = new graphic::Text("OCCUPIER", fntHeader);
     mHeaderOccupier->SetColor(WidgetsConstants::colorPlanetMapHeader);
     RegisterRenderable(mHeaderOccupier);
 
@@ -89,7 +91,7 @@ PanelPlanetInfo::PanelPlanetInfo()
     RegisterRenderable(mLabelOccupier);
 
     // LINE MISSION
-    mHeaderMission = new graphic::Text("MISSION", fntData);
+    mHeaderMission = new graphic::Text("MISSION", fntHeader);
     mHeaderMission->SetColor(WidgetsConstants::colorPlanetMapHeader);
     RegisterRenderable(mHeaderMission);
 

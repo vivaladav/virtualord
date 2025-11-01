@@ -40,6 +40,7 @@ enum MissionCategory : unsigned int
     MC_PRODUCTION,      // produce resources
     MC_RESCUE,          // rescue something
     MC_RESISTANCE,      // hold for some time
+    MC_TUTORIAL,        // game tutorial
 
     NUM_MISSION_CATEGORIES,
 

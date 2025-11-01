@@ -7,6 +7,8 @@
 namespace game
 {
 
+enum MissionCategory : unsigned int;
+
 enum MissionReward : unsigned int
 {
     MR_BLOBS,
@@ -47,6 +49,8 @@ public:
 
     MissionGoalType GetType() const;
     unsigned int GetQuantity() const;
+
+    MissionCategory GetCategory() const;
 
     bool IsPrimary() const;
 
