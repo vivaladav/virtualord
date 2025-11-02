@@ -12,6 +12,7 @@ namespace game
 {
 
 StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * panel)
+    : mPanelActions(panel)
 {
     // CLICK FILTER
     mClickFilter = new PanelClickFilter;
