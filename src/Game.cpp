@@ -26,7 +26,7 @@
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StateManager.h>
 
-#ifdef DEV_MODE
+#ifdef DEBUG
 #include <sgl/core/ModuleCore.h>
 #include <sgl/graphic/ModuleGraphic.h>
 #include <sgl/media/ModuleMedia.h>
