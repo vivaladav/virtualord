@@ -202,6 +202,9 @@ enum SpriteCollectiblesId : unsigned int
     // LOOT BOX
     IND_LOOTBOX,
     IND_LOOTBOX_SEL,
+    // LOOT BOX LVL2
+    IND_LOOTBOX_L2,
+    IND_LOOTBOX_L2_SEL,
 };
 
 // INDICATORS
