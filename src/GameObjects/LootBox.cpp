@@ -52,7 +52,8 @@ void LootBox::Collected(Player * collector)
     {
         SelfDestroy();
 
-        ap->PlaySound("game/explosion-01.ogg");
+        if(IsVisible())
+            ap->PlaySound("game/explosion-01.ogg");
 
         return ;
     }
@@ -90,7 +91,8 @@ void LootBox::Collected(Player * collector)
     pu->AddParticle(pd);
 
     // play SFX
-    ap->PlaySound("game/collect-01.ogg");
+    if(IsVisible())
+        ap->PlaySound("game/collect-01.ogg");
 }
 
 void LootBox::UpdateGraphics()
