@@ -348,7 +348,7 @@ void ScreenMainMenu::CreateChangelog()
     text->SetText("NEW FEATURES\n"
                   "\n"
                   "\nCHANGES\n"
-                  "\n"
+                  "Hit points no longer shown on self-destruction.\n"
                   "\nFIXES\n"
                   "\n"
                   );

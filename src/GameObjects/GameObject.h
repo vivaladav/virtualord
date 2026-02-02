@@ -177,7 +177,7 @@ public:
     void FindAndSetEnemyTarget();
     bool HasEnemyInRange();
 
-    void Hit(float damage, GameObject * attacker, bool fatal);
+    void Hit(float damage, GameObject * attacker, bool fatal, bool showHitPoints = true);
     void MissHit();
     void SelfDestroy();
 

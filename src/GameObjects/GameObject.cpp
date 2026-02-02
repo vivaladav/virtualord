@@ -573,7 +573,7 @@ bool GameObject::HasEnemyInRange()
     return false;
 }
 
-void GameObject::Hit(float damage, GameObject * attacker, bool fatal)
+void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showHitPoints)
 {
     using namespace sgl;
 
@@ -718,6 +718,9 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal)
     }
 
     // -- HIT POINTS --
+    if(!showHitPoints)
+        return ;
+
     // random generator for X position
     const int maxXDeltaHP = isoObj->GetWidth() * 0.25;
     const int minXDeltaHP = -maxXDeltaHP;
@@ -756,7 +759,7 @@ void GameObject::MissHit()
     puHP->AddParticle(dataHP);
 }
 
-void GameObject::SelfDestroy() { Hit(0.f, nullptr, true); }
+void GameObject::SelfDestroy() { Hit(0.f, nullptr, true, false); }
 
 void GameObject::SetActiveActionToDefault() { mActiveAction = mDefaultAction; }
 
