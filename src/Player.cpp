@@ -349,41 +349,49 @@ void Player::UpdateResources()
         mOnResourcesChanged();
 }
 
-void Player::HandleCollectable(GameObject * obj)
+void Player::HandleCollectable(GameObject * collected, GameObject * collector)
 {
-    const GameObjectTypeId type = obj->GetObjectType();
+    const GameObjectTypeId type = collected->GetObjectType();
 
     // DIAMONDS
     if(type == ObjectData::TYPE_DIAMONDS)
     {
-        auto d = static_cast<Diamonds *>(obj);
+        auto d = static_cast<Diamonds *>(collected);
         mStats[Stat::DIAMONDS].SumValue(d->GetNum());
     }
     else if(type == ObjectData::TYPE_BLOBS)
     {
-        auto d = static_cast<Blobs *>(obj);
+        auto d = static_cast<Blobs *>(collected);
         mStats[Stat::BLOBS].SumValue(d->GetNum());
     }
-    else if(type == ObjectData::TYPE_LOOTBOX)
+    else if(type == ObjectData::TYPE_LOOTBOX || type == ObjectData::TYPE_LOOTBOX2)
     {
-        auto lb = static_cast<LootBox *>(obj);
+        auto lb = static_cast<LootBox *>(collected);
         auto type = static_cast<Player::Stat>(lb->GetPrizeType());
 
         std::cout << "Player::HandleCollectable | LootBox type: " << type
                   << " - quantity: " << lb->GetPrizeQuantity() << std::endl;
 
-        mStats[type].SumValue(lb->GetPrizeQuantity());
+        if(type != INVALID_STAT)
+            mStats[type].SumValue(lb->GetPrizeQuantity());
+        // special case -> exploding lootbox
+        else
+        {
+            const float damage = collected->GetEnergy();
+            collector->Hit(damage, nullptr, false);
+        }
     }
     else
     {
-        std::cerr << "Player::HandleCollectable | don't know how to handle this object type: " << type << std::endl;
+        std::cerr << "Player::HandleCollectable | don't know how to handle this object type: "
+                  << type << std::endl;
         return ;
     }
 
     mOnResourcesChanged();
 
     // notify collection
-    static_cast<Collectable *>(obj)->Collected(this);
+    static_cast<Collectable *>(collected)->Collected(this);
 }
 
 void Player::AdjustTurnMaxEnergy()

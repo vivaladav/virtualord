@@ -241,12 +241,14 @@ void WallBuildPath::UpdateMove(float delta)
         const GameMapCell & targetCell = mGameMap->GetCell(mTargetRow, mTargetCol);
 
         // collect collectable object, if any
-        if(targetCell.objTop != nullptr &&
-           targetCell.objTop->GetObjectCategory() == ObjectData::CAT_COLLECTABLE)
-        {
-            player->HandleCollectable(targetCell.objTop);
+        GameObject * collectable = targetCell.objTop;
 
-            mGameMap->RemoveAndDestroyObject(targetCell.objTop);
+        if(collectable != nullptr &&
+           collectable->GetObjectCategory() == ObjectData::CAT_COLLECTABLE)
+        {
+            player->HandleCollectable(collectable, mUnit);
+
+            mGameMap->RemoveAndDestroyObject(collectable);
         }
 
         // handle moving object

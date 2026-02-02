@@ -538,7 +538,7 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new Wall(data, initData, variant);
     else if(ObjectData::TYPE_WALL_GATE == type)
         o2a.obj = new WallGate(data, initData, variant);
-    else if(ObjectData::TYPE_LOOTBOX == type)
+    else if(ObjectData::TYPE_LOOTBOX == type || ObjectData::TYPE_LOOTBOX2 == type)
         o2a.obj = new LootBox(data, initData);
     else if(ObjectData::TYPE_TEMPLE == type)
         o2a.obj = new Temple(data, initData);

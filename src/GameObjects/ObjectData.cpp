@@ -20,6 +20,7 @@ const std::string ObjectData::TYPE_STR_DEFENSIVE_TOWER("DEF_TOWER");
 const std::string ObjectData::TYPE_STR_DIAMONDS("DIAMONDS");
 const std::string ObjectData::TYPE_STR_HOSPITAL("HOSPITAL");
 const std::string ObjectData::TYPE_STR_LOOTBOX("LOOTBOX");
+const std::string ObjectData::TYPE_STR_LOOTBOX2("LOOTBOX2");
 const std::string ObjectData::TYPE_STR_MINI_UNIT1("MINIUNIT1");
 const std::string ObjectData::TYPE_STR_MINI_UNIT2("MINIUNIT2");
 const std::string ObjectData::TYPE_STR_MOUNTAINS("MOUNTAINS");
@@ -62,6 +63,7 @@ const GameObjectTypeId ObjectData::TYPE_DEFENSIVE_TOWER = h{}(TYPE_STR_DEFENSIVE
 const GameObjectTypeId ObjectData::TYPE_DIAMONDS = h{}(TYPE_STR_DIAMONDS);
 const GameObjectTypeId ObjectData::TYPE_HOSPITAL = h{}(TYPE_STR_HOSPITAL);
 const GameObjectTypeId ObjectData::TYPE_LOOTBOX = h{}(TYPE_STR_LOOTBOX);
+const GameObjectTypeId ObjectData::TYPE_LOOTBOX2 = h{}(TYPE_STR_LOOTBOX2);
 const GameObjectTypeId ObjectData::TYPE_MINI_UNIT1 = h{}(TYPE_STR_MINI_UNIT1);
 const GameObjectTypeId ObjectData::TYPE_MINI_UNIT2 = h{}(TYPE_STR_MINI_UNIT2);
 const GameObjectTypeId ObjectData::TYPE_MOUNTAINS = h{}(TYPE_STR_MOUNTAINS);
@@ -102,6 +104,7 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::TYPE_STR_MAP
     { ObjectData::TYPE_DEFENSIVE_TOWER, TYPE_STR_DEFENSIVE_TOWER },
     { ObjectData::TYPE_HOSPITAL, TYPE_STR_HOSPITAL },
     { ObjectData::TYPE_LOOTBOX, TYPE_STR_LOOTBOX },
+    { ObjectData::TYPE_LOOTBOX2, TYPE_STR_LOOTBOX2 },
     { ObjectData::TYPE_MINI_UNIT1, TYPE_STR_MINI_UNIT1 },
     { ObjectData::TYPE_MINI_UNIT2, TYPE_STR_MINI_UNIT2 },
     { ObjectData::TYPE_MOUNTAINS, TYPE_STR_MOUNTAINS },
@@ -156,6 +159,7 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::TITLES =
     { ObjectData::TYPE_DEFENSIVE_TOWER, "DEF_TOWER"},
     { ObjectData::TYPE_HOSPITAL, "HOSPITAL"},
     { ObjectData::TYPE_LOOTBOX, "LOOT_BOX"},
+    { ObjectData::TYPE_LOOTBOX2, "LOOT_BOX2"},
     { ObjectData::TYPE_MINI_UNIT1, "MINI_UNIT1"},
     { ObjectData::TYPE_MINI_UNIT2, "MINI_UNIT2"},
     { ObjectData::TYPE_MOUNTAINS, "MOUNTAINS"},
@@ -197,6 +201,7 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::DESCRIPTIONS
         { ObjectData::TYPE_DEFENSIVE_TOWER, "DESC_DEFENSIVE_TOWER"},
         { ObjectData::TYPE_HOSPITAL, "DESC_HOSPITAL"},
         { ObjectData::TYPE_LOOTBOX, "DESC_LOOTBOX"},
+        { ObjectData::TYPE_LOOTBOX2, "DESC_LOOTBOX2"},
         { ObjectData::TYPE_MINI_UNIT1, "DESC_MINI_UNIT1"},
         { ObjectData::TYPE_MINI_UNIT2, "DESC_MINI_UNIT2"},
         { ObjectData::TYPE_MOUNTAINS, "DESC_MOUNTAINS"},

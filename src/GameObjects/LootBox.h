@@ -29,12 +29,12 @@ public:
 
     void Collected(Player * collector) override;
 
-protected:
+private:
     void UpdateGraphics() override;
 
-private:
-    void SetImage();
+    void SetPrize();
 
+    void SetImage();
     void SetObjColors();
 
 private:

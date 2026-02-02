@@ -133,7 +133,7 @@ public:
     int GetResourceConsumption(ResourceType type) const;
     void UpdateResources();
 
-    void HandleCollectable(GameObject * obj);
+    void HandleCollectable(GameObject * collected, GameObject * collector);
 
     // -- TURN --
     float GetTurnEnergy() const;
