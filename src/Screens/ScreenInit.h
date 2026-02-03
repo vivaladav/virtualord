@@ -37,12 +37,14 @@ private:
 private:
     enum TexPackages : unsigned int
     {
-        PACKAGE_IMGS_BACKGROUNDS,
-        PACKAGE_IMGS_GAME,
+        PACKAGE_IMGS_BACKGROUNDS_PREGAME,
+        PACKAGE_IMGS_BACKGROUNDS_SHARED,
+        //PACKAGE_IMGS_GAME,
         PACKAGE_IMGS_TEST,
-        PACKAGE_IMGS_UI_GAME,
+        //PACKAGE_IMGS_UI_GAME,
         PACKAGE_IMGS_UI_OTHERS,
-        PACKAGE_IMGS_UI_TUTORIAL,
+        PACKAGE_IMGS_UI_SHARED,
+        //PACKAGE_IMGS_UI_TUTORIAL,
 
         NUM_DATA_PACKAGES
     };
