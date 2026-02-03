@@ -9,6 +9,7 @@
 #include "States/StateFactionSelection.h"
 #include "States/StateGame.h"
 #include "States/StateInit.h"
+#include "States/StateInitGame.h"
 #include "States/StateMainMenu.h"
 #include "States/StateNewGame.h"
 #include "States/StatePlanetMap.h"
@@ -104,6 +105,7 @@ Game::Game(int argc, char * argv[])
     mStateMan->AddState(new StateFactionSelection(this));
     mStateMan->AddState(new StateGame(this));
     mStateMan->AddState(new StateInit(this));
+    mStateMan->AddState(new StateInitGame(this));
     mStateMan->AddState(new StateMainMenu(this));
     mStateMan->AddState(new StateNewGame(this));
     mStateMan->AddState(new StatePlanetMap(this));

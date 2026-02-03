@@ -15,11 +15,11 @@ namespace sgl
 namespace game
 {
 
-class ScreenInit : public Screen
+class ScreenInitGame : public Screen
 {
 public:
-    ScreenInit(Game * game);
-    ~ScreenInit();
+    ScreenInitGame(Game * game);
+    ~ScreenInitGame();
 
     void Update(float delta) override;
     void Render() override;
@@ -28,20 +28,14 @@ private:
     void UpdateStatus();
 
     void SetupLoadPackages();
-    void SetupFonts();
-    void SetupMouseCursors();
-    void SetupMusic();
-    void SetupSFX();
     void SetupTextures();
 
 private:
     enum TexPackages : unsigned int
     {
-        PACKAGE_IMGS_BACKGROUNDS_PREGAME,
-        PACKAGE_IMGS_BACKGROUNDS_SHARED,
-        PACKAGE_IMGS_TEST,
-        PACKAGE_IMGS_UI_PREGAME,
-        PACKAGE_IMGS_UI_SHARED,
+        PACKAGE_IMGS_GAME,
+        PACKAGE_IMGS_UI_GAME,
+        PACKAGE_IMGS_UI_TUTORIAL,
 
         NUM_DATA_PACKAGES
     };
