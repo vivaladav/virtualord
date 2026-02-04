@@ -14,7 +14,9 @@ StateInit::StateInit(Game * game)
 
 void StateInit::OnActive()
 {
-    mScreen = new ScreenInit(mGame);
+    mScreen = new ScreenInit(mGame, mFirstInit);
+
+    mFirstInit = false;
 }
 
 void StateInit::OnInactive()

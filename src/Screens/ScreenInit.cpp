@@ -42,7 +42,7 @@ const char * packageSoundsUI = "data/sfx/UI/UI.bin";
 namespace game
 {
 
-ScreenInit::ScreenInit(Game * game)
+ScreenInit::ScreenInit(Game * game, bool firstInit)
     : Screen(game)
 {
     game->SetClearColor(0x12, 0x12, 0x12, 0xFF);
@@ -60,14 +60,18 @@ ScreenInit::ScreenInit(Game * game)
     mBg = new sgl::graphic::Image(tex);
 
     // == SETUP JOBS ==
-    SetupLoadPackages();
-    SetupFonts();
-    SetupMusic();
-    SetupSFX();
-    SetupTextures();
+    if(firstInit)
+    {
+        SetupFonts();
+        SetupMusic();
+        SetupSFX();
+        SetupPermanentTextures();
 
-    // NOTE always after SetupTextures
-    SetupMouseCursors();
+        // NOTE always after creating the textures
+        SetupMouseCursors();
+    }
+
+    SetupPregameTextures();
 
     // FINAL JOB - move to next screen
     // NOTE keep last
@@ -144,79 +148,6 @@ void ScreenInit::UpdateStatus()
     mLabelStatus->SetPosition(x, y);
 }
 
-void ScreenInit::SetupLoadPackages()
-{
-    auto am = sgl::media::AudioManager::Instance();
-
-    // BACKGROUNDS PREGAME
-    mJobs.emplace_back([this]
-    {
-        mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PREGAME] =
-            new sgl::core::DataPackage("data/img/backgrounds-pregame.bin");
-    });
-
-#ifdef DEV_MODE
-    // LOAD TEST PACKAGE
-    mJobs.emplace_back([this]
-    {
-        mTexPackages[PACKAGE_IMGS_TEST] = new sgl::core::DataPackage("data/img/test.bin");
-    });
-#endif
-
-    // LOAD UI PREGAME PACKAGE
-    mJobs.emplace_back([this]
-    {
-        mTexPackages[PACKAGE_IMGS_UI_PREGAME] =
-            new sgl::core::DataPackage("data/img/UI/UI-pregame.bin");
-    });
-
-    // LOAD UI SHARED PACKAGE
-    mJobs.emplace_back([this]
-    {
-        mTexPackages[PACKAGE_IMGS_UI_SHARED] = new sgl::core::DataPackage("data/img/UI/UI-shared.bin");
-    });
-
-    // LOAD MUSIC GAME PACKAGE
-    mJobs.emplace_back([am]
-    {
-        am->RegisterDataPackage(packageMusicGame);
-    });
-
-    // LOAD MUSIC MENUS PACKAGE
-    mJobs.emplace_back([am]
-    {
-        am->RegisterDataPackage(packageMusicMenus);
-    });
-
-#ifdef DEV_MODE
-    // LOAD MUSIC TEST PACKAGE
-    mJobs.emplace_back([am]
-    {
-        am->RegisterDataPackage(packageMusicTest);
-    });
-#endif
-
-    // LOAD SFX GAME PACKAGE
-    mJobs.emplace_back([am]
-    {
-        am->RegisterDataPackage(packageSoundsGame);
-    });
-
-    // LOAD SFX UI PACKAGE
-    mJobs.emplace_back([am]
-    {
-        am->RegisterDataPackage(packageSoundsUI);
-    });
-
-#ifdef DEV_MODE
-    // LOAD SFX TEST PACKAGE
-    mJobs.emplace_back([am]
-    {
-        am->RegisterDataPackage(packageSoundsTest);
-    });
-#endif
-}
-
 void ScreenInit::SetupFonts()
 {
     // REGISTER FONTS
@@ -247,6 +178,28 @@ void ScreenInit::SetupMusic()
 {
     auto am = sgl::media::AudioManager::Instance();
 
+    // ===== INIT PACKAGES =====
+    // LOAD MUSIC GAME PACKAGE
+    mJobs.emplace_back([am]
+    {
+        am->RegisterDataPackage(packageMusicGame);
+    });
+
+    // LOAD MUSIC MENUS PACKAGE
+    mJobs.emplace_back([am]
+    {
+        am->RegisterDataPackage(packageMusicMenus);
+    });
+
+#ifdef DEV_MODE
+    // LOAD MUSIC TEST PACKAGE
+    mJobs.emplace_back([am]
+    {
+        am->RegisterDataPackage(packageMusicTest);
+    });
+#endif
+
+    // ===== CREATE MUSIC =====
     // GAME MUSIC
     mJobs.emplace_back([this, am]
     {
@@ -266,7 +219,6 @@ void ScreenInit::SetupMusic()
     mJobs.emplace_back([this, am]
     {
         am->CreateMusic(packageMusicTest, "test/menu_01.ogg");
-
         am->CreateMusic(packageSoundsTest, "test/test.ogg");
     });
 #endif
@@ -276,14 +228,28 @@ void ScreenInit::SetupSFX()
 {
     auto am = sgl::media::AudioManager::Instance();
 
-#ifdef DEV_MODE
-    // TEST SFX
-    mJobs.emplace_back([this, am]
+    // ===== INIT PACKAGES =====
+    // LOAD SFX GAME PACKAGE
+    mJobs.emplace_back([am]
     {
-        am->CreateSound(packageSoundsTest, "test/test.ogg");
+        am->RegisterDataPackage(packageSoundsGame);
+    });
+
+    // LOAD SFX UI PACKAGE
+    mJobs.emplace_back([am]
+    {
+        am->RegisterDataPackage(packageSoundsUI);
+    });
+
+#ifdef DEV_MODE
+    // LOAD SFX TEST PACKAGE
+    mJobs.emplace_back([am]
+    {
+        am->RegisterDataPackage(packageSoundsTest);
     });
 #endif
 
+    // ===== CREATE SFX =====
     // GAME SFX
     mJobs.emplace_back([this, am]
     {
@@ -333,19 +299,50 @@ void ScreenInit::SetupSFX()
         am->CreateSound(packageSoundsUI, "UI/panel-close-01.ogg");
         am->CreateSound(packageSoundsUI, "UI/panel-open-01.ogg");
     });
+
+#ifdef DEV_MODE
+    // TEST SFX
+    mJobs.emplace_back([this, am]
+    {
+        am->CreateSound(packageSoundsTest, "test/test.ogg");
+    });
+#endif
 }
 
-void ScreenInit::SetupTextures()
+void ScreenInit::SetupPregameTextures()
 {
     auto tm = sgl::graphic::TextureManager::Instance();
 
-    // ===== BACKGROUNDS PREGAME =====
+    // ===== INIT PACKAGES =====
+    // BACKGROUNDS PREGAME
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PREGAME] =
+            new sgl::core::DataPackage("data/img/backgrounds-pregame.bin");
+    });
+
+#ifdef DEV_MODE
+    // TEST
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_TEST] = new sgl::core::DataPackage("data/img/test.bin");
+    });
+#endif
+
+    // UI PREGAME
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_PREGAME] =
+            new sgl::core::DataPackage("data/img/UI/UI-pregame.bin");
+    });
+
+    // ===== REGISTER TEXTURES - BACKGROUNDS PREGAME =====
     mJobs.emplace_back([this, tm]
     {
         tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PREGAME], "main_menu_bg.png");
     });
 
-    // ===== UI PREGAME =====
+    // ===== REGISTER TEXTURES - UI PREGAME =====
     // MAIN MENU
     mJobs.emplace_back([this, tm]
     {
@@ -396,7 +393,83 @@ void ScreenInit::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], SpriteFileMainMenuButtons, rects);
     });
 
-    // ===== UI SHARED =====
+    // ===== REGISTER TEXTURES - TEST =====
+#ifdef DEV_MODE
+    // TEST SPRITE
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            { 0, 0, 40, 40 },
+            { 40, 0, 40, 40 },
+            { 0, 40, 40, 40 },
+            { 40, 40, 40, 40 }
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestSprite, rects);
+    });
+
+    // TEST UI
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // COMBOBOX MAIN BUTTON BG
+            { 0, 0, 200, 50 },
+            { 200, 0, 200, 50 },
+            { 400, 0, 200, 50 },
+            { 600, 0, 200, 50 },
+            { 800, 0, 200, 50 },
+            // COMBOBOX ITEM BUTTON BG
+            { 0, 50, 200, 50 },
+            { 200, 50, 200, 50 },
+            { 400, 50, 200, 50 },
+            { 600, 50, 200, 50 },
+            { 800, 50, 200, 50 },
+            // SLIDER HORIZ
+            { 0, 101, 304, 20 },
+            { 305, 101, 300, 16 },
+            { 606, 101, 30, 30 },
+            // MULTI SELECTION
+            { 637, 101, 40, 40 },
+            { 678, 101, 40, 40 },
+            { 719, 101, 40, 40 },
+            { 760, 101, 40, 40 },
+            { 801, 101, 40, 40 },
+            // TEST CURSORS
+            { 842, 101, 19, 26 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestUI, rects);
+    });
+
+    // TEST IMAGES
+    mJobs.emplace_back([this, tm]
+    {
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/obj_null.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/red_dot4.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/square100.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/test-bar-bg.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/test-bar-nobg.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/text_area.png");
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestSprite);
+    });
+#endif
+}
+
+void ScreenInit::SetupPermanentTextures()
+{
+    auto tm = sgl::graphic::TextureManager::Instance();
+
+    // ===== INIT PACKAGES =====
+    // UI SHARED PACKAGE
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_SHARED] = new sgl::core::DataPackage("data/img/UI/UI-shared.bin");
+    });
+
+    // ===== REGISTER TEXTURES =====
     // CURSOR
     mJobs.emplace_back([this, tm]
     {
@@ -485,70 +558,6 @@ void ScreenInit::SetupTextures()
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_SHARED], SpriteFileTooltipsExp, rectsExp);
     });
-
-    // ===== TEST =====
-#ifdef DEV_MODE
-    // TEST SPRITE
-    mJobs.emplace_back([this, tm]
-    {
-        const std::vector<sgl::core::Rectd> rects
-        {
-            { 0, 0, 40, 40 },
-            { 40, 0, 40, 40 },
-            { 0, 40, 40, 40 },
-            { 40, 40, 40, 40 }
-        };
-
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestSprite, rects);
-    });
-
-    // TEST UI
-    mJobs.emplace_back([this, tm]
-    {
-        const std::vector<sgl::core::Rectd> rects
-        {
-            // COMBOBOX MAIN BUTTON BG
-            { 0, 0, 200, 50 },
-            { 200, 0, 200, 50 },
-            { 400, 0, 200, 50 },
-            { 600, 0, 200, 50 },
-            { 800, 0, 200, 50 },
-            // COMBOBOX ITEM BUTTON BG
-            { 0, 50, 200, 50 },
-            { 200, 50, 200, 50 },
-            { 400, 50, 200, 50 },
-            { 600, 50, 200, 50 },
-            { 800, 50, 200, 50 },
-            // SLIDER HORIZ
-            { 0, 101, 304, 20 },
-            { 305, 101, 300, 16 },
-            { 606, 101, 30, 30 },
-            // MULTI SELECTION
-            { 637, 101, 40, 40 },
-            { 678, 101, 40, 40 },
-            { 719, 101, 40, 40 },
-            { 760, 101, 40, 40 },
-            { 801, 101, 40, 40 },
-            // TEST CURSORS
-            { 842, 101, 19, 26 },
-        };
-
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestUI, rects);
-    });
-
-    // TEST IMAGES
-    mJobs.emplace_back([this, tm]
-    {
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/obj_null.png");
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/red_dot4.png");
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/square100.png");
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/test-bar-bg.png");
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/test-bar-nobg.png");
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/text_area.png");
-
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestSprite);
-    });
-#endif
 }
 
 } // namespace game

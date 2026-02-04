@@ -13,6 +13,8 @@ public:
 private:
     void OnActive() override;
     void OnInactive() override;
+
+    bool mFirstInit = true;
 };
 
 } // namespace game
