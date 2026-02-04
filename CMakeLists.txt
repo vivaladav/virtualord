@@ -451,6 +451,8 @@ add_executable(
     src/Widgets/WidgetsConstants.cpp
     src/Widgets/Test/TestComboBox.h
     src/Widgets/Test/TestComboBox.cpp
+    src/Widgets/Test/TestProgressBar.h
+    src/Widgets/Test/TestProgressBar.cpp
     src/Widgets/Test/TestSliderH.h
     src/Widgets/Test/TestSliderH.cpp
     src/Widgets/Tutorial/FocusArea.h

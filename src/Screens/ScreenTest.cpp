@@ -6,8 +6,8 @@
 #include "States/StatesIds.h"
 #include "Widgets/ButtonMainMenu.h"
 #include "Widgets/ButtonUnitsSelector.h"
-#include "Widgets/GameProgressBar.h"
 #include "Widgets/Test/TestComboBox.h"
+#include "Widgets/Test/TestProgressBar.h"
 #include "Widgets/Test/TestSliderH.h"
 
 #include <sgl/core/Timer.h>
@@ -346,17 +346,17 @@ void ScreenTest::TestSGui()
     const int pbY = label->GetY() + label->GetHeight() + 50;
     const int marginbBars = 25;
 
-    mPb0 = new GameProgressBar(FACTION_1, minProgress, maxProgress, container);
+    mPb0 = new TestProgressBar(FACTION_1, minProgress, maxProgress, container);
     mPb0->SetPosition(pbX, pbY);
     mPb0->SetValue(0);
     mPb0->AddFunctionOnCompleted([]{ std::cout << "TEST PROGRESS 0 100%" << std::endl; });
 
-    mPb1 = new GameProgressBar(FACTION_2, minProgress, maxProgress, container);
+    mPb1 = new TestProgressBar(FACTION_2, minProgress, maxProgress, container);
     mPb1->SetPosition(pbX, pbY + mPb0->GetHeight() + marginbBars);
     mPb1->SetValue(0);
     mPb1->AddFunctionOnCompleted([]{ std::cout << "TEST PROGRESS 1 100%" << std::endl; });
 
-    mPb2 = new GameProgressBar(FACTION_3, minProgress, maxProgress, container);
+    mPb2 = new TestProgressBar(FACTION_3, minProgress, maxProgress, container);
     mPb2->SetPosition(pbX, mPb1->GetY() + mPb1->GetHeight() + marginbBars);
     mPb2->SetValue(0);
     mPb2->AddFunctionOnCompleted([]{ std::cout << "TEST PROGRESS 2 100%" << std::endl; });

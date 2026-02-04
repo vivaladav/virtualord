@@ -444,6 +444,12 @@ void ScreenInit::SetupPregameTextures()
             { 801, 101, 40, 40 },
             // TEST CURSORS
             { 842, 101, 19, 26 },
+            // PROGRESS BAR
+            { 862, 101, 52, 8 },
+            { 862, 110, 50, 6 },
+            { 862, 117, 50, 6 },
+            { 862, 124, 50, 6 },
+            { 862, 131, 50, 6 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestUI, rects);
