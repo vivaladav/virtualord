@@ -3,6 +3,13 @@
 #include "Game.h"
 #include "Screens/DummyScreen.h"
 #include "States/StatesIds.h"
+#include "Widgets/GameUIData.h"
+
+#ifdef DEV_MODE
+#include "GameTestData.h"
+#endif
+
+#include <sgl/graphic/TextureManager.h>
 
 namespace game
 {
@@ -16,12 +23,43 @@ void StateLeavePregame::OnActive()
 {
     mScreen = new DummyScreen(mGame);
 
+    DestroyPregameTextures();
+
     mGame->RequestNextActiveState(StateId::INIT_GAME);
 }
 
 void StateLeavePregame::OnInactive()
 {
 
+}
+
+void StateLeavePregame::DestroyPregameTextures()
+{
+    auto tm = sgl::graphic::TextureManager::Instance();
+
+    // BACKGROUNDS PREGAME
+    tm->DestroyTexture("main_menu_bg.png");
+
+    // UI PREGAME
+    tm->DestroySprite(SpriteFileMainMenu);
+    tm->DestroyTexture("UI/main_menu_build_badge.png");
+    tm->DestroyTexture("UI/main_menu_warning_bg.png");
+
+    // MAIN MENU BUTTONS
+    tm->DestroySprite(SpriteFileMainMenuButtons);
+
+    // TEST
+#ifdef DEV_MODE
+    tm->DestroySprite(SpriteFileTestSprite);
+    tm->DestroySprite(SpriteFileTestUI);
+    tm->DestroyTexture("test/obj_null.png");
+    tm->DestroyTexture("test/red_dot4.png");
+    tm->DestroyTexture("test/square100.png");
+    tm->DestroyTexture("test/test-bar-bg.png");
+    tm->DestroyTexture("test/test-bar-nobg.png");
+    tm->DestroyTexture("test/text_area.png");
+    tm->DestroyTexture(SpriteFileTestSprite);
+#endif
 }
 
 } // namespace game
