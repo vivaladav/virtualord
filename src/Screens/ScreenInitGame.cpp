@@ -1558,7 +1558,6 @@ void ScreenInitGame::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorialExp, rectsExp);
     });
 
-
     // DIALOG SELF DESTRUCTION
     mJobs.emplace_back([this, tm]
     {

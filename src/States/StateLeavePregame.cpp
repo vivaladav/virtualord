@@ -30,7 +30,8 @@ void StateLeavePregame::OnActive()
 
 void StateLeavePregame::OnInactive()
 {
-
+    delete mScreen;
+    mScreen = nullptr;
 }
 
 void StateLeavePregame::DestroyPregameTextures()
