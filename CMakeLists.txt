@@ -184,6 +184,8 @@ add_executable(
     src/Particles/UpdaterOutput.cpp
     src/Particles/UpdaterSingleLaser.h
     src/Particles/UpdaterSingleLaser.cpp
+    src/Screens/DummyScreen.h
+    src/Screens/DummyScreen.cpp
     src/Screens/Screen.h
     src/Screens/Screen.cpp
     src/Screens/ScreenFactionSelection.h
@@ -216,6 +218,10 @@ add_executable(
     src/States/StateInit.cpp
     src/States/StateInitGame.h
     src/States/StateInitGame.cpp
+    src/States/StateLeaveGame.h
+    src/States/StateLeaveGame.cpp
+    src/States/StateLeavePregame.h
+    src/States/StateLeavePregame.cpp
     src/States/StateMainMenu.h
     src/States/StateMainMenu.cpp
     src/States/StateNewGame.h

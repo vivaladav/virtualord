@@ -24,10 +24,4 @@ protected:
     Screen * mScreen = nullptr;
 };
 
-inline BaseGameState::BaseGameState(unsigned int screenId, Game * game)
-    : sgl::utilities::State(screenId)
-    , mGame(game)
-{
-}
-
 } // namespace game

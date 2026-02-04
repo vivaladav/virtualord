@@ -10,6 +10,8 @@
 #include "States/StateGame.h"
 #include "States/StateInit.h"
 #include "States/StateInitGame.h"
+#include "States/StateLeaveGame.h"
+#include "States/StateLeavePregame.h"
 #include "States/StateMainMenu.h"
 #include "States/StateNewGame.h"
 #include "States/StatePlanetMap.h"
@@ -106,6 +108,8 @@ Game::Game(int argc, char * argv[])
     mStateMan->AddState(new StateGame(this));
     mStateMan->AddState(new StateInit(this));
     mStateMan->AddState(new StateInitGame(this));
+    mStateMan->AddState(new StateLeaveGame(this));
+    mStateMan->AddState(new StateLeavePregame(this));
     mStateMan->AddState(new StateMainMenu(this));
     mStateMan->AddState(new StateNewGame(this));
     mStateMan->AddState(new StatePlanetMap(this));

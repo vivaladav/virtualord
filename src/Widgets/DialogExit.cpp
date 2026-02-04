@@ -333,7 +333,7 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
         btn->AddOnClickFunction([game]
         {
             game->GetTutorialManager()->AbortTutorial();
-            game->RequestNextActiveState(StateId::MAIN_MENU);
+            game->RequestNextActiveState(StateId::LEAVE_GAME);
         });
 
         btnY += btn->GetHeight() + marginBtnV;
