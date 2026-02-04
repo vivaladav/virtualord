@@ -2,9 +2,12 @@
 
 #include "Game.h"
 #include "GameConstants.h"
-#include "GameTestData.h"
 #include "States/StatesIds.h"
 #include "Widgets/GameUIData.h"
+
+#ifdef DEV_MODE
+#include "GameTestData.h"
+#endif
 
 #include <sgl/core/DataPackage.h>
 #include <sgl/graphic/Cursor.h>
@@ -50,18 +53,21 @@ ScreenInit::ScreenInit(Game * game, bool firstInit)
     mTexPackages.assign(NUM_DATA_PACKAGES, nullptr);
 
     auto tm = sgl::graphic::TextureManager::Instance();
-
-    // -- BACKGROUND --
-    mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM] =
-        new sgl::core::DataPackage("data/img/backgrounds-shared.bin");
-    tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM], "space_bg.jpg");
-
-    auto tex = tm->GetTexture("space_bg.jpg");
-    mBg = new sgl::graphic::Image(tex);
+    auto fm = sgl::graphic::FontManager::Instance();
 
     // == SETUP JOBS ==
     if(firstInit)
     {
+        // BACKGROUND
+        mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM] =
+            new sgl::core::DataPackage("data/img/backgrounds-shared.bin");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM], "space_bg.jpg");
+
+        // FONT
+        fm->RegisterDataPackage(packageFontsGame);
+        fm->RegisterFont(packageFontsGame, "Lato-Regular.ttf");
+
+        // SETUP JOBS
         SetupFonts();
         SetupMusic();
         SetupSFX();
@@ -72,6 +78,10 @@ ScreenInit::ScreenInit(Game * game, bool firstInit)
     }
 
     SetupPregameTextures();
+
+    // BACKGROUND
+    auto tex = tm->GetTexture("space_bg.jpg");
+    mBg = new sgl::graphic::Image(tex);
 
     // FINAL JOB - move to next screen
     // NOTE keep last
@@ -84,11 +94,7 @@ ScreenInit::ScreenInit(Game * game, bool firstInit)
         #endif
     });
 
-    // INIT STATUS LABEL
-    auto fm = sgl::graphic::FontManager::Instance();
-    fm->RegisterDataPackage(packageFontsGame);
-    fm->RegisterFont(packageFontsGame, "Lato-Regular.ttf");
-
+    // STATUS LABEL
     sgl::graphic::Font * font = fm->GetFont("Lato-Regular.ttf", 32, sgl::graphic::Font::NORMAL);
     mLabelStatus = new sgl::sgui::Label(font);
     mLabelStatus->SetColor(0xEEEEEEFF);
