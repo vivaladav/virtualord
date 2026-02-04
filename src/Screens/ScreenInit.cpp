@@ -52,9 +52,9 @@ ScreenInit::ScreenInit(Game * game, bool firstInit)
     auto tm = sgl::graphic::TextureManager::Instance();
 
     // -- BACKGROUND --
-    mTexPackages[PACKAGE_IMGS_BACKGROUNDS_SHARED] =
+    mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM] =
         new sgl::core::DataPackage("data/img/backgrounds-shared.bin");
-    tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_BACKGROUNDS_SHARED], "space_bg.jpg");
+    tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM], "space_bg.jpg");
 
     auto tex = tm->GetTexture("space_bg.jpg");
     mBg = new sgl::graphic::Image(tex);
@@ -463,17 +463,17 @@ void ScreenInit::SetupPermanentTextures()
     auto tm = sgl::graphic::TextureManager::Instance();
 
     // ===== INIT PACKAGES =====
-    // UI SHARED PACKAGE
+    // UI PERMANENT PACKAGE
     mJobs.emplace_back([this]
     {
-        mTexPackages[PACKAGE_IMGS_UI_SHARED] = new sgl::core::DataPackage("data/img/UI/UI-shared.bin");
+        mTexPackages[PACKAGE_IMGS_UI_PERM] = new sgl::core::DataPackage("data/img/UI/UI-shared.bin");
     });
 
     // ===== REGISTER TEXTURES =====
     // CURSOR
     mJobs.emplace_back([this, tm]
     {
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_SHARED], SpriteFileCursor);
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileCursor);
     });
 
     // SETTINGS
@@ -514,7 +514,7 @@ void ScreenInit::SetupPermanentTextures()
             { 977, 801, 45, 39 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_SHARED], SpriteFileSettings, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileSettings, rects);
     });
 
     // SETTINGS - EXPANDABLE TEXTURES
@@ -533,7 +533,7 @@ void ScreenInit::SetupPermanentTextures()
             { 606, 53, 30, 30 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_SHARED], SpriteFileSettingsExp, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileSettingsExp, rects);
     });
 
     // TOOLTIPS
@@ -545,7 +545,7 @@ void ScreenInit::SetupPermanentTextures()
             { 0, 0, 250, 155 }
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_SHARED], SpriteFileTooltips, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileTooltips, rects);
 
         // EXPANDABLE TEXTURE
         const std::vector<sgl::core::Rectd> rectsExp
@@ -556,7 +556,7 @@ void ScreenInit::SetupPermanentTextures()
             { 0, 66, 20, 32 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_SHARED], SpriteFileTooltipsExp, rectsExp);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileTooltipsExp, rectsExp);
     });
 }
 

@@ -38,10 +38,10 @@ private:
     enum TexPackages : unsigned int
     {
         PACKAGE_IMGS_BACKGROUNDS_PREGAME,
-        PACKAGE_IMGS_BACKGROUNDS_SHARED,
+        PACKAGE_IMGS_BACKGROUNDS_PERM,
         PACKAGE_IMGS_TEST,
         PACKAGE_IMGS_UI_PREGAME,
-        PACKAGE_IMGS_UI_SHARED,
+        PACKAGE_IMGS_UI_PERM,
 
         NUM_DATA_PACKAGES
     };
