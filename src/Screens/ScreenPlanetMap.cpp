@@ -417,7 +417,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     buttonLeave->AddOnClickFunction([this]
     {
         // TODO change to galaxy screen
-        GetGame()->RequestNextActiveState(StateId::MAIN_MENU);
+        GetGame()->RequestNextActiveState(StateId::LEAVE_GAME);
     });
 
     const int planetId = game->GetCurrentPlanet();
