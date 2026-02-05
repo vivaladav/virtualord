@@ -11,6 +11,8 @@
 
 #include <sgl/graphic/TextureManager.h>
 
+#include <cassert>
+
 namespace game
 {
 
@@ -19,13 +21,22 @@ StateLeavePregame::StateLeavePregame(Game * game)
 {
 }
 
+void StateLeavePregame::SetNextStateData(sgl::utilities::StateData * data)
+{
+    assert(data != nullptr);
+
+    auto d = static_cast<StateDataLeavePregame *>(data);
+
+    mNextState = d->GetNextState();
+}
+
 void StateLeavePregame::OnActive()
 {
     mScreen = new DummyScreen(mGame);
 
     DestroyPregameTextures();
 
-    mGame->RequestNextActiveState(StateId::INIT_GAME);
+    mGame->RequestNextActiveState(mNextState);
 }
 
 void StateLeavePregame::OnInactive()

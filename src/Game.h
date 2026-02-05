@@ -22,7 +22,11 @@ namespace sgl
 
     namespace sgui { class Stage; }
 
-    namespace utilities { class StateManager; }
+    namespace utilities
+    {
+        class StateData;
+        class StateManager;
+    }
 }
 
 namespace game
@@ -80,7 +84,7 @@ public:
 
     // GAME STATE
     int GetActiveStateId() const;
-    void RequestNextActiveState(StateId sid);
+    void RequestNextActiveState(StateId sid, sgl::utilities::StateData * data = nullptr);
 
     Difficulty GetDifficulty() const;
     void SetDifficulty(Difficulty level);
