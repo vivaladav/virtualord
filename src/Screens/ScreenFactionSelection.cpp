@@ -81,7 +81,7 @@ ScreenFactionSelection::ScreenFactionSelection(Game * game)
 
     btnBack->AddOnClickFunction([game]
     {
-        game->RequestNextActiveState(StateId::MAIN_MENU);
+        game->RequestNextActiveState(StateId::LEAVE_GAME);
     });
 
     // -- FACTION 1 --
