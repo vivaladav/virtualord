@@ -352,6 +352,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- New exploding loot-box.\n"
                   "\nCHANGES\n"
                   "- Hit points no longer shown on self-destruction.\n"
+                  "- No longer pre-loading everything at the beginning, but"
+                  " loading assets based on game section.\n"
                   "\nFIXES\n"
                   "\n"
                   );
