@@ -31,6 +31,7 @@ public:
         ENERGY,
         MATERIAL,
         MONEY,
+        RESEARCH,
 
         NUM_PSTATS,
 

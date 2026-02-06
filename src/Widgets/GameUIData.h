@@ -745,7 +745,8 @@ extern const char SpriteFileResourcesBar[];
 enum SpriteIdResourcesBar : unsigned int
 {
     // BAR
-    IND_RESBAR_BG,
+    IND_RESBAR_BG_L,
+    IND_RESBAR_BG_R,
 
     // MINI BAR
     IND_RESBAR_MINIBAR_BG,
@@ -753,11 +754,14 @@ enum SpriteIdResourcesBar : unsigned int
 
     // ICONS
     IND_RESBAR_MONEY,
+    IND_RESBAR_RESEARCH,
     IND_RESBAR_ENERGY,
     IND_RESBAR_MATERIAL,
     IND_RESBAR_DIAMOND,
     IND_RESBAR_BLOB
 };
+
+extern const char SpriteFileResourcesBarExp[];
 
 // SETTINGS
 extern const char SpriteFileSettings[];

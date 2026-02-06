@@ -45,6 +45,7 @@ Player::Player(const char * name, int pid)
     mStats.emplace_back(Stat::ENERGY, 0);
     mStats.emplace_back(Stat::MATERIAL, 0);
     mStats.emplace_back(Stat::MONEY, 0);
+    mStats.emplace_back(Stat::RESEARCH, 0);
 
     for(StatValue & val : mStats)
         val.SetMin(0);
@@ -54,6 +55,7 @@ Player::Player(const char * name, int pid)
     mStats[Stat::ENERGY].SetMax(1000);
     mStats[Stat::MATERIAL].SetMax(500);
     mStats[Stat::MONEY].SetMax(99999999);
+    mStats[Stat::RESEARCH].SetMax(999999);
 
     // init vectors of resource generators
     mResGeneratorsMap.insert({ RES_ENERGY, {} });

@@ -28,8 +28,6 @@ public:
 private:
     void HandlePositionChanged() override;
 
-    void SetBg();
-
     ResourceTooltip * AssignResourceTooltip(sgl::sgui::Widget * target, const char * text);
     GameSimpleTooltip * AssignSimpleTooltip(sgl::sgui::Widget * target, const char * text);
     void CreateTooltip(sgl::sgui::Widget * tt, sgl::sgui::Widget * target, int showingMs);
@@ -37,7 +35,9 @@ private:
     void OnStringsChanged() override;
 
 private:
-    sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
 
     Player * mPlayer = nullptr;
     GameMap * mGameMap = nullptr;

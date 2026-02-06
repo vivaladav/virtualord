@@ -31,6 +31,7 @@ const char SpriteFilePanelTurnControl[] = "UI/panel_turn_control.png";
 const char SpriteFilePlanetMap[] = "UI/planet_map.png";
 const char SpriteFilePlanetMap2[] = "UI/planet_map-2.png";
 const char SpriteFileResourcesBar[] = "UI/resources_bar.png";
+const char SpriteFileResourcesBarExp[] = "UI/resources_bar-exp.png";
 const char SpriteFileSettings[] = "UI/game_settings.png";
 const char SpriteFileSettingsExp[] = "UI/game_settings-exp.png";
 const char SpriteFileTooltips[] = "UI/tooltips.png";
