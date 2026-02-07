@@ -70,6 +70,11 @@ void ParticleOutput::SetData(const DataParticleOutput & data)
             color = 0x81e481ff;
         break;
 
+        case OT_RESEARCH:
+            iconTexId = ID_PART_ICON_RESEARCH;
+            color = 0x9eccfaff;
+        break;
+
         default: break;
     }
 

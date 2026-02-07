@@ -431,6 +431,7 @@ enum SpriteIdParticles : unsigned int
     ID_PART_ICON_MATERIAL,
     ID_PART_ICON_DIAMONDS,
     ID_PART_ICON_BLOBS,
+    ID_PART_ICON_RESEARCH,
 
     // UPGRADE ICON
     ID_PART_ICON_UPGRADE,

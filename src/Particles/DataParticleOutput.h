@@ -12,6 +12,7 @@ enum OutputType : unsigned int
     OT_ENERGY,
     OT_MATERIAL,
     OT_MONEY,
+    OT_RESEARCH,
 
     NUM_OUTPUT_TYPES,
 
