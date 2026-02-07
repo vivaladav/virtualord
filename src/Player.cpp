@@ -12,6 +12,7 @@
 #include "GameObjects/Diamonds.h"
 #include "GameObjects/GameObjectsGroup.h"
 #include "GameObjects/LootBox.h"
+#include "GameObjects/ResearchCenter.h"
 #include "GameObjects/ResourceGenerator.h"
 #include "GameObjects/Structure.h"
 #include "GameObjects/Unit.h"
@@ -318,6 +319,25 @@ void Player::SumCells(int val)
 }
 
 int Player::GetMoneySpentPerTurn() const
+{
+    // TODO
+    return 0;
+}
+
+int Player::GetResearchGeneratedPerTurn() const
+{
+    int gen = 0;
+
+    for(auto s : mStructures)
+    {
+        if(s->GetObjectType() == ObjectData::TYPE_RESEARCH_CENTER)
+            gen += static_cast<ResearchCenter *>(s)->GetResearchPerTurn();
+    }
+
+    return gen;
+}
+
+int Player::GetResearchSpentPerTurn() const
 {
     // TODO
     return 0;

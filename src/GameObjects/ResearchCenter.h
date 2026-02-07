@@ -12,6 +12,8 @@ public:
 
     void OnNewTurn(PlayerFaction faction) override;
 
+    int GetResearchPerTurn() const;
+
 private:
     void UpdateGraphics() override;
 
@@ -20,5 +22,7 @@ private:
 private:
     int mResearchPerTurn = 50;
 };
+
+inline int ResearchCenter::GetResearchPerTurn() const { return mResearchPerTurn; }
 
 } // namespace game

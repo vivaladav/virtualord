@@ -105,6 +105,9 @@ public:
 
     int GetMoneySpentPerTurn() const;
 
+    int GetResearchGeneratedPerTurn() const;
+    int GetResearchSpentPerTurn() const;
+
     void SetOnNumUnitsChanged(const std::function<void()> & f);
 
     // available structures

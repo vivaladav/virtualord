@@ -257,8 +257,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
         srd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = 0;
-            const int resOut = 0;
+            const int resIn = mPlayer->GetResearchGeneratedPerTurn();
+            const int resOut = mPlayer->GetResearchSpentPerTurn();
             tt->SetValues(resIn, resOut);
         });
     }
