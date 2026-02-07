@@ -3,7 +3,11 @@
 #include "GameConstants.h"
 #include "GameData.h"
 #include "IsoObject.h"
+#include "Player.h"
+#include "Particles/DataParticleOutput.h"
+#include "Particles/UpdaterOutput.h"
 
+#include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
 
 namespace game
@@ -13,6 +17,43 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
     : Structure(data, initData)
 {
     SetImage();
+}
+
+void ResearchCenter::OnNewTurn(PlayerFaction faction)
+{
+    Structure::OnNewTurn(faction);
+
+    // not linked yet -> exit
+    if(!IsLinked())
+        return ;
+
+    // not own turn -> exit
+    if(faction != GetFaction())
+        return ;
+
+    // assign research points
+    GetOwner()->SumResource(Player::RESEARCH, mResearchPerTurn);
+
+    // VISUAL NOTIFICATION
+    // AI -> exit
+    if(!IsFactionLocal())
+        return ;
+
+    // emit notification
+    auto partMan = GetParticlesManager();
+    auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
+
+    IsoObject * isoObj = GetIsoObject();
+
+    const int marginV = 20;
+    const float x = isoObj->GetX() + isoObj->GetWidth() / 2;
+    const float y = isoObj->GetY() - marginV;
+
+    const float speed = 45.f;
+    const float decaySpeed = 120.f;
+
+    const DataParticleOutput pd(mResearchPerTurn, OT_RESEARCH, x, y, speed, decaySpeed);
+    pu->AddParticle(pd);
 }
 
 void ResearchCenter::UpdateGraphics()

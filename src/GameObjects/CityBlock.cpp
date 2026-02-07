@@ -30,7 +30,7 @@ CityBlock::CityBlock(const ObjectData & data, const ObjectInitData & initData,
 
 void CityBlock::OnNewTurn(PlayerFaction faction)
 {
-    GameObject::OnNewTurn(faction);
+    Structure::OnNewTurn(faction);
 
     // not linked yet -> exit
     if(!IsLinked())
