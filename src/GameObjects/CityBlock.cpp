@@ -40,10 +40,6 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
     if(faction != GetFaction())
         return ;
 
-    // AI -> exit
-    if(!IsFactionLocal())
-        return ;
-
     auto g = static_cast<CityGroup *>(GetGroup());
 
     // city not conquered yet -> exit
@@ -53,6 +49,11 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
     // assign money
     const int money = 50;
     GetOwner()->SumResource(Player::MONEY, money);
+
+    // VISUAL NOTIFICATION
+    // AI -> exit
+    if(!IsFactionLocal())
+        return ;
 
     // emit notification
     auto partMan = GetParticlesManager();
