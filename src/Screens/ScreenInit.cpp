@@ -60,7 +60,7 @@ ScreenInit::ScreenInit(Game * game, bool firstInit)
     {
         // BACKGROUND
         mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM] =
-            new sgl::core::DataPackage("data/img/backgrounds-shared.bin");
+            new sgl::core::DataPackage("data/img/backgrounds-perm.bin");
         tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM], "space_bg.jpg");
 
         // FONT
@@ -478,7 +478,7 @@ void ScreenInit::SetupPermanentTextures()
     // UI PERMANENT PACKAGE
     mJobs.emplace_back([this]
     {
-        mTexPackages[PACKAGE_IMGS_UI_PERM] = new sgl::core::DataPackage("data/img/UI/UI-shared.bin");
+        mTexPackages[PACKAGE_IMGS_UI_PERM] = new sgl::core::DataPackage("data/img/UI/UI-perm.bin");
     });
 
     // ===== REGISTER TEXTURES =====
