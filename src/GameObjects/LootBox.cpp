@@ -15,6 +15,7 @@
 #include <sgl/utilities/LoadedDie.h>
 #include <sgl/utilities/UniformDistribution.h>
 
+#include <cassert>
 #include <cmath>
 
 namespace game
@@ -81,6 +82,7 @@ void LootBox::Collected(Player * collector)
         OT_ENERGY,
         OT_MATERIAL,
         OT_MONEY,
+        OT_RESEARCH,
     };
 
     static_assert(static_cast<unsigned int>(NUM_OUTPUT_TYPES) ==
@@ -105,7 +107,10 @@ void LootBox::UpdateGraphics()
 void LootBox::SetPrize()
 {
     // define TYPE of prize
-    sgl::utilities::LoadedDie die({ 15.f, 15.f, 20.f, 20.f, 30.f });
+    const std::vector<float> probs = { 15.f, 15.f, 20.f, 20.f, 20.f, 10.f };
+    assert(probs.size() == NUM_LB_PRIZES);
+
+    sgl::utilities::LoadedDie die(probs);
     mPrizeType = static_cast<LootBox::Prize>(die.GetNextValue());
 
     // define QUANTITY of prize
@@ -122,6 +127,11 @@ void LootBox::SetPrize()
     {
         min = mult * 5;
         max = mult * 25;
+    }
+    else if(LB_RESEARCH == mPrizeType)
+    {
+        min = mult * 100;
+        max = mult * 300;
     }
     // energy and material
     else

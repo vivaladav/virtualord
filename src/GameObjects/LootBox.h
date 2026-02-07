@@ -15,6 +15,7 @@ public:
         LB_ENERGY,
         LB_MATERIAL,
         LB_MONEY,
+        LB_RESEARCH,
 
         NUM_LB_PRIZES,
 
