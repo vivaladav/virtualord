@@ -24,6 +24,7 @@ const std::string MissionGoal::STR_COMPLETE_TUTORIAL("MG_COMP_TUT");
 const std::string MissionGoal::STR_DESTROY_ENEMY_BASE("MG_DEST_BAS");
 const std::string MissionGoal::STR_DESTROY_ALL_ENEMIES("MG_DEST_ENE");
 const std::string MissionGoal::STR_GAIN_MONEY("MG_GAIN_MON");
+const std::string MissionGoal::STR_GEN_RESEARCH("MG_GEN_RES");
 const std::string MissionGoal::STR_MINE_ENERGY("MG_MINE_ENE");
 const std::string MissionGoal::STR_MINE_MATERIAL("MG_MINE_MAT");
 const std::string MissionGoal::STR_RESIST_TIME("MG_RESI_TIM");
@@ -36,6 +37,7 @@ const MissionGoalType MissionGoal::TYPE_COMPLETE_TUTORIAL = h{}(STR_COMPLETE_TUT
 const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_BASE = h{}(STR_DESTROY_ENEMY_BASE);
 const MissionGoalType MissionGoal::TYPE_DESTROY_ALL_ENEMIES = h{}(STR_DESTROY_ALL_ENEMIES);
 const MissionGoalType MissionGoal::TYPE_GAIN_MONEY = h{}(STR_GAIN_MONEY);
+const MissionGoalType MissionGoal::TYPE_GEN_RESEARCH = h{}(STR_GEN_RESEARCH);
 const MissionGoalType MissionGoal::TYPE_MINE_ENERGY = h{}(STR_MINE_ENERGY);
 const MissionGoalType MissionGoal::TYPE_MINE_MATERIAL = h{}(STR_MINE_MATERIAL);
 const MissionGoalType MissionGoal::TYPE_RESIST_TIME = h{}(STR_RESIST_TIME);
@@ -49,6 +51,7 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_DESTROY_ENEMY_BASE, "MG_DESTROY_ENEMY_BASE" },
     { TYPE_DESTROY_ALL_ENEMIES, "MG_DESTROY_ALL_ENEMIES" },
     { TYPE_GAIN_MONEY, "MG_GAIN_MONEY" },
+    { TYPE_GEN_RESEARCH, "MG_GEN_RESEARCH" },
     { TYPE_MINE_ENERGY, "MG_MINE_ENERGY" },
     { TYPE_MINE_MATERIAL, "MG_MINE_MATERIAL" },
     { TYPE_RESIST_TIME, "MG_RESIST_TIME" },
@@ -63,6 +66,7 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::STRINGS =
     { TYPE_DESTROY_ENEMY_BASE, STR_DESTROY_ENEMY_BASE },
     { TYPE_DESTROY_ALL_ENEMIES, STR_DESTROY_ALL_ENEMIES },
     { TYPE_GAIN_MONEY, STR_GAIN_MONEY },
+    { TYPE_GEN_RESEARCH, STR_GEN_RESEARCH },
     { TYPE_MINE_ENERGY, STR_MINE_ENERGY },
     { TYPE_MINE_MATERIAL, STR_MINE_MATERIAL },
     { TYPE_RESIST_TIME, STR_RESIST_TIME },
@@ -85,7 +89,8 @@ MissionCategory MissionGoal::GetCategory() const
         return MC_RESISTANCE;
     else if(mType == TYPE_COLLECT_BLOBS || mType == TYPE_COLLECT_DIAMONDS)
         return MC_COLLECTION;
-    else if(mType == TYPE_GAIN_MONEY || mType == TYPE_MINE_ENERGY || mType == TYPE_MINE_MATERIAL)
+    else if(mType == TYPE_GAIN_MONEY || mType == TYPE_MINE_ENERGY ||
+            mType == TYPE_MINE_MATERIAL || mType == TYPE_GEN_RESEARCH)
         return MC_PRODUCTION;
     else if(mType == TYPE_COMPLETE_TUTORIAL)
         return MC_TUTORIAL;

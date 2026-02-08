@@ -16,6 +16,7 @@ enum MissionReward : unsigned int
     MR_ENERGY,
     MR_MATERIAL,
     MR_MONEY,
+    MR_RESEARCH,
 
     NUM_MISSION_REWARDS
 };
@@ -35,6 +36,7 @@ public :
     static const MissionGoalType TYPE_DESTROY_ENEMY_BASE;
     static const MissionGoalType TYPE_DESTROY_ALL_ENEMIES;
     static const MissionGoalType TYPE_GAIN_MONEY;
+    static const MissionGoalType TYPE_GEN_RESEARCH;
     static const MissionGoalType TYPE_MINE_ENERGY;
     static const MissionGoalType TYPE_MINE_MATERIAL;
     static const MissionGoalType TYPE_RESIST_TIME;
@@ -81,6 +83,7 @@ private:
     static const std::string STR_DESTROY_ENEMY_BASE;
     static const std::string STR_DESTROY_ALL_ENEMIES;
     static const std::string STR_GAIN_MONEY;
+    static const std::string STR_GEN_RESEARCH;
     static const std::string STR_MINE_ENERGY;
     static const std::string STR_MINE_MATERIAL;
     static const std::string STR_RESIST_TIME;

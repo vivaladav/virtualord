@@ -1830,6 +1830,15 @@ bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
             return false;
         }
     }
+    else if(gt == MissionGoal::TYPE_GEN_RESEARCH)
+    {
+        if(mResourcesGained[Player::RESEARCH] < g.GetQuantity())
+        {
+            g.SetProgress(mResourcesGained[Player::RESEARCH] * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
     else if(gt == MissionGoal::TYPE_MINE_ENERGY)
     {
         if(mResourcesGained[MR_ENERGY] < g.GetQuantity())
@@ -3612,6 +3621,12 @@ void ScreenGame::SetMissionRewards()
             const int material = g.GetQuantity() / divMaterial;
             g.SetRewardByType(MR_MATERIAL, material);
         }
+        else if(gt == MissionGoal::TYPE_GEN_RESEARCH)
+        {
+            const int divMoney = 5;
+            const int money = g.GetQuantity() / divMoney;
+            g.SetRewardByType(MR_MONEY, money);
+        }
         else if(gt == MissionGoal::TYPE_MINE_MATERIAL)
         {
             const int divEnergy = 10;
@@ -3665,7 +3680,7 @@ void ScreenGame::SetMissionRewards()
 
 void ScreenGame::TrackResourcesForGoals()
 {
-    mResourceTrackers.resize(NUM_MISSION_REWARDS, 0);
+    mResourceTrackerIds.resize(NUM_MISSION_REWARDS, 0);
 
     const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
     {
@@ -3673,28 +3688,19 @@ void ScreenGame::TrackResourcesForGoals()
         Player::DIAMONDS,
         Player::ENERGY,
         Player::MATERIAL,
-        Player::MONEY
-    };
-
-    const MissionReward rewardIds[NUM_MISSION_REWARDS] =
-    {
-        MR_BLOBS,
-        MR_DIAMONDS,
-        MR_ENERGY,
-        MR_MATERIAL,
-        MR_MONEY,
+        Player::MONEY,
+        Player::RESEARCH,
     };
 
     for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
     {
         const Player::Stat resId = resourceIds[i];
-        const unsigned int rewId = rewardIds[i];
 
-        mResourceTrackers[rewId] = mLocalPlayer->AddOnResourceChanged(resId,
-            [this, rewId](const StatValue *, int oldVal, int newVal)
+        mResourceTrackerIds[resId] = mLocalPlayer->AddOnResourceChanged(resId,
+            [this, resId](const StatValue *, int oldVal, int newVal)
             {
                 if(newVal > oldVal)
-                    mResourcesGained[rewId] += newVal - oldVal;
+                    mResourcesGained[resId] += newVal - oldVal;
             });
     }
 }
@@ -3707,13 +3713,14 @@ void ScreenGame::ClearResourcesTracking()
         Player::DIAMONDS,
         Player::ENERGY,
         Player::MATERIAL,
-        Player::MONEY
+        Player::MONEY,
+        Player::RESEARCH,
     };
 
     for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
     {
         const Player::Stat resId = resourceIds[i];
-        const int funId = mResourceTrackers[i];
+        const int funId = mResourceTrackerIds[i];
 
         mLocalPlayer->RemoveOnResourceChanged(resId, funId);
     }
