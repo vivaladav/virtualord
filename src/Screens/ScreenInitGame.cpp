@@ -120,8 +120,6 @@ void ScreenInitGame::UpdateStatus()
 
 void ScreenInitGame::SetupLoadPackages()
 {
-    auto am = sgl::media::AudioManager::Instance();
-
     // LOAD GAME PACKAGE
     mJobs.emplace_back([this]
     {
@@ -1698,6 +1696,7 @@ void ScreenInitGame::SetupTextures()
             { 318, 127, 52, 52 },
             { 0, 180, 52, 52 },
             { 53, 180, 52, 52 },
+            { 106, 180, 52, 52 },
             // BUTTON ACTION OPTION
             { 371, 0, 258, 40 },
             { 371, 41, 258, 40 },

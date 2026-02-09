@@ -731,6 +731,12 @@ void ScreenGame::CreateUI()
         ShowActiveMiniUnitIndicators(static_cast<MiniUnit *>(mu), mCurrCell);
     });
 
+    // control research of research center
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_RESEARCH, [this]
+    {
+        // TODO
+    });
+
     // WALL GATE
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_OPEN_GATE,
                                        [this, panelObjActions]

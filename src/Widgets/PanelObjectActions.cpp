@@ -73,6 +73,9 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     mButtons[BTN_SET_TARGET] =
         new ObjectActionButton(ObjectActionButton::SET_TARGET, "T", KeyboardEvent::KEY_T,
                                sm->GetCString("TT_SET_DEST"), this);
+    mButtons[BTN_RESEARCH] =
+        new ObjectActionButton(ObjectActionButton::RESEARCH, "R", KeyboardEvent::KEY_R,
+                               sm->GetCString("TT_RESEARCH"), this);
 
     // keep these 2 last
     mButtons[BTN_SELF_DESTROY] =
@@ -145,6 +148,13 @@ void PanelObjectActions::SetObject(GameObject * obj)
     {
         if(obj->IsLinked())
             mButtons[BTN_BUILD_UNIT_BARRACKS]->SetVisible(true);
+        else
+            mButtons[BTN_CANCEL]->SetVisible(false);
+    }
+    else if(objType == ObjectData::TYPE_RESEARCH_CENTER)
+    {
+        if(obj->IsLinked())
+            mButtons[BTN_RESEARCH]->SetVisible(true);
         else
             mButtons[BTN_CANCEL]->SetVisible(false);
     }
@@ -241,6 +251,7 @@ void PanelObjectActions::OnStringsChanged()
     mButtons[BTN_TRADE]->SetTooltipText(sm->GetCString("TT_TRADE_RES"));
     mButtons[BTN_SPAWN]->SetTooltipText(sm->GetCString("TT_SPAWN_MU"));
     mButtons[BTN_SET_TARGET]->SetTooltipText(sm->GetCString("TT_SET_DEST"));
+    mButtons[BTN_SET_TARGET]->SetTooltipText(sm->GetCString("TT_RESEARCH"));
     mButtons[BTN_SELF_DESTROY]->SetTooltipText(sm->GetCString("TT_SELF_DESTR"));
     mButtons[BTN_CANCEL]->SetTooltipText(sm->GetCString("TT_CANCEL"));
 }

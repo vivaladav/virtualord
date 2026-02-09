@@ -41,6 +41,7 @@ public:
         BTN_TRADE,
         BTN_SPAWN,
         BTN_SET_TARGET,
+        BTN_RESEARCH,
 
         // keep these 2 last
         BTN_SELF_DESTROY,

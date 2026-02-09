@@ -37,6 +37,7 @@ public:
         SPAWN,
         SELF_DESTROY,
         SET_TARGET,
+        RESEARCH,
 
         NUM_ACTION_ICONS
     };
