@@ -21,7 +21,6 @@
 #include <sgl/sgui/Label.h>
 #include <sgl/utilities/StringManager.h>
 
-#include <cmath>
 #include <iomanip>
 #include <sstream>
 
