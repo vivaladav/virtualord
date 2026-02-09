@@ -2,8 +2,6 @@
 
 #include "GameObject.h"
 
-#include <vector>
-
 namespace game
 {
 
@@ -21,13 +19,11 @@ public:
 
     void OnPositionChanged() override;
 
-    int GetResourceUsage(ExtendedResource res) const;
+    virtual int GetResourceUsage(ExtendedResource res) const;
 
 protected:
     void OnFactionChanged() override;
     void OnLinkedChanged() override;
-
-    void SetResourceUsage(ExtendedResource res, int val);
 
 private:
     void HideIconEnergy();
@@ -35,8 +31,6 @@ private:
     void PositionIconEnergy();
 
 private:
-    std::vector<int> mResUsage;
-
     BlinkingIconEnergy * mIconEnergy = nullptr;
 };
 

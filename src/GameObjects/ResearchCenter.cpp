@@ -18,9 +18,11 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
 {
     SetImage();
 
-    SetResourceUsage(ER_ENERGY, 10);
-    SetResourceUsage(ER_MATERIAL, 10);
-    SetResourceUsage(ER_MONEY, 10);
+    // init resource usage
+    mResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
+    mResUsage[ER_ENERGY] = 10;
+    mResUsage[ER_MATERIAL] = 10;
+    mResUsage[ER_MONEY] = 10;
 }
 
 void ResearchCenter::OnNewTurn(PlayerFaction faction)
@@ -58,6 +60,14 @@ void ResearchCenter::OnNewTurn(PlayerFaction faction)
 
     const DataParticleOutput pd(mResearchPerTurn, OT_RESEARCH, x, y, speed, decaySpeed);
     pu->AddParticle(pd);
+}
+
+int ResearchCenter::GetResourceUsage(ExtendedResource res) const
+{
+    if(res < NUM_EXTENDED_RESOURCES)
+        return mResUsage[res];
+    else
+        return 0;
 }
 
 void ResearchCenter::UpdateGraphics()

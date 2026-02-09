@@ -14,9 +14,6 @@ Structure::Structure(const ObjectData & data, const ObjectInitData & initData)
     SetStructure(true);
     SetStatic(true);
 
-    // init resource usage
-    mResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
-
     if(IsFactionLocal())
         ShowIconEnergy();
     else
@@ -39,12 +36,9 @@ void Structure::OnPositionChanged()
     PositionIconEnergy();
 }
 
-int Structure::GetResourceUsage(ExtendedResource res) const
+int Structure::GetResourceUsage(ExtendedResource) const
 {
-    if(res < NUM_EXTENDED_RESOURCES)
-        return mResUsage[res];
-    else
-        return 0;
+    return 0;
 }
 
 void Structure::OnFactionChanged()
@@ -63,12 +57,6 @@ void Structure::OnLinkedChanged()
         HideIconEnergy();
     else if(GetFaction() != NO_FACTION)
         ShowIconEnergy();
-}
-
-void Structure::SetResourceUsage(ExtendedResource res, int val)
-{
-    if(res < NUM_EXTENDED_RESOURCES)
-        mResUsage[res] = val;
 }
 
 void Structure::HideIconEnergy()

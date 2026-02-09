@@ -2,6 +2,8 @@
 
 #include "Structure.h"
 
+#include <vector>
+
 namespace game
 {
 
@@ -14,12 +16,16 @@ public:
 
     int GetResearchPerTurn() const;
 
+    int GetResourceUsage(ExtendedResource res) const override;
+
 private:
     void UpdateGraphics() override;
 
     void SetImage();
 
 private:
+    std::vector<int> mResUsage;
+
     int mResearchPerTurn = 50;
 };
 
