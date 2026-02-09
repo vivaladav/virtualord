@@ -62,6 +62,14 @@ void ResearchCenter::OnNewTurn(PlayerFaction faction)
     pu->AddParticle(pd);
 }
 
+int ResearchCenter::GetResourceProduction(ExtendedResource res) const
+{
+    if(res == ER_RESEARCH)
+        return mResearchPerTurn;
+    else
+        return 0;
+}
+
 int ResearchCenter::GetResourceUsage(ExtendedResource res) const
 {
     if(res < NUM_EXTENDED_RESOURCES)

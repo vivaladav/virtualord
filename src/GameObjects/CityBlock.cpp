@@ -47,7 +47,7 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
         return ;
 
     // assign money
-    const int money = 50;
+    const int money = GetResourceProduction(ER_MONEY);
     GetOwner()->SumResource(Player::MONEY, money);
 
     // VISUAL NOTIFICATION
@@ -70,6 +70,17 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
 
     const DataParticleOutput pd(money, OT_MONEY, x, y, speed, decaySpeed);
     pu->AddParticle(pd);
+}
+
+int CityBlock::GetResourceProduction(ExtendedResource res) const
+{
+    if(res == ER_MONEY)
+    {
+        const int money = 50;
+        return money;
+    }
+    else
+        return 0;
 }
 
 void CityBlock::UpdateGraphics()

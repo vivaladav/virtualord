@@ -87,7 +87,7 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
         srd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mGameMap->GetFactionMoneyPerTurn(mPlayer->GetFaction());
+            const int resIn = mPlayer->GetResourceProduction(ER_MONEY);
             const int resOut = mPlayer->GetResourceConsumption(ER_MONEY);
             tt->SetValues(resIn, resOut);
         });

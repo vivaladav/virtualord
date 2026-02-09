@@ -47,6 +47,15 @@ void ResourceGenerator::ScaleOutput(float mult)
         mOutput = std::roundf(output);
 }
 
+int ResourceGenerator::GetResourceProduction(ExtendedResource res) const
+{
+    if((res == ER_ENERGY && mResource == RES_ENERGY) ||
+       (res == ER_MATERIAL && mResource == RES_MATERIAL1))
+        return mOutput;
+    else
+        return 0;
+}
+
 void ResourceGenerator::OnNewTurn(PlayerFaction faction)
 {
     // not linked yet -> exit

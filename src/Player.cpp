@@ -7,13 +7,10 @@
 #include "GameConstants.h"
 #include "GameMapCell.h"
 #include "AI/PlayerAI.h"
-#include "GameObjects/Base.h"
 #include "GameObjects/Blobs.h"
 #include "GameObjects/Diamonds.h"
 #include "GameObjects/GameObjectsGroup.h"
 #include "GameObjects/LootBox.h"
-#include "GameObjects/ResearchCenter.h"
-#include "GameObjects/ResourceGenerator.h"
 #include "GameObjects/Structure.h"
 #include "GameObjects/Unit.h"
 
@@ -562,35 +559,10 @@ int Player::GetResourceProduction(ExtendedResource type) const
 {
     int tot = 0;
 
-    if(type == ER_ENERGY)
+    for(const auto s : mStructures)
     {
-        for(const auto s : mStructures)
-        {
-            if(s->IsLinked() && (s->GetObjectType() == ObjectData::TYPE_RES_GEN_ENERGY ||
-               s->GetObjectType() == ObjectData::TYPE_RES_GEN_ENERGY_SOLAR))
-                tot += static_cast<const ResourceGenerator *>(s)->GetOutput();
-        }
-
-        tot += mBase->GetOutputEnergy();
-    }
-    else if(type == ER_MATERIAL)
-    {
-        for(const auto s : mStructures)
-        {
-            if(s->IsLinked() && (s->GetObjectType() == ObjectData::TYPE_RES_GEN_MATERIAL ||
-                                  s->GetObjectType() == ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT))
-                tot += static_cast<const ResourceGenerator *>(s)->GetOutput();
-        }
-
-        tot += mBase->GetOutputMaterial();
-    }
-    else if(type == ER_RESEARCH)
-    {
-        for(auto s : mStructures)
-        {
-            if(s->IsLinked() && s->GetObjectType() == ObjectData::TYPE_RESEARCH_CENTER)
-                tot += static_cast<ResearchCenter *>(s)->GetResearchPerTurn();
-        }
+        if(s->IsLinked())
+            tot += s->GetResourceProduction(type);
     }
 
     return tot;

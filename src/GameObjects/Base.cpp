@@ -59,9 +59,21 @@ void Base::OnNewTurn(PlayerFaction faction)
     const DataParticleOutput pd2(mOutputMaterial, OT_MATERIAL, x2, y12, speed, decaySpeed);
     pu->AddParticle(pd2);
 
-    const int money = GetGameMap()->GetFactionMoneyPerTurn(faction);
+    const int money = GetResourceProduction(ER_MONEY);
     const DataParticleOutput pd3(money, OT_MONEY, x3, y3, speed, decaySpeed);
     pu->AddParticle(pd3);
+}
+
+int Base::GetResourceProduction(ExtendedResource res) const
+{
+    if(res == ER_ENERGY)
+        return mOutputEnergy;
+    else if(res == ER_MATERIAL)
+        return mOutputMaterial;
+    else if(res == ER_MONEY)
+        return GetGameMap()->GetFactionMoneyPerTurn(GetFaction());
+    else
+        return 0;
 }
 
 void Base::UpdateGraphics()

@@ -36,6 +36,11 @@ void Structure::OnPositionChanged()
     PositionIconEnergy();
 }
 
+int Structure::GetResourceProduction(ExtendedResource res) const
+{
+    return 0;
+}
+
 int Structure::GetResourceUsage(ExtendedResource) const
 {
     return 0;

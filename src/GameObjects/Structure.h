@@ -19,6 +19,7 @@ public:
 
     void OnPositionChanged() override;
 
+    virtual int GetResourceProduction(ExtendedResource res) const;
     virtual int GetResourceUsage(ExtendedResource res) const;
 
 protected:

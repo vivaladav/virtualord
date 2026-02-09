@@ -14,8 +14,7 @@ public:
 
     void OnNewTurn(PlayerFaction faction) override;
 
-    int GetResearchPerTurn() const;
-
+    int GetResourceProduction(ExtendedResource res) const override;
     int GetResourceUsage(ExtendedResource res) const override;
 
 private:
@@ -28,7 +27,5 @@ private:
 
     int mResearchPerTurn = 50;
 };
-
-inline int ResearchCenter::GetResearchPerTurn() const { return mResearchPerTurn; }
 
 } // namespace game
