@@ -139,7 +139,6 @@ public:
     // structure conquest
     bool CanConquerStructure(Unit * unit, const Cell2D & end, Player * player);
     void StartConquerStructure(const Cell2D & end, Player * player);
-    void AbortConquerStructure(GameObject * target);
     void ConquerStructure(const Cell2D & end, Player * player);
 
     void HandleTempleExplorationOutcome(unsigned int outcome, Player * p, Temple * temple);

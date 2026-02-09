@@ -1079,11 +1079,8 @@ void GameMap::BuildStructure(const Cell2D & cell, Player * player, GameObjectTyp
     // propagate effects of conquest
     for(int r = obj->GetRow1(); r <= obj->GetRow0(); ++r)
     {
-        const int ind0 = r * mCols;
-
         for(int c = obj->GetCol1(); c <= obj->GetCol0(); ++c)
         {
-            const int ind = ind0 + c;
             UpdateInfluencedCells(r, c);
         }
     }
@@ -1268,30 +1265,6 @@ void GameMap::StartConquerStructure(const Cell2D & end, Player * player)
 {
     // take player's energy
     player->SumResource(Player::Stat::ENERGY, -COST_CONQUEST_RES_GEN);
-
-    // mark object cells as changing
-    const int ind1 = end.row * mCols + end.col;
-    GameObject * obj = mCells[ind1].objTop;
-
-    for(int r = obj->GetRow1(); r <= obj->GetRow0(); ++r)
-    {
-        const unsigned int indBase = r * mCols;
-
-        for(int c = obj->GetCol1(); c <= obj->GetCol0(); ++c)
-            const unsigned int ind = indBase + c;
-    }
-}
-
-void GameMap::AbortConquerStructure(GameObject * target)
-{
-    // mark object cells as not changing
-    for(int r = target->GetRow1(); r <= target->GetRow0(); ++r)
-    {
-        const unsigned int indBase = r * mCols;
-
-        for(int c = target->GetCol1(); c <= target->GetCol0(); ++c)
-            const unsigned int ind = indBase + c;
-    }
 }
 
 void GameMap::ConquerStructure(const Cell2D & end, Player * player)
