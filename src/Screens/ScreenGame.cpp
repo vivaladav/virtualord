@@ -1581,7 +1581,6 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
                     mGameMap->AbortBuildWalls(obj);
                 else if(actType == GameObjectActionType::CONQUER_STRUCTURE)
                 {
-                    mGameMap->AbortConquerStructure(act.target);
                     act.progressBar->DeleteLater();
                     ap->StopSound("game/conquer-02.ogg");
                 }

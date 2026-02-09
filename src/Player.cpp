@@ -25,9 +25,6 @@ namespace game
 
 constexpr float MAX_ENERGY0 = 100.f;
 
-// NOTE these will be replaced by dynamic values soon
-constexpr int ENERGY_PER_CELL = 1;
-
 Player::Player(const char * name, int pid)
     : mDummyStat(INVALID_STAT, 0)
     , mName(name)
@@ -57,12 +54,6 @@ Player::Player(const char * name, int pid)
     mStats[Stat::MATERIAL].SetMax(500);
     mStats[Stat::MONEY].SetMax(99999999);
     mStats[Stat::RESEARCH].SetMax(999999);
-
-    // init vectors of resource generators
-    mResGeneratorsMap.insert({ RES_ENERGY, {} });
-    mResGeneratorsMap.insert({ RES_MATERIAL1, {} });
-    mResGeneratorsMap.insert({ RES_DIAMONDS, {} });
-    mResGeneratorsMap.insert({ RES_BLOBS, {} });
 }
 
 Player::~Player()
@@ -318,53 +309,35 @@ void Player::SumCells(int val)
     mOnNumCellsChanged(mNumCells);
 }
 
-int Player::GetMoneySpentPerTurn() const
-{
-    // TODO
-    return 0;
-}
-
-int Player::GetResearchGeneratedPerTurn() const
-{
-    int gen = 0;
-
-    for(auto s : mStructures)
-    {
-        if(s->GetObjectType() == ObjectData::TYPE_RESEARCH_CENTER)
-            gen += static_cast<ResearchCenter *>(s)->GetResearchPerTurn();
-    }
-
-    return gen;
-}
-
-int Player::GetResearchSpentPerTurn() const
-{
-    // TODO
-    return 0;
-}
-
 void Player::UpdateResources()
 {
-    // energy
-    const int energyProd = GetResourceProduction(ResourceType::RES_ENERGY);
-    const int energyUsed = GetResourceConsumption(ResourceType::RES_ENERGY);
-    const int energyDiff = energyProd - energyUsed;
+    enum Stat stadIds[] =
+    {
+        Stat::ENERGY,
+        Stat::MATERIAL,
+        Stat::DIAMONDS,
+        Stat::BLOBS,
+        Stat::MONEY,
+        Stat::RESEARCH,
+    };
+
+    static_assert(sizeof(stadIds) / sizeof(enum Stat) == NUM_EXTENDED_RESOURCES);
 
     bool changed = false;
 
-    if(energyDiff != 0)
+    for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
     {
-        mStats[Player::Stat::ENERGY].SumValue(energyDiff);
-        changed = true;
-    }
+        const auto res = static_cast<ExtendedResource>(i);
 
-    // material 1
-    const int materialProd = GetResourceProduction(ResourceType::RES_MATERIAL1);
+        const int production = GetResourceProduction(res);
+        const int usage = GetResourceConsumption(res);
+        const int diff = production - usage;
 
-    if(materialProd != 0)
-    {
-        mStats[Player::Stat::MATERIAL].SumValue(materialProd);
-        changed = true;
+        if(diff != 0)
+        {
+            mStats[stadIds[i]].SumValue(diff);
+            changed = true;
+        }
     }
 
     if(changed)
@@ -585,89 +558,65 @@ void Player::SetSelectedObject(GameObject * obj)
     }
 }
 
-void Player::AddResourceGenerator(ResourceGenerator * gen)
+int Player::GetResourceProduction(ExtendedResource type) const
 {
-    const ResourceType type = gen->GetResourceType();
+    int tot = 0;
 
-    mResGeneratorsMap[type].push_back(gen);
-    mResGenerators.push_back(gen);
+    if(type == ER_ENERGY)
+    {
+        for(const auto s : mStructures)
+        {
+            if(s->IsLinked() && (s->GetObjectType() == ObjectData::TYPE_RES_GEN_ENERGY ||
+               s->GetObjectType() == ObjectData::TYPE_RES_GEN_ENERGY_SOLAR))
+                tot += static_cast<const ResourceGenerator *>(s)->GetOutput();
+        }
+
+        tot += mBase->GetOutputEnergy();
+    }
+    else if(type == ER_MATERIAL)
+    {
+        for(const auto s : mStructures)
+        {
+            if(s->IsLinked() && (s->GetObjectType() == ObjectData::TYPE_RES_GEN_MATERIAL ||
+                                  s->GetObjectType() == ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT))
+                tot += static_cast<const ResourceGenerator *>(s)->GetOutput();
+        }
+
+        tot += mBase->GetOutputMaterial();
+    }
+    else if(type == ER_RESEARCH)
+    {
+        for(auto s : mStructures)
+        {
+            if(s->IsLinked() && s->GetObjectType() == ObjectData::TYPE_RESEARCH_CENTER)
+                tot += static_cast<ResearchCenter *>(s)->GetResearchPerTurn();
+        }
+    }
+
+    return tot;
 }
 
-void Player::RemoveResourceGenerator(ResourceGenerator * gen)
+int Player::GetResourceConsumption(ExtendedResource type) const
 {
-    const ResourceType type = gen->GetResourceType();
-    std::vector<ResourceGenerator *> & generators = mResGeneratorsMap[type];
+    int tot = 0;
 
-    // remove generator from map
-    auto itM = generators.begin();
-
-    while(itM != generators.end())
+    // consider usage from structures
+    for(const auto s : mStructures)
     {
-        if(*itM == gen)
-        {
-            generators.erase(itM);
-            break;
-        }
-        else
-            ++itM;
+        if(s->IsLinked())
+            tot += s->GetResourceUsage(type);
     }
 
-    // remove generator from list
-    auto itL = mResGenerators.begin();
-
-    while(itL != mResGenerators.end())
+    // energy used by cells too
+    if(ER_ENERGY == type)
     {
-        if(*itL == gen)
-        {
-            mResGenerators.erase(itL);
-            break;
-        }
-        else
-            ++itL;
-    }
-}
+        const int energyPerCell = 1;
+        const int energycells = mNumCells * energyPerCell;
 
-int Player::GetResourceProduction(ResourceType type) const
-{
-    int res = 0;
-
-    auto it = mResGeneratorsMap.find(type);
-
-    // can't find resource type
-    if(mResGeneratorsMap.end() == it)
-        return 0;
-
-    const std::vector<ResourceGenerator *> & generators = it->second;
-
-    for(const ResourceGenerator * resGen : generators)
-    {
-        if(resGen->GetCell()->linked)
-              res += resGen->GetOutput();
+        tot +=energycells;
     }
 
-    // resource generated by base
-    if(RES_ENERGY == type)
-        res +=  mBase->GetOutputEnergy();
-    else if(RES_MATERIAL1 == type)
-        res += mBase->GetOutputMaterial();
-
-    return res;
-}
-
-int Player::GetResourceConsumption(ResourceType type) const
-{
-    switch(type)
-    {
-        case RES_ENERGY:
-        {
-            return mNumCells * ENERGY_PER_CELL;
-        }
-        break;
-
-        default:
-            return 0;
-        break;
-    }
+    return tot;
 }
 
 } // namespace game

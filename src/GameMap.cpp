@@ -1306,16 +1306,6 @@ void GameMap::ConquerStructure(const Cell2D & end, Player * player)
 
         if(prevOwner)
             prevOwner->RemoveStructure(st);
-
-        if(obj->GetObjectCategory() == ObjectData::CAT_RES_GENERATOR)
-        {
-            auto rg = static_cast<ResourceGenerator *>(obj);
-
-            player->AddResourceGenerator(rg);
-
-            if(prevOwner)
-                prevOwner->RemoveResourceGenerator(rg);
-        }
     }
 
     // update map
@@ -3393,8 +3383,6 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
     if(o2a.owner != nullptr)
     {
         // register objects to Player
-        if(o2a.obj->GetObjectCategory() == ObjectData::CAT_RES_GENERATOR)
-            o2a.owner->AddResourceGenerator(static_cast<ResourceGenerator *>(o2a.obj));
         if(o2a.obj->IsStructure())
             o2a.owner->AddStructure(static_cast<Structure *>(o2a.obj));
 
@@ -3442,13 +3430,7 @@ void GameMap::DestroyObject(GameObject * obj)
             owner->RemoveUnit(static_cast<Unit *>(obj));
         // remove structure
         else if(obj->IsStructure())
-        {
             owner->RemoveStructure(static_cast<Structure *>(obj));
-
-            // remove resource generator
-            if(obj->GetObjectCategory() == ObjectData::CAT_RES_GENERATOR)
-                owner->RemoveResourceGenerator(static_cast<ResourceGenerator *>(obj));
-        }
     }
 
     // generic cells update

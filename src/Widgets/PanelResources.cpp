@@ -88,7 +88,7 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
         srd->SetFunctionOnShowingTooltip([this, tt]
         {
             const int resIn = mGameMap->GetFactionMoneyPerTurn(mPlayer->GetFaction());
-            const int resOut = mPlayer->GetMoneySpentPerTurn();
+            const int resOut = mPlayer->GetResourceConsumption(ER_MONEY);
             tt->SetValues(resIn, resOut);
         });
     }
@@ -118,8 +118,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_ENERGY);
-            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_ENERGY);
+            const int resIn = mPlayer->GetResourceProduction(ER_ENERGY);
+            const int resOut = mPlayer->GetResourceConsumption(ER_ENERGY);
             tt->SetValues(resIn, resOut);
         });
     }
@@ -153,8 +153,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_MATERIAL1);
-            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_MATERIAL1);
+            const int resIn = mPlayer->GetResourceProduction(ER_MATERIAL);
+            const int resOut = mPlayer->GetResourceConsumption(ER_MATERIAL);
             tt->SetValues(resIn, resOut);
         });
     }
@@ -188,8 +188,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_DIAMONDS);
-            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_DIAMONDS);
+            const int resIn = mPlayer->GetResourceProduction(ER_DIAMONDS);
+            const int resOut = mPlayer->GetResourceConsumption(ER_DIAMONDS);
             tt->SetValues(resIn, resOut);
         });
     }
@@ -223,8 +223,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_BLOBS);
-            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_BLOBS);
+            const int resIn = mPlayer->GetResourceProduction(ER_BLOBS);
+            const int resOut = mPlayer->GetResourceConsumption(ER_BLOBS);
             tt->SetValues(resIn, resOut);
         });
     }
@@ -257,8 +257,8 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
         srd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mPlayer->GetResearchGeneratedPerTurn();
-            const int resOut = mPlayer->GetResearchSpentPerTurn();
+            const int resIn = mPlayer->GetResourceProduction(ER_RESEARCH);
+            const int resOut = mPlayer->GetResourceConsumption(ER_RESEARCH);
             tt->SetValues(resIn, resOut);
         });
     }

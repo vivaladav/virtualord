@@ -145,6 +145,20 @@ enum ResourceType : unsigned int
     RES_INVALID
 };
 
+enum ExtendedResource : unsigned int
+{
+    ER_ENERGY,
+    ER_MATERIAL,
+    ER_DIAMONDS,
+    ER_BLOBS,
+    ER_MONEY,
+    ER_RESEARCH,
+
+    NUM_EXTENDED_RESOURCES,
+
+    ER_INVALID
+};
+
 enum TerritoryStatus : unsigned int
 {
     TER_ST_UNEXPLORED,

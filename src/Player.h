@@ -5,7 +5,6 @@
 
 #include <functional>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace game
@@ -18,6 +17,7 @@ class ResourceGenerator;
 class Structure;
 class Unit;
 
+enum ExtendedResource : unsigned int;
 enum ResourceType : unsigned int;
 enum PlayerFaction : unsigned int;
 
@@ -103,11 +103,6 @@ public:
     void SumCells(int val);
     void SetOnNumCellsChanged(const std::function<void(int)> & f);
 
-    int GetMoneySpentPerTurn() const;
-
-    int GetResearchGeneratedPerTurn() const;
-    int GetResearchSpentPerTurn() const;
-
     void SetOnNumUnitsChanged(const std::function<void()> & f);
 
     // available structures
@@ -130,11 +125,8 @@ public:
     void SetSelectedObject(GameObject * obj);
     bool HasSelectedObject() const;
 
-    void AddResourceGenerator(ResourceGenerator * gen);
-    void RemoveResourceGenerator(ResourceGenerator * gen);
-
-    int GetResourceProduction(ResourceType type) const;
-    int GetResourceConsumption(ResourceType type) const;
+    int GetResourceProduction(ExtendedResource type) const;
+    int GetResourceConsumption(ExtendedResource type) const;
     void UpdateResources();
 
     void HandleCollectable(GameObject * collected, GameObject * collector);
@@ -178,8 +170,6 @@ private:
     std::function<void()> mOnResourcesChanged;
     std::function<void()> mOnTurnEnergyChanged;
     std::function<void()> mOnTurnMaxEnergyChanged;
-
-    std::unordered_map<ResourceType, std::vector<ResourceGenerator *>> mResGeneratorsMap;
 
     PlayerAI * mAI = nullptr;
 

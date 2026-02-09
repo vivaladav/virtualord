@@ -17,6 +17,10 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
     : Structure(data, initData)
 {
     SetImage();
+
+    SetResourceUsage(ER_ENERGY, 10);
+    SetResourceUsage(ER_MATERIAL, 10);
+    SetResourceUsage(ER_MONEY, 10);
 }
 
 void ResearchCenter::OnNewTurn(PlayerFaction faction)
