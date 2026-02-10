@@ -26,12 +26,13 @@ namespace game
 class Game;
 class GameSliderH;
 class Player;
+class ResearchCenter;
 class Screen;
 
 class DialogResearch : public sgl::sgui::Widget
 {
 public:
-    DialogResearch(Player * player);
+    DialogResearch(Player * player, ResearchCenter * rc);
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
@@ -60,6 +61,7 @@ private:
     GameSliderH * mSliderDiamonds = nullptr;
 
     Player * mPlayer = nullptr;
+    ResearchCenter * mResCenter = nullptr;
 };
 
 } // namespace game

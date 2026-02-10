@@ -857,7 +857,7 @@ void GameHUD::HideDialogNewMiniUnitsSquad()
     mScreen->SetPause(false);
 }
 
-void GameHUD::ShowDialogResearch()
+void GameHUD::ShowDialogResearch(ResearchCenter * rc)
 {
     if(mDialogResearch != nullptr)
         return ;
@@ -869,7 +869,7 @@ void GameHUD::ShowDialogResearch()
     mScreen->SetPause(true);
 
     Game * game = mScreen->GetGame();
-    mDialogResearch = new DialogResearch(game->GetLocalPlayer());
+    mDialogResearch = new DialogResearch(game->GetLocalPlayer(), rc);
     mDialogResearch->SetFocus();
 
     mDialogResearch->SetFunctionOnClose([this]

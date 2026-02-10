@@ -20,6 +20,7 @@
 #include "GameObjects/MiniUnit.h"
 #include "GameObjects/MiniUnitsGroup.h"
 #include "GameObjects/ObjectsDataRegistry.h"
+#include "GameObjects/ResearchCenter.h"
 #include "GameObjects/SpawningTower.h"
 #include "GameObjects/Temple.h"
 #include "GameObjects/Unit.h"
@@ -734,7 +735,8 @@ void ScreenGame::CreateUI()
     // control research of research center
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_RESEARCH, [this]
     {
-        mHUD->ShowDialogResearch();
+        auto rc = static_cast<ResearchCenter *>(mLocalPlayer->GetSelectedObject());
+        mHUD->ShowDialogResearch(rc);
     });
 
     // WALL GATE
@@ -1006,6 +1008,11 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
                 break;
             }
         }
+    }
+    // DEBUG: research dialog
+    else if(event.IsModAltDown() && key == KeyboardEvent::KEY_R)
+    {
+        mHUD->ShowDialogResearch(nullptr);
     }
     // DEBUG: show dialog trading
     else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_T)

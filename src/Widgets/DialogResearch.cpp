@@ -31,8 +31,9 @@ namespace game
 const int marginSide = 40;
 const int marginButtonsB = 20;
 
-DialogResearch::DialogResearch(Player * player)
+DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     : mPlayer(player)
+    , mResCenter(rc)
 {
     using namespace sgl;
 

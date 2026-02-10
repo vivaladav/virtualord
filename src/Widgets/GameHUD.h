@@ -42,6 +42,7 @@ class PanelSelfDestruction;
 class PanelShotType;
 class PanelTurnControl;
 class Player;
+class ResearchCenter;
 class ScreenGame;
 class Temple;
 
@@ -107,7 +108,7 @@ public:
     void ShowDialogNewMiniUnitsSquad(GameObject * spawner);
     void HideDialogNewMiniUnitsSquad();
 
-    void ShowDialogResearch();
+    void ShowDialogResearch(ResearchCenter * rc);
     void HideDialogResearch();
 
     void ShowDialogTrading();
