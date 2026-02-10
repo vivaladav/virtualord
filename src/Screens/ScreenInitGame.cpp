@@ -1219,6 +1219,23 @@ void ScreenInitGame::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogObject, rects);
     });
 
+    // DIALOG RESEARCH
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 40, 460 },
+            { 41, 0, 110, 460 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogResearch, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                            SpriteFileDialogResearchExp);
+    });
+
     // DIALOG TRADING
     mJobs.emplace_back([this, tm]
     {

@@ -27,6 +27,7 @@
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/DialogNewMiniUnitsSquad.h"
 #include "Widgets/DialogObject.h"
+#include "Widgets/DialogResearch.h"
 #include "Widgets/DialogTrading.h"
 #include "Widgets/DialogUpgrade.h"
 #include "Widgets/GameMapProgressBar.h"
@@ -851,6 +852,48 @@ void GameHUD::HideDialogNewMiniUnitsSquad()
     // schedule dialog deletion
     mDialogNewMiniUnits->DeleteLater();
     mDialogNewMiniUnits = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
+}
+
+void GameHUD::ShowDialogResearch()
+{
+    if(mDialogResearch != nullptr)
+        return ;
+
+    mScreen->ShowScreenOverlay();
+
+    ++mVisibleDialogs;
+
+    mScreen->SetPause(true);
+
+    Game * game = mScreen->GetGame();
+    mDialogResearch = new DialogResearch(game->GetLocalPlayer());
+    mDialogResearch->SetFocus();
+
+    mDialogResearch->SetFunctionOnClose([this]
+    {
+        HideDialogResearch();
+    });
+
+    TemporaryClosePanels();
+
+    // position dialog
+    CenterWidget(mDialogResearch);
+}
+
+void GameHUD::HideDialogResearch()
+{
+    --mVisibleDialogs;
+
+    mScreen->HideScreenOverlay();
+
+    ReopenPanels();
+
+    // schedule dialog deletion
+    mDialogResearch->DeleteLater();
+    mDialogResearch = nullptr;
 
     // un-pause game
     mScreen->SetPause(false);

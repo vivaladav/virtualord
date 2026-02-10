@@ -734,7 +734,7 @@ void ScreenGame::CreateUI()
     // control research of research center
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_RESEARCH, [this]
     {
-        // TODO
+        mHUD->ShowDialogResearch();
     });
 
     // WALL GATE

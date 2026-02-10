@@ -269,6 +269,18 @@ enum SpriteIdDialogObject : unsigned int
     ID_DLG_OBJ_PB_MARKS,
 };
 
+// DIALOG RESEARCH
+extern const char SpriteFileDialogResearch[];
+
+enum SpriteIdDialogResearch : unsigned int
+{
+    // BACKGROUND
+    ID_DLG_RES_BG_L,
+    ID_DLG_RES_BG_R,
+};
+
+extern const char SpriteFileDialogResearchExp[];
+
 // DIALOG TRADING
 extern const char SpriteFileDialogTrading[];
 

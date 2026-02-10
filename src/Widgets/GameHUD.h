@@ -27,6 +27,7 @@ class DialogMissionGoals;
 class DialogNewElement;
 class DialogNewMiniUnitsSquad;
 class DialogObject;
+class DialogResearch;
 class DialogTrading;
 class DialogUpgrade;
 class GameMapProgressBar;
@@ -106,6 +107,9 @@ public:
     void ShowDialogNewMiniUnitsSquad(GameObject * spawner);
     void HideDialogNewMiniUnitsSquad();
 
+    void ShowDialogResearch();
+    void HideDialogResearch();
+
     void ShowDialogTrading();
     void HideDialogTrading();
 
@@ -160,6 +164,7 @@ private:
     DialogNewElement * mDialogNewElement = nullptr;
     DialogNewMiniUnitsSquad * mDialogNewMiniUnits = nullptr;
     DialogObject * mDialogObj = nullptr;
+    DialogResearch * mDialogResearch = nullptr;
     DialogTrading * mDialogTrading = nullptr;
     DialogUpgrade * mDialogUpgrade = nullptr;
 

@@ -373,6 +373,8 @@ add_executable(
     src/Widgets/DialogNewMiniUnitsSquad.cpp
     src/Widgets/DialogObject.h
     src/Widgets/DialogObject.cpp
+    src/Widgets/DialogResearch.h
+    src/Widgets/DialogResearch.cpp
     src/Widgets/DialogSettings.h
     src/Widgets/DialogSettings.cpp
     src/Widgets/DialogTrading.h
