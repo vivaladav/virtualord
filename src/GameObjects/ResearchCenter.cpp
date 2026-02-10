@@ -162,10 +162,11 @@ void ResearchCenter::UpdateProduction()
     const int usageDiamonds = mResUsage[ER_DIAMONDS] > diamonds ? diamonds : mResUsage[ER_DIAMONDS];
 
     const int maxProdElem = 30;
+    const int maxProdElem2 = 40;
     const int maxUsage = 100;
     const int baseProd = (maxProdElem * usageEnergy / maxUsage) +
                          (maxProdElem * usageMaterial / maxUsage) +
-                         (maxProdElem * usageMoney / maxUsage);
+                         (maxProdElem2 * usageMoney / maxUsage);
 
     mResearchPerTurn = baseProd + (baseProd * usageBlobs / maxUsage) +
                        (baseProd * usageDiamonds / maxUsage);
