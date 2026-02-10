@@ -48,7 +48,6 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
 
     // assign money
     const int money = GetResourceProduction(ER_MONEY);
-    GetOwner()->SumResource(Player::MONEY, money);
 
     // VISUAL NOTIFICATION
     // AI -> exit

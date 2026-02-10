@@ -39,9 +39,6 @@ void ResearchCenter::OnNewTurn(PlayerFaction faction)
     if(faction != GetFaction())
         return ;
 
-    // assign research points
-    GetOwner()->SumResource(Player::RESEARCH, mResearchPerTurn);
-
     // VISUAL NOTIFICATION
     // AI -> exit
     if(!IsFactionLocal())

@@ -2871,11 +2871,6 @@ bool GameMap::IsAreaFree(int brR, int brC, int rows, int cols)
 
 void GameMap::OnNewTurn(PlayerFaction faction)
 {
-    // assign money to faction based on map influence
-    const int money = GetFactionMoneyPerTurn(faction);
-    auto p = mGame->GetPlayerByFaction(faction);
-    p->SumResource(Player::MONEY, money);
-
     // notify all objects
     for(GameObject * obj : mObjects)
         obj->OnNewTurn(faction);
