@@ -17,6 +17,10 @@ public:
     int GetResourceProduction(ExtendedResource res) const override;
     int GetResourceUsage(ExtendedResource res) const override;
 
+    void SetResourceUsage(ExtendedResource res, int val);
+
+    void UpdateProduction();
+
 private:
     void UpdateGraphics() override;
 
@@ -25,7 +29,7 @@ private:
 private:
     std::vector<int> mResUsage;
 
-    int mResearchPerTurn = 50;
+    int mResearchPerTurn;
 };
 
 } // namespace game

@@ -23,6 +23,8 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
     mResUsage[ER_ENERGY] = 10;
     mResUsage[ER_MATERIAL] = 10;
     mResUsage[ER_MONEY] = 10;
+
+    UpdateProduction();
 }
 
 void ResearchCenter::OnNewTurn(PlayerFaction faction)
@@ -78,6 +80,19 @@ int ResearchCenter::GetResourceUsage(ExtendedResource res) const
         return 0;
 }
 
+void ResearchCenter::SetResourceUsage(ExtendedResource res, int val)
+{
+    if(res >= NUM_EXTENDED_RESOURCES)
+        return ;
+
+    if(mResUsage[res] == val)
+        return ;
+
+    mResUsage[res] = val;
+
+    UpdateProduction();
+}
+
 void ResearchCenter::UpdateGraphics()
 {
     SetImage();
@@ -106,6 +121,54 @@ void ResearchCenter::SetImage()
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
 
     isoObj->SetTexture(tex);
+}
+
+void ResearchCenter::UpdateProduction()
+{
+    // check owner
+    auto p = GetOwner();
+
+    if(p == nullptr)
+    {
+        mResearchPerTurn = 0;
+        return ;
+    }
+
+    // ENERGY usage
+    const int energy = p->GetStat(Player::ENERGY).GetValue();
+    const int usageEnergy = mResUsage[ER_ENERGY] > energy ? energy : mResUsage[ER_ENERGY];
+
+    // MATERIAL usage
+    const int material = p->GetStat(Player::MATERIAL).GetValue();
+    const int usageMaterial = mResUsage[ER_MATERIAL] > material ? material : mResUsage[ER_MATERIAL];
+
+    // MONEY usage
+    const int money = p->GetStat(Player::MONEY).GetValue();
+    const int usageMoney = mResUsage[ER_MONEY] > money ? money : mResUsage[ER_MONEY];
+
+    // no production if required resource is not used
+    if(usageEnergy == 0 || usageMaterial == 0 || usageMoney == 0)
+    {
+        mResearchPerTurn = 0;
+        return ;
+    }
+
+    // BLOBS uasge
+    const int blobs = p->GetStat(Player::BLOBS).GetValue();
+    const int usageBlobs = mResUsage[ER_BLOBS] > blobs ? blobs : mResUsage[ER_BLOBS];
+
+    // DIAMONDS uasge
+    const int diamonds = p->GetStat(Player::DIAMONDS).GetValue();
+    const int usageDiamonds = mResUsage[ER_DIAMONDS] > diamonds ? diamonds : mResUsage[ER_DIAMONDS];
+
+    const int maxProdElem = 30;
+    const int maxUsage = 100;
+    const int baseProd = (maxProdElem * usageEnergy / maxUsage) +
+                         (maxProdElem * usageMaterial / maxUsage) +
+                         (maxProdElem * usageMoney / maxUsage);
+
+    mResearchPerTurn = baseProd + (baseProd * usageBlobs / maxUsage) +
+                       (baseProd * usageDiamonds / maxUsage);
 }
 
 } // namespace game

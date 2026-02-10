@@ -1009,11 +1009,6 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
             }
         }
     }
-    // DEBUG: research dialog
-    else if(event.IsModAltDown() && key == KeyboardEvent::KEY_R)
-    {
-        mHUD->ShowDialogResearch(nullptr);
-    }
     // DEBUG: show dialog trading
     else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_T)
         mHUD->ShowDialogTrading();

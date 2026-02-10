@@ -36,13 +36,14 @@ public:
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
-protected:
+private:
     void HandlePositionChanged() override;
 
     void OnInvestmentChanged();
 
-private:
     void SetPositions();
+
+    void UpdateOutput();
 
 private:
     sgl::graphic::Image * mBgL = nullptr;
@@ -59,6 +60,8 @@ private:
     GameSliderH * mSliderMaterial = nullptr;
     GameSliderH * mSliderBlobs = nullptr;
     GameSliderH * mSliderDiamonds = nullptr;
+
+    sgl::sgui::Label * mLabelProd = nullptr;
 
     Player * mPlayer = nullptr;
     ResearchCenter * mResCenter = nullptr;

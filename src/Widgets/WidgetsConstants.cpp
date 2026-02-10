@@ -30,7 +30,7 @@ const char * WidgetsConstants::FontFileShortcut = "Lato-Bold.ttf";
 const char * WidgetsConstants::FontFileStrongText = "Lato-Bold.ttf";
 const char * WidgetsConstants::FontFileText = "Lato-Regular.ttf";
 const char * WidgetsConstants::FontFileDialogTitle = "Lato-Regular.ttf";
-const char * WidgetsConstants::FontFilePanelHeader = "Lato-Bold.ttf";
+const char * WidgetsConstants::FontFilePanelHeader = "Lato-Regular.ttf";
 const char * WidgetsConstants::FontFilePanelText = "Lato-Regular.ttf";
 const char * WidgetsConstants::FontFilePanelTitle = "Lato-Regular.ttf";
 
