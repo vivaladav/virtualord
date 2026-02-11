@@ -92,7 +92,8 @@ public:
     void SumResource(Stat sid, int val);
     void SetResourceMax(Stat sid, int val);
     void SumResourceMax(Stat sid, int val);
-    void SetOnResourcesChanged(const std::function<void()> & f);
+    unsigned int AddOnResourcesChanged(const std::function<void()> & f);
+    void RemoveOnResourcesChanged(unsigned int funId);
     unsigned int AddOnResourceChanged(Stat sid, const std::function<void(const StatValue *,
                                                                          int, int)> & f);
     unsigned int AddOnResourceRangeChanged(Stat sid, const std::function<void(const StatValue *)> & f);
@@ -148,6 +149,9 @@ public:
     bool IsLocal() const;
 
 private:
+    void NotifyResourcesChanged();
+
+private:
     std::vector<Unit *> mUnits;
     std::vector<Structure *> mStructures;
     std::vector<ResourceGenerator *> mResGenerators;
@@ -165,9 +169,9 @@ private:
 
     std::string mName;
 
+    std::unordered_map<unsigned int, std::function<void()>> mOnResourcesChanged;
     std::function<void(int)> mOnNumCellsChanged;
     std::function<void()> mOnNumUnitsChanged;
-    std::function<void()> mOnResourcesChanged;
     std::function<void()> mOnTurnEnergyChanged;
     std::function<void()> mOnTurnMaxEnergyChanged;
 
@@ -252,8 +256,6 @@ inline bool Player::HasEnough(Stat sid, int val)
     else
         return false;
 }
-
-inline void Player::SetOnResourcesChanged(const std::function<void()> & f) { mOnResourcesChanged = f; }
 
 inline int Player::GetNumCells() const { return mNumCells; }
 inline void Player::SetOnNumCellsChanged(const std::function<void(int)> & f)

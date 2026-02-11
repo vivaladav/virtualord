@@ -73,7 +73,7 @@ GameHUD::GameHUD(ScreenGame * screen)
     Player * player = game->GetLocalPlayer();
 
     // react to local player changes in stats
-    player->SetOnResourcesChanged([this]
+    player->AddOnResourcesChanged([this]
     {
         if(mDialogNewElement != nullptr)
             mDialogNewElement->CheckBuild();
@@ -190,7 +190,7 @@ GameHUD::~GameHUD()
     Player * player = mScreen->GetGame()->GetLocalPlayer();
 
     player->SetOnNumUnitsChanged([]{});
-    player->SetOnResourcesChanged([]{});
+    player->AddOnResourcesChanged([]{});
 }
 
 void GameHUD::SetMiniMapEnabled(bool val)

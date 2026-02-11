@@ -27,7 +27,6 @@ Player::Player(const char * name, int pid)
     , mName(name)
     , mOnNumCellsChanged([](int){})
     , mOnNumUnitsChanged([](){})
-    , mOnResourcesChanged([](){})
     , mOnTurnEnergyChanged([](){})
     , mOnTurnMaxEnergyChanged([](){})
     , mPlayerId(pid)
@@ -235,7 +234,7 @@ void Player::SetResource(Stat sid, int val)
 
     mStats[sid].SetValue(val);
 
-    mOnResourcesChanged();
+    NotifyResourcesChanged();
 }
 
 void Player::SumResource(Stat sid, int val)
@@ -245,29 +244,59 @@ void Player::SumResource(Stat sid, int val)
 
     mStats[sid].SumValue(val);
 
-    mOnResourcesChanged();
+    NotifyResourcesChanged();
 }
 
-void Player::SetResourceMax(Stat sid, int val)
+void Player::SetResourceMax(Stat sid, int max)
 {
     if(sid >= NUM_PSTATS)
         return ;
 
-    mStats[sid].SetMax(val);
+    const int oldVal = mStats[sid].GetValue();
+
+    mStats[sid].SetMax(max);
+
+    const int newVal = mStats[sid].GetValue();
+
+    if(oldVal != newVal)
+        NotifyResourcesChanged();
 }
 
-void Player::SumResourceMax(Stat sid, int val)
+void Player::SumResourceMax(Stat sid, int sum)
 {
     if(sid >= NUM_PSTATS)
         return ;
 
+    const int oldVal = mStats[sid].GetValue();
     const int max = mStats[sid].GetMax();
-    int newMax = max + val;
+    int newMax = max + sum;
 
     if(newMax < 0)
         newMax = 0;
 
     mStats[sid].SetMax(newMax);
+
+    const int newVal = mStats[sid].GetValue();
+
+    if(oldVal != newVal)
+        NotifyResourcesChanged();
+}
+
+unsigned int Player::AddOnResourcesChanged(const std::function<void()> & f)
+{
+    static unsigned int num = 0;
+
+    mOnResourcesChanged.emplace(++num, f);
+
+    return num;
+}
+
+void Player::RemoveOnResourcesChanged(unsigned int funId)
+{
+    auto it = mOnResourcesChanged.find(funId);
+
+    if(it != mOnResourcesChanged.end())
+        mOnResourcesChanged.erase(it);
 }
 
 unsigned int Player::AddOnResourceChanged(Stat sid, const std::function<void (const StatValue *,
@@ -338,7 +367,7 @@ void Player::UpdateResources()
     }
 
     if(changed)
-        mOnResourcesChanged();
+        NotifyResourcesChanged();
 }
 
 void Player::HandleCollectable(GameObject * collected, GameObject * collector)
@@ -380,7 +409,7 @@ void Player::HandleCollectable(GameObject * collected, GameObject * collector)
         return ;
     }
 
-    mOnResourcesChanged();
+    NotifyResourcesChanged();
 
     // notify collection
     static_cast<Collectable *>(collected)->Collected(this);
@@ -589,6 +618,12 @@ int Player::GetResourceConsumption(ExtendedResource type) const
     }
 
     return tot;
+}
+
+void Player::NotifyResourcesChanged()
+{
+    for(auto & it : mOnResourcesChanged)
+        it.second();
 }
 
 } // namespace game
