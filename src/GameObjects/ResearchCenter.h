@@ -11,6 +11,7 @@ class ResearchCenter : public Structure
 {
 public:
     ResearchCenter(const ObjectData & data, const ObjectInitData & initData);
+    ~ResearchCenter();
 
     void OnNewTurn(PlayerFaction faction) override;
 
@@ -19,17 +20,19 @@ public:
 
     void SetResourceUsage(ExtendedResource res, int val);
 
-    void UpdateProduction();
-
 private:
     void UpdateGraphics() override;
 
     void SetImage();
 
+    void UpdateProduction();
+
 private:
     std::vector<int> mResUsage;
 
-    int mResearchPerTurn;
+    int mResearchPerTurn = 0;
+
+    unsigned int mResTrackerId = 0;
 };
 
 } // namespace game

@@ -25,6 +25,23 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
     mResUsage[ER_MONEY] = 10;
 
     UpdateProduction();
+
+    // track changes
+    auto p = GetOwner();
+
+    if(p != nullptr)
+        mResTrackerId = p->AddOnResourcesChanged([this]
+    {
+        UpdateProduction();
+    });
+}
+
+ResearchCenter::~ResearchCenter()
+{
+    auto p = GetOwner();
+
+    if(p != nullptr)
+        p->RemoveOnResourcesChanged(mResTrackerId);
 }
 
 void ResearchCenter::OnNewTurn(PlayerFaction faction)

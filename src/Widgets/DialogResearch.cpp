@@ -358,7 +358,6 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     header->SetPosition(x, y);
 
     // RESEARCH POINTS
-    mResCenter->UpdateProduction();
     const int researchPts = mResCenter->GetResourceProduction(ER_RESEARCH);
     mLabelProd = new sgui::Label(std::to_string(researchPts).c_str(), fontText, this);
     mLabelProd->SetColor(WidgetsConstants::colorDialogText);
