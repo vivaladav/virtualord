@@ -335,41 +335,6 @@ void Player::SumCells(int val)
     mOnNumCellsChanged(mNumCells);
 }
 
-void Player::UpdateResources()
-{
-    enum Stat stadIds[] =
-    {
-        Stat::ENERGY,
-        Stat::MATERIAL,
-        Stat::DIAMONDS,
-        Stat::BLOBS,
-        Stat::MONEY,
-        Stat::RESEARCH,
-    };
-
-    static_assert(sizeof(stadIds) / sizeof(enum Stat) == NUM_EXTENDED_RESOURCES);
-
-    bool changed = false;
-
-    for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
-    {
-        const auto res = static_cast<ExtendedResource>(i);
-
-        const int production = GetResourceProduction(res);
-        const int usage = GetResourceConsumption(res);
-        const int diff = production - usage;
-
-        if(diff != 0)
-        {
-            mStats[stadIds[i]].SumValue(diff);
-            changed = true;
-        }
-    }
-
-    if(changed)
-        NotifyResourcesChanged();
-}
-
 void Player::HandleCollectable(GameObject * collected, GameObject * collector)
 {
     const GameObjectTypeId type = collected->GetObjectType();
@@ -413,6 +378,20 @@ void Player::HandleCollectable(GameObject * collected, GameObject * collector)
 
     // notify collection
     static_cast<Collectable *>(collected)->Collected(this);
+}
+
+
+void Player::OnNewTurn()
+{
+    // consume energy of own cells
+    const int energy = GetCellsEnergyUsed();
+
+    if(energy > 0)
+    {
+        mStats[ENERGY].SumValue(-energy);
+
+        NotifyResourcesChanged();
+    }
 }
 
 void Player::AdjustTurnMaxEnergy()
@@ -610,14 +589,15 @@ int Player::GetResourceConsumption(ExtendedResource type) const
 
     // energy used by cells too
     if(ER_ENERGY == type)
-    {
-        const int energyPerCell = 1;
-        const int energycells = mNumCells * energyPerCell;
-
-        tot +=energycells;
-    }
+        tot += GetCellsEnergyUsed();
 
     return tot;
+}
+
+int Player::GetCellsEnergyUsed() const
+{
+    const int energyPerCell = 1;
+    return mNumCells * energyPerCell;
 }
 
 void Player::NotifyResourcesChanged()

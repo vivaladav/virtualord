@@ -2,6 +2,7 @@
 
 #include "GameConstants.h"
 #include "IsoObject.h"
+#include "Player.h"
 #include "Widgets/BlinkingIconEnergy.h"
 
 namespace game
@@ -23,6 +24,20 @@ Structure::Structure(const ObjectData & data, const ObjectInitData & initData)
 Structure::~Structure()
 {
     delete mIconEnergy;
+}
+
+void Structure::OnNewTurn(PlayerFaction faction)
+{
+    GameObject::OnNewTurn(faction);
+
+    if(faction != GetFaction())
+        return ;
+
+    if(!IsLinked())
+        return ;
+
+    ConsumeResources();
+    ProduceResources();
 }
 
 float Structure::GetTimeBuildUnit() const
@@ -93,6 +108,62 @@ void Structure::PositionIconEnergy()
     const int iconY = isoY - mIconEnergy->GetHeight() - iconMarginV;
 
     mIconEnergy->SetPosition(iconX, iconY);
+}
+
+void Structure::ProduceResources()
+{
+    auto p = GetOwner();
+
+    if(p == nullptr)
+        return ;
+
+    const Player::Stat statIds[] =
+    {
+        Player::ENERGY,
+        Player::MATERIAL,
+        Player::DIAMONDS,
+        Player::BLOBS,
+        Player::MONEY,
+        Player::RESEARCH
+    };
+
+    static_assert((sizeof(statIds) / sizeof(Player::Stat)) == NUM_EXTENDED_RESOURCES);
+
+    for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
+    {
+        const int val = GetResourceProduction(static_cast<ExtendedResource>(i));
+
+        if(val > 0)
+            p->SumResource(statIds[i], val);
+    }
+}
+
+void Structure::ConsumeResources()
+{
+    auto p = GetOwner();
+
+    if(p == nullptr)
+        return ;
+
+    const Player::Stat statIds[] =
+    {
+        Player::ENERGY,
+        Player::MATERIAL,
+        Player::DIAMONDS,
+        Player::BLOBS,
+        Player::MONEY,
+        Player::RESEARCH
+    };
+
+    static_assert((sizeof(statIds) / sizeof(Player::Stat)) == NUM_EXTENDED_RESOURCES);
+
+    for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
+    {
+        const int val = GetResourceUsage(static_cast<ExtendedResource>(i));
+
+        if(val > 0)
+            p->SumResource(statIds[i], -val);
+    }
 }
 
 } // namespace game

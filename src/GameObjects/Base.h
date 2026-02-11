@@ -14,10 +14,9 @@ public:
 
     int GetResourceProduction(ExtendedResource res) const override;
 
-protected:
+private:
     void UpdateGraphics() override;
 
-private:
     void SetImage();
 
 private:

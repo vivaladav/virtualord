@@ -151,7 +151,7 @@ const char * Temple::GetExplorationOutcomeString(ExplorationOutcome o) const
 
 void Temple::OnNewTurn(PlayerFaction faction)
 {
-    GameObject::OnNewTurn(faction);
+    Structure::OnNewTurn(faction);
 
     // nothing to do while not exploring
     if(faction != mExplorer)

@@ -128,11 +128,11 @@ public:
 
     int GetResourceProduction(ExtendedResource type) const;
     int GetResourceConsumption(ExtendedResource type) const;
-    void UpdateResources();
 
     void HandleCollectable(GameObject * collected, GameObject * collector);
 
     // -- TURN --
+    void OnNewTurn();
     float GetTurnEnergy() const;
     float GetTurnMaxEnergy() const;
     void AdjustTurnMaxEnergy();
@@ -149,6 +149,7 @@ public:
     bool IsLocal() const;
 
 private:
+    int GetCellsEnergyUsed() const;
     void NotifyResourcesChanged();
 
 private:

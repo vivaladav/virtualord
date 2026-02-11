@@ -3761,7 +3761,7 @@ void ScreenGame::EndTurn()
     const PlayerFaction activeFaction = p->GetFaction();
 
     p->ResetTurnEnergy();
-    p->UpdateResources();
+    p->OnNewTurn();
 
     mGameMap->OnNewTurn(activeFaction);
 

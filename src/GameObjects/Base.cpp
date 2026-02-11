@@ -15,15 +15,15 @@ namespace game
 
 Base::Base(const ObjectData & data, const ObjectInitData & initData)
     : Structure(data, initData)
-    , mOutputEnergy(15)
-    , mOutputMaterial(5)
+    , mOutputEnergy(20)
+    , mOutputMaterial(10)
 {
     SetImage();
 }
 
 void Base::OnNewTurn(PlayerFaction faction)
 {
-    GameObject::OnNewTurn(faction);
+    Structure::OnNewTurn(faction);
 
     // not linked yet -> exit
     if(!IsLinked())
