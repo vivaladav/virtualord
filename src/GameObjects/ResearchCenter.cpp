@@ -48,6 +48,10 @@ void ResearchCenter::OnNewTurn(PlayerFaction faction)
 {
     Structure::OnNewTurn(faction);
 
+    // not producing anything
+    if(mResearchPerTurn == 0)
+        return ;
+
     // not linked yet -> exit
     if(!IsLinked())
         return ;
@@ -88,6 +92,10 @@ int ResearchCenter::GetResourceProduction(ExtendedResource res) const
 
 int ResearchCenter::GetResourceUsage(ExtendedResource res) const
 {
+    // not consuming while not producing (for example when there's not enough resources)
+    if(mResearchPerTurn == 0)
+        return 0;
+
     if(res < NUM_EXTENDED_RESOURCES)
         return mResUsage[res];
     else
