@@ -50,17 +50,14 @@ void Base::OnNewTurn(PlayerFaction faction)
     const float y12 = isoObj->GetY();
     const float y3 = isoObj->GetY() - margin3;
 
-    const float speed = 40.f;
-    const float decaySpeed = 125.f;
-
-    const DataParticleOutput pd1(mOutputEnergy, OT_ENERGY, x1, y12, speed, decaySpeed);
+    const DataParticleOutput pd1(mOutputEnergy, OT_ENERGY, x1, y12);
     pu->AddParticle(pd1);
 
-    const DataParticleOutput pd2(mOutputMaterial, OT_MATERIAL, x2, y12, speed, decaySpeed);
+    const DataParticleOutput pd2(mOutputMaterial, OT_MATERIAL, x2, y12);
     pu->AddParticle(pd2);
 
     const int money = GetResourceProduction(ER_MONEY);
-    const DataParticleOutput pd3(money, OT_MONEY, x3, y3, speed, decaySpeed);
+    const DataParticleOutput pd3(money, OT_MONEY, x3, y3);
     pu->AddParticle(pd3);
 }
 

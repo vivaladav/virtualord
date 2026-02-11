@@ -32,6 +32,7 @@ void ParticleOutput::SetData(const DataParticleOutput & data)
     // init data
     mSpeed = -data.speed;
     mDecaySpeed = data.decaySpeed;
+    mTimerLife = data.timeLife;
 
     const float maxAlpha = 255.f;
     mAlpha = maxAlpha;
@@ -117,6 +118,16 @@ void ParticleOutput::SetStart(int x0, int y0)
 
 void ParticleOutput::Update(float delta)
 {
+    // UPDATE LIFE
+    mTimerLife -= delta;
+
+    if(mTimerLife < 0.f)
+    {
+        SetDone();
+        return ;
+    }
+
+    // UPDATE PARTICLE
     const float speed = mSpeed * delta;
     const float alphaDecay = mDecaySpeed * delta;
 
@@ -136,7 +147,7 @@ void ParticleOutput::Update(float delta)
     mIcon->SetAlpha(alpha);
     mTxt->SetAlpha(alpha);
 
-    // DONE!
+    // alpha is too low -> DONE
     if(mAlpha < minAlpha)
          SetDone();
 }

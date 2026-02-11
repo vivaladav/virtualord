@@ -91,10 +91,7 @@ void ResourceGenerator::OnNewTurn(PlayerFaction faction)
     const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
     const float y0 = isoObj->GetY() - isoObj->GetHeight() * 0.1f;
 
-    const float speed = 40.f;
-    const float decaySpeed = 125.f;
-
-    DataParticleOutput pd(mOutput, outputType, x0, y0, speed, decaySpeed);
+    DataParticleOutput pd(mOutput, outputType, x0, y0);
 
     pu->AddParticle(pd);
 }

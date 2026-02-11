@@ -64,10 +64,7 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
     const float x = isoObj->GetX() + isoObj->GetWidth() / 2;
     const float y = isoObj->GetY() - marginV;
 
-    const float speed = 45.f;
-    const float decaySpeed = 120.f;
-
-    const DataParticleOutput pd(money, OT_MONEY, x, y, speed, decaySpeed);
+    const DataParticleOutput pd(money, OT_MONEY, x, y);
     pu->AddParticle(pd);
 }
 

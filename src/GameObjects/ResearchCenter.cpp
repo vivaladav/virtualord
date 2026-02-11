@@ -75,10 +75,7 @@ void ResearchCenter::OnNewTurn(PlayerFaction faction)
     const float x = isoObj->GetX() + isoObj->GetWidth() / 2;
     const float y = isoObj->GetY() - marginV;
 
-    const float speed = 45.f;
-    const float decaySpeed = 120.f;
-
-    const DataParticleOutput pd(mResearchPerTurn, OT_RESEARCH, x, y, speed, decaySpeed);
+    const DataParticleOutput pd(mResearchPerTurn, OT_RESEARCH, x, y);
     pu->AddParticle(pd);
 }
 

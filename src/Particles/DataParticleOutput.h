@@ -21,17 +21,26 @@ enum OutputType : unsigned int
 
 struct DataParticleOutput : public sgl::graphic::ParticleData
 {
-    DataParticleOutput(int q, OutputType t, float x, float y, float sp, float ds)
+    DataParticleOutput(int q, OutputType t, float x, float y)
+        : sgl::graphic::ParticleData(x, y, 40.f)
+        , quantity(q)
+        , type(t)
+    {
+    }
+
+    DataParticleOutput(int q, OutputType t, float x, float y, float sp, float ds, float tl)
         : sgl::graphic::ParticleData(x, y, sp)
         , quantity(q)
         , type(t)
         , decaySpeed(ds)
+        , timeLife(tl)
     {
     }
 
     int quantity = 0;
     OutputType type;
-    float decaySpeed = 1.f;
+    float decaySpeed = 100.f;
+    float timeLife = 1.f;
 };
 
 } // namespace game
