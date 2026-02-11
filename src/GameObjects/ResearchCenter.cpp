@@ -189,9 +189,10 @@ void ResearchCenter::UpdateProduction()
     const int baseProd = (maxProdElem * usageEnergy / maxUsage) +
                          (maxProdElem * usageMaterial / maxUsage) +
                          (maxProdElem2 * usageMoney / maxUsage);
+    const int multProd2 = 2;
 
-    mResearchPerTurn = baseProd + (baseProd * usageBlobs / maxUsage) +
-                       (baseProd * usageDiamonds / maxUsage);
+    mResearchPerTurn = baseProd + (baseProd * multProd2 * usageBlobs / maxUsage) +
+                       (baseProd * multProd2 * usageDiamonds / maxUsage);
 }
 
 } // namespace game
