@@ -42,6 +42,7 @@ public:
         BTN_SPAWN,
         BTN_SET_TARGET,
         BTN_RESEARCH,
+        BTN_TECH_TREE,
 
         // keep these 2 last
         BTN_SELF_DESTROY,

@@ -739,6 +739,12 @@ void ScreenGame::CreateUI()
         mHUD->ShowDialogResearch(rc);
     });
 
+    // open tech tree
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_TECH_TREE, [this]
+    {
+
+    });
+
     // WALL GATE
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_OPEN_GATE,
                                        [this, panelObjActions]

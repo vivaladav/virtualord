@@ -76,6 +76,9 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     mButtons[BTN_RESEARCH] =
         new ObjectActionButton(ObjectActionButton::RESEARCH, "R", KeyboardEvent::KEY_R,
                                sm->GetCString("TT_RESEARCH"), this);
+    mButtons[BTN_TECH_TREE] =
+        new ObjectActionButton(ObjectActionButton::TECH_TREE, "T", KeyboardEvent::KEY_T,
+                               sm->GetCString("TT_TECHTREE"), this);
 
     // keep these 2 last
     mButtons[BTN_SELF_DESTROY] =
@@ -154,7 +157,10 @@ void PanelObjectActions::SetObject(GameObject * obj)
     else if(objType == ObjectData::TYPE_RESEARCH_CENTER)
     {
         if(obj->IsLinked())
+        {
             mButtons[BTN_RESEARCH]->SetVisible(true);
+            mButtons[BTN_TECH_TREE]->SetVisible(true);
+        }
         else
             mButtons[BTN_CANCEL]->SetVisible(false);
     }
@@ -165,8 +171,8 @@ void PanelObjectActions::SetObject(GameObject * obj)
             mButtons[BTN_BUILD_UNIT_HOSPITAL]->SetVisible(true);
             mButtons[BTN_HEAL_HOSPITAL]->SetVisible(true);
         }
-        else
-            mButtons[BTN_CANCEL]->SetVisible(false);
+
+        mButtons[BTN_CANCEL]->SetVisible(false);
     }
     else if(objType == ObjectData::TYPE_SPAWN_TOWER)
     {
@@ -251,7 +257,8 @@ void PanelObjectActions::OnStringsChanged()
     mButtons[BTN_TRADE]->SetTooltipText(sm->GetCString("TT_TRADE_RES"));
     mButtons[BTN_SPAWN]->SetTooltipText(sm->GetCString("TT_SPAWN_MU"));
     mButtons[BTN_SET_TARGET]->SetTooltipText(sm->GetCString("TT_SET_DEST"));
-    mButtons[BTN_SET_TARGET]->SetTooltipText(sm->GetCString("TT_RESEARCH"));
+    mButtons[BTN_RESEARCH]->SetTooltipText(sm->GetCString("TT_RESEARCH"));
+    mButtons[BTN_TECH_TREE]->SetTooltipText(sm->GetCString("TT_TECHTREE"));
     mButtons[BTN_SELF_DESTROY]->SetTooltipText(sm->GetCString("TT_SELF_DESTR"));
     mButtons[BTN_CANCEL]->SetTooltipText(sm->GetCString("TT_CANCEL"));
 }
