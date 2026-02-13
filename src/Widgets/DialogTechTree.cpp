@@ -45,20 +45,20 @@ DialogTechTree::DialogTechTree(Player * player)
     const int w = 1900;
     graphic::Texture * tex;
 
-    tex = tm->GetSprite(SpriteFileDialogResearch, ID_DLG_RES_BG_L);
+    tex = tm->GetSprite(SpriteFileDialogTechTree, ID_DLG_TECHT_BG_L);
     mBgL = new graphic::Image(tex);
     RegisterRenderable(mBgL);
 
     const int wL = mBgL->GetWidth();
     const int h = mBgL->GetHeight();
 
-    tex = tm->GetSprite(SpriteFileDialogResearch, ID_DLG_RES_BG_R);
+    tex = tm->GetSprite(SpriteFileDialogTechTree, ID_DLG_TECHT_BG_R);
     mBgR = new graphic::Image(tex);
     RegisterRenderable(mBgR);
 
     const int wR = mBgR->GetWidth();
 
-    tex = tm->GetTexture(SpriteFileDialogResearchExp);
+    tex = tm->GetTexture(SpriteFileDialogTechTreeExp);
     tex->SetScaleMode(graphic::TSCALE_NEAREST);
     mBgC = new graphic::Image(tex);
     RegisterRenderable(mBgC);
@@ -100,7 +100,6 @@ void DialogTechTree::SetPositions()
 {
     const int x0 = GetScreenX();
     const int y0 = GetScreenY();
-    const int w = GetWidth();
 
     int x = x0;
     int y = y0;

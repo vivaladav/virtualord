@@ -23,6 +23,7 @@
 #include <sstream>
 
 #ifdef DEV_MODE
+#include <chrono>
 #include <iostream>
 #endif
 
@@ -1234,6 +1235,53 @@ void ScreenInitGame::SetupTextures()
 
         tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME],
                             SpriteFileDialogResearchExp);
+    });
+
+    // DIALOG TECH TREE
+    mJobs.emplace_back([this, tm]
+    {
+#ifdef DEV_MODE
+        // TODO remove later, now left just for reference on testing loading times
+        auto t0 = std::chrono::high_resolution_clock::now();
+#endif
+
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 50, 1000 },
+            { 51, 0, 100, 1000 },
+            // BUTTON SECTION
+            { 152, 0, 300, 48 },
+            { 152, 49, 300, 48 },
+            { 152, 98, 300, 48 },
+            { 152, 147, 300, 48 },
+            // BUTTON UNLOCK
+            { 152, 196, 300, 44 },
+            { 152, 241, 300, 44 },
+            { 152, 286, 300, 44 },
+            { 152, 331, 300, 44 },
+            // BUTTON UPGRADE
+            { 152, 376, 96, 84 },
+            { 249, 376, 96, 84 },
+            { 346, 376, 96, 84 },
+            { 152, 461, 96, 84 },
+            { 249, 461, 96, 84 },
+            // UPGRADE UNLOCKED
+            { 346, 461, 96, 84 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+            SpriteFileDialogTechTree, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+            SpriteFileDialogTechTreeExp);
+
+#ifdef DEV_MODE
+        // TODO remove later, now left just for reference on testing loading times
+        auto t1 = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
+        std::cout << "ScreenInitGame::SetupTextures - DIALOG TECH TREE: " << duration.count() << " ms" << std::endl;
+#endif
     });
 
     // DIALOG TRADING

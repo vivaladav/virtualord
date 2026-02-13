@@ -281,6 +281,36 @@ enum SpriteIdDialogResearch : unsigned int
 
 extern const char SpriteFileDialogResearchExp[];
 
+// DIALOG TECH TREE
+extern const char SpriteFileDialogTechTree[];
+
+enum SpriteIdDialogTechTree : unsigned int
+{
+    // BACKGROUND
+    ID_DLG_TECHT_BG_L,
+    ID_DLG_TECHT_BG_R,
+    // BUTTON SECTION
+    ID_DLG_TECHT_BTN_SEC_NORMAL,
+    ID_DLG_TECHT_BTN_SEC_OVER,
+    ID_DLG_TECHT_BTN_SEC_PUSHED,
+    ID_DLG_TECHT_BTN_SEC_CHECKED,
+    // BUTTON UNLOCK
+    ID_DLG_TECHT_BTN_UNL_NORMAL,
+    ID_DLG_TECHT_BTN_UNL_DISABLED,
+    ID_DLG_TECHT_BTN_UNL_OVER,
+    ID_DLG_TECHT_BTN_UNL_PUSHED,
+    // BUTTON UPGRADE
+    ID_DLG_TECHT_BTN_UPG_NORMAL,
+    ID_DLG_TECHT_BTN_UPG_DISABLED,
+    ID_DLG_TECHT_BTN_UPG_OVER,
+    ID_DLG_TECHT_BTN_UPG_PUSHED,
+    ID_DLG_TECHT_BTN_UPG_CHECKED,
+    // UPGRADE UNLOCKED
+    ID_DLG_TECHT_UPG_UNLOCKED,
+};
+
+extern const char SpriteFileDialogTechTreeExp[];
+
 // DIALOG TRADING
 extern const char SpriteFileDialogTrading[];
 
