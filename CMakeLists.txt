@@ -377,6 +377,8 @@ add_executable(
     src/Widgets/DialogResearch.cpp
     src/Widgets/DialogSettings.h
     src/Widgets/DialogSettings.cpp
+    src/Widgets/DialogTechTree.h
+    src/Widgets/DialogTechTree.cpp
     src/Widgets/DialogTrading.h
     src/Widgets/DialogTrading.cpp
     src/Widgets/DialogUpgrade.h

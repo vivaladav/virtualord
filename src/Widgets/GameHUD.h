@@ -28,6 +28,7 @@ class DialogNewElement;
 class DialogNewMiniUnitsSquad;
 class DialogObject;
 class DialogResearch;
+class DialogTechTree;
 class DialogTrading;
 class DialogUpgrade;
 class GameMapProgressBar;
@@ -111,6 +112,9 @@ public:
     void ShowDialogResearch(ResearchCenter * rc);
     void HideDialogResearch();
 
+    void ShowDialogTechTree();
+    void HideDialogTechTree();
+
     void ShowDialogTrading();
     void HideDialogTrading();
 
@@ -166,6 +170,7 @@ private:
     DialogNewMiniUnitsSquad * mDialogNewMiniUnits = nullptr;
     DialogObject * mDialogObj = nullptr;
     DialogResearch * mDialogResearch = nullptr;
+    DialogTechTree * mDialogTechTree = nullptr;
     DialogTrading * mDialogTrading = nullptr;
     DialogUpgrade * mDialogUpgrade = nullptr;
 
