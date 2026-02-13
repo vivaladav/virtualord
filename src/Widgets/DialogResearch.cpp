@@ -4,12 +4,10 @@
 #include "Player.h"
 #include "GameObjects/ResearchCenter.h"
 #include "Widgets/ButtonDialogClose.h"
-#include "Widgets/GameButton.h"
 #include "Widgets/GameSliderH.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
 
-#include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/GraphicConstants.h>
@@ -17,11 +15,8 @@
 #include <sgl/graphic/Text.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
-#include <sgl/media/AudioManager.h>
-#include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/Label.h>
-#include <sgl/sgui/TextArea.h>
 #include <sgl/utilities/StringManager.h>
 
 namespace game
@@ -139,16 +134,16 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > maxRes)
         valRes = maxRes;
 
-    mSliderMoney = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    auto slider = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
-    y += (icon->GetHeight() - mSliderMoney->GetHeight()) / 2;
+    y += (icon->GetHeight() - slider->GetHeight()) / 2;
 
-    mSliderMoney->SetMinMax(minRes, maxRes);
-    mSliderMoney->SetStep(stepRes);
-    mSliderMoney->SetValue(valRes);
-    mSliderMoney->SetPosition(x, y);
+    slider->SetMinMax(minRes, maxRes);
+    slider->SetStep(stepRes);
+    slider->SetValue(valRes);
+    slider->SetPosition(x, y);
 
-    x += mSliderMoney->GetWidth() + marginSliderR;
+    x += slider->GetWidth() + marginSliderR;
 
     auto label = new sgui::Label(std::to_string(valRes).c_str(), fontText, this);
 
@@ -157,7 +152,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    mSliderMoney->SetOnValueChanged([this, label](int val)
+    slider->SetOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -185,16 +180,16 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > maxRes)
         valRes = maxRes;
 
-    mSliderEnergy = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    slider = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
-    y += (icon->GetHeight() - mSliderEnergy->GetHeight()) / 2;
+    y += (icon->GetHeight() - slider->GetHeight()) / 2;
 
-    mSliderEnergy->SetMinMax(minRes, maxRes);
-    mSliderEnergy->SetStep(stepRes);
-    mSliderEnergy->SetValue(valRes);
-    mSliderEnergy->SetPosition(x, y);
+    slider->SetMinMax(minRes, maxRes);
+    slider->SetStep(stepRes);
+    slider->SetValue(valRes);
+    slider->SetPosition(x, y);
 
-    x += mSliderEnergy->GetWidth() + marginSliderR;
+    x += slider->GetWidth() + marginSliderR;
 
     label = new sgui::Label(std::to_string(valRes).c_str(), fontText, this);
 
@@ -203,7 +198,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    mSliderEnergy->SetOnValueChanged([this, label](int val)
+    slider->SetOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -231,16 +226,16 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > maxRes)
         valRes = maxRes;
 
-    mSliderMaterial = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    slider = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
-    y += (icon->GetHeight() - mSliderMaterial->GetHeight()) / 2;
+    y += (icon->GetHeight() - slider->GetHeight()) / 2;
 
-    mSliderMaterial->SetMinMax(minRes, maxRes);
-    mSliderMaterial->SetStep(stepRes);
-    mSliderMaterial->SetValue(valRes);
-    mSliderMaterial->SetPosition(x, y);
+    slider->SetMinMax(minRes, maxRes);
+    slider->SetStep(stepRes);
+    slider->SetValue(valRes);
+    slider->SetPosition(x, y);
 
-    x += mSliderMaterial->GetWidth() + marginSliderR;
+    x += slider->GetWidth() + marginSliderR;
 
     label = new sgui::Label(std::to_string(valRes).c_str(), fontText, this);
 
@@ -249,7 +244,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    mSliderMaterial->SetOnValueChanged([this, label](int val)
+    slider->SetOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -277,15 +272,15 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > maxRes)
         valRes = maxRes;
 
-    mSliderDiamonds = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    slider = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
-    y += (icon->GetHeight() - mSliderDiamonds->GetHeight()) / 2;
+    y += (icon->GetHeight() - slider->GetHeight()) / 2;
 
-    mSliderDiamonds->SetMinMax(minRes, maxRes);
-    mSliderDiamonds->SetValue(valRes);
-    mSliderDiamonds->SetPosition(x, y);
+    slider->SetMinMax(minRes, maxRes);
+    slider->SetValue(valRes);
+    slider->SetPosition(x, y);
 
-    x += mSliderDiamonds->GetWidth() + marginSliderR;
+    x += slider->GetWidth() + marginSliderR;
 
     label = new sgui::Label(std::to_string(valRes).c_str(), fontText, this);
 
@@ -294,7 +289,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    mSliderDiamonds->SetOnValueChanged([this, label](int val)
+    slider->SetOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -322,15 +317,15 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > maxRes)
         valRes = maxRes;
 
-    mSliderBlobs = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    slider = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
-    y += (icon->GetHeight() - mSliderMaterial->GetHeight()) / 2;
+    y += (icon->GetHeight() - slider->GetHeight()) / 2;
 
-    mSliderBlobs->SetMinMax(minRes, maxRes);
-    mSliderBlobs->SetValue(valRes);
-    mSliderBlobs->SetPosition(x, y);
+    slider->SetMinMax(minRes, maxRes);
+    slider->SetValue(valRes);
+    slider->SetPosition(x, y);
 
-    x += mSliderBlobs->GetWidth() + marginSliderR;
+    x += slider->GetWidth() + marginSliderR;
 
     label = new sgui::Label(std::to_string(valRes).c_str(), fontText, this);
 
@@ -339,7 +334,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    mSliderBlobs->SetOnValueChanged([this, label](int val)
+    slider->SetOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -390,19 +385,17 @@ void DialogResearch::SetPositions()
 {
     const int x0 = GetScreenX();
     const int y0 = GetScreenY();
-    const int w = GetWidth();
 
     int x = x0;
-    int y = y0;
 
     // BACKGROUND
-    mBgL->SetPosition(x, y);
+    mBgL->SetPosition(x, y0);
     x += mBgL->GetWidth();
 
-    mBgC->SetPosition(x, y);
+    mBgC->SetPosition(x, y0);
     x += mBgC->GetWidth();
 
-    mBgR->SetPosition(x, y);
+    mBgR->SetPosition(x, y0);
 }
 
 void DialogResearch::UpdateOutput()

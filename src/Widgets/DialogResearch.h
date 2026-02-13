@@ -6,28 +6,20 @@
 
 namespace sgl
 {
-    namespace graphic
-    {
-        class Image;
-        class Text;
-    }
+    namespace graphic { class Image; }
 
     namespace sgui
     {
         class AbstractButton;
         class Label;
-        class TextArea;
     }
 }
 
 namespace game
 {
 
-class Game;
-class GameSliderH;
 class Player;
 class ResearchCenter;
-class Screen;
 
 class DialogResearch : public sgl::sgui::Widget
 {
@@ -50,16 +42,7 @@ private:
     sgl::graphic::Image * mBgC = nullptr;
     sgl::graphic::Image * mBgR = nullptr;
 
-    sgl::graphic::Text * mHeaderInvest = nullptr;
-    sgl::graphic::Text * mHeaderTurns = nullptr;
-
     sgl::sgui::AbstractButton * mBtnClose = nullptr;
-
-    GameSliderH * mSliderMoney = nullptr;
-    GameSliderH * mSliderEnergy = nullptr;
-    GameSliderH * mSliderMaterial = nullptr;
-    GameSliderH * mSliderBlobs = nullptr;
-    GameSliderH * mSliderDiamonds = nullptr;
 
     sgl::sgui::Label * mLabelProd = nullptr;
 
