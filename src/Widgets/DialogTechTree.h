@@ -8,7 +8,11 @@ namespace sgl
 {
     namespace graphic { class Image; }
 
-    namespace sgui { class AbstractButton; }
+    namespace sgui
+    {
+        class AbstractButton;
+        class ButtonsGroup;
+    }
 }
 
 namespace game
@@ -35,6 +39,8 @@ private:
     sgl::graphic::Image * mBgR = nullptr;
 
     sgl::sgui::AbstractButton * mBtnClose = nullptr;
+
+    sgl::sgui::ButtonsGroup * mButtonsSection = nullptr;
 
     Player * mPlayer = nullptr;
 };

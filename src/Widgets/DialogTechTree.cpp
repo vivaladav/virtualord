@@ -18,10 +18,58 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/sgui/ButtonsGroup.h>
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/Label.h>
 #include <sgl/utilities/StringManager.h>
 
+// anonymous namespace for local "private" classes
+namespace
+{
+
+using namespace game;
+
+// ===== BUTTON  =====
+class ButtonSection : public GameButton
+{
+public:
+    ButtonSection()
+        : GameButton(SpriteFileDialogTechTree,
+                     { ID_DLG_TECHT_BTN_SEC_NORMAL, ID_DLG_TECHT_BTN_SEC_NORMAL,
+                       ID_DLG_TECHT_BTN_SEC_OVER, ID_DLG_TECHT_BTN_SEC_PUSHED,
+                       ID_DLG_TECHT_BTN_SEC_CHECKED },
+                     { 0xa6c5d9ff, 0xffffffff, 0xb8d0e0ff, 0x94b9d1ff, 0xd4ecf7ff },
+                     nullptr)
+    {
+        using namespace sgl;
+
+        const int size = 22;
+
+        auto fm = graphic::FontManager::Instance();
+        auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
+        SetLabelFont(fnt);
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::AbstractButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-01.ogg");
+    }
+};
+
+} // namespace
+
+// ====== DIALOG TECH TREE =====
 namespace game
 {
 
@@ -84,6 +132,43 @@ DialogTechTree::DialogTechTree(Player * player)
     const int titleY = 10;
     title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
+
+    // BUTTONS SECTION
+    const int sectionX0 = 38;
+    const int sectionY0 = 95;
+    const int sectionSpacing = 78;
+
+    mButtonsSection = new sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
+    mButtonsSection->SetPosition(sectionX0, sectionY0);
+    mButtonsSection->SetSpacing(sectionSpacing);
+
+    auto btn = new ButtonSection;
+    btn->SetLabel(sm->GetCString("STRUCTURES"));
+    mButtonsSection->AddButton(btn);
+
+    btn = new ButtonSection;
+    btn->SetLabel(sm->GetCString("UNITS"));
+    mButtonsSection->AddButton(btn);
+
+    btn = new ButtonSection;
+    btn->SetLabel(sm->GetCString("RESOURCES"));
+    mButtonsSection->AddButton(btn);
+
+    btn = new ButtonSection;
+    btn->SetLabel(sm->GetCString("TECHNOLOGY"));
+    mButtonsSection->AddButton(btn);
+
+    btn = new ButtonSection;
+    btn->SetLabel(sm->GetCString("SPECIALS"));
+    mButtonsSection->AddButton(btn);
+
+    // start from first section
+    mButtonsSection->SetButtonChecked(0, true);
+
+    mButtonsSection->SetFunctionOnToggle([this](int idx, bool checked)
+    {
+        // TODO
+    });
 }
 
 void DialogTechTree::SetFunctionOnClose(const std::function<void()> & f)
