@@ -1268,6 +1268,11 @@ void ScreenInitGame::SetupTextures()
             { 249, 461, 96, 84 },
             // UPGRADE UNLOCKED
             { 346, 461, 96, 84 },
+            // CONNECTIONS
+            { 152, 546, 3, 64 },
+            { 156, 546, 3, 107 },
+            { 160, 546, 96, 3 },
+            { 160, 550, 141, 3 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
