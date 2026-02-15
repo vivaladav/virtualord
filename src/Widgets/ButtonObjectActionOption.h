@@ -1,11 +1,14 @@
 #pragma once
 
-#include "Widgets/GameButton.h"
+#include <sgl/sgui/PushButton.h>
 
 namespace sgl
 {
-    namespace graphic { class Text; }
-    namespace sgui { class PushButton; }
+    namespace graphic
+    {
+        class Image;
+        class Text;
+    }
 }
 
 namespace game
