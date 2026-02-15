@@ -65,6 +65,8 @@ void GameButton::SetData(const char * spriteFile,
 
 void GameButton::OnStateChanged(VisualState state)
 {
+    sgl::sgui::PushButton::PushButton::OnStateChanged(state);
+
     // refresh body
     mBody->SetTexture(mBackgrounds[state]);
     SetCurrBg(mBody);

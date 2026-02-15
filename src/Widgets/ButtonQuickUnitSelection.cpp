@@ -21,7 +21,7 @@
 namespace game
 {
 
-const std::array<unsigned int, sgl::sgui::PushButton::NUM_VISUAL_STATES> TEX_IDS =
+const std::array<unsigned int, sgl::sgui::AbstractButton::NUM_VISUAL_STATES> TEX_IDS =
 {
     SpriteIdUnitQuickSel::IND_UQS_BG_NORMAL,
     SpriteIdUnitQuickSel::IND_UQS_BG_DISABLED,

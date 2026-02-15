@@ -2,6 +2,7 @@
 
 #include "MissionGoal.h"
 #include "Screens/ScreenGame.h"
+#include <Widgets/GameButton.h>
 #include "Widgets/GameUIData.h"
 #include "Widgets/ProgressBarObjectVisualStat.h"
 #include "Widgets/WidgetsConstants.h"
@@ -66,21 +67,19 @@ private:
 };
 
 // ====== BUTTON END =====
-class ButtonEndMission : public sgl::sgui::ImageButton
+class ButtonEndMission : public GameButton
 {
 public:
     ButtonEndMission(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({
-                                     ID_DLG_MGOALS_BTN_END_NORMAL,
-                                     ID_DLG_MGOALS_BTN_END_DISABLED,
-                                     ID_DLG_MGOALS_BTN_END_OVER,
-                                     ID_DLG_MGOALS_BTN_END_PUSHED,
-                                     ID_DLG_MGOALS_BTN_END_NORMAL
-                                 },
-                                 SpriteFileDialogMissionGoals, parent)
+        : GameButton(SpriteFileDialogMissionGoals,
+                     { ID_DLG_MGOALS_BTN_COLLECT_NORMAL, ID_DLG_MGOALS_BTN_COLLECT_DISABLED,
+                       ID_DLG_MGOALS_BTN_COLLECT_OVER, ID_DLG_MGOALS_BTN_COLLECT_PUSHED,
+                       ID_DLG_MGOALS_BTN_COLLECT_NORMAL },
+                     { 0xd7f4deff, 0x436f4dff, 0xebf9eeff, 0xc3eeceff, 0xc3eeceff}, parent)
     {
         using namespace sgl;
 
+        // LABEL
         auto fm = graphic::FontManager::Instance();
         const int size = 18;
 
@@ -92,25 +91,9 @@ public:
     }
 
 private:
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        sgl::sgui::ImageButton::OnStateChanged(state);
-
-        const unsigned int colorsLabel[NUM_VISUAL_STATES] =
-        {
-            0xd7f4deff,
-            0x436f4dff,
-            0xebf9eeff,
-            0xc3eeceff,
-            0xc3eeceff
-        };
-
-        SetLabelColor(colorsLabel[state]);
-    }
-
     void HandleMouseOver() override
     {
-        sgl::sgui::AbstractButton::HandleMouseOver();
+        GameButton::HandleMouseOver();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_over-02.ogg");
@@ -118,7 +101,7 @@ private:
 
     void HandleButtonDown() override
     {
-        sgl::sgui::AbstractButton::HandleButtonDown();
+        GameButton::HandleButtonDown();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_click-02.ogg");
@@ -126,21 +109,19 @@ private:
 };
 
 // ====== BUTTON COLLECT =====
-class ButtonCollect : public sgl::sgui::ImageButton
+class ButtonCollect : public GameButton
 {
 public:
     ButtonCollect(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({
-                                     ID_DLG_MGOALS_BTN_COLLECT_NORMAL,
-                                     ID_DLG_MGOALS_BTN_COLLECT_DISABLED,
-                                     ID_DLG_MGOALS_BTN_COLLECT_OVER,
-                                     ID_DLG_MGOALS_BTN_COLLECT_PUSHED,
-                                     ID_DLG_MGOALS_BTN_COLLECT_NORMAL
-                                 },
-                                 SpriteFileDialogMissionGoals, parent)
+        : GameButton(SpriteFileDialogMissionGoals,
+                     { ID_DLG_MGOALS_BTN_COLLECT_NORMAL, ID_DLG_MGOALS_BTN_COLLECT_DISABLED,
+                       ID_DLG_MGOALS_BTN_COLLECT_OVER, ID_DLG_MGOALS_BTN_COLLECT_PUSHED,
+                       ID_DLG_MGOALS_BTN_COLLECT_NORMAL },
+                     { 0xc3dfeeff, 0x4d6673ff, 0xebf4f9ff, 0xc3dfeeff, 0xc3dfeeff }, parent)
     {
         using namespace sgl;
 
+        // LABEL
         auto fm = graphic::FontManager::Instance();
         const int size = 18;
 
@@ -152,25 +133,9 @@ public:
     }
 
 private:
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        sgl::sgui::ImageButton::OnStateChanged(state);
-
-        const unsigned int colorsLabel[NUM_VISUAL_STATES] =
-            {
-                0xc3dfeeff,
-                0x4d6673ff,
-                0xebf4f9ff,
-                0xc3dfeeff,
-                0xc3dfeeff
-            };
-
-        SetLabelColor(colorsLabel[state]);
-    }
-
     void HandleMouseOver() override
     {
-        sgl::sgui::AbstractButton::HandleMouseOver();
+        GameButton::HandleMouseOver();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_over-02.ogg");
@@ -178,7 +143,7 @@ private:
 
     void HandleButtonDown() override
     {
-        sgl::sgui::AbstractButton::HandleButtonDown();
+        GameButton::HandleButtonDown();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_click-02.ogg");

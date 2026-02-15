@@ -9,7 +9,7 @@ namespace game
 
 {
 
-const std::array<unsigned int, sgl::sgui::PushButton::NUM_VISUAL_STATES> texIds =
+const std::array<unsigned int, sgl::sgui::AbstractButton::NUM_VISUAL_STATES> texIds =
 {
     IND_MINIMAP_BUTTON_NORMAL,
     IND_MINIMAP_BUTTON_NORMAL,
