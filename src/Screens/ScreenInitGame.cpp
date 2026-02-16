@@ -1282,6 +1282,16 @@ void ScreenInitGame::SetupTextures()
         tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME],
             SpriteFileDialogTechTreeExp);
 
+        // TECH UPGRADES
+        const std::vector<sgl::core::Rectd> rects2
+        {
+            // ICONS
+            { 0, 0, 48, 48 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileTechUpgrades, rects2);
+
 #ifdef DEV_MODE
         // TODO remove later, now left just for reference on testing loading times
         auto t1 = std::chrono::high_resolution_clock::now();

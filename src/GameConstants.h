@@ -159,6 +159,11 @@ enum ExtendedResource : unsigned int
     ER_INVALID
 };
 
+enum TechUpgradeId : unsigned int
+{
+    TECH_UP_BASE_IMPROVE,
+};
+
 enum TerritoryStatus : unsigned int
 {
     TER_ST_UNEXPLORED,

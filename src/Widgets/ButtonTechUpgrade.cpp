@@ -1,5 +1,6 @@
 #include "Widgets/ButtonTechUpgrade.h"
 
+#include "GameConstants.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
 
@@ -15,14 +16,16 @@
 namespace game
 {
 
-ButtonTechUpgrade::ButtonTechUpgrade(sgl::sgui::Widget * parent)
+ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * parent)
     : sgl::sgui::AbstractButton(parent)
     , mBg(new sgl::graphic::Image)
+    , mIcon(new sgl::graphic::Image)
 {
     using namespace sgl;
 
     SetCheckable(true);
 
+    // BACKGROUND
     RegisterRenderable(mBg);
 
     auto tm = sgl::graphic::TextureManager::Instance();
@@ -39,9 +42,31 @@ ButtonTechUpgrade::ButtonTechUpgrade(sgl::sgui::Widget * parent)
     for(unsigned int i = 0; i < sgui::AbstractButton::NUM_VISUAL_STATES; ++i)
         mTexs[i] = tm->GetSprite(SpriteFileDialogTechTree, texIds[i]);
 
+    // ICONS
+    mIconsIds.emplace(TECH_UP_BASE_IMPROVE, ID_TECH_UP_ICON_BASE_IMPROVE);
+
+    SetUpgrade(upgrade);
+
     // UPDATE CONTENT
     UpdateGraphics(NORMAL);
     UpdatePositions();
+}
+
+ButtonTechUpgrade::~ButtonTechUpgrade()
+{
+    // delete icon if not registered as renderable
+    if(!mIconVisible)
+        delete mIcon;
+}
+
+void ButtonTechUpgrade::SetUpgrade(TechUpgradeId upgrade)
+{
+    auto tm = sgl::graphic::TextureManager::Instance();
+
+    const unsigned int texId = mIconsIds.at(upgrade);
+    auto tex = tm->GetSprite(SpriteFileTechUpgrades, texId);
+
+    mIcon->SetTexture(tex);
 }
 
 void ButtonTechUpgrade::HandleMouseOver()
@@ -72,6 +97,33 @@ void ButtonTechUpgrade::UpdateGraphics(sgl::sgui::AbstractButton::VisualState st
     mBg->SetTexture(mTexs[state]);
 
     SetSize(mBg->GetWidth(), mBg->GetHeight());
+
+    // hide icon when disabled
+    if(state == sgl::sgui::AbstractButton::DISABLED)
+    {
+        if(mIconVisible)
+        {
+            UnregisterRenderable(mIcon);
+            mIconVisible = false;
+        }
+    }
+    // show icon
+    else if(!mIconVisible)
+    {
+        RegisterRenderable(mIcon);
+        mIconVisible = true;
+
+        const unsigned int colors[] =
+        {
+            0xbfe3f3ff,
+            0xffffffff,
+            0xd4ecf7ff,
+            0xb3d5e5ff,
+            0xe9f6fbff
+        };
+
+        mIcon->SetColor(colors[state]);
+    }
 }
 
 void ButtonTechUpgrade::HandlePositionChanged()
@@ -83,7 +135,13 @@ void ButtonTechUpgrade::HandlePositionChanged()
 
 void ButtonTechUpgrade::UpdatePositions()
 {
-    mBg->SetPosition(GetScreenX(), GetScreenY());
+    const int x0 = GetScreenX();
+    const int y0 = GetScreenY();
+    mBg->SetPosition(x0, y0);
+
+    const int iconX = x0 + (mBg->GetWidth() - mIcon->GetWidth()) / 2;
+    const int iconY = y0 + (mBg->GetHeight() - mIcon->GetHeight()) / 2;
+    mIcon->SetPosition(iconX, iconY);
 }
 
 } // namespace game

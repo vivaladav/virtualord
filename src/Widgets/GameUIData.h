@@ -883,6 +883,17 @@ enum SpriteIdSettingsExp : unsigned int
     IND_SET_SLIDERH_BUTTON
 };
 
+// TECH UPGRADES
+extern const char SpriteFileTechUpgrades[];
+
+enum SpriteIdTechUpgrades : unsigned int
+{
+    // ICONS
+    ID_TECH_UP_ICON_BASE_IMPROVE,
+
+    NUM_TECH_UPGRADES_ICONS,
+};
+
 // TOOLTIPS
 extern const char SpriteFileTooltips[];
 

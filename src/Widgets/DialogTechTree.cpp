@@ -1,6 +1,7 @@
 #include "Widgets/DialogTechTree.h"
 
 #include "Game.h"
+#include "GameConstants.h"
 #include "Player.h"
 #include "Widgets/ButtonDialogClose.h"
 #include "Widgets/ButtonTechUpgrade.h"
@@ -182,23 +183,25 @@ DialogTechTree::DialogTechTree(Player * player)
     int btnX = upgradesX0;
     int btnY = upgradesY0;
 
-    auto btnUpgrade = new ButtonTechUpgrade(this);
+    auto btnUpgrade = new ButtonTechUpgrade(TECH_UP_BASE_IMPROVE, this);
     btnUpgrade->SetPosition(btnX, btnY);
 
     btnX += btnUpgrade->GetWidth() + buttonsMarginH;
 
-    btnUpgrade = new ButtonTechUpgrade(this);
+    btnUpgrade = new ButtonTechUpgrade(TECH_UP_BASE_IMPROVE, this);
+    btnUpgrade->SetEnabled(false);
     btnUpgrade->SetPosition(btnX, btnY);
 
     btnX += btnUpgrade->GetWidth() + buttonsMarginH;
 
-    btnUpgrade = new ButtonTechUpgrade(this);
+    btnUpgrade = new ButtonTechUpgrade(TECH_UP_BASE_IMPROVE, this);
+    btnUpgrade->SetEnabled(false);
     btnUpgrade->SetPosition(btnX, btnY);
 
     btnX = upgradesX0;
     btnY += btnUpgrade->GetHeight() + buttonsMarginV;
 
-    btnUpgrade = new ButtonTechUpgrade(this);
+    btnUpgrade = new ButtonTechUpgrade(TECH_UP_BASE_IMPROVE, this);
     btnUpgrade->SetPosition(btnX, btnY);
 }
 

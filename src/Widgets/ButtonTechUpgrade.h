@@ -2,6 +2,7 @@
 
 #include <sgl/sgui/AbstractButton.h>
 
+#include <unordered_map>
 
 namespace sgl
 {
@@ -15,10 +16,15 @@ namespace sgl
 namespace game
 {
 
+enum TechUpgradeId : unsigned int;
+
 class ButtonTechUpgrade : public sgl::sgui::AbstractButton
 {
 public:
-    ButtonTechUpgrade(sgl::sgui::Widget * parent);
+    ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * parent);
+    ~ButtonTechUpgrade();
+
+    void SetUpgrade(TechUpgradeId upgrade);
 
 private:
     void HandleMouseOver() override;
@@ -35,7 +41,12 @@ private:
 private:
     std::array<sgl::graphic::Texture *, sgl::sgui::AbstractButton::NUM_VISUAL_STATES> mTexs;
 
+    std::unordered_map<unsigned int, unsigned int> mIconsIds;
+
     sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mIcon = nullptr;
+
+    bool mIconVisible = false;
 };
 
 } // namespace game
