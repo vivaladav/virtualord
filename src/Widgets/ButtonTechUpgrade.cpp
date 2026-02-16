@@ -69,6 +69,18 @@ void ButtonTechUpgrade::SetUpgrade(TechUpgradeId upgrade)
     mIcon->SetTexture(tex);
 }
 
+void ButtonTechUpgrade::SetUnlocked(bool unlocked)
+{
+    if(mUnlocked == unlocked)
+        return ;
+
+    mUnlocked = unlocked;
+
+    SetCheckable(!mUnlocked);
+
+    UpdateGraphics(GetState());
+}
+
 void ButtonTechUpgrade::HandleMouseOver()
 {
     sgl::sgui::AbstractButton::HandleMouseOver();
@@ -94,7 +106,15 @@ void ButtonTechUpgrade::OnStateChanged(sgl::sgui::AbstractButton::VisualState st
 
 void ButtonTechUpgrade::UpdateGraphics(sgl::sgui::AbstractButton::VisualState state)
 {
-    mBg->SetTexture(mTexs[state]);
+    if(mUnlocked)
+    {
+        auto tm = sgl::graphic::TextureManager::Instance();
+        auto tex = tm->GetSprite(SpriteFileDialogTechTree, ID_DLG_TECHT_UPG_UNLOCKED);
+
+        mBg->SetTexture(tex);
+    }
+    else
+        mBg->SetTexture(mTexs[state]);
 
     SetSize(mBg->GetWidth(), mBg->GetHeight());
 
@@ -113,16 +133,24 @@ void ButtonTechUpgrade::UpdateGraphics(sgl::sgui::AbstractButton::VisualState st
         RegisterRenderable(mIcon);
         mIconVisible = true;
 
-        const unsigned int colors[] =
+        if(mUnlocked)
         {
-            0xbfe3f3ff,
-            0xffffffff,
-            0xd4ecf7ff,
-            0xb3d5e5ff,
-            0xe9f6fbff
-        };
+            const unsigned int color = 0xe5ffe9ff;
+            mIcon->SetColor(color);
+        }
+        else
+        {
+            const unsigned int colors[] =
+            {
+                0xbfe3f3ff,
+                0xffffffff,
+                0xd4ecf7ff,
+                0xb3d5e5ff,
+                0xe9f6fbff
+            };
 
-        mIcon->SetColor(colors[state]);
+            mIcon->SetColor(colors[state]);
+        }
     }
 }
 

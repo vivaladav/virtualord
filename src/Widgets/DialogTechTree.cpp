@@ -185,6 +185,7 @@ DialogTechTree::DialogTechTree(Player * player)
 
     auto btnUpgrade = new ButtonTechUpgrade(TECH_UP_BASE_IMPROVE, this);
     btnUpgrade->SetPosition(btnX, btnY);
+    btnUpgrade->SetUnlocked(true);
 
     btnX += btnUpgrade->GetWidth() + buttonsMarginH;
 

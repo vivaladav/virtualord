@@ -26,6 +26,8 @@ public:
 
     void SetUpgrade(TechUpgradeId upgrade);
 
+    void SetUnlocked(bool unlocked);
+
 private:
     void HandleMouseOver() override;
 
@@ -47,6 +49,7 @@ private:
     sgl::graphic::Image * mIcon = nullptr;
 
     bool mIconVisible = false;
+    bool mUnlocked = false;
 };
 
 } // namespace game
