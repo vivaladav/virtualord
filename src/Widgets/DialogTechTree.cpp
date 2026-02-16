@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Player.h"
 #include "Widgets/ButtonDialogClose.h"
+#include "Widgets/ButtonTechUpgrade.h"
 #include "Widgets/GameButton.h"
 #include "Widgets/GameSliderH.h"
 #include "Widgets/GameUIData.h"
@@ -169,6 +170,36 @@ DialogTechTree::DialogTechTree(Player * player)
     {
         // TODO
     });
+
+    UpdateUpgrades();
+
+     // TEST
+    const int upgradesX0 = 38;
+    const int upgradesY0 = 185;
+    const int buttonsMarginH = 96;
+    const int buttonsMarginV = 64;
+
+    int btnX = upgradesX0;
+    int btnY = upgradesY0;
+
+    auto btnUpgrade = new ButtonTechUpgrade(this);
+    btnUpgrade->SetPosition(btnX, btnY);
+
+    btnX += btnUpgrade->GetWidth() + buttonsMarginH;
+
+    btnUpgrade = new ButtonTechUpgrade(this);
+    btnUpgrade->SetPosition(btnX, btnY);
+
+    btnX += btnUpgrade->GetWidth() + buttonsMarginH;
+
+    btnUpgrade = new ButtonTechUpgrade(this);
+    btnUpgrade->SetPosition(btnX, btnY);
+
+    btnX = upgradesX0;
+    btnY += btnUpgrade->GetHeight() + buttonsMarginV;
+
+    btnUpgrade = new ButtonTechUpgrade(this);
+    btnUpgrade->SetPosition(btnX, btnY);
 }
 
 void DialogTechTree::SetFunctionOnClose(const std::function<void()> & f)
@@ -197,6 +228,11 @@ void DialogTechTree::SetPositions()
     x += mBgC->GetWidth();
 
     mBgR->SetPosition(x, y);
+}
+
+void DialogTechTree::UpdateUpgrades()
+{
+    // TODO
 }
 
 } // namespace game

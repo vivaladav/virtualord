@@ -353,6 +353,8 @@ add_executable(
     src/Widgets/ButtonUnitsSelector.cpp
     src/Widgets/ButtonPanelTab.h
     src/Widgets/ButtonPanelTab.cpp
+    src/Widgets/ButtonTechUpgrade.h
+    src/Widgets/ButtonTechUpgrade.cpp
     src/Widgets/ButtonsPanel.h
     src/Widgets/ButtonsPanel.cpp
     src/Widgets/CountdownLabel.h

@@ -3,6 +3,7 @@
 #include <sgl/sgui/Widget.h>
 
 #include <functional>
+#include <vector>
 
 namespace sgl
 {
@@ -18,6 +19,7 @@ namespace sgl
 namespace game
 {
 
+class ButtonTechUpgrade;
 class Player;
 class Screen;
 
@@ -33,7 +35,11 @@ private:
 
     void SetPositions();
 
+    void UpdateUpgrades();
+
 private:
+    std::vector<ButtonTechUpgrade *> mUpgrades;
+
     sgl::graphic::Image * mBgL = nullptr;
     sgl::graphic::Image * mBgC = nullptr;
     sgl::graphic::Image * mBgR = nullptr;
