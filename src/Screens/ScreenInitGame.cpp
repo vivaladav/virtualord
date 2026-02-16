@@ -1266,6 +1266,7 @@ void ScreenInitGame::SetupTextures()
             { 346, 376, 96, 84 },
             { 152, 461, 96, 84 },
             { 249, 461, 96, 84 },
+            { 302, 546, 20, 20 },
             // UPGRADE UNLOCKED
             { 346, 461, 96, 84 },
             // CONNECTIONS
