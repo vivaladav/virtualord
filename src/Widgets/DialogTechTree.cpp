@@ -216,50 +216,51 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
     // clear panel
     ClearButtonsUpgrade();
-    mLinksUsed = 0;
+    ClearLinks();
 
     // populate panel
     if(section == SEC_STRUCTURES)
     {
-        // COL 0
+        // -- COL 0 --
+        // [0, 0]
         btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_1, 1, true, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
-        link = GetNewLink(ID_DLG_TECHT_LINK_VS);
-        btnUpgrade->AddLink(link);
-
-        linkX = btnX + (btnUpgrade->GetWidth() - link->GetWidth()) / 2;
-        linkY = btnY - link->GetHeight();
-        link->SetPosition(linkX, linkY);
-
-        link = GetNewLink(ID_DLG_TECHT_LINK_HS);
-        btnUpgrade->AddLink(link);
-
-        linkX = btnX + btnUpgrade->GetWidth();
-        linkY = btnY + (btnUpgrade->GetHeight() - link->GetHeight()) / 2;
-        link->SetPosition(linkX, linkY);
+        AddLinkToUpgrade(btnUpgrade, LINK_VERT, LS_NORTH);
+        AddLinkToUpgrade(btnUpgrade, LINK_HORIZ, LS_WEST);
 
         btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
 
+        // [1, 0]
         btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_2, 2, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
+        AddLinkToUpgrade(btnUpgrade, LINK_VERT, LS_NORTH);
+
         btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
 
+        // [2, 0]
         btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_3, 3, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
+        AddLinkToUpgrade(btnUpgrade, LINK_VERT, LS_NORTH);
+
         btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
 
+        // [3, 0]
         btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_4, 4, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
+        AddLinkToUpgrade(btnUpgrade, LINK_VERT, LS_NORTH);
+
         btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
 
+        // [4, 0]
         btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_5, 5, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
-        // COL 1
+        // -- COL 1 --
+        // [0, 1]
         btnX += btnUpgrade->GetWidth() + buttonsMarginH;
         btnY = upgradesY0;
 
@@ -277,7 +278,10 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 void DialogTechTree::ClearButtonsUpgrade()
 {
     for(auto btn : mButtonsUpgrade)
+    {
         btn->SetVisible(false);
+        btn->ClearLinks();
+    }
 
     mButtonsUpgradeUsed = 0;
 }
@@ -309,18 +313,29 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
     return btn;
 }
 
-sgl::sgui::Image *DialogTechTree::GetNewLink(unsigned int texID)
+void DialogTechTree::ClearLinks()
+{
+    for(auto l : mLinks)
+        l->SetVisible(false);
+
+    mLinksUsed = 0;
+}
+
+sgl::sgui::Image * DialogTechTree::GetNewLink(unsigned int texID)
 {
     auto tm = sgl::graphic::TextureManager::Instance();
 
     sgl::sgui::Image * link;
 
-    if(mLinksUsed < mButtonUpgradeLinks.size())
-        link = mButtonUpgradeLinks[mLinksUsed];
+    if(mLinksUsed < mLinks.size())
+    {
+        link = mLinks[mLinksUsed];
+        link->SetVisible(true);
+    }
     else
     {
         link = new sgl::sgui::Image(this);
-        mButtonUpgradeLinks.emplace_back(link);
+        mLinks.emplace_back(link);
     }
 
     auto tex = tm->GetSprite(SpriteFileDialogTechTree, texID);
@@ -330,6 +345,45 @@ sgl::sgui::Image *DialogTechTree::GetNewLink(unsigned int texID)
 
     return link;
 
+}
+
+void DialogTechTree::AddLinkToUpgrade(ButtonTechUpgrade * btn, LinkType type, LinkSlot slot)
+{
+    int linkX = btn->GetX();
+    int linkY = btn->GetY();
+
+    unsigned int texID;
+
+    if(type == LINK_VERT)
+        texID = ID_DLG_TECHT_LINK_VS;
+    else if(type == LINK_HORIZ)
+        texID = ID_DLG_TECHT_LINK_HS;
+
+    sgl::sgui::Image * link = GetNewLink(texID);
+    btn->AddLink(link);
+
+    if(slot == LS_NORTH)
+    {
+        linkX += (btn->GetWidth() - link->GetWidth()) / 2;
+        linkY -= link->GetHeight();
+    }
+    else if(slot == LS_SOUTH)
+    {
+        linkX += (btn->GetWidth() - link->GetWidth()) / 2;
+        linkY += btn->GetHeight();
+    }
+    else if(slot == LS_WEST)
+    {
+        linkX += btn->GetWidth();
+        linkY += (btn->GetHeight() - link->GetHeight()) / 2;
+    }
+    else if(slot == LS_EAST)
+    {
+        linkX -= link->GetWidth();
+        linkY += (btn->GetHeight() - link->GetHeight()) / 2;
+    }
+
+    link->SetPosition(linkX, linkY);
 }
 
 } // namespace game

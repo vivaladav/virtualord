@@ -45,6 +45,25 @@ private:
         NUM_UPG_SECTIONS
     };
 
+    enum LinkType : unsigned int
+    {
+        LINK_VERT,
+        LINK_HORIZ,
+
+        NUM_LINK_TYPES
+    };
+
+    enum LinkSlot : unsigned int
+    {
+        LS_NORTH,
+        LS_SOUTH,
+        LS_WEST,
+        LS_EAST,
+
+        NUM_LINK_SLOTS
+    };
+
+private:
     void HandlePositionChanged() override;
 
     void SetPositions();
@@ -55,11 +74,13 @@ private:
     ButtonTechUpgrade * GetNewButtonUpgrade(TechUpgradeId upgrade, int level,
                                             bool enabled, bool unlocked);
 
+    void ClearLinks();
     sgl::sgui::Image * GetNewLink(unsigned int texID);
+    void AddLinkToUpgrade(ButtonTechUpgrade * btn, LinkType type, LinkSlot slot);
 
 private:
     std::vector<ButtonTechUpgrade *> mButtonsUpgrade;
-    std::vector<sgl::sgui::Image *> mButtonUpgradeLinks;
+    std::vector<sgl::sgui::Image *> mLinks;
 
     sgl::graphic::Image * mBgL = nullptr;
     sgl::graphic::Image * mBgC = nullptr;
