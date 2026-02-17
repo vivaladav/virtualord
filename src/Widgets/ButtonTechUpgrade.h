@@ -43,7 +43,7 @@ private:
 private:
     std::array<sgl::graphic::Texture *, sgl::sgui::AbstractButton::NUM_VISUAL_STATES> mTexs;
 
-    std::unordered_map<unsigned int, unsigned int> mIconsIds;
+    std::unordered_map<TechUpgradeId, unsigned int> mIconsIds;
 
     sgl::graphic::Image * mBg = nullptr;
     sgl::graphic::Image * mIcon = nullptr;

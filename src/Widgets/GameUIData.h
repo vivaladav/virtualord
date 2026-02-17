@@ -889,6 +889,7 @@ extern const char SpriteFileTechUpgrades[];
 enum SpriteIdTechUpgrades : unsigned int
 {
     // ICONS
+    ID_TECH_UP_ICON_TODO,
     ID_TECH_UP_ICON_BASE_IMPROVE,
 
     NUM_TECH_UPGRADES_ICONS,

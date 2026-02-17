@@ -43,7 +43,13 @@ ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * 
         mTexs[i] = tm->GetSprite(SpriteFileDialogTechTree, texIds[i]);
 
     // ICONS
-    mIconsIds.emplace(TECH_UP_BASE_IMPROVE, ID_TECH_UP_ICON_BASE_IMPROVE);
+    mIconsIds.emplace(TECH_UP_NULL, ID_TECH_UP_ICON_TODO);
+
+    mIconsIds.emplace(TECH_UP_BASE_IMPROVE_1, ID_TECH_UP_ICON_BASE_IMPROVE);
+    mIconsIds.emplace(TECH_UP_BASE_IMPROVE_2, ID_TECH_UP_ICON_BASE_IMPROVE);
+    mIconsIds.emplace(TECH_UP_BASE_IMPROVE_3, ID_TECH_UP_ICON_BASE_IMPROVE);
+    mIconsIds.emplace(TECH_UP_BASE_IMPROVE_4, ID_TECH_UP_ICON_BASE_IMPROVE);
+    mIconsIds.emplace(TECH_UP_BASE_IMPROVE_5, ID_TECH_UP_ICON_BASE_IMPROVE);
 
     SetUpgrade(upgrade);
 

@@ -161,7 +161,15 @@ enum ExtendedResource : unsigned int
 
 enum TechUpgradeId : unsigned int
 {
-    TECH_UP_BASE_IMPROVE,
+    TECH_UP_BASE_IMPROVE_1,
+    TECH_UP_BASE_IMPROVE_2,
+    TECH_UP_BASE_IMPROVE_3,
+    TECH_UP_BASE_IMPROVE_4,
+    TECH_UP_BASE_IMPROVE_5,
+
+    NUM_TECH_UPGRADES,
+
+    TECH_UP_NULL
 };
 
 enum TerritoryStatus : unsigned int
