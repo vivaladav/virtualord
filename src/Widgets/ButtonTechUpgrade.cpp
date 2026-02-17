@@ -7,6 +7,7 @@
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/Image.h>
+#include <sgl/graphic/Text.h>
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
@@ -20,10 +21,12 @@ ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * 
     : sgl::sgui::AbstractButton(parent)
     , mBg(new sgl::graphic::Image)
     , mIcon(new sgl::graphic::Image)
+    , mBgLevel(new sgl::graphic::Image)
 {
     using namespace sgl;
 
     SetCheckable(true);
+    InitState(sgui::AbstractButton::NORMAL);
 
     // BACKGROUND
     RegisterRenderable(mBg);
@@ -53,8 +56,12 @@ ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * 
 
     SetUpgrade(upgrade);
 
+    // LEVEL
+    auto tex = tm->GetSprite(SpriteFileDialogTechTree, ID_DLG_TECHT_BTN_UPG_LVL_BG);
+    mBgLevel->SetTexture(tex);
+
     // UPDATE CONTENT
-    UpdateGraphics(NORMAL);
+    UpdateGraphics(sgui::AbstractButton::NORMAL);
     UpdatePositions();
 }
 
@@ -63,6 +70,10 @@ ButtonTechUpgrade::~ButtonTechUpgrade()
     // delete icon if not registered as renderable
     if(!mIconVisible)
         delete mIcon;
+
+    // delete level background if not registered as renderable
+    if(mLevel == 0)
+        delete mBgLevel;
 }
 
 void ButtonTechUpgrade::SetUpgrade(TechUpgradeId upgrade)
@@ -73,6 +84,64 @@ void ButtonTechUpgrade::SetUpgrade(TechUpgradeId upgrade)
     auto tex = tm->GetSprite(SpriteFileTechUpgrades, texId);
 
     mIcon->SetTexture(tex);
+
+    UpdateColorsIcon();
+}
+
+void ButtonTechUpgrade::SetLevel(unsigned int lvl)
+{
+    using namespace sgl;
+
+    // same level -> nothing to do
+    if(lvl == mLevel)
+        return ;
+
+    // always destroy previous label
+    if(mLabelLevel != nullptr)
+    {
+        if(mLevelVisible)
+            UnregisterRenderable(mLabelLevel);
+
+        delete mLabelLevel;
+        mLabelLevel = nullptr;
+    }
+
+    // level set
+    if(lvl > 0)
+    {
+        // create new label
+        const int size = 14;
+
+        auto fm = graphic::FontManager::Instance();
+        auto font = fm->GetFont(WidgetsConstants::FontFileText, size, graphic::Font::NORMAL);
+
+        mLabelLevel = new graphic::Text(std::to_string(lvl).c_str(), font, true);
+
+        // level already visible
+        if(mLevelVisible)
+            RegisterRenderable(mLabelLevel);
+        // make level visible if state is not DISABLED
+        else if(GetState() != sgl::sgui::AbstractButton::DISABLED)
+        {
+            RegisterRenderable(mBgLevel);
+            RegisterRenderable(mLabelLevel);
+            mLevelVisible = true;
+        }
+
+        UpdateColorsLevel();
+    }
+    // level cleared
+    else
+    {
+        if(mLevelVisible)
+        {
+            UnregisterRenderable(mBgLevel);
+            mLevelVisible = false;
+        }
+    }
+
+    // update value
+    mLevel = lvl;
 }
 
 void ButtonTechUpgrade::SetUnlocked(bool unlocked)
@@ -112,19 +181,31 @@ void ButtonTechUpgrade::OnStateChanged(sgl::sgui::AbstractButton::VisualState st
 
 void ButtonTechUpgrade::UpdateGraphics(sgl::sgui::AbstractButton::VisualState state)
 {
+    // UNLOCKED
     if(mUnlocked)
     {
+        // background
         auto tm = sgl::graphic::TextureManager::Instance();
         auto tex = tm->GetSprite(SpriteFileDialogTechTree, ID_DLG_TECHT_UPG_UNLOCKED);
 
         mBg->SetTexture(tex);
+
+        // icon
+        UpdateColorsIcon();
+
+        // level
+        if(mLevel > 0)
+            UpdateColorsLevel();
+
+        return ;
     }
-    else
-        mBg->SetTexture(mTexs[state]);
+
+    // NOT UNLOCKED YET
+    mBg->SetTexture(mTexs[state]);
 
     SetSize(mBg->GetWidth(), mBg->GetHeight());
 
-    // hide icon when disabled
+    // hide icon and level when disabled
     if(state == sgl::sgui::AbstractButton::DISABLED)
     {
         if(mIconVisible)
@@ -132,34 +213,94 @@ void ButtonTechUpgrade::UpdateGraphics(sgl::sgui::AbstractButton::VisualState st
             UnregisterRenderable(mIcon);
             mIconVisible = false;
         }
-    }
-    // show icon
-    else if(!mIconVisible)
-    {
-        RegisterRenderable(mIcon);
-        mIconVisible = true;
 
-        if(mUnlocked)
+        if(mLevelVisible)
         {
-            const unsigned int color = 0xe5ffe9ff;
-            mIcon->SetColor(color);
+            UnregisterRenderable(mBgLevel);
+            UnregisterRenderable(mLabelLevel);
+            mLevelVisible = false;
         }
-        else
+    }
+    // not disabled state
+    else
+    {
+        // show icon
+        if(!mIconVisible)
         {
-            const unsigned int colors[] =
-            {
-                0xbfe3f3ff,
-                0xffffffff,
-                0xd4ecf7ff,
-                0xb3d5e5ff,
-                0xe9f6fbff
-            };
+            RegisterRenderable(mIcon);
+            mIconVisible = true;
+        }
 
-            mIcon->SetColor(colors[state]);
+        UpdateColorsIcon();
+
+        // show level
+        if(mLevel > 0)
+        {
+            if(!mLevelVisible)
+            {
+                RegisterRenderable(mBgLevel);
+                RegisterRenderable(mLabelLevel);
+                mLevelVisible = true;
+            }
+
+            UpdateColorsLevel();
         }
     }
 }
 
+void ButtonTechUpgrade::UpdateColorsIcon()
+{
+    if(mUnlocked)
+    {
+        const unsigned int colorIcon = 0xe5ffe9ff;
+        mIcon->SetColor(colorIcon);
+    }
+    else
+    {
+        const sgl::sgui::AbstractButton::VisualState state = GetState();
+
+        const unsigned int colorsIcon[] =
+        {
+            0xbfe3f3ff,
+            0xffffffff,
+            0xd4ecf7ff,
+            0xb3d5e5ff,
+            0xe9f6fbff
+        };
+
+        mIcon->SetColor(colorsIcon[state]);
+    }
+}
+
+void ButtonTechUpgrade::UpdateColorsLevel()
+{
+    if(mUnlocked)
+    {
+        const unsigned int colorBg = 0xe5ffe9ff;
+        mBgLevel->SetColor(colorBg);
+
+        const unsigned int colorLvl = 0x004d0dff;
+        mLabelLevel->SetColor(colorLvl);
+    }
+    else
+    {
+        const sgl::sgui::AbstractButton::VisualState state = GetState();
+
+        const unsigned int colorsLevelBg[] =
+        {
+            0xbfe3f3ff,
+            0xffffffff,
+            0xd4ecf7ff,
+            0xb3d5e5ff,
+            0xe9f6fbff
+        };
+
+        mBgLevel->SetColor(colorsLevelBg[state]);
+
+        const unsigned int colorLevel = 0x00334dff;
+        mLabelLevel->SetColor(colorLevel);
+    }
+}
 void ButtonTechUpgrade::HandlePositionChanged()
 {
     sgl::sgui::AbstractButton::HandlePositionChanged();
@@ -176,6 +317,17 @@ void ButtonTechUpgrade::UpdatePositions()
     const int iconX = x0 + (mBg->GetWidth() - mIcon->GetWidth()) / 2;
     const int iconY = y0 + (mBg->GetHeight() - mIcon->GetHeight()) / 2;
     mIcon->SetPosition(iconX, iconY);
+
+    if(mLevel > 0)
+    {
+        const int bgLevelX = x0 + (mBg->GetWidth() - mBgLevel->GetWidth()) / 2;
+        const int bgLevelY = y0 + mBg->GetHeight() - (mBgLevel->GetHeight() / 2);
+        mBgLevel->SetPosition(bgLevelX, bgLevelY);
+
+        const int levelX = bgLevelX + (mBgLevel->GetWidth() - mLabelLevel->GetWidth()) / 2;
+        const int levelY = bgLevelY + (mBgLevel->GetHeight() - mLabelLevel->GetHeight()) / 2;
+        mLabelLevel->SetPosition(levelX, levelY);
+    }
 }
 
 } // namespace game

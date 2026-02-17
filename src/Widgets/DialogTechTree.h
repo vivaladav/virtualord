@@ -51,7 +51,8 @@ private:
     void UpdateUpgrades(UpgradeSections section);
 
     void ClearButtonsUpgrade();
-    ButtonTechUpgrade * GetNewButtonUpgrade(TechUpgradeId upgrade, bool enabled, bool unlocked);
+    ButtonTechUpgrade * GetNewButtonUpgrade(TechUpgradeId upgrade, int level,
+                                            bool enabled, bool unlocked);
 
 private:
     std::vector<ButtonTechUpgrade *> mButtonsUpgrade;

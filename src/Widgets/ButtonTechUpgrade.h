@@ -9,6 +9,7 @@ namespace sgl
     namespace graphic
     {
         class Image;
+        class Text;
         class Texture;
     }
 }
@@ -26,6 +27,9 @@ public:
 
     void SetUpgrade(TechUpgradeId upgrade);
 
+    unsigned int GetLevel() const;
+    void SetLevel(unsigned int lvl);
+
     void SetUnlocked(bool unlocked);
 
 private:
@@ -36,6 +40,8 @@ private:
     void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override;
 
     void UpdateGraphics(sgl::sgui::AbstractButton::VisualState state);
+    void UpdateColorsIcon();
+    void UpdateColorsLevel();
 
     void HandlePositionChanged() override;
     void UpdatePositions();
@@ -48,8 +54,15 @@ private:
     sgl::graphic::Image * mBg = nullptr;
     sgl::graphic::Image * mIcon = nullptr;
 
+    sgl::graphic::Image * mBgLevel = nullptr;
+    sgl::graphic::Text * mLabelLevel = nullptr;
+
+    unsigned int mLevel = 0;
+    bool mLevelVisible = false;
     bool mIconVisible = false;
     bool mUnlocked = false;
 };
+
+inline unsigned int ButtonTechUpgrade::GetLevel() const { return mLevel; }
 
 } // namespace game

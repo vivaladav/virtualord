@@ -218,40 +218,40 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
     if(section == SEC_STRUCTURES)
     {
         // COL 0
-        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_1, true, false);
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_1, 1, true, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
         btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
 
-        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_2, false, false);
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_2, 2, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
         btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
 
-        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_3, false, false);
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_3, 3, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
         btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
 
-        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_4, false, false);
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_4, 4, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
         btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
 
-        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_5, false, false);
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_5, 5, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
 
         // COL 1
         btnX += btnUpgrade->GetWidth() + buttonsMarginH;
         btnY = upgradesY0;
 
-        btnUpgrade = GetNewButtonUpgrade(TECH_UP_NULL, false, false);
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_NULL, 0, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
     }
     else
     {
         // COL 0
-        btnUpgrade = GetNewButtonUpgrade(TECH_UP_NULL, false, false);
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_NULL, 0, false, false);
         btnUpgrade->SetPosition(btnX, btnY);
     }
 }
@@ -264,7 +264,7 @@ void DialogTechTree::ClearButtonsUpgrade()
     mButtonsUpgradeUsed = 0;
 }
 
-ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade,
+ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, int level,
                                                         bool enabled, bool unlocked)
 {
     ButtonTechUpgrade * btn = nullptr;
@@ -281,6 +281,7 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade,
         mButtonsUpgrade.emplace_back(btn);
     }
 
+    btn->SetLevel(level);
     btn->SetEnabled(enabled);
     btn->SetUnlocked(unlocked);
 
