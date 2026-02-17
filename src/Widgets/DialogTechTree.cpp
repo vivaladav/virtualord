@@ -144,66 +144,32 @@ DialogTechTree::DialogTechTree(Player * player)
     mButtonsSection->SetPosition(sectionX0, sectionY0);
     mButtonsSection->SetSpacing(sectionSpacing);
 
-    auto btn = new ButtonSection;
-    btn->SetLabel(sm->GetCString("STRUCTURES"));
-    mButtonsSection->AddButton(btn);
+    const char * sectionTitle[] =
+    {
+        "STRUCTURES",
+        "UNITS",
+        "RESOURCES",
+        "TECHNOLOGY",
+        "SPECIALS"
+    };
 
-    btn = new ButtonSection;
-    btn->SetLabel(sm->GetCString("UNITS"));
-    mButtonsSection->AddButton(btn);
-
-    btn = new ButtonSection;
-    btn->SetLabel(sm->GetCString("RESOURCES"));
-    mButtonsSection->AddButton(btn);
-
-    btn = new ButtonSection;
-    btn->SetLabel(sm->GetCString("TECHNOLOGY"));
-    mButtonsSection->AddButton(btn);
-
-    btn = new ButtonSection;
-    btn->SetLabel(sm->GetCString("SPECIALS"));
-    mButtonsSection->AddButton(btn);
+    for(unsigned int i = 0; i < NUM_UPG_SECTIONS; ++i)
+    {
+        auto btn = new ButtonSection;
+        btn->SetLabel(sm->GetCString(sectionTitle[i]));
+        mButtonsSection->AddButton(btn);
+    }
 
     // start from first section
     mButtonsSection->SetButtonChecked(0, true);
 
     mButtonsSection->SetFunctionOnToggle([this](int idx, bool checked)
     {
-        // TODO
+        if(checked)
+            UpdateUpgrades(static_cast<UpgradeSections>(idx));
     });
 
-    UpdateUpgrades();
-
-     // TEST
-    const int upgradesX0 = 38;
-    const int upgradesY0 = 185;
-    const int buttonsMarginH = 96;
-    const int buttonsMarginV = 64;
-
-    int btnX = upgradesX0;
-    int btnY = upgradesY0;
-
-    auto btnUpgrade = new ButtonTechUpgrade(TECH_UP_BASE_IMPROVE, this);
-    btnUpgrade->SetPosition(btnX, btnY);
-    btnUpgrade->SetUnlocked(true);
-
-    btnX += btnUpgrade->GetWidth() + buttonsMarginH;
-
-    btnUpgrade = new ButtonTechUpgrade(TECH_UP_BASE_IMPROVE, this);
-    btnUpgrade->SetEnabled(false);
-    btnUpgrade->SetPosition(btnX, btnY);
-
-    btnX += btnUpgrade->GetWidth() + buttonsMarginH;
-
-    btnUpgrade = new ButtonTechUpgrade(TECH_UP_BASE_IMPROVE, this);
-    btnUpgrade->SetEnabled(false);
-    btnUpgrade->SetPosition(btnX, btnY);
-
-    btnX = upgradesX0;
-    btnY += btnUpgrade->GetHeight() + buttonsMarginV;
-
-    btnUpgrade = new ButtonTechUpgrade(TECH_UP_BASE_IMPROVE, this);
-    btnUpgrade->SetPosition(btnX, btnY);
+    UpdateUpgrades(SEC_STRUCTURES);
 }
 
 void DialogTechTree::SetFunctionOnClose(const std::function<void()> & f)
@@ -234,9 +200,93 @@ void DialogTechTree::SetPositions()
     mBgR->SetPosition(x, y);
 }
 
-void DialogTechTree::UpdateUpgrades()
+void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 {
-    // TODO
+    const int upgradesX0 = 38;
+    const int upgradesY0 = 782;
+    const int buttonsMarginH = 96;
+    const int buttonsMarginV = 64;
+
+    int btnX = upgradesX0;
+    int btnY = upgradesY0;
+    ButtonTechUpgrade * btnUpgrade = nullptr;
+
+    // clear panel
+    ClearButtonsUpgrade();
+
+    // populate panel
+    if(section == SEC_STRUCTURES)
+    {
+        // COL 0
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_1, true, false);
+        btnUpgrade->SetPosition(btnX, btnY);
+
+        btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
+
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_2, false, false);
+        btnUpgrade->SetPosition(btnX, btnY);
+
+        btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
+
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_3, false, false);
+        btnUpgrade->SetPosition(btnX, btnY);
+
+        btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
+
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_4, false, false);
+        btnUpgrade->SetPosition(btnX, btnY);
+
+        btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
+
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_5, false, false);
+        btnUpgrade->SetPosition(btnX, btnY);
+
+        // COL 1
+        btnX += btnUpgrade->GetWidth() + buttonsMarginH;
+        btnY = upgradesY0;
+
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_NULL, false, false);
+        btnUpgrade->SetPosition(btnX, btnY);
+    }
+    else
+    {
+        // COL 0
+        btnUpgrade = GetNewButtonUpgrade(TECH_UP_NULL, false, false);
+        btnUpgrade->SetPosition(btnX, btnY);
+    }
+}
+
+void DialogTechTree::ClearButtonsUpgrade()
+{
+    for(auto btn : mButtonsUpgrade)
+        btn->SetVisible(false);
+
+    mButtonsUpgradeUsed = 0;
+}
+
+ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade,
+                                                        bool enabled, bool unlocked)
+{
+    ButtonTechUpgrade * btn = nullptr;
+
+    if(mButtonsUpgradeUsed < mButtonsUpgrade.size())
+    {
+        btn = mButtonsUpgrade[mButtonsUpgradeUsed];
+        btn->SetUpgrade(upgrade);
+        btn->SetVisible(true);
+    }
+    else
+    {
+        btn = new ButtonTechUpgrade(upgrade, this);
+        mButtonsUpgrade.emplace_back(btn);
+    }
+
+    btn->SetEnabled(enabled);
+    btn->SetUnlocked(unlocked);
+
+    ++mButtonsUpgradeUsed;
+
+    return btn;
 }
 
 } // namespace game

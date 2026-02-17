@@ -1287,6 +1287,7 @@ void ScreenInitGame::SetupTextures()
         {
             // ICONS
             { 0, 0, 48, 48 },
+            { 49, 0, 48, 48 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
