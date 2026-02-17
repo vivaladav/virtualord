@@ -22,8 +22,11 @@
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/ButtonsGroup.h>
 #include <sgl/sgui/Image.h>
+#include <sgl/sgui/ImageButton.h>
 #include <sgl/sgui/Label.h>
 #include <sgl/utilities/StringManager.h>
+
+#include <sstream>
 
 // anonymous namespace for local "private" classes
 namespace
@@ -31,7 +34,7 @@ namespace
 
 using namespace game;
 
-// ===== BUTTON  =====
+// ===== BUTTON SECTION  =====
 class ButtonSection : public GameButton
 {
 public:
@@ -69,6 +72,122 @@ public:
     }
 };
 
+// ===== BUTTON UNLOCK  =====
+class ButtonUnlock : public sgl::sgui::ImageButton
+{
+public:
+    ButtonUnlock(sgl::sgui::Widget * parent)
+        : sgl::sgui::ImageButton({ ID_DLG_TECHT_BTN_UNL_NORMAL, ID_DLG_TECHT_BTN_UNL_DISABLED,
+                                   ID_DLG_TECHT_BTN_UNL_OVER, ID_DLG_TECHT_BTN_UNL_PUSHED,
+                                   ID_DLG_TECHT_BTN_UNL_NORMAL },
+                                 SpriteFileDialogTechTree, parent)
+    {
+        using namespace sgl;
+
+        // LABEL
+        const int size = 18;
+
+        auto fm = graphic::FontManager::Instance();
+        auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
+
+        mLabel = new sgui::Label(fnt, this);
+
+        // ICON
+        auto tm = graphic::TextureManager::Instance();
+
+        auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_RESEARCH_24);
+        mIcon = new sgui::Image(tex, this);
+
+        // init look
+        InitState(sgui::AbstractButton::NORMAL);
+        UpdateGraphics();
+    }
+
+    void SetCost(int cost)
+    {
+        auto sm = sgl::utilities::StringManager::Instance();
+
+        std::ostringstream os;
+        os << sm->GetString("UNLOCK") << " - " << cost;
+
+        mLabel->SetText(os.str().c_str());
+
+        UpdatePositions();
+    }
+
+private:
+    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
+    {
+        sgl::sgui::ImageButton::OnStateChanged(state);
+
+        UpdateGraphics();
+    }
+
+    void UpdateGraphics()
+    {
+        const auto state = GetState();
+
+        const unsigned int colorLabel[] =
+        {
+            0xb7e1bfff,
+            0x5c7060ff,
+            0xc9e8cfff,
+            0x9fdfabff,
+            0xb7e1bfff,
+        };
+
+        mLabel->SetColor(colorLabel[state]);
+
+        const unsigned char alpha = state == sgl::sgui::AbstractButton::DISABLED ? 64 : 255;
+        mIcon->SetAlpha(alpha);
+    }
+
+    void HandlePositionChanged() override
+    {
+        sgl::sgui::ImageButton::HandlePositionChanged();
+
+        UpdatePositions();
+    }
+
+    void UpdatePositions()
+    {
+        const int spacing = 5;
+        const int contW = mLabel->GetWidth() + spacing + mIcon->GetWidth();
+
+        // LABEL
+        const int labelX = (GetWidth() - contW) / 2;
+        const int labelY = (GetHeight() - mLabel->GetHeight()) / 2;
+
+        mLabel->SetPosition(labelX, labelY);
+
+        // ICON
+        const int iconX = labelX + mLabel->GetWidth() + spacing;
+        const int iconY = (GetHeight() - mIcon->GetHeight()) / 2;
+
+        mIcon->SetPosition(iconX, iconY);
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::ImageButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::ImageButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-01.ogg");
+    }
+
+private:
+    sgl::sgui::Label * mLabel = nullptr;
+    sgl::sgui::Image * mIcon = nullptr;
+};
+
 } // namespace
 
 // ====== DIALOG TECH TREE =====
@@ -93,12 +212,19 @@ DialogTechTree::DialogTechTree(Player * player)
 
     // INIT DESCRIPTIONS
     mDescriptions.emplace(TECH_UP_NULL, "");
-
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_1, "UPG_BASE_IMP1");
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_2, "UPG_BASE_IMP2");
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_3, "UPG_BASE_IMP3");
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_4, "UPG_BASE_IMP4");
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_5, "UPG_BASE_IMP5");
+
+    // INIT COSTS
+    mCosts.emplace(TECH_UP_NULL, 0);
+    mCosts.emplace(TECH_UP_BASE_IMPROVE_1, 250);
+    mCosts.emplace(TECH_UP_BASE_IMPROVE_2, 500);
+    mCosts.emplace(TECH_UP_BASE_IMPROVE_3, 1250);
+    mCosts.emplace(TECH_UP_BASE_IMPROVE_4, 3000);
+    mCosts.emplace(TECH_UP_BASE_IMPROVE_5, 4000);
 
     // -- BACKGROUND --
     const int w = 1900;
@@ -178,8 +304,6 @@ DialogTechTree::DialogTechTree(Player * player)
             UpdateUpgrades(static_cast<UpgradeSections>(idx));
     });
 
-    UpdateUpgrades(SEC_STRUCTURES);
-
     // DESCRIPTION
     const int descY = 940;
 
@@ -187,6 +311,17 @@ DialogTechTree::DialogTechTree(Player * player)
     mLabelDescription = new sgui::Label(fontDesc, this);
     mLabelDescription->SetColor(WidgetsConstants::colorDialogText);
     mLabelDescription->SetPosition(marginSide, descY);
+
+    // BUTTON UNLOCK
+    mBtnUnlock = new ButtonUnlock(this);
+    mBtnUnlock->SetVisible(false);
+
+    const int btnX = w - marginSide - mBtnUnlock->GetWidth();
+    const int btnY = 920;
+    mBtnUnlock->SetPosition(btnX, btnY);
+
+    // show first panel
+    UpdateUpgrades(SEC_STRUCTURES);
 }
 
 void DialogTechTree::SetFunctionOnClose(const std::function<void()> & f)
@@ -234,6 +369,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
     // clear panel
     ClearButtonsUpgrade();
     ClearLinks();
+    mLabelDescription->SetVisible(false);
+    mBtnUnlock->SetVisible(false);
 
     // populate panel
     if(section == SEC_STRUCTURES)
@@ -332,6 +469,26 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
         {
             if(!btn->IsChecked())
                 mLabelDescription->SetVisible(false);
+        });
+
+        btn->AddOnToggleFunction([this, btn](bool checked)
+        {
+            mBtnUnlock->SetVisible(checked);
+
+            if(checked)
+            {
+                const TechUpgradeId upgrade = btn->GetUpgrade();
+                auto it = mCosts.find(upgrade);
+
+                if(it != mCosts.end())
+                {
+                    const int cost = it->second;
+
+                    static_cast<ButtonUnlock *>(mBtnUnlock)->SetCost(cost);
+
+                    mBtnUnlock->SetEnabled(mPlayer->HasEnough(Player::RESEARCH, cost));
+                }
+            }
         });
     }
 
