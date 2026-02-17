@@ -3,6 +3,7 @@
 #include <sgl/sgui/Widget.h>
 
 #include <functional>
+#include <string>
 #include <vector>
 
 namespace sgl
@@ -14,6 +15,7 @@ namespace sgl
         class AbstractButton;
         class ButtonsGroup;
         class Image;
+        class Label;
     }
 }
 
@@ -78,9 +80,12 @@ private:
     sgl::sgui::Image * GetNewLink(unsigned int texID);
     void AddLinkToUpgrade(ButtonTechUpgrade * btn, LinkType type, LinkSlot slot);
 
+    void SetDescription(TechUpgradeId upgrade);
+
 private:
     std::vector<ButtonTechUpgrade *> mButtonsUpgrade;
     std::vector<sgl::sgui::Image *> mLinks;
+    std::unordered_map<TechUpgradeId, std::string> mDescriptions;
 
     sgl::graphic::Image * mBgL = nullptr;
     sgl::graphic::Image * mBgC = nullptr;
@@ -89,6 +94,8 @@ private:
     sgl::sgui::AbstractButton * mBtnClose = nullptr;
 
     sgl::sgui::ButtonsGroup * mButtonsSection = nullptr;
+
+    sgl::sgui::Label * mLabelDescription = nullptr;
 
     Player * mPlayer = nullptr;
 

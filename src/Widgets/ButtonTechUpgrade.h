@@ -28,6 +28,7 @@ public:
     ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * parent);
     ~ButtonTechUpgrade();
 
+    TechUpgradeId GetUpgrade() const;
     void SetUpgrade(TechUpgradeId upgrade);
 
     unsigned int GetLevel() const;
@@ -38,8 +39,12 @@ public:
     void ClearLinks();
     void AddLink(sgl::sgui::Image * link);
 
+    void SetOnMouseOver(const std::function<void()> & f);
+    void SetOnMouseOut(const std::function<void()> & f);
+
 private:
     void HandleMouseOver() override;
+    void HandleMouseOut() override;
 
     void HandleButtonDown() override;
 
@@ -58,11 +63,16 @@ private:
     std::unordered_map<TechUpgradeId, unsigned int> mIconsIds;
     std::vector<sgl::sgui::Image *> mLinks;
 
+    std::function<void()> mFuncOnMouseOver;
+    std::function<void()> mFuncOnMouseOut;
+
     sgl::graphic::Image * mBg = nullptr;
     sgl::graphic::Image * mIcon = nullptr;
 
     sgl::graphic::Image * mBgLevel = nullptr;
     sgl::graphic::Text * mLabelLevel = nullptr;
+
+    TechUpgradeId mUpgrade;
 
     unsigned int mLevel = 0;
     bool mLevelVisible = false;
@@ -70,6 +80,18 @@ private:
     bool mUnlocked = false;
 };
 
+inline TechUpgradeId ButtonTechUpgrade::GetUpgrade() const { return mUpgrade; }
+
 inline unsigned int ButtonTechUpgrade::GetLevel() const { return mLevel; }
+
+inline void ButtonTechUpgrade::SetOnMouseOver(const std::function<void()> & f)
+{
+    mFuncOnMouseOver = f;
+}
+
+inline void ButtonTechUpgrade::SetOnMouseOut(const std::function<void()> & f)
+{
+    mFuncOnMouseOut = f;
+}
 
 } // namespace game

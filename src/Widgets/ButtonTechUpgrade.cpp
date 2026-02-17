@@ -24,9 +24,12 @@ namespace game
 
 ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * parent)
     : sgl::sgui::AbstractButton(parent)
+    , mFuncOnMouseOver([]{})
+    , mFuncOnMouseOut([]{})
     , mBg(new sgl::graphic::Image)
     , mIcon(new sgl::graphic::Image)
     , mBgLevel(new sgl::graphic::Image)
+    , mUpgrade(upgrade)
 {
     using namespace sgl;
 
@@ -84,6 +87,8 @@ ButtonTechUpgrade::~ButtonTechUpgrade()
 void ButtonTechUpgrade::SetUpgrade(TechUpgradeId upgrade)
 {
     auto tm = sgl::graphic::TextureManager::Instance();
+
+    mUpgrade = upgrade;
 
     const unsigned int texId = mIconsIds.at(upgrade);
     auto tex = tm->GetSprite(SpriteFileTechUpgrades, texId);
@@ -182,6 +187,15 @@ void ButtonTechUpgrade::HandleMouseOver()
 
     auto player = sgl::media::AudioManager::Instance()->GetPlayer();
     player->PlaySound("UI/button_over-03.ogg");
+
+    mFuncOnMouseOver();
+}
+
+void ButtonTechUpgrade::HandleMouseOut()
+{
+    sgl::sgui::AbstractButton::HandleMouseOut();
+
+    mFuncOnMouseOut();
 }
 
 void ButtonTechUpgrade::HandleButtonDown()

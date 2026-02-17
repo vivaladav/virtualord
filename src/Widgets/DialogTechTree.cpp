@@ -91,6 +91,15 @@ DialogTechTree::DialogTechTree(Player * player)
     const unsigned int colorHeader = 0x9dcbe2ff;
     const unsigned int colorLabel = 0x70a7c2ff;
 
+    // INIT DESCRIPTIONS
+    mDescriptions.emplace(TECH_UP_NULL, "");
+
+    mDescriptions.emplace(TECH_UP_BASE_IMPROVE_1, "UPG_BASE_IMP1");
+    mDescriptions.emplace(TECH_UP_BASE_IMPROVE_2, "UPG_BASE_IMP2");
+    mDescriptions.emplace(TECH_UP_BASE_IMPROVE_3, "UPG_BASE_IMP3");
+    mDescriptions.emplace(TECH_UP_BASE_IMPROVE_4, "UPG_BASE_IMP4");
+    mDescriptions.emplace(TECH_UP_BASE_IMPROVE_5, "UPG_BASE_IMP5");
+
     // -- BACKGROUND --
     const int w = 1900;
     graphic::Texture * tex;
@@ -170,6 +179,14 @@ DialogTechTree::DialogTechTree(Player * player)
     });
 
     UpdateUpgrades(SEC_STRUCTURES);
+
+    // DESCRIPTION
+    const int descY = 940;
+
+    auto fontDesc = fm->GetFont(WidgetsConstants::FontFileText, 20, graphic::Font::NORMAL);
+    mLabelDescription = new sgui::Label(fontDesc, this);
+    mLabelDescription->SetColor(WidgetsConstants::colorDialogText);
+    mLabelDescription->SetPosition(marginSide, descY);
 }
 
 void DialogTechTree::SetFunctionOnClose(const std::function<void()> & f)
@@ -302,6 +319,20 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
     {
         btn = new ButtonTechUpgrade(upgrade, this);
         mButtonsUpgrade.emplace_back(btn);
+
+        btn->SetOnMouseOver([this, btn]
+        {
+            const TechUpgradeId upgrade = btn->GetUpgrade();
+
+            mLabelDescription->SetVisible(true);
+            SetDescription(upgrade);
+        });
+
+        btn->SetOnMouseOut([this, btn]
+        {
+            if(!btn->IsChecked())
+                mLabelDescription->SetVisible(false);
+        });
     }
 
     btn->SetLevel(level);
@@ -384,6 +415,16 @@ void DialogTechTree::AddLinkToUpgrade(ButtonTechUpgrade * btn, LinkType type, Li
     }
 
     link->SetPosition(linkX, linkY);
+}
+
+void DialogTechTree::SetDescription(TechUpgradeId upgrade)
+{
+    auto sm = sgl::utilities::StringManager::Instance();
+
+    auto it = mDescriptions.find(upgrade);
+
+    if(it != mDescriptions.end())
+        mLabelDescription->SetText(sm->GetCString(it->second));
 }
 
 } // namespace game
