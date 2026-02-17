@@ -309,10 +309,10 @@ enum SpriteIdDialogTechTree : unsigned int
     // UPGRADE UNLOCKED
     ID_DLG_TECHT_UPG_UNLOCKED,
     // CONNECTIONS
-    ID_DLG_TECHT_CONN_VS,
-    ID_DLG_TECHT_CONN_VL,
-    ID_DLG_TECHT_CONN_HS,
-    ID_DLG_TECHT_CONN_HL,
+    ID_DLG_TECHT_LINK_VS,
+    ID_DLG_TECHT_LINK_VL,
+    ID_DLG_TECHT_LINK_HS,
+    ID_DLG_TECHT_LINK_HL,
 };
 
 extern const char SpriteFileDialogTechTreeExp[];

@@ -13,6 +13,7 @@ namespace sgl
     {
         class AbstractButton;
         class ButtonsGroup;
+        class Image;
     }
 }
 
@@ -54,8 +55,11 @@ private:
     ButtonTechUpgrade * GetNewButtonUpgrade(TechUpgradeId upgrade, int level,
                                             bool enabled, bool unlocked);
 
+    sgl::sgui::Image * GetNewLink(unsigned int texID);
+
 private:
     std::vector<ButtonTechUpgrade *> mButtonsUpgrade;
+    std::vector<sgl::sgui::Image *> mButtonUpgradeLinks;
 
     sgl::graphic::Image * mBgL = nullptr;
     sgl::graphic::Image * mBgC = nullptr;
@@ -68,6 +72,7 @@ private:
     Player * mPlayer = nullptr;
 
     unsigned int mButtonsUpgradeUsed = 0;
+    unsigned int mLinksUsed = 0;
 };
 
 } // namespace game

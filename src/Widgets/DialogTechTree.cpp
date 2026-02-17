@@ -209,10 +209,14 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
     int btnX = upgradesX0;
     int btnY = upgradesY0;
+    int linkX = upgradesX0;
+    int linkY = upgradesY0;
     ButtonTechUpgrade * btnUpgrade = nullptr;
+    sgl::sgui::Image * link = nullptr;
 
     // clear panel
     ClearButtonsUpgrade();
+    mLinksUsed = 0;
 
     // populate panel
     if(section == SEC_STRUCTURES)
@@ -220,6 +224,20 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // COL 0
         btnUpgrade = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_1, 1, true, false);
         btnUpgrade->SetPosition(btnX, btnY);
+
+        link = GetNewLink(ID_DLG_TECHT_LINK_VS);
+        btnUpgrade->AddLink(link);
+
+        linkX = btnX + (btnUpgrade->GetWidth() - link->GetWidth()) / 2;
+        linkY = btnY - link->GetHeight();
+        link->SetPosition(linkX, linkY);
+
+        link = GetNewLink(ID_DLG_TECHT_LINK_HS);
+        btnUpgrade->AddLink(link);
+
+        linkX = btnX + btnUpgrade->GetWidth();
+        linkY = btnY + (btnUpgrade->GetHeight() - link->GetHeight()) / 2;
+        link->SetPosition(linkX, linkY);
 
         btnY -= btnUpgrade->GetHeight() + buttonsMarginV;
 
@@ -274,6 +292,7 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
         btn = mButtonsUpgrade[mButtonsUpgradeUsed];
         btn->SetUpgrade(upgrade);
         btn->SetVisible(true);
+        btn->ClearLinks();
     }
     else
     {
@@ -288,6 +307,29 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
     ++mButtonsUpgradeUsed;
 
     return btn;
+}
+
+sgl::sgui::Image *DialogTechTree::GetNewLink(unsigned int texID)
+{
+    auto tm = sgl::graphic::TextureManager::Instance();
+
+    sgl::sgui::Image * link;
+
+    if(mLinksUsed < mButtonUpgradeLinks.size())
+        link = mButtonUpgradeLinks[mLinksUsed];
+    else
+    {
+        link = new sgl::sgui::Image(this);
+        mButtonUpgradeLinks.emplace_back(link);
+    }
+
+    auto tex = tm->GetSprite(SpriteFileDialogTechTree, texID);
+    link->SetTexture(tex);
+
+    ++mLinksUsed;
+
+    return link;
+
 }
 
 } // namespace game

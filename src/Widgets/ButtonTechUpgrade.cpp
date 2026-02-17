@@ -12,7 +12,12 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/Image.h>
-#include <sgl/sgui/Label.h>
+
+namespace
+{
+    constexpr unsigned int colorLink = 0xc2d6d6cc;
+    constexpr unsigned int colorLinkUnlocked = 0xa3f5b1cc;
+}
 
 namespace game
 {
@@ -156,6 +161,21 @@ void ButtonTechUpgrade::SetUnlocked(bool unlocked)
     UpdateGraphics(GetState());
 }
 
+void ButtonTechUpgrade::ClearLinks()
+{
+    mLinks.clear();
+}
+
+void ButtonTechUpgrade::AddLink(sgl::sgui::Image * link)
+{
+    mLinks.emplace_back(link);
+
+    if(mUnlocked)
+        link->SetColor(colorLinkUnlocked);
+    else
+        link->SetColor(colorLink);
+}
+
 void ButtonTechUpgrade::HandleMouseOver()
 {
     sgl::sgui::AbstractButton::HandleMouseOver();
@@ -196,6 +216,10 @@ void ButtonTechUpgrade::UpdateGraphics(sgl::sgui::AbstractButton::VisualState st
         // level
         if(mLevel > 0)
             UpdateColorsLevel();
+
+        // links
+        for(auto l : mLinks)
+            l->SetColor(colorLinkUnlocked);
 
         return ;
     }
@@ -246,6 +270,10 @@ void ButtonTechUpgrade::UpdateGraphics(sgl::sgui::AbstractButton::VisualState st
             UpdateColorsLevel();
         }
     }
+
+    // links
+    for(auto l : mLinks)
+        l->SetColor(colorLink);
 }
 
 void ButtonTechUpgrade::UpdateColorsIcon()
@@ -301,6 +329,7 @@ void ButtonTechUpgrade::UpdateColorsLevel()
         mLabelLevel->SetColor(colorLevel);
     }
 }
+
 void ButtonTechUpgrade::HandlePositionChanged()
 {
     sgl::sgui::AbstractButton::HandlePositionChanged();
