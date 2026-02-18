@@ -74,6 +74,7 @@ private:
 
     void ClearButtonsUpgrade();
     ButtonTechUpgrade * GetNewButtonUpgrade(TechUpgradeId upgrade, int level,
+                                            ButtonTechUpgrade * enabler,
                                             bool enabled, bool unlocked);
 
     void ClearLinks();

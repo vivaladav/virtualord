@@ -39,6 +39,9 @@ public:
     void ClearLinks();
     void AddLink(sgl::sgui::Image * link);
 
+    void ClearButtonsToEnable();
+    void AddButtonToEnable(ButtonTechUpgrade * b);
+
     void SetOnMouseOver(const std::function<void()> & f);
     void SetOnMouseOut(const std::function<void()> & f);
 
@@ -62,6 +65,7 @@ private:
     std::array<sgl::graphic::Texture *, sgl::sgui::AbstractButton::NUM_VISUAL_STATES> mTexs;
     std::unordered_map<TechUpgradeId, unsigned int> mIconsIds;
     std::vector<sgl::sgui::Image *> mLinks;
+    std::vector<ButtonTechUpgrade *> mButtonsToEnable;
 
     std::function<void()> mFuncOnMouseOver;
     std::function<void()> mFuncOnMouseOut;
@@ -83,6 +87,12 @@ private:
 inline TechUpgradeId ButtonTechUpgrade::GetUpgrade() const { return mUpgrade; }
 
 inline unsigned int ButtonTechUpgrade::GetLevel() const { return mLevel; }
+
+inline void ButtonTechUpgrade::ClearButtonsToEnable() { mButtonsToEnable.clear(); }
+inline void ButtonTechUpgrade::AddButtonToEnable(ButtonTechUpgrade * b)
+{
+    mButtonsToEnable.emplace_back(b);
+}
 
 inline void ButtonTechUpgrade::SetOnMouseOver(const std::function<void()> & f)
 {

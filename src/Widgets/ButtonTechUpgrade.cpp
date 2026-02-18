@@ -161,6 +161,13 @@ void ButtonTechUpgrade::SetUnlocked(bool unlocked)
 
     mUnlocked = unlocked;
 
+    // enable connected buttons
+    if(unlocked)
+    {
+        for(auto b : mButtonsToEnable)
+            b->SetEnabled(true);
+    }
+
     SetCheckable(!mUnlocked);
 
     UpdateGraphics(GetState());
