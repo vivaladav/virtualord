@@ -20,8 +20,8 @@ private:
     void SetImage();
 
 private:
-    int mOutputEnergy = 0;
-    int mOutputMaterial = 0;
+    float mOutputEnergy = 0.f;
+    float mOutputMaterial = 0.f;
 };
 
 } // namespace game

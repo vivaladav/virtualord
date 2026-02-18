@@ -4,11 +4,14 @@
 #include "GameData.h"
 #include "GameMap.h"
 #include "IsoObject.h"
+#include "Player.h"
 #include "Particles/DataParticleOutput.h"
 #include "Particles/UpdaterOutput.h"
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
+
+#include <cmath>
 
 namespace game
 {
@@ -50,10 +53,12 @@ void Base::OnNewTurn(PlayerFaction faction)
     const float y12 = isoObj->GetY();
     const float y3 = isoObj->GetY() - margin3;
 
-    const DataParticleOutput pd1(mOutputEnergy, OT_ENERGY, x1, y12);
+    const int energy = GetResourceProduction(ER_ENERGY);
+    const DataParticleOutput pd1(energy, OT_ENERGY, x1, y12);
     pu->AddParticle(pd1);
 
-    const DataParticleOutput pd2(mOutputMaterial, OT_MATERIAL, x2, y12);
+    const int material = GetResourceProduction(ER_MATERIAL);
+    const DataParticleOutput pd2(material, OT_MATERIAL, x2, y12);
     pu->AddParticle(pd2);
 
     const int money = GetResourceProduction(ER_MONEY);
@@ -63,12 +68,19 @@ void Base::OnNewTurn(PlayerFaction faction)
 
 int Base::GetResourceProduction(ExtendedResource res) const
 {
+    auto p = GetOwner();
+
+    if(p == nullptr)
+        return 0;
+
+    const float mult = p->GetBaseProductionMult();
+
     if(res == ER_ENERGY)
-        return mOutputEnergy;
+        return std::roundf(mult * mOutputEnergy);
     else if(res == ER_MATERIAL)
-        return mOutputMaterial;
+        return std::roundf(mult * mOutputMaterial);
     else if(res == ER_MONEY)
-        return GetGameMap()->GetFactionMoneyPerTurn(GetFaction());
+        return std::roundf(mult * GetGameMap()->GetFactionMoneyPerTurn(GetFaction()));
     else
         return 0;
 }

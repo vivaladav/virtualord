@@ -394,12 +394,50 @@ void Player::ClearUpgrades()
         it.second = false;
 }
 
-void Player::SetUpgradeUnlocked(TechUpgradeId upgrade, bool unlocked)
+void Player::SetUpgradeUnlocked(TechUpgradeId upgrade)
 {
     auto it = mUpgrades.find(upgrade);
 
-    if(it != mUpgrades.end())
-        it->second = unlocked;
+    if(it == mUpgrades.end())
+        return ;
+
+    it->second = true;
+
+    switch(upgrade)
+    {
+        case TECH_UP_BASE_IMPROVE_1:
+        {
+            mBaseProdMult *= 1.05f;
+        }
+        break;
+
+        case TECH_UP_BASE_IMPROVE_2:
+        {
+            mBaseProdMult *= 1.10f;
+        }
+        break;
+
+        case TECH_UP_BASE_IMPROVE_3:
+        {
+            mBaseProdMult *= 1.15f;
+        }
+        break;
+
+        case TECH_UP_BASE_IMPROVE_4:
+        {
+            mBaseProdMult *= 1.20f;
+        }
+        break;
+
+        case TECH_UP_BASE_IMPROVE_5:
+        {
+            mBaseProdMult *= 1.25f;
+        }
+        break;
+
+        default:
+        break;
+    }
 }
 
 void Player::OnNewTurn()

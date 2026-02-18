@@ -136,7 +136,9 @@ public:
     // -- upgrades --
     void ClearUpgrades();
     bool IsUpgradeUnlocked(TechUpgradeId upgrade) const;
-    void SetUpgradeUnlocked(TechUpgradeId upgrade, bool unlocked);
+    void SetUpgradeUnlocked(TechUpgradeId upgrade);
+
+    float GetBaseProductionMult() const;
 
     // -- TURN --
     void OnNewTurn();
@@ -200,6 +202,9 @@ private:
 
     int mNumCells = 0;
     unsigned int mMaxUnits = 0;
+
+    // -- upgrades --
+    float mBaseProdMult = 1.f;
 };
 
 inline PlayerFaction Player::GetFaction() const { return mFaction; }
@@ -305,6 +310,8 @@ inline bool Player::IsUpgradeUnlocked(TechUpgradeId upgrade) const
     else
         return false;
 }
+
+inline float Player::GetBaseProductionMult() const { return mBaseProdMult; }
 
 inline float Player::GetTurnEnergy() const { return mTurnEnergy; }
 inline float Player::GetTurnMaxEnergy() const { return mTurnMaxEnergy; }

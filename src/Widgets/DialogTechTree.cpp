@@ -333,7 +333,7 @@ DialogTechTree::DialogTechTree(Player * player)
 
         if(it != mCosts.end())
         {
-            mPlayer->SetUpgradeUnlocked(upgrade, true);
+            mPlayer->SetUpgradeUnlocked(upgrade);
 
             const int cost = it->second;
             mPlayer->SumResource(Player::RESEARCH, -cost);
