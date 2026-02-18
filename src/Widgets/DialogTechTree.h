@@ -23,6 +23,7 @@ namespace game
 {
 
 class ButtonTechUpgrade;
+class Game;
 class Player;
 class Screen;
 
@@ -31,7 +32,7 @@ enum TechUpgradeId : unsigned int;
 class DialogTechTree : public sgl::sgui::Widget
 {
 public:
-    DialogTechTree(Player * player);
+    DialogTechTree(Game * game, Player * player);
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
@@ -74,8 +75,8 @@ private:
 
     void ClearButtonsUpgrade();
     ButtonTechUpgrade * GetNewButtonUpgrade(TechUpgradeId upgrade, int level,
-                                            ButtonTechUpgrade * enabler,
-                                            bool enabled, bool unlocked);
+                                            const std::vector<ButtonTechUpgrade *> & enablers,
+                                            bool enabled);
 
     void ClearLinks();
     sgl::sgui::Image * GetNewLink(unsigned int texID);
@@ -101,6 +102,7 @@ private:
 
     sgl::sgui::AbstractButton * mBtnUnlock = nullptr;
 
+    Game * mGame = nullptr;
     Player * mPlayer = nullptr;
 
     unsigned int mButtonsUpgradeUsed = 0;
