@@ -207,7 +207,12 @@ void ButtonTechUpgrade::HandleMouseOut()
 
 void ButtonTechUpgrade::HandleButtonDown()
 {
+    // do not react when unlocked
+    if(mUnlocked)
+        return ;
+
     sgl::sgui::AbstractButton::HandleButtonDown();
+
 
     auto player = sgl::media::AudioManager::Instance()->GetPlayer();
     player->PlaySound("UI/button_click-03.ogg");
