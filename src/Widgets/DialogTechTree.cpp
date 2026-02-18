@@ -401,7 +401,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
     {
         // -- COL 0 --
         // [0, 0]
-        auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_1, 1, true, false);
+        auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_1, 1, nullptr, true, false);
         btnUpgrade00->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade00, LINK_VERT, LS_NORTH);
@@ -410,56 +410,46 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         btnY -= btnUpgrade00->GetHeight() + buttonsMarginV;
 
         // [1, 0]
-        auto btnUpgrade10 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_2, 2, false, false);
+        auto btnUpgrade10 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_2, 2, btnUpgrade00, false, false);
         btnUpgrade10->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade10, LINK_VERT, LS_NORTH);
 
-        btnUpgrade00->AddButtonToEnable(btnUpgrade10);
-
         btnY -= btnUpgrade10->GetHeight() + buttonsMarginV;
 
         // [2, 0]
-        auto btnUpgrade20 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_3, 3, false, false);
+        auto btnUpgrade20 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_3, 3, btnUpgrade10, false, false);
         btnUpgrade20->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade20, LINK_VERT, LS_NORTH);
 
-        btnUpgrade10->AddButtonToEnable(btnUpgrade20);
-
         btnY -= btnUpgrade20->GetHeight() + buttonsMarginV;
 
         // [3, 0]
-        auto btnUpgrade30 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_4, 4, false, false);
+        auto btnUpgrade30 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_4, 4, btnUpgrade20, false, false);
         btnUpgrade30->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade30, LINK_VERT, LS_NORTH);
 
-        btnUpgrade20->AddButtonToEnable(btnUpgrade30);
-
         btnY -= btnUpgrade30->GetHeight() + buttonsMarginV;
 
         // [4, 0]
-        auto btnUpgrade40 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_5, 5, false, false);
+        auto btnUpgrade40 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_5, 5, btnUpgrade30, false, false);
         btnUpgrade40->SetPosition(btnX, btnY);
-
-        btnUpgrade30->AddButtonToEnable(btnUpgrade40);
 
         // -- COL 1 --
         // [0, 1]
         btnX += btnUpgrade00->GetWidth() + buttonsMarginH;
         btnY = upgradesY0;
 
-        auto btnUpgrade01 = GetNewButtonUpgrade(TECH_UP_NULL, 0, false, false);
+        auto btnUpgrade01 = GetNewButtonUpgrade(TECH_UP_NULL, 0, btnUpgrade00, false, false);
         btnUpgrade01->SetPosition(btnX, btnY);
-
-        btnUpgrade00->AddButtonToEnable(btnUpgrade01);
     }
     else
     {
         // -- COL 0 --
         // [0, 0]
-        auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_NULL, 0, false, false);
+        auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_NULL, 0, nullptr, false, false);
         btnUpgrade00->SetPosition(btnX, btnY);
     }
 }
