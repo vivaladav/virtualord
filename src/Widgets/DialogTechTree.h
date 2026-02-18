@@ -6,6 +6,11 @@
 #include <string>
 #include <vector>
 
+namespace
+{
+    class ButtonUnlock;
+}
+
 namespace sgl
 {
     namespace graphic { class Image; }
@@ -99,8 +104,9 @@ private:
     sgl::sgui::ButtonsGroup * mButtonsSection = nullptr;
 
     sgl::sgui::Label * mLabelDescription = nullptr;
+    sgl::sgui::Label * mLabelUnlocked = nullptr;
 
-    sgl::sgui::AbstractButton * mBtnUnlock = nullptr;
+    ButtonUnlock * mBtnUnlock = nullptr;
 
     Player * mPlayer = nullptr;
 

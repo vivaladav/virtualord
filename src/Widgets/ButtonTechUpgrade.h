@@ -34,6 +34,7 @@ public:
     unsigned int GetLevel() const;
     void SetLevel(unsigned int lvl);
 
+    bool IsUnlocked() const;
     void SetUnlocked(bool unlocked);
 
     void ClearLinks();
@@ -87,6 +88,8 @@ private:
 inline TechUpgradeId ButtonTechUpgrade::GetUpgrade() const { return mUpgrade; }
 
 inline unsigned int ButtonTechUpgrade::GetLevel() const { return mLevel; }
+
+inline bool ButtonTechUpgrade::IsUnlocked() const { return mUnlocked; }
 
 inline void ButtonTechUpgrade::ClearButtonsToEnable() { mButtonsToEnable.clear(); }
 inline void ButtonTechUpgrade::AddButtonToEnable(ButtonTechUpgrade * b)

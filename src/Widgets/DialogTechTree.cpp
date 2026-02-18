@@ -114,6 +114,7 @@ public:
         UpdatePositions();
     }
 
+    void ClearUpgradeToUnlock() { mUpgradeToUnlock = nullptr; }
     ButtonTechUpgrade * GetUpgradeToUnlock() const { return mUpgradeToUnlock; }
     void SetUpgradeToUnlock(ButtonTechUpgrade * btn) { mUpgradeToUnlock = btn; }
 
@@ -326,7 +327,7 @@ DialogTechTree::DialogTechTree(Player * player)
 
     mBtnUnlock->AddOnClickFunction([this]
     {
-        auto btn = static_cast<ButtonUnlock *>(mBtnUnlock)->GetUpgradeToUnlock();
+        auto btn = mBtnUnlock->GetUpgradeToUnlock();
 
         const TechUpgradeId upgrade = btn->GetUpgrade();
         auto it = mCosts.find(upgrade);
@@ -342,9 +343,19 @@ DialogTechTree::DialogTechTree(Player * player)
             btn->ClearButtonsToEnable();
 
             mBtnUnlock->SetVisible(false);
+            mBtnUnlock->ClearUpgradeToUnlock();
+
             mLabelDescription->SetVisible(false);
         }
     });
+
+    // UNLOCKED
+    mLabelUnlocked = new sgui::Label(sm->GetCString("UPGRADE_UNLOCKED"), fontDesc, this);
+    mLabelUnlocked->SetColor(WidgetsConstants::colorDialogGood);
+    mLabelUnlocked->SetVisible(false);
+
+    const int labelX = w - marginSide - mLabelUnlocked->GetWidth();
+    mLabelUnlocked->SetPosition(labelX, descY);
 
     // show first panel
     UpdateUpgrades(SEC_STRUCTURES);
@@ -396,6 +407,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
     ClearLinks();
     mLabelDescription->SetVisible(false);
     mBtnUnlock->SetVisible(false);
+    mBtnUnlock->ClearUpgradeToUnlock();
 
     // populate panel
     if(section == SEC_STRUCTURES)
@@ -492,38 +504,65 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
 
         btn->SetOnMouseOver([this, btn]
         {
+            // do nothing if button UNLOCK is visible as 1 upgrade is selected
+            if(mBtnUnlock->IsVisible())
+                return ;
+
             const TechUpgradeId upgrade = btn->GetUpgrade();
 
             mLabelDescription->SetVisible(true);
             SetDescription(upgrade);
+
+            if(btn->IsUnlocked())
+                mLabelUnlocked->SetVisible(true);
         });
 
         btn->SetOnMouseOut([this, btn]
         {
+            // do nothing if button UNLOCK is visible as 1 upgrade is selected
+            if(mBtnUnlock->IsVisible())
+                return ;
+
             if(!btn->IsChecked())
                 mLabelDescription->SetVisible(false);
+
+            if(btn->IsUnlocked())
+                mLabelUnlocked->SetVisible(false);
         });
 
         btn->AddOnToggleFunction([this, btn](bool checked)
         {
-            mBtnUnlock->SetVisible(checked);
-
-            if(checked)
+            if(!checked)
             {
-                const TechUpgradeId upgrade = btn->GetUpgrade();
-                auto it = mCosts.find(upgrade);
+                mBtnUnlock->ClearUpgradeToUnlock();
+                mBtnUnlock->SetVisible(false);
 
-                if(it != mCosts.end())
-                {
-                    const int cost = it->second;
+                return ;
+            }
 
-                    auto b = static_cast<ButtonUnlock *>(mBtnUnlock);
+            const TechUpgradeId upgrade = btn->GetUpgrade();
 
-                    b->SetCost(cost);
-                    b->SetUpgradeToUnlock(btn);
+            // uncheck previous button upgrade
+            auto currentBtnUpgrade = mBtnUnlock->GetUpgradeToUnlock();
 
-                    b->SetEnabled(mPlayer->HasEnough(Player::RESEARCH, cost));
-                }
+            if(currentBtnUpgrade != nullptr)
+            {
+                currentBtnUpgrade->SetChecked(false);
+
+                SetDescription(upgrade);
+            }
+
+            // update button unlock
+            auto it = mCosts.find(upgrade);
+
+            if(it != mCosts.end())
+            {
+                const int cost = it->second;
+
+                mBtnUnlock->SetVisible(true);
+                mBtnUnlock->SetCost(cost);
+                mBtnUnlock->SetUpgradeToUnlock(btn);
+                mBtnUnlock->SetEnabled(mPlayer->HasEnough(Player::RESEARCH, cost));
             }
         });
     }
