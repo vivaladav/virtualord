@@ -465,6 +465,7 @@ void DialogTechTree::ClearButtonsUpgrade()
     for(auto btn : mButtonsUpgrade)
     {
         btn->SetVisible(false);
+        btn->SetChecked(false);
         btn->ClearLinks();
         btn->ClearButtonsToEnable();
     }
