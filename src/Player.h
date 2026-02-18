@@ -5,6 +5,7 @@
 
 #include <functional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace game
@@ -20,6 +21,7 @@ class Unit;
 enum ExtendedResource : unsigned int;
 enum ResourceType : unsigned int;
 enum PlayerFaction : unsigned int;
+enum TechUpgradeId : unsigned int;
 
 class Player
 {
@@ -131,6 +133,11 @@ public:
 
     void HandleCollectable(GameObject * collected, GameObject * collector);
 
+    // -- upgrades --
+    void ClearUpgrades();
+    bool IsUpgradeUnlocked(TechUpgradeId upgrade) const;
+    void SetUpgradeUnlocked(TechUpgradeId upgrade, bool unlocked);
+
     // -- TURN --
     void OnNewTurn();
     float GetTurnEnergy() const;
@@ -153,6 +160,8 @@ private:
     void NotifyResourcesChanged();
 
 private:
+    std::unordered_map<TechUpgradeId, bool> mUpgrades;
+
     std::vector<Unit *> mUnits;
     std::vector<Structure *> mStructures;
     std::vector<ResourceGenerator *> mResGenerators;
@@ -286,6 +295,16 @@ inline const std::vector<GameObjectTypeId> & Player::GetAvailableMiniUnits() con
 
 inline GameObject * Player::GetSelectedObject() const { return mSelObj; }
 inline bool Player::HasSelectedObject() const { return mSelObj != nullptr; }
+
+inline bool Player::IsUpgradeUnlocked(TechUpgradeId upgrade) const
+{
+    auto it = mUpgrades.find(upgrade);
+
+    if(it != mUpgrades.end())
+        return it->second;
+    else
+        return false;
+}
 
 inline float Player::GetTurnEnergy() const { return mTurnEnergy; }
 inline float Player::GetTurnMaxEnergy() const { return mTurnMaxEnergy; }

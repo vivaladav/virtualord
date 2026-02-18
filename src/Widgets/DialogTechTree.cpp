@@ -1,6 +1,5 @@
 #include "Widgets/DialogTechTree.h"
 
-#include "Game.h"
 #include "GameConstants.h"
 #include "Player.h"
 #include "Widgets/ButtonDialogClose.h"
@@ -202,9 +201,8 @@ namespace game
 const int marginSide = 40;
 const int marginButtonsB = 20;
 
-DialogTechTree::DialogTechTree(Game * game, Player * player)
-    : mGame(game)
-    , mPlayer(player)
+DialogTechTree::DialogTechTree(Player * player)
+    : mPlayer(player)
 {
     using namespace sgl;
 
@@ -335,7 +333,7 @@ DialogTechTree::DialogTechTree(Game * game, Player * player)
 
         if(it != mCosts.end())
         {
-            mGame->SetUpgradeUnlocked(upgrade, true);
+            mPlayer->SetUpgradeUnlocked(upgrade, true);
 
             const int cost = it->second;
             mPlayer->SumResource(Player::RESEARCH, -cost);
@@ -529,7 +527,7 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
         });
     }
 
-    const bool unlocked = mGame->IsUpgradeUnlocked(upgrade);
+    const bool unlocked = mPlayer->IsUpgradeUnlocked(upgrade);
 
     if(!unlocked)
     {
@@ -539,7 +537,7 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
 
             // enable if enabler is unlocked
             const TechUpgradeId enablerUpgrade = e->GetUpgrade();
-            enabled |= mGame->IsUpgradeUnlocked(enablerUpgrade);
+            enabled |= mPlayer->IsUpgradeUnlocked(enablerUpgrade);
         }
     }
 

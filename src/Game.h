@@ -43,7 +43,6 @@ enum Planets : unsigned int;
 enum PlayerFaction : unsigned int;
 enum ResourceType : unsigned int;
 enum StateId : int;
-enum TechUpgradeId : unsigned int;
 
 enum Difficulty : unsigned int
 {
@@ -92,11 +91,6 @@ public:
 
     MapsRegistry * GetMapsRegistry() const;
     const ObjectsDataRegistry * GetObjectsRegistry() const;
-
-    // -- upgrades --
-    void ClearUpgrades();
-    bool IsUpgradeUnlocked(TechUpgradeId upgrade) const;
-    void SetUpgradeUnlocked(TechUpgradeId upgrade, bool unlocked);
 
     // -- players --
     Player * AddPlayer(const char * name, int pid);
@@ -148,8 +142,6 @@ private:
     std::map<unsigned int, std::function<void()>> mOnSettingsChanged;
 
     std::unordered_map<GameCursorId, sgl::graphic::Cursor *> mCursors;
-
-    std::unordered_map<TechUpgradeId, bool> mUpgrades;
 
     sgl::graphic::Renderer * mRenderer = nullptr;
     sgl::graphic::Window * mWin = nullptr;
@@ -212,22 +204,6 @@ inline void Game::SetDifficulty(Difficulty level) { mDiff = level; }
 
 inline MapsRegistry * Game::GetMapsRegistry() const { return mMapsReg; }
 inline const ObjectsDataRegistry * Game::GetObjectsRegistry() const { return mObjsRegistry; }
-
-inline void Game::ClearUpgrades()
-{
-    for(auto it : mUpgrades)
-        it.second = false;
-}
-
-inline bool Game::IsUpgradeUnlocked(TechUpgradeId upgrade) const
-{
-    return mUpgrades.at(upgrade);
-}
-
-inline void Game::SetUpgradeUnlocked(TechUpgradeId upgrade, bool unlocked)
-{
-    mUpgrades[upgrade] = unlocked;
-}
 
 inline int Game::GetNumPlayers() const { return mPlayers.size(); }
 

@@ -32,7 +32,7 @@ enum TechUpgradeId : unsigned int;
 class DialogTechTree : public sgl::sgui::Widget
 {
 public:
-    DialogTechTree(Game * game, Player * player);
+    DialogTechTree(Player * player);
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
@@ -102,7 +102,6 @@ private:
 
     sgl::sgui::AbstractButton * mBtnUnlock = nullptr;
 
-    Game * mGame = nullptr;
     Player * mPlayer = nullptr;
 
     unsigned int mButtonsUpgradeUsed = 0;

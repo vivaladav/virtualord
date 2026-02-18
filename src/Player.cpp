@@ -50,6 +50,14 @@ Player::Player(const char * name, int pid)
     mStats[Stat::MATERIAL].SetMax(500);
     mStats[Stat::MONEY].SetMax(99999999);
     mStats[Stat::RESEARCH].SetMax(999999);
+
+    // -- UPGRADES --
+    mUpgrades.emplace(TECH_UP_NULL, false);
+    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_1, false);
+    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_2, false);
+    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_3, false);
+    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, false);
+    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, false);
 }
 
 Player::~Player()
@@ -380,6 +388,19 @@ void Player::HandleCollectable(GameObject * collected, GameObject * collector)
     static_cast<Collectable *>(collected)->Collected(this);
 }
 
+void Player::ClearUpgrades()
+{
+    for(auto it : mUpgrades)
+        it.second = false;
+}
+
+void Player::SetUpgradeUnlocked(TechUpgradeId upgrade, bool unlocked)
+{
+    auto it = mUpgrades.find(upgrade);
+
+    if(it != mUpgrades.end())
+        it->second = unlocked;
+}
 
 void Player::OnNewTurn()
 {

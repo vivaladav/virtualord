@@ -180,21 +180,12 @@ void Game::InitGameData()
     mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", NO_FACTION, TER_ST_UNREACHABLE);
     mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", NO_FACTION, TER_ST_UNREACHABLE);
     mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
-
-    // -- UPGRADES --
-    mUpgrades.emplace(TECH_UP_NULL, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_1, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_2, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_3, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, false);
 }
 
 void Game::ClearGameData()
 {
     mMapsReg->ClearData();
     ClearPlayers();
-    ClearUpgrades();
 }
 
 // -- mouse cursors --
