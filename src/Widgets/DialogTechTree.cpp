@@ -334,11 +334,14 @@ DialogTechTree::DialogTechTree(Player * player)
 
         if(it != mCosts.end())
         {
+            // unlock upgrade
             mPlayer->SetUpgradeUnlocked(upgrade);
 
+            // pay cost
             const int cost = it->second;
             mPlayer->SumResource(Player::RESEARCH, -cost);
 
+            // update dialog
             btn->SetUnlocked(true);
             btn->ClearButtonsToEnable();
 
@@ -346,6 +349,10 @@ DialogTechTree::DialogTechTree(Player * player)
             mBtnUnlock->ClearUpgradeToUnlock();
 
             mLabelDescription->SetVisible(false);
+
+            // play SFX
+            auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
+            ap->PlaySound("game/upgrade_unlocked-01.ogg");
         }
     });
 
