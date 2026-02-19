@@ -39,8 +39,6 @@ ScreenNewGame::ScreenNewGame(Game * game)
     p->AddAvailableStructure(ObjectData::TYPE_DEFENSIVE_TOWER);
     p->AddAvailableStructure(ObjectData::TYPE_HOSPITAL);
     p->AddAvailableStructure(ObjectData::TYPE_PRACTICE_TARGET);
-    p->AddAvailableStructure(ObjectData::TYPE_RADAR_STATION);
-    p->AddAvailableStructure(ObjectData::TYPE_RADAR_TOWER);
     p->AddAvailableStructure(ObjectData::TYPE_RESEARCH_CENTER);
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR);
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT);

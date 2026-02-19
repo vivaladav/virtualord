@@ -99,6 +99,8 @@ DialogTechTree::DialogTechTree(Player * player)
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_3, "UPG_BASE_IMP3");
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_4, "UPG_BASE_IMP4");
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_5, "UPG_BASE_IMP5");
+    mDescriptions.emplace(TECH_UP_RADAR_STATION, "UPG_RADAR_STATION");
+    mDescriptions.emplace(TECH_UP_RADAR_TOWER, "UPG_RADAR_TOWER");
 
     // INIT COSTS
     mCosts.emplace(TECH_UP_NULL, 0);
@@ -107,6 +109,8 @@ DialogTechTree::DialogTechTree(Player * player)
     mCosts.emplace(TECH_UP_BASE_IMPROVE_3, 1250);
     mCosts.emplace(TECH_UP_BASE_IMPROVE_4, 3000);
     mCosts.emplace(TECH_UP_BASE_IMPROVE_5, 4000);
+    mCosts.emplace(TECH_UP_RADAR_STATION, 500);
+    mCosts.emplace(TECH_UP_RADAR_TOWER, 400);
 
     // -- BACKGROUND --
     const int w = 1900;
@@ -343,9 +347,19 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         btnX += btnUpgrade00->GetWidth() + buttonsMarginH;
         btnY = upgradesY0;
 
-        auto btnUpgrade01 = GetNewButtonUpgrade(TECH_UP_NULL, 0,
+        auto btnUpgrade01 = GetNewButtonUpgrade(TECH_UP_RADAR_STATION, 0,
                                                 { btnUpgrade00 }, false);
         btnUpgrade01->SetPosition(btnX, btnY);
+
+        AddLinkToUpgrade(btnUpgrade01, LINK_VERT, LS_NORTH);
+
+        btnY -= btnUpgrade01->GetHeight() + buttonsMarginV;
+
+        // [1, 1]
+        auto btnUpgrade11 = GetNewButtonUpgrade(TECH_UP_RADAR_TOWER, 0,
+                                                { btnUpgrade01 }, false);
+
+        btnUpgrade11->SetPosition(btnX, btnY);
     }
     else
     {

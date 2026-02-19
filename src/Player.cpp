@@ -406,33 +406,31 @@ void Player::SetUpgradeUnlocked(TechUpgradeId upgrade)
     switch(upgrade)
     {
         case TECH_UP_BASE_IMPROVE_1:
-        {
             mBaseProdMult *= 1.05f;
-        }
         break;
 
         case TECH_UP_BASE_IMPROVE_2:
-        {
             mBaseProdMult *= 1.10f;
-        }
         break;
 
         case TECH_UP_BASE_IMPROVE_3:
-        {
             mBaseProdMult *= 1.15f;
-        }
         break;
 
         case TECH_UP_BASE_IMPROVE_4:
-        {
             mBaseProdMult *= 1.20f;
-        }
         break;
 
         case TECH_UP_BASE_IMPROVE_5:
-        {
             mBaseProdMult *= 1.25f;
-        }
+        break;
+
+        case TECH_UP_RADAR_STATION:
+            AddAvailableStructure(ObjectData::TYPE_RADAR_STATION);
+        break;
+
+        case TECH_UP_RADAR_TOWER:
+            AddAvailableStructure(ObjectData::TYPE_RADAR_TOWER);
         break;
 
         default:
