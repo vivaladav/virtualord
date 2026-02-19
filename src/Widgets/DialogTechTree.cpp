@@ -216,7 +216,7 @@ DialogTechTree::DialogTechTree(Player * player)
         if(it != mCosts.end())
         {
             // unlock upgrade
-            mPlayer->SetUpgradeUnlocked(upgrade);
+            mPlayer->UnlockUpgrade(upgrade);
 
             // pay cost
             const int cost = it->second;

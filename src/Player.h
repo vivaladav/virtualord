@@ -136,7 +136,7 @@ public:
     // -- upgrades --
     void ClearUpgrades();
     bool IsUpgradeUnlocked(TechUpgradeId upgrade) const;
-    void SetUpgradeUnlocked(TechUpgradeId upgrade);
+    void UnlockUpgrade(TechUpgradeId upgrade);
 
     float GetBaseProductionMult() const;
 

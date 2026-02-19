@@ -392,7 +392,7 @@ void Player::ClearUpgrades()
         it.second = false;
 }
 
-void Player::SetUpgradeUnlocked(TechUpgradeId upgrade)
+void Player::UnlockUpgrade(TechUpgradeId upgrade)
 {
     auto it = mUpgrades.find(upgrade);
 
