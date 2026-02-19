@@ -52,12 +52,10 @@ Player::Player(const char * name, int pid)
     mStats[Stat::RESEARCH].SetMax(999999);
 
     // -- UPGRADES --
+    for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
+        mUpgrades.emplace(static_cast<TechUpgradeId>(i), false);
+
     mUpgrades.emplace(TECH_UP_NULL, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_1, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_2, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_3, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, false);
-    mUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, false);
 }
 
 Player::~Player()
