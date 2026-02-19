@@ -1,15 +1,10 @@
 #pragma once
 
-#include <sgl/sgui/Widget.h>
+#include <sgl/sgui/ImageButton.h>
 
 #include <functional>
 #include <string>
 #include <vector>
-
-namespace
-{
-    class ButtonUnlock;
-}
 
 namespace sgl
 {
@@ -17,7 +12,6 @@ namespace sgl
 
     namespace sgui
     {
-        class AbstractButton;
         class ButtonsGroup;
         class Image;
         class Label;
@@ -27,6 +21,8 @@ namespace sgl
 namespace game
 {
 
+// ===== DIALOG TECH TREE  =====
+class ButtonUnlock;
 class ButtonTechUpgrade;
 class Game;
 class Player;
@@ -113,5 +109,40 @@ private:
     unsigned int mButtonsUpgradeUsed = 0;
     unsigned int mLinksUsed = 0;
 };
+
+// ===== BUTTON UNLOCK  =====
+class ButtonUnlock : public sgl::sgui::ImageButton
+{
+public:
+    ButtonUnlock(sgl::sgui::Widget * parent);
+
+    void SetCost(int cost);
+
+    void ClearUpgradeToUnlock();
+    ButtonTechUpgrade * GetUpgradeToUnlock() const;
+    void SetUpgradeToUnlock(ButtonTechUpgrade * btn);
+
+private:
+    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override;
+
+    void UpdateGraphics();
+
+    void HandlePositionChanged() override;
+    void UpdatePositions();
+
+    void HandleMouseOver() override;
+    void HandleButtonDown() override;
+
+private:
+    sgl::sgui::Label * mLabel = nullptr;
+    sgl::sgui::Image * mIcon = nullptr;
+
+    ButtonTechUpgrade * mUpgradeToUnlock = nullptr;
+};
+
+inline void ButtonUnlock::ClearUpgradeToUnlock() { mUpgradeToUnlock = nullptr; }
+inline ButtonTechUpgrade * ButtonUnlock::GetUpgradeToUnlock() const { return mUpgradeToUnlock; }
+inline void ButtonUnlock::SetUpgradeToUnlock(ButtonTechUpgrade * btn) { mUpgradeToUnlock = btn; }
+
 
 } // namespace game

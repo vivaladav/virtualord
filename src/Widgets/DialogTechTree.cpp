@@ -71,134 +71,11 @@ public:
     }
 };
 
-// ===== BUTTON UNLOCK  =====
-class ButtonUnlock : public sgl::sgui::ImageButton
-{
-public:
-    ButtonUnlock(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({ ID_DLG_TECHT_BTN_UNL_NORMAL, ID_DLG_TECHT_BTN_UNL_DISABLED,
-                                   ID_DLG_TECHT_BTN_UNL_OVER, ID_DLG_TECHT_BTN_UNL_PUSHED,
-                                   ID_DLG_TECHT_BTN_UNL_NORMAL },
-                                 SpriteFileDialogTechTree, parent)
-    {
-        using namespace sgl;
-
-        // LABEL
-        const int size = 18;
-
-        auto fm = graphic::FontManager::Instance();
-        auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
-
-        mLabel = new sgui::Label(fnt, this);
-
-        // ICON
-        auto tm = graphic::TextureManager::Instance();
-
-        auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_RESEARCH_24);
-        mIcon = new sgui::Image(tex, this);
-
-        // init look
-        InitState(sgui::AbstractButton::NORMAL);
-        UpdateGraphics();
-    }
-
-    void SetCost(int cost)
-    {
-        auto sm = sgl::utilities::StringManager::Instance();
-
-        std::ostringstream os;
-        os << sm->GetString("UNLOCK") << " - " << cost;
-
-        mLabel->SetText(os.str().c_str());
-
-        UpdatePositions();
-    }
-
-    void ClearUpgradeToUnlock() { mUpgradeToUnlock = nullptr; }
-    ButtonTechUpgrade * GetUpgradeToUnlock() const { return mUpgradeToUnlock; }
-    void SetUpgradeToUnlock(ButtonTechUpgrade * btn) { mUpgradeToUnlock = btn; }
-
-private:
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        sgl::sgui::ImageButton::OnStateChanged(state);
-
-        UpdateGraphics();
-    }
-
-    void UpdateGraphics()
-    {
-        const auto state = GetState();
-
-        const unsigned int colorLabel[] =
-        {
-            0xb7e1bfff,
-            0x6c9374ff,
-            0xc9e8cfff,
-            0x9fdfabff,
-            0xb7e1bfff,
-        };
-
-        mLabel->SetColor(colorLabel[state]);
-
-        const unsigned char alpha = state == sgl::sgui::AbstractButton::DISABLED ? 64 : 255;
-        mIcon->SetAlpha(alpha);
-    }
-
-    void HandlePositionChanged() override
-    {
-        sgl::sgui::ImageButton::HandlePositionChanged();
-
-        UpdatePositions();
-    }
-
-    void UpdatePositions()
-    {
-        const int spacing = 5;
-        const int contW = mLabel->GetWidth() + spacing + mIcon->GetWidth();
-
-        // LABEL
-        const int labelX = (GetWidth() - contW) / 2;
-        const int labelY = (GetHeight() - mLabel->GetHeight()) / 2;
-
-        mLabel->SetPosition(labelX, labelY);
-
-        // ICON
-        const int iconX = labelX + mLabel->GetWidth() + spacing;
-        const int iconY = (GetHeight() - mIcon->GetHeight()) / 2;
-
-        mIcon->SetPosition(iconX, iconY);
-    }
-
-    void HandleMouseOver() override
-    {
-        sgl::sgui::ImageButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-01.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::ImageButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_click-01.ogg");
-    }
-
-private:
-    sgl::sgui::Label * mLabel = nullptr;
-    sgl::sgui::Image * mIcon = nullptr;
-
-    ButtonTechUpgrade * mUpgradeToUnlock = nullptr;
-};
-
 } // namespace
 
-// ====== DIALOG TECH TREE =====
 namespace game
 {
-
+// ====== DIALOG TECH TREE =====
 const int marginSide = 40;
 const int marginButtonsB = 20;
 
@@ -678,6 +555,112 @@ void DialogTechTree::SetDescription(TechUpgradeId upgrade)
 
     if(it != mDescriptions.end())
         mLabelDescription->SetText(sm->GetCString(it->second));
+}
+
+// ===== BUTTON UNLOCK  =====
+ButtonUnlock::ButtonUnlock(sgl::sgui::Widget * parent)
+    : sgl::sgui::ImageButton({ ID_DLG_TECHT_BTN_UNL_NORMAL, ID_DLG_TECHT_BTN_UNL_DISABLED,
+                               ID_DLG_TECHT_BTN_UNL_OVER, ID_DLG_TECHT_BTN_UNL_PUSHED,
+                               ID_DLG_TECHT_BTN_UNL_NORMAL },
+                             SpriteFileDialogTechTree, parent)
+{
+    using namespace sgl;
+
+    // LABEL
+    const int size = 18;
+
+    auto fm = graphic::FontManager::Instance();
+    auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
+
+    mLabel = new sgui::Label(fnt, this);
+
+    // ICON
+    auto tm = graphic::TextureManager::Instance();
+    auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_RESEARCH_24);
+    mIcon = new sgui::Image(tex, this);
+
+    // init look
+    InitState(sgui::AbstractButton::NORMAL);
+    UpdateGraphics();
+}
+
+void ButtonUnlock::SetCost(int cost)
+{
+    auto sm = sgl::utilities::StringManager::Instance();
+
+    std::ostringstream os;
+    os << sm->GetString("UNLOCK") << " - " << cost;
+
+    mLabel->SetText(os.str().c_str());
+
+    UpdatePositions();
+}
+
+void ButtonUnlock::OnStateChanged(sgl::sgui::AbstractButton::VisualState state)
+{
+    sgl::sgui::ImageButton::OnStateChanged(state);
+
+    UpdateGraphics();
+}
+
+void ButtonUnlock::UpdateGraphics()
+{
+    const auto state = GetState();
+
+    const unsigned int colorLabel[] =
+    {
+        0xb7e1bfff,
+        0x6c9374ff,
+        0xc9e8cfff,
+        0x9fdfabff,
+        0xb7e1bfff,
+    };
+
+    mLabel->SetColor(colorLabel[state]);
+
+    const unsigned char alpha = state == sgl::sgui::AbstractButton::DISABLED ? 64 : 255;
+    mIcon->SetAlpha(alpha);
+}
+
+void ButtonUnlock::HandlePositionChanged()
+{
+    sgl::sgui::ImageButton::HandlePositionChanged();
+
+    UpdatePositions();
+}
+
+void ButtonUnlock::UpdatePositions()
+{
+    const int spacing = 5;
+    const int contW = mLabel->GetWidth() + spacing + mIcon->GetWidth();
+
+    // LABEL
+    const int labelX = (GetWidth() - contW) / 2;
+    const int labelY = (GetHeight() - mLabel->GetHeight()) / 2;
+
+    mLabel->SetPosition(labelX, labelY);
+
+    // ICON
+    const int iconX = labelX + mLabel->GetWidth() + spacing;
+    const int iconY = (GetHeight() - mIcon->GetHeight()) / 2;
+
+    mIcon->SetPosition(iconX, iconY);
+}
+
+void ButtonUnlock::HandleMouseOver()
+{
+    sgl::sgui::ImageButton::HandleMouseOver();
+
+    auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+    player->PlaySound("UI/button_over-01.ogg");
+}
+
+void ButtonUnlock::HandleButtonDown()
+{
+    sgl::sgui::ImageButton::HandleButtonDown();
+
+    auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+    player->PlaySound("UI/button_click-01.ogg");
 }
 
 } // namespace game
