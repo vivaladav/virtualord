@@ -1816,6 +1816,17 @@ bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
         else
             return false;
     }
+    else if(gt == MissionGoal::TYPE_CREATE_UNITS)
+    {
+        const unsigned int numUnits = mLocalPlayer->GetNumUnits();
+
+        if(numUnits < g.GetQuantity())
+        {
+            g.SetProgress(numUnits * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
     else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_BASE)
     {
         // check if destroyed all enemy bases
@@ -3603,6 +3614,17 @@ void ScreenGame::SetMissionRewards()
             const int multMoney = 5;
             const int money = g.GetQuantity() * multMoney;
             g.SetRewardByType(MR_MONEY, money);
+        }
+        else if(gt == MissionGoal::TYPE_CREATE_UNITS)
+        {
+            const int multMoney = 200;
+            g.SetRewardByType(MR_MONEY, g.GetQuantity() * multMoney);
+
+            const int multEnergy = 20;
+            g.SetRewardByType(MR_ENERGY, g.GetQuantity() * multEnergy);
+
+            const int multMaterial = 40;
+            g.SetRewardByType(MR_MATERIAL, g.GetQuantity() * multMaterial);
         }
         else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_BASE)
         {
