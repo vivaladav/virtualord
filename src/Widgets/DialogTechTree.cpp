@@ -133,7 +133,7 @@ private:
         const unsigned int colorLabel[] =
         {
             0xb7e1bfff,
-            0x5c7060ff,
+            0x6c9374ff,
             0xc9e8cfff,
             0x9fdfabff,
             0xb7e1bfff,
@@ -216,7 +216,7 @@ DialogTechTree::DialogTechTree(Player * player)
     const unsigned int colorLabel = 0x70a7c2ff;
 
     // INIT DESCRIPTIONS
-    mDescriptions.emplace(TECH_UP_NULL, "");
+    mDescriptions.emplace(TECH_UP_NULL, "TODO");
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_1, "UPG_BASE_IMP1");
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_2, "UPG_BASE_IMP2");
     mDescriptions.emplace(TECH_UP_BASE_IMPROVE_3, "UPG_BASE_IMP3");
