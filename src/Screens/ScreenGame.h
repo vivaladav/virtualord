@@ -217,6 +217,8 @@ private:
     std::vector<MissionGoal> mMissionGoals;
     std::vector<int> mResourcesGained;
     std::vector<unsigned int> mResourceTrackerIds;
+    int mMiniUnitsCreated = 0;
+    int mUnitsCreated = 0;
 
     CameraMapController * mCamController = nullptr;
 

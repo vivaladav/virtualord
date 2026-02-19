@@ -21,6 +21,7 @@ const std::string MissionGoal::STR_NULL;
 const std::string MissionGoal::STR_COLLECT_BLOBS("MG_COLL_BLO");
 const std::string MissionGoal::STR_COLLECT_DIAMONDS("MG_COLL_DIA");
 const std::string MissionGoal::STR_COMPLETE_TUTORIAL("MG_COMP_TUT");
+const std::string MissionGoal::STR_CREATE_MINI_UNITS("MG_CREA_MUN");
 const std::string MissionGoal::STR_CREATE_UNITS("MG_CREA_UNI");
 const std::string MissionGoal::STR_DESTROY_ENEMY_BASE("MG_DEST_BAS");
 const std::string MissionGoal::STR_DESTROY_ALL_ENEMIES("MG_DEST_ENE");
@@ -35,6 +36,7 @@ const MissionGoalType MissionGoal::TYPE_NULL = 0;
 const MissionGoalType MissionGoal::TYPE_COLLECT_BLOBS = h{}(STR_COLLECT_BLOBS);
 const MissionGoalType MissionGoal::TYPE_COLLECT_DIAMONDS = h{}(STR_COLLECT_DIAMONDS);
 const MissionGoalType MissionGoal::TYPE_COMPLETE_TUTORIAL = h{}(STR_COMPLETE_TUTORIAL);
+const MissionGoalType MissionGoal::TYPE_CREATE_MINI_UNITS = h{}(STR_CREATE_MINI_UNITS);
 const MissionGoalType MissionGoal::TYPE_CREATE_UNITS = h{}(STR_CREATE_UNITS);
 const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_BASE = h{}(STR_DESTROY_ENEMY_BASE);
 const MissionGoalType MissionGoal::TYPE_DESTROY_ALL_ENEMIES = h{}(STR_DESTROY_ALL_ENEMIES);
@@ -50,6 +52,7 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_COLLECT_BLOBS, "MG_COLLECT_BLOBS" },
     { TYPE_COLLECT_DIAMONDS, "MG_COLLECT_DIAMONDS" },
     { TYPE_COMPLETE_TUTORIAL, "MG_COMPLETE_TUTORIAL" },
+    { TYPE_CREATE_MINI_UNITS, "MG_CREATE_MINI_UNITS" },
     { TYPE_CREATE_UNITS, "MG_CREATE_UNITS" },
     { TYPE_DESTROY_ENEMY_BASE, "MG_DESTROY_ENEMY_BASE" },
     { TYPE_DESTROY_ALL_ENEMIES, "MG_DESTROY_ALL_ENEMIES" },
@@ -66,6 +69,7 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::STRINGS =
     { TYPE_COLLECT_BLOBS, STR_COLLECT_BLOBS },
     { TYPE_COLLECT_DIAMONDS, STR_COLLECT_DIAMONDS },
     { TYPE_COMPLETE_TUTORIAL, STR_COMPLETE_TUTORIAL },
+    { TYPE_CREATE_MINI_UNITS, STR_CREATE_MINI_UNITS },
     { TYPE_CREATE_UNITS, STR_CREATE_UNITS },
     { TYPE_DESTROY_ENEMY_BASE, STR_DESTROY_ENEMY_BASE },
     { TYPE_DESTROY_ALL_ENEMIES, STR_DESTROY_ALL_ENEMIES },
@@ -89,7 +93,7 @@ MissionCategory MissionGoal::GetCategory() const
 {
     if(mType == TYPE_DESTROY_ALL_ENEMIES || mType == TYPE_DESTROY_ENEMY_BASE)
         return MC_DESTRUCTION;
-    else if(mType == TYPE_CREATE_UNITS)
+    else if(mType == TYPE_CREATE_MINI_UNITS || mType == TYPE_CREATE_UNITS)
         return MC_CREATION;
     else if(mType == TYPE_RESIST_TIME)
         return MC_RESISTANCE;

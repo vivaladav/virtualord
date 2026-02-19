@@ -1816,13 +1816,20 @@ bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
         else
             return false;
     }
+    else if(gt == MissionGoal::TYPE_CREATE_MINI_UNITS)
+    {
+        if(mMiniUnitsCreated < g.GetQuantity())
+        {
+            g.SetProgress(mMiniUnitsCreated * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
     else if(gt == MissionGoal::TYPE_CREATE_UNITS)
     {
-        const unsigned int numUnits = mLocalPlayer->GetNumUnits();
-
-        if(numUnits < g.GetQuantity())
+        if(mUnitsCreated < g.GetQuantity())
         {
-            g.SetProgress(numUnits * 100 / g.GetQuantity());
+            g.SetProgress(mUnitsCreated * 100 / g.GetQuantity());
 
             return false;
         }
@@ -2012,6 +2019,9 @@ bool ScreenGame::SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, Game
 
         assert(mu != nullptr);
 
+        if(player->IsLocal())
+            ++mMiniUnitsCreated;
+
         mu->SetGroup(group);
 
         // add unit to map if cell is visible to local player
@@ -2078,6 +2088,9 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
         gen->SetCurrentAction(GameObjectActionType::IDLE);
 
         mGameMap->CreateUnit(type, cell, player);
+
+        if(player->IsLocal())
+            ++mUnitsCreated;
 
         // add unit to map if cell is visible to local player
         if(mGameMap->IsCellVisibleToLocalPlayer(cell.row, cell.col))
@@ -3614,6 +3627,17 @@ void ScreenGame::SetMissionRewards()
             const int multMoney = 5;
             const int money = g.GetQuantity() * multMoney;
             g.SetRewardByType(MR_MONEY, money);
+        }
+        else if(gt == MissionGoal::TYPE_CREATE_MINI_UNITS)
+        {
+            const int multMoney = 250;
+            g.SetRewardByType(MR_MONEY, g.GetQuantity() * multMoney);
+
+            const int multEnergy = 30;
+            g.SetRewardByType(MR_ENERGY, g.GetQuantity() * multEnergy);
+
+            const int multMaterial = 60;
+            g.SetRewardByType(MR_MATERIAL, g.GetQuantity() * multMaterial);
         }
         else if(gt == MissionGoal::TYPE_CREATE_UNITS)
         {

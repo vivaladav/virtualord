@@ -33,6 +33,7 @@ public :
     static const MissionGoalType TYPE_COLLECT_BLOBS;
     static const MissionGoalType TYPE_COLLECT_DIAMONDS;
     static const MissionGoalType TYPE_COMPLETE_TUTORIAL;
+    static const MissionGoalType TYPE_CREATE_MINI_UNITS;
     static const MissionGoalType TYPE_CREATE_UNITS;
     static const MissionGoalType TYPE_DESTROY_ENEMY_BASE;
     static const MissionGoalType TYPE_DESTROY_ALL_ENEMIES;
@@ -81,6 +82,7 @@ private:
     static const std::string STR_COLLECT_BLOBS;
     static const std::string STR_COLLECT_DIAMONDS;
     static const std::string STR_COMPLETE_TUTORIAL;
+    static const std::string STR_CREATE_MINI_UNITS;
     static const std::string STR_CREATE_UNITS;
     static const std::string STR_DESTROY_ENEMY_BASE;
     static const std::string STR_DESTROY_ALL_ENEMIES;
