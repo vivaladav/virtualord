@@ -10,41 +10,24 @@
 namespace game
 {
 
-using h = std::hash<std::string>;
-
 unsigned int MissionGoal::num = 0;
 
 const std::string MissionGoal::TAG_VALUE("%VAL%");
 
-// -- MISSION TYPE STRINGS --
-const std::string MissionGoal::STR_NULL;
-const std::string MissionGoal::STR_COLLECT_BLOBS("MG_COLL_BLO");
-const std::string MissionGoal::STR_COLLECT_DIAMONDS("MG_COLL_DIA");
-const std::string MissionGoal::STR_COMPLETE_TUTORIAL("MG_COMP_TUT");
-const std::string MissionGoal::STR_CREATE_MINI_UNITS("MG_CREA_MUN");
-const std::string MissionGoal::STR_CREATE_UNITS("MG_CREA_UNI");
-const std::string MissionGoal::STR_DESTROY_ENEMY_BASE("MG_DEST_BAS");
-const std::string MissionGoal::STR_DESTROY_ALL_ENEMIES("MG_DEST_ENE");
-const std::string MissionGoal::STR_GAIN_MONEY("MG_GAIN_MON");
-const std::string MissionGoal::STR_GEN_RESEARCH("MG_GEN_RES");
-const std::string MissionGoal::STR_MINE_ENERGY("MG_MINE_ENE");
-const std::string MissionGoal::STR_MINE_MATERIAL("MG_MINE_MAT");
-const std::string MissionGoal::STR_RESIST_TIME("MG_RESI_TIM");
-
 // -- MISSION TYPE --
 const MissionGoalType MissionGoal::TYPE_NULL = 0;
-const MissionGoalType MissionGoal::TYPE_COLLECT_BLOBS = h{}(STR_COLLECT_BLOBS);
-const MissionGoalType MissionGoal::TYPE_COLLECT_DIAMONDS = h{}(STR_COLLECT_DIAMONDS);
-const MissionGoalType MissionGoal::TYPE_COMPLETE_TUTORIAL = h{}(STR_COMPLETE_TUTORIAL);
-const MissionGoalType MissionGoal::TYPE_CREATE_MINI_UNITS = h{}(STR_CREATE_MINI_UNITS);
-const MissionGoalType MissionGoal::TYPE_CREATE_UNITS = h{}(STR_CREATE_UNITS);
-const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_BASE = h{}(STR_DESTROY_ENEMY_BASE);
-const MissionGoalType MissionGoal::TYPE_DESTROY_ALL_ENEMIES = h{}(STR_DESTROY_ALL_ENEMIES);
-const MissionGoalType MissionGoal::TYPE_GAIN_MONEY = h{}(STR_GAIN_MONEY);
-const MissionGoalType MissionGoal::TYPE_GEN_RESEARCH = h{}(STR_GEN_RESEARCH);
-const MissionGoalType MissionGoal::TYPE_MINE_ENERGY = h{}(STR_MINE_ENERGY);
-const MissionGoalType MissionGoal::TYPE_MINE_MATERIAL = h{}(STR_MINE_MATERIAL);
-const MissionGoalType MissionGoal::TYPE_RESIST_TIME = h{}(STR_RESIST_TIME);
+const MissionGoalType MissionGoal::TYPE_COLLECT_BLOBS = 8180831592100055012u;
+const MissionGoalType MissionGoal::TYPE_COLLECT_DIAMONDS = 12762739805032650787u;
+const MissionGoalType MissionGoal::TYPE_COMPLETE_TUTORIAL = 1773561169575209575u;
+const MissionGoalType MissionGoal::TYPE_CREATE_MINI_UNITS = 993249735153949780u;
+const MissionGoalType MissionGoal::TYPE_CREATE_UNITS = 7817244446116281940u;
+const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_BASE = 6201685467854920925u;
+const MissionGoalType MissionGoal::TYPE_DESTROY_ALL_ENEMIES = 9824093894361502513u;
+const MissionGoalType MissionGoal::TYPE_GAIN_MONEY = 10899834782554881582u;
+const MissionGoalType MissionGoal::TYPE_GEN_RESEARCH = 14329901690992621984u;
+const MissionGoalType MissionGoal::TYPE_MINE_ENERGY = 16410639771806347059u;
+const MissionGoalType MissionGoal::TYPE_MINE_MATERIAL = 5378452321571368320u;
+const MissionGoalType MissionGoal::TYPE_RESIST_TIME = 5309855068505147025u;
 
 const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION =
 {
@@ -61,23 +44,6 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_MINE_ENERGY, "MG_MINE_ENERGY" },
     { TYPE_MINE_MATERIAL, "MG_MINE_MATERIAL" },
     { TYPE_RESIST_TIME, "MG_RESIST_TIME" },
-};
-
-const std::unordered_map<MissionGoalType, std::string> MissionGoal::STRINGS =
-{
-    { TYPE_NULL, STR_NULL },
-    { TYPE_COLLECT_BLOBS, STR_COLLECT_BLOBS },
-    { TYPE_COLLECT_DIAMONDS, STR_COLLECT_DIAMONDS },
-    { TYPE_COMPLETE_TUTORIAL, STR_COMPLETE_TUTORIAL },
-    { TYPE_CREATE_MINI_UNITS, STR_CREATE_MINI_UNITS },
-    { TYPE_CREATE_UNITS, STR_CREATE_UNITS },
-    { TYPE_DESTROY_ENEMY_BASE, STR_DESTROY_ENEMY_BASE },
-    { TYPE_DESTROY_ALL_ENEMIES, STR_DESTROY_ALL_ENEMIES },
-    { TYPE_GAIN_MONEY, STR_GAIN_MONEY },
-    { TYPE_GEN_RESEARCH, STR_GEN_RESEARCH },
-    { TYPE_MINE_ENERGY, STR_MINE_ENERGY },
-    { TYPE_MINE_MATERIAL, STR_MINE_MATERIAL },
-    { TYPE_RESIST_TIME, STR_RESIST_TIME },
 };
 
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool primary)
@@ -106,16 +72,6 @@ MissionCategory MissionGoal::GetCategory() const
         return MC_TUTORIAL;
     else
         return MC_UNKNOWN;
-}
-
-const std::string & MissionGoal::GeTypeString(MissionGoalType t)
-{
-    const auto it = STRINGS.find(t);
-
-    if(it != STRINGS.end())
-        return it->second;
-    else
-        return STR_NULL;
 }
 
 void MissionGoal::SetRewardCollected()

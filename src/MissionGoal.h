@@ -43,8 +43,6 @@ public :
     static const MissionGoalType TYPE_MINE_MATERIAL;
     static const MissionGoalType TYPE_RESIST_TIME;
 
-    static const std::string & GeTypeString(MissionGoalType t);
-
 public:
     MissionGoal(MissionGoalType type, unsigned int quantity, bool primary);
 
@@ -77,21 +75,6 @@ public:
     const std::string GetDescription() const;
 
 private:
-    // -- MISSION TYPE STRINGS --
-    static const std::string STR_NULL;
-    static const std::string STR_COLLECT_BLOBS;
-    static const std::string STR_COLLECT_DIAMONDS;
-    static const std::string STR_COMPLETE_TUTORIAL;
-    static const std::string STR_CREATE_MINI_UNITS;
-    static const std::string STR_CREATE_UNITS;
-    static const std::string STR_DESTROY_ENEMY_BASE;
-    static const std::string STR_DESTROY_ALL_ENEMIES;
-    static const std::string STR_GAIN_MONEY;
-    static const std::string STR_GEN_RESEARCH;
-    static const std::string STR_MINE_ENERGY;
-    static const std::string STR_MINE_MATERIAL;
-    static const std::string STR_RESIST_TIME;
-
     static const std::string TAG_VALUE;
     static const std::unordered_map<MissionGoalType, std::string> DESCRIPTION;
     static const std::unordered_map<MissionGoalType, std::string> STRINGS;
