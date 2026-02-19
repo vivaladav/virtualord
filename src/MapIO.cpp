@@ -13,7 +13,7 @@
 namespace game
 {
 
-const std::string MapIO::MAP_VERSION("0.2.5");
+const std::string MapIO::MAP_VERSION("0.3.0");
 
 const std::string MapIO::MAP_TAG_COMMENT("#");
 const std::string MapIO::MAP_TAG_GOAL("G");
@@ -166,7 +166,7 @@ bool MapIO::Save(const std::string & filename, const std::vector<GameMapCell> & 
     for(const GameObject * obj : objects)
     {
         fs << MapLayers::REGULAR_OBJECTS << " "
-           << ObjectData::GetObjectTypeStr(obj->GetObjectType()) << " "
+           << obj->GetObjectType() << " "
            << obj->GetObjectVariant() << " "
            << obj->GetFaction() << " "
            << obj->GetRow0() << " " << obj->GetCol0() << "\n";
@@ -382,10 +382,8 @@ void MapIO::ReadObjectsData(std::fstream & fs)
         ss.str(line);
 
         MapObjectEntry e;
-        std::string objIdStr;
 
-        ss >> e.layerId >> objIdStr >> e.variantId >> e.faction >> e.r0 >> e.c0;
-        e.typeId = std::hash<std::string>{}(objIdStr);
+        ss >> e.layerId >> e.typeId >> e.variantId >> e.faction >> e.r0 >> e.c0;
 
         mObjEntries.emplace_back(e);
     }

@@ -77,7 +77,6 @@ public:
 private:
     static const std::string TAG_VALUE;
     static const std::unordered_map<MissionGoalType, std::string> DESCRIPTION;
-    static const std::unordered_map<MissionGoalType, std::string> STRINGS;
 
 private:
     static unsigned int num;
