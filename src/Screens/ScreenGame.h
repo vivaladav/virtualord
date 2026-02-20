@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Cell2D.h"
-#include "MissionGoal.h"
 #include "Screen.h"
 #include "GameObjects/GameObjectAction.h"
 #include "GameObjects/GameObjectTypes.h"
@@ -35,6 +34,7 @@ class IsoLayer;
 class IsoMap;
 class MiniMap;
 class MiniUnit;
+class MissionGoalsTracker;
 class PathIndicator;
 class PathOverlay;
 class Player;
@@ -90,10 +90,6 @@ public:
     bool GetPaused() const;
     void SetPause(bool paused);
 
-    // MISSION GOALS
-    const std::vector<MissionGoal> & GetMissionGoals() const;
-    void CollectMissionGoalReward(unsigned int index);
-
     // TURN SYSTEM
     void SetLocalTurnStage(TurnStage ts);
     bool IsCurrentTurnLocal() const;
@@ -125,8 +121,6 @@ private:
     void CancelMiniUnitsGroupPath(GameObjectsGroup * group);
 
     void UpdateGameEnd();
-    bool CheckIfGoalCompleted(MissionGoal & g);
-    void UpdateGoalCompletedIcon();
     void HandleGameOver();
     void HandleGameWon();
     void AssignMapToFaction(PlayerFaction faction);
@@ -180,10 +174,6 @@ private:
 
     void AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, PlayerFaction f);
 
-    // MISSION GOALS
-    void TrackResourcesForGoals();
-    void ClearResourcesTracking();
-
     // TURN
     void EndTurn();
     void InitLocalTurn();
@@ -213,11 +203,7 @@ private:
     std::vector<GameObjectAction> mObjActions;
     std::vector<GameObjectAction> mObjActionsToDo;
 
-    std::vector<MissionGoal> mMissionGoals;
-    std::vector<int> mResourcesGained;
-    std::vector<unsigned int> mResourceTrackerIds;
-    int mMiniUnitsCreated = 0;
-    int mUnitsCreated = 0;
+    MissionGoalsTracker * mTrackerMG = nullptr;
 
     CameraMapController * mCamController = nullptr;
 
@@ -256,9 +242,7 @@ private:
 
     float mTimePlayed = 0.f;
 
-    bool mMapCompleted = false;
     bool mPaused = false;
-    bool mTutorialStarted = false;
 };
 
 inline void ScreenGame::SetObjectActionCompleted(GameObject * obj)
@@ -278,11 +262,6 @@ inline const sgl::graphic::ParticlesManager * ScreenGame::GetParticlesManager() 
 inline GameHUD * ScreenGame::GetHUD() const { return mHUD; }
 
 inline bool ScreenGame::GetPaused() const { return mPaused; }
-
-inline const std::vector<MissionGoal> & ScreenGame::GetMissionGoals() const
-{
-    return mMissionGoals;
-}
 
 inline bool ScreenGame::IsCurrentTurnLocal() const { return mActivePlayerIdx == 0; }
 

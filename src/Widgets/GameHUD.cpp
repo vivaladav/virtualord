@@ -370,7 +370,7 @@ void GameHUD::ShowDialogMissionGoals()
     mScreen->SetPause(true);
 
     Game * game = mScreen->GetGame();
-    mDialogMissionGoals = new DialogMissionGoals(mScreen);
+    mDialogMissionGoals = new DialogMissionGoals(mScreen->mTrackerMG);
     mDialogMissionGoals->SetFocus();
 
     mDialogMissionGoals->AddFunctionOnClose([this]

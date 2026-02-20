@@ -1,7 +1,7 @@
 #include "Widgets/DialogMissionGoals.h"
 
 #include "MissionGoal.h"
-#include "Screens/ScreenGame.h"
+#include "MissionGoalsTracker.h"
 #include <Widgets/GameButton.h>
 #include "Widgets/GameUIData.h"
 #include "Widgets/ProgressBarObjectVisualStat.h"
@@ -156,12 +156,12 @@ namespace game
 {
 
 // ===== DIALOG =====
-DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
-    : mScreen(screen)
+DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
+    : mTrackerMG(mgt)
 {
     using namespace sgl;
 
-    const std::vector<MissionGoal> & goals = mScreen->GetMissionGoals();
+    const std::vector<MissionGoal> & goals = mTrackerMG->GetGoals();
 
     auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
@@ -339,7 +339,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 {
     using namespace sgl;
 
-    const std::vector<MissionGoal> & goals = mScreen->GetMissionGoals();
+    const std::vector<MissionGoal> & goals = mTrackerMG->GetGoals();
     const MissionGoal & g = goals[goalInd];
 
     auto fm = graphic::FontManager::Instance();
@@ -503,7 +503,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
         btn->AddOnClickFunction([this, btn, labelData, goalInd]
         {
-            mScreen->CollectMissionGoalReward(goalInd);
+            mTrackerMG->CollectMissionGoalReward(goalInd);
 
             btn->SetVisible(false);
             labelData->SetVisible(true);
@@ -517,7 +517,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
 void DialogMissionGoals::CheckIfEndAllowed()
 {
-    const std::vector<MissionGoal> & goals = mScreen->GetMissionGoals();
+    const std::vector<MissionGoal> & goals = mTrackerMG->GetGoals();
 
     for(const MissionGoal & g : goals)
     {

@@ -27,7 +27,7 @@ typedef std::size_t MissionGoalType;
 
 class MissionGoal
 {
-public :
+public:
     static const int PROGRESS_UNKNOWN = -1;
 
     // -- MISSION TYPE --

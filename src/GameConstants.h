@@ -206,28 +206,6 @@ enum Planets : unsigned int
     PLANET_UNKNOWN
 };
 
-enum TutorialId : unsigned int
-{
-    TUTORIAL_MISSION_INTRO,
-    TUTORIAL_PLANET_MAP,
-
-    NUM_TUTORIALS,
-
-    TUTORIAL_UNKNOWN
-};
-
-enum TutorialState : unsigned int
-{
-    TS_TODO,
-    TS_IN_PROGRESS,
-    TS_DONE,
-    TS_ABORTED,
-
-    NUM_TUTORIAL_STATES,
-
-    TS_UNKNOWN
-};
-
 enum TurnStage : unsigned int
 {
     TURN_STAGE_MINI_UNITS_ATTACK,

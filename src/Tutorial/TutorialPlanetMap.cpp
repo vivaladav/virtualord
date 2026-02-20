@@ -1,7 +1,6 @@
 #include "Tutorial/TutorialPlanetMap.h"
 
 #include "Game.h"
-#include "GameConstants.h"
 #include "MapsRegistry.h"
 #include "Player.h"
 #include "Screens/ScreenPlanetMap.h"
@@ -16,6 +15,7 @@
 #include "Tutorial/StepPlanetMapNoInfo.h"
 #include "Tutorial/StepPlanetMapSelectTerritory.h"
 #include "Tutorial/StepPlanetMapSendAI.h"
+#include "Tutorial/TutorialConstants.h"
 
 #include <cassert>
 

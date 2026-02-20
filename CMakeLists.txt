@@ -50,6 +50,8 @@ add_executable(
     src/MapsRegistry.cpp
     src/MissionGoal.h
     src/MissionGoal.cpp
+    src/MissionGoalsTracker.h
+    src/MissionGoalsTracker.cpp
     src/Player.h
     src/Player.cpp
     src/StatValue.h

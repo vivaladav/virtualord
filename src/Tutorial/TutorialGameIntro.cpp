@@ -2,7 +2,6 @@
 
 #include "CameraMapController.h"
 #include "Game.h"
-#include "GameConstants.h"
 #include "GameMap.h"
 #include "Player.h"
 #include "GameObjects/Base.h"
@@ -34,6 +33,7 @@
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Widgets/GameHUD.h"
+#include "Tutorial/TutorialConstants.h"
 
 #include <cassert>
 

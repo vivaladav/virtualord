@@ -9,6 +9,7 @@
 #include "IsoMap.h"
 #include "MapIO.h"
 #include "MapsRegistry.h"
+#include "MissionGoalsTracker.h"
 #include "Player.h"
 #include "AI/ConquerPath.h"
 #include "AI/ObjectPath.h"
@@ -39,7 +40,7 @@
 #include "Particles/UpdaterOutput.h"
 #include "Particles/UpdaterSingleLaser.h"
 #include "States/StatesIds.h"
-#include "Tutorial/Tutorial.h"
+#include "Tutorial/TutorialConstants.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/GameHUD.h"
@@ -100,6 +101,10 @@ ScreenGame::ScreenGame(Game * game)
 
     InitParticlesSystem();
 
+
+    // MISSION GOALS
+    mTrackerMG = new MissionGoalsTracker(game, mLocalPlayer);
+
     // -- ISOMETRIC MAP --
     CreateIsoMap();
     CreateLayers();
@@ -108,8 +113,6 @@ ScreenGame::ScreenGame(Game * game)
     mGameMap = new GameMap(GetGame(), this, mIsoMap);
 
     LoadMapFile();
-
-    TrackResourcesForGoals();
 
     // center map on screen
     const int mapH = mIsoMap->GetHeight();
@@ -158,7 +161,9 @@ ScreenGame::ScreenGame(Game * game)
     mPathfinder->SetMap(mGameMap);
 
     // -- PLAYERS --
-    for(int i = 0; i < GetGame()->GetNumPlayers(); ++i)
+    const unsigned int numPlayers = game->GetNumPlayers();
+
+    for(int i = 0; i < numPlayers; ++i)
     {
         Player * p = game->GetPlayerByIndex(i);
 
@@ -173,6 +178,8 @@ ScreenGame::ScreenGame(Game * game)
 
     // UI
     CreateUI();
+
+    mTrackerMG->SetGameHUD(mHUD);
 
     // OVERLAYS
     mPathOverlay = new PathOverlay(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
@@ -197,15 +204,14 @@ ScreenGame::ScreenGame(Game * game)
         {
             tutMan->CreateTutorial(TUTORIAL_MISSION_INTRO, this);
             tutMan->StartTutorial();
-            mTutorialStarted = true;
+
+            mTrackerMG->SetTutorialStarted();
         }
     }
 }
 
 ScreenGame::~ScreenGame()
 {
-    ClearResourcesTracking();
-
     // clear Players
     Game * game = GetGame();
 
@@ -240,6 +246,8 @@ ScreenGame::~ScreenGame()
     for(auto it : mStructIndicators)
         delete it.second;
 
+    delete mTrackerMG;
+
     delete mTempStructIndicator;
 
     delete mIsoMap;
@@ -272,6 +280,7 @@ void ScreenGame::Update(float delta)
 
     // keep track of time played (while not paused)
     mTimePlayed += delta;
+    mTrackerMG->SetPlayedTime(mTimePlayed);
 
     // -- PARTICLES --
     mPartMan->Update(delta);
@@ -450,13 +459,6 @@ void ScreenGame::SetPause(bool paused)
     mHUD->SetEnabled(!paused);
 
     mHUD->UpdatePanelTurnControl();
-}
-
-void ScreenGame::CollectMissionGoalReward(unsigned int index)
-{
-    mMissionGoals[index].AssignReward(mLocalPlayer);
-
-    UpdateGoalCompletedIcon();
 }
 
 void ScreenGame::SetLocalTurnStage(TurnStage ts)
@@ -825,10 +827,12 @@ void ScreenGame::CreateUI()
         CancelObjectAction(selObj);
     });
 
-    // MISSION COUNTDOWN if needed by primary goal
-    for(const MissionGoal & g : mMissionGoals)
+    // MISSION COUNTDOWN if needed
+    const std::vector<MissionGoal> goals = mTrackerMG->GetGoals();
+
+    for(const MissionGoal & g : goals)
     {
-        if(g.IsPrimary() && g.GetType() == MissionGoal::TYPE_RESIST_TIME)
+        if(g.GetType() == MissionGoal::TYPE_RESIST_TIME)
         {
             mHUD->ShowMissionCountdown(g.GetQuantity());
             break;
@@ -897,21 +901,7 @@ void ScreenGame::LoadMapFile()
     mGameMap->InitCities();
 
     // get mission data
-    mMissionGoals = mio.GetMissionGoals();
-
-    // remove tutorial missions if tutorial is disabled
-    if(!GetGame()->IsTutorialEnabled())
-    {
-        auto it = mMissionGoals.begin();
-
-        while(it != mMissionGoals.end())
-        {
-            if(it->GetCategory() == MC_TUTORIAL)
-                it = mMissionGoals.erase(it);
-            else
-                ++it;
-        }
-    }
+    mTrackerMG->SetGoals(mio.GetMissionGoals());
 }
 
 void ScreenGame::OnKeyDown(sgl::core::KeyboardEvent & event)
@@ -1720,185 +1710,7 @@ void ScreenGame::UpdateGameEnd()
         return ;
     }
 
-    // map already completed
-    if(mMapCompleted)
-        return ;
-
-    // check goals
-    unsigned int primaryGoals = 0;
-    unsigned int completedPrimaryGoals = 0;
-
-    for(MissionGoal & g : mMissionGoals)
-    {
-        if(g.IsPrimary())
-            ++primaryGoals;
-
-        const bool completed = CheckIfGoalCompleted(g);
-
-        if(completed)
-        {
-            if(g.IsPrimary())
-                ++completedPrimaryGoals;
-
-            if(!g.IsRewardCollected())
-                mHUD->ShowGoalCompletedIcon();
-        }
-    }
-
-    if(completedPrimaryGoals == primaryGoals)
-        mMapCompleted = true;
-}
-
-bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
-{
-    if(g.IsCompleted())
-        return true;
-
-    const auto gt = g.GetType();
-
-    if(gt == MissionGoal::TYPE_COLLECT_BLOBS)
-    {
-        if(mResourcesGained[MR_BLOBS] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_BLOBS] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_COLLECT_DIAMONDS)
-    {
-        if(mResourcesGained[MR_DIAMONDS] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_DIAMONDS] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_COMPLETE_TUTORIAL)
-    {
-        Game * game = GetGame();
-
-        if(game->IsTutorialEnabled() && mTutorialStarted)
-        {
-            auto tutMan = game->GetTutorialManager();
-
-            if(tutMan->GetTutorialState(TUTORIAL_MISSION_INTRO) != TS_DONE)
-            {
-                auto tut = tutMan->GetTutorial();
-
-                if(tut != nullptr)
-                    g.SetProgress(tut->GetNumStepsDone() * 100 / tut->GetNumStepsAtStart());
-
-                return false;
-            }
-        }
-        else
-            return false;
-    }
-    else if(gt == MissionGoal::TYPE_CREATE_MINI_UNITS)
-    {
-        if(mMiniUnitsCreated < g.GetQuantity())
-        {
-            g.SetProgress(mMiniUnitsCreated * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_CREATE_UNITS)
-    {
-        if(mUnitsCreated < g.GetQuantity())
-        {
-            g.SetProgress(mUnitsCreated * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_BASE)
-    {
-        // check if destroyed all enemy bases
-        for(Player * p : mAiPlayers)
-        {
-            if(p->HasStructure(ObjectData::TYPE_BASE))
-                return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_DESTROY_ALL_ENEMIES)
-    {
-        // check if destroyed all enemies
-        for(Player * p : mAiPlayers)
-        {
-            if(p->GetNumObjects() > 0)
-                return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_GAIN_MONEY)
-    {
-        if(mResourcesGained[MR_MONEY] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_MONEY] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_GEN_RESEARCH)
-    {
-        if(mResourcesGained[Player::RESEARCH] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[Player::RESEARCH] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_MINE_ENERGY)
-    {
-        if(mResourcesGained[MR_ENERGY] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_ENERGY] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_MINE_MATERIAL)
-    {
-        if(mResourcesGained[MR_MATERIAL] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_MATERIAL] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_RESIST_TIME)
-    {
-        // check elapsed time
-        const unsigned int playedTime = GetPlayTimeInSec();
-
-        if(playedTime < g.GetQuantity())
-        {
-            g.SetProgress(playedTime * 100 / g.GetQuantity());
-
-            return false;
-        }
-
-        mHUD->HideMissionCountdown();
-    }
-    else
-        return false;
-
-    g.SetCompleted();
-
-    return true;
-}
-
-void ScreenGame::UpdateGoalCompletedIcon()
-{
-    for(MissionGoal & g : mMissionGoals)
-    {
-        // there's still some reward to collect -> do not hide
-        if(g.IsCompleted() && !g.IsRewardCollected())
-            return;
-    }
-
-    mHUD->HideGoalCompletedIcon();
+    mTrackerMG->Update();
 }
 
 void ScreenGame::HandleGameOver()
@@ -1999,7 +1811,7 @@ bool ScreenGame::SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, Game
         assert(mu != nullptr);
 
         if(player->IsLocal())
-            ++mMiniUnitsCreated;
+            mTrackerMG->AddMiniUnitCreated();
 
         mu->SetGroup(group);
 
@@ -2069,7 +1881,7 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
         mGameMap->CreateUnit(type, cell, player);
 
         if(player->IsLocal())
-            ++mUnitsCreated;
+            mTrackerMG->AddUnitCreated();
 
         // add unit to map if cell is visible to local player
         if(mGameMap->IsCellVisibleToLocalPlayer(cell.row, cell.col))
@@ -3575,56 +3387,6 @@ void ScreenGame::AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, 
 
     MiniMap * mm = mHUD->GetMinimap();
     mm->AddElement(cell.row, cell.col, data.GetRows(), data.GetCols(), mtype, f);
-}
-
-void ScreenGame::TrackResourcesForGoals()
-{
-    // init support data
-    mResourcesGained.assign(NUM_MISSION_REWARDS, 0);
-    mResourceTrackerIds.assign(NUM_MISSION_REWARDS, 0);
-
-    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
-    {
-        Player::BLOBS,
-        Player::DIAMONDS,
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::MONEY,
-        Player::RESEARCH,
-    };
-
-    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
-    {
-        const Player::Stat resId = resourceIds[i];
-
-        mResourceTrackerIds[resId] = mLocalPlayer->AddOnResourceChanged(resId,
-            [this, resId](const StatValue *, int oldVal, int newVal)
-            {
-                if(newVal > oldVal)
-                    mResourcesGained[resId] += newVal - oldVal;
-            });
-    }
-}
-
-void ScreenGame::ClearResourcesTracking()
-{
-    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
-    {
-        Player::BLOBS,
-        Player::DIAMONDS,
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::MONEY,
-        Player::RESEARCH,
-    };
-
-    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
-    {
-        const Player::Stat resId = resourceIds[i];
-        const int funId = mResourceTrackerIds[i];
-
-        mLocalPlayer->RemoveOnResourceChanged(resId, funId);
-    }
 }
 
 void ScreenGame::EndTurn()

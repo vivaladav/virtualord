@@ -5,6 +5,7 @@
 #include "MapsRegistry.h"
 #include "Player.h"
 #include "States/StatesIds.h"
+#include "Tutorial/TutorialConstants.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonPlanetMap.h"
 #include "Widgets/DialogExit.h"
