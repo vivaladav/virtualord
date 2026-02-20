@@ -47,8 +47,6 @@ public:
     DialogNewElement(ElemType type, Player * player, const ObjectsDataRegistry * dataReg);
     ~DialogNewElement();
 
-    void CheckBuild();
-
     void SetFunctionOnBuild(const std::function<void()> & f);
     void SetFunctionOnClose(const std::function<void()> & f);
 

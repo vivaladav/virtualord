@@ -699,12 +699,6 @@ DialogNewElement::~DialogNewElement()
     delete mButtonsStructures;
 }
 
-void DialogNewElement::CheckBuild()
-{
-    const int ind = GetSelectedIndex();
-    CheckBuild(ind);
-}
-
 void DialogNewElement::SetFunctionOnBuild(const std::function<void()> & f)
 {
     mBtnBuild->AddOnClickFunction(f);
