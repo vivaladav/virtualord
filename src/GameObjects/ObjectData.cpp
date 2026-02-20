@@ -7,8 +7,6 @@
 
 namespace game
 {
-using h = std::hash<std::string>;
-
 // -- OBJECT TYPE --
 const GameObjectTypeId ObjectData::TYPE_NULL = 0;
 
@@ -140,13 +138,13 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::DESCRIPTIONS
 // -- OBJECT CATEGORY --
 const GameObjectCategoryId ObjectData::CAT_NULL = 0;
 
-const GameObjectCategoryId ObjectData::CAT_COLLECTABLE = h{}("COLLECTABLE");
-const GameObjectCategoryId ObjectData::CAT_MINI_UNIT = h{}("MINI_UNIT");
-const GameObjectCategoryId ObjectData::CAT_RES_GENERATOR = h{}("RES_GEN");
-const GameObjectCategoryId ObjectData::CAT_RES_STORAGE = h{}("RES_STORAGE");
-const GameObjectCategoryId ObjectData::CAT_SCENE_OBJ = h{}("SCENE_OBJ");
-const GameObjectCategoryId ObjectData::CAT_STRUCTURE = h{}("STRUCTURE");
-const GameObjectCategoryId ObjectData::CAT_UNIT = h{}("UNIT");
+const GameObjectCategoryId ObjectData::CAT_COLLECTABLE = 9419833046200742204u;
+const GameObjectCategoryId ObjectData::CAT_MINI_UNIT = 13146483742249843079u;
+const GameObjectCategoryId ObjectData::CAT_RES_GENERATOR = 7012214588672144715u;
+const GameObjectCategoryId ObjectData::CAT_RES_STORAGE = 12817435265416001740u;
+const GameObjectCategoryId ObjectData::CAT_SCENE_OBJ = 16719829775621082597u;
+const GameObjectCategoryId ObjectData::CAT_STRUCTURE = 17957022383009386536u;
+const GameObjectCategoryId ObjectData::CAT_UNIT = 2375135268229788161u;
 
 const char * ObjectData::STR_CLASS[NUM_OBJ_CLASSES] =
 {

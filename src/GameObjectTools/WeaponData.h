@@ -2,7 +2,6 @@
 
 #include "GameObjects/GameObjectTypes.h"
 
-#include <string>
 #include <unordered_map>
 
 namespace game
@@ -46,13 +45,6 @@ public:
 
     unsigned int GetBurstShots() const;
     float GetTimeCooldown() const;
-
-private:
-    static const std::string STR_LASER1;
-    static const std::string STR_LASER2;
-    static const std::string STR_LASER3;
-    static const std::string STR_LASER4;
-    static const std::string STR_LASER5;
 
 private:
     const std::unordered_map<ObjAttId, int> mAttributes;
