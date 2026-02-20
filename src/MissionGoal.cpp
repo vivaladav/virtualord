@@ -1,6 +1,7 @@
 #include "MissionGoal.h"
 
 #include "GameConstants.h"
+#include "Player.h"
 
 #include <sgl/utilities/StringManager.h>
 
@@ -76,14 +77,36 @@ MissionCategory MissionGoal::GetCategory() const
         return MC_UNKNOWN;
 }
 
-void MissionGoal::SetRewardCollected()
+void MissionGoal::AssignReward(Player * p)
 {
     if(mRewardCollected)
         return ;
 
+    // assign rewards to player
+    const Player::Stat resourceIds[] =
+    {
+        Player::BLOBS,
+        Player::DIAMONDS,
+        Player::ENERGY,
+        Player::MATERIAL,
+        Player::MONEY,
+        Player::RESEARCH,
+    };
+
+    static_assert(sizeof(resourceIds) / sizeof(Player::Stat) == NUM_MISSION_REWARDS);
+
+    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
+    {
+        const int reward = mRewards[i];
+
+        if(reward > 0)
+            p->SumResource(resourceIds[i], reward);
+    }
+
+    // update reward data
     mRewardCollected = true;
 
-    mRewards = {};
+    mRewards.fill(0);
 }
 
 const std::string MissionGoal::GetDescription() const

@@ -7,6 +7,8 @@
 namespace game
 {
 
+class Player;
+
 enum MissionCategory : unsigned int;
 
 enum MissionReward : unsigned int
@@ -66,7 +68,7 @@ public:
 
     // REWARD
     bool IsRewardCollected() const;
-    void SetRewardCollected();
+    void AssignReward(Player * p);
     int GetRewardByType(MissionReward r) const;
 
     // STRINGS
