@@ -932,6 +932,20 @@ void ScreenGame::LoadMapFile()
 
     // get mission data
     mMissionGoals = mio.GetMissionGoals();
+
+    // remove tutorial missions if tutorial is disabled
+    if(!GetGame()->IsTutorialEnabled())
+    {
+        auto it = mMissionGoals.begin();
+
+        while(it != mMissionGoals.end())
+        {
+            if(it->GetCategory() == MC_TUTORIAL)
+                it = mMissionGoals.erase(it);
+            else
+                ++it;
+        }
+    }
 }
 
 void ScreenGame::OnKeyDown(sgl::core::KeyboardEvent & event)

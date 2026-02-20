@@ -360,6 +360,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- No longer pre-loading everything at the beginning, but"
                   " loading assets based on game section.\n"
                   "- Improved animation of output particles.\n"
+                  "- No tutorial mission goals if tutorial is disabled.\n"
                   "\nFIXES\n"
                   "\n"
                   );
