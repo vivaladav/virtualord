@@ -181,7 +181,6 @@ private:
     void AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, PlayerFaction f);
 
     // MISSION GOALS
-    void SetMissionRewards();
     void TrackResourcesForGoals();
     void ClearResourcesTracking();
 

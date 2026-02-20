@@ -5,6 +5,7 @@
 #include <sgl/utilities/StringManager.h>
 
 #include <cstddef>
+#include <iostream>
 #include <sstream>
 
 namespace game
@@ -53,6 +54,7 @@ MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool prima
     , mRewards({})
     , mPrimary(primary)
 {
+    SetMissionRewards();
 }
 
 MissionCategory MissionGoal::GetCategory() const
@@ -108,6 +110,138 @@ const std::string MissionGoal::GetDescription() const
     else
         return d;
 }
+
+
+void MissionGoal::SetMissionRewards()
+{
+        if(mType == MissionGoal::TYPE_COLLECT_BLOBS)
+        {
+            const int divDiamonds = 10;
+            const int diamonds = mQuantity / divDiamonds;
+            mRewards[MR_DIAMONDS] = diamonds;
+
+            const int multMoney = 5;
+            const int money = mQuantity * multMoney;
+            mRewards[MR_MONEY] = money;
+        }
+        else if(mType == MissionGoal::TYPE_COLLECT_DIAMONDS)
+        {
+            const int divBlobs = 10;
+            const int blobs = mQuantity / divBlobs;
+            mRewards[MR_BLOBS] = blobs;
+
+            const int multMoney = 5;
+            const int money = mQuantity * multMoney;
+            mRewards[MR_MONEY] = money;
+        }
+        else if(mType == MissionGoal::TYPE_CREATE_MINI_UNITS)
+        {
+            const int multMoney = 250;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
+
+            const int multEnergy = 30;
+            mRewards[MR_ENERGY] = mQuantity * multEnergy;
+
+            const int multMaterial = 60;
+            mRewards[MR_MATERIAL] = mQuantity * multMaterial;
+        }
+        else if(mType == MissionGoal::TYPE_CREATE_UNITS)
+        {
+            const int multMoney = 200;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
+
+            const int multEnergy = 20;
+            mRewards[MR_ENERGY] = mQuantity * multEnergy;
+
+            const int multMaterial = 40;
+            mRewards[MR_MATERIAL] = mQuantity * multMaterial;
+        }
+        else if(mType == MissionGoal::TYPE_DESTROY_ENEMY_BASE)
+        {
+            const int money = 10000;
+
+            mRewards[MR_MONEY] = money;
+        }
+        else if(mType == MissionGoal::TYPE_DESTROY_ALL_ENEMIES)
+        {
+            const int money = 15000;
+
+            mRewards[MR_MONEY] = money;
+        }
+        else if(mType == MissionGoal::TYPE_GAIN_MONEY)
+        {
+            const int divBlobs = 100;
+            const int blobs = mQuantity / divBlobs;
+            mRewards[MR_BLOBS] = blobs;
+
+            const int divDiamonds = 100;
+            const int diamonds = mQuantity / divDiamonds;
+            mRewards[MR_DIAMONDS] = diamonds;
+
+            const int divEnergy = 50;
+            const int energy = mQuantity / divEnergy;
+            mRewards[MR_ENERGY] = energy;
+
+            const int divMaterial = 10;
+            const int material = mQuantity / divMaterial;
+            mRewards[MR_MATERIAL] = material;
+        }
+        else if(mType == MissionGoal::TYPE_GEN_RESEARCH)
+        {
+            const int divMoney = 5;
+            const int money = mQuantity / divMoney;
+            mRewards[MR_MONEY] = money;
+        }
+        else if(mType == MissionGoal::TYPE_MINE_MATERIAL)
+        {
+            const int divEnergy = 10;
+            const int energy = mQuantity / divEnergy;
+            mRewards[MR_ENERGY] = energy;
+
+            const int divMoney = 2;
+            const int money = mQuantity / divMoney;
+            mRewards[MR_MONEY] = money;
+        }
+        else if(mType == MissionGoal::TYPE_MINE_ENERGY)
+        {
+            const int divMaterial = 10;
+            const int material = mQuantity / divMaterial;
+            mRewards[MR_MATERIAL] = material;
+
+            const int divMoney = 2;
+            const int money = mQuantity / divMoney;
+            mRewards[MR_MONEY] = money;
+        }
+        else if(mType == MissionGoal::TYPE_RESIST_TIME)
+        {
+            const int blobs = mQuantity;
+            mRewards[MR_BLOBS] = blobs;
+
+            const int diamonds = mQuantity;
+            mRewards[MR_DIAMONDS] = diamonds;
+
+            const int multMoney = 100;
+            const int money = mQuantity * multMoney;
+            mRewards[MR_MONEY] = money;
+        }
+        else if(mType == MissionGoal::TYPE_COMPLETE_TUTORIAL)
+        {
+            const int blobs = 25;
+            mRewards[MR_BLOBS] = blobs;
+
+            const int diamonds = 25;
+            mRewards[MR_DIAMONDS] = diamonds;
+
+            const int energy = 100;
+            mRewards[MR_ENERGY] = energy;
+
+            const int material = 100;
+            mRewards[MR_MATERIAL] = material;
+        }
+        else
+            std::cout << "[WAR] Mission Goal type unknown: " << mType << std::endl;
+}
+
 
 } // namespace game
 

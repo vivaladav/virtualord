@@ -68,11 +68,13 @@ public:
     bool IsRewardCollected() const;
     void SetRewardCollected();
     int GetRewardByType(MissionReward r) const;
-    void SetRewardByType(MissionReward r, int val);
 
     // STRINGS
     // NOTE return string is already transformed with quantity and translated
     const std::string GetDescription() const;
+
+private:
+    void SetMissionRewards();
 
 private:
     static const std::string TAG_VALUE;
@@ -125,12 +127,6 @@ inline int MissionGoal::GetRewardByType(MissionReward r) const
         return mRewards[r];
     else
         return 0;
-}
-
-inline void MissionGoal::SetRewardByType(MissionReward r, int val)
-{
-    if(r < NUM_MISSION_REWARDS)
-        mRewards[r] = val;
 }
 
 } // namespace game
