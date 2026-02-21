@@ -355,6 +355,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- New research dialog to control production of research center.\n"
                   "- New tech tree dialog available from research center.\n"
                   "- Introduced first upgrades unlockable from the tech tree dialog.\n"
+                  "- New mission goals: create units and mini-units.\n"
+                  "- New mission goals: create structures.\n"
                   "\nCHANGES\n"
                   "- Hit points no longer shown on self-destruction.\n"
                   "- No longer pre-loading everything at the beginning, but"
