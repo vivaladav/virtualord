@@ -2023,6 +2023,9 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
         // clear action data once the action is completed
         SetObjectActionCompleted(unit);
 
+        if(player->IsLocal())
+            mTrackerMG->AddStructureBuilt();
+
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/build-01.ogg", 250);
     });

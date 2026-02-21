@@ -18,6 +18,7 @@ const std::string MissionGoal::TAG_VALUE("%VAL%");
 
 // -- MISSION TYPE --
 const MissionGoalType MissionGoal::TYPE_NULL = 0;
+const MissionGoalType MissionGoal::TYPE_BUILD_STRUCTURES = 11605552180239521411u;
 const MissionGoalType MissionGoal::TYPE_COLLECT_BLOBS = 8180831592100055012u;
 const MissionGoalType MissionGoal::TYPE_COLLECT_DIAMONDS = 12762739805032650787u;
 const MissionGoalType MissionGoal::TYPE_COMPLETE_TUTORIAL = 1773561169575209575u;
@@ -34,6 +35,7 @@ const MissionGoalType MissionGoal::TYPE_RESIST_TIME = 5309855068505147025u;
 const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION =
 {
     { TYPE_NULL, "MG_UNKNOWN" },
+    { TYPE_BUILD_STRUCTURES, "MG_BUILD_STRUCTS" },
     { TYPE_COLLECT_BLOBS, "MG_COLLECT_BLOBS" },
     { TYPE_COLLECT_DIAMONDS, "MG_COLLECT_DIAMONDS" },
     { TYPE_COMPLETE_TUTORIAL, "MG_COMPLETE_TUTORIAL" },
@@ -62,7 +64,8 @@ MissionCategory MissionGoal::GetCategory() const
 {
     if(mType == TYPE_DESTROY_ALL_ENEMIES || mType == TYPE_DESTROY_ENEMY_BASE)
         return MC_DESTRUCTION;
-    else if(mType == TYPE_CREATE_MINI_UNITS || mType == TYPE_CREATE_UNITS)
+    else if(mType == TYPE_CREATE_MINI_UNITS || mType == TYPE_CREATE_UNITS ||
+            mType == TYPE_BUILD_STRUCTURES)
         return MC_CREATION;
     else if(mType == TYPE_RESIST_TIME)
         return MC_RESISTANCE;
@@ -146,6 +149,20 @@ void MissionGoal::SetMissionRewards()
             const int multMoney = 5;
             const int money = mQuantity * multMoney;
             mRewards[MR_MONEY] = money;
+        }
+        else if(mType == MissionGoal::TYPE_BUILD_STRUCTURES)
+        {
+            const int multEnergy = 30;
+            mRewards[MR_ENERGY] = mQuantity * multEnergy;
+
+            const int multMaterial = 50;
+            mRewards[MR_MATERIAL] = mQuantity * multMaterial;
+
+            const int multBlobs = 10;
+            mRewards[MR_BLOBS] = mQuantity * multBlobs;
+
+            const int multDiamonds = 10;
+            mRewards[MR_DIAMONDS] = mQuantity * multDiamonds;
         }
         else if(mType == MissionGoal::TYPE_COLLECT_DIAMONDS)
         {
