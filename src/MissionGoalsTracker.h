@@ -32,6 +32,7 @@ public:
     void AddMiniUnitCreated();
     void AddUnitCreated();
     void AddStructureBuilt();
+    void AddWallBuilt();
 
 private:
     bool CheckIfGoalCompleted(MissionGoal & g);
@@ -49,6 +50,7 @@ private:
     int mMiniUnitsCreated = 0;
     int mUnitsCreated = 0;
     int mStructuresBuilt = 0;
+    int mWallBuilt = 0;
     unsigned int mPlayedTime = 0;
 
     bool mMapCompleted = false;
@@ -69,5 +71,6 @@ inline void MissionGoalsTracker::SetPlayedTime(unsigned int sec) { mPlayedTime =
 inline void MissionGoalsTracker::AddMiniUnitCreated() { ++mMiniUnitsCreated; }
 inline void MissionGoalsTracker::AddUnitCreated() { ++mUnitsCreated; }
 inline void MissionGoalsTracker::AddStructureBuilt() { ++mStructuresBuilt; }
+inline void MissionGoalsTracker::AddWallBuilt() { ++mWallBuilt; }
 
 } // namespace game

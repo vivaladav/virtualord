@@ -188,6 +188,15 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
             return false;
         }
     }
+    else if(gt == MissionGoal::TYPE_BUILD_WALL)
+    {
+        if(mWallBuilt < g.GetQuantity())
+        {
+            g.SetProgress(mWallBuilt * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
     else if(gt == MissionGoal::TYPE_CREATE_MINI_UNITS)
     {
         if(mMiniUnitsCreated < g.GetQuantity())

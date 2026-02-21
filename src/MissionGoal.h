@@ -33,6 +33,7 @@ public:
     // -- MISSION TYPE --
     static const MissionGoalType TYPE_NULL;
     static const MissionGoalType TYPE_BUILD_STRUCTURES;
+    static const MissionGoalType TYPE_BUILD_WALL;
     static const MissionGoalType TYPE_COLLECT_BLOBS;
     static const MissionGoalType TYPE_COLLECT_DIAMONDS;
     static const MissionGoalType TYPE_COMPLETE_TUTORIAL;

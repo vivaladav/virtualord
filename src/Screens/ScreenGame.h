@@ -87,6 +87,8 @@ public:
     MiniMap * GetMiniMap() const;
     void SetMiniMapEnabled(bool val);
 
+    MissionGoalsTracker * GetMissionGoalsTracker() const;
+
     bool GetPaused() const;
     void SetPause(bool paused);
 
@@ -260,6 +262,8 @@ inline const sgl::graphic::ParticlesManager * ScreenGame::GetParticlesManager() 
 }
 
 inline GameHUD * ScreenGame::GetHUD() const { return mHUD; }
+
+inline MissionGoalsTracker * ScreenGame::GetMissionGoalsTracker() const { return mTrackerMG; }
 
 inline bool ScreenGame::GetPaused() const { return mPaused; }
 

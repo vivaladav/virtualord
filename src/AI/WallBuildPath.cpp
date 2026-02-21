@@ -6,6 +6,7 @@
 #include "IsoLayer.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
+#include "MissionGoalsTracker.h"
 #include "Player.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Unit.h"
@@ -120,6 +121,8 @@ bool WallBuildPath::InitNextBuild()
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/build-02.ogg", 200);
+
+        mScreen->GetMissionGoalsTracker()->AddWallBuilt();
 
         InitNextMove();
     });
