@@ -52,10 +52,12 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_RESIST_TIME, "MG_RESIST_TIME" },
 };
 
-MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool primary)
+MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
+                         unsigned int ed, bool primary)
     : mId(++num)
     , mType(type)
     , mQuantity(quantity)
+    , mExtraData(ed)
     , mRewards({})
     , mPrimary(primary)
 {

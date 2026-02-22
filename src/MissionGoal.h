@@ -48,13 +48,14 @@ public:
     static const MissionGoalType TYPE_RESIST_TIME;
 
 public:
-    MissionGoal(MissionGoalType type, unsigned int quantity, bool primary);
+    MissionGoal(MissionGoalType type, unsigned int quantity, unsigned int ed, bool primary);
 
     // ATTRIBUTES
     unsigned int GetId() const;
 
     MissionGoalType GetType() const;
     unsigned int GetQuantity() const;
+    unsigned int GetExtraData() const;
 
     MissionCategory GetCategory() const;
 
@@ -87,10 +88,11 @@ private:
 private:
     static unsigned int num;
 
-    unsigned int mId;
+    unsigned int mId = 0;
 
     MissionGoalType mType;
-    unsigned int mQuantity;
+    unsigned int mQuantity = 0;
+    unsigned int mExtraData = 0;
 
     int mProgress = PROGRESS_UNKNOWN;
 
@@ -98,7 +100,7 @@ private:
 
     bool mCompleted = false;
     bool mRewardCollected = false;
-    bool mPrimary;
+    bool mPrimary = false;
 };
 
 // ATTRIBUTES
@@ -106,6 +108,7 @@ inline unsigned int MissionGoal::GetId() const { return mId; }
 
 inline MissionGoalType MissionGoal::GetType() const { return mType; }
 inline unsigned int MissionGoal::GetQuantity() const { return mQuantity; }
+inline unsigned int MissionGoal::GetExtraData() const { return mExtraData; }
 
 inline bool MissionGoal::IsPrimary() const { return mPrimary; }
 
