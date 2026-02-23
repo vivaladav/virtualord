@@ -34,28 +34,32 @@ public:
     void AddMiniUnitCreated();
     void AddUnitCreated();
     void AddStructureBuilt(GameObjectTypeId type);
+    void AddStructureConquered(GameObjectTypeId type);
     void AddWallBuilt();
 
 private:
     bool CheckIfGoalCompleted(MissionGoal & g);
 
     unsigned int GetNumStructuresBuilt(GameObjectTypeId type) const;
+    unsigned int GetNumStructuresConquered(GameObjectTypeId type) const;
 
 private:
     std::vector<MissionGoal> mMissionGoals;
     std::vector<int> mResourcesGained;
     std::vector<unsigned int> mResourceTrackerIds;
     std::vector<Player *> mAiPlayers;
-    std::unordered_map<GameObjectTypeId, unsigned int> mStructuresBuiltTypes;
+    std::unordered_map<GameObjectTypeId, unsigned int> mStructuresBuilt;
+    std::unordered_map<GameObjectTypeId, unsigned int> mStructuresConquered;
 
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
     GameHUD * mHUD = nullptr;
 
-    int mMiniUnitsCreated = 0;
-    int mUnitsCreated = 0;
-    int mStructuresBuilt = 0;
-    int mWallBuilt = 0;
+    unsigned int mMiniUnitsCreated = 0;
+    unsigned int mUnitsCreated = 0;
+    unsigned int mTotStructuresBuilt = 0;
+    unsigned int mTotStructuresConquered = 0;
+    unsigned int mWallBuilt = 0;
     unsigned int mPlayedTime = 0;
 
     bool mMapCompleted = false;
@@ -79,8 +83,14 @@ inline void MissionGoalsTracker::AddWallBuilt() { ++mWallBuilt; }
 
 inline unsigned int MissionGoalsTracker::GetNumStructuresBuilt(GameObjectTypeId type) const
 {
-    const auto it = mStructuresBuiltTypes.find(type);
-    return it != mStructuresBuiltTypes.end() ? it->second : 0;
+    const auto it = mStructuresBuilt.find(type);
+    return it != mStructuresBuilt.end() ? it->second : 0;
+}
+
+inline unsigned int MissionGoalsTracker::GetNumStructuresConquered(GameObjectTypeId type) const
+{
+    const auto it = mStructuresConquered.find(type);
+    return it != mStructuresConquered.end() ? it->second : 0;
 }
 
 } // namespace game

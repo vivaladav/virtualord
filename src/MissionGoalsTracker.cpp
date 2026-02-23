@@ -138,15 +138,29 @@ void MissionGoalsTracker::Update()
 void MissionGoalsTracker::AddStructureBuilt(GameObjectTypeId type)
 {
     // register type built
-    auto it = mStructuresBuiltTypes.find(type);
+    auto it = mStructuresBuilt.find(type);
 
-    if(it != mStructuresBuiltTypes.end())
+    if(it != mStructuresBuilt.end())
         ++(it->second);
     else
-        mStructuresBuiltTypes.emplace(type, 1);
+        mStructuresBuilt.emplace(type, 1);
 
     // update generic counter
-    ++mStructuresBuilt;
+    ++mTotStructuresBuilt;
+}
+
+void MissionGoalsTracker::AddStructureConquered(GameObjectTypeId type)
+{
+    // register type conquered
+    auto it = mStructuresConquered.find(type);
+
+    if(it != mStructuresConquered.end())
+        ++(it->second);
+    else
+        mStructuresConquered.emplace(type, 1);
+
+    // update generic counter
+    ++mTotStructuresConquered;
 }
 
 bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
@@ -239,9 +253,9 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_BUILD_STRUCTURES)
     {
-        if(mStructuresBuilt < g.GetQuantity())
+        if(mTotStructuresBuilt < g.GetQuantity())
         {
-            g.SetProgress(mStructuresBuilt * 100 / g.GetQuantity());
+            g.SetProgress(mTotStructuresBuilt * 100 / g.GetQuantity());
 
             return false;
         }
@@ -251,6 +265,37 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
         if(mWallBuilt < g.GetQuantity())
         {
             g.SetProgress(mWallBuilt * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_CONQUER_GEN_ENERGY)
+    {
+        const int conquered = GetNumStructuresConquered(ObjectData::TYPE_RES_GEN_ENERGY);
+
+        if(conquered < g.GetQuantity())
+        {
+            g.SetProgress(conquered * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_CONQUER_GEN_MATERIAL)
+    {
+        const int conquered = GetNumStructuresConquered(ObjectData::TYPE_RES_GEN_MATERIAL);
+
+        if(conquered < g.GetQuantity())
+        {
+            g.SetProgress(conquered * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_CONQUER_STRUCTURES)
+    {
+        if(mTotStructuresConquered < g.GetQuantity())
+        {
+            g.SetProgress(mTotStructuresConquered * 100 / g.GetQuantity());
 
             return false;
         }

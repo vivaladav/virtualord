@@ -1959,6 +1959,9 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
         // clear action data once the action is completed
         SetObjectActionCompleted(unit);
 
+        // register conquest
+        mTrackerMG->AddStructureConquered(objStruct->GetObjectType());
+
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/conquer-02.ogg", 250);
     });

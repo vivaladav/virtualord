@@ -41,6 +41,9 @@ public:
     static const MissionGoalType TYPE_COLLECT_BLOBS;
     static const MissionGoalType TYPE_COLLECT_DIAMONDS;
     static const MissionGoalType TYPE_COMPLETE_TUTORIAL;
+    static const MissionGoalType TYPE_CONQUER_GEN_ENERGY;
+    static const MissionGoalType TYPE_CONQUER_GEN_MATERIAL;
+    static const MissionGoalType TYPE_CONQUER_STRUCTURES;
     static const MissionGoalType TYPE_CREATE_MINI_UNITS;
     static const MissionGoalType TYPE_CREATE_UNITS;
     static const MissionGoalType TYPE_DESTROY_ENEMY_BASE;

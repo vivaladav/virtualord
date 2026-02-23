@@ -27,6 +27,9 @@ const MissionGoalType MissionGoal::TYPE_BUILD_WALL = 11692193607369444126u;
 const MissionGoalType MissionGoal::TYPE_COLLECT_BLOBS = 8180831592100055012u;
 const MissionGoalType MissionGoal::TYPE_COLLECT_DIAMONDS = 12762739805032650787u;
 const MissionGoalType MissionGoal::TYPE_COMPLETE_TUTORIAL = 1773561169575209575u;
+const MissionGoalType MissionGoal::TYPE_CONQUER_GEN_ENERGY = 7585817105308243794u;
+const MissionGoalType MissionGoal::TYPE_CONQUER_GEN_MATERIAL = 99665469119904040u;
+const MissionGoalType MissionGoal::TYPE_CONQUER_STRUCTURES = 9730583447334225283u;
 const MissionGoalType MissionGoal::TYPE_CREATE_MINI_UNITS = 993249735153949780u;
 const MissionGoalType MissionGoal::TYPE_CREATE_UNITS = 7817244446116281940u;
 const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_BASE = 6201685467854920925u;
@@ -49,6 +52,9 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_COLLECT_BLOBS, "MG_COLLECT_BLOBS" },
     { TYPE_COLLECT_DIAMONDS, "MG_COLLECT_DIAMONDS" },
     { TYPE_COMPLETE_TUTORIAL, "MG_COMPLETE_TUTORIAL" },
+    { TYPE_CONQUER_GEN_ENERGY, "MG_CONQUER_GEN_ENE" },
+    { TYPE_CONQUER_GEN_MATERIAL, "MG_CONQUER_GEN_MAT" },
+    { TYPE_CONQUER_STRUCTURES, "MG_CONQUER_STRUCTS" },
     { TYPE_CREATE_MINI_UNITS, "MG_CREATE_MINI_UNITS" },
     { TYPE_CREATE_UNITS, "MG_CREATE_UNITS" },
     { TYPE_DESTROY_ENEMY_BASE, "MG_DESTROY_ENEMY_BASE" },
@@ -74,6 +80,9 @@ MissionCategory MissionGoal::GetCategory() const
 {
     if(mType == TYPE_DESTROY_ALL_ENEMIES || mType == TYPE_DESTROY_ENEMY_BASE)
         return MC_DESTRUCTION;
+    else if(mType == TYPE_CONQUER_STRUCTURES || mType == TYPE_CONQUER_GEN_ENERGY ||
+            mType == TYPE_CONQUER_GEN_MATERIAL)
+        return MC_CONQUEST;
     else if(mType == TYPE_CREATE_MINI_UNITS || mType == TYPE_CREATE_UNITS ||
             mType == TYPE_BUILD_STRUCTURES || mType == TYPE_BUILD_WALL ||
             mType == TYPE_BUILD_BUNKER || mType == TYPE_BUILD_DEF_TOWER ||
@@ -239,6 +248,28 @@ void MissionGoal::SetMissionRewards()
             const int money = 15000;
 
             mRewards[MR_MONEY] = money;
+        }
+        else if(mType == TYPE_CONQUER_GEN_ENERGY || mType == TYPE_CONQUER_GEN_MATERIAL)
+        {
+            const int multMoney = 500;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
+
+            const int multEnergy = 10;
+            mRewards[MR_ENERGY] = mQuantity * multEnergy;
+
+            const int multMaterial = 10;
+            mRewards[MR_MATERIAL] = mQuantity * multMaterial;
+        }
+        else if(mType == TYPE_CONQUER_STRUCTURES)
+        {
+            const int multMoney = 100;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
+
+            const int multBlobs = 5;
+            mRewards[MR_BLOBS] = mQuantity * multBlobs;
+
+            const int multDiamonds = 5;
+            mRewards[MR_DIAMONDS] = mQuantity * multDiamonds;
         }
         else if(mType == TYPE_GAIN_MONEY)
         {

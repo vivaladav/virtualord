@@ -72,6 +72,7 @@ enum MapLayers : unsigned int
 enum MissionCategory : unsigned int
 {
     MC_COLLECTION,      // collect resources
+    MC_CONQUEST,        // conquest
     MC_CREATION,        // build something
     MC_DESTRUCTION,     // destroy enemies
     MC_PRODUCTION,      // produce resources
