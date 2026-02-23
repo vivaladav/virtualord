@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameObjects/GameObjectTypes.h"
 #include "MissionGoal.h"
 
 #include <vector>
@@ -32,18 +33,20 @@ public:
     void SetPlayedTime(unsigned int sec);
     void AddMiniUnitCreated();
     void AddUnitCreated();
-    void AddStructureBuilt(unsigned int type);
+    void AddStructureBuilt(GameObjectTypeId type);
     void AddWallBuilt();
 
 private:
     bool CheckIfGoalCompleted(MissionGoal & g);
+
+    unsigned int GetNumStructuresBuilt(GameObjectTypeId type) const;
 
 private:
     std::vector<MissionGoal> mMissionGoals;
     std::vector<int> mResourcesGained;
     std::vector<unsigned int> mResourceTrackerIds;
     std::vector<Player *> mAiPlayers;
-    std::unordered_map<unsigned int, int> mStructuresBuiltTypes;
+    std::unordered_map<GameObjectTypeId, unsigned int> mStructuresBuiltTypes;
 
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
@@ -73,5 +76,11 @@ inline void MissionGoalsTracker::SetPlayedTime(unsigned int sec) { mPlayedTime =
 inline void MissionGoalsTracker::AddMiniUnitCreated() { ++mMiniUnitsCreated; }
 inline void MissionGoalsTracker::AddUnitCreated() { ++mUnitsCreated; }
 inline void MissionGoalsTracker::AddWallBuilt() { ++mWallBuilt; }
+
+inline unsigned int MissionGoalsTracker::GetNumStructuresBuilt(GameObjectTypeId type) const
+{
+    const auto it = mStructuresBuiltTypes.find(type);
+    return it != mStructuresBuiltTypes.end() ? it->second : 0;
+}
 
 } // namespace game

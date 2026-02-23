@@ -13,7 +13,7 @@
 namespace game
 {
 
-const std::string MapIO::MAP_VERSION("0.3.1");
+const std::string MapIO::MAP_VERSION("0.3.0");
 
 const std::string MapIO::MAP_TAG_COMMENT("#");
 const std::string MapIO::MAP_TAG_GOAL("G");
@@ -278,12 +278,8 @@ void MapIO::ReadHeader(std::fstream & fs)
             unsigned int quantity = 0;
             ss >> quantity;
 
-            // extra data
-            unsigned int extraData = 0;
-            ss >> extraData;
-
             // store goal
-            mGoals.emplace_back(type, quantity, extraData, primary);
+            mGoals.emplace_back(type, quantity, primary);
 
             // assign category based on first primary goal
             if(primary && MC_UNKNOWN == mCategory)

@@ -135,7 +135,7 @@ void MissionGoalsTracker::Update()
     mMapCompleted = completedPrimaryGoals == primaryGoals;
 }
 
-void MissionGoalsTracker::AddStructureBuilt(unsigned int type)
+void MissionGoalsTracker::AddStructureBuilt(GameObjectTypeId type)
 {
     // register type built
     auto it = mStructuresBuiltTypes.find(type);
@@ -192,6 +192,17 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
         }
         else
             return false;
+    }
+    else if(gt == MissionGoal::TYPE_BUILD_SOLAR_PANELS)
+    {
+        const int built = GetNumStructuresBuilt(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR);
+
+        if(built < g.GetQuantity())
+        {
+            g.SetProgress(built * 100 / g.GetQuantity());
+
+            return false;
+        }
     }
     else if(gt == MissionGoal::TYPE_BUILD_STRUCTURES)
     {
