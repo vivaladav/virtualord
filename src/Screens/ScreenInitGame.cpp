@@ -1274,6 +1274,11 @@ void ScreenInitGame::SetupTextures()
             { 156, 546, 3, 107 },
             { 160, 546, 96, 3 },
             { 160, 550, 141, 3 },
+            // ICONS UPGRADES
+            { 152, 654, 48, 48 },
+            { 201, 654, 48, 48 },
+            { 250, 654, 48, 48 },
+            { 299, 654, 48, 48 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
@@ -1281,19 +1286,6 @@ void ScreenInitGame::SetupTextures()
 
         tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME],
             SpriteFileDialogTechTreeExp);
-
-        // TECH UPGRADES
-        const std::vector<sgl::core::Rectd> rects2
-        {
-            // ICONS
-            { 0, 0, 48, 48 },
-            { 49, 0, 48, 48 },
-            { 98, 0, 48, 48 },
-            { 147, 0, 48, 48 },
-        };
-
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
-                           SpriteFileTechUpgrades, rects2);
 
 #ifdef DEV_MODE
         // TODO remove later, now left just for reference on testing loading times

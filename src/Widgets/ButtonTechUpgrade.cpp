@@ -93,7 +93,7 @@ void ButtonTechUpgrade::SetUpgrade(TechUpgradeId upgrade)
     mUpgrade = upgrade;
 
     const unsigned int texId = mIconsIds.at(upgrade);
-    auto tex = tm->GetSprite(SpriteFileTechUpgrades, texId);
+    auto tex = tm->GetSprite(SpriteFileDialogTechTree, texId);
 
     mIcon->SetTexture(tex);
 

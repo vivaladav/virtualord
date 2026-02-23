@@ -38,7 +38,6 @@ const char SpriteFileResourcesBar[] = "UI/resources_bar.png";
 const char SpriteFileResourcesBarExp[] = "UI/resources_bar-exp.png";
 const char SpriteFileSettings[] = "UI/game_settings.png";
 const char SpriteFileSettingsExp[] = "UI/game_settings-exp.png";
-const char SpriteFileTechUpgrades[] = "UI/tech_upgrades.png";
 const char SpriteFileTooltips[] = "UI/tooltips.png";
 const char SpriteFileTooltipsExp[] = "UI/tooltips-exp.png";
 const char SpriteFileTutorial[] = "UI/tutorial.png";

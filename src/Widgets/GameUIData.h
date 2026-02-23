@@ -313,6 +313,11 @@ enum SpriteIdDialogTechTree : unsigned int
     ID_DLG_TECHT_LINK_VL,
     ID_DLG_TECHT_LINK_HS,
     ID_DLG_TECHT_LINK_HL,
+    // ICONS UPGRADES
+    ID_TECH_UP_ICON_TODO,
+    ID_TECH_UP_ICON_BASE_IMPROVE,
+    ID_TECH_UP_ICON_RADAR_STATION,
+    ID_TECH_UP_ICON_RADAR_TOWER,
 };
 
 extern const char SpriteFileDialogTechTreeExp[];
@@ -881,20 +886,6 @@ enum SpriteIdSettingsExp : unsigned int
     IND_SET_SLIDERH_BG,
     IND_SET_SLIDERH_BAR,
     IND_SET_SLIDERH_BUTTON
-};
-
-// TECH UPGRADES
-extern const char SpriteFileTechUpgrades[];
-
-enum SpriteIdTechUpgrades : unsigned int
-{
-    // ICONS
-    ID_TECH_UP_ICON_TODO,
-    ID_TECH_UP_ICON_BASE_IMPROVE,
-    ID_TECH_UP_ICON_RADAR_STATION,
-    ID_TECH_UP_ICON_RADAR_TOWER,
-
-    NUM_TECH_UPGRADES_ICONS,
 };
 
 // TOOLTIPS
