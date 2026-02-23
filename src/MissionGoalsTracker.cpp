@@ -193,6 +193,39 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
         else
             return false;
     }
+    else if(gt == MissionGoal::TYPE_BUILD_BUNKER)
+    {
+        const int built = GetNumStructuresBuilt(ObjectData::TYPE_BUNKER);
+
+        if(built < g.GetQuantity())
+        {
+            g.SetProgress(built * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_BUILD_DEF_TOWER)
+    {
+        const int built = GetNumStructuresBuilt(ObjectData::TYPE_DEFENSIVE_TOWER);
+
+        if(built < g.GetQuantity())
+        {
+            g.SetProgress(built * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_BUILD_MAT_EXTRACT)
+    {
+        const int built = GetNumStructuresBuilt(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT);
+
+        if(built < g.GetQuantity())
+        {
+            g.SetProgress(built * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
     else if(gt == MissionGoal::TYPE_BUILD_SOLAR_PANELS)
     {
         const int built = GetNumStructuresBuilt(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR);

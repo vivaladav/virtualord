@@ -32,6 +32,9 @@ public:
 
     // -- MISSION TYPE --
     static const MissionGoalType TYPE_NULL;
+    static const MissionGoalType TYPE_BUILD_BUNKER;
+    static const MissionGoalType TYPE_BUILD_DEF_TOWER;
+    static const MissionGoalType TYPE_BUILD_MAT_EXTRACT;
     static const MissionGoalType TYPE_BUILD_SOLAR_PANELS;
     static const MissionGoalType TYPE_BUILD_STRUCTURES;
     static const MissionGoalType TYPE_BUILD_WALL;
