@@ -3,6 +3,7 @@
 #include "MissionGoal.h"
 
 #include <vector>
+#include <unordered_map>
 
 namespace game
 {
@@ -31,7 +32,7 @@ public:
     void SetPlayedTime(unsigned int sec);
     void AddMiniUnitCreated();
     void AddUnitCreated();
-    void AddStructureBuilt();
+    void AddStructureBuilt(unsigned int type);
     void AddWallBuilt();
 
 private:
@@ -42,6 +43,7 @@ private:
     std::vector<int> mResourcesGained;
     std::vector<unsigned int> mResourceTrackerIds;
     std::vector<Player *> mAiPlayers;
+    std::unordered_map<unsigned int, int> mStructuresBuiltTypes;
 
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
@@ -70,7 +72,6 @@ inline void MissionGoalsTracker::SetPlayedTime(unsigned int sec) { mPlayedTime =
 
 inline void MissionGoalsTracker::AddMiniUnitCreated() { ++mMiniUnitsCreated; }
 inline void MissionGoalsTracker::AddUnitCreated() { ++mUnitsCreated; }
-inline void MissionGoalsTracker::AddStructureBuilt() { ++mStructuresBuilt; }
 inline void MissionGoalsTracker::AddWallBuilt() { ++mWallBuilt; }
 
 } // namespace game

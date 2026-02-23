@@ -135,6 +135,20 @@ void MissionGoalsTracker::Update()
     mMapCompleted = completedPrimaryGoals == primaryGoals;
 }
 
+void MissionGoalsTracker::AddStructureBuilt(unsigned int type)
+{
+    // register type built
+    auto it = mStructuresBuiltTypes.find(type);
+
+    if(it != mStructuresBuiltTypes.end())
+        ++(it->second);
+    else
+        mStructuresBuiltTypes.emplace(type, 1);
+
+    // update generic counter
+    ++mStructuresBuilt;
+}
+
 bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 {
     if(g.IsCompleted())
