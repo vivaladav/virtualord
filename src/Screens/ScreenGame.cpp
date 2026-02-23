@@ -2242,6 +2242,8 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
                              "start: " << start.row << "," << start.col
                           << " - target: " << oldTarget.row << "," << oldTarget.col << std::endl;
 
+                delete cp;
+
                 return false;
             }
         }
@@ -2257,6 +2259,8 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
                       << " - CONNECT STRUCTURE FAILED (no path) - "
                          "start: " << start.row << "," << start.col
                       << " - target: " << target.row << "," << target.col << std::endl;
+
+            delete cp;
 
             return false;
         }
