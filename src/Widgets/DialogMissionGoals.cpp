@@ -433,11 +433,12 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
         const unsigned int iconIds[NUM_MISSION_REWARDS] =
         {
-            ID_DLG_MGOALS_ICON_BLOBS,
-            ID_DLG_MGOALS_ICON_DIAMONDS,
-            ID_DLG_MGOALS_ICON_ENERGY,
-            ID_DLG_MGOALS_ICON_MATERIAL,
-            ID_DLG_MGOALS_ICON_MONEY,
+            ID_UIS_ICON_C_RES_BLOBS_24,
+            ID_UIS_ICON_C_RES_DIAMONDS_24,
+            ID_UIS_ICON_C_RES_ENERGY_24,
+            ID_UIS_ICON_C_RES_MATERIAL_24,
+            ID_UIS_ICON_C_RES_MONEY_24,
+            ID_UIS_ICON_C_RES_RESEARCH_24,
         };
 
         for(unsigned int r = 0; r < NUM_MISSION_REWARDS; ++r)
@@ -465,7 +466,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
             contX += labelData->GetWidth() + rewardMargin;
 
-            auto texIcon = tm->GetSprite(SpriteFileDialogMissionGoals, iconIds[r]);
+            auto texIcon = tm->GetSprite(SpriteFileGameUIShared, iconIds[r]);
             auto icon = new sgui::Image(texIcon, bg);
             icon->SetPosition(contX, contY + ((labelData->GetHeight() - icon->GetHeight()) / 2));
 
