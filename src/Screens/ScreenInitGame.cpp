@@ -1279,6 +1279,10 @@ void ScreenInitGame::SetupTextures()
             { 201, 654, 48, 48 },
             { 250, 654, 48, 48 },
             { 299, 654, 48, 48 },
+            { 348, 654, 48, 48 },
+            { 397, 654, 48, 48 },
+            { 152, 703, 48, 48 },
+            { 201, 703, 48, 48 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],

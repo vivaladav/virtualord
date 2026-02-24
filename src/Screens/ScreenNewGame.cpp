@@ -42,10 +42,6 @@ ScreenNewGame::ScreenNewGame(Game * game)
     p->AddAvailableStructure(ObjectData::TYPE_RESEARCH_CENTER);
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR);
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT);
-    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_BLOBS);
-    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_DIAMONDS);
-    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_ENERGY);
-    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_MATERIAL);
     p->AddAvailableStructure(ObjectData::TYPE_SPAWN_TOWER);
     p->AddAvailableStructure(ObjectData::TYPE_TRADING_POST);
     p->AddAvailableStructure(ObjectData::TYPE_WALL_GATE);

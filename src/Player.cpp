@@ -431,6 +431,13 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
             AddAvailableStructure(ObjectData::TYPE_RADAR_TOWER);
         break;
 
+        case TECH_UP_STORAGE_STRUCTS:
+            AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_BLOBS);
+            AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_DIAMONDS);
+            AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_ENERGY);
+            AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_MATERIAL);
+        break;
+
         default:
         break;
     }

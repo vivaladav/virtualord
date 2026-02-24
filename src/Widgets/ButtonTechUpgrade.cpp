@@ -63,6 +63,7 @@ ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * 
     mIconsIds.emplace(TECH_UP_BASE_IMPROVE_5, ID_TECH_UP_ICON_BASE_IMPROVE);
     mIconsIds.emplace(TECH_UP_RADAR_STATION, ID_TECH_UP_ICON_RADAR_STATION);
     mIconsIds.emplace(TECH_UP_RADAR_TOWER, ID_TECH_UP_ICON_RADAR_TOWER);
+    mIconsIds.emplace(TECH_UP_STORAGE_STRUCTS, ID_TECH_UP_ICON_STORAGE_STRUCTS);
 
     SetUpgrade(upgrade);
 
