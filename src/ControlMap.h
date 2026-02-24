@@ -32,6 +32,8 @@ private:
 
     void UpdateControllers();
 
+    void UpdatePercentageControlled(PlayerFaction f);
+
     IsoObject * GetNewMarker();
     void ClearUsedMarkers();
 
@@ -69,6 +71,7 @@ private:
     std::vector<ControlCell> mMap;
     std::vector<IsoObject * > mMarkers;
     std::vector<unsigned int> mTypesMap;
+    std::vector<int> mPercControlledByFaction;
     unsigned int mUsedMarkers = 0;
 
     IsoLayer * mLayer = nullptr;

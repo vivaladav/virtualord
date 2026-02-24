@@ -19,6 +19,8 @@ ControlMap::ControlMap(IsoLayer * layer, Player * localPlayer)
     : mLayer(layer)
     , mPlayer(localPlayer)
 {
+    mPercControlledByFaction.assign(NUM_FACTIONS, 0);
+
     // init all 2^8 combinations to error type
     const int typeCombinations = 256;
     mTypesMap.assign(typeCombinations, IND_INF_AREA_UNDEFINED);
@@ -171,6 +173,8 @@ void ControlMap::AddControlPointsForCell(unsigned int r, unsigned int c, PlayerF
 
     UpdateControllers();
     UpdateVisualAreas();
+
+    UpdatePercentageControlled(faction);
 }
 
 void ControlMap::AddControlPointsForObject(GameObject * obj)
@@ -189,6 +193,8 @@ void ControlMap::AddControlPointsForObject(GameObject * obj)
 
     UpdateControllers();
     UpdateVisualAreas();
+
+    UpdatePercentageControlled(faction);
 }
 
 void ControlMap::UpdateVisualAreas()
@@ -230,15 +236,10 @@ void ControlMap::UpdateVisualAreas()
 
 int ControlMap::GetPercentageControlledByFaction(PlayerFaction f) const
 {
-    const int size = mRows * mCols;
-
-    int controlled = 0;
-
-    for(int i = 0; i < size; ++i)
-        controlled += static_cast<int>(mMap[i].controller == f);
-
-    const float h = 100.f;
-    return std::roundf(controlled * h / size);
+    if(f < NUM_FACTIONS)
+        return mPercControlledByFaction[f];
+    else
+        return 0;
 }
 
 void ControlMap::AddControlPointsToArea(int rTL, int cTL,
@@ -377,6 +378,19 @@ void ControlMap::UpdateControllers()
             }
         }
     }
+}
+
+void ControlMap::UpdatePercentageControlled(PlayerFaction f)
+{
+    const float size = mRows * mCols;
+
+    int controlled = 0;
+
+    for(int i = 0; i < size; ++i)
+        controlled += static_cast<int>(mMap[i].controller == f);
+
+    const float h = 100.f;
+    mPercControlledByFaction[f] = std::roundf(controlled * h / size);
 }
 
 IsoObject * ControlMap::GetNewMarker()
