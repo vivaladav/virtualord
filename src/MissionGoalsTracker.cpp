@@ -1,5 +1,6 @@
 #include "MissionGoalsTracker.h"
 
+#include "ControlMap.h"
 #include "Game.h"
 #include "Player.h"
 #include "GameObjects/ObjectData.h"
@@ -375,7 +376,6 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     else if(gt == MissionGoal::TYPE_RESIST_TIME)
     {
         // check elapsed time
-
         if(mPlayedTime < g.GetQuantity())
         {
             g.SetProgress(mPlayedTime * 100 / g.GetQuantity());
@@ -384,6 +384,18 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
         }
 
         mHUD->HideMissionCountdown();
+    }
+    else if(gt == MissionGoal::TYPE_TERRITORY_CONTROL)
+    {
+        const auto faction = mPlayer->GetFaction();
+        const int conquered = mControlMap->GetPercentageControlledByFaction(faction);
+
+        if(conquered < g.GetQuantity())
+        {
+            g.SetProgress(conquered * 100 / g.GetQuantity());
+
+            return false;
+        }
     }
     else
         return false;

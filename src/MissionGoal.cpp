@@ -39,6 +39,7 @@ const MissionGoalType MissionGoal::TYPE_GEN_RESEARCH = 14329901690992621984u;
 const MissionGoalType MissionGoal::TYPE_MINE_ENERGY = 16410639771806347059u;
 const MissionGoalType MissionGoal::TYPE_MINE_MATERIAL = 5378452321571368320u;
 const MissionGoalType MissionGoal::TYPE_RESIST_TIME = 5309855068505147025u;
+const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL = 12724023192682496055u;
 
 const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION =
 {
@@ -64,15 +65,17 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_MINE_ENERGY, "MG_MINE_ENERGY" },
     { TYPE_MINE_MATERIAL, "MG_MINE_MATERIAL" },
     { TYPE_RESIST_TIME, "MG_RESIST_TIME" },
+    { TYPE_TERRITORY_CONTROL, "MG_TERR_CONTROL" },
 };
 
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool primary)
     : mId(++num)
     , mType(type)
     , mQuantity(quantity)
-    , mRewards({})
     , mPrimary(primary)
 {
+    mRewards.fill(0);
+
     SetMissionRewards();
 }
 
@@ -81,7 +84,7 @@ MissionCategory MissionGoal::GetCategory() const
     if(mType == TYPE_DESTROY_ALL_ENEMIES || mType == TYPE_DESTROY_ENEMY_BASE)
         return MC_DESTRUCTION;
     else if(mType == TYPE_CONQUER_STRUCTURES || mType == TYPE_CONQUER_GEN_ENERGY ||
-            mType == TYPE_CONQUER_GEN_MATERIAL)
+            mType == TYPE_CONQUER_GEN_MATERIAL || mType == TYPE_TERRITORY_CONTROL)
         return MC_CONQUEST;
     else if(mType == TYPE_CREATE_MINI_UNITS || mType == TYPE_CREATE_UNITS ||
             mType == TYPE_BUILD_STRUCTURES || mType == TYPE_BUILD_WALL ||
@@ -340,6 +343,16 @@ void MissionGoal::SetMissionRewards()
 
             const int material = 100;
             mRewards[MR_MATERIAL] = material;
+        }
+        else if(mType == TYPE_TERRITORY_CONTROL)
+        {
+            const int multMoney = 100;
+            const int money = mQuantity * multMoney;
+            mRewards[MR_MONEY] = money;
+
+            const int multResearch = 50;
+            const int research = mQuantity * multResearch;
+            mRewards[MR_RESEARCH] = research;
         }
         else
             std::cout << "[WAR] Mission Goal type unknown: " << mType << std::endl;

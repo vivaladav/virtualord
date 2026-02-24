@@ -9,6 +9,7 @@
 namespace game
 {
 
+class ControlMap;
 class Game;
 class GameHUD;
 class Player;
@@ -20,6 +21,7 @@ public:
     ~MissionGoalsTracker();
 
     void SetGameHUD(GameHUD * gh);
+    void SetControlMap(const ControlMap * cm);
 
     const std::vector<MissionGoal> & GetGoals() const;
     void SetGoals(const std::vector<MissionGoal> & goals);
@@ -54,6 +56,7 @@ private:
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
     GameHUD * mHUD = nullptr;
+    const ControlMap * mControlMap = nullptr;
 
     unsigned int mMiniUnitsCreated = 0;
     unsigned int mUnitsCreated = 0;
@@ -67,6 +70,7 @@ private:
 };
 
 inline void MissionGoalsTracker::SetGameHUD(GameHUD * gh) { mHUD = gh; }
+inline void MissionGoalsTracker::SetControlMap(const ControlMap * cm) { mControlMap = cm; }
 
 inline const std::vector<MissionGoal> & MissionGoalsTracker::GetGoals() const
 {

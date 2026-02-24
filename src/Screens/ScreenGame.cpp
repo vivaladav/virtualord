@@ -112,6 +112,8 @@ ScreenGame::ScreenGame(Game * game)
     // create game map
     mGameMap = new GameMap(GetGame(), this, mIsoMap);
 
+    mTrackerMG->SetControlMap(mGameMap->GetControlMap());
+
     LoadMapFile();
 
     // center map on screen

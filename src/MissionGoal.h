@@ -53,6 +53,7 @@ public:
     static const MissionGoalType TYPE_MINE_ENERGY;
     static const MissionGoalType TYPE_MINE_MATERIAL;
     static const MissionGoalType TYPE_RESIST_TIME;
+    static const MissionGoalType TYPE_TERRITORY_CONTROL;
 
 public:
     MissionGoal(MissionGoalType type, unsigned int quantity, bool primary);
