@@ -11,6 +11,7 @@
 #include "GameObjects/Diamonds.h"
 #include "GameObjects/GameObjectsGroup.h"
 #include "GameObjects/LootBox.h"
+#include "GameObjects/ResourceStorage.h"
 #include "GameObjects/Structure.h"
 #include "GameObjects/Unit.h"
 
@@ -438,6 +439,14 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
             AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_MATERIAL);
         break;
 
+        case TECH_UP_STORAGE_ENERGY_1:
+            UpgradeResourceStorage(RES_ENERGY, 1.25f);
+        break;
+
+        case TECH_UP_STORAGE_ENERGY_2:
+            UpgradeResourceStorage(RES_ENERGY, 1.5f);
+        break;
+
         default:
         break;
     }
@@ -666,6 +675,18 @@ void Player::NotifyResourcesChanged()
 {
     for(auto & it : mOnResourcesChanged)
         it.second();
+}
+
+void Player::UpgradeResourceStorage(ResourceType type, float mult)
+{
+    mStorageEnergyMult *= mult;
+
+    // notify existing structures
+    for(auto s : mStructures)
+    {
+        if(s->GetObjectType() == ObjectData::TYPE_RES_STORAGE_ENERGY)
+            static_cast<ResourceStorage *>(s)->OnCapacityUpgraded();
+    }
 }
 
 } // namespace game

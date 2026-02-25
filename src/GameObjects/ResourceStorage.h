@@ -14,6 +14,8 @@ public:
 
     ResourceType GetResourceType() const;
 
+    void OnCapacityUpgraded();
+
 private:
     void UpdateGraphics() override;
 
@@ -21,6 +23,7 @@ private:
     void OnAttributeChanged() override;
 
     void UpdateCapacity();
+    void UpdateCapacityValue();
 
     void SetImage();
 
@@ -31,6 +34,8 @@ private:
 };
 
 inline ResourceType ResourceStorage::GetResourceType() const { return mResource; }
+
+inline void ResourceStorage::OnCapacityUpgraded() { UpdateCapacity(); }
 
 } // namespace game
 

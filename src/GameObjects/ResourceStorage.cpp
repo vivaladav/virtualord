@@ -65,9 +65,14 @@ void ResourceStorage::OnLinkedChanged()
 
 void ResourceStorage::OnAttributeChanged()
 {
+    UpdateCapacity();
+}
+
+void ResourceStorage::UpdateCapacity()
+{
     const int oldCapacity = mCapacity;
 
-    UpdateCapacity();
+    UpdateCapacityValue();
 
     // update owner's capacity
     if(oldCapacity != mCapacity && IsLinked())
@@ -87,12 +92,15 @@ void ResourceStorage::OnAttributeChanged()
     }
 }
 
-void ResourceStorage::UpdateCapacity()
+void ResourceStorage::UpdateCapacityValue()
 {
+    Player * p = GetOwner();
+
     const bool mainRes = RES_ENERGY == mResource || RES_MATERIAL1 == mResource;
     const float maxCapacity = mainRes ? 2000.f : 1000.f;
+    const float mult = p != nullptr ? p->GetStorageEnergyMult() : 1.f;
 
-    mCapacity = std::roundf(maxCapacity * GetAttribute(OBJ_ATT_STORAGE) / MAX_STAT_FVAL);
+    mCapacity = std::roundf(mult * maxCapacity * GetAttribute(OBJ_ATT_STORAGE) / MAX_STAT_FVAL);
 }
 
 void ResourceStorage::SetImage()

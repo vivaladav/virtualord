@@ -61,7 +61,7 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
             p->SumResource(Player::MATERIAL, 1000);
             p->SumResource(Player::BLOBS, 100);
             p->SumResource(Player::DIAMONDS, 100);
-            p->SumResource(Player::RESEARCH, 100);
+            p->SumResource(Player::RESEARCH, 500);
         }
         else if(event.IsModCtrlDown())
         {

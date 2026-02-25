@@ -102,6 +102,8 @@ DialogTechTree::DialogTechTree(Player * player)
     mDescriptions.emplace(TECH_UP_RADAR_STATION, "UPG_RADAR_STATION");
     mDescriptions.emplace(TECH_UP_RADAR_TOWER, "UPG_RADAR_TOWER");
     mDescriptions.emplace(TECH_UP_STORAGE_STRUCTS, "UPG_STOR_STRUCTS");
+    mDescriptions.emplace(TECH_UP_STORAGE_ENERGY_1, "UPG_STOR_ENE1");
+    mDescriptions.emplace(TECH_UP_STORAGE_ENERGY_2, "UPG_STOR_ENE2");
 
     // INIT COSTS
     mCosts.emplace(TECH_UP_NULL, 0);
@@ -113,6 +115,8 @@ DialogTechTree::DialogTechTree(Player * player)
     mCosts.emplace(TECH_UP_RADAR_STATION, 500);
     mCosts.emplace(TECH_UP_RADAR_TOWER, 400);
     mCosts.emplace(TECH_UP_STORAGE_STRUCTS, 1200);
+    mCosts.emplace(TECH_UP_STORAGE_ENERGY_1, 600);
+    mCosts.emplace(TECH_UP_STORAGE_ENERGY_2, 1500);
 
     // -- BACKGROUND --
     const int w = 1900;
@@ -372,9 +376,28 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
                                                 { btnUpgrade01 }, false);
         btnUpgrade02->SetPosition(btnX, btnY);
 
-        AddLinkToUpgrade(btnUpgrade01, LINK_VERT, LS_NORTH);
+        AddLinkToUpgrade(btnUpgrade02, LINK_VERT, LS_NORTH);
 
-        btnY -= btnUpgrade01->GetHeight() + buttonsMarginV;
+        btnY -= btnUpgrade02->GetHeight() + buttonsMarginV;
+
+        // [1, 2]
+        auto btnUpgrade12 = GetNewButtonUpgrade(TECH_UP_STORAGE_ENERGY_1, 1,
+                                                { btnUpgrade02 }, false);
+
+        btnUpgrade12->SetPosition(btnX, btnY);
+
+        AddLinkToUpgrade(btnUpgrade12, LINK_VERT, LS_NORTH);
+        AddLinkToUpgrade(btnUpgrade12, LINK_HORIZ, LS_WEST);
+
+        // -- COL 3 --
+        btnX = btnUpgrade12->GetX() + btnUpgrade12->GetWidth() + buttonsMarginH;
+        btnY = btnUpgrade12->GetY();
+
+        // [1, 3]
+        auto btnUpgrade13 = GetNewButtonUpgrade(TECH_UP_STORAGE_ENERGY_2, 2,
+                                                { btnUpgrade12 }, false);
+
+        btnUpgrade13->SetPosition(btnX, btnY);
     }
     else
     {
