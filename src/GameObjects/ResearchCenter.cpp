@@ -20,20 +20,26 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
 
     // init resource usage
     mResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
-    mResUsage[ER_ENERGY] = 10;
-    mResUsage[ER_MATERIAL] = 10;
-    mResUsage[ER_MONEY] = 10;
+
+    // set default usage wanted (will be updated in UpdateProduction)
+    const int defUsage = 10;
+
+    mResUsage[ER_ENERGY] = defUsage;
+    mResUsage[ER_MATERIAL] = defUsage;
+    mResUsage[ER_MONEY] = defUsage;
 
     UpdateProduction();
 
-    // track changes
+    // track changes of resources
     auto p = GetOwner();
 
     if(p != nullptr)
-        mResTrackerId = p->AddOnResourcesChanged([this]
     {
-        UpdateProduction();
-    });
+        mResTrackerId = p->AddOnResourcesChanged([this]
+                                                 {
+                                                     UpdateProduction();
+                                                 });
+    }
 }
 
 ResearchCenter::~ResearchCenter()
@@ -153,43 +159,55 @@ void ResearchCenter::UpdateProduction()
         return ;
     }
 
-    // ENERGY usage
+    // -- clamp usage to what's available --
+    // ENERGY
     const int energy = p->GetStat(Player::ENERGY).GetValue();
-    const int usageEnergy = mResUsage[ER_ENERGY] > energy ? energy : mResUsage[ER_ENERGY];
 
-    // MATERIAL usage
+    if(mResUsage[ER_ENERGY] > energy)
+        mResUsage[ER_ENERGY] = energy;
+
+    // MATERIAL
     const int material = p->GetStat(Player::MATERIAL).GetValue();
-    const int usageMaterial = mResUsage[ER_MATERIAL] > material ? material : mResUsage[ER_MATERIAL];
 
-    // MONEY usage
+    if(mResUsage[ER_MATERIAL] > material)
+        mResUsage[ER_MATERIAL] = material;
+
+    // MONEY
     const int money = p->GetStat(Player::MONEY).GetValue();
-    const int usageMoney = mResUsage[ER_MONEY] > money ? money : mResUsage[ER_MONEY];
+
+    if(mResUsage[ER_MONEY] > money)
+        mResUsage[ER_MONEY] = money;
 
     // no production if required resource is not used
-    if(usageEnergy == 0 || usageMaterial == 0 || usageMoney == 0)
+    if(mResUsage[ER_ENERGY] == 0 || mResUsage[ER_MATERIAL] == 0 || mResUsage[ER_MONEY] == 0)
     {
         mResearchPerTurn = 0;
         return ;
     }
 
-    // BLOBS uasge
+    // BLOBS
     const int blobs = p->GetStat(Player::BLOBS).GetValue();
-    const int usageBlobs = mResUsage[ER_BLOBS] > blobs ? blobs : mResUsage[ER_BLOBS];
 
-    // DIAMONDS uasge
+    if(mResUsage[ER_BLOBS] > blobs)
+        mResUsage[ER_BLOBS] = blobs;
+
+    // DIAMONDS
     const int diamonds = p->GetStat(Player::DIAMONDS).GetValue();
-    const int usageDiamonds = mResUsage[ER_DIAMONDS] > diamonds ? diamonds : mResUsage[ER_DIAMONDS];
 
+    if(mResUsage[ER_DIAMONDS] > diamonds)
+        mResUsage[ER_DIAMONDS] = diamonds;
+
+    // -- define research points production --
     const int maxProdElem = 30;
     const int maxProdElem2 = 40;
     const int maxUsage = 100;
-    const int baseProd = (maxProdElem * usageEnergy / maxUsage) +
-                         (maxProdElem * usageMaterial / maxUsage) +
-                         (maxProdElem2 * usageMoney / maxUsage);
+    const int baseProd = (maxProdElem * mResUsage[ER_ENERGY] / maxUsage) +
+                         (maxProdElem * mResUsage[ER_MATERIAL] / maxUsage) +
+                         (maxProdElem2 * mResUsage[ER_MONEY] / maxUsage);
     const int multProd2 = 2;
 
-    mResearchPerTurn = baseProd + (baseProd * multProd2 * usageBlobs / maxUsage) +
-                       (baseProd * multProd2 * usageDiamonds / maxUsage);
+    mResearchPerTurn = baseProd + (baseProd * multProd2 * mResUsage[ER_BLOBS] / maxUsage) +
+                       (baseProd * multProd2 * mResUsage[ER_DIAMONDS] / maxUsage);
 }
 
 } // namespace game
