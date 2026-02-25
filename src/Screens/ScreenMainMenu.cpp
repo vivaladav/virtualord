@@ -365,7 +365,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Improved animation of output particles.\n"
                   "- No tutorial mission goals if tutorial is disabled.\n"
                   "\nFIXES\n"
-                  "\n"
+                  "- Fix sliders showing wrong values and graphics when step is not 1.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

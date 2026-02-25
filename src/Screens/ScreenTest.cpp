@@ -454,8 +454,24 @@ void ScreenTest::TestSGui()
         label->SetText(std::to_string(val).c_str());
     });
 
+    wY += slider->GetHeight() * 2;
+
+    // SLIDER TEST STEP
+    slider = new TestSliderH(container4);
+    slider->SetMinMax(0, 25);
+    slider->SetStep(10);
+    slider->SetY(wY);
+
+    label = new Label(std::to_string(slider->GetValue()).c_str(), font, container4);
+    label->SetPosition(slider->GetX() + slider->GetWidth() + 50, slider->GetY());
+
+    slider->SetOnValueChanged([label](int val)
+                              {
+                                  label->SetText(std::to_string(val).c_str());
+                              });
+
     // SCROLL BAR
-    wY = 850;
+    wY = 900;
     auto container5 = new Widget;
     container5->SetPosition(wX, wY);
 
