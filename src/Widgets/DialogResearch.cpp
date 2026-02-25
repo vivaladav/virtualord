@@ -86,6 +86,8 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     const int topRes = 100;
     const int topRes2 = 10;
     const int stepRes = 10;
+    const int stepSingle = 1;
+    const int stepTreshold = stepRes * 2;
 
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, 20, graphic::Font::NORMAL);
     auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
@@ -99,6 +101,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
 
     int maxRes = 0;
     int valRes = 0;
+    int step = 0;
 
     // TITLE
     auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 32, graphic::Font::NORMAL);
@@ -139,9 +142,11 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     y += (icon->GetHeight() - slider->GetHeight()) / 2;
 
     slider->SetMinMax(minRes, maxRes);
-    slider->SetStep(stepRes);
     slider->SetValue(valRes);
     slider->SetPosition(x, y);
+
+    step = maxRes > stepTreshold ? stepRes : stepSingle;
+    slider->SetStep(step);
 
     x += slider->GetWidth() + marginSliderR;
 
@@ -185,9 +190,11 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     y += (icon->GetHeight() - slider->GetHeight()) / 2;
 
     slider->SetMinMax(minRes, maxRes);
-    slider->SetStep(stepRes);
     slider->SetValue(valRes);
     slider->SetPosition(x, y);
+
+    step = maxRes > stepTreshold ? stepRes : stepSingle;
+    slider->SetStep(step);
 
     x += slider->GetWidth() + marginSliderR;
 
@@ -231,9 +238,11 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     y += (icon->GetHeight() - slider->GetHeight()) / 2;
 
     slider->SetMinMax(minRes, maxRes);
-    slider->SetStep(stepRes);
     slider->SetValue(valRes);
     slider->SetPosition(x, y);
+
+    step = maxRes > stepTreshold ? stepRes : stepSingle;
+    slider->SetStep(step);
 
     x += slider->GetWidth() + marginSliderR;
 
@@ -279,6 +288,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     slider->SetMinMax(minRes, maxRes);
     slider->SetValue(valRes);
     slider->SetPosition(x, y);
+    slider->SetStep(stepSingle);
 
     x += slider->GetWidth() + marginSliderR;
 
@@ -324,6 +334,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     slider->SetMinMax(minRes, maxRes);
     slider->SetValue(valRes);
     slider->SetPosition(x, y);
+    slider->SetStep(stepSingle);
 
     x += slider->GetWidth() + marginSliderR;
 
