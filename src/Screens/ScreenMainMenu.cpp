@@ -358,6 +358,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New mission goals: create units and mini-units.\n"
                   "- New mission goals: create structures and create specific structures.\n"
                   "- New mission goals: conquer structures and conquer specific structures.\n"
+                  "- New mission goals: control territory with and without time limit.\n"
                   "\nCHANGES\n"
                   "- Hit points no longer shown on self-destruction.\n"
                   "- No longer pre-loading everything at the beginning, but"

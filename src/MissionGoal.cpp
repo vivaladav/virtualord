@@ -40,6 +40,8 @@ const MissionGoalType MissionGoal::TYPE_MINE_ENERGY = 16410639771806347059u;
 const MissionGoalType MissionGoal::TYPE_MINE_MATERIAL = 5378452321571368320u;
 const MissionGoalType MissionGoal::TYPE_RESIST_TIME = 5309855068505147025u;
 const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL = 12724023192682496055u;
+const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL_10M = 1074831185674823527u;
+const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL_20M = 9704104995837322694u;
 
 const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION =
 {
@@ -66,6 +68,8 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_MINE_MATERIAL, "MG_MINE_MATERIAL" },
     { TYPE_RESIST_TIME, "MG_RESIST_TIME" },
     { TYPE_TERRITORY_CONTROL, "MG_TERR_CONTROL" },
+    { TYPE_TERRITORY_CONTROL_10M, "MG_TERR_CONTROL_10M" },
+    { TYPE_TERRITORY_CONTROL_20M, "MG_TERR_CONTROL_20M" },
 };
 
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool primary)
@@ -84,7 +88,8 @@ MissionCategory MissionGoal::GetCategory() const
     if(mType == TYPE_DESTROY_ALL_ENEMIES || mType == TYPE_DESTROY_ENEMY_BASE)
         return MC_DESTRUCTION;
     else if(mType == TYPE_CONQUER_STRUCTURES || mType == TYPE_CONQUER_GEN_ENERGY ||
-            mType == TYPE_CONQUER_GEN_MATERIAL || mType == TYPE_TERRITORY_CONTROL)
+            mType == TYPE_CONQUER_GEN_MATERIAL || mType == TYPE_TERRITORY_CONTROL ||
+            mType == TYPE_TERRITORY_CONTROL_10M || mType == TYPE_TERRITORY_CONTROL_20M)
         return MC_CONQUEST;
     else if(mType == TYPE_CREATE_MINI_UNITS || mType == TYPE_CREATE_UNITS ||
             mType == TYPE_BUILD_STRUCTURES || mType == TYPE_BUILD_WALL ||
@@ -354,10 +359,41 @@ void MissionGoal::SetMissionRewards()
             const int research = mQuantity * multResearch;
             mRewards[MR_RESEARCH] = research;
         }
+        else if(mType == TYPE_TERRITORY_CONTROL_10M)
+        {
+            const int multMoney = 100;
+            const int money = mQuantity * multMoney;
+            mRewards[MR_MONEY] = money;
+
+            const int multResearch = 50;
+            const int research = mQuantity * multResearch;
+            mRewards[MR_RESEARCH] = research;
+
+            const int multBlobs = 10;
+            mRewards[MR_BLOBS] = mQuantity * multBlobs;
+
+            const int multDiamonds = 10;
+            mRewards[MR_DIAMONDS] = mQuantity * multDiamonds;
+        }
+        else if(mType == TYPE_TERRITORY_CONTROL_20M)
+        {
+            const int multMoney = 100;
+            const int money = mQuantity * multMoney;
+            mRewards[MR_MONEY] = money;
+
+            const int multResearch = 50;
+            const int research = mQuantity * multResearch;
+            mRewards[MR_RESEARCH] = research;
+
+            const int multBlobs = 10;
+            mRewards[MR_BLOBS] = mQuantity * multBlobs;
+
+            const int multDiamonds = 10;
+            mRewards[MR_DIAMONDS] = mQuantity * multDiamonds;
+        }
         else
             std::cout << "[WAR] Mission Goal type unknown: " << mType << std::endl;
 }
-
 
 } // namespace game
 
