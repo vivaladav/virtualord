@@ -72,6 +72,35 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_TERRITORY_CONTROL_20M, "MG_TERR_CONTROL_20M" },
 };
 
+const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORIES =
+{
+    { TYPE_NULL, MC_UNKNOWN },
+    { TYPE_BUILD_BUNKER, MC_CREATION },
+    { TYPE_BUILD_DEF_TOWER, MC_CREATION },
+    { TYPE_BUILD_MAT_EXTRACT, MC_CREATION },
+    { TYPE_BUILD_SOLAR_PANELS, MC_CREATION },
+    { TYPE_BUILD_STRUCTURES, MC_CREATION },
+    { TYPE_BUILD_WALL, MC_CREATION },
+    { TYPE_COLLECT_BLOBS, MC_COLLECTION },
+    { TYPE_COLLECT_DIAMONDS, MC_COLLECTION },
+    { TYPE_COMPLETE_TUTORIAL, MC_TUTORIAL },
+    { TYPE_CONQUER_GEN_ENERGY, MC_CONQUEST },
+    { TYPE_CONQUER_GEN_MATERIAL, MC_CONQUEST },
+    { TYPE_CONQUER_STRUCTURES, MC_CONQUEST },
+    { TYPE_CREATE_MINI_UNITS, MC_CREATION },
+    { TYPE_CREATE_UNITS, MC_CREATION },
+    { TYPE_DESTROY_ENEMY_BASE, MC_DESTRUCTION },
+    { TYPE_DESTROY_ALL_ENEMIES, MC_DESTRUCTION },
+    { TYPE_GAIN_MONEY, MC_PRODUCTION },
+    { TYPE_GEN_RESEARCH, MC_PRODUCTION },
+    { TYPE_MINE_ENERGY, MC_PRODUCTION },
+    { TYPE_MINE_MATERIAL, MC_PRODUCTION },
+    { TYPE_RESIST_TIME, MC_RESISTANCE },
+    { TYPE_TERRITORY_CONTROL, MC_CONQUEST },
+    { TYPE_TERRITORY_CONTROL_10M, MC_CONQUEST },
+    { TYPE_TERRITORY_CONTROL_20M, MC_CONQUEST },
+};
+
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool primary)
     : mId(++num)
     , mType(type)
@@ -80,33 +109,9 @@ MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool prima
 {
     mRewards.fill(0);
 
-    SetMissionRewards();
-}
+    SetCategory();
 
-MissionCategory MissionGoal::GetCategory() const
-{
-    if(mType == TYPE_DESTROY_ALL_ENEMIES || mType == TYPE_DESTROY_ENEMY_BASE)
-        return MC_DESTRUCTION;
-    else if(mType == TYPE_CONQUER_STRUCTURES || mType == TYPE_CONQUER_GEN_ENERGY ||
-            mType == TYPE_CONQUER_GEN_MATERIAL || mType == TYPE_TERRITORY_CONTROL ||
-            mType == TYPE_TERRITORY_CONTROL_10M || mType == TYPE_TERRITORY_CONTROL_20M)
-        return MC_CONQUEST;
-    else if(mType == TYPE_CREATE_MINI_UNITS || mType == TYPE_CREATE_UNITS ||
-            mType == TYPE_BUILD_STRUCTURES || mType == TYPE_BUILD_WALL ||
-            mType == TYPE_BUILD_BUNKER || mType == TYPE_BUILD_DEF_TOWER ||
-            mType == TYPE_BUILD_MAT_EXTRACT || mType == TYPE_BUILD_SOLAR_PANELS)
-        return MC_CREATION;
-    else if(mType == TYPE_RESIST_TIME)
-        return MC_RESISTANCE;
-    else if(mType == TYPE_COLLECT_BLOBS || mType == TYPE_COLLECT_DIAMONDS)
-        return MC_COLLECTION;
-    else if(mType == TYPE_GAIN_MONEY || mType == TYPE_MINE_ENERGY ||
-            mType == TYPE_MINE_MATERIAL || mType == TYPE_GEN_RESEARCH)
-        return MC_PRODUCTION;
-    else if(mType == TYPE_COMPLETE_TUTORIAL)
-        return MC_TUTORIAL;
-    else
-        return MC_UNKNOWN;
+    SetMissionRewards();
 }
 
 void MissionGoal::AssignReward(Player * p)
@@ -164,6 +169,16 @@ const std::string MissionGoal::GetDescription() const
     }
     else
         return d;
+}
+
+void MissionGoal::SetCategory()
+{
+    auto it = CATEGORIES.find(mType);
+
+    if(it != CATEGORIES.end())
+        mCategory = it->second;
+    else
+        mCategory = MC_UNKNOWN;
 }
 
 void MissionGoal::SetMissionRewards()

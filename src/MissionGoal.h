@@ -91,11 +91,13 @@ public:
     const std::string GetDescription() const;
 
 private:
+    void SetCategory();
     void SetMissionRewards();
 
 private:
     static const std::string TAG_VALUE;
     static const std::unordered_map<MissionGoalType, std::string> DESCRIPTION;
+    static const std::unordered_map<MissionGoalType, MissionCategory> CATEGORIES;
 
 private:
     static unsigned int num;
@@ -103,6 +105,7 @@ private:
     unsigned int mId = 0;
 
     MissionGoalType mType;
+    MissionCategory mCategory;
     unsigned int mQuantity = 0;
 
     int mProgress = PROGRESS_UNKNOWN;
@@ -120,6 +123,8 @@ inline unsigned int MissionGoal::GetId() const { return mId; }
 
 inline MissionGoalType MissionGoal::GetType() const { return mType; }
 inline unsigned int MissionGoal::GetQuantity() const { return mQuantity; }
+
+inline MissionCategory MissionGoal::GetCategory() const { return mCategory; }
 
 inline bool MissionGoal::IsPrimary() const { return mPrimary; }
 
