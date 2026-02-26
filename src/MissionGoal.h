@@ -76,6 +76,9 @@ public:
     bool IsCompleted() const;
     void SetCompleted();
 
+    bool IsFailed() const;
+    void SetFailed();
+
     // REWARD
     bool IsRewardCollected() const;
     void AssignReward(Player * p);
@@ -105,6 +108,7 @@ private:
     std::array<int, NUM_MISSION_REWARDS> mRewards;
 
     bool mCompleted = false;
+    bool mFailed = false;
     bool mRewardCollected = false;
     bool mPrimary = false;
 };
@@ -129,6 +133,9 @@ inline void MissionGoal::SetCompleted()
 }
 
 inline bool MissionGoal::IsCompleted() const { return mCompleted; }
+
+inline bool MissionGoal::IsFailed() const { return mFailed; }
+inline void MissionGoal::SetFailed() { mFailed = true; }
 
 // REWARD
 inline bool MissionGoal::IsRewardCollected() const { return mRewardCollected; }

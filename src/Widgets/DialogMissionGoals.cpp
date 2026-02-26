@@ -393,9 +393,15 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     contX += labelHeader->GetWidth() + marginHeaderH;
 
-    if(g.IsProgressUnknown())
+    sgui::Label * labelData = nullptr;
+
+    if(g.IsFailed())
+        labelData = new sgui::Label("-", font, bg);
+    else if(g.IsProgressUnknown())
+        labelData = new sgui::Label("?", font, bg);
+
+    if(labelData != nullptr)
     {
-        auto labelData = new sgui::Label("?", font, bg);
         labelData->SetColor(colorData);
         labelData->SetPosition(contX, contY);
     }
@@ -418,8 +424,8 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     contX += labelHeader->GetWidth() + marginHeaderH;
 
-    // collected
-    if(g.IsRewardCollected())
+    // collected or failed
+    if(g.IsRewardCollected() || g.IsFailed())
     {
         auto labelData = new sgui::Label("-", font, bg);
         labelData->SetColor(colorData);
@@ -477,23 +483,30 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     // REWARD COLLECTION
     const int paddingCenterToR = 120;
 
-    // label collected
-    const unsigned int colorCollected = 0x67e486ff;
+    // label collected OR failed
     const int sizeCollected = 22;
-    font = fm->GetFont(WidgetsConstants::FontFileText, sizeDesc, graphic::Font::NORMAL);
+    font = fm->GetFont(WidgetsConstants::FontFileStrongText, sizeDesc, graphic::Font::NORMAL);
 
-    auto labelData = new sgui::Label(sm->GetCString("COLLECTED_REW"), font, bg);
-    labelData->SetColor(colorCollected);
+    if(g.IsFailed())
+    {
+        labelData = new sgui::Label(sm->GetCString("GOAL_FAILED"), font, bg);
+        labelData->SetColor(WidgetsConstants::colorDialogBad);
+    }
+    else
+    {
+        labelData = new sgui::Label(sm->GetCString("COLLECTED_REW"), font, bg);
+        labelData->SetColor(WidgetsConstants::colorDialogGood);
+    }
 
     contX = bg->GetWidth() - paddingCenterToR - (labelData->GetWidth() / 2);
     contY = (bg->GetHeight() - labelData->GetHeight()) / 2;
     labelData->SetPosition(contX, contY);
 
-    labelData->SetVisible(g.IsRewardCollected());
-
-    // not collected yet -> button
-    if(!g.IsRewardCollected())
+    // not collected or failed yet -> show button
+    if(!g.IsRewardCollected() && !g.IsFailed())
     {
+        labelData->SetVisible(false);
+
         auto btn = new ButtonCollect(bg);
 
         contX = bg->GetWidth() - paddingCenterToR - (btn->GetWidth() / 2);

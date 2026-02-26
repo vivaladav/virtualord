@@ -168,6 +168,8 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 {
     if(g.IsCompleted())
         return true;
+    else if(g.IsFailed())
+        return false;
 
     const auto gt = g.GetType();
 
