@@ -636,7 +636,7 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
         if(mOwner != nullptr)
         {
             if(attacker != nullptr)
-                mGameMap->RegisterEnemyKill(attacker);
+                mGameMap->RegisterEnemyKill(attacker, this);
 
             mGameMap->RegisterCasualty(GetFaction());
         }
@@ -743,7 +743,7 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
 void GameObject::MissHit()
 {
     auto partMan = GetParticlesManager();
-    auto pu = static_cast<UpdaterDamage *>(partMan->GetUpdater(PU_DAMAGE));
+    auto puHP = static_cast<UpdaterHitPoints *>(partMan->GetUpdater(PU_HIT_POINTS));
 
     IsoObject * isoObj = GetIsoObject();
     const float posX = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
@@ -752,8 +752,6 @@ void GameObject::MissHit()
     const float speedHP = 75.f;
     const float decaySpeedHP = 50.f;
     const float maxDistHP = 50.f;
-
-    auto puHP = static_cast<UpdaterHitPoints *>(partMan->GetUpdater(PU_HIT_POINTS));
 
     DataParticleHitPoints dataHP(posX, posY, speedHP, decaySpeedHP, maxDistHP);
     puHP->AddParticle(dataHP);

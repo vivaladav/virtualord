@@ -32,8 +32,11 @@ const MissionGoalType MissionGoal::TYPE_CONQUER_GEN_MATERIAL = 99665469119904040
 const MissionGoalType MissionGoal::TYPE_CONQUER_STRUCTURES = 9730583447334225283u;
 const MissionGoalType MissionGoal::TYPE_CREATE_MINI_UNITS = 993249735153949780u;
 const MissionGoalType MissionGoal::TYPE_CREATE_UNITS = 7817244446116281940u;
-const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_BASE = 6201685467854920925u;
 const MissionGoalType MissionGoal::TYPE_DESTROY_ALL_ENEMIES = 9824093894361502513u;
+const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_BASE = 6201685467854920925u;
+const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_MUNITS = 41357166837518537u;
+const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_STRUCTURES = 10854058722408627522u;
+const MissionGoalType MissionGoal::TYPE_DESTROY_ENEMY_UNITS = 14580287524601127112u;
 const MissionGoalType MissionGoal::TYPE_GAIN_MONEY = 10899834782554881582u;
 const MissionGoalType MissionGoal::TYPE_GEN_RESEARCH = 14329901690992621984u;
 const MissionGoalType MissionGoal::TYPE_MINE_ENERGY = 16410639771806347059u;
@@ -60,8 +63,11 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_CONQUER_STRUCTURES, "MG_CONQUER_STRUCTS" },
     { TYPE_CREATE_MINI_UNITS, "MG_CREATE_MINI_UNITS" },
     { TYPE_CREATE_UNITS, "MG_CREATE_UNITS" },
-    { TYPE_DESTROY_ENEMY_BASE, "MG_DESTROY_ENEMY_BASE" },
     { TYPE_DESTROY_ALL_ENEMIES, "MG_DESTROY_ALL_ENEMIES" },
+    { TYPE_DESTROY_ENEMY_BASE, "MG_DESTROY_ENEMY_BASE" },
+    { TYPE_DESTROY_ENEMY_MUNITS, "MG_DESTROY_ENEMY_MUNITS" },
+    { TYPE_DESTROY_ENEMY_STRUCTURES, "MG_DESTROY_ENEMY_STRUCTS" },
+    { TYPE_DESTROY_ENEMY_UNITS, "MG_DESTROY_ENEMY_UNITS" },
     { TYPE_GAIN_MONEY, "MG_GAIN_MONEY" },
     { TYPE_GEN_RESEARCH, "MG_GEN_RESEARCH" },
     { TYPE_MINE_ENERGY, "MG_MINE_ENERGY" },
@@ -89,8 +95,11 @@ const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORI
     { TYPE_CONQUER_STRUCTURES, MC_CONQUEST },
     { TYPE_CREATE_MINI_UNITS, MC_CREATION },
     { TYPE_CREATE_UNITS, MC_CREATION },
-    { TYPE_DESTROY_ENEMY_BASE, MC_DESTRUCTION },
     { TYPE_DESTROY_ALL_ENEMIES, MC_DESTRUCTION },
+    { TYPE_DESTROY_ENEMY_BASE, MC_DESTRUCTION },
+    { TYPE_DESTROY_ENEMY_MUNITS, MC_DESTRUCTION },
+    { TYPE_DESTROY_ENEMY_STRUCTURES, MC_DESTRUCTION },
+    { TYPE_DESTROY_ENEMY_UNITS, MC_DESTRUCTION },
     { TYPE_GAIN_MONEY, MC_PRODUCTION },
     { TYPE_GEN_RESEARCH, MC_PRODUCTION },
     { TYPE_MINE_ENERGY, MC_PRODUCTION },
@@ -260,17 +269,32 @@ void MissionGoal::SetMissionRewards()
             const int multMaterial = 40;
             mRewards[MR_MATERIAL] = mQuantity * multMaterial;
         }
+        else if(mType == TYPE_DESTROY_ALL_ENEMIES)
+        {
+            const int money = 15000;
+
+            mRewards[MR_MONEY] = money;
+        }
         else if(mType == TYPE_DESTROY_ENEMY_BASE)
         {
             const int money = 10000;
 
             mRewards[MR_MONEY] = money;
         }
-        else if(mType == TYPE_DESTROY_ALL_ENEMIES)
+        else if(mType == TYPE_DESTROY_ENEMY_MUNITS)
         {
-            const int money = 15000;
-
-            mRewards[MR_MONEY] = money;
+            const int multMoney = 100;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
+        }
+        else if(mType == TYPE_DESTROY_ENEMY_STRUCTURES)
+        {
+            const int multMoney = 500;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
+        }
+        else if(mType == TYPE_DESTROY_ENEMY_UNITS)
+        {
+            const int multMoney = 200;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
         }
         else if(mType == TYPE_CONQUER_GEN_ENERGY || mType == TYPE_CONQUER_GEN_MATERIAL)
         {

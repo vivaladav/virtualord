@@ -105,7 +105,7 @@ public:
     void InitCities();
 
     // player stats
-    void RegisterEnemyKill(GameObject * killer);
+    void RegisterEnemyKill(GameObject * killer, GameObject * victim);
     void RegisterCasualty(PlayerFaction killed);
     unsigned int GetEnemiesKilled(PlayerFaction killer) const;
     unsigned int GetCasualties(PlayerFaction faction) const;

@@ -7,6 +7,7 @@
 #include "IsoLayer.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
+#include "MissionGoalsTracker.h"
 #include "Player.h"
 #include "AI/ConquerPath.h"
 #include "AI/ObjectPath.h"
@@ -781,13 +782,17 @@ void GameMap::InitCities()
     }
 }
 
-void GameMap::RegisterEnemyKill(GameObject * killer)
+void GameMap::RegisterEnemyKill(GameObject * killer, GameObject * victim)
 {
     // TODO assign experience points based on kill maybe
     const int experienceKill = 100;
     killer->SumExperience(experienceKill);
 
     ++mEnemiesKilled[killer->GetFaction()];
+
+    // track kill for mission goals
+    auto trackerMG = mScreenGame->GetMissionGoalsTracker();
+    trackerMG->AddObjectDestroyedByCategory(victim->GetObjectCategory());
 }
 
 bool GameMap::AreObjectsAdjacent(const GameObject * obj1, const GameObject * obj2) const

@@ -164,6 +164,16 @@ void MissionGoalsTracker::AddStructureConquered(GameObjectTypeId type)
     ++mTotStructuresConquered;
 }
 
+void MissionGoalsTracker::AddObjectDestroyedByCategory(GameObjectCategoryId cat)
+{
+    auto it = mCategoriesDestroyed.find(cat);
+
+    if(it != mCategoriesDestroyed.end())
+        ++(it->second);
+    else
+        mCategoriesDestroyed.emplace(cat, 1);
+}
+
 bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 {
     if(g.IsCompleted())
@@ -321,6 +331,15 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
             return false;
         }
     }
+    else if(gt == MissionGoal::TYPE_DESTROY_ALL_ENEMIES)
+    {
+        // check if destroyed all enemies
+        for(Player * p : mAiPlayers)
+        {
+            if(p->GetNumObjects() > 0)
+                return false;
+        }
+    }
     else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_BASE)
     {
         // check if destroyed all enemy bases
@@ -330,13 +349,37 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
                 return false;
         }
     }
-    else if(gt == MissionGoal::TYPE_DESTROY_ALL_ENEMIES)
+    else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_MUNITS)
     {
-        // check if destroyed all enemies
-        for(Player * p : mAiPlayers)
+        const unsigned int num = GetNumObjectsDestroyedByCategory(ObjectData::CAT_MINI_UNIT);
+
+        if(num < g.GetQuantity())
         {
-            if(p->GetNumObjects() > 0)
-                return false;
+            g.SetProgress(num * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_STRUCTURES)
+    {
+        const unsigned int num = GetNumObjectsDestroyedByCategory(ObjectData::CAT_STRUCTURE);
+
+        if(num < g.GetQuantity())
+        {
+            g.SetProgress(num * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
+    else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_UNITS)
+    {
+        const unsigned int num = GetNumObjectsDestroyedByCategory(ObjectData::CAT_UNIT);
+
+        if(num < g.GetQuantity())
+        {
+            g.SetProgress(num * 100 / g.GetQuantity());
+
+            return false;
         }
     }
     else if(gt == MissionGoal::TYPE_GAIN_MONEY)

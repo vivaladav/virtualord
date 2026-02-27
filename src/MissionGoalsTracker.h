@@ -38,12 +38,14 @@ public:
     void AddStructureBuilt(GameObjectTypeId type);
     void AddStructureConquered(GameObjectTypeId type);
     void AddWallBuilt();
+    void AddObjectDestroyedByCategory(GameObjectCategoryId cat);
 
 private:
     bool CheckIfGoalCompleted(MissionGoal & g);
 
     unsigned int GetNumStructuresBuilt(GameObjectTypeId type) const;
     unsigned int GetNumStructuresConquered(GameObjectTypeId type) const;
+    unsigned int GetNumObjectsDestroyedByCategory(GameObjectCategoryId cat) const;
 
 private:
     std::vector<MissionGoal> mMissionGoals;
@@ -52,6 +54,7 @@ private:
     std::vector<Player *> mAiPlayers;
     std::unordered_map<GameObjectTypeId, unsigned int> mStructuresBuilt;
     std::unordered_map<GameObjectTypeId, unsigned int> mStructuresConquered;
+    std::unordered_map<GameObjectCategoryId, unsigned int> mCategoriesDestroyed;
 
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
@@ -95,6 +98,12 @@ inline unsigned int MissionGoalsTracker::GetNumStructuresConquered(GameObjectTyp
 {
     const auto it = mStructuresConquered.find(type);
     return it != mStructuresConquered.end() ? it->second : 0;
+}
+
+inline unsigned int MissionGoalsTracker::GetNumObjectsDestroyedByCategory(GameObjectCategoryId cat) const
+{
+    const auto it = mCategoriesDestroyed.find(cat);
+    return it != mCategoriesDestroyed.end() ? it->second : 0;
 }
 
 } // namespace game

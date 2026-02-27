@@ -46,8 +46,11 @@ public:
     static const MissionGoalType TYPE_CONQUER_STRUCTURES;
     static const MissionGoalType TYPE_CREATE_MINI_UNITS;
     static const MissionGoalType TYPE_CREATE_UNITS;
-    static const MissionGoalType TYPE_DESTROY_ENEMY_BASE;
     static const MissionGoalType TYPE_DESTROY_ALL_ENEMIES;
+    static const MissionGoalType TYPE_DESTROY_ENEMY_BASE;
+    static const MissionGoalType TYPE_DESTROY_ENEMY_MUNITS;
+    static const MissionGoalType TYPE_DESTROY_ENEMY_STRUCTURES;
+    static const MissionGoalType TYPE_DESTROY_ENEMY_UNITS;
     static const MissionGoalType TYPE_GAIN_MONEY;
     static const MissionGoalType TYPE_GEN_RESEARCH;
     static const MissionGoalType TYPE_MINE_ENERGY;
