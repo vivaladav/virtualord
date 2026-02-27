@@ -39,6 +39,7 @@ public:
     void AddStructureConquered(GameObjectTypeId type);
     void AddWallBuilt();
     void AddObjectDestroyedByCategory(GameObjectCategoryId cat);
+    void AddObjectSelfDestructed();
 
 private:
     bool CheckIfGoalCompleted(MissionGoal & g);
@@ -67,6 +68,7 @@ private:
     unsigned int mTotStructuresConquered = 0;
     unsigned int mWallBuilt = 0;
     unsigned int mPlayedTime = 0;
+    unsigned int mSelfDestructed = 0;
 
     bool mMapCompleted = false;
     bool mTutorialStarted = false;
@@ -87,6 +89,7 @@ inline void MissionGoalsTracker::SetPlayedTime(unsigned int sec) { mPlayedTime =
 inline void MissionGoalsTracker::AddMiniUnitCreated() { ++mMiniUnitsCreated; }
 inline void MissionGoalsTracker::AddUnitCreated() { ++mUnitsCreated; }
 inline void MissionGoalsTracker::AddWallBuilt() { ++mWallBuilt; }
+inline void MissionGoalsTracker::AddObjectSelfDestructed() { ++mSelfDestructed; }
 
 inline unsigned int MissionGoalsTracker::GetNumStructuresBuilt(GameObjectTypeId type) const
 {

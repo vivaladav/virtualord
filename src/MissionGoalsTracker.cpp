@@ -420,7 +420,6 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_RESIST_TIME)
     {
-        // check elapsed time
         if(mPlayedTime < g.GetQuantity())
         {
             g.SetProgress(mPlayedTime * 100 / g.GetQuantity());
@@ -429,6 +428,15 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
         }
 
         mHUD->HideMissionCountdown();
+    }
+    else if(gt == MissionGoal::TYPE_SELF_DESTRUCT)
+    {
+        if(mSelfDestructed < g.GetQuantity())
+        {
+            g.SetProgress(mSelfDestructed * 100 / g.GetQuantity());
+
+            return false;
+        }
     }
     else if(gt == MissionGoal::TYPE_TERRITORY_CONTROL)
     {

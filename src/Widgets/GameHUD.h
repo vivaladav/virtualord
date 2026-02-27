@@ -147,6 +147,8 @@ private:
 
     void CenterWidget(sgl::sgui::Widget * w);
 
+    void TrackSelfDestruction(GameObject * obj);
+
     void OnStringsChanged() override;
 
 private:

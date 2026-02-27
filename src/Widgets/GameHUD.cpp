@@ -8,6 +8,7 @@
 #include "GameUIData.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
+#include "MissionGoalsTracker.h"
 #include "Player.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Structure.h"
@@ -238,6 +239,8 @@ void GameHUD::ShowPanelSelfDestruction()
 
                                                  mScreen->mGameMap->RemoveAndDestroyObject(obj);
 
+                                                 TrackSelfDestruction(obj);
+
                                                  HidePanelSelfDestruction();
                                              });
 
@@ -246,6 +249,8 @@ void GameHUD::ShowPanelSelfDestruction()
                                             {
                                                 auto obj = mScreen->mLocalPlayer->GetSelectedObject();
                                                 obj->SelfDestroy();
+
+                                                TrackSelfDestruction(obj);
 
                                                 HidePanelSelfDestruction();
                                             });
@@ -1248,6 +1253,14 @@ void GameHUD::CenterWidget(sgl::sgui::Widget * w)
     const int posX = (renderer->GetWidth() - w->GetWidth()) / 2;
     const int posY = (renderer->GetHeight() - w->GetHeight()) / 2;
     w->SetPosition(posX, posY);
+}
+
+void GameHUD::TrackSelfDestruction(GameObject * obj)
+{
+    const GameObjectCategoryId cat = obj->GetObjectCategory();
+
+    if(cat == ObjectData::CAT_UNIT || cat == ObjectData::CAT_STRUCTURE)
+        mScreen->mTrackerMG->AddObjectSelfDestructed();
 }
 
 void GameHUD::OnStringsChanged()
