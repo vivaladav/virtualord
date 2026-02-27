@@ -314,9 +314,11 @@ void MissionGoal::SetMissionRewards()
         }
         else if(mType == TYPE_GEN_RESEARCH)
         {
-            const int divMoney = 5;
-            const int money = mQuantity / divMoney;
-            mRewards[MR_MONEY] = money;
+            const int divBlobs = 10;
+            mRewards[MR_BLOBS] = mQuantity / divBlobs;
+
+            const int divDiamonds = 10;
+            mRewards[MR_DIAMONDS] = mQuantity / divDiamonds;
         }
         else if(mType == TYPE_MINE_MATERIAL)
         {
