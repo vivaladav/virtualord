@@ -69,6 +69,7 @@ public:
 
     MissionGoalType GetType() const;
     unsigned int GetQuantity() const;
+    unsigned int GetTimeLimit() const;
 
     MissionCategory GetCategory() const;
 
@@ -96,6 +97,7 @@ public:
 
 private:
     void SetCategory();
+    void SetTimeLimit();
     void SetMissionRewards();
 
 private:
@@ -111,6 +113,7 @@ private:
     MissionGoalType mType;
     MissionCategory mCategory;
     unsigned int mQuantity = 0;
+    unsigned int mTimeLimit = 0;
 
     int mProgress = PROGRESS_UNKNOWN;
 
@@ -127,6 +130,7 @@ inline unsigned int MissionGoal::GetId() const { return mId; }
 
 inline MissionGoalType MissionGoal::GetType() const { return mType; }
 inline unsigned int MissionGoal::GetQuantity() const { return mQuantity; }
+inline unsigned int MissionGoal::GetTimeLimit() const { return mTimeLimit; }
 
 inline MissionCategory MissionGoal::GetCategory() const { return mCategory; }
 

@@ -122,6 +122,7 @@ MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool prima
     mRewards.fill(0);
 
     SetCategory();
+    SetTimeLimit();
 
     SetMissionRewards();
 }
@@ -191,6 +192,14 @@ void MissionGoal::SetCategory()
         mCategory = it->second;
     else
         mCategory = MC_UNKNOWN;
+}
+
+void MissionGoal::SetTimeLimit()
+{
+    if(mType == TYPE_TERRITORY_CONTROL_10M)
+        mTimeLimit = 600;
+    else if(mType == TYPE_TERRITORY_CONTROL_20M)
+        mTimeLimit = 1200;
 }
 
 void MissionGoal::SetMissionRewards()

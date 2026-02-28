@@ -41,6 +41,8 @@ public:
     void AddObjectDestroyedByCategory(GameObjectCategoryId cat);
     void AddObjectSelfDestructed();
 
+    unsigned int GetPlayedTime() const;
+
 private:
     bool CheckIfGoalCompleted(MissionGoal & g);
 
@@ -90,6 +92,8 @@ inline void MissionGoalsTracker::AddMiniUnitCreated() { ++mMiniUnitsCreated; }
 inline void MissionGoalsTracker::AddUnitCreated() { ++mUnitsCreated; }
 inline void MissionGoalsTracker::AddWallBuilt() { ++mWallBuilt; }
 inline void MissionGoalsTracker::AddObjectSelfDestructed() { ++mSelfDestructed; }
+
+inline unsigned int MissionGoalsTracker::GetPlayedTime() const { return mPlayedTime; }
 
 inline unsigned int MissionGoalsTracker::GetNumStructuresBuilt(GameObjectTypeId type) const
 {

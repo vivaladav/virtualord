@@ -492,6 +492,23 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
         labelData = new sgui::Label(sm->GetCString("GOAL_FAILED"), font, bg);
         labelData->SetColor(WidgetsConstants::colorDialogBad);
     }
+    else if(g.GetTimeLimit() > 0)
+    {
+        std::ostringstream ss;
+
+        const unsigned int secsInMin = 60;
+
+        const unsigned int timeLimit = g.GetTimeLimit();
+        const unsigned int timePlayed = mTrackerMG->GetPlayedTime();
+        const unsigned int timeLeft = timeLimit - timePlayed;
+
+        const unsigned int minutes = timeLeft / secsInMin;
+        const unsigned int seconds = timeLeft - (minutes * secsInMin);
+        ss << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) <<  seconds;
+
+        labelData = new sgui::Label(ss.str().c_str(), font, bg);
+        labelData->SetColor(WidgetsConstants::colorDialogText);
+    }
     else
     {
         labelData = new sgui::Label(sm->GetCString("COLLECTED_REW"), font, bg);
@@ -503,7 +520,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     labelData->SetPosition(contX, contY);
 
     // not collected or failed yet -> show button
-    if(!g.IsRewardCollected() && !g.IsFailed())
+    if(!g.IsRewardCollected() && !g.IsFailed() && !(g.GetTimeLimit() > 0))
     {
         labelData->SetVisible(false);
 
