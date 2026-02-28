@@ -200,6 +200,8 @@ void MissionGoal::SetTimeLimit()
         mTimeLimit = 600;
     else if(mType == TYPE_TERRITORY_CONTROL_20M)
         mTimeLimit = 1200;
+    else if(mType == TYPE_RESIST_TIME)
+        mTimeLimit = mQuantity;
 }
 
 void MissionGoal::SetMissionRewards()
