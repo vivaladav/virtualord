@@ -3436,6 +3436,8 @@ void ScreenGame::EndTurn()
     // new active player is local player
     if(IsCurrentTurnLocal())
     {
+        ++mLocalTurns;
+
         if(!mGameMap->IsDoingAutomaticMoves())
             InitLocalTurn();
     }
@@ -3449,8 +3451,6 @@ void ScreenGame::EndTurn()
 
 void ScreenGame::InitLocalTurn()
 {
-    ++mLocalTurns;
-
     SetLocalTurnStage(TURN_STAGE_PLAY);
 
     mHUD->SetLocalActionsEnabled(true);
