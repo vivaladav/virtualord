@@ -3465,9 +3465,6 @@ void ScreenGame::ReselectLastSelected()
 {
     if(mLastSelected == nullptr)
         return ;
-    {
-        if(mLastSelected == nullptr)
-            return ;
 
     // make sure object is still valid
     if(mGameMap->HasObject(mLastSelected))
