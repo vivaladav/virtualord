@@ -3449,6 +3449,8 @@ void ScreenGame::EndTurn()
 
 void ScreenGame::InitLocalTurn()
 {
+    ++mLocalTurns;
+
     SetLocalTurnStage(TURN_STAGE_PLAY);
 
     mHUD->SetLocalActionsEnabled(true);
@@ -3463,6 +3465,9 @@ void ScreenGame::ReselectLastSelected()
 {
     if(mLastSelected == nullptr)
         return ;
+    {
+        if(mLastSelected == nullptr)
+            return ;
 
     // make sure object is still valid
     if(mGameMap->HasObject(mLastSelected))
