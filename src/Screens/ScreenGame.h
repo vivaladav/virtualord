@@ -246,6 +246,8 @@ private:
     float mTimePlayed = 0.f;
 
     bool mPaused = false;
+
+    bool mLocalTurnInitDone = false;
 };
 
 inline void ScreenGame::SetObjectActionCompleted(GameObject * obj)

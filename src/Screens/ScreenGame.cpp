@@ -3433,6 +3433,10 @@ void ScreenGame::EndTurn()
 
     std::cout << "ScreenGame::EndTurn - START PLAYER " << mActivePlayerIdx << std::endl;
 
+    // reset flag for local turn init
+    if(IsCurrentTurnLocal())
+        mLocalTurnInitDone = false;
+
     // update active player data
     Player * p = game->GetPlayerByIndex(mActivePlayerIdx);
     const PlayerFaction activeFaction = p->GetFaction();
@@ -3458,6 +3462,10 @@ void ScreenGame::EndTurn()
 
 void ScreenGame::InitLocalTurn()
 {
+    if(mLocalTurnInitDone)
+        return;
+
+    std::cout << "ScreenGame::InitLocalTurn - turn: " << mLocalPlayer->GetTurnsPlayed() << std::endl;
     SetLocalTurnStage(TURN_STAGE_PLAY);
 
     mHUD->SetLocalActionsEnabled(true);
@@ -3466,6 +3474,8 @@ void ScreenGame::InitLocalTurn()
 
     // reset focus to Stage
     sgl::sgui::Stage::Instance()->SetFocus();
+
+    mLocalTurnInitDone = true;
 }
 
 void ScreenGame::ReselectLastSelected()
