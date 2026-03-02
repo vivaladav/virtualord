@@ -18,6 +18,8 @@
 
 #include <sgl/sgui/Image.h>
 
+#include <cassert>
+
 namespace game
 {
 
@@ -278,25 +280,17 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
 
 PanelResources::~PanelResources()
 {
+    assert(mCallbackValIds.size() == Player::NUM_PSTATS);
+    assert(mCallbackRangeIds.size() == Player::NUM_PSTATS);
+
     // CLEAR OBSERVERS FROM PLAYER STATS
-    auto st = Player::Stat::MONEY;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
+    for(unsigned int i = 0; i < Player::NUM_PSTATS; ++i)
+    {
+        const auto st = static_cast<Player::Stat>(i);
 
-    st = Player::Stat::ENERGY;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
-    mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[st]);
-
-    st = Player::Stat::MATERIAL;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
-    mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[st]);
-
-    st = Player::Stat::DIAMONDS;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
-    mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[st]);
-
-    st = Player::Stat::BLOBS;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
-    mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[st]);
+        mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[i]);
+        mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[i]);
+    }
 }
 
 ResourceTooltip * PanelResources::AssignResourceTooltip(sgl::sgui::Widget * target, const char * text)
