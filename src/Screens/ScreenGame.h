@@ -244,7 +244,6 @@ private:
     float mTimerAutoEndTurn = 0.f;
 
     float mTimePlayed = 0.f;
-    int mLocalTurns = 1;
 
     bool mPaused = false;
 };
@@ -270,7 +269,5 @@ inline MissionGoalsTracker * ScreenGame::GetMissionGoalsTracker() const { return
 inline bool ScreenGame::GetPaused() const { return mPaused; }
 
 inline bool ScreenGame::IsCurrentTurnLocal() const { return mActivePlayerIdx == 0; }
-
-inline unsigned int ScreenGame::GetNumLocalTurns() const { return mLocalTurns; }
 
 } // namespace game

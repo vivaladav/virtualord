@@ -151,6 +151,9 @@ public:
     void SetOnTurnEnergyChanged(const std::function<void()> & f);
     void SetOnTurnMaxEnergyChanged(const std::function<void()> & f);
 
+    unsigned int GetTurnsPlayed() const;
+    void ResetTurnsPlayed(unsigned int start = 0);
+
     // -- AI --
     bool IsAI() const;
     PlayerAI * GetAI();
@@ -202,6 +205,8 @@ private:
 
     float mTurnEnergy;
     float mTurnMaxEnergy;
+
+    unsigned int mTurnsPlayed = 0;
 
     int mNumCells = 0;
     unsigned int mMaxUnits = 0;
@@ -329,6 +334,9 @@ inline void Player::SetOnTurnMaxEnergyChanged(const std::function<void()> & f)
 {
     mOnTurnMaxEnergyChanged = f;
 }
+
+inline unsigned int Player::GetTurnsPlayed() const { return mTurnsPlayed; }
+inline void Player::ResetTurnsPlayed(unsigned int start) { mTurnsPlayed = start; }
 
 inline bool Player::IsAI() const { return mAI != nullptr; }
 inline PlayerAI * Player::GetAI() { return mAI; }

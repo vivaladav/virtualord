@@ -454,6 +454,9 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
 
 void Player::OnNewTurn()
 {
+    // update turns counter
+    ++mTurnsPlayed;
+
     // consume energy of own cells
     const int energy = GetCellsEnergyUsed();
 

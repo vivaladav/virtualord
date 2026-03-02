@@ -171,10 +171,19 @@ ScreenGame::ScreenGame(Game * game)
 
         p->ResetTurnEnergy();
 
+        // AI players
         if(p->IsAI())
         {
             p->GetAI()->SetGameMap(mGameMap);
             mAiPlayers.push_back(p);
+
+            p->ResetTurnsPlayed();
+        }
+        // local player
+        else
+        {
+            // first turn is always played by local player
+            p->ResetTurnsPlayed(1);
         }
     }
 
@@ -3436,8 +3445,6 @@ void ScreenGame::EndTurn()
     // new active player is local player
     if(IsCurrentTurnLocal())
     {
-        ++mLocalTurns;
-
         if(!mGameMap->IsDoingAutomaticMoves())
             InitLocalTurn();
     }
