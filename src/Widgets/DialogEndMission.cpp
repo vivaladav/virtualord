@@ -73,8 +73,9 @@ namespace game
 {
 
 // ===== DIALOG =====
-DialogEndMission::DialogEndMission(int time, int territoryConquered, int enemiesKilled,
-                                   int casualties, bool victory)
+DialogEndMission::DialogEndMission(unsigned int time, unsigned int territoryConquered,
+                                   unsigned int enemiesKilled, unsigned int casualties,
+                                   unsigned int turns, bool victory)
 {
     using namespace sgl;
 
@@ -117,7 +118,7 @@ DialogEndMission::DialogEndMission(int time, int territoryConquered, int enemies
     const int limitR = 720;
     const int marginL = 40;
     const int marginT = 120;
-    const int marginWidgetH = 35;
+    const int marginWidgetH = 30;
     const unsigned int colorHeader = 0x9dcbe2ff;
     const unsigned int colorData = 0x70a7c2ff;
 
@@ -151,6 +152,24 @@ DialogEndMission::DialogEndMission(int time, int territoryConquered, int enemies
     ss.width(fieldW);
     ss.fill(fieldF);
     ss << timeS;
+
+    label = new sgui::Label(ss.str().c_str(), font, this);
+    label->SetColor(colorData);
+    widgetX += limitR - label->GetWidth();
+    label->SetPosition(widgetX, widgetY);
+
+    widgetX = marginL;
+    widgetY += marginWidgetH + label->GetHeight();
+
+    ss.str(std::string());
+    ss.clear();
+
+    // TURNS PLAYED
+    label = new sgui::Label(sm->GetCString("TURNS_PLAYED"), font, this);
+    label->SetColor(colorHeader);
+    label->SetPosition(widgetX, widgetY);
+
+    ss << turns;
 
     label = new sgui::Label(ss.str().c_str(), font, this);
     label->SetColor(colorData);

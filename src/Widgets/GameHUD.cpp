@@ -427,14 +427,16 @@ void GameHUD::ShowDialogEndMission(bool won)
     // stats
     GameMap * gm = mScreen->mGameMap;
 
-    const PlayerFaction pf = mScreen->GetGame()->GetLocalPlayerFaction();
-    const int territory = gm->GetControlMap()->GetPercentageControlledByFaction(pf);
+    const Player * p = mScreen->GetGame()->GetLocalPlayer();
+    const PlayerFaction pf = p->GetFaction();
+    const unsigned int turns = p->GetTurnsPlayed();
+    const unsigned int territory = gm->GetControlMap()->GetPercentageControlledByFaction(pf);
     const unsigned int killed = gm->GetEnemiesKilled(pf);
     const unsigned int casualties = gm->GetCasualties(pf);
     const unsigned int played = mScreen->GetPlayTimeInSec();
 
     // create dialog
-    mDialogEnd = new DialogEndMission(played, territory, killed, pf, won);
+    mDialogEnd = new DialogEndMission(played, territory, killed, pf, turns, won);
     mDialogEnd->SetFocus();
 
     mDialogEnd->SetFunctionOnClose([this, won]
