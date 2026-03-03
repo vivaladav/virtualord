@@ -492,23 +492,26 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
         labelData = new sgui::Label(sm->GetCString("GOAL_FAILED"), font, bg);
         labelData->SetColor(WidgetsConstants::colorDialogBad);
     }
-    // else if(g.GetTimeLimit() > 0)
-    // {
-    //     std::ostringstream ss;
+    else if(g.GetExtraValue() > 0 && !g.IsCompleted())
+    {
+        std::ostringstream ss;
 
-    //     const unsigned int secsInMin = 60;
+        if(g.GetType() == MissionGoal::TYPE_TERRITORY_CONTROL_TIME)
+        {
+            const unsigned int secsInMin = 60;
+            const unsigned int timeLimit = g.GetExtraValue() * secsInMin;
+            const unsigned int timePlayed = mTrackerMG->GetPlayedTime();
+            const unsigned int timeLeft = timeLimit - timePlayed;
 
-    //     const unsigned int timeLimit = g.GetTimeLimit();
-    //     const unsigned int timePlayed = mTrackerMG->GetPlayedTime();
-    //     const unsigned int timeLeft = timeLimit - timePlayed;
+            const unsigned int minutes = timeLeft / secsInMin;
+            const unsigned int seconds = timeLeft - (minutes * secsInMin);
+            ss << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) <<  seconds;
+        }
 
-    //     const unsigned int minutes = timeLeft / secsInMin;
-    //     const unsigned int seconds = timeLeft - (minutes * secsInMin);
-    //     ss << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) <<  seconds;
-
-    //     labelData = new sgui::Label(ss.str().c_str(), font, bg);
-    //     labelData->SetColor(WidgetsConstants::colorDialogText);
-    // }
+        labelData = new sgui::Label(ss.str().c_str(), font, bg);
+        labelData->SetColor(WidgetsConstants::colorDialogText);
+    }
+    // leave COLLECTED label as default
     else
     {
         labelData = new sgui::Label(sm->GetCString("COLLECTED_REW"), font, bg);
@@ -519,9 +522,8 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     contY = (bg->GetHeight() - labelData->GetHeight()) / 2;
     labelData->SetPosition(contX, contY);
 
-    // not collected or failed yet -> show button
-    //if(!g.IsRewardCollected() && !g.IsFailed() && !(g.GetTimeLimit() > 0))
-    if(!g.IsRewardCollected() && !g.IsFailed())
+    // not collected or failed yet and no extra value -> show button
+    if(!g.IsRewardCollected() && !g.IsFailed() && !(g.GetExtraValue() > 0 && !g.IsCompleted()))
     {
         labelData->SetVisible(false);
 
