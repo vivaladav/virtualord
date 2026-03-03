@@ -494,9 +494,11 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     }
     else if(g.GetExtraValue() > 0 && !g.IsCompleted())
     {
+        const MissionGoalType goalType = g.GetType();
+
         std::ostringstream ss;
 
-        if(g.GetType() == MissionGoal::TYPE_TERRITORY_CONTROL_TIME)
+        if(goalType == MissionGoal::TYPE_TERRITORY_CONTROL_TIME)
         {
             const unsigned int secsInMin = 60;
             const unsigned int timeLimit = g.GetExtraValue() * secsInMin;
@@ -506,6 +508,14 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
             const unsigned int minutes = timeLeft / secsInMin;
             const unsigned int seconds = timeLeft - (minutes * secsInMin);
             ss << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) <<  seconds;
+        }
+        else if(goalType == MissionGoal::TYPE_TERRITORY_CONTROL_TURNS)
+        {
+            const unsigned int turnsLimit = g.GetExtraValue();
+            const unsigned int turnsPlayed = mTrackerMG->GetPlayedTurns();
+            const unsigned int turnsLeft = turnsLimit - turnsPlayed;
+
+            ss << turnsLeft;
         }
 
         labelData = new sgui::Label(ss.str().c_str(), font, bg);

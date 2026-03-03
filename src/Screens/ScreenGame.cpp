@@ -3449,6 +3449,8 @@ void ScreenGame::EndTurn()
     // new active player is local player
     if(IsCurrentTurnLocal())
     {
+        mTrackerMG->AddPlayedTurns();
+
         if(!mGameMap->IsDoingAutomaticMoves())
             InitLocalTurn();
     }

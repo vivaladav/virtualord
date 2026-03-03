@@ -45,6 +45,7 @@ const MissionGoalType MissionGoal::TYPE_RESIST_TIME = 5309855068505147025u;
 const MissionGoalType MissionGoal::TYPE_SELF_DESTRUCT = 1062394292963769397u;
 const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL = 12724023192682496055u;
 const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL_TIME = 14784500176427593662u;
+const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL_TURNS = 12702852901591190554u;
 
 const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION =
 {
@@ -76,6 +77,7 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_SELF_DESTRUCT, "MG_SELF_DESTRUCT" },
     { TYPE_TERRITORY_CONTROL, "MG_TERR_CONTROL" },
     { TYPE_TERRITORY_CONTROL_TIME, "MG_TERR_CONTROL_TIME" },
+    { TYPE_TERRITORY_CONTROL_TURNS, "MG_TERR_CONTROL_TURNS" },
 };
 
 const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORIES =
@@ -108,6 +110,7 @@ const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORI
     { TYPE_SELF_DESTRUCT, MC_DESTRUCTION },
     { TYPE_TERRITORY_CONTROL, MC_CONQUEST },
     { TYPE_TERRITORY_CONTROL_TIME, MC_CONQUEST },
+    { TYPE_TERRITORY_CONTROL_TURNS, MC_CONQUEST },
 };
 
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
@@ -429,6 +432,22 @@ void MissionGoal::SetMissionRewards()
             mRewards[MR_BLOBS] = mQuantity * multBlobs;
 
             const int multDiamonds = 10;
+            mRewards[MR_DIAMONDS] = mQuantity * multDiamonds;
+        }
+        else if(mType == TYPE_TERRITORY_CONTROL_TURNS)
+        {
+            const int multMoney = 50;
+            const int money = mQuantity * multMoney;
+            mRewards[MR_MONEY] = money;
+
+            const int multResearch = 25;
+            const int research = mQuantity * multResearch;
+            mRewards[MR_RESEARCH] = research;
+
+            const int multBlobs = 5;
+            mRewards[MR_BLOBS] = mQuantity * multBlobs;
+
+            const int multDiamonds = 5;
             mRewards[MR_DIAMONDS] = mQuantity * multDiamonds;
         }
         else

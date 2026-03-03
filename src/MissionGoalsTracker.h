@@ -33,6 +33,7 @@ public:
     // tracked data
     void SetTutorialStarted();
     void SetPlayedTime(unsigned int sec);
+    void AddPlayedTurns();
     void AddMiniUnitCreated();
     void AddUnitCreated();
     void AddStructureBuilt(GameObjectTypeId type);
@@ -42,6 +43,7 @@ public:
     void AddObjectSelfDestructed();
 
     unsigned int GetPlayedTime() const;
+    unsigned int GetPlayedTurns() const;
 
 private:
     bool CheckIfGoalCompleted(MissionGoal & g);
@@ -70,6 +72,7 @@ private:
     unsigned int mTotStructuresConquered = 0;
     unsigned int mWallBuilt = 0;
     unsigned int mPlayedTime = 0;
+    unsigned int mPlayedTurns = 0;
     unsigned int mSelfDestructed = 0;
 
     bool mMapCompleted = false;
@@ -87,13 +90,14 @@ inline const std::vector<MissionGoal> & MissionGoalsTracker::GetGoals() const
 inline void MissionGoalsTracker::SetTutorialStarted() { mTutorialStarted = true; }
 
 inline void MissionGoalsTracker::SetPlayedTime(unsigned int sec) { mPlayedTime = sec; }
-
+inline void MissionGoalsTracker::AddPlayedTurns() { ++mPlayedTurns; }
 inline void MissionGoalsTracker::AddMiniUnitCreated() { ++mMiniUnitsCreated; }
 inline void MissionGoalsTracker::AddUnitCreated() { ++mUnitsCreated; }
 inline void MissionGoalsTracker::AddWallBuilt() { ++mWallBuilt; }
 inline void MissionGoalsTracker::AddObjectSelfDestructed() { ++mSelfDestructed; }
 
 inline unsigned int MissionGoalsTracker::GetPlayedTime() const { return mPlayedTime; }
+inline unsigned int MissionGoalsTracker::GetPlayedTurns() const { return mPlayedTurns; }
 
 inline unsigned int MissionGoalsTracker::GetNumStructuresBuilt(GameObjectTypeId type) const
 {

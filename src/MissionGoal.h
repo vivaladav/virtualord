@@ -59,6 +59,7 @@ public:
     static const MissionGoalType TYPE_SELF_DESTRUCT;
     static const MissionGoalType TYPE_TERRITORY_CONTROL;
     static const MissionGoalType TYPE_TERRITORY_CONTROL_TIME;
+    static const MissionGoalType TYPE_TERRITORY_CONTROL_TURNS;
 
 public:
     MissionGoal(MissionGoalType type, unsigned int quantity, unsigned int extraVal, bool primary);

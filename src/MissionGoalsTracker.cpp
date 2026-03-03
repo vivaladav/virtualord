@@ -471,6 +471,26 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
             return false;
         }
     }
+    else if(gt == MissionGoal::TYPE_TERRITORY_CONTROL_TURNS)
+    {
+        const int turnsLimit = g.GetExtraValue();
+
+        if(mPlayedTurns >= turnsLimit)
+        {
+            g.SetFailed();
+            return false;
+        }
+
+        const auto faction = mPlayer->GetFaction();
+        const int conquered = mControlMap->GetPercentageControlledByFaction(faction);
+
+        if(conquered < g.GetQuantity())
+        {
+            g.SetProgress(conquered * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
     else
         return false;
 
