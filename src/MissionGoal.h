@@ -58,18 +58,17 @@ public:
     static const MissionGoalType TYPE_RESIST_TIME;
     static const MissionGoalType TYPE_SELF_DESTRUCT;
     static const MissionGoalType TYPE_TERRITORY_CONTROL;
-    static const MissionGoalType TYPE_TERRITORY_CONTROL_10M;
-    static const MissionGoalType TYPE_TERRITORY_CONTROL_20M;
+    static const MissionGoalType TYPE_TERRITORY_CONTROL_TIME;
 
 public:
-    MissionGoal(MissionGoalType type, unsigned int quantity, bool primary);
+    MissionGoal(MissionGoalType type, unsigned int quantity, unsigned int extraVal, bool primary);
 
     // ATTRIBUTES
     unsigned int GetId() const;
 
     MissionGoalType GetType() const;
     unsigned int GetQuantity() const;
-    unsigned int GetTimeLimit() const;
+    unsigned int GetExtraValue() const;
 
     MissionCategory GetCategory() const;
 
@@ -102,6 +101,7 @@ private:
 
 private:
     static const std::string TAG_VALUE;
+    static const std::string TAG_VALUE2;
     static const std::unordered_map<MissionGoalType, std::string> DESCRIPTION;
     static const std::unordered_map<MissionGoalType, MissionCategory> CATEGORIES;
 
@@ -113,7 +113,7 @@ private:
     MissionGoalType mType;
     MissionCategory mCategory;
     unsigned int mQuantity = 0;
-    unsigned int mTimeLimit = 0;
+    unsigned int mExtraValue = 0;
 
     int mProgress = PROGRESS_UNKNOWN;
 
@@ -130,7 +130,7 @@ inline unsigned int MissionGoal::GetId() const { return mId; }
 
 inline MissionGoalType MissionGoal::GetType() const { return mType; }
 inline unsigned int MissionGoal::GetQuantity() const { return mQuantity; }
-inline unsigned int MissionGoal::GetTimeLimit() const { return mTimeLimit; }
+inline unsigned int MissionGoal::GetExtraValue() const { return mExtraValue; }
 
 inline MissionCategory MissionGoal::GetCategory() const { return mCategory; }
 

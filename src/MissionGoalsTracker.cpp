@@ -450,31 +450,10 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
             return false;
         }
     }
-    else if(gt == MissionGoal::TYPE_TERRITORY_CONTROL_10M)
+    else if(gt == MissionGoal::TYPE_TERRITORY_CONTROL_TIME)
     {
-        // 60 sec * 10
-        const int timeLimit = 600;
-
-        if(mPlayedTime > timeLimit)
-        {
-            g.SetFailed();
-            return false;
-        }
-
-        const auto faction = mPlayer->GetFaction();
-        const int conquered = mControlMap->GetPercentageControlledByFaction(faction);
-
-        if(conquered < g.GetQuantity())
-        {
-            g.SetProgress(conquered * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_TERRITORY_CONTROL_20M)
-    {
-        // 60 sec * 20
-        const int timeLimit = 1200;
+        // 60 sec * minutes
+        const int timeLimit = 60 * g.GetExtraValue();
 
         if(mPlayedTime > timeLimit)
         {

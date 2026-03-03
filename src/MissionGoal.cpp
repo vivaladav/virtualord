@@ -7,7 +7,6 @@
 
 #include <cstddef>
 #include <iostream>
-#include <sstream>
 
 namespace game
 {
@@ -15,6 +14,7 @@ namespace game
 unsigned int MissionGoal::num = 0;
 
 const std::string MissionGoal::TAG_VALUE("%VAL%");
+const std::string MissionGoal::TAG_VALUE2("%VAL2%");
 
 // -- MISSION TYPE --
 const MissionGoalType MissionGoal::TYPE_NULL = 0;
@@ -44,8 +44,7 @@ const MissionGoalType MissionGoal::TYPE_MINE_MATERIAL = 5378452321571368320u;
 const MissionGoalType MissionGoal::TYPE_RESIST_TIME = 5309855068505147025u;
 const MissionGoalType MissionGoal::TYPE_SELF_DESTRUCT = 1062394292963769397u;
 const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL = 12724023192682496055u;
-const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL_10M = 1074831185674823527u;
-const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL_20M = 9704104995837322694u;
+const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL_TIME = 14784500176427593662u;
 
 const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION =
 {
@@ -76,8 +75,7 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_RESIST_TIME, "MG_RESIST_TIME" },
     { TYPE_SELF_DESTRUCT, "MG_SELF_DESTRUCT" },
     { TYPE_TERRITORY_CONTROL, "MG_TERR_CONTROL" },
-    { TYPE_TERRITORY_CONTROL_10M, "MG_TERR_CONTROL_10M" },
-    { TYPE_TERRITORY_CONTROL_20M, "MG_TERR_CONTROL_20M" },
+    { TYPE_TERRITORY_CONTROL_TIME, "MG_TERR_CONTROL_TIME" },
 };
 
 const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORIES =
@@ -109,20 +107,20 @@ const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORI
     { TYPE_RESIST_TIME, MC_RESISTANCE },
     { TYPE_SELF_DESTRUCT, MC_DESTRUCTION },
     { TYPE_TERRITORY_CONTROL, MC_CONQUEST },
-    { TYPE_TERRITORY_CONTROL_10M, MC_CONQUEST },
-    { TYPE_TERRITORY_CONTROL_20M, MC_CONQUEST },
+    { TYPE_TERRITORY_CONTROL_TIME, MC_CONQUEST },
 };
 
-MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity, bool primary)
+MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
+                         unsigned int extraVal, bool primary)
     : mId(++num)
     , mType(type)
     , mQuantity(quantity)
+    , mExtraValue(extraVal)
     , mPrimary(primary)
 {
     mRewards.fill(0);
 
     SetCategory();
-    SetTimeLimit();
 
     SetMissionRewards();
 }
@@ -171,13 +169,18 @@ const std::string MissionGoal::GetDescription() const
     const std::string & d = sm->GetString(it->second);
     const size_t indTag = d.find(TAG_VALUE);
 
+    // replace TAG VALUE
     if(indTag != std::string::npos)
     {
-        std::ostringstream os;
-        os << mQuantity;
-
         std::string d2 = d;
-        d2.replace(indTag, TAG_VALUE.length(), os.str());
+        d2.replace(indTag, TAG_VALUE.length(), std::to_string(mQuantity));
+
+        // replace TAG VALUE 2
+        const size_t indTag2 = d2.find(TAG_VALUE2);
+
+        if(indTag2 != std::string::npos)
+            d2.replace(indTag2, TAG_VALUE2.length(), std::to_string(mExtraValue));
+
         return d2;
     }
     else
@@ -192,16 +195,6 @@ void MissionGoal::SetCategory()
         mCategory = it->second;
     else
         mCategory = MC_UNKNOWN;
-}
-
-void MissionGoal::SetTimeLimit()
-{
-    if(mType == TYPE_TERRITORY_CONTROL_10M)
-        mTimeLimit = 600;
-    else if(mType == TYPE_TERRITORY_CONTROL_20M)
-        mTimeLimit = 1200;
-    else if(mType == TYPE_RESIST_TIME)
-        mTimeLimit = mQuantity;
 }
 
 void MissionGoal::SetMissionRewards()
@@ -422,23 +415,7 @@ void MissionGoal::SetMissionRewards()
             const int research = mQuantity * multResearch;
             mRewards[MR_RESEARCH] = research;
         }
-        else if(mType == TYPE_TERRITORY_CONTROL_10M)
-        {
-            const int multMoney = 100;
-            const int money = mQuantity * multMoney;
-            mRewards[MR_MONEY] = money;
-
-            const int multResearch = 50;
-            const int research = mQuantity * multResearch;
-            mRewards[MR_RESEARCH] = research;
-
-            const int multBlobs = 10;
-            mRewards[MR_BLOBS] = mQuantity * multBlobs;
-
-            const int multDiamonds = 10;
-            mRewards[MR_DIAMONDS] = mQuantity * multDiamonds;
-        }
-        else if(mType == TYPE_TERRITORY_CONTROL_20M)
+        else if(mType == TYPE_TERRITORY_CONTROL_TIME)
         {
             const int multMoney = 100;
             const int money = mQuantity * multMoney;
