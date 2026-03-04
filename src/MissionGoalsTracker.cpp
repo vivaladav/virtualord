@@ -429,6 +429,15 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 
         mHUD->HideMissionCountdown();
     }
+    else if(gt == MissionGoal::TYPE_RESIST_TURNS)
+    {
+        if(mPlayedTurns < g.GetQuantity())
+        {
+            g.SetProgress(mPlayedTurns * 100 / g.GetQuantity());
+
+            return false;
+        }
+    }
     else if(gt == MissionGoal::TYPE_SELF_DESTRUCT)
     {
         if(mSelfDestructed < g.GetQuantity())

@@ -42,6 +42,7 @@ const MissionGoalType MissionGoal::TYPE_GEN_RESEARCH = 14329901690992621984u;
 const MissionGoalType MissionGoal::TYPE_MINE_ENERGY = 16410639771806347059u;
 const MissionGoalType MissionGoal::TYPE_MINE_MATERIAL = 5378452321571368320u;
 const MissionGoalType MissionGoal::TYPE_RESIST_TIME = 5309855068505147025u;
+const MissionGoalType MissionGoal::TYPE_RESIST_TURNS = 640078702452599444u;
 const MissionGoalType MissionGoal::TYPE_SELF_DESTRUCT = 1062394292963769397u;
 const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL = 12724023192682496055u;
 const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL_TIME = 14784500176427593662u;
@@ -74,6 +75,7 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_MINE_ENERGY, "MG_MINE_ENERGY" },
     { TYPE_MINE_MATERIAL, "MG_MINE_MATERIAL" },
     { TYPE_RESIST_TIME, "MG_RESIST_TIME" },
+    { TYPE_RESIST_TURNS, "MG_RESIST_TURNS" },
     { TYPE_SELF_DESTRUCT, "MG_SELF_DESTRUCT" },
     { TYPE_TERRITORY_CONTROL, "MG_TERR_CONTROL" },
     { TYPE_TERRITORY_CONTROL_TIME, "MG_TERR_CONTROL_TIME" },
@@ -107,6 +109,7 @@ const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORI
     { TYPE_MINE_ENERGY, MC_PRODUCTION },
     { TYPE_MINE_MATERIAL, MC_PRODUCTION },
     { TYPE_RESIST_TIME, MC_RESISTANCE },
+    { TYPE_RESIST_TURNS, MC_RESISTANCE },
     { TYPE_SELF_DESTRUCT, MC_DESTRUCTION },
     { TYPE_TERRITORY_CONTROL, MC_CONQUEST },
     { TYPE_TERRITORY_CONTROL_TIME, MC_CONQUEST },
@@ -205,12 +208,10 @@ void MissionGoal::SetMissionRewards()
         if(mType == TYPE_COLLECT_BLOBS)
         {
             const int divDiamonds = 10;
-            const int diamonds = mQuantity / divDiamonds;
-            mRewards[MR_DIAMONDS] = diamonds;
+            mRewards[MR_DIAMONDS] = mQuantity / divDiamonds;
 
             const int multMoney = 5;
-            const int money = mQuantity * multMoney;
-            mRewards[MR_MONEY] = money;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
         }
         else if(mType == TYPE_BUILD_BUNKER || mType == TYPE_BUILD_DEF_TOWER ||
                 mType == TYPE_BUILD_MAT_EXTRACT || mType == TYPE_BUILD_SOLAR_PANELS)
@@ -244,18 +245,15 @@ void MissionGoal::SetMissionRewards()
         else if(mType == TYPE_BUILD_WALL)
         {
             const int multMoney = 10;
-            const int money = mQuantity * multMoney;
-            mRewards[MR_MONEY] = money;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
         }
         else if(mType == TYPE_COLLECT_DIAMONDS)
         {
             const int divBlobs = 10;
-            const int blobs = mQuantity / divBlobs;
-            mRewards[MR_BLOBS] = blobs;
+            mRewards[MR_BLOBS] = mQuantity / divBlobs;
 
             const int multMoney = 5;
-            const int money = mQuantity * multMoney;
-            mRewards[MR_MONEY] = money;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
         }
         else if(mType == TYPE_CREATE_MINI_UNITS)
         {
@@ -282,13 +280,11 @@ void MissionGoal::SetMissionRewards()
         else if(mType == TYPE_DESTROY_ALL_ENEMIES)
         {
             const int money = 15000;
-
             mRewards[MR_MONEY] = money;
         }
         else if(mType == TYPE_DESTROY_ENEMY_BASE)
         {
             const int money = 10000;
-
             mRewards[MR_MONEY] = money;
         }
         else if(mType == TYPE_DESTROY_ENEMY_MUNITS)
@@ -331,20 +327,16 @@ void MissionGoal::SetMissionRewards()
         else if(mType == TYPE_GAIN_MONEY)
         {
             const int divBlobs = 100;
-            const int blobs = mQuantity / divBlobs;
-            mRewards[MR_BLOBS] = blobs;
+            mRewards[MR_BLOBS] = mQuantity / divBlobs;
 
             const int divDiamonds = 100;
-            const int diamonds = mQuantity / divDiamonds;
-            mRewards[MR_DIAMONDS] = diamonds;
+            mRewards[MR_DIAMONDS] = mQuantity / divDiamonds;
 
             const int divEnergy = 50;
-            const int energy = mQuantity / divEnergy;
-            mRewards[MR_ENERGY] = energy;
+            mRewards[MR_ENERGY] = mQuantity / divEnergy;
 
             const int divMaterial = 10;
-            const int material = mQuantity / divMaterial;
-            mRewards[MR_MATERIAL] = material;
+            mRewards[MR_MATERIAL] = mQuantity / divMaterial;
         }
         else if(mType == TYPE_GEN_RESEARCH)
         {
@@ -357,34 +349,36 @@ void MissionGoal::SetMissionRewards()
         else if(mType == TYPE_MINE_MATERIAL)
         {
             const int divEnergy = 10;
-            const int energy = mQuantity / divEnergy;
-            mRewards[MR_ENERGY] = energy;
+            mRewards[MR_ENERGY] = mQuantity / divEnergy;
 
             const int divMoney = 2;
-            const int money = mQuantity / divMoney;
-            mRewards[MR_MONEY] = money;
+            mRewards[MR_MONEY] = mQuantity / divMoney;
         }
         else if(mType == TYPE_MINE_ENERGY)
         {
             const int divMaterial = 10;
-            const int material = mQuantity / divMaterial;
-            mRewards[MR_MATERIAL] = material;
+            mRewards[MR_MATERIAL] = mQuantity / divMaterial;
 
             const int divMoney = 2;
-            const int money = mQuantity / divMoney;
-            mRewards[MR_MONEY] = money;
+            mRewards[MR_MONEY] = mQuantity / divMoney;
         }
         else if(mType == TYPE_RESIST_TIME)
         {
-            const int blobs = mQuantity;
-            mRewards[MR_BLOBS] = blobs;
+            mRewards[MR_BLOBS] = mQuantity;
 
-            const int diamonds = mQuantity;
-            mRewards[MR_DIAMONDS] = diamonds;
+            mRewards[MR_DIAMONDS] = mQuantity;
 
             const int multMoney = 100;
-            const int money = mQuantity * multMoney;
-            mRewards[MR_MONEY] = money;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
+        }
+        else if(mType == TYPE_RESIST_TURNS)
+        {
+            mRewards[MR_BLOBS] = mQuantity;
+
+            mRewards[MR_DIAMONDS] = mQuantity;
+
+            const int multMoney = 100;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
         }
         else if(mType == TYPE_COMPLETE_TUTORIAL)
         {
@@ -411,22 +405,18 @@ void MissionGoal::SetMissionRewards()
         else if(mType == TYPE_TERRITORY_CONTROL)
         {
             const int multMoney = 100;
-            const int money = mQuantity * multMoney;
-            mRewards[MR_MONEY] = money;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
 
             const int multResearch = 50;
-            const int research = mQuantity * multResearch;
-            mRewards[MR_RESEARCH] = research;
+            mRewards[MR_RESEARCH] = mQuantity * multResearch;
         }
         else if(mType == TYPE_TERRITORY_CONTROL_TIME)
         {
             const int multMoney = 100;
-            const int money = mQuantity * multMoney;
-            mRewards[MR_MONEY] = money;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
 
             const int multResearch = 50;
-            const int research = mQuantity * multResearch;
-            mRewards[MR_RESEARCH] = research;
+            mRewards[MR_RESEARCH] = mQuantity * multResearch;
 
             const int multBlobs = 10;
             mRewards[MR_BLOBS] = mQuantity * multBlobs;
@@ -437,12 +427,10 @@ void MissionGoal::SetMissionRewards()
         else if(mType == TYPE_TERRITORY_CONTROL_TURNS)
         {
             const int multMoney = 50;
-            const int money = mQuantity * multMoney;
-            mRewards[MR_MONEY] = money;
+            mRewards[MR_MONEY] = mQuantity * multMoney;
 
             const int multResearch = 25;
-            const int research = mQuantity * multResearch;
-            mRewards[MR_RESEARCH] = research;
+            mRewards[MR_RESEARCH] = mQuantity * multResearch;
 
             const int multBlobs = 5;
             mRewards[MR_BLOBS] = mQuantity * multBlobs;
