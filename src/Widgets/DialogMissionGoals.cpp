@@ -1,5 +1,6 @@
 #include "Widgets/DialogMissionGoals.h"
 
+#include "GameConstants.h"
 #include "MissionGoal.h"
 #include "MissionGoalsTracker.h"
 #include <Widgets/GameButton.h>
@@ -437,19 +438,19 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
         const int rewardMargin = 5;
         const int rewardMarginIcon = 30;
 
-        const unsigned int iconIds[NUM_MISSION_REWARDS] =
+        const unsigned int iconIds[NUM_EXTENDED_RESOURCES] =
         {
-            ID_UIS_ICON_C_RES_BLOBS_24,
-            ID_UIS_ICON_C_RES_DIAMONDS_24,
             ID_UIS_ICON_C_RES_ENERGY_24,
             ID_UIS_ICON_C_RES_MATERIAL_24,
+            ID_UIS_ICON_C_RES_DIAMONDS_24,
+            ID_UIS_ICON_C_RES_BLOBS_24,
             ID_UIS_ICON_C_RES_MONEY_24,
             ID_UIS_ICON_C_RES_RESEARCH_24,
         };
 
-        for(unsigned int r = 0; r < NUM_MISSION_REWARDS; ++r)
+        for(unsigned int r = 0; r < NUM_EXTENDED_RESOURCES; ++r)
         {
-            const int reward = g.GetRewardByType(static_cast<MissionReward>(r));
+            const int reward = g.GetRewardByType(static_cast<ExtendedResource>(r));
 
             // no reward for this type
             if(reward <= 0)

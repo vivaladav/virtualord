@@ -1,27 +1,16 @@
 #pragma once
 
-#include <array>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace game
 {
 
 class Player;
 
+enum ExtendedResource : unsigned int;
 enum MissionCategory : unsigned int;
-
-enum MissionReward : unsigned int
-{
-    MR_BLOBS,
-    MR_DIAMONDS,
-    MR_ENERGY,
-    MR_MATERIAL,
-    MR_MONEY,
-    MR_RESEARCH,
-
-    NUM_MISSION_REWARDS
-};
 
 typedef std::size_t MissionGoalType;
 
@@ -89,7 +78,7 @@ public:
     // REWARD
     bool IsRewardCollected() const;
     void AssignReward(Player * p);
-    int GetRewardByType(MissionReward r) const;
+    int GetRewardByType(ExtendedResource r) const;
 
     // STRINGS
     // NOTE return string is already transformed with quantity and translated
@@ -118,7 +107,7 @@ private:
 
     int mProgress = PROGRESS_UNKNOWN;
 
-    std::array<int, NUM_MISSION_REWARDS> mRewards;
+    std::vector<int> mRewards;
 
     bool mCompleted = false;
     bool mFailed = false;
@@ -155,13 +144,5 @@ inline void MissionGoal::SetFailed() { mFailed = true; }
 
 // REWARD
 inline bool MissionGoal::IsRewardCollected() const { return mRewardCollected; }
-
-inline int MissionGoal::GetRewardByType(MissionReward r) const
-{
-    if(r < NUM_MISSION_REWARDS)
-        return mRewards[r];
-    else
-        return 0;
-}
 
 } // namespace game

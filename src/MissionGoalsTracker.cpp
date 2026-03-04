@@ -17,21 +17,21 @@ MissionGoalsTracker::MissionGoalsTracker(Game * g, Player * p)
     , mPlayer(p)
 {
     // init support data
-    mResourcesGained.assign(NUM_MISSION_REWARDS, 0);
-    mResourceTrackerIds.assign(NUM_MISSION_REWARDS, 0);
+    mResourcesGained.assign(NUM_EXTENDED_RESOURCES, 0);
+    mResourceTrackerIds.assign(NUM_EXTENDED_RESOURCES, 0);
 
     // setup resource trackers
-    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
+    const Player::Stat resourceIds[] =
     {
-        Player::BLOBS,
-        Player::DIAMONDS,
         Player::ENERGY,
         Player::MATERIAL,
+        Player::DIAMONDS,
+        Player::BLOBS,
         Player::MONEY,
         Player::RESEARCH,
     };
 
-    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
+    for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
     {
         const Player::Stat resId = resourceIds[i];
 
@@ -57,17 +57,17 @@ MissionGoalsTracker::MissionGoalsTracker(Game * g, Player * p)
 
 MissionGoalsTracker::~MissionGoalsTracker()
 {
-    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
+    const Player::Stat resourceIds[] =
     {
-        Player::BLOBS,
-        Player::DIAMONDS,
         Player::ENERGY,
         Player::MATERIAL,
+        Player::DIAMONDS,
+        Player::BLOBS,
         Player::MONEY,
         Player::RESEARCH,
     };
 
-    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
+    for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
     {
         const Player::Stat resId = resourceIds[i];
         const int funId = mResourceTrackerIds[i];
@@ -185,18 +185,18 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 
     if(gt == MissionGoal::TYPE_COLLECT_BLOBS)
     {
-        if(mResourcesGained[MR_BLOBS] < g.GetQuantity())
+        if(mResourcesGained[ER_BLOBS] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[MR_BLOBS] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[ER_BLOBS] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_COLLECT_DIAMONDS)
     {
-        if(mResourcesGained[MR_DIAMONDS] < g.GetQuantity())
+        if(mResourcesGained[ER_DIAMONDS] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[MR_DIAMONDS] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[ER_DIAMONDS] * 100 / g.GetQuantity());
 
             return false;
         }
@@ -384,9 +384,9 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_GAIN_MONEY)
     {
-        if(mResourcesGained[MR_MONEY] < g.GetQuantity())
+        if(mResourcesGained[ER_MONEY] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[MR_MONEY] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[ER_MONEY] * 100 / g.GetQuantity());
 
             return false;
         }
@@ -402,18 +402,18 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_MINE_ENERGY)
     {
-        if(mResourcesGained[MR_ENERGY] < g.GetQuantity())
+        if(mResourcesGained[ER_ENERGY] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[MR_ENERGY] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[ER_ENERGY] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_MINE_MATERIAL)
     {
-        if(mResourcesGained[MR_MATERIAL] < g.GetQuantity())
+        if(mResourcesGained[ER_MATERIAL] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[MR_MATERIAL] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[ER_MATERIAL] * 100 / g.GetQuantity());
 
             return false;
         }
