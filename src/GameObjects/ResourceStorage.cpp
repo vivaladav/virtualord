@@ -80,12 +80,12 @@ void ResourceStorage::UpdateCapacity()
         const int diff = mCapacity - oldCapacity;
 
         const Player::Stat statIds[NUM_RESOURCES] =
-            {
-                Player::Stat::ENERGY,
-                Player::Stat::MATERIAL,
-                Player::Stat::DIAMONDS,
-                Player::Stat::BLOBS
-            };
+        {
+            Player::Stat::ENERGY,
+            Player::Stat::MATERIAL,
+            Player::Stat::DIAMONDS,
+            Player::Stat::BLOBS
+        };
 
         Player * p = GetOwner();
         p->SumResourceMax(statIds[mResource], diff);
@@ -96,10 +96,22 @@ void ResourceStorage::UpdateCapacityValue()
 {
     Player * p = GetOwner();
 
+    // set max capacity value
     const bool mainRes = RES_ENERGY == mResource || RES_MATERIAL1 == mResource;
     const float maxCapacity = mainRes ? 2000.f : 1000.f;
-    const float mult = p != nullptr ? p->GetStorageEnergyMult() : 1.f;
 
+    // define upgrade multiplier
+    float mult = 1.f;
+
+    if(p != nullptr)
+    {
+        if(RES_ENERGY == mResource)
+            mult = p->GetStorageEnergyMult();
+        else if(RES_MATERIAL1 == mResource)
+            mult = p->GetStorageMaterialMult();
+    }
+
+    // update capacity value
     mCapacity = std::roundf(mult * maxCapacity * GetAttribute(OBJ_ATT_STORAGE) / MAX_STAT_FVAL);
 }
 

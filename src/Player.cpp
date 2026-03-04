@@ -447,6 +447,14 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
             UpgradeResourceStorage(RES_ENERGY, 1.5f);
         break;
 
+        case TECH_UP_STORAGE_MATERIAL_1:
+            UpgradeResourceStorage(RES_MATERIAL1, 1.25f);
+        break;
+
+        case TECH_UP_STORAGE_MATERIAL_2:
+            UpgradeResourceStorage(RES_MATERIAL1, 1.5f);
+        break;
+
         default:
         break;
     }
@@ -680,14 +688,25 @@ void Player::NotifyResourcesChanged()
         it.second();
 }
 
-void Player::UpgradeResourceStorage(ResourceType type, float mult)
+void Player::UpgradeResourceStorage(ResourceType res, float mult)
 {
-    mStorageEnergyMult *= mult;
+    const GameObjectTypeId objectTypes[] =
+    {
+        ObjectData::TYPE_RES_STORAGE_ENERGY,
+        ObjectData::TYPE_RES_STORAGE_MATERIAL,
+        ObjectData::TYPE_RES_STORAGE_DIAMONDS,
+        ObjectData::TYPE_RES_STORAGE_BLOBS,
+    };
+
+    if(res == RES_ENERGY)
+        mStorageEnergyMult *= mult;
+    else if(res == RES_MATERIAL1)
+        mStorageMaterialMult *= mult;
 
     // notify existing structures
     for(auto s : mStructures)
     {
-        if(s->GetObjectType() == ObjectData::TYPE_RES_STORAGE_ENERGY)
+        if(s->GetObjectType() == objectTypes[res])
             static_cast<ResourceStorage *>(s)->OnCapacityUpgraded();
     }
 }

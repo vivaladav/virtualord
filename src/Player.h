@@ -140,6 +140,7 @@ public:
 
     float GetBaseProductionMult() const;
     float GetStorageEnergyMult() const;
+    float GetStorageMaterialMult() const;
 
     // -- TURN --
     void OnNewTurn();
@@ -165,7 +166,7 @@ private:
     int GetCellsEnergyUsed() const;
     void NotifyResourcesChanged();
 
-    void UpgradeResourceStorage(ResourceType type, float mult);
+    void UpgradeResourceStorage(ResourceType res, float mult);
 
 private:
     std::unordered_map<TechUpgradeId, bool> mUpgrades;
@@ -214,6 +215,7 @@ private:
     // -- upgrades --
     float mBaseProdMult = 1.f;
     float mStorageEnergyMult = 1.f;
+    float mStorageMaterialMult = 1.f;
 };
 
 inline PlayerFaction Player::GetFaction() const { return mFaction; }
@@ -322,6 +324,7 @@ inline bool Player::IsUpgradeUnlocked(TechUpgradeId upgrade) const
 
 inline float Player::GetBaseProductionMult() const { return mBaseProdMult; }
 inline float Player::GetStorageEnergyMult() const { return mStorageEnergyMult; }
+inline float Player::GetStorageMaterialMult() const { return mStorageMaterialMult; }
 
 inline float Player::GetTurnEnergy() const { return mTurnEnergy; }
 inline float Player::GetTurnMaxEnergy() const { return mTurnMaxEnergy; }
