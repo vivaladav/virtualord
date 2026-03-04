@@ -3450,6 +3450,7 @@ void ScreenGame::EndTurn()
     if(IsCurrentTurnLocal())
     {
         mTrackerMG->AddPlayedTurns();
+        mHUD->AddPlayedTurn();
 
         if(!mGameMap->IsDoingAutomaticMoves())
             InitLocalTurn();

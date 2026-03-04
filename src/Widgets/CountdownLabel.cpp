@@ -7,20 +7,28 @@
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/Text.h>
 
-#include <sstream>
-
 #include <cmath>
 
 namespace game
 {
 
-CountdownLabel::CountdownLabel(PlayerFaction faction, int seconds, sgl::sgui::Widget * parent)
+CountdownLabel::CountdownLabel(PlayerFaction faction, unsigned int turns,
+                               sgl::sgui::Widget * parent)
     : sgl::sgui::Widget(parent)
     , mFaction(faction)
-    , mTime(seconds)
-    , mTimeInt(seconds)
+    , mTurns(turns)
 {
     SetCamera(sgl::graphic::Camera::GetDefaultCamera());
+
+    UpdateDigits();
+}
+
+void CountdownLabel::AddPlayedTurn()
+{
+    if(mTurns == 0)
+        return ;
+
+    --mTurns;
 
     UpdateDigits();
 }
@@ -32,25 +40,6 @@ void CountdownLabel::UpdateDigits()
     UnregisterRenderable(mTxt);
     delete mTxt;
 
-    // PREPARE DATA
-    const int secsInM = 60;
-    // mins
-    int time = mTimeInt;
-    const int timeM = time / secsInM;
-    // secs
-    time -= timeM * secsInM;
-    const int timeS = time;
-
-    const int fieldW = 2;
-    const char fieldF = '0';
-    std::ostringstream ss;
-    ss.width(fieldW);
-    ss.fill(fieldF);
-    ss << timeM << ":";
-    ss.width(fieldW);
-    ss.fill(fieldF);
-    ss << timeS;
-
     // CREATE TEXT
     const int fontSize = 20;
     const unsigned int colors[] = { 0xd98c8cff, 0x8cd98cff, 0x8cccd9ff };
@@ -59,7 +48,7 @@ void CountdownLabel::UpdateDigits()
     graphic::Font * font = fm->GetFont(WidgetsConstants::FontFileStrongText, fontSize,
                                        graphic::Font::NORMAL);
 
-    mTxt = new graphic::Text(ss.str().c_str(), font);
+    mTxt = new graphic::Text(std::to_string(mTurns).c_str(), font);
     mTxt->SetColor(colors[mFaction]);
     RegisterRenderable(mTxt);
 
@@ -81,22 +70,6 @@ void CountdownLabel::SetPositions()
     const int y0 = GetScreenY();
 
     mTxt->SetPosition(x0, y0);
-}
-
-void CountdownLabel::OnUpdate(float delta)
-{
-    mTime -= delta;
-
-    if(mTime < 0.f)
-        mTime = 0.f;
-
-    const int t = static_cast<int>(std::roundf(mTime));
-
-    if(t != mTimeInt)
-    {
-        mTimeInt = t;
-        UpdateDigits();
-    }
 }
 
 } // namespace game

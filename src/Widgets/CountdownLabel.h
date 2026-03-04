@@ -12,7 +12,9 @@ enum PlayerFaction : unsigned int;
 class CountdownLabel : public sgl::sgui::Widget
 {
 public:
-    CountdownLabel(PlayerFaction faction, int seconds, sgl::sgui::Widget * parent = nullptr);
+    CountdownLabel(PlayerFaction faction, unsigned int turns, sgl::sgui::Widget * parent = nullptr);
+
+    void AddPlayedTurn();
 
 private:
     void UpdateDigits();
@@ -21,11 +23,8 @@ private:
 
     void SetPositions();
 
-    void OnUpdate(float delta) override;
-
 private:
-    float mTime = 0;
-    int mTimeInt = 0;
+    unsigned int mTurns = 0;
 
     PlayerFaction mFaction;
 

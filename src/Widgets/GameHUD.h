@@ -91,8 +91,9 @@ public:
     void HideDialogNewElement();
     DialogNewElement * GetDialogNewElement();
 
-    void ShowMissionCountdown(int secs);
+    void ShowMissionCountdown(unsigned int turns);
     void HideMissionCountdown();
+    void AddPlayedTurn();
 
     void ShowGoalCompletedIcon();
     void HideGoalCompletedIcon();
@@ -140,6 +141,7 @@ private:
     void ReopenPanels();
 
     void PositionOptionsPanelOverObjectActions(sgl::sgui::Widget * panel, unsigned int button);
+    void PositionMissionCountdown();
 
     void ResumeGameFromExit();
 

@@ -10,6 +10,7 @@
 #include "IsoObject.h"
 #include "MissionGoalsTracker.h"
 #include "Player.h"
+#include "GameObjects/Base.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Structure.h"
 #include "GameObjects/Temple.h"
@@ -679,31 +680,30 @@ void GameHUD::HideDialogNewElement()
     mScreen->SetPause(false);
 }
 
-void GameHUD::ShowMissionCountdown(int secs)
+void GameHUD::ShowMissionCountdown(unsigned int turns)
 {
     const Player * p = mScreen->GetGame()->GetLocalPlayer();
     const PlayerFaction pf = p->GetFaction();
-    const auto bases = p->GetStructuresByType(ObjectData::TYPE_BASE);
 
-    // this shouldn't happen
-    if(bases.empty())
-        return ;
+    mCountdownLabel = new CountdownLabel(pf, turns, this);
 
-    const Structure * base = bases[0];
-    const IsoObject * isoObj = base->GetIsoObject();
-
-    mCountdownLabel = new CountdownLabel(pf, secs, this);
-
-    const int x0 = isoObj->GetX() + (isoObj->GetWidth() - mCountdownLabel->GetWidth()) / 2;
-    const int y0 = isoObj->GetY() - mCountdownLabel->GetHeight();
-
-    mCountdownLabel->SetPosition(x0, y0);
+    PositionMissionCountdown();
 }
 
 void GameHUD::HideMissionCountdown()
 {
     delete mCountdownLabel;
     mCountdownLabel = nullptr;
+}
+
+void GameHUD::AddPlayedTurn()
+{
+    if(mCountdownLabel == nullptr)
+        return ;
+
+    mCountdownLabel->AddPlayedTurn();
+
+    PositionMissionCountdown();
 }
 
 void GameHUD::ShowGoalCompletedIcon()
@@ -1226,6 +1226,18 @@ void GameHUD::PositionOptionsPanelOverObjectActions(sgl::sgui::Widget * panel, u
     const int panelX = btn->GetScreenX() + (btn->GetWidth() - panel->GetWidth()) / 2;
     const int panelY = btn->GetScreenY() - panel->GetHeight() - marginB;
     panel->SetPosition(panelX, panelY);
+}
+
+void GameHUD::PositionMissionCountdown()
+{
+    const Player * p = mScreen->GetGame()->GetLocalPlayer();
+    const PlayerFaction pf = p->GetFaction();
+    const Base * base = p->GetBase();
+    const IsoObject * isoObj = base->GetIsoObject();
+    const int x0 = isoObj->GetX() + (isoObj->GetWidth() - mCountdownLabel->GetWidth()) / 2;
+    const int y0 = isoObj->GetY() - mCountdownLabel->GetHeight();
+
+    mCountdownLabel->SetPosition(x0, y0);
 }
 
 void GameHUD::ResumeGameFromExit()
