@@ -843,7 +843,7 @@ void ScreenGame::CreateUI()
 
     for(const MissionGoal & g : goals)
     {
-        if(g.GetType() == MissionGoal::TYPE_RESIST_TIME)
+        if(g.GetType() == MissionGoal::TYPE_RESIST_TURNS)
         {
             mHUD->ShowMissionCountdown(g.GetQuantity());
             break;

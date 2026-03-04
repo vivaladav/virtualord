@@ -55,7 +55,6 @@ public:
     static const MissionGoalType TYPE_GEN_RESEARCH;
     static const MissionGoalType TYPE_MINE_ENERGY;
     static const MissionGoalType TYPE_MINE_MATERIAL;
-    static const MissionGoalType TYPE_RESIST_TIME;
     static const MissionGoalType TYPE_RESIST_TURNS;
     static const MissionGoalType TYPE_SELF_DESTRUCT;
     static const MissionGoalType TYPE_TERRITORY_CONTROL;

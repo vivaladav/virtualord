@@ -418,17 +418,6 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
             return false;
         }
     }
-    else if(gt == MissionGoal::TYPE_RESIST_TIME)
-    {
-        if(mPlayedTime < g.GetQuantity())
-        {
-            g.SetProgress(mPlayedTime * 100 / g.GetQuantity());
-
-            return false;
-        }
-
-        mHUD->HideMissionCountdown();
-    }
     else if(gt == MissionGoal::TYPE_RESIST_TURNS)
     {
         if(mPlayedTurns < g.GetQuantity())
@@ -437,6 +426,8 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 
             return false;
         }
+
+        mHUD->HideMissionCountdown();
     }
     else if(gt == MissionGoal::TYPE_SELF_DESTRUCT)
     {

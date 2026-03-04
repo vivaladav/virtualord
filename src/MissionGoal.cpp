@@ -41,7 +41,6 @@ const MissionGoalType MissionGoal::TYPE_GAIN_MONEY = 10899834782554881582u;
 const MissionGoalType MissionGoal::TYPE_GEN_RESEARCH = 14329901690992621984u;
 const MissionGoalType MissionGoal::TYPE_MINE_ENERGY = 16410639771806347059u;
 const MissionGoalType MissionGoal::TYPE_MINE_MATERIAL = 5378452321571368320u;
-const MissionGoalType MissionGoal::TYPE_RESIST_TIME = 5309855068505147025u;
 const MissionGoalType MissionGoal::TYPE_RESIST_TURNS = 640078702452599444u;
 const MissionGoalType MissionGoal::TYPE_SELF_DESTRUCT = 1062394292963769397u;
 const MissionGoalType MissionGoal::TYPE_TERRITORY_CONTROL = 12724023192682496055u;
@@ -74,7 +73,6 @@ const std::unordered_map<MissionGoalType, std::string> MissionGoal::DESCRIPTION 
     { TYPE_GEN_RESEARCH, "MG_GEN_RESEARCH" },
     { TYPE_MINE_ENERGY, "MG_MINE_ENERGY" },
     { TYPE_MINE_MATERIAL, "MG_MINE_MATERIAL" },
-    { TYPE_RESIST_TIME, "MG_RESIST_TIME" },
     { TYPE_RESIST_TURNS, "MG_RESIST_TURNS" },
     { TYPE_SELF_DESTRUCT, "MG_SELF_DESTRUCT" },
     { TYPE_TERRITORY_CONTROL, "MG_TERR_CONTROL" },
@@ -108,7 +106,6 @@ const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORI
     { TYPE_GEN_RESEARCH, MC_PRODUCTION },
     { TYPE_MINE_ENERGY, MC_PRODUCTION },
     { TYPE_MINE_MATERIAL, MC_PRODUCTION },
-    { TYPE_RESIST_TIME, MC_RESISTANCE },
     { TYPE_RESIST_TURNS, MC_RESISTANCE },
     { TYPE_SELF_DESTRUCT, MC_DESTRUCTION },
     { TYPE_TERRITORY_CONTROL, MC_CONQUEST },
@@ -361,15 +358,6 @@ void MissionGoal::SetMissionRewards()
 
             const int divMoney = 2;
             mRewards[MR_MONEY] = mQuantity / divMoney;
-        }
-        else if(mType == TYPE_RESIST_TIME)
-        {
-            mRewards[MR_BLOBS] = mQuantity;
-
-            mRewards[MR_DIAMONDS] = mQuantity;
-
-            const int multMoney = 100;
-            mRewards[MR_MONEY] = mQuantity * multMoney;
         }
         else if(mType == TYPE_RESIST_TURNS)
         {
