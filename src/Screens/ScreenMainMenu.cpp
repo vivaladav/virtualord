@@ -358,7 +358,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New mission goals: create units and mini-units.\n"
                   "- New mission goals: create structures and create specific structures.\n"
                   "- New mission goals: conquer structures and conquer specific structures.\n"
-                  "- New mission goals: control territory with and without time limit.\n"
+                  "- New mission goals: control territory also with time and turns limit.\n"
                   "- New mission goals: destroy enemy units and structures.\n"
                   "\nCHANGES\n"
                   "- Hit points no longer shown on self-destruction.\n"
@@ -366,6 +366,7 @@ void ScreenMainMenu::CreateChangelog()
                   " loading assets based on game section.\n"
                   "- Improved animation of output particles.\n"
                   "- No tutorial mission goals if tutorial is disabled.\n"
+                  "- Change mission goal resist X time to resist X turns.\n"
                   "\nFIXES\n"
                   "- Fix sliders showing wrong values and graphics when step is not 1.\n"
                   );
