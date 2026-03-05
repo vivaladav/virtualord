@@ -321,8 +321,8 @@ enum SpriteIdDialogTechTree : unsigned int
     ID_TECH_UP_ICON_STORAGE_STRUCTS,
     ID_TECH_UP_ICON_STORAGE_ENERGY,
     ID_TECH_UP_ICON_STORAGE_MATERIAL,
-    ID_TECH_UP_ICON_STORAGE_BLOBS,
     ID_TECH_UP_ICON_STORAGE_DIAMONDS,
+    ID_TECH_UP_ICON_STORAGE_BLOBS,
 };
 
 extern const char SpriteFileDialogTechTreeExp[];

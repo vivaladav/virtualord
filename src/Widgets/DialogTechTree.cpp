@@ -106,6 +106,8 @@ DialogTechTree::DialogTechTree(Player * player)
     mDescriptions.emplace(TECH_UP_STORAGE_ENERGY_2, "UPG_STOR_ENE2");
     mDescriptions.emplace(TECH_UP_STORAGE_MATERIAL_1, "UPG_STOR_MAT1");
     mDescriptions.emplace(TECH_UP_STORAGE_MATERIAL_2, "UPG_STOR_MAT2");
+    mDescriptions.emplace(TECH_UP_STORAGE_DIAMONDS_1, "UPG_STOR_DIA1");
+    mDescriptions.emplace(TECH_UP_STORAGE_DIAMONDS_2, "UPG_STOR_DIA2");
 
     // INIT COSTS
     mCosts.emplace(TECH_UP_NULL, 0);
@@ -121,6 +123,8 @@ DialogTechTree::DialogTechTree(Player * player)
     mCosts.emplace(TECH_UP_STORAGE_ENERGY_2, 1500);
     mCosts.emplace(TECH_UP_STORAGE_MATERIAL_1, 600);
     mCosts.emplace(TECH_UP_STORAGE_MATERIAL_2, 1500);
+    mCosts.emplace(TECH_UP_STORAGE_DIAMONDS_1, 600);
+    mCosts.emplace(TECH_UP_STORAGE_DIAMONDS_2, 1500);
 
     // -- BACKGROUND --
     const int w = 1900;
@@ -404,6 +408,19 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         AddLinkToUpgrade(btnUpgrade22, LINK_VERT, LS_NORTH);
         AddLinkToUpgrade(btnUpgrade22, LINK_HORIZ, LS_WEST);
 
+        btnY -= btnUpgrade22->GetHeight() + buttonsMarginV;
+
+        // [3, 2]
+        auto btnUpgrade32 = GetNewButtonUpgrade(TECH_UP_STORAGE_DIAMONDS_1, 1,
+                                                { btnUpgrade22 }, false);
+
+        btnUpgrade32->SetPosition(btnX, btnY);
+
+        AddLinkToUpgrade(btnUpgrade32, LINK_VERT, LS_NORTH);
+        AddLinkToUpgrade(btnUpgrade32, LINK_HORIZ, LS_WEST);
+
+        btnY -= btnUpgrade32->GetHeight() + buttonsMarginV;
+
         // -- COL 3 --
         btnX = btnUpgrade12->GetX() + btnUpgrade12->GetWidth() + buttonsMarginH;
         btnY = btnUpgrade12->GetY();
@@ -423,6 +440,14 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         btnUpgrade23->SetPosition(btnX, btnY);
 
         btnY -= btnUpgrade23->GetHeight() + buttonsMarginV;
+
+        // [3, 3]
+        auto btnUpgrade33 = GetNewButtonUpgrade(TECH_UP_STORAGE_DIAMONDS_2, 2,
+                                                { btnUpgrade32 }, false);
+
+        btnUpgrade33->SetPosition(btnX, btnY);
+
+        btnY -= btnUpgrade33->GetHeight() + buttonsMarginV;
     }
     else
     {
