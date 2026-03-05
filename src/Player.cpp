@@ -455,13 +455,20 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
             UpgradeResourceStorage(RES_MATERIAL1, 1.5f);
         break;
 
-
         case TECH_UP_STORAGE_DIAMONDS_1:
             UpgradeResourceStorage(RES_DIAMONDS, 1.25f);
         break;
 
         case TECH_UP_STORAGE_DIAMONDS_2:
             UpgradeResourceStorage(RES_DIAMONDS, 1.5f);
+        break;
+
+        case TECH_UP_STORAGE_BLOBS_1:
+            UpgradeResourceStorage(RES_BLOBS, 1.25f);
+            break;
+
+        case TECH_UP_STORAGE_BLOBS_2:
+            UpgradeResourceStorage(RES_BLOBS, 1.5f);
         break;
 
         default:
@@ -713,6 +720,8 @@ void Player::UpgradeResourceStorage(ResourceType res, float mult)
         mStorageMaterialMult *= mult;
     else if(res == RES_DIAMONDS)
         mStorageDiamondsMult *= mult;
+    else if(res == RES_BLOBS)
+        mStorageBlobsMult *= mult;
 
     // notify existing structures
     for(auto s : mStructures)

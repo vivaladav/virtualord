@@ -142,6 +142,7 @@ public:
     float GetStorageEnergyMult() const;
     float GetStorageMaterialMult() const;
     float GetStorageDiamondsMult() const;
+    float GetStorageBlobsMult() const;
 
     // -- TURN --
     void OnNewTurn();
@@ -218,6 +219,7 @@ private:
     float mStorageEnergyMult = 1.f;
     float mStorageMaterialMult = 1.f;
     float mStorageDiamondsMult = 1.f;
+    float mStorageBlobsMult = 1.f;
 };
 
 inline PlayerFaction Player::GetFaction() const { return mFaction; }
@@ -328,6 +330,7 @@ inline float Player::GetBaseProductionMult() const { return mBaseProdMult; }
 inline float Player::GetStorageEnergyMult() const { return mStorageEnergyMult; }
 inline float Player::GetStorageMaterialMult() const { return mStorageMaterialMult; }
 inline float Player::GetStorageDiamondsMult() const { return mStorageDiamondsMult; }
+inline float Player::GetStorageBlobsMult() const { return mStorageBlobsMult; }
 
 inline float Player::GetTurnEnergy() const { return mTurnEnergy; }
 inline float Player::GetTurnMaxEnergy() const { return mTurnMaxEnergy; }

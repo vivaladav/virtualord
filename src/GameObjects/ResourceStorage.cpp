@@ -111,6 +111,8 @@ void ResourceStorage::UpdateCapacityValue()
             mult = p->GetStorageMaterialMult();
         else if(RES_DIAMONDS == mResource)
             mult = p->GetStorageDiamondsMult();
+        else if(RES_BLOBS == mResource)
+            mult = p->GetStorageBlobsMult();
     }
 
     // update capacity value
