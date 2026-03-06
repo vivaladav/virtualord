@@ -361,6 +361,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New mission goals: conquer structures and conquer specific structures.\n"
                   "- New mission goals: control territory also with time and turns limit.\n"
                   "- New mission goals: destroy enemy units and structures.\n"
+                  "- Introduced support for 3 sizes of planet.\n"
                   "\nCHANGES\n"
                   "- Hit points no longer shown on self-destruction.\n"
                   "- No longer pre-loading everything at the beginning, but"
@@ -368,6 +369,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Improved animation of output particles.\n"
                   "- No tutorial mission goals if tutorial is disabled.\n"
                   "- Change mission goal resist X time to resist X turns.\n"
+                  "- First planet is now small (5 missions, 3 mandatory).\n"
                   "\nFIXES\n"
                   "- Fix sliders showing wrong values and graphics when step is not 1.\n"
                   );
