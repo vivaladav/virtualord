@@ -1758,7 +1758,7 @@ void ScreenGame::AssignMapToFaction(PlayerFaction faction)
     MapsRegistry * mapReg = game->GetMapsRegistry();
 
     const unsigned int territory = game->GetCurrentTerritory();
-    const Planets planet = game->GetCurrentPlanet();
+    const PlanetId planet = game->GetCurrentPlanet();
 
     mapReg->SetMapOccupier(planet, territory, faction);
     mapReg->SetMapStatus(planet, territory, TER_ST_OCCUPIED);

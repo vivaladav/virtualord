@@ -22,9 +22,4 @@ const char * MISSION_CATEGORY_TITLE[NUM_MISSION_CATEGORIES] =
     "TUTORIAL"
 };
 
-const char * PLANETS_NAME[NUM_PLANETS] =
-{
-    "Tutoria 50"
-};
-
 } // namespace game

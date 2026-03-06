@@ -39,7 +39,7 @@ class TutorialManager;
 
 enum GameCursorId : unsigned int;
 enum LanguageId : unsigned int;
-enum Planets : unsigned int;
+enum PlanetId : unsigned int;
 enum PlayerFaction : unsigned int;
 enum ResourceType : unsigned int;
 enum StateId : int;
@@ -74,8 +74,8 @@ public:
     const std::string & GetCurrentMapFile() const;
     unsigned int GetCurrentTerritory() const;
     void SetCurrentTerritory(unsigned int territory);
-    Planets GetCurrentPlanet() const;
-    void SetCurrentPlanet(Planets planet);
+    PlanetId GetCurrentPlanet() const;
+    void SetCurrentPlanet(PlanetId planet);
 
     int GetResourcePriceBuy(ResourceType t) const;
     int GetResourcePriceSell(ResourceType t) const;
@@ -162,7 +162,7 @@ private:
     PlayerFaction mLocalFaction;
 
     unsigned int mCurrMap = 0;
-    Planets mCurrPlanet;
+    PlanetId mCurrPlanet;
     unsigned int mCurrTerritory = 0;
 
     unsigned int mRandSeed = 0;
@@ -188,8 +188,8 @@ inline void Game::SetCurrentTerritory(unsigned int territory)
     mCurrTerritory = territory;
 }
 
-inline Planets Game::GetCurrentPlanet() const { return mCurrPlanet; }
-inline void Game::SetCurrentPlanet(Planets planet) { mCurrPlanet = planet; }
+inline PlanetId Game::GetCurrentPlanet() const { return mCurrPlanet; }
+inline void Game::SetCurrentPlanet(PlanetId planet) { mCurrPlanet = planet; }
 
 inline void Game::SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {

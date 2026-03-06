@@ -184,20 +184,6 @@ enum TechUpgradeId : unsigned int
     TECH_UP_NULL
 };
 
-enum TerritoryStatus : unsigned int
-{
-    TER_ST_UNEXPLORED,
-    TER_ST_FREE,
-    TER_ST_OCCUPIED,
-    TER_ST_OCCUPIED_UNEXPLORED,
-    TER_ST_UNREACHABLE,
-    TER_ST_UNAVAILABLE,
-
-    NUM_TERRITORY_STATUSES,
-
-    TER_ST_UNKNOWN
-};
-
 enum ParticlesUpdaterId : unsigned int
 {
     PU_DAMAGE,
@@ -205,15 +191,6 @@ enum ParticlesUpdaterId : unsigned int
     PU_HIT_POINTS,
     PU_OUTPUT,
     PU_SINGLE_LASER
-};
-
-enum Planets : unsigned int
-{
-    PLANET_1,
-
-    NUM_PLANETS,
-
-    PLANET_UNKNOWN
 };
 
 enum TurnStage : unsigned int
@@ -228,6 +205,5 @@ enum TurnStage : unsigned int
 
 extern const char * FACTIONS_NAME[NUM_FACTIONS];
 extern const char * MISSION_CATEGORY_TITLE[NUM_MISSION_CATEGORIES];
-extern const char * PLANETS_NAME[NUM_PLANETS];
 
 } // namespace game

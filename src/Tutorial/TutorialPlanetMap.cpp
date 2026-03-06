@@ -21,7 +21,6 @@
 
 namespace
 {
-const unsigned int planet0 = 0;
 const unsigned int mission0 = 0;
 }
 
@@ -42,12 +41,12 @@ TutorialPlanetMap::TutorialPlanetMap(Screen * screen)
     AddStep([] { return new StepDelay(1.f); });
     AddStep([mr, localFaction]
         {
-            const bool won = mr->GetMapOccupier(planet0, mission0) == localFaction;
+            const bool won = mr->GetMapOccupier(PLANET_1, mission0) == localFaction;
             return new StepPlanetMapIntro(won);
         });
     AddStep([this, mr, localFaction]
         {
-            const bool won = mr->GetMapOccupier(planet0, mission0) == localFaction;
+            const bool won = mr->GetMapOccupier(PLANET_1, mission0) == localFaction;
             return new StepPlanetMapSelectTerritory(mScreen->mPlanet, won);
         });
     AddStep([] { return new StepDelay(0.5f); });

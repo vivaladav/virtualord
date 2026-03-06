@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "GameConstants.h"
+#include "MapsRegistry.h"
 #include "Player.h"
 #include "AI/PlayerAI.h"
 #include "GameObjects/GameObject.h"

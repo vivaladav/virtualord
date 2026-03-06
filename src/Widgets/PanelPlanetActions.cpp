@@ -1,6 +1,6 @@
 #include "Widgets/PanelPlanetActions.h"
 
-#include "GameConstants.h"
+#include "MapsRegistry.h"
 #include "Widgets/ButtonPlanetMap.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"

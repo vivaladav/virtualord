@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "GameConstants.h"
+#include "MapsRegistry.h"
 #include "Version.h"
 #include "States/StatesIds.h"
 #include "States/StateLeavePregame.h"
