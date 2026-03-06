@@ -35,7 +35,7 @@ MissionGoalsTracker::MissionGoalsTracker(Game * g, Player * p)
     {
         const Player::Stat resId = resourceIds[i];
 
-        mResourceTrackerIds[resId] = mPlayer->AddOnResourceChanged(resId,
+        mResourceTrackerIds[i] = mPlayer->AddOnResourceChanged(resId,
             [this, resId](const StatValue *, int oldVal, int newVal)
             {
                 if(newVal > oldVal)
