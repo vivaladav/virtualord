@@ -1,5 +1,6 @@
 #include "ObjectVisualAttribute.h"
 
+#include "Widgets/GameSimpleTooltip.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
 
@@ -81,6 +82,20 @@ void ObjectVisualAttribute::SetData(const char * txt, unsigned int val)
 
     // reset positions
     HandlePositionChanged();
+}
+
+void ObjectVisualAttribute::SetTooltipData(const char * text, int timeShowing)
+{
+    if(mTooltip != nullptr)
+        mTooltip->SetText(text);
+    else
+    {
+        mTooltip = new GameSimpleTooltip(text);
+
+        mLabel->SetTooltip(mTooltip);
+        mLabel->SetTooltipDelay(WidgetsConstants::timeTooltipButtonDelay);
+        mLabel->SetTooltipShowingTime(timeShowing);
+    }
 }
 
 void ObjectVisualAttribute::HandlePositionChanged()

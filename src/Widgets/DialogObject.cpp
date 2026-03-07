@@ -360,7 +360,7 @@ void DialogObject::SetObject(GameObject * obj)
                                                                    obj->GetMaxHealth());
 
     // ATTRIBUTES
-    int statsAdded = 0;
+    int attsAdded = 0;
 
     for(unsigned int i = 0; i < NUM_OBJ_ATTRIBUTES; ++i)
     {
@@ -368,12 +368,14 @@ void DialogObject::SetObject(GameObject * obj)
 
         if(val > 0)
         {
-            mVisAtt[statsAdded]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[i]), val);
-            ++statsAdded;
+            mVisAtt[attsAdded]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[i]), val);
+            mVisAtt[attsAdded]->SetTooltipData(sm->GetCString(ObjectData::STR_ATTRIBUTE_TOOLTIPS[i]));
+
+            ++attsAdded;
         }
     }
 
-    for(int i = statsAdded; i < NUM_VIS_ATT; ++i)
+    for(int i = attsAdded; i < NUM_VIS_ATT; ++i)
         mVisAtt[i]->ClearData();
 }
 

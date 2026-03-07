@@ -811,7 +811,12 @@ void DialogNewElement::ShowData(int ind)
         const int val = data.GetAttribute(static_cast<ObjAttId>(i));
 
         if(val > 0)
-            mVisAtt[attsAdded++]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[i]), val);
+        {
+            mVisAtt[attsAdded]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[i]), val);
+            mVisAtt[attsAdded]->SetTooltipData(sm->GetCString(ObjectData::STR_ATTRIBUTE_TOOLTIPS[i]));
+
+            ++attsAdded;
+        }
     }
 
     // WEAPON ATTRIBUTES
@@ -827,7 +832,14 @@ void DialogNewElement::ShowData(int ind)
             const auto attId = static_cast<ObjAttId>(FIRST_WEAPON_ATTRIBUTE + i);
 
             const int val = wAttributes.at(attId);
-            mVisAtt[attsAdded++]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[attId]), val);
+
+            if(val > 0)
+            {
+                mVisAtt[attsAdded]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[attId]), val);
+                mVisAtt[attsAdded]->SetTooltipData(sm->GetCString(ObjectData::STR_ATTRIBUTE_TOOLTIPS[attId]));
+
+                ++attsAdded;
+            }
         }
     }
 

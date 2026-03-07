@@ -14,6 +14,8 @@ namespace sgl
 namespace game
 {
 
+class GameSimpleTooltip;
+
 class ObjectVisualAttribute : public sgl::sgui::Widget
 {
 public:
@@ -22,12 +24,16 @@ public:
     void ClearData();
     void SetData(const char * txt, unsigned int val);
 
+    void SetTooltipData(const char * text, int timeShowing = 3000);
+
     void HandlePositionChanged() override;
 
 private:
     sgl::graphic::Image * mBg = nullptr;
     sgl::sgui::Label * mLabel = nullptr;
     sgl::sgui::Image * mValueBar = nullptr;
+
+    GameSimpleTooltip * mTooltip = nullptr;
 };
 
 } // namespace game

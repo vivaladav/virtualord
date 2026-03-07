@@ -578,17 +578,22 @@ void DialogNewMiniUnitsSquad::UpdateData()
 
     auto sm = sgl::utilities::StringManager::Instance();
 
-    unsigned int attAdded = 0;
+    unsigned int attsAdded = 0;
 
     for(unsigned int i = 0; i < NUM_OBJ_ATTRIBUTES; ++i)
     {
         const int val = data.GetAttribute(static_cast<ObjAttId>(i));
 
         if(val > 0)
-            mAttributes[attAdded++]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[i]), val);
+        {
+            mAttributes[attsAdded]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[i]), val);
+            mAttributes[attsAdded]->SetTooltipData(sm->GetCString(ObjectData::STR_ATTRIBUTE_TOOLTIPS[i]));
+
+            ++attsAdded;
+        }
 
         // it shouldn't happen, but just in case
-        if(numPanelAttributes == attAdded)
+        if(numPanelAttributes == attsAdded)
             break;
     }
 
@@ -605,12 +610,19 @@ void DialogNewMiniUnitsSquad::UpdateData()
             const auto attId = static_cast<ObjAttId>(FIRST_WEAPON_ATTRIBUTE + i);
 
             const int val = wAttributes.at(attId);
-            mAttributes[attAdded++]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[attId]), val);
+
+            if(val > 0)
+            {
+                mAttributes[attsAdded]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[attId]), val);
+                mAttributes[attsAdded]->SetTooltipData(sm->GetCString(ObjectData::STR_ATTRIBUTE_TOOLTIPS[attId]));
+
+                ++attsAdded;
+            }
         }
     }
 
     // clear remaining slots
-    for(unsigned int i = attAdded; i < numPanelAttributes; ++i)
+    for(unsigned int i = attsAdded; i < numPanelAttributes; ++i)
         mAttributes[i]->ClearData();
 
     // TOTAL COSTS

@@ -4,6 +4,7 @@
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "Widgets/ButtonDialogAction.h"
 #include "Widgets/ButtonDialogClose.h"
+#include "Widgets/GameSimpleTooltip.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
 
@@ -19,8 +20,6 @@
 #include <sgl/sgui/ImageButton.h>
 #include <sgl/sgui/Label.h>
 #include <sgl/utilities/StringManager.h>
-
-#include <sstream>
 
 // anonymous namespace for local "private" classes
 namespace
@@ -317,6 +316,12 @@ DialogUpgrade::DialogUpgrade(GameObject * obj, const ObjectsDataRegistry * odr)
                                  fontHeader, bg);
         header->SetColor(WidgetsConstants::colorDialogHeader2);
         header->SetPosition(paddingAttL, (bg->GetHeight() - header->GetHeight()) / 2);
+
+        const int timeShowing = 3000;
+        auto tt = new GameSimpleTooltip(sm->GetCString(ObjectData::STR_ATTRIBUTE_TOOLTIPS[i]));
+        header->SetTooltip(tt);
+        header->SetTooltipDelay(WidgetsConstants::timeTooltipButtonDelay);
+        header->SetTooltipShowingTime(timeShowing);
 
         // attribute bar
         auto bar = new ValueUpgradeBar(MAX_STAT_IVAL, bg);

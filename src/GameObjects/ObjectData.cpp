@@ -202,6 +202,30 @@ const char * ObjectData::STR_ATTRIBUTES[NUM_OBJ_ATTRIBUTES] =
     "ATTACK_RANGE",
 };
 
+const char * ObjectData::STR_ATTRIBUTE_TOOLTIPS[NUM_OBJ_ATTRIBUTES] =
+{
+    // GENERIC
+    "TT_ATT_ENERGY",
+    "TT_ATT_HEALTH",
+    "TT_ATT_VIEW_RANGE",
+    "TT_ATT_REGENERATION",
+    "TT_ATT_RESISTANCE",
+    "TT_ATT_SHIELD",
+    // UNIT
+    "TT_ATT_SPEED",
+    "TT_ATT_CONSTRUCTION",
+    "TT_ATT_CONQUEST",
+    "TT_ATT_HEALING_RANGE",
+    "TT_ATT_HEALING_POWER",
+    "TT_ATT_SPAWNING",
+    // RESOURCE STORAGE
+    "TT_ATT_STORAGE",
+    // WEAPON
+    "TT_ATT_ATTACK_ACCURACY",
+    "TT_ATT_ATTACK_POWER",
+    "TT_ATT_ATTACK_RANGE",
+};
+
 const ObjectData ObjectData::NullObj({}, {}, {}, nullptr, ObjectData::TYPE_NULL, ObjectData::CAT_NULL,
                                      OC_NULL, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 0, 0);
 

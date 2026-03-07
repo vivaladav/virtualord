@@ -140,6 +140,7 @@ public:
 
     static const char * STR_CLASS[NUM_OBJ_CLASSES];
     static const char * STR_ATTRIBUTES[NUM_OBJ_ATTRIBUTES];
+    static const char * STR_ATTRIBUTE_TOOLTIPS[NUM_OBJ_ATTRIBUTES];
 
     static const int MAX_STAT_VAL = 10;
 
