@@ -73,6 +73,12 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFileDialogMissionGoalsExp);
     // DIALOG OBJECT
     tm->DestroySprite(SpriteFileDialogObject);
+    // DIALOG RESEARCH
+    tm->DestroySprite(SpriteFileDialogResearch);
+    tm->DestroyTexture(SpriteFileDialogResearchExp);
+    // DIALOG TECH TREE
+    tm->DestroySprite(SpriteFileDialogTechTree);
+    tm->DestroyTexture(SpriteFileDialogTechTreeExp);
     // DIALOG TRADING
     tm->DestroySprite(SpriteFileDialogTrading);
     // DIALOG UPGRADE
@@ -110,6 +116,7 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFilePlanetMap2);
     // RESOURCES BAR
     tm->DestroySprite(SpriteFileResourcesBar);
+    tm->DestroyTexture(SpriteFileResourcesBarExp);
     // QUICK UNIT SELECTION
     tm->DestroySprite(SpriteFileUnitQuickSel);
 
