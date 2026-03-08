@@ -51,7 +51,8 @@ public:
     static const MissionGoalType TYPE_TERRITORY_CONTROL_TURNS;
 
 public:
-    MissionGoal(MissionGoalType type, unsigned int quantity, unsigned int extraVal, bool primary);
+    MissionGoal(MissionGoalType type, unsigned int quantity, unsigned int extraVal,
+                bool primary, bool hidden);
 
     // ATTRIBUTES
     unsigned int GetId() const;
@@ -63,6 +64,8 @@ public:
     MissionCategory GetCategory() const;
 
     bool IsPrimary() const;
+
+    bool IsHidden() const;
 
     // PROGRESS
     int GetProgress() const;
@@ -113,6 +116,7 @@ private:
     bool mFailed = false;
     bool mRewardCollected = false;
     bool mPrimary = false;
+    bool mHidden = false;
 };
 
 // ATTRIBUTES
@@ -125,6 +129,7 @@ inline unsigned int MissionGoal::GetExtraValue() const { return mExtraValue; }
 inline MissionCategory MissionGoal::GetCategory() const { return mCategory; }
 
 inline bool MissionGoal::IsPrimary() const { return mPrimary; }
+inline bool MissionGoal::IsHidden() const { return mHidden; }
 
 // PROGRESS
 inline int MissionGoal::GetProgress() const { return mProgress; }
@@ -134,6 +139,7 @@ inline void MissionGoal::SetProgress(int p) { mProgress = p;  }
 inline void MissionGoal::SetCompleted()
 {
     mCompleted = true;
+    mHidden = false;
     mProgress = 100;
 }
 

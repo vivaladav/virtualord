@@ -363,6 +363,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New mission goals: destroy enemy units and structures.\n"
                   "- Introduced support for 3 sizes of planet.\n"
                   "- Added tooltips to explain object attributes in all dialogs showing them.\n"
+                  "- Added support for hidden mission goals.\n"
                   "\nCHANGES\n"
                   "- Hit points no longer shown on self-destruction.\n"
                   "- No longer pre-loading everything at the beginning, but"

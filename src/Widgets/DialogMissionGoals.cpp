@@ -372,8 +372,11 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     const int sizeDesc = 20;
     const unsigned int colorData = 0x8cbfd9ff;
 
-    auto font = fm->GetFont(WidgetsConstants::FontFileText, sizeDesc, graphic::Font::NORMAL);
-    auto labelDesc = new sgui::Label(g.GetDescription().c_str(), font, bg);
+    const std::string desc = g.IsHidden() ? sm->GetString("HIDDEN_GOAL") :
+                             g.GetDescription();
+
+    auto fontDesc = fm->GetFont(WidgetsConstants::FontFileText, sizeDesc, graphic::Font::NORMAL);
+    auto labelDesc = new sgui::Label(desc.c_str(), fontDesc, bg);
     labelDesc->SetColor(colorData);
     labelDesc->SetPosition(contX, contY);
 
@@ -394,12 +397,13 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     contX += labelHeader->GetWidth() + marginHeaderH;
 
+    auto fontData = fm->GetFont(WidgetsConstants::FontFileText, size2, graphic::Font::NORMAL);
     sgui::Label * labelData = nullptr;
 
     if(g.IsFailed())
-        labelData = new sgui::Label("-", font, bg);
-    else if(g.IsProgressUnknown())
-        labelData = new sgui::Label("?", font, bg);
+        labelData = new sgui::Label("-", fontData, bg);
+    else if(g.IsProgressUnknown() || g.IsHidden())
+        labelData = new sgui::Label("?", fontData, bg);
 
     if(labelData != nullptr)
     {
@@ -426,9 +430,11 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     contX += labelHeader->GetWidth() + marginHeaderH;
 
     // collected or failed
-    if(g.IsRewardCollected() || g.IsFailed())
+    if(g.IsRewardCollected() || g.IsFailed() || g.IsHidden())
     {
-        auto labelData = new sgui::Label("-", font, bg);
+        const char * textReward = g.IsHidden() ? "?" : "-";
+
+        auto labelData = new sgui::Label(textReward, fontData, bg);
         labelData->SetColor(colorData);
         labelData->SetPosition(contX, contY);
     }
@@ -486,11 +492,12 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     // label collected OR failed
     const int sizeCollected = 22;
-    font = fm->GetFont(WidgetsConstants::FontFileStrongText, sizeDesc, graphic::Font::NORMAL);
+    auto fontOutcome = fm->GetFont(WidgetsConstants::FontFileStrongText, sizeDesc,
+                                   graphic::Font::NORMAL);
 
     if(g.IsFailed())
     {
-        labelData = new sgui::Label(sm->GetCString("GOAL_FAILED"), font, bg);
+        labelData = new sgui::Label(sm->GetCString("GOAL_FAILED"), fontOutcome, bg);
         labelData->SetColor(WidgetsConstants::colorDialogBad);
     }
     else if(g.GetExtraValue() > 0 && !g.IsCompleted())
@@ -519,13 +526,13 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
             ss << turnsLeft;
         }
 
-        labelData = new sgui::Label(ss.str().c_str(), font, bg);
+        labelData = new sgui::Label(ss.str().c_str(), fontOutcome, bg);
         labelData->SetColor(WidgetsConstants::colorDialogText);
     }
     // leave COLLECTED label as default
     else
     {
-        labelData = new sgui::Label(sm->GetCString("COLLECTED_REW"), font, bg);
+        labelData = new sgui::Label(sm->GetCString("COLLECTED_REW"), fontOutcome, bg);
         labelData->SetColor(WidgetsConstants::colorDialogGood);
     }
 

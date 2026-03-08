@@ -13,7 +13,7 @@
 namespace game
 {
 
-const std::string MapIO::MAP_VERSION("0.3.1");
+const std::string MapIO::MAP_VERSION("0.3.2");
 
 const std::string MapIO::MAP_TAG_COMMENT("#");
 const std::string MapIO::MAP_TAG_GOAL("G");
@@ -115,7 +115,7 @@ bool MapIO::Save(const std::string & filename, const std::vector<GameMapCell> & 
     fs << "# ====== GOALS =====\n";
 
     for(const MissionGoal & g : goals)
-        fs << MAP_TAG_GOAL << " " << g.IsPrimary() << " "
+        fs << MAP_TAG_GOAL << " " << g.IsPrimary() << " " << g.IsHidden() << " "
            << g.GetType() << " " << g.GetQuantity() << " "
            << g.GetExtraValue() << "\n";
 
@@ -271,8 +271,12 @@ void MapIO::ReadHeader(std::fstream & fs)
             bool primary = false;
             ss >> primary;
 
+            // check if hidden goal
+            bool hidden = false;
+            ss >> hidden;
+
             // goal type
-            MissionGoalType type;
+            MissionGoalType type = MissionGoal::TYPE_NULL;
             ss >> type;
 
             // quantity data
@@ -284,7 +288,7 @@ void MapIO::ReadHeader(std::fstream & fs)
             ss >> extraVal;
 
             // store goal
-            mGoals.emplace_back(type, quantity, extraVal, primary);
+            mGoals.emplace_back(type, quantity, extraVal, primary, hidden);
 
             // assign category based on first primary goal
             if(primary && MC_UNKNOWN == mCategory)

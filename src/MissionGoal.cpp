@@ -114,12 +114,13 @@ const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORI
 };
 
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
-                         unsigned int extraVal, bool primary)
+                         unsigned int extraVal, bool primary, bool hidden)
     : mId(++num)
     , mType(type)
     , mQuantity(quantity)
     , mExtraValue(extraVal)
     , mPrimary(primary)
+    , mHidden(hidden)
 {
     mRewards.assign(NUM_EXTENDED_RESOURCES, 0);
 
