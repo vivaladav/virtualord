@@ -147,7 +147,6 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
 
     const int marginRowV = 5;
     const int headerGoalH = 20;
-    const int marginTop = 30;
     const int marginHeaderGoalH = 25;
     const int marginGoalsGroupH = 40;
     const int marginGoals2GroupH = 35;
@@ -172,7 +171,7 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
             ++numSecondaryGoals;
     }
 
-    int contentH = marginTop;
+    int contentH = WidgetsConstants::MarginDialogContentT;
 
     if(numPrimaryGoals > 0)
         contentH += headerGoalH + marginHeaderGoalH;
@@ -214,8 +213,6 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
     mBtnClose->SetPosition(buttonX, buttonY);
 
     // -- CONTENT --
-    const int marginL = 40;
-
     // TITLE
     auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
                             WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
@@ -223,10 +220,10 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
     title->SetColor(WidgetsConstants::colorDialogTitle);
 
     const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
-    title->SetPosition(marginL, titleY);
+    title->SetPosition(WidgetsConstants::MarginDialogTitleL, titleY);
 
-    int contentX = marginL;
-    int contentY = WidgetsConstants::DialogTitleBarH + marginTop;
+    int contentX = WidgetsConstants::MarginDialogContentL;
+    int contentY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
     // PRIMARY GOALS
     const unsigned int colorHeader = 0xdbe9f0ff;

@@ -1045,7 +1045,6 @@ void ScreenInitGame::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileWalls, rects);
     });
 
-
     // ===== UI GAME =====
     // DIALOG EXIT
     mJobs.emplace_back([this, tm]
@@ -1053,31 +1052,24 @@ void ScreenInitGame::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUND
-            { 0, 0, 600, 400 },
-            // BUTTON
-            { 601, 0, 300, 44 },
-            { 601, 45, 300, 44 },
-            { 601, 90, 300, 44 },
-            { 601, 135, 300, 44 },
+            { 0, 0, 604, 70 },
+            { 0, 71, 604, 90 },
+            // BUTTON 1
+            { 0, 161, 300, 44 },
+            { 301, 161, 300, 44 },
+            { 0, 206, 300, 44 },
+            { 301, 206, 300, 44 },
             // BUTTON 2
-            { 601, 180, 300, 44 },
-            { 601, 225, 300, 44 },
-            { 601, 270, 300, 44 },
-            { 601, 315, 300, 44 },
-            // BUTTON CLOSE
-            { 902, 0, 95, 41 },
-            { 902, 42, 95, 41 },
-            { 902, 84, 95, 41 },
-            { 902, 126, 95, 41 },
-
+            { 0, 251, 300, 44 },
+            { 0, 296, 300, 44 },
+            { 301, 296, 300, 44 },
             // ICONS
-            { 902, 168, 32, 24 },
-            { 935, 168, 32, 24 },
-            { 902, 193, 32, 24 },
-            { 935, 193, 32, 24 },
+            { 301, 251, 32, 24 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExit, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExitExp);
     });
 
     // DIALOG EXPLORE TEMPLE

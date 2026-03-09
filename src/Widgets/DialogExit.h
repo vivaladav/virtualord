@@ -49,8 +49,10 @@ private:
     void SetPositions();
 
 private:
-    sgl::graphic::Image * mBg = nullptr;
-    sgl::graphic::Text * mTitle = nullptr;
+    sgl::graphic::Image * mBgTop = nullptr;
+    sgl::graphic::Image * mBgMid = nullptr;
+    sgl::graphic::Image * mBgBot = nullptr;
+
     sgl::sgui::AbstractButton * mButtonClose = nullptr;
 
     std::function<void()> mOnShowingSettings;

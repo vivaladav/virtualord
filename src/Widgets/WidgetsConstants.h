@@ -43,6 +43,11 @@ public:
     static const int FontSizePlanetMapHeader;
     static const int FontSizePlanetMapText;
 
+    // MARGINS
+    static const int MarginDialogContentL;
+    static const int MarginDialogContentT;
+    static const int MarginDialogTitleL;
+
     // SIZES
     static const int DialogTitleBarH;
 

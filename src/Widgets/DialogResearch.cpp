@@ -73,13 +73,11 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     mBtnClose->SetX(buttonX);
 
     // -- CONTENT --
-    const int marginContL = 40;
     const int marginContL2 = 420;
     const int marginContR = 40;
-    const int marginContT = 90;
     const int marginHeaderB = 25;
     const int marginIconR = 25;
-    const int marginIconB = 50;
+    const int marginIconB = 60;
     const int marginSliderR = 20;
 
     const int minRes = 0;
@@ -96,9 +94,6 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     auto texSliderBar = tm->GetSprite(SpriteFileGameUIShared, ID_SLIDER_DLG_BAR);
     auto texSliderBtn = tm->GetSprite(SpriteFileGameUIShared, ID_SLIDER_DLG_BTN);
 
-    int x = marginContL;
-    int y = marginContT;
-
     int maxRes = 0;
     int valRes = 0;
     int step = 0;
@@ -109,10 +104,13 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
 
     sgui::Label * title = new sgui::Label(sm->GetCString("RESEARCH"), fontTitle, this);
 
-    const int titleX = 40;
+    const int titleX = WidgetsConstants::MarginDialogTitleL;
     const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
     title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
+
+    int x = WidgetsConstants::MarginDialogContentL;
+    int y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
     // HEADER INVEST
     auto header = new sgui::Label(sm->GetCString("INVEST_RES"), fontHeader, this);
@@ -167,7 +165,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     });
 
     // ENERGY
-    x = marginContL;
+    x = WidgetsConstants::MarginDialogContentL;
     y = icon->GetY() + icon->GetHeight() + marginIconB;
 
     tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_ENERGY_24);
@@ -215,7 +213,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     });
 
     // MATERIAL
-    x = marginContL;
+    x = WidgetsConstants::MarginDialogContentL;
     y = icon->GetY() + icon->GetHeight() + marginIconB;
 
     tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MATERIAL_24);
@@ -357,7 +355,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     // HEADER RESEARCH / TURN
     const int header2Y = 400;
 
-    x = marginContL;
+    x = WidgetsConstants::MarginDialogContentL;
     y = header2Y;
 
     header = new sgui::Label(sm->GetCString("RESEARCH_PTS_TURN"), fontHeader, this);
