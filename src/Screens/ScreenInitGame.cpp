@@ -1226,8 +1226,8 @@ void ScreenInitGame::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUND
-            { 0, 0, 40, 460 },
-            { 41, 0, 110, 460 },
+            { 0, 0, 90, 470 },
+            { 91, 0, 110, 470 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
@@ -1475,6 +1475,10 @@ void ScreenInitGame::SetupTextures()
             { 95, 50, 94, 40 },
             { 190, 50, 94, 40 },
             { 285, 50, 94, 40 },
+            // SLIDER DIALOG
+            { 0, 91, 204, 16 },
+            { 0, 108, 200, 12 },
+            { 205, 91, 24, 24 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUIShared, rects);

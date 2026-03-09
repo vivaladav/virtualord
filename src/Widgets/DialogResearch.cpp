@@ -92,9 +92,9 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, 20, graphic::Font::NORMAL);
     auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
 
-    auto texSliderBg = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_SLIDER_BG);
-    auto texSliderBar = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_SLIDER_BAR);
-    auto texSliderBtn = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_SLIDER_BTN);
+    auto texSliderBg = tm->GetSprite(SpriteFileGameUIShared, ID_SLIDER_DLG_BG);
+    auto texSliderBar = tm->GetSprite(SpriteFileGameUIShared, ID_SLIDER_DLG_BAR);
+    auto texSliderBtn = tm->GetSprite(SpriteFileGameUIShared, ID_SLIDER_DLG_BTN);
 
     int x = marginContL;
     int y = marginContT;
@@ -109,7 +109,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     sgui::Label * title = new sgui::Label(sm->GetCString("RESEARCH"), fontTitle, this);
 
     const int titleX = 40;
-    const int titleY = 10;
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
     title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
 

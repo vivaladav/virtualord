@@ -12,7 +12,7 @@ const unsigned int WidgetsConstants::colorDialogIcon = 0xb6c3c9ff;
 const unsigned int WidgetsConstants::colorDialogHeader1 = 0xd1f0faff;
 const unsigned int WidgetsConstants::colorDialogHeader2 = 0x9dd1e2ff;
 const unsigned int WidgetsConstants::colorDialogText = 0x87b0c5ff;
-const unsigned int WidgetsConstants::colorDialogTitle = 0xe6f9ffff;
+const unsigned int WidgetsConstants::colorDialogTitle = 0xecf5f9ff;
 const unsigned int WidgetsConstants::colorPanelBad = 0xd27979ff;
 const unsigned int WidgetsConstants::colorPanelGood = 0x79d280ff;
 const unsigned int WidgetsConstants::colorPanelHeader = 0xd1ecfaff;
@@ -38,6 +38,9 @@ const char * WidgetsConstants::FontFilePanelTitle = "Lato-Regular.ttf";
 const int WidgetsConstants::FontSizePlanetMapTitle = 28;
 const int WidgetsConstants::FontSizePlanetMapHeader = 24;
 const int WidgetsConstants::FontSizePlanetMapText = 22;
+
+// SIZES
+const int WidgetsConstants::DialogTitleBarH = 62;
 
 // TIMES
 const int WidgetsConstants::timeTooltipButtonDelay = 500;

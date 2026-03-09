@@ -42,6 +42,9 @@ public:
     static const int FontSizePlanetMapHeader;
     static const int FontSizePlanetMapText;
 
+    // SIZES
+    static const int DialogTitleBarH;
+
     // TIMES
     static const int timeTooltipButtonDelay;
 };
