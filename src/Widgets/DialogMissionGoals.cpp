@@ -3,7 +3,8 @@
 #include "GameConstants.h"
 #include "MissionGoal.h"
 #include "MissionGoalsTracker.h"
-#include <Widgets/GameButton.h>
+#include "Widgets/ButtonDialogClose.h"
+#include "Widgets/GameButton.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/ProgressBarObjectVisualStat.h"
 #include "Widgets/WidgetsConstants.h"
@@ -32,40 +33,8 @@ namespace
 
 using namespace game;
 
-// ====== BUTTON CLOSE =====
-class ButtonCloseDMG : public sgl::sgui::ImageButton
-{
-public:
-    ButtonCloseDMG(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({
-                                    ID_DLG_MGOALS_BTN_CLOSE_NORMAL,
-                                    ID_DLG_MGOALS_BTN_CLOSE_DISABLED,
-                                    ID_DLG_MGOALS_BTN_CLOSE_OVER,
-                                    ID_DLG_MGOALS_BTN_CLOSE_PUSHED,
-                                    ID_DLG_MGOALS_BTN_CLOSE_NORMAL
-                                 },
-                                 SpriteFileDialogMissionGoals, parent)
-    {
-        SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
-    }
-
-private:
-    void HandleMouseOver() override
-    {
-        sgl::sgui::AbstractButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-02.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_click-02.ogg");
-    }
-};
+constexpr int rowW = 1200;
+constexpr int rowH = 80;
 
 // ====== BUTTON END =====
 class ButtonEndMission : public GameButton
@@ -73,10 +42,10 @@ class ButtonEndMission : public GameButton
 public:
     ButtonEndMission(sgl::sgui::Widget * parent)
         : GameButton(SpriteFileDialogMissionGoals,
-                     { ID_DLG_MGOALS_BTN_COLLECT_NORMAL, ID_DLG_MGOALS_BTN_COLLECT_DISABLED,
-                       ID_DLG_MGOALS_BTN_COLLECT_OVER, ID_DLG_MGOALS_BTN_COLLECT_PUSHED,
-                       ID_DLG_MGOALS_BTN_COLLECT_NORMAL },
-                     { 0xd7f4deff, 0x436f4dff, 0xebf9eeff, 0xc3eeceff, 0xc3eeceff}, parent)
+                     { ID_DLG_MGOALS_BTN_END_NORMAL, ID_DLG_MGOALS_BTN_END_DISABLED,
+                       ID_DLG_MGOALS_BTN_END_OVER, ID_DLG_MGOALS_BTN_END_PUSHED,
+                       ID_DLG_MGOALS_BTN_END_NORMAL },
+                     { 0xd9f2e1ff, 0x4d7f5eff, 0xecf9f0ff, 0xb3e5c3ff, 0xd9f2e1ff }, parent)
     {
         using namespace sgl;
 
@@ -118,7 +87,7 @@ public:
                      { ID_DLG_MGOALS_BTN_COLLECT_NORMAL, ID_DLG_MGOALS_BTN_COLLECT_DISABLED,
                        ID_DLG_MGOALS_BTN_COLLECT_OVER, ID_DLG_MGOALS_BTN_COLLECT_PUSHED,
                        ID_DLG_MGOALS_BTN_COLLECT_NORMAL },
-                     { 0xc3dfeeff, 0x4d6673ff, 0xebf4f9ff, 0xc3dfeeff, 0xc3dfeeff }, parent)
+                     { 0xd6eaf5ff, 0x526c7aff, 0xebf4f9ff, 0xeaf5faff, 0xb3d3e5ff }, parent)
     {
         using namespace sgl;
 
@@ -169,18 +138,21 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
     auto sm = utilities::StringManager::Instance();
 
     // -- define content height based on goals --
-    int contentH = 0;
+    auto texRow1 = tm->GetSprite(SpriteFileDialogMissionGoalsExp, ID_DLG_MGOALS_BG_ROW1);
+    texRow1->SetScaleMode(graphic::TSCALE_NEAREST);
+    auto texRow2 = tm->GetSprite(SpriteFileDialogMissionGoalsExp, ID_DLG_MGOALS_BG_ROW2);
+    texRow1->SetScaleMode(graphic::TSCALE_NEAREST);
+    auto texHeaderBar = tm->GetSprite(SpriteFileDialogMissionGoalsExp, ID_DLG_MGOALS_SECTION_LINE);
+    texHeaderBar->SetScaleMode(graphic::TSCALE_NEAREST);
 
-    graphic::Texture * texRow1 = tm->GetSprite(SpriteFileDialogMissionGoals, ID_DLG_MGOALS_BG_ROW1);
-    graphic::Texture * texRow2 = tm->GetSprite(SpriteFileDialogMissionGoals, ID_DLG_MGOALS_BG_ROW2);
-
-    const int rowH = texRow1->GetHeight();
     const int marginRowV = 5;
     const int headerGoalH = 20;
-    const int marginHeaderGoalH = 20;
+    const int marginTop = 30;
+    const int marginHeaderGoalH = 25;
     const int marginGoalsGroupH = 40;
     const int marginGoals2GroupH = 35;
-    const int endButtonAreaH = 65;
+    const int paddingHeaderGoalH = 5;
+    const int endButtonAreaH = 45;
 
     const unsigned int numGoals = goals.size();
     unsigned int numPrimaryGoals = 0;
@@ -199,6 +171,8 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
         else
             ++numSecondaryGoals;
     }
+
+    int contentH = marginTop;
 
     if(numPrimaryGoals > 0)
         contentH += headerGoalH + marginHeaderGoalH;
@@ -233,7 +207,7 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
     SetSize(w, h);
 
     // BUTTON CLOSE
-    mBtnClose = new ButtonCloseDMG(this);
+    mBtnClose = new ButtonDialogClose(this);
 
     const int buttonX = w - mBtnClose->GetWidth();
     const int buttonY = 0;
@@ -244,15 +218,16 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
 
     // TITLE
     const int sizeTitle = 28;
-    const int marginTitleT = 14;
 
     auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle, sizeTitle, graphic::Font::NORMAL);
     auto title = new sgui::Label(sm->GetCString("MISSION_GOALS"), font, this);
     title->SetColor(WidgetsConstants::colorDialogTitle);
-    title->SetPosition(marginL, marginTitleT);
+
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
+    title->SetPosition(marginL, titleY);
 
     int contentX = marginL;
-    int contentY = mBgTop->GetHeight();
+    int contentY = WidgetsConstants::DialogTitleBarH + marginTop;
 
     // PRIMARY GOALS
     const unsigned int colorHeader = 0xdbe9f0ff;
@@ -264,6 +239,10 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
         auto labelHeader = new sgui::Label(sm->GetCString("PRIMARY_GOALS"), font, this);
         labelHeader->SetColor(colorHeader);
         labelHeader->SetPosition(contentX, contentY);
+
+        auto headerBar = new sgui::Image(texHeaderBar, this);
+        headerBar->SetImageWidth(rowW);
+        headerBar->SetPosition(contentX, contentY + labelHeader->GetHeight() + paddingHeaderGoalH);
 
         contentY += labelHeader->GetHeight() + marginHeaderGoalH;
 
@@ -289,6 +268,10 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
         auto labelHeader = new sgui::Label(sm->GetCString("SECONDARY_GOALS"), font, this);
         labelHeader->SetColor(colorHeader);
         labelHeader->SetPosition(contentX, contentY);
+
+        auto headerBar = new sgui::Image(texHeaderBar, this);
+        headerBar->SetImageWidth(rowW);
+        headerBar->SetPosition(contentX, contentY + labelHeader->GetHeight() + paddingHeaderGoalH);
 
         contentY += labelHeader->GetHeight() + marginHeaderGoalH;
 
@@ -354,14 +337,15 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     // body
     auto bg = new sgui::Image(texBg, this);
+    bg->SetImageSize(rowW, rowH);
 
     // CHECKBOX
     const int marginCheckboxR = 10;
 
     auto tm = graphic::TextureManager::Instance();
-    const unsigned int texId = g.IsCompleted() ? ID_DLG_MGOALS_CHECKBOX_CHECKED :
-                                                 ID_DLG_MGOALS_CHECKBOX_NORMAL;
-    auto texCheckbox = tm->GetSprite(SpriteFileDialogMissionGoals, texId);
+    const unsigned int texId = g.IsCompleted() ? ID_CHECKBOX_CHECKED :
+                                                 ID_CHECKBOX_NORMAL;
+    auto texCheckbox = tm->GetSprite(SpriteFileGameUIShared, texId);
 
     auto checkbox = new sgui::Image(texCheckbox, bg);
     checkbox->SetPosition(contX, contY);

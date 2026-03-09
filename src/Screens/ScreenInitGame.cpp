@@ -1118,40 +1118,20 @@ void ScreenInitGame::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUNDS
-            { 0, 0, 1280, 95 },
-            { 0, 96, 1280, 50 },
-            { 0, 237, 1200, 80 },
-            { 0, 318, 1200, 80 },
+            { 0, 0, 1284, 70 },
+            { 0, 71, 1284, 80 },
 
             // BUTTON COLLECT
-            { 0, 147, 220, 44 },
-            { 221, 147, 220, 44 },
-            { 0, 192, 220, 44 },
-            { 221, 192, 220, 44 },
-
-            // BUTTON CLOSE
-            { 1084, 147, 95, 41 },
-            { 1180, 147, 95, 41 },
-            { 1084, 189, 95, 41 },
-            { 1180, 189, 95, 41 },
+            { 642, 152, 220, 44 },
+            { 863, 152, 220, 44 },
+            { 642, 197, 220, 44 },
+            { 863, 197, 220, 44 },
 
             // BUTTON END MISSION
-            { 442, 147, 320, 44 },
-            { 763, 147, 320, 44 },
-            { 442, 192, 320, 44 },
-            { 763, 192, 320, 44 },
-
-            //CHECKBOX
-            { 1201, 237, 24, 24 },
-            { 1201, 262, 24, 24 },
-            { 1201, 287, 24, 24 },
-
-            // ICONS REWARD
-            { 1226, 237, 24, 24},
-            { 1226, 262, 24, 24},
-            { 1226, 287, 24, 24},
-            { 1251, 237, 24, 24},
-            { 1251, 262, 24, 24},
+            { 0, 152, 320, 50 },
+            { 321, 152, 320, 50 },
+            { 0, 203, 320, 50 },
+            { 321, 203, 320, 50 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
@@ -1163,7 +1143,12 @@ void ScreenInitGame::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUND
-            { 0, 0, 1280, 10 },
+            { 0, 0, 1284, 10 },
+            // PANELS ROW
+            { 1285, 0, 10, 10 },
+            { 1296, 0, 10, 10 },
+            // SECTION HORIZONTAL LINE
+            { 1307, 0, 10, 3 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
@@ -1479,6 +1464,14 @@ void ScreenInitGame::SetupTextures()
             { 0, 91, 204, 16 },
             { 0, 108, 200, 12 },
             { 205, 91, 24, 24 },
+            // VALUE BAR
+            { 230, 91, 154, 16 },
+            { 230, 108, 150, 12 },
+            { 230, 121, 154, 16 },
+            // CHECKBOX
+            { 0, 121, 24, 24 },
+            { 25, 121, 24, 24 },
+            { 50, 121, 24, 24 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUIShared, rects);
