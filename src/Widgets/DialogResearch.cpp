@@ -104,7 +104,8 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     int step = 0;
 
     // TITLE
-    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 32, graphic::Font::NORMAL);
+    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                                 WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
 
     sgui::Label * title = new sgui::Label(sm->GetCString("RESEARCH"), fontTitle, this);
 

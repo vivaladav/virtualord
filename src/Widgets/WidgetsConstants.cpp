@@ -35,6 +35,7 @@ const char * WidgetsConstants::FontFilePanelText = "Lato-Regular.ttf";
 const char * WidgetsConstants::FontFilePanelTitle = "Lato-Regular.ttf";
 
 // FONT SIZES
+const int WidgetsConstants::FontSizeDialogTitle = 30;
 const int WidgetsConstants::FontSizePlanetMapTitle = 28;
 const int WidgetsConstants::FontSizePlanetMapHeader = 24;
 const int WidgetsConstants::FontSizePlanetMapText = 22;

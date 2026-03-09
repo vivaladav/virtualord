@@ -38,6 +38,7 @@ public:
     static const char * FontFilePanelTitle;
 
     // FONT SIZES
+    static const int FontSizeDialogTitle;
     static const int FontSizePlanetMapTitle;
     static const int FontSizePlanetMapHeader;
     static const int FontSizePlanetMapText;

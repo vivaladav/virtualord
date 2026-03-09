@@ -217,9 +217,8 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
     const int marginL = 40;
 
     // TITLE
-    const int sizeTitle = 28;
-
-    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle, sizeTitle, graphic::Font::NORMAL);
+    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                            WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
     auto title = new sgui::Label(sm->GetCString("MISSION_GOALS"), font, this);
     title->SetColor(WidgetsConstants::colorDialogTitle);
 
