@@ -1470,6 +1470,11 @@ void ScreenInitGame::SetupTextures()
             { 235, 17, 16, 16 },
             // WARNING ICON
             { 252, 0, 36, 32 },
+            // BUTTON DIALOG CLOSE
+            { 0, 50, 94, 40 },
+            { 95, 50, 94, 40 },
+            { 190, 50, 94, 40 },
+            { 285, 50, 94, 40 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUIShared, rects);
