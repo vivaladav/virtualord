@@ -6,6 +6,16 @@ namespace game
 // COLORS
 const unsigned int WidgetsConstants::colorPlanetMapEnoughRes = 0x85cc85ff;
 const unsigned int WidgetsConstants::colorPlanetMapLackRes = 0xcc8b85ff;
+const unsigned int WidgetsConstants::colorDialogButtonNormal = 0xd6eaf5ff;
+const unsigned int WidgetsConstants::colorDialogButtonDisabled = 0x526c7aff;
+const unsigned int WidgetsConstants::colorDialogButtonOver = 0xeaf5faff;
+const unsigned int WidgetsConstants::colorDialogButtonPushed = 0xb3d3e5ff;
+const unsigned int WidgetsConstants::colorDialogButtonChecked = 0xeaf7faff;
+const unsigned int WidgetsConstants::colorDialogButtonOkNormal = 0xd9f2e1ff;
+const unsigned int WidgetsConstants::colorDialogButtonOkDisabled = 0x4d7f5eff;
+const unsigned int WidgetsConstants::colorDialogButtonOkOver = 0xecf9f0ff;
+const unsigned int WidgetsConstants::colorDialogButtonOkPushed = 0xb3e5c3ff;
+const unsigned int WidgetsConstants::colorDialogButtonOkChecked = 0xFFFFFFFF;
 const unsigned int WidgetsConstants::colorDialogBad = 0xd27979ff;
 const unsigned int WidgetsConstants::colorDialogGood = 0x67e486ff;
 const unsigned int WidgetsConstants::colorDialogIcon = 0xb6c3c9ff;

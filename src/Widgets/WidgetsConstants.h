@@ -9,6 +9,16 @@ public:
     // COLORS
     static const unsigned int colorPlanetMapEnoughRes;
     static const unsigned int colorPlanetMapLackRes;
+    static const unsigned int colorDialogButtonNormal;
+    static const unsigned int colorDialogButtonDisabled;
+    static const unsigned int colorDialogButtonOver;
+    static const unsigned int colorDialogButtonPushed;
+    static const unsigned int colorDialogButtonChecked;
+    static const unsigned int colorDialogButtonOkNormal;
+    static const unsigned int colorDialogButtonOkDisabled;
+    static const unsigned int colorDialogButtonOkOver;
+    static const unsigned int colorDialogButtonOkPushed;
+    static const unsigned int colorDialogButtonOkChecked;
     static const unsigned int colorDialogHeader1;
     static const unsigned int colorDialogHeader2;
     static const unsigned int colorDialogBad;

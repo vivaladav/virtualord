@@ -42,7 +42,11 @@ public:
                      { ID_DLG_TECHT_BTN_SEC_NORMAL, ID_DLG_TECHT_BTN_SEC_NORMAL,
                        ID_DLG_TECHT_BTN_SEC_OVER, ID_DLG_TECHT_BTN_SEC_PUSHED,
                        ID_DLG_TECHT_BTN_SEC_CHECKED },
-                     { 0xa6c5d9ff, 0xffffffff, 0xb8d0e0ff, 0x94b9d1ff, 0xd4ecf7ff },
+                     { WidgetsConstants::colorDialogButtonNormal,
+                       WidgetsConstants::colorDialogButtonDisabled,
+                       WidgetsConstants::colorDialogButtonOver,
+                       WidgetsConstants::colorDialogButtonPushed,
+                       WidgetsConstants::colorDialogButtonChecked },
                      nullptr)
     {
         using namespace sgl;
@@ -76,9 +80,6 @@ public:
 namespace game
 {
 // ====== DIALOG TECH TREE =====
-const int marginSide = 40;
-const int marginButtonsB = 20;
-
 DialogTechTree::DialogTechTree(Player * player)
     : mPlayer(player)
 {
@@ -165,18 +166,18 @@ DialogTechTree::DialogTechTree(Player * player)
 
     // -- CONTENT --
     // TITLE
-    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 32, graphic::Font::NORMAL);
+    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                                 WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
 
     sgui::Label * title = new sgui::Label(sm->GetCString("TECH_TREE"), fontTitle, this);
-
-    const int titleX = 40;
-    const int titleY = 10;
-    title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
+
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
+    title->SetPosition(WidgetsConstants::MarginDialogTitleL, titleY);
 
     // BUTTONS SECTION
     const int sectionX0 = 38;
-    const int sectionY0 = 95;
+    const int sectionY0 = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
     const int sectionSpacing = 78;
 
     mButtonsSection = new sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
@@ -208,20 +209,12 @@ DialogTechTree::DialogTechTree(Player * player)
             UpdateUpgrades(static_cast<UpgradeSections>(idx));
     });
 
-    // DESCRIPTION
-    const int descY = 940;
-
-    auto fontDesc = fm->GetFont(WidgetsConstants::FontFileText, 20, graphic::Font::NORMAL);
-    mLabelDescription = new sgui::Label(fontDesc, this);
-    mLabelDescription->SetColor(WidgetsConstants::colorDialogText);
-    mLabelDescription->SetPosition(marginSide, descY);
-
     // BUTTON UNLOCK
     mBtnUnlock = new ButtonUnlock(this);
     mBtnUnlock->SetVisible(false);
 
-    const int btnX = w - marginSide - mBtnUnlock->GetWidth();
-    const int btnY = 920;
+    const int btnX = w - WidgetsConstants::MarginDialogContentL - mBtnUnlock->GetWidth();
+    const int btnY = 930;
     mBtnUnlock->SetPosition(btnX, btnY);
 
     mBtnUnlock->AddOnClickFunction([this]
@@ -255,13 +248,19 @@ DialogTechTree::DialogTechTree(Player * player)
         }
     });
 
+    // DESCRIPTION
+    auto fontDesc = fm->GetFont(WidgetsConstants::FontFileText, 20, graphic::Font::NORMAL);
+    mLabelDescription = new sgui::Label(fontDesc, this);
+    mLabelDescription->SetColor(WidgetsConstants::colorDialogText);
+
     // UNLOCKED
     mLabelUnlocked = new sgui::Label(sm->GetCString("UPGRADE_UNLOCKED"), fontDesc, this);
     mLabelUnlocked->SetColor(WidgetsConstants::colorDialogGood);
     mLabelUnlocked->SetVisible(false);
 
-    const int labelX = w - marginSide - mLabelUnlocked->GetWidth();
-    mLabelUnlocked->SetPosition(labelX, descY);
+    const int labelX = w - WidgetsConstants::MarginDialogContentL - mLabelUnlocked->GetWidth();
+    const int labelY = btnY + (mBtnUnlock->GetHeight() - mLabelUnlocked->GetHeight()) / 2;
+    mLabelUnlocked->SetPosition(labelX, labelY);
 
     // show first panel
     UpdateUpgrades(SEC_STRUCTURES);
@@ -674,7 +673,13 @@ void DialogTechTree::SetDescription(TechUpgradeId upgrade)
     auto it = mDescriptions.find(upgrade);
 
     if(it != mDescriptions.end())
+    {
         mLabelDescription->SetText(sm->GetCString(it->second));
+
+        const int descY = mBtnUnlock->GetY() +
+                          (mBtnUnlock->GetHeight() - mLabelDescription->GetHeight()) / 2;
+        mLabelDescription->SetPosition(WidgetsConstants::MarginDialogContentL, descY);
+    }
 }
 
 // ===== BUTTON UNLOCK  =====
@@ -729,11 +734,11 @@ void ButtonUnlock::UpdateGraphics()
 
     const unsigned int colorLabel[] =
     {
-        0xb7e1bfff,
-        0x6c9374ff,
-        0xc9e8cfff,
-        0x9fdfabff,
-        0xb7e1bfff,
+        WidgetsConstants::colorDialogButtonOkNormal,
+        WidgetsConstants::colorDialogButtonOkDisabled,
+        WidgetsConstants::colorDialogButtonOkOver,
+        WidgetsConstants::colorDialogButtonOkPushed,
+        WidgetsConstants::colorDialogButtonOkChecked
     };
 
     mLabel->SetColor(colorLabel[state]);
