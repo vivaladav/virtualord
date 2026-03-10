@@ -1054,17 +1054,12 @@ void ScreenInitGame::SetupTextures()
             // BACKGROUND
             { 0, 0, 604, 70 },
             { 0, 71, 604, 90 },
-            // BUTTON 1
+            // BUTTON WISHLIST
             { 0, 161, 300, 44 },
-            { 301, 161, 300, 44 },
             { 0, 206, 300, 44 },
             { 301, 206, 300, 44 },
-            // BUTTON 2
-            { 0, 251, 300, 44 },
-            { 0, 296, 300, 44 },
-            { 301, 296, 300, 44 },
             // ICONS
-            { 301, 251, 32, 24 },
+            { 301, 161, 32, 24 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExit, rects);
@@ -1461,9 +1456,14 @@ void ScreenInitGame::SetupTextures()
             { 230, 108, 150, 12 },
             { 230, 121, 154, 16 },
             // CHECKBOX
-            { 0, 121, 24, 24 },
-            { 25, 121, 24, 24 },
-            { 50, 121, 24, 24 },
+            { 313, 0, 24, 24 },
+            { 338, 0, 24, 24 },
+            { 363, 0, 24, 24 },
+            // BUTTON DIALOG STANDARD
+            { 0, 138, 300, 44 },
+            { 0, 183, 300, 44 },
+            { 0, 228, 300, 44 },
+            { 0, 273, 300, 44 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUIShared, rects);

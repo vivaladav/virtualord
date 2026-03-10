@@ -30,11 +30,14 @@ class ButtonDialogEndMission : public GameButton
 {
 public:
     ButtonDialogEndMission(sgl::sgui::Widget * parent)
-        : GameButton(SpriteFileDialogEndMission,
-        { IND_DIA_EM_BTN_NORMAL, IND_DIA_EM_BTN_DISABLED, IND_DIA_EM_BTN_OVER,
-          IND_DIA_EM_BTN_PUSHED, IND_DIA_EM_BTN_PUSHED },
-        { 0xc1e0f0ff, 0x5a6266ff, 0xd6e9f5ff, 0xadd6ebff, 0xadd6ebff },
-        parent)
+        : GameButton(SpriteFileGameUIShared,
+                     { ID_DLG_BTN_STD_NORMAL, ID_DLG_BTN_STD_DISABLED, ID_DLG_BTN_STD_OVER,
+                       ID_DLG_BTN_STD_PUSHED, ID_DLG_BTN_STD_PUSHED },
+                     { WidgetsConstants::colorDialogButtonNormal,
+                      WidgetsConstants::colorDialogButtonDisabled,
+                      WidgetsConstants::colorDialogButtonOver,
+                      WidgetsConstants::colorDialogButtonPushed,
+                      WidgetsConstants::colorDialogButtonChecked }, parent)
     {
         using namespace sgl;
 

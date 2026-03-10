@@ -46,8 +46,7 @@ public:
                        WidgetsConstants::colorDialogButtonDisabled,
                        WidgetsConstants::colorDialogButtonOver,
                        WidgetsConstants::colorDialogButtonPushed,
-                       WidgetsConstants::colorDialogButtonChecked },
-                     nullptr)
+                       WidgetsConstants::colorDialogButtonChecked }, nullptr)
     {
         using namespace sgl;
 

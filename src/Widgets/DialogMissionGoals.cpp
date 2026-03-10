@@ -45,7 +45,12 @@ public:
                      { ID_DLG_MGOALS_BTN_END_NORMAL, ID_DLG_MGOALS_BTN_END_DISABLED,
                        ID_DLG_MGOALS_BTN_END_OVER, ID_DLG_MGOALS_BTN_END_PUSHED,
                        ID_DLG_MGOALS_BTN_END_NORMAL },
-                     { 0xd9f2e1ff, 0x4d7f5eff, 0xecf9f0ff, 0xb3e5c3ff, 0xd9f2e1ff }, parent)
+                     {
+                         WidgetsConstants::colorDialogButtonOkNormal,
+                         WidgetsConstants::colorDialogButtonOkDisabled,
+                         WidgetsConstants::colorDialogButtonOkOver,
+                         WidgetsConstants::colorDialogButtonOkPushed,
+                         WidgetsConstants::colorDialogButtonOkChecked }, parent)
     {
         using namespace sgl;
 
@@ -87,7 +92,11 @@ public:
                      { ID_DLG_MGOALS_BTN_COLLECT_NORMAL, ID_DLG_MGOALS_BTN_COLLECT_DISABLED,
                        ID_DLG_MGOALS_BTN_COLLECT_OVER, ID_DLG_MGOALS_BTN_COLLECT_PUSHED,
                        ID_DLG_MGOALS_BTN_COLLECT_NORMAL },
-                     { 0xd6eaf5ff, 0x526c7aff, 0xebf4f9ff, 0xeaf5faff, 0xb3d3e5ff }, parent)
+                     { WidgetsConstants::colorDialogButtonNormal,
+                       WidgetsConstants::colorDialogButtonDisabled,
+                       WidgetsConstants::colorDialogButtonOver,
+                       WidgetsConstants::colorDialogButtonPushed,
+                       WidgetsConstants::colorDialogButtonChecked }, parent)
     {
         using namespace sgl;
 

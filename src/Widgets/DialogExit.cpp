@@ -37,11 +37,14 @@ class ButtonDialogExit : public GameButton
 {
 public:
     ButtonDialogExit(sgl::sgui::Widget * parent)
-        : GameButton(SpriteFileDialogExit,
-                     { ID_DLG_EXIT_BTN_NORMAL, ID_DLG_EXIT_BTN_DISABLED,
-                       ID_DLG_EXIT_BTN_OVER, ID_DLG_EXIT_BTN_PUSHED, ID_DLG_EXIT_BTN_PUSHED },
-                     { 0xd6eaf5ff, 0x526c7aff, 0xeaf5faff, 0xb3d3e5ff, 0xb3d3e5ff },
-                     parent)
+        : GameButton(SpriteFileGameUIShared,
+                     { ID_DLG_BTN_STD_NORMAL, ID_DLG_BTN_STD_DISABLED, ID_DLG_BTN_STD_OVER,
+                       ID_DLG_BTN_STD_PUSHED, ID_DLG_BTN_STD_PUSHED },
+                     { WidgetsConstants::colorDialogButtonNormal,
+                       WidgetsConstants::colorDialogButtonDisabled,
+                       WidgetsConstants::colorDialogButtonOver,
+                       WidgetsConstants::colorDialogButtonPushed,
+                       WidgetsConstants::colorDialogButtonChecked }, parent)
     {
         using namespace sgl;
 
