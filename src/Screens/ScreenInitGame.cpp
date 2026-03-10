@@ -1147,49 +1147,24 @@ void ScreenInitGame::SetupTextures()
     {
         const std::vector<sgl::core::Rectd> rects
         {
-            // DIALOG
-            { 0, 0, 860, 525 },
-            { 0, 526, 400, 38 },
-            { 401, 526, 400, 38 },
-
-            // ATTRIBUTES BAR
-            { 861, 0, 140, 18 },
-            { 861, 19, 140, 18 },
-            { 861, 38, 140, 18 },
-            { 861, 57, 140, 18 },
-            { 861, 76, 140, 18 },
-            { 861, 95, 140, 18 },
-            { 861, 114, 140, 18 },
-            { 861, 133, 140, 18 },
-            { 861, 152, 140, 18 },
-            { 861, 171, 140, 18 },
-            { 861, 190, 140, 18 },
-
-            // STARS BAR
-            { 861, 209, 112, 16 },
-            { 861, 226, 112, 16 },
-            { 861, 243, 112, 16 },
-            { 861, 260, 112, 16 },
-            { 861, 277, 112, 16 },
-            { 861, 294, 112, 16 },
-            { 861, 311, 112, 16 },
-            { 861, 328, 112, 16 },
-            { 861, 345, 112, 16 },
-            { 861, 362, 112, 16 },
-            { 861, 379, 112, 16 },
-
-            // BUTTON CLOSE
-            { 861, 396, 105, 40 },
-            { 861, 396, 105, 40 },
-            { 861, 396, 105, 40 },
-
-            // PROGRESS BAR
-            { 0, 565, 154, 16 },
-            { 155, 565, 150, 12 },
-            { 155, 565, 150, 12 },
+            // BACKGROUND
+            { 0, 0, 90, 555 },
+            { 91, 0, 110, 555 },
+            // PANEL BACKGROUND
+            { 202, 0, 10, 210 },
+            { 202, 211, 10, 210 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogObject, rects);
+
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // BACKGROUND
+            { 0, 0, 10, 555 },
+            { 11, 0, 10, 210 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogObjectExp, rectsExp);
     });
 
     // DIALOG RESEARCH
@@ -1464,6 +1439,18 @@ void ScreenInitGame::SetupTextures()
             { 0, 183, 300, 44 },
             { 0, 228, 300, 44 },
             { 0, 273, 300, 44 },
+            // STARS BAR
+            { 301, 138, 112, 16 },
+            { 301, 155, 112, 16 },
+            { 301, 172, 112, 16 },
+            { 301, 189, 112, 16 },
+            { 301, 206, 112, 16 },
+            { 301, 223, 112, 16 },
+            { 301, 240, 112, 16 },
+            { 301, 257, 112, 16 },
+            { 301, 274, 112, 16 },
+            { 301, 291, 112, 16 },
+            { 301, 308, 112, 16 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUIShared, rects);

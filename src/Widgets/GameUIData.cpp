@@ -15,6 +15,7 @@ const char SpriteFileDialogNewElement[] = "UI/new_element_dalog.png";
 const char SpriteFileDialogNewElementExp[] = "UI/new_element_dalog-exp.png";
 const char SpriteFileDialogNewMiniUnits[] = "UI/dialog_new_miniunits_squad.png";
 const char SpriteFileDialogObject[] = "UI/dialog_object.png";
+const char SpriteFileDialogObjectExp[] = "UI/dialog_object-exp.png";
 const char SpriteFileDialogResearch[] = "UI/dialog_research.png";
 const char SpriteFileDialogResearchExp[] = "UI/dialog_research-exp.png";
 const char SpriteFileDialogTechTree[] = "UI/dialog_tech_tree.png";

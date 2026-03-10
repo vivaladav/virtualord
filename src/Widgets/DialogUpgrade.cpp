@@ -263,8 +263,8 @@ DialogUpgrade::DialogUpgrade(GameObject * obj, const ObjectsDataRegistry * odr)
     dataY += header->GetHeight() + marginHeaderV;
 
     const int level = obj->GetExperienceLevel();
-    const unsigned int barLvlTexId = ID_DLG_OBJ_SBAR_1 + level;
-    tex = tm->GetSprite(SpriteFileDialogObject, barLvlTexId);
+    const unsigned int barLvlTexId = ID_STARS_BAR_1 + level;
+    tex = tm->GetSprite(SpriteFileGameUIShared, barLvlTexId);
     auto levelBar = new sgui::Image(tex, this);
     levelBar->SetPosition(dataX, dataY);
 
