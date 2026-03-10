@@ -266,11 +266,8 @@ void DialogEndMission::HandlePositionChanged()
 
 void DialogEndMission::SetPositions()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
-
-    int x = x0;
-    int y = y0;
+    const int y = GetScreenY();
+    int x = GetScreenX();
 
     // BACKGROUND
     mBgL->SetPosition(x, y);

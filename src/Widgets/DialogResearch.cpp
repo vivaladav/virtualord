@@ -393,19 +393,17 @@ void DialogResearch::HandlePositionChanged()
 
 void DialogResearch::SetPositions()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
-
-    int x = x0;
+    const int y = GetScreenY();
+    int x = GetScreenX();
 
     // BACKGROUND
-    mBgL->SetPosition(x, y0);
+    mBgL->SetPosition(x, y);
     x += mBgL->GetWidth();
 
-    mBgC->SetPosition(x, y0);
+    mBgC->SetPosition(x, y);
     x += mBgC->GetWidth();
 
-    mBgR->SetPosition(x, y0);
+    mBgR->SetPosition(x, y);
 }
 
 void DialogResearch::UpdateOutput()

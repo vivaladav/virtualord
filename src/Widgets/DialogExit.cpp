@@ -383,19 +383,16 @@ void DialogExit::HandlePositionChanged()
 
 void DialogExit::SetPositions()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
+    const int x = GetScreenX();
+    int y = GetScreenY();
 
-    // BACKGROUND
-    int y = y0;
-
-    mBgTop->SetPosition(x0, y);
+    mBgTop->SetPosition(x, y);
 
     y += mBgTop->GetHeight();
-    mBgMid->SetPosition(x0, y);
+    mBgMid->SetPosition(x, y);
 
     y += mBgMid->GetHeight();
-    mBgBot->SetPosition(x0, y);
+    mBgBot->SetPosition(x, y);
 }
 
 } // namespace game
