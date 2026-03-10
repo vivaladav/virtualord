@@ -8,8 +8,10 @@
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Text.h>
+#include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
@@ -86,13 +88,31 @@ DialogEndMission::DialogEndMission(unsigned int time, unsigned int territoryConq
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
 
-    // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileDialogEndMission, IND_DIA_EM_BG);
-    mBg = new graphic::Image(tex);
-    RegisterRenderable(mBg);
+    // -- BACKGROUND --
+    const int w = 850;
+    graphic::Texture * tex;
 
-    const int w = mBg->GetWidth();
-    const int h = mBg->GetHeight();
+    tex = tm->GetSprite(SpriteFileDialogEndMission, ID_DIA_ENDM_BG_L);
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
+
+    const int wL = mBgL->GetWidth();
+    const int h = mBgL->GetHeight();
+
+    tex = tm->GetSprite(SpriteFileDialogEndMission, ID_DIA_ENDM_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
+
+    const int wR = mBgR->GetWidth();
+
+    tex = tm->GetTexture(SpriteFileDialogEndMissionExp);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(tex);
+    RegisterRenderable(mBgC);
+
+    const int wC = w - wL - wR;
+    mBgC->SetWidth(wC);
+
     SetSize(w, h);
 
     // BUTTON CLOSE
@@ -103,7 +123,8 @@ DialogEndMission::DialogEndMission(unsigned int time, unsigned int territoryConq
     mButton->SetPosition(buttonX, buttonY);
 
     // TITLE
-    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 32, graphic::Font::NORMAL);
+    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                            WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
 
     sgui::Label * title = nullptr;
 
@@ -112,21 +133,20 @@ DialogEndMission::DialogEndMission(unsigned int time, unsigned int territoryConq
     else
         title = new sgui::Label(sm->GetCString("DEFEAT"), font, this);
 
-    const int titleX = (w - title->GetWidth()) / 2;
-    const int titleY = 10;
-    title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
+
+    const int titleX = (w - title->GetWidth()) / 2;
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
+    title->SetPosition(titleX, titleY);
 
     // -- CONTENT --
     const int limitR = 720;
-    const int marginL = 40;
-    const int marginT = 120;
     const int marginWidgetH = 30;
     const unsigned int colorHeader = 0x9dcbe2ff;
     const unsigned int colorData = 0x70a7c2ff;
 
-    int widgetX = marginL;
-    int widgetY = marginT;
+    int widgetX = WidgetsConstants::MarginDialogContentL;
+    int widgetY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
     font = fm->GetFont(WidgetsConstants::FontFileText, 24, graphic::Font::NORMAL);
 
@@ -161,7 +181,7 @@ DialogEndMission::DialogEndMission(unsigned int time, unsigned int territoryConq
     widgetX += limitR - label->GetWidth();
     label->SetPosition(widgetX, widgetY);
 
-    widgetX = marginL;
+    widgetX = WidgetsConstants::MarginDialogContentL;
     widgetY += marginWidgetH + label->GetHeight();
 
     ss.str(std::string());
@@ -179,7 +199,7 @@ DialogEndMission::DialogEndMission(unsigned int time, unsigned int territoryConq
     widgetX += limitR - label->GetWidth();
     label->SetPosition(widgetX, widgetY);
 
-    widgetX = marginL;
+    widgetX = WidgetsConstants::MarginDialogContentL;
     widgetY += marginWidgetH + label->GetHeight();
 
     ss.str(std::string());
@@ -197,7 +217,7 @@ DialogEndMission::DialogEndMission(unsigned int time, unsigned int territoryConq
     widgetX += limitR - label->GetWidth();
     label->SetPosition(widgetX, widgetY);
 
-    widgetX = marginL;
+    widgetX = WidgetsConstants::MarginDialogContentL;
     widgetY += marginWidgetH + label->GetHeight();
 
     ss.str(std::string());
@@ -215,7 +235,7 @@ DialogEndMission::DialogEndMission(unsigned int time, unsigned int territoryConq
     widgetX += limitR - label->GetWidth();
     label->SetPosition(widgetX, widgetY);
 
-    widgetX = marginL;
+    widgetX = WidgetsConstants::MarginDialogContentL;
     widgetY += marginWidgetH + label->GetHeight();
 
     ss.str(std::string());
@@ -232,9 +252,6 @@ DialogEndMission::DialogEndMission(unsigned int time, unsigned int territoryConq
     label->SetColor(colorData);
     widgetX += limitR - label->GetWidth();
     label->SetPosition(widgetX, widgetY);
-
-    widgetX = marginL;
-    widgetY += marginWidgetH + label->GetHeight();
 }
 
 void DialogEndMission::SetFunctionOnClose(const std::function<void()> & f)
@@ -251,10 +268,18 @@ void DialogEndMission::SetPositions()
 {
     const int x0 = GetScreenX();
     const int y0 = GetScreenY();
-    const int w = mBg->GetWidth();
+
+    int x = x0;
+    int y = y0;
 
     // BACKGROUND
-    mBg->SetPosition(x0, y0);
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
+
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
+
+    mBgR->SetPosition(x, y);
 }
 
 } // namespace game

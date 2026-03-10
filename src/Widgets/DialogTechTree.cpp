@@ -131,7 +131,7 @@ DialogTechTree::DialogTechTree(Player * player)
     mCosts.emplace(TECH_UP_STORAGE_BLOBS_2, 1500);
 
     // -- BACKGROUND --
-    const int w = 1900;
+    const int w = 1904;
     graphic::Texture * tex;
 
     tex = tm->GetSprite(SpriteFileDialogTechTree, ID_DLG_TECHT_BG_L);

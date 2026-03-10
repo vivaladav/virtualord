@@ -33,14 +33,11 @@ extern const char SpriteFileDialogEndMission[];
 enum SpriteIdDialogEndMission : unsigned int
 {
     // BACKGROUND
-    IND_DIA_EM_BG,
-
-    // BUTTON
-    IND_DIA_EM_BTN_NORMAL,
-    IND_DIA_EM_BTN_DISABLED,
-    IND_DIA_EM_BTN_OVER,
-    IND_DIA_EM_BTN_PUSHED,
+    ID_DIA_ENDM_BG_L,
+    ID_DIA_ENDM_BG_R,
 };
+
+extern const char SpriteFileDialogEndMissionExp[];
 
 // DIALOG EXIT
 extern const char SpriteFileDialogExit[];

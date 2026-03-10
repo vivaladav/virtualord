@@ -1676,16 +1676,13 @@ void ScreenInitGame::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUND
-            { 0, 0, 800, 500 },
-
-            // BUTTON
-            { 0, 501, 300, 44 },
-            { 301, 501, 300, 44 },
-            { 0, 546, 300, 44 },
-            { 301, 546, 300, 44 },
+            { 0, 0, 90, 500 },
+            { 91, 0, 90, 500 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogEndMission, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogEndMissionExp);
     });
 
     // NEW ELEMENT DIALOG

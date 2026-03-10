@@ -31,7 +31,10 @@ private:
     void SetPositions();
 
 private:
-    sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
+
     sgl::sgui::AbstractButton * mButton = nullptr;
 };
 
