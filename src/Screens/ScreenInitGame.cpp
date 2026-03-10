@@ -1648,28 +1648,6 @@ void ScreenInitGame::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorialExp, rectsExp);
     });
 
-    // DIALOG SELF DESTRUCTION
-    mJobs.emplace_back([this, tm]
-    {
-        const std::vector<sgl::core::Rectd> rects
-        {
-            // BACKGROUND
-            { 0, 0, 500, 270 },
-            // BUTTON 1
-            { 501, 0, 300, 44 },
-            { 501, 45, 300, 44 },
-            { 501, 90, 300, 44 },
-            { 501, 135, 300, 44 },
-            // BUTTON CLOSE
-            { 501, 180, 95, 41 },
-            { 597, 180, 95, 41 },
-            { 693, 180, 95, 41 },
-            { 501, 222, 95, 41 },
-        };
-
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogDestruction, rects);
-    });
-
     // END MISSION DIALOG
     mJobs.emplace_back([this, tm]
     {

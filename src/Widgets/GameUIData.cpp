@@ -4,7 +4,6 @@ namespace game
 {
 
 const char SpriteFileCursor[] = "UI/cursor.png";
-const char SpriteFileDialogDestruction[] = "UI/dialog_destruction.png";
 const char SpriteFileDialogEndMission[] = "UI/dialog_end_mission.png";
 const char SpriteFileDialogEndMissionExp[] = "UI/dialog_end_mission-exp.png";
 const char SpriteFileDialogExit[] = "UI/dialog_exit.png";

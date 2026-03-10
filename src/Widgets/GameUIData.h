@@ -6,27 +6,6 @@ namespace game
 // MOUSE CURSOR
 extern const char SpriteFileCursor[];
 
-// DIALOG SELF DESTRUCTION
-extern const char SpriteFileDialogDestruction[];
-
-enum SpriteIdDialogDestruction : unsigned int
-{
-    // BACKGROUND
-    ID_DLG_DESTR_BG,
-
-    // BUTTON 1
-    ID_DLG_DESTR_BTN1_NORMAL,
-    ID_DLG_DESTR_BTN1_DISABLED,
-    ID_DLG_DESTR_BTN1_OVER,
-    ID_DLG_DESTR_BTN1_PUSHED,
-
-    // BUTTON CLOSE
-    ID_DLG_DESTR_BTN_CLOSE_NORMAL,
-    ID_DLG_DESTR_BTN_CLOSE_DISABLED,
-    ID_DLG_DESTR_BTN_CLOSE_OVER,
-    ID_DLG_DESTR_BTN_CLOSE_PUSHED,
-};
-
 // DIALOG END MISSION
 extern const char SpriteFileDialogEndMission[];
 

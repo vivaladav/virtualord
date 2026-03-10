@@ -100,8 +100,6 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFilePanelTurnControl);
     // MAP UI
     tm->DestroySprite(SpriteFileMapUI);
-     // DIALOG SELF DESTRUCTION
-    tm->DestroySprite(SpriteFileDialogDestruction);
     // END MISSION DIALOG
     tm->DestroySprite(SpriteFileDialogEndMission);
     // NEW ELEMENT DIALOG
