@@ -4,6 +4,7 @@
 #include "GameConstants.h"
 #include "Player.h"
 #include "StatValue.h"
+#include "Widgets/ButtonDialogClose.h"
 #include "Widgets/GameButton.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
@@ -11,8 +12,10 @@
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Text.h>
+#include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
@@ -46,16 +49,74 @@ constexpr unsigned int colorData = 0xadd4ebff;
 
 const std::string zero4("0000");
 
-// ===== BUTTON =====
-class ButtonDialogTradingClose : public sgl::sgui::ImageButton
+// ===== BUTTONS =====
+class ButtonBuy : public GameButton
 {
 public:
-    ButtonDialogTradingClose(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({ ID_DLG_TRADING_BTN_CLOSE_NORMAL, ID_DLG_TRADING_BTN_CLOSE_NORMAL,
-                                   ID_DLG_TRADING_BTN_CLOSE_OVER, ID_DLG_TRADING_BTN_CLOSE_PUSHED,
-                                   ID_DLG_TRADING_BTN_CLOSE_PUSHED }, SpriteFileDialogTrading, parent)
+    ButtonBuy(sgl::sgui::Widget * parent)
+        : GameButton(SpriteFileDialogTrading,
+                     { ID_DLG_TRADING_BTN_BUY_NORMAL, ID_DLG_TRADING_BTN_BUY_DISABLED,
+                       ID_DLG_TRADING_BTN_BUY_OVER, ID_DLG_TRADING_BTN_BUY_PUSHED,
+                       ID_DLG_TRADING_BTN_BUY_PUSHED },
+                     { WidgetsConstants::colorDialogButtonOkNormal,
+                       WidgetsConstants::colorDialogButtonOkDisabled,
+                       WidgetsConstants::colorDialogButtonOkOver,
+                       WidgetsConstants::colorDialogButtonOkPushed,
+                       WidgetsConstants::colorDialogButtonOkChecked }, parent)
     {
-        SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
+        using namespace sgl;
+
+        const int size = 24;
+
+        auto fm = graphic::FontManager::Instance();
+        auto sm = utilities::StringManager::Instance();
+
+        auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
+        SetLabelFont(fnt);
+        SetLabel(sm->GetCString("BUY"));
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::AbstractButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-01.ogg");
+    }
+};
+
+class ButtonSell : public GameButton
+{
+public:
+    ButtonSell(sgl::sgui::Widget * parent)
+        : GameButton(SpriteFileDialogTrading,
+                     { ID_DLG_TRADING_BTN_SELL_NORMAL, ID_DLG_TRADING_BTN_SELL_DISABLED,
+                      ID_DLG_TRADING_BTN_SELL_OVER, ID_DLG_TRADING_BTN_SELL_PUSHED,
+                      ID_DLG_TRADING_BTN_SELL_PUSHED },
+                     { WidgetsConstants::colorDialogButtonNoNormal,
+                       WidgetsConstants::colorDialogButtonNoDisabled,
+                       WidgetsConstants::colorDialogButtonNoOver,
+                       WidgetsConstants::colorDialogButtonNoPushed,
+                       WidgetsConstants::colorDialogButtonNoChecked }, parent)
+    {
+        using namespace sgl;
+
+        const int size = 24;
+
+        auto fm = graphic::FontManager::Instance();
+        auto sm = utilities::StringManager::Instance();
+
+        auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
+        SetLabelFont(fnt);
+        SetLabel(sm->GetCString("SELL"));
     }
 
     void HandleMouseOver() override
@@ -79,9 +140,10 @@ class ButtonDialogTradingMinus : public sgl::sgui::ImageButton
 {
 public:
     ButtonDialogTradingMinus(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({ ID_DLG_TRADING_BTN_MINUS_NORMAL, ID_DLG_TRADING_BTN_MINUS_DISABLED,
-                                  ID_DLG_TRADING_BTN_MINUS_OVER, ID_DLG_TRADING_BTN_MINUS_PUSHED,
-                                  ID_DLG_TRADING_BTN_MINUS_PUSHED }, SpriteFileDialogTrading, parent)
+        : sgl::sgui::ImageButton({ ID_DLG_TRADING_BTN_MINUS_NORMAL,
+                                   ID_DLG_TRADING_BTN_MINUS_DISABLED, ID_DLG_TRADING_BTN_MINUS_OVER,
+                                   ID_DLG_TRADING_BTN_MINUS_PUSHED, ID_DLG_TRADING_BTN_MINUS_PUSHED },
+                                 SpriteFileDialogTrading, parent)
     {
     }
 
@@ -129,71 +191,6 @@ public:
     }
 };
 
-class ButtonAction : public GameButton
-{
-public:
-    ButtonAction(const char * text, const char * textShortcut, int shortcut, sgl::sgui::Widget * parent)
-        : GameButton(SpriteFileDialogTrading,
-                     { ID_DLG_TRADING_BTN_ACT_NORMAL, ID_DLG_TRADING_BTN_ACT_DISABLED,
-                       ID_DLG_TRADING_BTN_ACT_OVER, ID_DLG_TRADING_BTN_ACT_PUSHED,
-                       ID_DLG_TRADING_BTN_ACT_PUSHED }, { 0xe3e6e8ff, 0x454f54ff,
-                       0xf1f2f4ff, 0xabb4baff, 0xc2c2a3ff }, parent)
-    {
-        using namespace sgl;
-
-        // set label font
-        auto fm = graphic::FontManager::Instance();
-        auto font = fm->GetFont(WidgetsConstants::FontFileButton, 18, graphic::Font::NORMAL);
-
-        SetLabelFont(font);
-
-        SetLabel(text);
-
-        // SHORTCUT
-        SetShortcutKey(shortcut);
-
-        const int scbX0 = 147;
-        const int scbY0 = 22;
-        const int scbSize = 14;
-
-        font = fm->GetFont(WidgetsConstants::FontFileShortcut, 12, graphic::Font::NORMAL);
-        mShortcut = new sgui::Label(textShortcut, font, this);
-        mShortcut->SetColor(0xd5daddff);
-
-        const int scX0 = scbX0 + (scbSize - mShortcut->GetWidth()) / 2;
-        const int scY0 = scbY0 + (scbSize - mShortcut->GetHeight()) / 2;
-        mShortcut->SetPosition(scX0, scY0);
-    }
-
-    void HandleMouseOver() override
-    {
-        sgl::sgui::AbstractButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-01.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_click-01.ogg");
-    }
-
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        GameButton::OnStateChanged(state);
-        // update shortcut label alpha
-        const unsigned char alphaEn = 255;
-        const unsigned char alphaDis = 128;
-        const unsigned char alphaLabel = DISABLED == state ? alphaDis : alphaEn;
-        mShortcut->SetAlpha(alphaLabel);
-    }
-
-private:
-    sgl::sgui::Label * mShortcut = nullptr;
-};
 
 } // namespace
 
@@ -208,7 +205,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     using namespace sgl;
 
     // INIT DATA
-    static_assert(TRADED_RES == NUM_RESOURCES, "DialogTrading - not handling all resources");
+    // static_assert(TRADED_RES == NUM_RESOURCES, "DialogTrading - not handling all resources");
 
     for(unsigned int i = 0; i < NUM_RESOURCES; ++i)
     {
@@ -220,30 +217,48 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
 
-    // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_BG);
-    mBg = new graphic::Image(tex);
-    RegisterRenderable(mBg);
 
-    const int w = mBg->GetWidth();
-    const int h = mBg->GetHeight();
+    // BACKGROUND
+    const int w = 1440;
+    graphic::Texture * tex;
+
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_BG_L);
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
+
+    const int wL = mBgL->GetWidth();
+    const int h = mBgL->GetHeight();
+
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
+
+    const int wR = mBgR->GetWidth();
+
+    tex = tm->GetSprite(SpriteFileDialogTradingExp, ID_DLG_TRADING_BG_C);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(tex);
+    RegisterRenderable(mBgC);
+
+    const int wC = w - wL - wR;
+    mBgC->SetWidth(wC);
+
     SetSize(w, h);
 
     // BUTTON CLOSE
-    mButtonClose = new ButtonDialogTradingClose(this);
+    mButtonClose = new ButtonDialogClose(this);
 
     const int buttonX = w - mButtonClose->GetWidth();
     mButtonClose->SetX(buttonX);
 
     // TITLE
-    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 32, graphic::Font::NORMAL);
-
-    sgui::Label * title = new sgui::Label(sm->GetCString("TRADE_UR_RES"), fontTitle, this);
-
-    const int titleX = (w - title->GetWidth()) / 2;
-    const int titleY = 5;
-    title->SetPosition(titleX, titleY);
+    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                            WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
+    auto title = new sgui::Label(sm->GetCString("TRADE_UR_RES"), font, this);
     title->SetColor(WidgetsConstants::colorDialogTitle);
+
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
+    title->SetPosition(WidgetsConstants::MarginDialogTitleL, titleY);
 
     // -- HEADERS --
     const int hbH = 40;
@@ -370,7 +385,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddBuyBlock(hbX2, dbY3, hbW2, RES_DIAMONDS, fontData);
 
     // TOTAL BUY
-    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
     int dataX = hbX2 + marginIconMoneyL;
@@ -389,7 +404,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     // BUTTON BUY
     const int marginBtnR = 20;
 
-    auto btnBuy = new ButtonAction(sm->GetCString("BUY"), "B", core::KeyboardEvent::KEY_B, this);
+    auto btnBuy = new ButtonBuy(this);
     dataX = hbX2 + hbW2 - btnBuy->GetWidth() - marginBtnR;
     dataY = dbY4 + (dbH - btnBuy->GetHeight()) / 2;
     btnBuy->SetPosition(dataX, dataY);
@@ -414,7 +429,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddSellBlock(hbX3, dbY3, hbW3, RES_DIAMONDS, fontData);
 
     // TOTAL SELL
-    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     icon = new sgui::Image(tex, this);
 
     dataX = hbX3 + marginIconMoneyL;
@@ -431,7 +446,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     mLabelTotSell->SetPosition(dataX, dataY);
 
     // BUTTON SELL
-    auto btnSell = new ButtonAction(sm->GetCString("SELL"), "S", core::KeyboardEvent::KEY_S, this);
+    auto btnSell = new ButtonSell(this);
 
     dataX = hbX3 + hbW3 - btnSell->GetWidth() - marginBtnR;
     dataY = dbY4 + (dbH - btnSell->GetHeight()) / 2;
@@ -476,23 +491,25 @@ void DialogTrading::AddResBlock(int x0, int y0, ResourceType res, sgl::graphic::
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
 
-    const unsigned int texIds[NUM_RESOURCES] =
+    const unsigned int texIds[] =
     {
-        ID_DLG_TRADING_ICON_ENERGY,
-        ID_DLG_TRADING_ICON_MATERIAL,
-        ID_DLG_TRADING_ICON_DIAMONDS,
-        ID_DLG_TRADING_ICON_BLOBS
+        ID_UIS_ICON_C_RES_ENERGY_24,
+        ID_UIS_ICON_C_RES_MATERIAL_24,
+        ID_UIS_ICON_C_RES_DIAMONDS_24,
+        ID_UIS_ICON_C_RES_BLOBS_24,
+        ID_UIS_ICON_C_RES_RESEARCH_24,
     };
 
-    auto tex = tm->GetSprite(SpriteFileDialogTrading, texIds[res]);
+    auto tex = tm->GetSprite(SpriteFileGameUIShared, texIds[res]);
     auto icon = new sgui::Image(tex, this);
 
-    const char * text[NUM_RESOURCES] =
+    const char * text[] =
     {
         sm->GetCString("ENERGY"),
         sm->GetCString("MATERIAL"),
         sm->GetCString("DIAMONDS"),
         sm->GetCString("BLOBS"),
+        sm->GetCString("RESEARCH"),
     };
 
     auto data = new sgui::Label(text[res], font, this);
@@ -512,12 +529,13 @@ void DialogTrading::AddStockBlock(int x0, int y0, int bW, ResourceType res, sgl:
 {
     using namespace  sgl;
 
-    const Player::Stat stats[NUM_RESOURCES] =
+    const Player::Stat stats[] =
     {
         Player::ENERGY,
         Player::MATERIAL,
         Player::DIAMONDS,
         Player::BLOBS,
+        Player::RESEARCH,
     };
 
     const StatValue & s = mPlayer->GetStat(stats[res]);
@@ -542,7 +560,7 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, ResourceType res, sgl::g
     auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
 
-    auto tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
     int dataX = x0 + marginIconMoneyL;
@@ -604,7 +622,7 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, ResourceType res, sgl::
     auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
 
-    auto tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_ICON_MONEY);
+    auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
     int dataX = x0 + marginIconMoneyL;
@@ -666,11 +684,16 @@ void DialogTrading::HandlePositionChanged()
 
 void DialogTrading::SetPositions()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
+    const int y = GetScreenY();
+    int x = GetScreenX();
 
-    // BACKGROUND
-    mBg->SetPosition(x0, y0);
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
+
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
+
+    mBgR->SetPosition(x, y);
 }
 
 int DialogTrading::GetCurrentSpend() const

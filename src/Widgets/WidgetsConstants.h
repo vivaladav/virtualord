@@ -19,6 +19,11 @@ public:
     static const unsigned int colorDialogButtonOkOver;
     static const unsigned int colorDialogButtonOkPushed;
     static const unsigned int colorDialogButtonOkChecked;
+    static const unsigned int colorDialogButtonNoNormal;
+    static const unsigned int colorDialogButtonNoDisabled;
+    static const unsigned int colorDialogButtonNoOver;
+    static const unsigned int colorDialogButtonNoPushed;
+    static const unsigned int colorDialogButtonNoChecked;
     static const unsigned int colorDialogHeader1;
     static const unsigned int colorDialogHeader2;
     static const unsigned int colorDialogBad;

@@ -21,6 +21,7 @@ const char SpriteFileDialogResearchExp[] = "UI/dialog_research-exp.png";
 const char SpriteFileDialogTechTree[] = "UI/dialog_tech_tree.png";
 const char SpriteFileDialogTechTreeExp[] = "UI/dialog_tech_tree-exp.png";
 const char SpriteFileDialogTrading[] = "UI/dialog_trading.png";
+const char SpriteFileDialogTradingExp[] = "UI/dialog_trading-exp.png";
 const char SpriteFileDialogUpgrade[] = "UI/dialog_upgrade.png";
 const char SpriteFileFactionSelection[] = "UI/faction_selection.png";
 const char SpriteFileGameUI[] = "UI/game_UI.png";

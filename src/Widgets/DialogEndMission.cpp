@@ -36,10 +36,10 @@ public:
                      { ID_DLG_BTN_STD_NORMAL, ID_DLG_BTN_STD_DISABLED, ID_DLG_BTN_STD_OVER,
                        ID_DLG_BTN_STD_PUSHED, ID_DLG_BTN_STD_PUSHED },
                      { WidgetsConstants::colorDialogButtonNormal,
-                      WidgetsConstants::colorDialogButtonDisabled,
-                      WidgetsConstants::colorDialogButtonOver,
-                      WidgetsConstants::colorDialogButtonPushed,
-                      WidgetsConstants::colorDialogButtonChecked }, parent)
+                       WidgetsConstants::colorDialogButtonDisabled,
+                       WidgetsConstants::colorDialogButtonOver,
+                       WidgetsConstants::colorDialogButtonPushed,
+                       WidgetsConstants::colorDialogButtonChecked }, parent)
     {
         using namespace sgl;
 
@@ -269,7 +269,6 @@ void DialogEndMission::SetPositions()
     const int y = GetScreenY();
     int x = GetScreenX();
 
-    // BACKGROUND
     mBgL->SetPosition(x, y);
     x += mBgL->GetWidth();
 

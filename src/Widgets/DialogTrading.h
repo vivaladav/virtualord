@@ -64,7 +64,7 @@ private:
     void Sell();
 
 private:
-    static const int TRADED_RES = 4;
+    static const int TRADED_RES = 5;
 
     std::array<int, TRADED_RES> mBuy;
     std::array<int, TRADED_RES> mSell;
@@ -73,7 +73,10 @@ private:
     std::array<sgl::sgui::Label *, TRADED_RES> mLabelBuy;
     std::array<sgl::sgui::Label *, TRADED_RES> mLabelSell;
 
-    sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
+
     sgl::sgui::AbstractButton * mButtonClose = nullptr;
 
     sgl::sgui::Label * mLabelTotBuy = nullptr;
