@@ -261,67 +261,141 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     title->SetPosition(WidgetsConstants::MarginDialogTitleL, titleY);
 
     // -- HEADERS --
-    const int hbH = 40;
-    const int hbW0 = 300;
-    const int hbW1 = 200;
-    const int hbW2 = 350;
-    const int hbW3 = 350;
     const int marginHB = 20;
-    const int hbX0 = 40;
-    const int hbY0 = 75;
-    const int hbX1 = hbX0 + hbW0 + marginHB;
-    const int hbX2 = hbX1 + hbW1 + marginHB;
-    const int hbX3 = hbX2 + hbW2 + marginHB;
 
     const unsigned int colorHeader = 0xd6eaf5ff;
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, 22, graphic::Font::NORMAL);
 
+    const int hbgY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+    int hbgX = WidgetsConstants::MarginDialogContentL;
+
     // RESOURCE
-    sgui::Label * header = new sgui::Label(sm->GetCString("RESOURCE"), fontHeader, this);
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_BG_HEADER1);
+    auto imgHeaderBg1 = new sgui::Image(tex, this);
+    imgHeaderBg1->SetPosition(hbgX, hbgY);
+
+    sgui::Label * header = new sgui::Label(sm->GetCString("RESOURCE"), fontHeader, imgHeaderBg1);
     header->SetColor(colorHeader);
 
-    int headerX = hbX0 + (hbW0 - header->GetWidth()) / 2;
-    int headerY = hbY0 + (hbH - header->GetHeight()) / 2;
+    const int header1X = hbgX;
+    const int header1W = imgHeaderBg1->GetWidth();
+    int headerX = (header1W - header->GetWidth()) / 2;
+    int headerY = (imgHeaderBg1->GetHeight() - header->GetHeight()) / 2;
     header->SetPosition(headerX, headerY);
 
     // STOCK
-    header = new sgui::Label(sm->GetCString("STOCK"), fontHeader, this);
+    hbgX += imgHeaderBg1->GetWidth() + marginHB;
+
+    auto imgHeaderBg2 = new sgui::Image(tex, this);
+    imgHeaderBg2->SetPosition(hbgX, hbgY);
+
+    header = new sgui::Label(sm->GetCString("STOCK"), fontHeader, imgHeaderBg2);
     header->SetColor(colorHeader);
 
-    headerX = hbX1 + (hbW1 - header->GetWidth()) / 2;
-    headerY = hbY0 + (hbH - header->GetHeight()) / 2;
+    const int header2X = hbgX;
+    const int header2W = imgHeaderBg2->GetWidth();
+    headerX = (header2W - header->GetWidth()) / 2;
+    headerY = (imgHeaderBg2->GetHeight() - header->GetHeight()) / 2;
     header->SetPosition(headerX, headerY);
 
     // BUY
-    header = new sgui::Label(sm->GetCString("BUY"), fontHeader, this);
+    hbgX += imgHeaderBg2->GetWidth() + marginHB;
+
+    tex = tm->GetSprite(SpriteFileDialogTrading, ID_DLG_TRADING_BG_HEADER2);
+    auto imgHeaderBg3 = new sgui::Image(tex, this);
+    imgHeaderBg3->SetPosition(hbgX, hbgY);
+
+    header = new sgui::Label(sm->GetCString("BUY"), fontHeader, imgHeaderBg3);
     header->SetColor(colorHeader);
 
-    headerX = hbX2 + (hbW2 - header->GetWidth()) / 2;
-    headerY = hbY0 + (hbH - header->GetHeight()) / 2;
+    const int header3X = hbgX;
+    const int header3W = imgHeaderBg3->GetWidth();
+    headerX = (header3W - header->GetWidth()) / 2;
+    headerY = (imgHeaderBg3->GetHeight() - header->GetHeight()) / 2;
     header->SetPosition(headerX, headerY);
 
     // SELL
-    header = new sgui::Label(sm->GetCString("SELL"), fontHeader, this);
+    hbgX += imgHeaderBg3->GetWidth() + marginHB;
+
+    auto imgHeaderBg4 = new sgui::Image(tex, this);
+    imgHeaderBg4->SetPosition(hbgX, hbgY);
+
+    header = new sgui::Label(sm->GetCString("SELL"), fontHeader, imgHeaderBg4);
     header->SetColor(colorHeader);
 
-    headerX = hbX3 + (hbW3 - header->GetWidth()) / 2;
-    headerY = hbY0 + (hbH - header->GetHeight()) / 2;
+    const int header4X = hbgX;
+    const int header4W = imgHeaderBg4->GetWidth();
+    headerX = (imgHeaderBg4->GetWidth() - header->GetWidth()) / 2;
+    headerY = (imgHeaderBg4->GetHeight() - header->GetHeight()) / 2;
     header->SetPosition(headerX, headerY);
 
-    // -- ICONS & LABELS RESOURCES --
-    const int dbX0 = 40;
-    const int dbY0 = 135;
-    const int dbY1 = 215;
-    const int dbY2 = 295;
-    const int dbY3 = 375;
-    const int dbY4 = 470;
+    // -- ROWS BACKGROUND --
+    const int marginHeadersB = 20;
+    const int marginRowB = 30;
+    const int rowW = 1360;
+    const int rowH = 50;
+    const int rowBlockH = rowH + marginRowB;
+    const unsigned int colorRow1 = 0x27495999;
+    const unsigned int colorRow2 = 0x2f576a99;
 
+    const int rowX0 = WidgetsConstants::MarginDialogContentL;
+    const int rowY0 = imgHeaderBg1->GetY() + imgHeaderBg1->GetHeight() + marginHeadersB;
+
+    int rowY = rowY0;
+
+    // ROW ENERGY
+    tex = tm->GetSprite(SpriteFileDialogTradingExp, ID_DLG_TRADING_BG_ROW);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    auto imgRow = new sgui::Image(tex, this);
+    imgRow->SetImageSize(rowW, rowH);
+    imgRow->SetPosition(rowX0, rowY);
+    imgRow->SetColor(colorRow1);
+
+    rowY += rowBlockH;
+
+    // ROW MATERIAL
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    imgRow = new sgui::Image(tex, this);
+    imgRow->SetImageSize(rowW, rowH);
+    imgRow->SetPosition(rowX0, rowY);
+    imgRow->SetColor(colorRow2);
+
+    rowY += rowBlockH;
+
+    // ROW BLOBS
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    imgRow = new sgui::Image(tex, this);
+    imgRow->SetImageSize(rowW, rowH);
+    imgRow->SetPosition(rowX0, rowY);
+    imgRow->SetColor(colorRow1);
+
+    rowY += rowBlockH;
+
+    // ROW DIAMONDS
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    imgRow = new sgui::Image(tex, this);
+    imgRow->SetImageSize(rowW, rowH);
+    imgRow->SetPosition(rowX0, rowY);
+    imgRow->SetColor(colorRow2);
+
+    rowY += rowBlockH;
+
+    // ROW RESEARCH
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    imgRow = new sgui::Image(tex, this);
+    imgRow->SetImageSize(rowW, rowH);
+    imgRow->SetPosition(rowX0, rowY);
+    imgRow->SetColor(colorRow1);
+
+    // -- ICONS & LABELS RESOURCES --
     auto fontData = fm->GetFont(WidgetsConstants::FontFileText, 20, graphic::Font::NORMAL);
 
     mCallbackValIds.assign(NUM_RESOURCES, RES_INVALID);
 
+    rowY = rowY0;
+
     // ENERGY
-    AddResBlock(dbX0, dbY0, RES_ENERGY, fontData);
+    AddResBlock(rowX0, rowY, RES_ENERGY, fontData);
 
     auto st = Player::Stat::ENERGY;
     mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
@@ -329,8 +403,10 @@ DialogTrading::DialogTrading(Game * g, Player * p)
         UpdateStockLabel(val->GetId());
     });
 
+    rowY += rowBlockH;
+
     // MATERIAL
-    AddResBlock(dbX0, dbY1, RES_MATERIAL1, fontData);
+    AddResBlock(rowX0, rowY, RES_MATERIAL1, fontData);
 
     st = Player::Stat::MATERIAL;
     mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
@@ -338,8 +414,10 @@ DialogTrading::DialogTrading(Game * g, Player * p)
         UpdateStockLabel(val->GetId());
     });
 
+    rowY += rowBlockH;
+
     // BLOBS
-    AddResBlock(dbX0, dbY2, RES_BLOBS, fontData);
+    AddResBlock(rowX0, rowY, RES_BLOBS, fontData);
 
     st = Player::Stat::BLOBS;
     mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
@@ -347,10 +425,23 @@ DialogTrading::DialogTrading(Game * g, Player * p)
         UpdateStockLabel(val->GetId());
     });
 
+    rowY += rowBlockH;
+
     // DIAMONDS
-    AddResBlock(dbX0, dbY3, RES_DIAMONDS, fontData);
+    AddResBlock(rowX0, rowY, RES_DIAMONDS, fontData);
 
     st = Player::Stat::DIAMONDS;
+    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
+    {
+        UpdateStockLabel(val->GetId());
+    });
+
+    rowY += rowBlockH;
+
+    // RESEARCH
+    AddResBlock(rowX0, rowY, RES_DIAMONDS, fontData);
+
+    st = Player::Stat::RESEARCH;
     mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
     {
         UpdateStockLabel(val->GetId());
@@ -359,37 +450,53 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     // -- LABELS STOCK --
     std::ostringstream ss;
 
+    rowY = rowY0;
+
     // ENERGY
-    AddStockBlock(hbX1, dbY0, hbW1, RES_ENERGY, fontData);
+    AddStockBlock(header2X, rowY, header2W, RES_ENERGY, fontData);
+    rowY += rowBlockH;
 
     // MATERIAL
-    AddStockBlock(hbX1, dbY1, hbW1, RES_MATERIAL1, fontData);
+    AddStockBlock(header2X, rowY, header2W, RES_MATERIAL1, fontData);
+    rowY += rowBlockH;
 
     // BLOBS
-    AddStockBlock(hbX1, dbY2, hbW1, RES_BLOBS, fontData);
+    AddStockBlock(header2X, rowY, header2W, RES_BLOBS, fontData);
+    rowY += rowBlockH;
 
     // DIAMONDS
-    AddStockBlock(hbX1, dbY3, hbW1, RES_DIAMONDS, fontData);
+    AddStockBlock(header2X, rowY, header2W, RES_DIAMONDS, fontData);
+    rowY += rowBlockH;
 
     // -- BUY --
+    rowY = rowY0;
+
     // ENERGY
-    AddBuyBlock(hbX2, dbY0, hbW2, RES_ENERGY, fontData);
+    AddBuyBlock(header3X, rowY, header3W, RES_ENERGY, fontData);
+    rowY += rowBlockH;
 
     // MATERIAL
-    AddBuyBlock(hbX2, dbY1, hbW2, RES_MATERIAL1, fontData);
+    AddBuyBlock(header3X, rowY, header3W, RES_MATERIAL1, fontData);
+    rowY += rowBlockH;
 
     // BLOBS
-    AddBuyBlock(hbX2, dbY2, hbW2, RES_BLOBS, fontData);
+    AddBuyBlock(header3X, rowY, header3W, RES_BLOBS, fontData);
+    rowY += rowBlockH;
 
     // DIAMONDS
-    AddBuyBlock(hbX2, dbY3, hbW2, RES_DIAMONDS, fontData);
+    AddBuyBlock(header3X, rowY, header3W, RES_DIAMONDS, fontData);
+    rowY += rowBlockH;
+
+    // DIAMONDS
+    AddBuyBlock(header3X, rowY, header3W, RES_DIAMONDS, fontData);
+    rowY += rowBlockH;
 
     // TOTAL BUY
     tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
-    int dataX = hbX2 + marginIconMoneyL;
-    int dataY = dbY4 + (dbH - icon->GetHeight()) / 2;
+    int dataX = header3X + marginIconMoneyL;
+    int dataY = rowY + (dbH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
 
     mLabelTotBuy = new sgui::Label(fontData, this);
@@ -398,15 +505,15 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     UpdateLabelTotalSpend();
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY4 + (dbH - mLabelTotBuy->GetHeight()) / 2;
+    dataY = rowY + (dbH - mLabelTotBuy->GetHeight()) / 2;
     mLabelTotBuy->SetPosition(dataX, dataY);
 
     // BUTTON BUY
     const int marginBtnR = 20;
 
     auto btnBuy = new ButtonBuy(this);
-    dataX = hbX2 + hbW2 - btnBuy->GetWidth() - marginBtnR;
-    dataY = dbY4 + (dbH - btnBuy->GetHeight()) / 2;
+    dataX = header3X + header3W - btnBuy->GetWidth() - marginBtnR;
+    dataY = rowY + (dbH - btnBuy->GetHeight()) / 2;
     btnBuy->SetPosition(dataX, dataY);
 
     btnBuy->AddOnClickFunction([this]
@@ -416,24 +523,33 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     });
 
     // -- SELL --
+    rowY = rowY0;
     // ENERGY
-    AddSellBlock(hbX3, dbY0, hbW3, RES_ENERGY, fontData);
+    AddSellBlock(header4X, rowY, header4W, RES_ENERGY, fontData);
+    rowY += rowBlockH;
 
     // MATERIAL
-    AddSellBlock(hbX3, dbY1, hbW3, RES_MATERIAL1, fontData);
+    AddSellBlock(header4X, rowY, header4W, RES_MATERIAL1, fontData);
+    rowY += rowBlockH;
 
     // BLOBS
-    AddSellBlock(hbX3, dbY2, hbW3, RES_BLOBS, fontData);
+    AddSellBlock(header4X, rowY, header4W, RES_BLOBS, fontData);
+    rowY += rowBlockH;
 
     // DIAMONDS
-    AddSellBlock(hbX3, dbY3, hbW3, RES_DIAMONDS, fontData);
+    AddSellBlock(header4X, rowY, header4W, RES_DIAMONDS, fontData);
+    rowY += rowBlockH;
+
+    // DIAMONDS
+    AddSellBlock(header4X, rowY, header4W, RES_DIAMONDS, fontData);
+    rowY += rowBlockH;
 
     // TOTAL SELL
     tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     icon = new sgui::Image(tex, this);
 
-    dataX = hbX3 + marginIconMoneyL;
-    dataY = dbY4 + (dbH - icon->GetHeight()) / 2;
+    dataX = header4X + marginIconMoneyL;
+    dataY = rowY + (dbH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
 
     mLabelTotSell = new sgui::Label(fontData, this);
@@ -442,14 +558,14 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     UpdateLabelTotalGain();
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = dbY4 + (dbH - mLabelTotSell->GetHeight()) / 2;
+    dataY = rowY + (dbH - mLabelTotSell->GetHeight()) / 2;
     mLabelTotSell->SetPosition(dataX, dataY);
 
     // BUTTON SELL
     auto btnSell = new ButtonSell(this);
 
-    dataX = hbX3 + hbW3 - btnSell->GetWidth() - marginBtnR;
-    dataY = dbY4 + (dbH - btnSell->GetHeight()) / 2;
+    dataX = header4X + header4W - btnSell->GetWidth() - marginBtnR;
+    dataY = rowY + (dbH - btnSell->GetHeight()) / 2;
     btnSell->SetPosition(dataX, dataY);
 
     btnSell->AddOnClickFunction([this]
@@ -515,7 +631,7 @@ void DialogTrading::AddResBlock(int x0, int y0, ResourceType res, sgl::graphic::
     auto data = new sgui::Label(text[res], font, this);
     data->SetColor(colorData);
 
-    const int paddingIcon = 10;
+    const int paddingIcon = 20;
     int dataX = x0 + paddingIcon;
     int dataY = y0 + (dbH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
