@@ -37,11 +37,11 @@ class ObjectsDataRegistry;
 class Player;
 class TutorialManager;
 
+enum ExtendedResource : unsigned int;
 enum GameCursorId : unsigned int;
 enum LanguageId : unsigned int;
 enum PlanetId : unsigned int;
 enum PlayerFaction : unsigned int;
-enum ResourceType : unsigned int;
 enum StateId : int;
 
 enum Difficulty : unsigned int
@@ -77,8 +77,8 @@ public:
     PlanetId GetCurrentPlanet() const;
     void SetCurrentPlanet(PlanetId planet);
 
-    int GetResourcePriceBuy(ResourceType t) const;
-    int GetResourcePriceSell(ResourceType t) const;
+    int GetResourcePriceBuy(ExtendedResource t) const;
+    int GetResourcePriceSell(ExtendedResource t) const;
 
     void SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 

@@ -205,37 +205,43 @@ const std::string & Game::GetCurrentMapFile() const
     return mMapsReg->GetMapFile(mCurrPlanet, mCurrTerritory);
 }
 
-int Game::GetResourcePriceBuy(ResourceType t) const
+int Game::GetResourcePriceBuy(ExtendedResource t) const
 {
     // TODO make it change depending on territory/planet
-
-    const int price[NUM_RESOURCES] =
+    const int price[] =
     {
         60,
         70,
         120,
-        170
+        170,
+        1,
+        250,
     };
 
-    if(t < NUM_RESOURCES)
+    static_assert(sizeof(price) / sizeof(int) == NUM_EXTENDED_RESOURCES);
+
+    if(t < NUM_EXTENDED_RESOURCES)
         return price[t];
     else
         return 0;
 }
 
-int Game::GetResourcePriceSell(ResourceType t) const
+int Game::GetResourcePriceSell(ExtendedResource t) const
 {
     // TODO make it change depending on territory/planet
-
-    const int price[NUM_RESOURCES] =
+    const int price[] =
     {
         50,
         60,
         100,
-        150
+        150,
+        1,
+        200,
     };
 
-    if(t < NUM_RESOURCES)
+    static_assert(sizeof(price) / sizeof(int) == NUM_EXTENDED_RESOURCES);
+
+    if(t < NUM_EXTENDED_RESOURCES)
         return price[t];
     else
         return 0;
