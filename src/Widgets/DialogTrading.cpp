@@ -41,10 +41,10 @@ constexpr int digitsBuy = 3;
 constexpr int digitsTot = 5;
 constexpr int digitsQuantity = 4;
 constexpr char digitsFill = '0';
-constexpr int marginIconMoneyL = 20;
+constexpr int marginIconMoneyL = 30;
 constexpr int marginIconMoneyR = 10;
-constexpr int marginBtnR = 20;
-constexpr int marginQuantity = 20;
+constexpr int marginBtnR = 30;
+constexpr int marginQuantity = 35;
 constexpr int rowH = 50;
 constexpr unsigned int colorData = 0xadd4ebff;
 
@@ -384,7 +384,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     imgRow = new sgui::Image(tex, this);
     imgRow->SetImageSize(rowW, rowH);
     imgRow->SetPosition(rowX0, rowY);
-    imgRow->SetColor(colorRow2);
+    imgRow->SetColor(colorRow1);
 
     rowY += rowBlockH;
 
@@ -393,7 +393,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     imgRow = new sgui::Image(tex, this);
     imgRow->SetImageSize(rowW, rowH);
     imgRow->SetPosition(rowX0, rowY);
-    imgRow->SetColor(colorRow1);
+    imgRow->SetColor(colorRow2);
 
     rowY += rowBlockH;
 
@@ -545,8 +545,6 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     mLabelTotBuy->SetPosition(dataX, dataY);
 
     // BUTTON BUY
-    const int marginBtnR = 20;
-
     mButtonBuy = new ButtonBuy(this);
     dataX = header3X + header3W - mButtonBuy->GetWidth() - marginBtnR;
     dataY = totalY0 + (rowH - mButtonBuy->GetHeight()) / 2;

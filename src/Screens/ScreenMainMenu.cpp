@@ -372,6 +372,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- No tutorial mission goals if tutorial is disabled.\n"
                   "- Change mission goal resist X time to resist X turns.\n"
                   "- First planet is now small (5 missions, 3 mandatory).\n"
+                  "- Added research points as resource to dialog trading.\n"
                   "\nFIXES\n"
                   "- Fixed sliders showing wrong values and graphics when step is not 1.\n"
                   "- Fixed initial material value bigger than storage capacity.\n"
