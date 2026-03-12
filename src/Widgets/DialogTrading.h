@@ -4,7 +4,6 @@
 
 #include <array>
 #include <functional>
-#include <vector>
 
 namespace sgl
 {
@@ -71,6 +70,8 @@ private:
 
     void UpdateStockLabel(unsigned int statId);
 
+    void UpdateButtons();
+
     void Buy();
     void Sell();
 
@@ -87,6 +88,14 @@ private:
     sgl::graphic::Image * mBgR = nullptr;
 
     sgl::sgui::AbstractButton * mButtonClose = nullptr;
+
+    std::array<sgl::sgui::AbstractButton *, NUM_TRADED_RES> mButtonsBuyMinus;
+    std::array<sgl::sgui::AbstractButton *, NUM_TRADED_RES> mButtonsBuyPlus;
+    std::array<sgl::sgui::AbstractButton *, NUM_TRADED_RES> mButtonsSellMinus;
+    std::array<sgl::sgui::AbstractButton *, NUM_TRADED_RES> mButtonsSellPlus;
+
+    sgl::sgui::AbstractButton * mButtonBuy = nullptr;
+    sgl::sgui::AbstractButton * mButtonSell = nullptr;
 
     sgl::sgui::Label * mLabelTotBuy = nullptr;
     sgl::sgui::Label * mLabelTotSell = nullptr;

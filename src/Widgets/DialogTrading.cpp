@@ -25,6 +25,7 @@
 #include <sgl/utilities/StringManager.h>
 #include <sgl/utilities/System.h>
 
+#include <numeric>
 #include <sstream>
 #include <string>
 
@@ -154,10 +155,10 @@ public:
     }
 };
 
-class ButtonDialogTradingMinus : public sgl::sgui::ImageButton
+class ButtonMinus : public sgl::sgui::ImageButton
 {
 public:
-    ButtonDialogTradingMinus(sgl::sgui::Widget * parent)
+    ButtonMinus(sgl::sgui::Widget * parent)
         : sgl::sgui::ImageButton({ ID_DLG_TRADING_BTN_MINUS_NORMAL,
                                    ID_DLG_TRADING_BTN_MINUS_DISABLED, ID_DLG_TRADING_BTN_MINUS_OVER,
                                    ID_DLG_TRADING_BTN_MINUS_PUSHED, ID_DLG_TRADING_BTN_MINUS_PUSHED },
@@ -182,10 +183,10 @@ public:
     }
 };
 
-class ButtonDialogTradingPlus : public sgl::sgui::ImageButton
+class ButtonPlus : public sgl::sgui::ImageButton
 {
 public:
-    ButtonDialogTradingPlus(sgl::sgui::Widget * parent)
+    ButtonPlus(sgl::sgui::Widget * parent)
         : sgl::sgui::ImageButton({ ID_DLG_TRADING_BTN_PLUS_NORMAL, ID_DLG_TRADING_BTN_PLUS_DISABLED,
                                   ID_DLG_TRADING_BTN_PLUS_OVER, ID_DLG_TRADING_BTN_PLUS_PUSHED,
                                   ID_DLG_TRADING_BTN_PLUS_PUSHED }, SpriteFileDialogTrading, parent)
@@ -209,7 +210,6 @@ public:
     }
 };
 
-
 } // namespace
 
 namespace game
@@ -231,6 +231,11 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     mSell.fill(0);
 
     mCallbackValIds.fill(0);
+
+    mButtonsBuyMinus.fill(nullptr);
+    mButtonsBuyPlus.fill(nullptr);
+    mButtonsSellMinus.fill(nullptr);
+    mButtonsSellPlus.fill(nullptr);
 
     // BACKGROUND
     const int w = 1440;
@@ -542,15 +547,17 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     // BUTTON BUY
     const int marginBtnR = 20;
 
-    auto btnBuy = new ButtonBuy(this);
-    dataX = header3X + header3W - btnBuy->GetWidth() - marginBtnR;
-    dataY = totalY0 + (rowH - btnBuy->GetHeight()) / 2;
-    btnBuy->SetPosition(dataX, dataY);
+    mButtonBuy = new ButtonBuy(this);
+    dataX = header3X + header3W - mButtonBuy->GetWidth() - marginBtnR;
+    dataY = totalY0 + (rowH - mButtonBuy->GetHeight()) / 2;
+    mButtonBuy->SetPosition(dataX, dataY);
 
-    btnBuy->AddOnClickFunction([this]
+    mButtonBuy->AddOnClickFunction([this]
     {
         Buy();
         UpdateLabelTotalSpend();
+
+        UpdateButtons();
     });
 
     // -- SELL --
@@ -592,17 +599,22 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     mLabelTotSell->SetPosition(dataX, dataY);
 
     // BUTTON SELL
-    auto btnSell = new ButtonSell(this);
+    mButtonSell = new ButtonSell(this);
 
-    dataX = header4X + header4W - btnSell->GetWidth() - marginBtnR;
-    dataY = totalY0 + (rowH - btnSell->GetHeight()) / 2;
-    btnSell->SetPosition(dataX, dataY);
+    dataX = header4X + header4W - mButtonSell->GetWidth() - marginBtnR;
+    dataY = totalY0 + (rowH - mButtonSell->GetHeight()) / 2;
+    mButtonSell->SetPosition(dataX, dataY);
 
-    btnSell->AddOnClickFunction([this]
+    mButtonSell->AddOnClickFunction([this]
     {
         Sell();
         UpdateLabelTotalGain();
+
+        UpdateButtons();
     });
+
+    // init buttons state
+    UpdateButtons();
 }
 
 DialogTrading::~DialogTrading()
@@ -711,7 +723,8 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, TradedResources res,
     dataY = y0 + (rowH - labelCost->GetHeight()) / 2;
     labelCost->SetPosition(dataX, dataY);
 
-    auto btnPlus = new ButtonDialogTradingPlus(this);
+    auto btnPlus = new ButtonPlus(this);
+    mButtonsBuyPlus[res] = btnPlus;
 
     dataX = x0 + bW - marginBtnR - btnPlus->GetWidth();
     dataY = y0 + (rowH - btnPlus->GetHeight()) / 2;
@@ -726,7 +739,8 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, TradedResources res,
 
     mLabelBuy[res] = label;
 
-    auto btnMinus = new ButtonDialogTradingMinus(this);
+    auto btnMinus = new ButtonMinus(this);
+    mButtonsBuyMinus[res] = btnMinus;
 
     dataX -= marginQuantity + btnMinus->GetWidth();
     dataY = y0 + (rowH - btnMinus->GetHeight()) / 2;
@@ -737,6 +751,8 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, TradedResources res,
         IncBuyQuantity(res, label);
 
         UpdateLabelTotalSpend();
+
+        UpdateButtons();
     });
 
     btnMinus->AddOnClickFunction([this, res, label]
@@ -744,6 +760,8 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, TradedResources res,
         DecBuyQuantity(res, label);
 
         UpdateLabelTotalSpend();
+
+        UpdateButtons();
     });
 }
 
@@ -773,7 +791,8 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, TradedResources res,
     dataY = y0 + (rowH - labelCost->GetHeight()) / 2;
     labelCost->SetPosition(dataX, dataY);
 
-    auto btnPlus = new ButtonDialogTradingPlus(this);
+    auto btnPlus = new ButtonPlus(this);
+    mButtonsSellPlus[res] = btnPlus;
 
     dataX = x0 + bW - marginBtnR - btnPlus->GetWidth();
     dataY = y0 + (rowH - btnPlus->GetHeight()) / 2;
@@ -788,7 +807,8 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, TradedResources res,
 
     mLabelSell[res] = label;
 
-    auto btnMinus = new ButtonDialogTradingMinus(this);
+    auto btnMinus = new ButtonMinus(this);
+    mButtonsSellMinus[res] = btnMinus;
 
     dataX -= marginQuantity + btnMinus->GetWidth();
     dataY = y0 + (rowH - btnMinus->GetHeight()) / 2;
@@ -799,6 +819,8 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, TradedResources res,
         IncSellQuantity(res, label);
 
         UpdateLabelTotalGain();
+
+        UpdateButtons();
     });
 
     btnMinus->AddOnClickFunction([this, res, label]
@@ -806,6 +828,8 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, TradedResources res,
         DecSellQuantity(res, label);
 
         UpdateLabelTotalGain();
+
+        UpdateButtons();
     });
 }
 
@@ -1011,6 +1035,40 @@ void DialogTrading::UpdateStockLabel(unsigned int statId)
     const int dataX = oldX + (oldW - newW) / 2;
     const int dataY = oldY + (oldH - newH) / 2;
     label->SetPosition(dataX, dataY);
+}
+
+void DialogTrading::UpdateButtons()
+{
+    const int currSpend = GetCurrentSpend();
+    const int money = mPlayer->GetStat(Player::Stat::MONEY).GetValue();
+
+    for(unsigned int i = 0; i < NUM_TRADED_RES; ++i)
+    {
+        const StatValue & s = mPlayer->GetStat(stats[i]);
+        const int capacity = s.GetMax();
+        const int owned = s.GetValue();
+        const int newOwned = owned + mBuy[i];
+
+        // BUY MINUS
+        mButtonsBuyMinus[i]->SetEnabled(mBuy[i] > 0);
+
+        // BUY PLUS
+        mButtonsBuyPlus[i]->SetEnabled((newOwned < capacity) && (currSpend < money));
+
+        // SELL MINUS
+        mButtonsSellMinus[i]->SetEnabled(mSell[i] > 0);
+
+        // SELL PLUS
+        mButtonsSellPlus[i]->SetEnabled(owned > 0);
+    }
+
+    // BUY
+    const int totBuy = std::accumulate(mBuy.begin(), mBuy.end(), 0);
+    mButtonBuy->SetEnabled(totBuy > 0);
+
+    // SELL
+    const int totSell = std::accumulate(mSell.begin(), mSell.end(), 0);
+    mButtonSell->SetEnabled(totSell > 0);
 }
 
 void DialogTrading::Buy()
