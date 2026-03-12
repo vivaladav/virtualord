@@ -44,7 +44,7 @@ constexpr int marginIconMoneyL = 20;
 constexpr int marginIconMoneyR = 10;
 constexpr int marginBtnR = 20;
 constexpr int marginQuantity = 20;
-constexpr int dbH = 50;
+constexpr int rowH = 50;
 constexpr unsigned int colorData = 0xadd4ebff;
 
 const std::string zero4("0000");
@@ -277,7 +277,6 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     sgui::Label * header = new sgui::Label(sm->GetCString("RESOURCE"), fontHeader, imgHeaderBg1);
     header->SetColor(colorHeader);
 
-    const int header1X = hbgX;
     const int header1W = imgHeaderBg1->GetWidth();
     int headerX = (header1W - header->GetWidth()) / 2;
     int headerY = (imgHeaderBg1->GetHeight() - header->GetHeight()) / 2;
@@ -333,7 +332,6 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     const int marginHeadersB = 20;
     const int marginRowB = 30;
     const int rowW = 1360;
-    const int rowH = 50;
     const int rowBlockH = rowH + marginRowB;
     const unsigned int colorRow1 = 0x27495999;
     const unsigned int colorRow2 = 0x2f576a99;
@@ -386,6 +384,23 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     imgRow->SetImageSize(rowW, rowH);
     imgRow->SetPosition(rowX0, rowY);
     imgRow->SetColor(colorRow1);
+
+    // -- SEPARATION LINES --
+    const int marginLinesT = 20;
+    const int marginLinesB = 10;
+    const int linesY = rowY + rowH + marginLinesT;
+
+    // BUY
+    tex = tm->GetSprite(SpriteFileDialogTradingExp, ID_DLG_TRADING_LINE);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    auto imgLine = new sgui::Image(tex, this);
+    imgLine->SetImageWidth(header3W);
+    imgLine->SetPosition(header3X, linesY);
+
+    // SELL
+    imgLine = new sgui::Image(tex, this);
+    imgLine->SetImageWidth(header4W);
+    imgLine->SetPosition(header4X, linesY);
 
     // -- ICONS & LABELS RESOURCES --
     auto fontData = fm->GetFont(WidgetsConstants::FontFileText, 20, graphic::Font::NORMAL);
@@ -468,6 +483,9 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddStockBlock(header2X, rowY, header2W, RES_DIAMONDS, fontData);
     rowY += rowBlockH;
 
+    // RESEARCH
+    AddStockBlock(header2X, rowY, header2W, RES_DIAMONDS, fontData);
+
     // -- BUY --
     rowY = rowY0;
 
@@ -487,16 +505,18 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddBuyBlock(header3X, rowY, header3W, RES_DIAMONDS, fontData);
     rowY += rowBlockH;
 
-    // DIAMONDS
+    // RESEARCH
     AddBuyBlock(header3X, rowY, header3W, RES_DIAMONDS, fontData);
     rowY += rowBlockH;
 
     // TOTAL BUY
+    const int totalY0 = linesY + imgLine->GetHeight() + marginLinesB;
+
     tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
     int dataX = header3X + marginIconMoneyL;
-    int dataY = rowY + (dbH - icon->GetHeight()) / 2;
+    int dataY = totalY0 + (rowH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
 
     mLabelTotBuy = new sgui::Label(fontData, this);
@@ -505,7 +525,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     UpdateLabelTotalSpend();
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = rowY + (dbH - mLabelTotBuy->GetHeight()) / 2;
+    dataY = totalY0 + (rowH - mLabelTotBuy->GetHeight()) / 2;
     mLabelTotBuy->SetPosition(dataX, dataY);
 
     // BUTTON BUY
@@ -513,7 +533,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
 
     auto btnBuy = new ButtonBuy(this);
     dataX = header3X + header3W - btnBuy->GetWidth() - marginBtnR;
-    dataY = rowY + (dbH - btnBuy->GetHeight()) / 2;
+    dataY = totalY0 + (rowH - btnBuy->GetHeight()) / 2;
     btnBuy->SetPosition(dataX, dataY);
 
     btnBuy->AddOnClickFunction([this]
@@ -540,7 +560,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddSellBlock(header4X, rowY, header4W, RES_DIAMONDS, fontData);
     rowY += rowBlockH;
 
-    // DIAMONDS
+    // RESEARCH
     AddSellBlock(header4X, rowY, header4W, RES_DIAMONDS, fontData);
     rowY += rowBlockH;
 
@@ -549,7 +569,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     icon = new sgui::Image(tex, this);
 
     dataX = header4X + marginIconMoneyL;
-    dataY = rowY + (dbH - icon->GetHeight()) / 2;
+    dataY = totalY0 + (rowH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
 
     mLabelTotSell = new sgui::Label(fontData, this);
@@ -558,14 +578,14 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     UpdateLabelTotalGain();
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = rowY + (dbH - mLabelTotSell->GetHeight()) / 2;
+    dataY = totalY0 + (rowH - mLabelTotSell->GetHeight()) / 2;
     mLabelTotSell->SetPosition(dataX, dataY);
 
     // BUTTON SELL
     auto btnSell = new ButtonSell(this);
 
     dataX = header4X + header4W - btnSell->GetWidth() - marginBtnR;
-    dataY = rowY + (dbH - btnSell->GetHeight()) / 2;
+    dataY = totalY0 + (rowH - btnSell->GetHeight()) / 2;
     btnSell->SetPosition(dataX, dataY);
 
     btnSell->AddOnClickFunction([this]
@@ -603,7 +623,6 @@ void DialogTrading::AddResBlock(int x0, int y0, ResourceType res, sgl::graphic::
 {
     using namespace  sgl;
 
-    auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
 
@@ -633,11 +652,11 @@ void DialogTrading::AddResBlock(int x0, int y0, ResourceType res, sgl::graphic::
 
     const int paddingIcon = 20;
     int dataX = x0 + paddingIcon;
-    int dataY = y0 + (dbH - icon->GetHeight()) / 2;
+    int dataY = y0 + (rowH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
 
     dataX += icon->GetWidth() + paddingIcon;
-    dataY = y0 + (dbH - data->GetHeight()) / 2;
+    dataY = y0 + (rowH - data->GetHeight()) / 2;
     data->SetPosition(dataX, dataY);
 }
 
@@ -663,7 +682,7 @@ void DialogTrading::AddStockBlock(int x0, int y0, int bW, ResourceType res, sgl:
     label->SetColor(colorData);
 
     const int dataX = x0 + (bW - label->GetWidth()) / 2;
-    const int dataY = y0 + (dbH - label->GetHeight()) / 2;
+    const int dataY = y0 + (rowH - label->GetHeight()) / 2;
     label->SetPosition(dataX, dataY);
 
     mLabelStock[res] = label;
@@ -673,14 +692,13 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, ResourceType res, sgl::g
 {
     using namespace  sgl;
 
-    auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
 
     auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
     int dataX = x0 + marginIconMoneyL;
-    int dataY = y0 + (dbH - icon->GetHeight()) / 2;
+    int dataY = y0 + (rowH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
 
     std::ostringstream ss;
@@ -692,20 +710,20 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, ResourceType res, sgl::g
     labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = y0 + (dbH - labelCost->GetHeight()) / 2;
+    dataY = y0 + (rowH - labelCost->GetHeight()) / 2;
     labelCost->SetPosition(dataX, dataY);
 
     auto btnPlus = new ButtonDialogTradingPlus(this);
 
     dataX = x0 + bW - marginBtnR - btnPlus->GetWidth();
-    dataY = y0 + (dbH - btnPlus->GetHeight()) / 2;
+    dataY = y0 + (rowH - btnPlus->GetHeight()) / 2;
     btnPlus->SetPosition(dataX, dataY);
 
     auto label = new sgui::Label(zero4.c_str(), font, this);
     label->SetColor(colorData);
 
     dataX -= marginQuantity + label->GetWidth();
-    dataY = y0 + (dbH - label->GetHeight()) / 2;
+    dataY = y0 + (rowH - label->GetHeight()) / 2;
     label->SetPosition(dataX, dataY);
 
     mLabelBuy[res] = label;
@@ -713,7 +731,7 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, ResourceType res, sgl::g
     auto btnMinus = new ButtonDialogTradingMinus(this);
 
     dataX -= marginQuantity + btnMinus->GetWidth();
-    dataY = y0 + (dbH - btnMinus->GetHeight()) / 2;
+    dataY = y0 + (rowH - btnMinus->GetHeight()) / 2;
     btnMinus->SetPosition(dataX, dataY);
 
     btnPlus->AddOnClickFunction([this, res, label]
@@ -735,14 +753,13 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, ResourceType res, sgl::
 {
     using namespace  sgl;
 
-    auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
 
     auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
     int dataX = x0 + marginIconMoneyL;
-    int dataY = y0 + (dbH - icon->GetHeight()) / 2;
+    int dataY = y0 + (rowH - icon->GetHeight()) / 2;
     icon->SetPosition(dataX, dataY);
 
     std::ostringstream ss;
@@ -754,20 +771,20 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, ResourceType res, sgl::
     labelCost->SetColor(colorData);
 
     dataX += icon->GetWidth() + marginIconMoneyR;
-    dataY = y0 + (dbH - labelCost->GetHeight()) / 2;
+    dataY = y0 + (rowH - labelCost->GetHeight()) / 2;
     labelCost->SetPosition(dataX, dataY);
 
     auto btnPlus = new ButtonDialogTradingPlus(this);
 
     dataX = x0 + bW - marginBtnR - btnPlus->GetWidth();
-    dataY = y0 + (dbH - btnPlus->GetHeight()) / 2;
+    dataY = y0 + (rowH - btnPlus->GetHeight()) / 2;
     btnPlus->SetPosition(dataX, dataY);
 
     auto label = new sgui::Label(zero4.c_str(), font, this);
     label->SetColor(colorData);
 
     dataX -= marginQuantity + label->GetWidth();
-    dataY = y0 + (dbH - label->GetHeight()) / 2;
+    dataY = y0 + (rowH - label->GetHeight()) / 2;
     label->SetPosition(dataX, dataY);
 
     mLabelSell[res] = label;
@@ -775,7 +792,7 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, ResourceType res, sgl::
     auto btnMinus = new ButtonDialogTradingMinus(this);
 
     dataX -= marginQuantity + btnMinus->GetWidth();
-    dataY = y0 + (dbH - btnMinus->GetHeight()) / 2;
+    dataY = y0 + (rowH - btnMinus->GetHeight()) / 2;
     btnMinus->SetPosition(dataX, dataY);
 
     btnPlus->AddOnClickFunction([this, res, label]
