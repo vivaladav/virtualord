@@ -48,7 +48,7 @@ Player::Player(const char * name, int pid)
     mStats[Stat::BLOBS].SetMax(100);
     mStats[Stat::DIAMONDS].SetMax(100);
     mStats[Stat::ENERGY].SetMax(1000);
-    mStats[Stat::MATERIAL].SetMax(500);
+    mStats[Stat::MATERIAL].SetMax(1000);
     mStats[Stat::MONEY].SetMax(99999999);
     mStats[Stat::RESEARCH].SetMax(999999);
 

@@ -373,7 +373,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- Change mission goal resist X time to resist X turns.\n"
                   "- First planet is now small (5 missions, 3 mandatory).\n"
                   "\nFIXES\n"
-                  "- Fix sliders showing wrong values and graphics when step is not 1.\n"
+                  "- Fixed sliders showing wrong values and graphics when step is not 1.\n"
+                  "- Fixed initial material value bigger than storage capacity.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
