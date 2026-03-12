@@ -2,8 +2,8 @@
 
 #include "GameObjects/GameObject.h"
 #include "GameObjects/ObjectsDataRegistry.h"
-#include "Widgets/ButtonDialogAction.h"
 #include "Widgets/ButtonDialogClose.h"
+#include "Widgets/GameButton.h"
 #include "Widgets/GameSimpleTooltip.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
@@ -11,6 +11,7 @@
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
@@ -27,10 +28,53 @@ namespace
 
 using namespace game;
 
+class ButtonUpgrade : public GameButton
+{
+public:
+    ButtonUpgrade(sgl::sgui::Widget * parent)
+        : GameButton(SpriteFileDialogUpgrade,
+                     { ID_DLG_UP_BTN_NORMAL, ID_DLG_UP_BTN_DISABLED,
+                       ID_DLG_UP_BTN_OVER, ID_DLG_UP_BTN_PUSHED,
+                       ID_DLG_UP_BTN_PUSHED },
+                     { WidgetsConstants::colorDialogButtonOkNormal,
+                       WidgetsConstants::colorDialogButtonOkDisabled,
+                       WidgetsConstants::colorDialogButtonOkOver,
+                       WidgetsConstants::colorDialogButtonOkPushed,
+                       WidgetsConstants::colorDialogButtonOkChecked }, parent)
+    {
+        using namespace sgl;
+
+        const int size = 22;
+
+        auto fm = graphic::FontManager::Instance();
+        auto sm = utilities::StringManager::Instance();
+
+        auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
+        SetLabelFont(fnt);
+        SetLabel(sm->GetCString("UPGRADE"));
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::AbstractButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-01.ogg");
+    }
+};
+
 class ButtonDec : public sgl::sgui::ImageButton
 {
 public:
-    ButtonDec (ObjAttId attId, sgl::sgui::Widget * parent)
+    ButtonDec(ObjAttId attId, sgl::sgui::Widget * parent)
     : sgl::sgui::ImageButton({ ID_DLG_UP_BTN_MINUS_NORMAL, ID_DLG_UP_BTN_MINUS_DISABLED,
                                ID_DLG_UP_BTN_MINUS_OVER, ID_DLG_UP_BTN_MINUS_PUSHED,
                                ID_DLG_UP_BTN_MINUS_PUSHED }, SpriteFileDialogUpgrade, parent)
@@ -63,7 +107,7 @@ private:
 class ButtonInc : public sgl::sgui::ImageButton
 {
 public:
-    ButtonInc (ObjAttId attId, sgl::sgui::Widget * parent)
+    ButtonInc(ObjAttId attId, sgl::sgui::Widget * parent)
     : sgl::sgui::ImageButton({ ID_DLG_UP_BTN_PLUS_NORMAL, ID_DLG_UP_BTN_PLUS_DISABLED,
                                ID_DLG_UP_BTN_PLUS_OVER, ID_DLG_UP_BTN_PLUS_PUSHED,
                                ID_DLG_UP_BTN_PLUS_PUSHED }, SpriteFileDialogUpgrade, parent)
@@ -191,12 +235,30 @@ DialogUpgrade::DialogUpgrade(GameObject * obj, const ObjectsDataRegistry * odr)
     mChangesToApply.assign(NUM_BASIC_ATTRIBUTES, 0);
 
     // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileDialogUpgrade, ID_DLG_UP_BG);
-    mBg = new graphic::Image(tex);
-    RegisterRenderable(mBg);
+    const int w = 984;
+    graphic::Texture * tex;
 
-    const int w = mBg->GetWidth();
-    const int h = mBg->GetHeight();
+    tex = tm->GetSprite(SpriteFileDialogUpgrade, ID_DLG_UP_BG_L);
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
+
+    const int wL = mBgL->GetWidth();
+    const int h = mBgL->GetHeight();
+
+    tex = tm->GetSprite(SpriteFileDialogUpgrade, ID_DLG_UP_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
+
+    const int wR = mBgR->GetWidth();
+
+    tex = tm->GetTexture(SpriteFileDialogUpgradeExp);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(tex);
+    RegisterRenderable(mBgC);
+
+    const int wC = w - wL - wR;
+    mBgC->SetWidth(wC);
+
     SetSize(w, h);
 
     // BUTTON CLOSE
@@ -207,37 +269,38 @@ DialogUpgrade::DialogUpgrade(GameObject * obj, const ObjectsDataRegistry * odr)
     mBtnClose->SetPosition(buttonX, buttonY);
 
     // -- CONTENT --
-    const int marginL = 35;
 
     // TITLE
-    const int sizeTitle = 28;
-    const int marginTitleT = 10;
-
-    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle, sizeTitle,
-                            graphic::Font::NORMAL);
+    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                            WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
     auto title = new sgui::Label(sm->GetCString("UPGRADE"), font, this);
     title->SetColor(WidgetsConstants::colorDialogTitle);
-    title->SetPosition(marginL, marginTitleT);
+
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
+    title->SetPosition(WidgetsConstants::MarginDialogTitleL, titleY);
+
+    // PANELS
+    const int panelsX = WidgetsConstants::MarginDialogContentL;
+    const int panelsY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+    const int panelsW = 300;
+    const int panelImgH = 220;
+    const int panelDataY = panelsY + panelImgH;
+    const int panelDataH = 260;
+
+    tex = tm->GetSprite(SpriteFileDialogUpgrade, ID_DLG_UP_PANELS_BG);
+    auto panels = new sgui::Image(tex, this);
+    panels->SetPosition(panelsX, panelsY);
 
     // IMAGE
     const ObjectData & data = odr->GetObjectData(obj->GetObjectType());
     const unsigned int texInd = data.GetIconTexId(obj->GetFaction(), obj);
     tex = tm->GetSprite(data.GetIconTexFile(), texInd);
 
-    const int panelImgX = marginL;
-    const int panelImgY = 70;
-    const int panelImgW = 300;
-    const int panelImgH = 220;
-
     auto img = new sgui::Image(tex, this);
-    img->SetPosition(panelImgX + (panelImgW - img->GetWidth()) / 2,
-                     panelImgY + (panelImgH - img->GetHeight()) / 2);
+    img->SetPosition(panelsX + (panelsW - img->GetWidth()) / 2,
+                     panelsY + (panelImgH - img->GetHeight()) / 2);
 
     // -- DATA --
-    const int panelDataX = marginL;
-    const int panelDataY = 290;
-    const int panelDataW = 300;
-    const int panelDataH = 260;
     const int paddingDataL = 20;
     const int paddingDataT = 20;
     const int marginHeaderV = 10;
@@ -253,7 +316,7 @@ DialogUpgrade::DialogUpgrade(GameObject * obj, const ObjectsDataRegistry * odr)
                                 sizeText, graphic::Font::NORMAL);
 
     // LEVEL
-    const int dataX = panelDataX + paddingDataL;
+    const int dataX = panelsX + paddingDataL;
     int dataY = panelDataY + paddingDataT;
 
     auto header = new sgui::Label(sm->GetCString("LEVEL"), fontHeader, this);
@@ -284,8 +347,8 @@ DialogUpgrade::DialogUpgrade(GameObject * obj, const ObjectsDataRegistry * odr)
     mLabelPoints->SetPosition(dataX, dataY);
 
     // -- ATTRIBUTES --
-    const int areaAttX = 335;
-    const int areaAttY = 70;
+    const int areaAttX = panelsX + panelsW;
+    const int areaAttY = panelsY;
     const int paddingAttL = 10;
     const int barX = 390;
     const int marginButton = 15;
@@ -390,10 +453,10 @@ DialogUpgrade::DialogUpgrade(GameObject * obj, const ObjectsDataRegistry * odr)
     }
 
     // BUTTON UPGRADE
+    const int marginButtonT = 25;
     const int btnX1 = areaAttX + tex->GetWidth();
-    const int btnY = 567;
-    mBtnUpgrade = new ButtonDialogAction(sm->GetCString("UPGRADE"),
-                                           "U", core::KeyboardEvent::KEY_U, this);
+    const int btnY = attY + marginButtonT;
+    mBtnUpgrade = new ButtonUpgrade(this);
     mBtnUpgrade->SetEnabled(false);
     mBtnUpgrade->SetPosition(btnX1 - mBtnUpgrade->GetWidth(), btnY);
 
@@ -424,11 +487,16 @@ void DialogUpgrade::HandlePositionChanged()
 
 void DialogUpgrade::SetPositions()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
+    const int y = GetScreenY();
+    int x = GetScreenX();
 
-    // BACKGROUND
-    mBg->SetPosition(x0, y0);
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
+
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
+
+    mBgR->SetPosition(x, y);
 }
 
 void DialogUpgrade::OnPointsChanged()

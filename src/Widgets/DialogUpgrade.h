@@ -61,7 +61,10 @@ private:
     std::vector<sgl::sgui::AbstractButton *> mButtonsDec;
     std::vector<sgl::sgui::AbstractButton *> mButtonsInc;
 
-    sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
+
     sgl::sgui::AbstractButton * mBtnClose = nullptr;
     sgl::sgui::AbstractButton * mBtnUpgrade = nullptr;
 
