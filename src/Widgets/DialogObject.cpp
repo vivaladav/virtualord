@@ -163,7 +163,7 @@ public:
         // BAR
         const unsigned int barLvlTexId = ID_STARS_BAR_1 + val;
         auto tm = sgl::graphic::TextureManager::Instance();
-        sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileGameUIShared, barLvlTexId);
+        sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileUIShared, barLvlTexId);
         mBar->SetTexture(tex);
 
         // POSITION ELEMENTS

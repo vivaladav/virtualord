@@ -88,8 +88,6 @@ void StateLeaveGame::DestroyTextures()
     // GAME UI
     tm->DestroySprite(SpriteFileGameUI);
     tm->DestroySprite(SpriteFileGameUIExp);
-    // GAME UI SHARED GRAPHICS
-    tm->DestroySprite(SpriteFileGameUIShared);
     // PANEL HIT
     tm->DestroyTexture(SpriteFilePanelHit);
     // MAP UI

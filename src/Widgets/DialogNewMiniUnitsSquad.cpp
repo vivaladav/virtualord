@@ -210,7 +210,7 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
     y += header->GetHeight() + marginHeaderCostB;
 
     // ENERGY
-    auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_ENERGY_24);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_ENERGY_24);
     auto icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -224,7 +224,7 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
     x = icon->GetX() + marginIconToNextR;
 
     // MATERIAL
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_MATERIAL_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_MATERIAL_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -238,7 +238,7 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
     x = icon->GetX() + marginIconToNextR;
 
     // DIAMONDS
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_DIAMONDS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_DIAMONDS_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -252,7 +252,7 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
     x = icon->GetX() + marginIconToNextR;
 
     // BLOBS
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_BLOBS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_BLOBS_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -407,7 +407,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     y += header->GetHeight() + marginHeaderB;
 
     // ENERGY
-    auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_ENERGY_24);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_ENERGY_24);
     auto icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -420,7 +420,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     x = icon->GetX() + marginIconToNextR;
 
     // MATERIAL
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_MATERIAL_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_MATERIAL_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -434,7 +434,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     y += marginIconB;
 
     // DIAMONDS
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_DIAMONDS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_DIAMONDS_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -447,7 +447,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     x = icon->GetX() + marginIconToNextR;
 
     // BLOBS
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_BLOBS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_BLOBS_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);

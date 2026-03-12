@@ -350,7 +350,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     auto tm = graphic::TextureManager::Instance();
     const unsigned int texId = g.IsCompleted() ? ID_CHECKBOX_CHECKED :
                                                  ID_CHECKBOX_NORMAL;
-    auto texCheckbox = tm->GetSprite(SpriteFileGameUIShared, texId);
+    auto texCheckbox = tm->GetSprite(SpriteFileUIShared, texId);
 
     auto checkbox = new sgui::Image(texCheckbox, bg);
     checkbox->SetPosition(contX, contY);
@@ -468,7 +468,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
             contX += labelData->GetWidth() + rewardMargin;
 
-            auto texIcon = tm->GetSprite(SpriteFileGameUIShared, iconIds[r]);
+            auto texIcon = tm->GetSprite(SpriteFileUIShared, iconIds[r]);
             auto icon = new sgui::Image(texIcon, bg);
             icon->SetPosition(contX, contY + ((labelData->GetHeight() - icon->GetHeight()) / 2));
 

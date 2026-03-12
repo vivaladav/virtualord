@@ -81,7 +81,7 @@ PanelHit::PanelHit()
 
     y += mHeaderCost->GetHeight();
 
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_ENERGY_16);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_ENERGY_16);
     mIconCost = new sgui::Image(tex, this);
     mIconCost->SetColor(WidgetsConstants::colorPanelHeader);
     mIconCost->SetY(y);

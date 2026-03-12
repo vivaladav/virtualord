@@ -16,7 +16,7 @@ ProgressBarObjectVisualStat::ProgressBarObjectVisualStat(float min, float max, s
     auto tm = TextureManager::Instance();
 
     // background
-    Texture * tex = tm->GetSprite(SpriteFileGameUIShared, ID_VALBAR_BG);
+    Texture * tex = tm->GetSprite(SpriteFileUIShared, ID_VALBAR_BG);
     mBg = new Image(tex);
     RegisterRenderable(mBg);
 
@@ -25,13 +25,13 @@ ProgressBarObjectVisualStat::ProgressBarObjectVisualStat(float min, float max, s
     // bar
     const unsigned int colorBar = 0xf5e7a3ff;
 
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_VALBAR_BAR);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_VALBAR_BAR);
     mBar = new Image(tex);
     mBar->SetColor(colorBar);
     RegisterRenderable(mBar);
 
     // marks overlay
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_VALBAR_MARKS);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_VALBAR_MARKS);
     mMarks = new Image(tex);
     RegisterRenderable(mMarks);
 

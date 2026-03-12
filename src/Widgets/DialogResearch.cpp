@@ -90,9 +90,9 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, 20, graphic::Font::NORMAL);
     auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
 
-    auto texSliderBg = tm->GetSprite(SpriteFileGameUIShared, ID_SLIDER_DLG_BG);
-    auto texSliderBar = tm->GetSprite(SpriteFileGameUIShared, ID_SLIDER_DLG_BAR);
-    auto texSliderBtn = tm->GetSprite(SpriteFileGameUIShared, ID_SLIDER_DLG_BTN);
+    auto texSliderBg = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BG);
+    auto texSliderBar = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BAR);
+    auto texSliderBtn = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BTN);
 
     int maxRes = 0;
     int valRes = 0;
@@ -120,7 +120,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     y += header->GetHeight() + marginHeaderB;
 
     // MONEY
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
     icon->SetPosition(x, y);
 
@@ -168,7 +168,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     x = WidgetsConstants::MarginDialogContentL;
     y = icon->GetY() + icon->GetHeight() + marginIconB;
 
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_ENERGY_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_ENERGY_24);
     icon = new sgui::Image(tex, this);
     icon->SetPosition(x, y);
 
@@ -216,7 +216,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     x = WidgetsConstants::MarginDialogContentL;
     y = icon->GetY() + icon->GetHeight() + marginIconB;
 
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MATERIAL_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MATERIAL_24);
     icon = new sgui::Image(tex, this);
     icon->SetPosition(x, y);
 
@@ -264,7 +264,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     x = marginContL2;
     y = header->GetY() + header->GetHeight() + marginHeaderB;
 
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_DIAMONDS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_DIAMONDS_24);
     icon = new sgui::Image(tex, this);
     icon->SetPosition(x, y);
 
@@ -310,7 +310,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     x = marginContL2;
     y = icon->GetY() + icon->GetHeight() + marginIconB;
 
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_BLOBS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_BLOBS_24);
     icon = new sgui::Image(tex, this);
     icon->SetPosition(x, y);
 
@@ -372,7 +372,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     mLabelProd->SetPosition(x, y);
 
     // ICON RESEARCH
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_RESEARCH_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_RESEARCH_24);
     icon = new sgui::Image(tex, this);
 
     x -= marginIconR + icon->GetWidth();

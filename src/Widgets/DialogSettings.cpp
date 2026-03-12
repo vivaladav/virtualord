@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "GameConstants.h"
+#include "Widgets/ButtonDialogClose.h"
 #include "Widgets/ButtonPanelTab.h"
 #include "Widgets/GameSliderH.h"
 #include "Widgets/GameUIData.h"
@@ -49,41 +50,6 @@ constexpr int contY0 = 40;
 constexpr int minResW = 1024;
 constexpr float minResRatio = 1.25f;
 constexpr int minRefresh = 60;
-
-// ====== BUTTON CLOSE =====
-class ButtonCloseSettings : public sgl::sgui::ImageButton
-{
-public:
-    ButtonCloseSettings(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({
-                                    IND_SET_BTN_X_NORMAL,
-                                    IND_SET_BTN_X_DISABLED,
-                                    IND_SET_BTN_X_OVER,
-                                    IND_SET_BTN_X_PUSHED,
-                                    IND_SET_BTN_X_NORMAL
-                                },
-                                SpriteFileSettings, parent)
-    {
-        SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
-    }
-
-private:
-    void HandleMouseOver() override
-    {
-        sgl::sgui::AbstractButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-02.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_click-02.ogg");
-    }
-};
 
 // ====== COMBOBOX =====
 class SettingsComboBox : public sgl::sgui::ComboBox
@@ -464,7 +430,7 @@ DialogSettings::DialogSettings(Game * game)
     int x, y;
 
     // BUTTON BACK
-    mButtonBack = new ButtonCloseSettings(this);
+    mButtonBack = new ButtonDialogClose(this);
     mButtonBack->SetX(GetWidth() - mButtonBack->GetWidth());
 
     // TITLE

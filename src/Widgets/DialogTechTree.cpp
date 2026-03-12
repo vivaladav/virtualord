@@ -697,7 +697,7 @@ ButtonUnlock::ButtonUnlock(sgl::sgui::Widget * parent)
 
     // ICON
     auto tm = graphic::TextureManager::Instance();
-    auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_RESEARCH_24);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_RESEARCH_24);
     mIcon = new sgui::Image(tex, this);
 
     // init look

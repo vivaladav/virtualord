@@ -32,7 +32,7 @@ class ButtonDialogEndMission : public GameButton
 {
 public:
     ButtonDialogEndMission(sgl::sgui::Widget * parent)
-        : GameButton(SpriteFileGameUIShared,
+        : GameButton(SpriteFileUIShared,
                      { ID_DLG_BTN_STD_NORMAL, ID_DLG_BTN_STD_DISABLED, ID_DLG_BTN_STD_OVER,
                        ID_DLG_BTN_STD_PUSHED, ID_DLG_BTN_STD_PUSHED },
                      { WidgetsConstants::colorDialogButtonNormal,

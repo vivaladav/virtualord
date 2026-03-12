@@ -29,7 +29,7 @@ WarningMessage::WarningMessage()
     // ICON
     auto tm = graphic::TextureManager::Instance();
 
-    auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_WARNING);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_WARNING);
     mIcon = new graphic::Image(tex);
     RegisterRenderable(mIcon);
 

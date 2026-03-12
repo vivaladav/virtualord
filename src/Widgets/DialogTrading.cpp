@@ -528,7 +528,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     // TOTAL BUY
     const int totalY0 = linesY + imgLine->GetHeight() + marginLinesB;
 
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
     int dataX = header3X + marginIconMoneyL;
@@ -580,7 +580,7 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     AddSellBlock(header4X, rowY, header4W, TR_RESEARCH, fontData);
 
     // TOTAL SELL
-    tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     icon = new sgui::Image(tex, this);
 
     dataX = header4X + marginIconMoneyL;
@@ -646,7 +646,7 @@ void DialogTrading::AddResBlock(int x0, int y0, TradedResources res, sgl::graphi
         ID_UIS_ICON_C_RES_RESEARCH_24,
     };
 
-    auto tex = tm->GetSprite(SpriteFileGameUIShared, texIds[res]);
+    auto tex = tm->GetSprite(SpriteFileUIShared, texIds[res]);
     auto icon = new sgui::Image(tex, this);
 
     const char * text[] =
@@ -702,7 +702,7 @@ void DialogTrading::AddBuyBlock(int x0, int y0, int bW, TradedResources res,
 
     auto tm = graphic::TextureManager::Instance();
 
-    auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
     int dataX = x0 + marginIconMoneyL;
@@ -770,7 +770,7 @@ void DialogTrading::AddSellBlock(int x0, int y0, int bW, TradedResources res,
 
     auto tm = graphic::TextureManager::Instance();
 
-    auto tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_C_RES_MONEY_24);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MONEY_24);
     auto icon = new sgui::Image(tex, this);
 
     int dataX = x0 + marginIconMoneyL;
