@@ -800,7 +800,10 @@ extern const char SpriteFileTooltips[];
 enum SpriteIdTooltips : unsigned int
 {
     // RESOURCE BAR TOOLTIP
-    IND_TOOLTIP_RES_BAR_BG,
+    ID_TOOLTIP_RES_BAR_BG,
+    // GAME TOOLTIP
+    ID_TOOLTIP_GAME_BG_L,
+    ID_TOOLTIP_GAME_BG_R,
 };
 
 // TOOLTIPS - EXPANDABLE TEXTURE
@@ -808,10 +811,8 @@ extern const char SpriteFileTooltipsExp[];
 
 enum SpriteIdTooltipsExp : unsigned int
 {
-    // SIMPLE TOOLTIP
-    IND_TOOLTIP_SIMPLE_LEFT,
-    IND_TOOLTIP_SIMPLE_CONT,
-    IND_TOOLTIP_SIMPLE_RIGHT,
+    // GAME TOOLTIP
+    ID_TOOLTIP_GAME_BG_C,
 };
 
 // SHARED UI GRAPHICS

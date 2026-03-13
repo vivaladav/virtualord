@@ -24,7 +24,7 @@ ResourceTooltip::ResourceTooltip(const char * title)
     auto tm = graphic::TextureManager::Instance();
 
     // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileTooltips, IND_TOOLTIP_RES_BAR_BG);
+    graphic::Texture * tex = tm->GetSprite(SpriteFileTooltips, ID_TOOLTIP_RES_BAR_BG);
 
     mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
