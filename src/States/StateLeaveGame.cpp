@@ -66,6 +66,7 @@ void StateLeaveGame::DestroyTextures()
     // ===== UI GAME =====
     // DIALOG EXIT
     tm->DestroySprite(SpriteFileDialogExit);
+    tm->DestroyTexture(SpriteFileDialogExitExp);
     // DIALOG EXPLORE TEMPLE
     tm->DestroySprite(SpriteFileDialogExploreTemple);
     // DIALOG MISSION GOALS
@@ -73,6 +74,7 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFileDialogMissionGoalsExp);
     // DIALOG OBJECT
     tm->DestroySprite(SpriteFileDialogObject);
+    tm->DestroySprite(SpriteFileDialogObjectExp);
     // DIALOG RESEARCH
     tm->DestroySprite(SpriteFileDialogResearch);
     tm->DestroyTexture(SpriteFileDialogResearchExp);
@@ -81,8 +83,10 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroyTexture(SpriteFileDialogTechTreeExp);
     // DIALOG TRADING
     tm->DestroySprite(SpriteFileDialogTrading);
+    tm->DestroySprite(SpriteFileDialogTradingExp);
     // DIALOG UPGRADE
     tm->DestroySprite(SpriteFileDialogUpgrade);
+    tm->DestroyTexture(SpriteFileDialogUpgradeExp);
     // FACTION SELECTION
     tm->DestroySprite(SpriteFileFactionSelection);
     // GAME UI
@@ -100,6 +104,7 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFileMapUI);
     // END MISSION DIALOG
     tm->DestroySprite(SpriteFileDialogEndMission);
+    tm->DestroyTexture(SpriteFileDialogEndMissionExp);
     // NEW ELEMENT DIALOG
     tm->DestroySprite(SpriteFileDialogNewElement);
     tm->DestroySprite(SpriteFileDialogNewElementExp);
