@@ -385,12 +385,12 @@ DialogSettings::DialogSettings(Game * game)
     auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
                                  WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
 
-    sgui::Label * title = new sgui::Label(mSM->GetCString("SETTINGS"), fontTitle, this);
+    mTitle = new sgui::Label(mSM->GetCString("SETTINGS"), fontTitle, this);
 
     const int titleX = WidgetsConstants::MarginDialogTitleL;
-    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
-    title->SetPosition(titleX, titleY);
-    title->SetColor(WidgetsConstants::colorDialogTitle);
+    const int titleY = (WidgetsConstants::DialogTitleBarH - mTitle->GetHeight()) / 2;
+    mTitle->SetPosition(titleX, titleY);
+    mTitle->SetColor(WidgetsConstants::colorDialogTitle);
 
     // BUTTONS PANEL
     mGroupButtons = new sgl::sgui::AbstractButtonsGroup;
