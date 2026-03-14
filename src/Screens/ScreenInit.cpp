@@ -494,59 +494,43 @@ void ScreenInit::SetupPermanentTextures()
     {
         const std::vector<sgl::core::Rectd> rects
         {
-            // PANELS
-            { 0, 0, 1300, 800 },
-
-            // BUTTON CLOSE
-            { 0, 801, 100, 40 },
-            { 101, 801, 100, 40 },
-            { 202, 801, 100, 40 },
-            { 303, 801, 100, 40 },
-
-            // SECONDARY BUTTON
-            { 404, 801, 250, 2 },
+            // BACKGROUND
+            { 0, 0, 90, 800 },
+            { 91, 0, 110, 800 },
 
             // COMBO BOX
-            { 0, 842, 300, 38 },
-            { 301, 842, 300, 38 },
-            { 602, 842, 300, 38 },
-            { 903, 842, 300, 38 },
-            { 0, 881, 300, 38 },
-            { 301, 881, 300, 38 },
-            { 602, 881, 300, 38 },
-            { 903, 881, 300, 38 },
+            { 201, 0, 310, 38 },
+            { 201, 39, 310, 38 },
+            { 201, 78, 310, 38 },
+            { 201, 117, 310, 38 },
+            { 201, 156, 310, 38 },
+            { 201, 195, 310, 38 },
+            { 201, 234, 310, 38 },
+            { 201, 273, 310, 38 },
+
+            // BUTTON TAB
+            { 201, 312, 260, 44 },
+            { 201, 357, 260, 44 },
+            { 201, 402, 260, 44 },
+            { 201, 447, 260, 44 },
+            { 201, 492, 260, 44 },
 
             // CHECK BOX
-            { 655, 801, 45, 39 },
-            { 701, 801, 45, 39 },
-            { 747, 801, 45, 39 },
-            { 793, 801, 45, 39 },
-            { 839, 801, 45, 39 },
-            { 885, 801, 45, 39 },
-            { 931, 801, 45, 39 },
-            { 977, 801, 45, 39 },
+            { 201, 537, 45, 39 },
+            { 247, 537, 45, 39 },
+            { 293, 537, 45, 39 },
+            { 339, 537, 45, 39 },
+            { 385, 537, 45, 39 },
+
+            // SLIDER
+            { 201, 577, 304, 18 },
+            { 201, 596, 300, 14 },
+            { 201, 611, 30, 30 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileSettings, rects);
-    });
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileDialogSettings, rects);
 
-    // SETTINGS - EXPANDABLE TEXTURES
-    mJobs.emplace_back([this, tm]
-    {
-        const std::vector<sgl::core::Rectd> rects
-        {
-            // PANELS
-            { 0, 0, 1200, 20 },
-            { 0, 21, 1200, 10 },
-            { 0, 32, 1200, 20 },
-
-            // HORIZONTAL SLIDER
-            { 0, 53, 304, 18 },
-            { 305, 53, 300, 14 },
-            { 606, 53, 30, 30 }
-        };
-
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileSettingsExp, rects);
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileDialogSettingsExp);
     });
 
     // TOOLTIPS

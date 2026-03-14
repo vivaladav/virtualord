@@ -741,58 +741,46 @@ enum SpriteIdResourcesBar : unsigned int
 extern const char SpriteFileResourcesBarExp[];
 
 // SETTINGS
-extern const char SpriteFileSettings[];
+extern const char SpriteFileDialogSettings[];
 
 enum SpriteIdSettings : unsigned int
 {
-    // PANELS
-    IND_SET_PANEL,
-
-    // BUTTON BACK
-    IND_SET_BTN_X_NORMAL,
-    IND_SET_BTN_X_DISABLED,
-    IND_SET_BTN_X_OVER,
-    IND_SET_BTN_X_PUSHED,
-
-    // SECONDARY BUTTON
-    IND_SET_BTN2_LINE,
+    // BACKGROUND
+    ID_DLG_SETT_BG_L,
+    ID_DLG_SETT_BG_R,
 
     // COMBO BOX
-    IND_SET_CB_NORMAL,
-    IND_SET_CB_DISABLED,
-    IND_SET_CB_OVER,
-    IND_SET_CB_PUSHED,
-    IND_SET_CBI_NORMAL,
-    IND_SET_CBI_DISABLED,
-    IND_SET_CBI_OVER,
-    IND_SET_CBI_PUSHED,
+    ID_DLG_SETT_CB_NORMAL,
+    ID_DLG_SETT_CB_DISABLED,
+    ID_DLG_SETT_CB_OVER,
+    ID_DLG_SETT_CB_PUSHED,
+    ID_DLG_SETT_CBI_NORMAL,
+    ID_DLG_SETT_CBI_DISABLED,
+    ID_DLG_SETT_CBI_OVER,
+    ID_DLG_SETT_CBI_PUSHED,
+
+    // BUTTON TAB
+    ID_DLG_SETT_TAB_NORMAL,
+    ID_DLG_SETT_TAB_DISABLED,
+    ID_DLG_SETT_TAB_OVER,
+    ID_DLG_SETT_TAB_PUSHED,
+    ID_DLG_SETT_TAB_CHECKED,
 
     // CHECK BOX
-    IND_SET_CHB_NORMAL,
-    IND_SET_CHB_DISABLED,
-    IND_SET_CHB_OVER,
-    IND_SET_CHB_PUSHED,
-    IND_SET_CHB_CHECKED_NORMAL,
-    IND_SET_CHB_CHECKED_DISABLED,
-    IND_SET_CHB_CHECKED_OVER,
-    IND_SET_CHB_CHECKED_PUSHED,
+    ID_DLG_SETT_CHB_NORMAL,
+    ID_DLG_SETT_CHB_DISABLED,
+    ID_DLG_SETT_CHB_OVER,
+    ID_DLG_SETT_CHB_PUSHED,
+    ID_DLG_SETT_CHB_CHECKED,
+
+    // SLIDER
+    ID_DLG_SETT_SLIDER_BG,
+    ID_DLG_SETT_SLIDER_BAR,
+    ID_DLG_SETT_SLIDER_BUTTON,
 };
 
 // SETTINGS - EXPANDABLE TEXTURES
-extern const char SpriteFileSettingsExp[];
-
-enum SpriteIdSettingsExp : unsigned int
-{
-    // PANELS
-    IND_SET_PANEL2_TOP,
-    IND_SET_PANEL2_MID,
-    IND_SET_PANEL2_BOTTOM,
-
-    // SLIDER H
-    IND_SET_SLIDERH_BG,
-    IND_SET_SLIDERH_BAR,
-    IND_SET_SLIDERH_BUTTON
-};
+extern const char SpriteFileDialogSettingsExp[];
 
 // TOOLTIPS
 extern const char SpriteFileTooltips[];

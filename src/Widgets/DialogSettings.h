@@ -71,9 +71,11 @@ private:
 
     sgl::sgui::Widget * mPanels[NUM_PANELS];
 
-    sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
 
-    sgl::sgui::ImageButton * mButtonBack = nullptr;
+    sgl::sgui::ImageButton * mButtonClose = nullptr;
 
     sgl::sgui::ComboBox * mComboLang = nullptr;
     sgl::sgui::ComboBox * mComboRes = nullptr;

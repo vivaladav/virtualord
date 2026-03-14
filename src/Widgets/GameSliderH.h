@@ -16,6 +16,8 @@ class GameSliderH : public sgl::sgui::Slider
 {
 
 public:
+    GameSliderH(const char * fileSprite, unsigned int texBgID, unsigned int  texBarID,
+                unsigned int texButtonID, sgl::sgui::Widget * parent);
     GameSliderH(sgl::graphic::Texture * texBg, sgl::graphic::Texture * texBar,
                 sgl::graphic::Texture * texButton, sgl::sgui::Widget * parent);
 

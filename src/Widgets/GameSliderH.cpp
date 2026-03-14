@@ -7,6 +7,27 @@
 namespace game
 {
 
+GameSliderH::GameSliderH(const char * fileSprite, unsigned int texBgID, unsigned int  texBarID,
+                         unsigned int texButtonID, sgl::sgui::Widget * parent)
+    : sgl::sgui::Slider(sgl::sgui::Slider::HORIZONTAL, parent)
+{
+    using namespace sgl;
+
+    auto tm = graphic::TextureManager::Instance();
+
+    auto texBg = tm->GetSprite(fileSprite, texBgID);
+    mTexBar = tm->GetSprite(fileSprite, texBarID);
+    auto texButton = tm->GetSprite(fileSprite, texButtonID);
+
+    mBg->SetTexture(texBg);
+    mBar->SetTexture(mTexBar);
+    mButton->SetTexture(texButton);
+
+    UpdateGraphics(GetState());
+
+    UpdatePositions();
+}
+
 GameSliderH::GameSliderH(sgl::graphic::Texture * texBg, sgl::graphic::Texture * texBar,
                          sgl::graphic::Texture * texButton, sgl::sgui::Widget * parent)
     : sgl::sgui::Slider(sgl::sgui::Slider::HORIZONTAL, parent)
