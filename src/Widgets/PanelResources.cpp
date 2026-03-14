@@ -34,9 +34,10 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     sm->AddListener(this);
 
     // -- BACKGROUND --
+    const int marginL = -30;
     const int slotW = 160;
     const int slots = 6;
-    const int slotsW = slotW * slots;
+    const int slotsW = slotW * slots + (2 * marginL);
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = nullptr;
@@ -62,7 +63,7 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     // -- SLOTS --
     const int x0 = mBgL->GetWidth();
 
-    int slotX = x0;
+    int slotX = x0 + marginL;
 
     const int numDigitsMoney = 8;
     const int numDigitsResearch = 6;
