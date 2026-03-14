@@ -731,11 +731,11 @@ enum SpriteIdResourcesBar : unsigned int
 
     // ICONS
     IND_RESBAR_MONEY,
-    IND_RESBAR_RESEARCH,
     IND_RESBAR_ENERGY,
     IND_RESBAR_MATERIAL,
     IND_RESBAR_DIAMOND,
-    IND_RESBAR_BLOB
+    IND_RESBAR_BLOB,
+    IND_RESBAR_RESEARCH,
 };
 
 extern const char SpriteFileResourcesBarExp[];

@@ -1816,18 +1816,18 @@ void ScreenInitGame::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BAR
-            { 0, 0, 35, 54 },
-            { 36, 0, 35, 54 },
+            { 0, 0, 75, 56 },
+            { 76, 0, 75, 56 },
             // MINI BAR
-            { 0, 55, 54, 8 },
-            { 0, 64, 50, 4 },
+            { 0, 57, 54, 8 },
+            { 55, 57, 50, 4 },
             // ICONS
-            { 72, 0, 32, 32 },
-            { 105, 0, 32, 32 },
-            { 138, 0, 32, 32 },
-            { 72, 33, 32, 32 },
-            { 105, 33, 32, 32 },
-            { 138, 33, 32, 32 },
+            { 152, 0, 32, 32 },
+            { 185, 0, 32, 32 },
+            { 218, 0, 32, 32 },
+            { 152, 33, 32, 32 },
+            { 185, 33, 32, 32 },
+            { 218, 33, 32, 32 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileResourcesBar, rects);
