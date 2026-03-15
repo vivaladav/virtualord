@@ -3,6 +3,7 @@
 #include "GameObjects/GameObject.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "Widgets/ButtonDialogClose.h"
+#include "Widgets/ButtonDialogOk.h"
 #include "Widgets/GameButton.h"
 #include "Widgets/GameSimpleTooltip.h"
 #include "Widgets/GameUIData.h"
@@ -27,49 +28,6 @@ namespace
 {
 
 using namespace game;
-
-class ButtonUpgrade : public GameButton
-{
-public:
-    ButtonUpgrade(sgl::sgui::Widget * parent)
-        : GameButton(SpriteFileDialogUpgrade,
-                     { ID_DLG_UP_BTN_NORMAL, ID_DLG_UP_BTN_DISABLED,
-                       ID_DLG_UP_BTN_OVER, ID_DLG_UP_BTN_PUSHED,
-                       ID_DLG_UP_BTN_PUSHED },
-                     { WidgetsConstants::colorDialogButtonOkNormal,
-                       WidgetsConstants::colorDialogButtonOkDisabled,
-                       WidgetsConstants::colorDialogButtonOkOver,
-                       WidgetsConstants::colorDialogButtonOkPushed,
-                       WidgetsConstants::colorDialogButtonOkChecked }, parent)
-    {
-        using namespace sgl;
-
-        const int size = 22;
-
-        auto fm = graphic::FontManager::Instance();
-        auto sm = utilities::StringManager::Instance();
-
-        auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
-        SetLabelFont(fnt);
-        SetLabel(sm->GetCString("UPGRADE"));
-    }
-
-    void HandleMouseOver() override
-    {
-        sgl::sgui::AbstractButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-01.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_click-01.ogg");
-    }
-};
 
 class ButtonDec : public sgl::sgui::ImageButton
 {
@@ -456,7 +414,7 @@ DialogUpgrade::DialogUpgrade(GameObject * obj, const ObjectsDataRegistry * odr)
     const int marginButtonT = 25;
     const int btnX1 = areaAttX + tex->GetWidth();
     const int btnY = attY + marginButtonT;
-    mBtnUpgrade = new ButtonUpgrade(this);
+    mBtnUpgrade = new ButtonDialogOk(sm->GetCString("UPGRADE"), this);
     mBtnUpgrade->SetEnabled(false);
     mBtnUpgrade->SetPosition(btnX1 - mBtnUpgrade->GetWidth(), btnY);
 

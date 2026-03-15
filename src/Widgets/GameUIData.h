@@ -320,11 +320,6 @@ enum SpriteIdDialogUpgrade : unsigned int
     ID_DLG_UP_BTN_PLUS_DISABLED,
     ID_DLG_UP_BTN_PLUS_OVER,
     ID_DLG_UP_BTN_PLUS_PUSHED,
-    // BUTTON UPGRADE
-    ID_DLG_UP_BTN_NORMAL,
-    ID_DLG_UP_BTN_DISABLED,
-    ID_DLG_UP_BTN_OVER,
-    ID_DLG_UP_BTN_PUSHED,
 };
 
 extern const char SpriteFileDialogUpgradeExp[];
@@ -872,6 +867,11 @@ enum SpriteIdUIShared : unsigned int
     ID_STARS_BAR_8,
     ID_STARS_BAR_9,
     ID_STARS_BAR_10,
+    // BUTTON DIALOG OK
+    ID_DLG_BTN_OK_NORMAL,
+    ID_DLG_BTN_OK_DISABLED,
+    ID_DLG_BTN_OK_OVER,
+    ID_DLG_BTN_OK_PUSHED,
 };
 
 // UNIT QUICK SELECTION

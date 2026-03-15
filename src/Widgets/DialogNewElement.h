@@ -83,7 +83,6 @@ private:
     sgl::graphic::Image * mBgMid = nullptr;
     sgl::graphic::Image * mBgBtm = nullptr;
 
-    sgl::sgui::Label * mTitle = nullptr;
     sgl::sgui::ButtonsGroup * mSlots = nullptr;
 
     sgl::sgui::TextArea * mDescription = nullptr;

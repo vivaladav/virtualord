@@ -333,6 +333,8 @@ add_executable(
     src/Widgets/ButtonDialogClose.cpp
     src/Widgets/ButtonDialogContinue.h
     src/Widgets/ButtonDialogContinue.cpp
+    src/Widgets/ButtonDialogOk.h
+    src/Widgets/ButtonDialogOk.cpp
     src/Widgets/ButtonDialogSelect.h
     src/Widgets/ButtonDialogSelect.cpp
     src/Widgets/ButtonMainMenu.h

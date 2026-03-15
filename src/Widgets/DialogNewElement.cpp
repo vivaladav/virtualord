@@ -7,6 +7,7 @@
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "Widgets/ButtonDialogAction.h"
 #include "Widgets/ButtonDialogArrows.h"
+#include "Widgets/ButtonDialogClose.h"
 #include "Widgets/ButtonPanelTab.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/ObjectVisualAttribute.h"
@@ -39,68 +40,6 @@ namespace
 using namespace game;
 
 constexpr int NUM_SLOTS = 6;
-
-// ===== BUTTON CLOSE =====
-
-class ButtonCloseDNE : public sgl::sgui::AbstractButton
-{
-public:
-    ButtonCloseDNE(sgl::sgui::Widget * parent)
-        : AbstractButton(parent)
-        , mBody(new sgl::graphic::Image)
-    {
-        SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
-
-        // register graphic elements
-        RegisterRenderable(mBody);
-
-        // set initial visual state
-        SetState(NORMAL);
-    }
-
-private:
-    void HandleMouseOver() override
-    {
-        sgl::sgui::AbstractButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-02.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/dialog_close-01.ogg");
-    }
-
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        const unsigned int texIds[NUM_VISUAL_STATES] =
-        {
-            IND_DLG_NEWE_CLOSE_NORMAL,
-            IND_DLG_NEWE_CLOSE_NORMAL,     // button can't be disabled
-            IND_DLG_NEWE_CLOSE_OVER,
-            IND_DLG_NEWE_CLOSE_PUSHED,
-            IND_DLG_NEWE_CLOSE_NORMAL,     // button can't be checked
-        };
-
-        auto tm = sgl::graphic::TextureManager::Instance();
-        sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, texIds[state]);
-        mBody->SetTexture(tex);
-
-        SetSize(mBody->GetWidth(), mBody->GetHeight());
-    }
-
-    void HandlePositionChanged() override
-    {
-        mBody->SetPosition(GetScreenX(), GetScreenY());
-    }
-
-private:
-    sgl::graphic::Image * mBody = nullptr;
-};
 
 // ===== BUTTON SLOT =====
 
@@ -345,7 +284,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     const int marginT = 8;
 
     int midBgH = 470;
-    int slotsY0 = 65;
+    int slotsY0 = 43;
 
     if(ETYPE_UNITS_BARRACKS == type)
     {
@@ -411,19 +350,21 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     SetSize(w, h);
 
     // CLOSE BUTTON
-    mBtnClose = new ButtonCloseDNE(this);
+    mBtnClose = new ButtonDialogClose(this);
     mBtnClose->SetX(GetWidth() - mBtnClose->GetWidth());
 
     // TITLE
     auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 28, sgl::graphic::Font::NORMAL);
 
-    if(ETYPE_STRUCTURES == type)
-        mTitle = new sgui::Label(sm->GetCString("CREATE_NEW_STRUCTURE"), font, this);
-    else
-        mTitle = new sgui::Label(sm->GetCString("CREATE_NEW_UNIT"), font, this);
+    sgui::Label * title = nullptr;
 
-    mTitle->SetColor(0xf1f2f4ff);
-    mTitle->SetPosition(marginL, marginT);
+    if(ETYPE_STRUCTURES == type)
+        title = new sgui::Label(sm->GetCString("CREATE_NEW_STRUCTURE"), font, this);
+    else
+        title = new sgui::Label(sm->GetCString("CREATE_NEW_UNIT"), font, this);
+
+    title->SetColor(0xf1f2f4ff);
+    title->SetPosition(marginL, marginT);
 
     // SLOTS
     mSlots = new sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
@@ -482,9 +423,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     });
 
     // INFO PANEL
-    const int slotsMarginBottom = 15;
-
-    const int panelY0 = slotsY0 + mSlots->GetHeight() + slotsMarginBottom;
+    const int panelY0 = slotsY0 + mSlots->GetHeight();
     tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_INFO);
     auto panelInfo = new sgui::Image(tex, this);
     panelInfo->SetPosition(marginL, panelY0);
@@ -636,7 +575,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     {
         mButtonsStructures = new sgl::sgui::AbstractButtonsGroup;
 
-        const int btnY = 55;
+        const int btnY = 65;
         int btnX = marginL;
 
         auto btn = new ButtonPanelTab(sm->GetCString("GENERIC_STRUCT"), this);

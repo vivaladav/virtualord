@@ -626,6 +626,11 @@ void ScreenInit::SetupPermanentTextures()
             { 301, 274, 112, 16 },
             { 301, 291, 112, 16 },
             { 301, 308, 112, 16 },
+            // BUTTON DIALOG OK
+            { 414, 0, 220, 40 },
+            { 414, 41, 220, 40 },
+            { 414, 82, 220, 40 },
+            { 414, 123, 220, 40 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileUIShared, rects);
