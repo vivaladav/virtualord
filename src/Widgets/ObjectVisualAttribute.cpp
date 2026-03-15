@@ -23,7 +23,7 @@ ObjectVisualAttribute::ObjectVisualAttribute(sgl::sgui::Widget * parent)
     auto fm = graphic::FontManager::Instance();
 
     // BACKGROUND
-    auto tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ATT_OFF);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_PANEL_ATT_OFF);
     mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 
@@ -48,7 +48,7 @@ void ObjectVisualAttribute::ClearData()
 
     // BACKGROUND
     auto tm = sgl::graphic::TextureManager::Instance();
-    auto tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ATT_OFF);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_PANEL_ATT_OFF);
     mBg->SetTexture(tex);
 
     // CONTENT
@@ -62,7 +62,7 @@ void ObjectVisualAttribute::SetData(const char * txt, unsigned int val)
 
     // BACKGROUND
     auto tm = TextureManager::Instance();
-    Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ATT_ON);
+    Texture * tex = tm->GetSprite(SpriteFileUIShared, ID_PANEL_ATT_ON);
     mBg->SetTexture(tex);
 
     // LABEL
@@ -75,8 +75,8 @@ void ObjectVisualAttribute::SetData(const char * txt, unsigned int val)
     if(val > maxVal)
         val = maxVal;
 
-    const unsigned int texId = IND_DLG_NEWE_BAR0 + val;
-    tex = tm->GetSprite(SpriteFileDialogNewElement, texId);
+    const unsigned int texId = AD_ATT_BAR0 + val;
+    tex = tm->GetSprite(SpriteFileUIShared, texId);
     mValueBar->SetTexture(tex);
     mValueBar->SetVisible(true);
 
