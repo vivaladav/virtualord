@@ -75,7 +75,7 @@ void ObjectVisualAttribute::SetData(const char * txt, unsigned int val)
     if(val > maxVal)
         val = maxVal;
 
-    const unsigned int texId = AD_ATT_BAR0 + val;
+    const unsigned int texId = ID_ATT_BAR0 + val;
     tex = tm->GetSprite(SpriteFileUIShared, texId);
     mValueBar->SetTexture(tex);
     mValueBar->SetVisible(true);

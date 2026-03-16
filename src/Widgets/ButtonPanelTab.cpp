@@ -16,10 +16,10 @@ namespace game
 {
 
 ButtonPanelTab::ButtonPanelTab(const char * text, sgl::sgui::Widget * parent)
-    : GameButton(SpriteFileDialogSettings,
-                 { ID_DLG_SETT_TAB_NORMAL, ID_DLG_SETT_TAB_DISABLED,
-                   ID_DLG_SETT_TAB_OVER, ID_DLG_SETT_TAB_PUSHED,
-                   ID_DLG_SETT_TAB_CHECKED },
+    : GameButton(SpriteFileUIShared,
+                 { ID_BTN_TAB_NORMAL, ID_BTN_TAB_DISABLED,
+                   ID_BTN_TAB_OVER, ID_BTN_TAB_PUSHED,
+                   ID_BTN_TAB_CHECKED },
                  { WidgetsConstants::colorDialogButtonNormal,
                   WidgetsConstants::colorDialogButtonDisabled,
                   WidgetsConstants::colorDialogButtonOver,
