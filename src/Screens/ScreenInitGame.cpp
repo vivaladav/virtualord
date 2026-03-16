@@ -1601,15 +1601,15 @@ void ScreenInitGame::SetupTextures()
             { 904, 603, 200, 200 },
             { 0, 710, 400, 266 },
             // BUTTON LEFT
-            { 400, 710, 20, 80 },
-            { 421, 710, 20, 80 },
-            { 442, 710, 20, 80 },
-            { 463, 710, 20, 80 },
+            { 400, 755, 20, 80 },
+            { 421, 755, 20, 80 },
+            { 442, 755, 20, 80 },
+            { 463, 755, 20, 80 },
             // BUTTON RIGHT
-            { 400, 791, 20, 80 },
-            { 421, 791, 20, 80 },
-            { 442, 791, 20, 80 },
-            { 463, 791, 20, 80 }
+            { 400, 836, 20, 80 },
+            { 421, 836, 20, 80 },
+            { 442, 836, 20, 80 },
+            { 463, 836, 20, 80 }
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewElement, rects);
@@ -1619,7 +1619,7 @@ void ScreenInitGame::SetupTextures()
         {
             // BACKGROUND
             { 0, 0, 10, 709 },
-            { 0, 11, 10, 754 },
+            { 11, 0, 10, 754 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewElementExp, rectsExp);

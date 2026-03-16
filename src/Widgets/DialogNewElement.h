@@ -15,7 +15,6 @@ namespace sgl
     namespace sgui
     {
         class AbstractButton;
-        class AbstractButtonsGroup;
         class ButtonsGroup;
         class Label;
         class TextArea;
@@ -93,7 +92,7 @@ private:
     sgl::sgui::AbstractButton * mBtnLeft = nullptr;
     sgl::sgui::AbstractButton * mBtnRight = nullptr;
 
-    sgl::sgui::AbstractButtonsGroup * mButtonsStructures = nullptr;
+    sgl::sgui::ButtonsGroup * mButtonsStructures = nullptr;
 
     Player * mPlayer = nullptr;
 

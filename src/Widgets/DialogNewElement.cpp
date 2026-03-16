@@ -288,7 +288,8 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
 
-    const int slotsX0 = WidgetsConstants::MarginDialogContentL + WidgetsConstants::PaddingPanelDialogL;
+    const int paddingPanelH = 40;
+    const int slotsX0 = WidgetsConstants::MarginDialogContentL + paddingPanelH;
     int slotsY0 = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT +
                   WidgetsConstants::PaddingPanelDialogT;
 
@@ -327,10 +328,6 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
             if(OCU_MEDIC == data.GetClass())
                 mTypes.push_back(t);
         }
-    }
-    else
-    {
-        slotsY0 = 110;
     }
 
     // -- BACKGROUND --
@@ -390,6 +387,54 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
     const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
     title->SetPosition(WidgetsConstants::MarginDialogTitleL, titleY);
+
+    // structures are grouped by categoy
+    if(ETYPE_STRUCTURES == type)
+    {
+        mButtonsStructures = new sgl::sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
+
+        auto btn = new ButtonPanelTab(sm->GetCString("GENERIC_STRUCT"), this);
+        mButtonsStructures->AddButton(btn);
+
+        btn = new ButtonPanelTab(sm->GetCString("DEFENSE"), this);
+        mButtonsStructures->AddButton(btn);
+
+        btn = new ButtonPanelTab(sm->GetCString("RESOURCES"), this);
+        mButtonsStructures->AddButton(btn);
+
+        btn = new ButtonPanelTab(sm->GetCString("TECHNOLOGY"), this);
+        mButtonsStructures->AddButton(btn);
+
+        mButtonsStructures->SetFunctionOnToggle([this](unsigned int ind, bool checked)
+                                                {
+                                                    if(!checked)
+                                                        return ;
+
+                                                    const unsigned int NUM_CAT = 4;
+
+                                                    if(ind >= NUM_CAT)
+                                                        return ;
+
+                                                    const ObjFamily categories[NUM_CAT] =
+                                                        {
+                                                            OCAT_GENERIC,
+                                                            OCAT_DEFENSE,
+                                                            OCAT_RESOURCES,
+                                                            OCAT_TECHNOLOGY,
+                                                        };
+
+                                                    ShowStructuresByFamily(categories[ind]);
+                                                });
+
+
+        const int panelContentW = 1280;
+        const int btnsX = WidgetsConstants::MarginDialogContentL +
+                          (panelContentW - mButtonsStructures->GetWidth()) / 2;
+        const int btnsY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+        mButtonsStructures->SetPosition(btnsX, btnsY);
+
+        slotsY0 += btn->GetHeight();
+    }
 
     // SLOTS
     mSlots = new sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
@@ -589,67 +634,15 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
     // BUTTON BUILD
     mBtnBuild = new ButtonDialogOk(sm->GetCString("BUILD"), this);
-    const ObjectVisualAttribute * lastPanel = mVisAtt[NUM_VIS_ATT - 1];
     const int btnX = GetWidth() - WidgetsConstants::MarginDialogContentR - mBtnBuild->GetWidth();
     const int marginButtonB = 20;
     const int btnY = GetHeight() - marginButtonB - mBtnBuild->GetHeight();
     mBtnBuild->SetPosition(btnX, btnY);
 
-    // structures are grouped by categoy
-    if(ETYPE_STRUCTURES == type)
-    {
-        mButtonsStructures = new sgl::sgui::AbstractButtonsGroup;
-
-        const int btnY = 65;
-        int btnX = slotsX0;
-
-        auto btn = new ButtonPanelTab(sm->GetCString("GENERIC_STRUCT"), this);
-        btn->SetPosition(btnX, btnY);
-        mButtonsStructures->AddButton(btn);
-
-        btnX += btn->GetWidth();
-
-        btn = new ButtonPanelTab(sm->GetCString("DEFENSE"), this);
-        btn->SetPosition(btnX, btnY);
-        mButtonsStructures->AddButton(btn);
-
-        btnX += btn->GetWidth();
-
-        btn = new ButtonPanelTab(sm->GetCString("RESOURCES"), this);
-        btn->SetPosition(btnX, btnY);
-        mButtonsStructures->AddButton(btn);
-
-        btnX += btn->GetWidth();
-
-        btn = new ButtonPanelTab(sm->GetCString("TECHNOLOGY"), this);
-        btn->SetPosition(btnX, btnY);
-        mButtonsStructures->AddButton(btn);
-
-        mButtonsStructures->SetFunctionOnToggle([this](unsigned int ind, bool checked)
-        {
-            if(!checked)
-                return ;
-
-            const unsigned int NUM_CAT = 4;
-
-            if(ind >= NUM_CAT)
-                return ;
-
-            const ObjFamily categories[NUM_CAT] =
-            {
-                OCAT_GENERIC,
-                OCAT_DEFENSE,
-                OCAT_RESOURCES,
-                OCAT_TECHNOLOGY,
-            };
-
-            ShowStructuresByFamily(categories[ind]);
-        });
-
-        mButtonsStructures->SetButtonChecked(0, true);
-    }
-    else
+    if(type != ETYPE_STRUCTURES)
         UpdateSlots();
+    else
+        mButtonsStructures->SetButtonChecked(0, true);
 
     PositionElements();
 
