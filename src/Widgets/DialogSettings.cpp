@@ -20,7 +20,7 @@
 #include <sgl/graphic/Window.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
-#include <sgl/sgui/AbstractButtonsGroup.h>
+#include <sgl/sgui/ButtonsGroup.h>
 #include <sgl/sgui/ComboBox.h>
 #include <sgl/sgui/ComboBoxItem.h>
 #include <sgl/sgui/Image.h>
@@ -44,6 +44,7 @@ constexpr unsigned int sizeTxt = 22;
 constexpr int blockSettingW = 500;
 constexpr int blockSettingH = 90;
 
+constexpr int panelContentW = 1100;
 constexpr int contX0 = 30;
 constexpr int contY0 = 40;
 
@@ -375,8 +376,6 @@ DialogSettings::DialogSettings(Game * game)
 
     SetSize(w, h);
 
-    int x, y;
-
     // BUTTON CLOSE
     mButtonClose = new ButtonDialogClose(this);
     mButtonClose->SetX(w - mButtonClose->GetWidth());
@@ -393,35 +392,24 @@ DialogSettings::DialogSettings(Game * game)
     mTitle->SetColor(WidgetsConstants::colorDialogTitle);
 
     // BUTTONS PANEL
-    mGroupButtons = new sgl::sgui::AbstractButtonsGroup;
-
-    x = WidgetsConstants::MarginDialogContentL;
-    y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+    mGroupButtons = new sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
 
     auto btn = new ButtonPanelTab(mSM->GetCString("GAME"), this);
     mButtonsTabs.emplace_back(btn);
-    btn->SetPosition(x, y);
     mGroupButtons->AddButton(btn);
 
-    x += btn->GetWidth();
 
     btn = new ButtonPanelTab(mSM->GetCString("AUDIO"), this);
     mButtonsTabs.emplace_back(btn);
-    btn->SetPosition(x, y);
     mGroupButtons->AddButton(btn);
-
-    x += btn->GetWidth();
 
     btn = new ButtonPanelTab(mSM->GetCString("VIDEO"), this);
     mButtonsTabs.emplace_back(btn);
-    btn->SetPosition(x, y);
     mGroupButtons->AddButton(btn);
 
-    x += btn->GetWidth();
 
     btn = new ButtonPanelTab(mSM->GetCString("CONTROLS"), this);
     mButtonsTabs.emplace_back(btn);
-    btn->SetPosition(x, y);
     mGroupButtons->AddButton(btn);
 
     mGroupButtons->SetFunctionOnToggle([this](unsigned int index, bool checked)
@@ -429,6 +417,10 @@ DialogSettings::DialogSettings(Game * game)
         for(unsigned int i = 0; i < Panel::NUM_PANELS; ++i)
             mPanels[i]->SetVisible(i == index);
     });
+
+    int x = WidgetsConstants::MarginDialogContentL + (panelContentW - mGroupButtons->GetWidth()) / 2;
+    int y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+    mGroupButtons->SetPosition(x, y);
 
     // PANEL CONTENT
     x = WidgetsConstants::MarginDialogContentL;
