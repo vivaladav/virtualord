@@ -1501,18 +1501,18 @@ void ScreenInitGame::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUND
-            { 0, 0, 768, 60 },
+            { 0, 0, 750, 62 },
             // PROGRESS BAR
-            { 0, 61, 404, 16 },
-            { 0, 78, 400, 12 },
-            { 0, 91, 400, 16 },
+            { 0, 63, 404, 16 },
+            { 0, 80, 400, 12 },
+            { 0, 93, 404, 16 },
             // BUTTON
-            { 405, 61, 60, 40 },
-            { 466, 61, 60, 40 },
-            { 527, 61, 60, 40 },
-            { 588, 61, 60, 40 },
+            { 405, 63, 60, 40 },
+            { 466, 63, 60, 40 },
+            { 527, 63, 60, 40 },
+            { 588, 63, 60, 40 },
             // ICONS
-            { 649, 61, 32, 32 },
+            { 649, 63, 32, 32 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelTurnControl, rects);
