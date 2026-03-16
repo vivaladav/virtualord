@@ -1628,7 +1628,25 @@ void ScreenInitGame::SetupTextures()
     // NEW MINI UNITS SQUAD DIALOG
     mJobs.emplace_back([this, tm]
     {
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewMiniUnits);
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUNDS
+            { 0, 0, 90, 615 },
+            { 91, 0, 360, 615 },
+            { 452, 0, 10, 200 },
+            { 452, 201, 10, 200 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewMiniUnits, rects);
+
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // BACKGROUNDS
+            { 0, 0, 10, 615 },
+            { 0, 616, 10, 200 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewMiniUnitsExp, rectsExp);
     });
 
     // OBJECT ACTION BUTTON

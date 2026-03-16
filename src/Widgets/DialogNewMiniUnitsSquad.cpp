@@ -16,7 +16,9 @@
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
+#include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/Label.h>
@@ -27,11 +29,65 @@
 
 namespace
 {
-constexpr int panelPreviewW = 240;
-constexpr int panelPreviewH = 200;
 
-constexpr int topPanelX0 = 40;
-constexpr int topPanelY0 = 67;
+using namespace game;
+
+class PanelDialogMiniUnits : public sgl::sgui::Widget
+{
+public:
+    PanelDialogMiniUnits(int w, sgl::sgui::Widget * parent)
+        : sgl::sgui::Widget(parent)
+    {
+        using namespace sgl;
+
+        auto tm = graphic::TextureManager::Instance();
+        graphic::Texture * tex;
+
+        tex = tm->GetSprite(SpriteFileDialogNewMiniUnits, ID_DLG_NEWMU_PANEL_BG_L);
+        mBgL = new graphic::Image(tex);
+        RegisterRenderable(mBgL);
+
+        const int wL = mBgL->GetWidth();
+        const int h = mBgL->GetHeight();
+
+        tex = tm->GetSprite(SpriteFileDialogNewMiniUnits, ID_DLG_NEWMU_PANEL_BG_R);
+        mBgR = new graphic::Image(tex);
+        RegisterRenderable(mBgR);
+
+        const int wR = mBgR->GetWidth();
+
+        tex = tm->GetSprite(SpriteFileDialogNewMiniUnitsExp, ID_DLG_NEWMU_PANEL_BG_C);
+        tex->SetScaleMode(graphic::TSCALE_NEAREST);
+        mBgC = new graphic::Image(tex);
+        RegisterRenderable(mBgC);
+
+        const int wC = w - wL - wR;
+        mBgC->SetWidth(wC);
+
+        SetSize(w, h);
+    }
+
+    void HandlePositionChanged() override
+    {
+        const int y = GetScreenY();
+        int x = GetScreenX();
+
+        // BACKGROUND
+        mBgL->SetPosition(x, y);
+        x += mBgL->GetWidth();
+
+        mBgC->SetPosition(x, y);
+        x += mBgC->GetWidth();
+
+        mBgR->SetPosition(x, y);
+    }
+
+private:
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
+};
+
 }
 
 namespace game
@@ -50,28 +106,47 @@ DialogNewMiniUnitsSquad::DialogNewMiniUnitsSquad(GameObject * spawner, Player * 
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
 
-    // BACKGROUND
-    graphic::Texture * tex = tm->GetTexture(SpriteFileDialogNewMiniUnits);
-    mBg = new graphic::Image(tex);
-    RegisterRenderable(mBg);
+    // -- BACKGROUND --
+    const int w = 1184;
+    graphic::Texture * tex;
 
-    const int w = mBg->GetWidth();
-    const int h = mBg->GetHeight();
+    tex = tm->GetSprite(SpriteFileDialogNewMiniUnits, ID_DLG_NEWMU_BG_L);
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
+
+    const int wL = mBgL->GetWidth();
+    const int h = mBgL->GetHeight();
+
+    tex = tm->GetSprite(SpriteFileDialogNewMiniUnits, ID_DLG_NEWMU_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
+
+    const int wR = mBgR->GetWidth();
+
+    tex = tm->GetSprite(SpriteFileDialogNewMiniUnitsExp, ID_DLG_NEWMU_BG_C);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(tex);
+    RegisterRenderable(mBgC);
+
+    const int wC = w - wL - wR;
+    mBgC->SetWidth(wC);
+
     SetSize(w, h);
 
     // BUTTON CLOSE
     mBtnClose = new ButtonDialogClose(this);
-    mBtnClose->SetX(GetWidth() - mBtnClose->GetWidth());
+    mBtnClose->SetX(w - mBtnClose->GetWidth());
 
     // TITLE
-    const int marginL = 40;
-    const int marginT = 7;
+    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                                 WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
 
-    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 28, graphic::Font::NORMAL);
+    sgui::Label * title = new sgui::Label(sm->GetCString("CREATE_MU_SQUADS"), fontTitle, this);
 
-    auto title = new sgui::Label(sm->GetCString("CREATE_MU_SQUADS"), font, this);
+    const int titleX = WidgetsConstants::MarginDialogTitleL;
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
+    title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
-    title->SetPosition(marginL, marginT);
 
     // PANELS
     CreatePanelPreview();
@@ -80,9 +155,11 @@ DialogNewMiniUnitsSquad::DialogNewMiniUnitsSquad(GameObject * spawner, Player * 
     CreatePanelConfig();
 
     // BUTTON BUILD
-    const int btnX = 940;
-    const int btnY = 510;
     mBtnBuild = new ButtonDialogOk(sm->GetCString("SPAWN"), this);
+
+    const int btnX = w - WidgetsConstants::MarginDialogContentR - mBtnBuild->GetWidth();
+    const int marginButtonB = 20;
+    const int btnY = h - marginButtonB - mBtnBuild->GetHeight();
     mBtnBuild->SetPosition(btnX, btnY);
 
     UpdateData();
@@ -118,10 +195,17 @@ void DialogNewMiniUnitsSquad::CreatePanelPreview()
 {
     using namespace sgl;
 
+    const int panelX = WidgetsConstants::MarginDialogContentL;
+    const int panelY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+    constexpr int panelW = 240;
+
+    mPanelPreview = new PanelDialogMiniUnits(panelW, this);
+    mPanelPreview->SetPosition(panelX, panelY);
+
     // ARROWS
     const int marginButtonLR = 10;
 
-    int x = topPanelX0 + marginButtonLR;
+    int x = panelX + marginButtonLR;
     int y;
 
     // ARROW LEFT
@@ -129,7 +213,7 @@ void DialogNewMiniUnitsSquad::CreatePanelPreview()
     // LEFT always disabled when starting as initial index is 0
     mBtnLeft->SetEnabled(false);
 
-    y = topPanelY0 + (panelPreviewH - mBtnLeft->GetHeight()) / 2;
+    y = panelY + (mPanelPreview->GetHeight() - mBtnLeft->GetHeight()) / 2;
     mBtnLeft->SetPosition(x, y);
 
     mBtnLeft->AddOnClickFunction([this]
@@ -140,7 +224,7 @@ void DialogNewMiniUnitsSquad::CreatePanelPreview()
     // ARROW RIGHT
     mBtnRight = new ButtonDialogArrowRight(this);
 
-    x = topPanelX0 + panelPreviewW - marginButtonLR - mBtnRight->GetWidth();
+    x = panelX + panelW - marginButtonLR - mBtnRight->GetWidth();
     mBtnRight->SetPosition(x, y);
 
     mBtnRight->AddOnClickFunction([this]
@@ -162,11 +246,16 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
 {
     using namespace sgl;
 
-    const int panelX0 = 280;
+    const int panelX = mPanelPreview->GetX() + mPanelPreview->GetWidth();
+    const int panelY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+    const int panelW = 560;
     const int marginL = 20;
     const int marginT = 20;
     const int marginHeaderB = 5;
-    const int x0 = panelX0 + marginL;
+    const int x0 = panelX + marginL;
+
+    auto panel = new PanelDialogMiniUnits(panelW, this);
+    panel->SetPosition(panelX, panelY);
 
     auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
@@ -176,7 +265,7 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
     auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
 
     int x = x0;
-    int y = topPanelY0 + marginT;
+    int y = panelY + marginT;
 
     // -- DESCRIPTION --
     // HEADER DESCRIPTION
@@ -210,7 +299,7 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
     y += header->GetHeight() + marginHeaderCostB;
 
     // ENERGY
-    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_ENERGY_24);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_ENERGY_24);
     auto icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -224,7 +313,7 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
     x = icon->GetX() + marginIconToNextR;
 
     // MATERIAL
-    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_MATERIAL_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MATERIAL_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -238,7 +327,7 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
     x = icon->GetX() + marginIconToNextR;
 
     // DIAMONDS
-    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_DIAMONDS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_DIAMONDS_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -252,7 +341,7 @@ void DialogNewMiniUnitsSquad::CreatePanelDescription()
     x = icon->GetX() + marginIconToNextR;
 
     // BLOBS
-    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_BLOBS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_BLOBS_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -268,13 +357,13 @@ void DialogNewMiniUnitsSquad::CreatePanelAttributes()
 {
     using namespace sgl;
 
-    const int panelY0 = topPanelY0 + 200;
+    const int panelY = mPanelPreview->GetY() + mPanelPreview->GetHeight();
 
     const int rows = 6;
     const int cols = 2;
 
-    int x = topPanelX0;
-    int y = panelY0;
+    int x = WidgetsConstants::MarginDialogContentL;
+    int y = panelY;
 
     for(int r = 0; r < rows; ++r)
     {
@@ -288,7 +377,7 @@ void DialogNewMiniUnitsSquad::CreatePanelAttributes()
             x += panel->GetWidth();
         }
 
-        x = topPanelX0;
+        x = WidgetsConstants::MarginDialogContentL;
         y += mAttributes[0]->GetHeight();
     }
 }
@@ -298,6 +387,8 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     using namespace sgl;
 
     const int panelX0 = 840;
+    const int panelY = WidgetsConstants::DialogTitleBarH +
+                       WidgetsConstants::MarginDialogContentT;
     const int marginL = 20;
     const int marginT = 20;
     const int x0 = panelX0 + marginL;
@@ -316,7 +407,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     auto texSliderBtn = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_SLIDER_BTN);
 
     int x = x0;
-    int y = topPanelY0 + marginT;
+    int y = panelY + marginT;
 
     // -- ELEMENTS --
     // HEADER ELEMENTS
@@ -407,7 +498,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     y += header->GetHeight() + marginHeaderB;
 
     // ENERGY
-    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_ENERGY_24);
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_ENERGY_24);
     auto icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -420,7 +511,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     x = icon->GetX() + marginIconToNextR;
 
     // MATERIAL
-    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_MATERIAL_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MATERIAL_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -434,7 +525,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     y += marginIconB;
 
     // DIAMONDS
-    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_DIAMONDS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_DIAMONDS_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -447,7 +538,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     x = icon->GetX() + marginIconToNextR;
 
     // BLOBS
-    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_BLOBS_24);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_BLOBS_24);
     icon = new sgui::Image(tex, this);
     icon->SetColor(WidgetsConstants::colorDialogIcon);
     icon->SetPosition(x, y);
@@ -549,8 +640,10 @@ void DialogNewMiniUnitsSquad::UpdatePreview()
     auto tex = tm->GetSprite(data.GetIconTexFile(), texInd);
     mImgPreview->SetTexture(tex);
 
-    const int previewX = topPanelX0 + (panelPreviewW - mImgPreview->GetWidth()) / 2;
-    const int previewY = topPanelY0 + (panelPreviewH - mImgPreview->GetHeight()) / 2;
+    const int previewX = mPanelPreview->GetX() +
+                         (mPanelPreview->GetWidth() - mImgPreview->GetWidth()) / 2;
+    const int previewY = mPanelPreview->GetY() +
+                         (mPanelPreview->GetHeight() - mImgPreview->GetHeight()) / 2;
     mImgPreview->SetPosition(previewX, previewY);
 }
 
@@ -563,7 +656,9 @@ void DialogNewMiniUnitsSquad::UpdateData()
     UpdatePreview();
 
     // DESCRIPTION
-    mDescription->SetText(ObjectData::DESCRIPTIONS.at(typeToBuild).c_str());
+    auto sm = sgl::utilities::StringManager::Instance();
+
+    mDescription->SetText(sm->GetCString(ObjectData::DESCRIPTIONS.at(typeToBuild)));
 
     // COSTS
     const std::array<int, NUM_OBJ_COSTS> & costs = data.GetCosts();
@@ -575,8 +670,6 @@ void DialogNewMiniUnitsSquad::UpdateData()
 
     // ATTRIBUTES
     const unsigned int numPanelAttributes = mAttributes.size();
-
-    auto sm = sgl::utilities::StringManager::Instance();
 
     unsigned int attsAdded = 0;
 
@@ -636,10 +729,17 @@ void DialogNewMiniUnitsSquad::HandlePositionChanged()
 
 void DialogNewMiniUnitsSquad::SetPositions()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
+    const int y = GetScreenY();
+    int x = GetScreenX();
 
-    mBg->SetPosition(x0, y0);
+    // BACKGROUND
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
+
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
+
+    mBgR->SetPosition(x, y);
 }
 
 } // namespace game

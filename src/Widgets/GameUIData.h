@@ -139,6 +139,24 @@ enum SpriteIdDialogNewElementExp : unsigned int
 // NEW MINI UNITS SQUAD DIALOG
 extern const char SpriteFileDialogNewMiniUnits[];
 
+enum SpriteIdDialogNewMiniUnits : unsigned int
+{
+    // BACKGROUND
+    ID_DLG_NEWMU_BG_L,
+    ID_DLG_NEWMU_BG_R,
+    ID_DLG_NEWMU_PANEL_BG_L,
+    ID_DLG_NEWMU_PANEL_BG_R,
+};
+
+extern const char SpriteFileDialogNewMiniUnitsExp[];
+
+enum SpriteIdDialogNewMiniUnitsExp : unsigned int
+{
+    // BACKGROUND
+    ID_DLG_NEWMU_BG_C,
+    ID_DLG_NEWMU_PANEL_BG_C,
+};
+
 // DIALOG OBJECT
 extern const char SpriteFileDialogObject[];
 

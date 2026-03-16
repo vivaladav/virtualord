@@ -285,10 +285,7 @@ DialogObject::DialogObject(const ObjectsDataRegistry * odr)
 
     // BUTTON CLOSE
     mBtnClose = new ButtonDialogClose(this);
-
-    const int buttonX = w - mBtnClose->GetWidth();
-    const int buttonY = 0;
-    mBtnClose->SetPosition(buttonX, buttonY);
+    mBtnClose->SetX(w - mBtnClose->GetWidth());
 
     // -- CONTENT --
     // TITLE
