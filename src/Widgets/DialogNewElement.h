@@ -79,9 +79,9 @@ private:
 
     std::vector<GameObjectTypeId> mTypes;
 
-    sgl::graphic::Image * mBgTop = nullptr;
-    sgl::graphic::Image * mBgMid = nullptr;
-    sgl::graphic::Image * mBgBtm = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
 
     sgl::sgui::ButtonsGroup * mSlots = nullptr;
 

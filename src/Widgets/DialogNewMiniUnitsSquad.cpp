@@ -4,9 +4,9 @@
 #include "Player.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/ObjectsDataRegistry.h"
-#include "Widgets/ButtonDialogAction.h"
 #include "Widgets/ButtonDialogArrows.h"
 #include "Widgets/ButtonDialogClose.h"
+#include "Widgets/ButtonDialogOk.h"
 #include "Widgets/GameButton.h"
 #include "Widgets/GameSliderH.h"
 #include "Widgets/GameUIData.h"
@@ -82,7 +82,7 @@ DialogNewMiniUnitsSquad::DialogNewMiniUnitsSquad(GameObject * spawner, Player * 
     // BUTTON BUILD
     const int btnX = 940;
     const int btnY = 510;
-    mBtnBuild = new ButtonDialogAction(sm->GetCString("SPAWN"), "S", core::KeyboardEvent::KEY_S, this);
+    mBtnBuild = new ButtonDialogOk(sm->GetCString("SPAWN"), this);
     mBtnBuild->SetPosition(btnX, btnY);
 
     UpdateData();

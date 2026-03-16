@@ -11,9 +11,9 @@ namespace game
 
 // ===== BUTTON LEFT ARROW =====
 ButtonDialogArrowLeft::ButtonDialogArrowLeft(sgl::sgui::Widget * parent)
-    : sgl::sgui::ImageButton({ IND_DLG_NEWE_LEFT_NORMAL, IND_DLG_NEWE_LEFT_DISABLED,
-                               IND_DLG_NEWE_LEFT_OVER, IND_DLG_NEWE_LEFT_PUSHED,
-                               IND_DLG_NEWE_LEFT_NORMAL }, SpriteFileDialogNewElement, parent)
+    : sgl::sgui::ImageButton({ ID_DLG_NEWEL_LEFT_NORMAL, ID_DLG_NEWEL_LEFT_DISABLED,
+                               ID_DLG_NEWEL_LEFT_OVER, ID_DLG_NEWEL_LEFT_PUSHED,
+                               ID_DLG_NEWEL_LEFT_NORMAL }, SpriteFileDialogNewElement, parent)
 {
     SetShortcutKey(sgl::core::KeyboardEvent::KEY_LEFT);
 }
@@ -36,9 +36,9 @@ void ButtonDialogArrowLeft::HandleButtonDown()
 
 // ===== BUTTON RIGHT ARROW =====
 ButtonDialogArrowRight::ButtonDialogArrowRight(sgl::sgui::Widget * parent)
-    : sgl::sgui::ImageButton({ IND_DLG_NEWE_RIGHT_NORMAL, IND_DLG_NEWE_RIGHT_DISABLED,
-                               IND_DLG_NEWE_RIGHT_OVER, IND_DLG_NEWE_RIGHT_PUSHED,
-                               IND_DLG_NEWE_RIGHT_NORMAL }, SpriteFileDialogNewElement, parent)
+    : sgl::sgui::ImageButton({ ID_DLG_NEWEL_RIGHT_NORMAL, ID_DLG_NEWEL_RIGHT_DISABLED,
+                               ID_DLG_NEWEL_RIGHT_OVER, ID_DLG_NEWEL_RIGHT_PUSHED,
+                               ID_DLG_NEWEL_RIGHT_NORMAL }, SpriteFileDialogNewElement, parent)
 {
     SetShortcutKey(sgl::core::KeyboardEvent::KEY_RIGHT);
 }
