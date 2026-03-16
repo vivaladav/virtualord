@@ -608,7 +608,6 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     // ATTRIBUTE PANELS
     const int panelsX0 = slotsX0 + panelInfo->GetWidth();
     const int panelsY0 = panelY0;
-    const int panelBorder = 1;
     int panelsX = panelsX0;
     int panelsY = panelsY0;
 
@@ -625,11 +624,11 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
             mVisAtt[ind] = panAtt;
 
-            panelsX += panAtt->GetWidth() - panelBorder;
+            panelsX += panAtt->GetWidth();
         }
 
         panelsX = panelsX0;
-        panelsY += mVisAtt[0]->GetHeight() - panelBorder;
+        panelsY += mVisAtt[0]->GetHeight();
     }
 
     // BUTTON BUILD
