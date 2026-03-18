@@ -419,6 +419,7 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     mHUD->ShowPanelObjectActions(obj);
     mHUD->ShowPanelSelectedObject(obj);
 
+    // set UI focus
     sgl::sgui::Stage::Instance()->SetFocus();
 }
 

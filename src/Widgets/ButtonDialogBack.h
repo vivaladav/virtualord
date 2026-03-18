@@ -1,11 +1,11 @@
 #pragma once
 
-#include "GameButton.h"
+#include <sgl/sgui/ImageButton.h>
 
 namespace game
 {
 
-class ButtonDialogBack : public GameButton
+class ButtonDialogBack : public sgl::sgui::ImageButton
 {
 public:
     ButtonDialogBack(sgl::sgui::Widget * parent = nullptr);

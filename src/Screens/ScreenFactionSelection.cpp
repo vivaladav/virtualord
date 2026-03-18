@@ -262,6 +262,9 @@ ScreenFactionSelection::ScreenFactionSelection(Game * game)
         game->RequestNextActiveState(StateId::NEW_GAME);
     });
 
+    // set UI focus
+    sgl::sgui::Stage::Instance()->SetFocus();
+
     // START MUSIC
     sgl::media::AudioManager::Instance()->GetPlayer()->PlayMusic("game/music_01.ogg");
 }

@@ -645,6 +645,11 @@ void ScreenInit::SetupPermanentTextures()
             { 555, 254, 260, 44 },
             { 555, 299, 260, 44 },
             { 555, 344, 260, 44 },
+            // BUTTON DIALOG BACK
+            { 635, 0, 94, 40 },
+            { 730, 0, 94, 40 },
+            { 635, 41, 94, 40 },
+            { 730, 41, 94, 40 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileUIShared, rects);
