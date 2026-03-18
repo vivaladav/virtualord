@@ -330,51 +330,28 @@ enum SpriteIdGameUIExp : unsigned int
 };
 
 // FACTION SELECTION DIALOG
-extern const char SpriteFileFactionSelection[];
+extern const char SpriteFileDialogFactionSelection[];
 
-enum SpriteIdFactionSelection : unsigned int
+enum SpriteIdDialogFactionSelection : unsigned int
 {
-    // PANELS
-    IND_FSEL_MAIN_BG,
-    IND_FSEL_PANEL_F1,
-    IND_FSEL_PANEL_F2,
-    IND_FSEL_PANEL_F3,
-    IND_FSEL_PANEL_TXT,
-    IND_FSEL_PANEL_ATTR,
+    // BACKGROUND
+    ID_DLG_FACT_SEL_BG_L,
+    ID_DLG_FACT_SEL_BG_R,
+    ID_DLG_FACT_SEL_PANEL_INFO,
+    ID_DLG_FACT_SEL_PANEL_ATT,
 
-    // ATTRIBUTES BAR
-    IND_FSEL_BAR0,
-    IND_FSEL_BAR1,
-    IND_FSEL_BAR2,
-    IND_FSEL_BAR3,
-    IND_FSEL_BAR4,
-    IND_FSEL_BAR5,
-    IND_FSEL_BAR6,
-    IND_FSEL_BAR7,
-    IND_FSEL_BAR8,
-    IND_FSEL_BAR9,
-    IND_FSEL_BAR10,
+    // BUTTON FACTION
+    ID_DLG_FACT_SEL_BTN_FAC_NORMAL,
+    ID_DLG_FACT_SEL_BTN_FAC_OVER,
+    ID_DLG_FACT_SEL_BTN_FAC_CHECKED,
 
-    // BACK BUTTON
-    IND_FSEL_BACK_NORMAL,
-    IND_FSEL_BACK_OVER,
-    IND_FSEL_BACK_PUSHED,
-
-    // SELECT BUTTON
-    IND_FSEL_SEL_NORMAL,
-    IND_FSEL_SEL_OVER,
-    IND_FSEL_SEL_PUSHED,
-    IND_FSEL_SEL_CHECKED,
-
-    // CONTINUE BUTTON
-    IND_FSEL_CONTINUE_NORMAL,
-    IND_FSEL_CONTINUE_DISABLED,
-    IND_FSEL_CONTINUE_OVER,
-    IND_FSEL_CONTINUE_PUSHED,
-
-    // SPECIAL VALUES
-    NUM_FSEL_PIPS = IND_FSEL_BAR9 - IND_FSEL_BAR0 + 1
+    // LOGOS
+    ID_DLG_FACT_SEL_LOGO_F1,
+    ID_DLG_FACT_SEL_LOGO_F2,
+    ID_DLG_FACT_SEL_LOGO_F3,
 };
+
+extern const char SpriteFileDialogFactionSelectionExp[];
 
 // OBJECT ACTION BUTTON
 extern const char SpriteFileObjActionButton[];

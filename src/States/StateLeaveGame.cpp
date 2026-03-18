@@ -88,7 +88,7 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFileDialogUpgrade);
     tm->DestroyTexture(SpriteFileDialogUpgradeExp);
     // FACTION SELECTION
-    tm->DestroySprite(SpriteFileFactionSelection);
+    tm->DestroySprite(SpriteFileDialogFactionSelection);
     // GAME UI
     tm->DestroySprite(SpriteFileGameUI);
     tm->DestroySprite(SpriteFileGameUIExp);

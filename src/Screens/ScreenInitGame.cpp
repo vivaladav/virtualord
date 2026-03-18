@@ -1331,42 +1331,26 @@ void ScreenInitGame::SetupTextures()
     {
         const std::vector<sgl::core::Rectd> rects
         {
-            // PANELS
-            { 0, 0, 1102, 970 },
-            { 1103, 0, 300, 260 },
-            { 1103, 261, 300, 260 },
-            { 1103, 522, 300, 260 },
-            { 1103, 783, 300, 110 },
-            { 1404, 0, 300, 370 },
-            // ATTRIBUTES BAR
-            { 1103, 894, 187, 24 },
-            { 1103, 918, 187, 24 },
-            { 1103, 942, 187, 24 },
-            { 1103, 966, 187, 24 },
-            { 1103, 990, 187, 24 },
-            { 1404, 819, 187, 24 },
-            { 1404, 843, 187, 24 },
-            { 1404, 867, 187, 24 },
-            { 1404, 891, 187, 24 },
-            { 1404, 915, 187, 24 },
-            { 1404, 939, 187, 24 },
-            // BACK BUTTON
-            { 0, 971, 320, 50 },
-            { 321, 971, 320, 50 },
-            { 642, 971, 320, 50 },
-            // SELECT BUTTON
-            { 1404, 615, 250, 50 },
-            { 1404, 666, 250, 50 },
-            { 1404, 717, 250, 50 },
-            { 1404, 768, 250, 50 },
-            // CONTINUE BUTTON
-            { 1404, 371, 300, 60 },
-            { 1404, 432, 300, 60 },
-            { 1404, 493, 300, 60 },
-            { 1404, 554, 300, 60 }
+            // BACKGROUND
+            { 0, 0, 90, 885 },
+            { 91, 0, 365, 885 },
+            { 0, 886, 450, 200 },
+            { 0, 1087, 500, 50 },
+
+            // BUTTON FACTION
+            { 457, 0, 230, 200 },
+            { 457, 201, 230, 200 },
+            { 457, 402, 230, 200 },
+
+            // LOGOS
+            { 530, 603, 152, 170 },
+            { 530, 774, 152, 170 },
+            { 530, 945, 152, 170 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileFactionSelection, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogFactionSelection, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogFactionSelectionExp);
     });
 
     // GAME UI

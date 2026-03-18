@@ -329,12 +329,8 @@ add_executable(
     src/Widgets/ButtonDialogBack.cpp
     src/Widgets/ButtonDialogClose.h
     src/Widgets/ButtonDialogClose.cpp
-    src/Widgets/ButtonDialogContinue.h
-    src/Widgets/ButtonDialogContinue.cpp
     src/Widgets/ButtonDialogOk.h
     src/Widgets/ButtonDialogOk.cpp
-    src/Widgets/ButtonDialogSelect.h
-    src/Widgets/ButtonDialogSelect.cpp
     src/Widgets/ButtonMainMenu.h
     src/Widgets/ButtonMainMenu.cpp
     src/Widgets/ButtonMainMenuSocial.h
@@ -369,6 +365,8 @@ add_executable(
     src/Widgets/DialogExit.cpp
     src/Widgets/DialogExploreTemple.h
     src/Widgets/DialogExploreTemple.cpp
+    src/Widgets/DialogFactionSelection.h
+    src/Widgets/DialogFactionSelection.cpp
     src/Widgets/DialogMissionGoals.h
     src/Widgets/DialogMissionGoals.cpp
     src/Widgets/DialogNewElement.h

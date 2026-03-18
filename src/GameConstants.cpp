@@ -5,7 +5,7 @@ namespace game
 
 const char * FACTIONS_NAME[NUM_FACTIONS] =
 {
-    "Zulux",
+    "Zulox",
     "Domens",
     "Alphen"
 };
