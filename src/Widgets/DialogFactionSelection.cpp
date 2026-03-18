@@ -20,7 +20,7 @@
 #include <sgl/graphic/Window.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
-#include <sgl/sgui/ButtonsGroup.h>
+#include <sgl/sgui/AbstractButtonsGroup.h>
 #include <sgl/sgui/ComboBox.h>
 #include <sgl/sgui/ComboBoxItem.h>
 #include <sgl/sgui/Image.h>
@@ -88,6 +88,7 @@ namespace game
 
 DialogFactionSelection::DialogFactionSelection::DialogFactionSelection(Game * game)
     : mGame(game)
+    , mFaction(NO_FACTION)
 {
     using namespace sgl;
 
@@ -148,6 +149,8 @@ DialogFactionSelection::DialogFactionSelection::DialogFactionSelection(Game * ga
     int x = WidgetsConstants::MarginDialogContentL;
     int y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
+    mButtonsFact = new sgui::AbstractButtonsGroup;
+
     // 0 exploration | 1 construction | 2 combat | 3 technology
     // ROW 1
     auto row = CreateFactionRow(FACTION_1, { 7, 6, 8, 4 });
@@ -168,9 +171,16 @@ DialogFactionSelection::DialogFactionSelection::DialogFactionSelection(Game * ga
     // BUTTON SELECT
     const int marginB = 20;
 
-    auto btn = new ButtonDialogOk(sm->GetCString("SELECT"), this);
-    btn->SetPosition(w - btn->GetWidth() - WidgetsConstants::MarginDialogContentR,
-                     h - btn->GetHeight() - marginB);
+    mButtonSel = new ButtonDialogOk(sm->GetCString("SELECT"), this);
+    mButtonSel->SetEnabled(false);
+    mButtonSel->SetPosition(w - mButtonSel->GetWidth() - WidgetsConstants::MarginDialogContentR,
+                            h - mButtonSel->GetHeight() - marginB);
+
+    mButtonSel->AddOnClickFunction([this]
+    {
+        mGame->SetLocalPlayerFaction(mFaction);
+        mGame->RequestNextActiveState(StateId::NEW_GAME);
+    });
 }
 
 sgl::sgui::Widget * DialogFactionSelection::CreateFactionRow(PlayerFaction faction,
@@ -190,6 +200,16 @@ sgl::sgui::Widget * DialogFactionSelection::CreateFactionRow(PlayerFaction facti
 
     // BUTTON FACTION
     auto btnFaction = new ButtonFaction(faction, box);
+    mButtonsFact->AddButton(btnFaction);
+
+    btnFaction->AddOnToggleFunction([this, faction](bool checked)
+    {
+        if(checked)
+        {
+            mFaction = faction;
+            mButtonSel->SetEnabled(true);
+        }
+    });
 
     x += btnFaction->GetWidth();
 

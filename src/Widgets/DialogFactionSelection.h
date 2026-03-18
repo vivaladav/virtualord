@@ -9,9 +9,7 @@ namespace sgl
     namespace sgui
     {
         class AbstractButton;
-        class ButtonsGroup;
-        class ComboBox;
-        class ImageButton;
+        class AbstractButtonsGroup;
         class Label;
     }
 }
@@ -41,9 +39,14 @@ private:
     sgl::graphic::Image * mBgC = nullptr;
     sgl::graphic::Image * mBgR = nullptr;
 
-    sgl::sgui::ImageButton * mButtonClose = nullptr;
+    sgl::sgui::AbstractButton * mButtonClose = nullptr;
+    sgl::sgui::AbstractButton * mButtonSel = nullptr;
+
+    sgl::sgui::AbstractButtonsGroup * mButtonsFact = nullptr;
 
     Game * mGame = nullptr;
+
+    PlayerFaction mFaction;
 };
 
 } // namespace game
