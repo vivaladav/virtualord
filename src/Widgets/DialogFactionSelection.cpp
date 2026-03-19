@@ -3,7 +3,7 @@
 #include "Game.h"
 #include "GameConstants.h"
 #include "States/StatesIds.h"
-#include "Widgets/ButtonDialogBack.h".h"
+#include "Widgets/ButtonDialogBack.h"
 #include "Widgets/ButtonDialogOk.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
@@ -64,6 +64,7 @@ public:
                          (GetHeight() - img->GetHeight()) / 2);
     }
 
+private:
     void HandleMouseOver()
     {
         sgl::sgui::AbstractButton::HandleMouseOver();
