@@ -28,6 +28,8 @@ ScreenFactionSelection::ScreenFactionSelection(Game * game)
     auto dialog = new DialogFactionSelection(game);
     dialog->SetPosition((screenW - dialog->GetWidth()) / 2,
                         (screenH - dialog->GetHeight()) / 2);
+
+    dialog->SetFocus();
 }
 
 ScreenFactionSelection::~ScreenFactionSelection()

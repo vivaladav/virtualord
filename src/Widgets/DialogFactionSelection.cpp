@@ -3,7 +3,7 @@
 #include "Game.h"
 #include "GameConstants.h"
 #include "States/StatesIds.h"
-#include "Widgets/ButtonDialogClose.h"
+#include "Widgets/ButtonDialogBack.h".h"
 #include "Widgets/ButtonDialogOk.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
@@ -124,7 +124,7 @@ DialogFactionSelection::DialogFactionSelection::DialogFactionSelection(Game * ga
     SetSize(w, h);
 
     // BUTTON CLOSE
-    mButtonClose = new ButtonDialogClose(this);
+    mButtonClose = new ButtonDialogBack(this);
     mButtonClose->SetX(w - mButtonClose->GetWidth());
 
     mButtonClose->AddOnClickFunction([this]
