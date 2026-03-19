@@ -9,6 +9,7 @@ const char SpriteFileDialogEndMissionExp[] = "UI/dialog_end_mission-exp.png";
 const char SpriteFileDialogExit[] = "UI/dialog_exit.png";
 const char SpriteFileDialogExitExp[] = "UI/dialog_exit-exp.png";
 const char SpriteFileDialogExploreTemple[] = "UI/dialog_explore_temple.png";
+const char SpriteFileDialogExploreTempleExp[] = "UI/dialog_explore_temple-exp.png";
 const char SpriteFileDialogFactionSelection[] = "UI/dialog_faction_selection.png";
 const char SpriteFileDialogFactionSelectionExp[] = "UI/dialog_faction_selection-exp.png";
 const char SpriteFileDialogMissionGoals[] = "UI/dialog_mission_goals.png";

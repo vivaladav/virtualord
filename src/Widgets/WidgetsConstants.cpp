@@ -60,6 +60,7 @@ const int WidgetsConstants::FontSizePlanetMapText = 22;
 const int WidgetsConstants::MarginDialogContentL = 42;
 const int WidgetsConstants::MarginDialogContentR = 42;
 const int WidgetsConstants::MarginDialogContentT = 30;
+const int WidgetsConstants::MarginDialogContentB = 30;
 const int WidgetsConstants::MarginDialogTitleL = 42;
 const int WidgetsConstants::PaddingPanelDialogT = 30;
 const int WidgetsConstants::PaddingPanelDialogL = 30;

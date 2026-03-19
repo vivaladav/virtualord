@@ -63,6 +63,7 @@ public:
     static const int MarginDialogContentL;
     static const int MarginDialogContentR;
     static const int MarginDialogContentT;
+    static const int MarginDialogContentB;
     static const int MarginDialogTitleL;
     static const int PaddingPanelDialogT;
     static const int PaddingPanelDialogL;

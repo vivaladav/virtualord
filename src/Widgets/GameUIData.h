@@ -42,9 +42,10 @@ extern const char SpriteFileDialogExploreTemple[];
 enum SpriteIdDialogExploreTemple : unsigned int
 {
     // BACKGROUND
-    ID_DLG_EXTM_BACKGROUND,
-    ID_DLG_EXTM_LINE_H,
-    ID_DLG_EXTM_LINE_V,
+    ID_DLG_EXTM_BG_L,
+    ID_DLG_EXTM_BG_R,
+    ID_DLG_EXTM2_BG_L,
+    ID_DLG_EXTM2_BG_R,
 
     // BUTTON
     ID_DLG_EXTM_BTN_NORMAL,
@@ -52,16 +53,17 @@ enum SpriteIdDialogExploreTemple : unsigned int
     ID_DLG_EXTM_BTN_OVER,
     ID_DLG_EXTM_BTN_PUSHED,
 
-    // ICONS
-    ID_DLG_EXTM_ICON_MONEY,
-    ID_DLG_EXTM_ICON_MATERIAL,
-    ID_DLG_EXTM_ICON_BLOBS,
-    ID_DLG_EXTM_ICON_DIAMONDS,
+    // LAYOUT
+    ID_DLG_EXTM_LINE_VERT,
+};
 
-    // SLIDER
-    ID_DLG_EXTM_SLIDER_BG,
-    ID_DLG_EXTM_SLIDER_BAR,
-    ID_DLG_EXTM_SLIDER_BTN,
+extern const char SpriteFileDialogExploreTempleExp[];
+
+enum SpriteIdDialogExploreTempleExp : unsigned int
+{
+    // BACKGROUND
+    ID_DLG_EXTM_BG_C,
+    ID_DLG_EXTM2_BG_C,
 };
 
 // DIALOG MISSION GOALS

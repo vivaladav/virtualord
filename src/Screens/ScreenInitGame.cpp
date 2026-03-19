@@ -1073,30 +1073,33 @@ void ScreenInitGame::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUND
-            { 0, 0, 850, 500 },
-            { 0, 501, 770, 2 },
-            { 851, 0, 2, 270 },
+            { 0, 0, 90, 525 },
+            { 91, 0, 110, 525 },
+            { 201, 0, 90, 500 },
+            { 293, 0, 90, 500 },
 
             // BUTTON
-            { 854, 0, 260, 44 },
-            { 854, 45, 260, 44 },
-            { 854, 90, 260, 44 },
-            { 854, 135, 260, 44 },
+            { 0, 526, 300, 50 },
+            { 0, 577, 300, 50 },
+            { 0, 627, 300, 50 },
+            { 0, 678, 300, 50 },
 
-            // ICONS
-            { 854, 180, 24, 24 },
-            { 879, 180, 24, 24 },
-            { 904, 180, 24, 24 },
-            { 929, 180, 24, 24 },
-
-            // SLIDER
-            { 854, 205, 204, 16 },
-            { 854, 222, 200, 12 },
-            { 1059, 205, 24, 24 },
+            // LAYOUT
+            { 384, 0, 3, 285 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
                            SpriteFileDialogExploreTemple, rects);
+
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+             // BACKGROUND
+             { 0, 0, 10, 525 },
+             { 11, 0, 10, 500 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogExploreTempleExp, rectsExp);
     });
 
     // DIALOG MISSION GOALS

@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Player.h"
 #include "GameObjects/Temple.h"
+#include "Widgets/ButtonDialogClose.h"
 #include "Widgets/GameButton.h"
 #include "Widgets/GameSliderH.h"
 #include "Widgets/GameUIData.h"
@@ -11,8 +12,10 @@
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Text.h>
+#include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
@@ -36,8 +39,12 @@ public:
     ButtonExploreTemple(sgl::sgui::Widget * parent)
         : GameButton(SpriteFileDialogExploreTemple,
                      { ID_DLG_EXTM_BTN_NORMAL, ID_DLG_EXTM_BTN_DISABLED,
-                      ID_DLG_EXTM_BTN_OVER, ID_DLG_EXTM_BTN_PUSHED, ID_DLG_EXTM_BTN_PUSHED },
-                     { 0xc3dfeeff, 0x5a6266ff, 0xebf4f9ff, 0xc3dfeeff, 0xc3dfeeff },
+                       ID_DLG_EXTM_BTN_OVER, ID_DLG_EXTM_BTN_PUSHED, ID_DLG_EXTM_BTN_PUSHED },
+                     { WidgetsConstants::colorDialogButtonOkNormal,
+                       WidgetsConstants::colorDialogButtonOkDisabled,
+                       WidgetsConstants::colorDialogButtonOkOver,
+                       WidgetsConstants::colorDialogButtonOkPushed,
+                       WidgetsConstants::colorDialogButtonOkChecked },
                      parent)
     {
         using namespace sgl;
@@ -72,9 +79,6 @@ namespace game
 {
 
 // ===== DIALOG EXPLORE TEMPLE =====
-const int marginSide = 40;
-const int marginButtonsB = 20;
-
 DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     : mPlayer(player)
     , mTemple(temple)
@@ -85,71 +89,87 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
 
-    const int headerFontSize = 22;
-    const unsigned int colorHeader = 0x9dcbe2ff;
-    const unsigned int colorLabel = 0x70a7c2ff;
+    // -- BACKGROUND --
+    const int w = 904;
+    graphic::Texture * tex;
 
-    // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_BACKGROUND);
-    mBg = new graphic::Image(tex);
-    RegisterRenderable(mBg);
+    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_BG_L);
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
 
-    const int w = mBg->GetWidth();
-    const int h = mBg->GetHeight();
+    const int wL = mBgL->GetWidth();
+    const int h = mBgL->GetHeight();
+
+    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
+
+    const int wR = mBgR->GetWidth();
+
+    tex = tm->GetSprite(SpriteFileDialogExploreTempleExp, ID_DLG_EXTM_BG_C);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(tex);
+    RegisterRenderable(mBgC);
+
+    const int wC = w - wL - wR;
+    mBgC->SetWidth(wC);
+
     SetSize(w, h);
 
+    // BUTTON CLOSE
+    mBtnClose = new ButtonDialogClose(this);
+    mBtnClose->SetX(w - mBtnClose->GetWidth());
+
     // TITLE
-    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 32, graphic::Font::NORMAL);
+    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                                 WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
 
-    sgui::Label * title = new sgui::Label(sm->GetCString("EXPL_TEMPLE"), fontTitle, this);
+    auto title = new sgui::Label(sm->GetCString("EXPL_TEMPLE"), fontTitle, this);
 
-    const int titleX = (w - title->GetWidth()) / 2;
-    const int titleY = 10;
+    const int titleX = WidgetsConstants::MarginDialogTitleL;
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
     title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
 
-    // HORIZ BAR 1
-    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_LINE_H);
-    mLineH1 = new graphic::Image(tex);
-    RegisterRenderable(mLineH1);
+    // -- CONTENT --
+    const int headerSize = 22;
+    const int textSize = 18;
 
-    // HORIZ BAR 2
-    mLineH2 = new graphic::Image(tex);
-    RegisterRenderable(mLineH2);
+    auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, headerSize, graphic::Font::NORMAL);
+    auto fontLabel = fm->GetFont(WidgetsConstants::FontFileText, textSize, graphic::Font::NORMAL);
 
-    // -- INVESTING PANEL --
-    const int sliderLabelFontSize = 18;
-    const int iconsX0 = marginSide;
-    const int iconsY0 = 135;
-    const int iconsX1 = 510;
-    const int iconsY1 = 215;
+    const int marginHeaderB = 20;
     const int marginIconR = 20;
     const int marginSliderR = 20;
-
+    const int marginResourceB = 55;
+    const int marginPanelV = 40;
+    const int barH = 3;
+    const int blockResW = 510;
     const int minInvest = 0;
 
-    graphic::Texture * texSliderBg = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_SLIDER_BG);
-    graphic::Texture * texSliderBar = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_SLIDER_BAR);
-    graphic::Texture * texSliderBtn = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_SLIDER_BTN);
+    auto texSliderBg = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BG);
+    auto texSliderBar = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BAR);
+    auto texSliderBtn = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BTN);
 
-    auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, headerFontSize, graphic::Font::NORMAL);
-    auto fontLabel = fm->GetFont(WidgetsConstants::FontFileText, sliderLabelFontSize, graphic::Font::NORMAL);
+    int x = WidgetsConstants::MarginDialogContentL;
+    int y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
     // HEADER INVEST
-    mHeaderInvest = new graphic::Text(sm->GetCString("INVEST_RES"), fontHeader);
-    mHeaderInvest->SetColor(colorHeader);
-    RegisterRenderable(mHeaderInvest);
+    auto header = new sgui::Label(sm->GetCString("INVEST_RES"), fontHeader, this);
+    header->SetColor(WidgetsConstants::colorDialogHeader2);
+    header->SetPosition(x, y);
 
-    // MONEY
+    y += header->GetHeight() + marginHeaderB;
+
+    // MONEY - ICON
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MONEY_24);
+    auto icon = new sgui::Image(tex, this);
+    icon->SetPosition(x, y);
+
+    // MONEY - SLIDER
     const int playerMoney = player->GetStat(Player::Stat::MONEY).GetValue();
     const int maxTempleMoney = temple->GetMaxInvestableMoney();
     const int maxMoney =  playerMoney < maxTempleMoney ? playerMoney : maxTempleMoney;
-
-    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_ICON_MONEY);
-
-    auto icon = new sgui::Image(tex, this);
-    icon->SetColor(colorHeader);
-    icon->SetPosition(iconsX0, iconsY0);
 
     mSliderMoney = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
     mSliderMoney->SetMinMax(minInvest, maxMoney);
@@ -158,7 +178,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
                               icon->GetY() + (icon->GetHeight() - mSliderMoney->GetHeight()) / 2);
 
     auto label = new sgui::Label(std::to_string(mSliderMoney->GetValue()).c_str(), fontLabel, this);
-    label->SetColor(colorLabel);
+    label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(mSliderMoney->GetX() + mSliderMoney->GetWidth() + marginSliderR,
                        mSliderMoney->GetY());
 
@@ -169,25 +189,26 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
         OnInvestmentChanged();
     });
 
-    // MATERIAL
+    y += icon->GetHeight() + marginResourceB;
+
+    // MATERIAL - ICON
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MATERIAL_24);
+    icon = new sgui::Image(tex, this);
+    icon->SetPosition(x, y);
+
+    // MATERIAL - SLIDER
     const int playerMaterial = player->GetStat(Player::Stat::MATERIAL).GetValue();
     const int maxTempleMaterial = temple->GetMaxInvestableMaterial();
     const int maxMaterial =  playerMaterial < maxTempleMaterial ? playerMaterial : maxTempleMaterial;
-
-    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_ICON_MATERIAL);
-
-    icon = new sgui::Image(tex, this);
-    icon->SetColor(colorHeader);
-    icon->SetPosition(iconsX0, iconsY1);
 
     mSliderMaterial = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
     mSliderMaterial->SetMinMax(minInvest, maxMaterial);
     mSliderMaterial->SetValue(minInvest + (maxMaterial - minInvest) / 2);
     mSliderMaterial->SetPosition(icon->GetX() + icon->GetWidth() + marginIconR,
-                                 icon->GetY() + (icon->GetHeight() - mSliderMoney->GetHeight()) / 2);
+                                 icon->GetY() + (icon->GetHeight() - mSliderMaterial->GetHeight()) / 2);
 
     label = new sgui::Label(std::to_string(mSliderMaterial->GetValue()).c_str(), fontLabel, this);
-    label->SetColor(colorLabel);
+    label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(mSliderMaterial->GetX() + mSliderMaterial->GetWidth() + marginSliderR,
                        mSliderMaterial->GetY());
 
@@ -198,54 +219,27 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
         OnInvestmentChanged();
     });
 
-    // BLOBS
-    const int playerBlobs = player->GetStat(Player::Stat::BLOBS).GetValue();
-    const int maxTempleBlobs = temple->GetMaxInvestableBlobs();
-    const int maxBlobs =  playerBlobs < maxTempleBlobs ? playerBlobs : maxTempleBlobs;
+    x += blockResW;
+    y = header->GetY() + header->GetHeight() + marginHeaderB;
 
-    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_ICON_BLOBS);
-
+    // DIAMONDS - ICON
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_DIAMONDS_24);
     icon = new sgui::Image(tex, this);
-    icon->SetColor(colorHeader);
-    icon->SetPosition(iconsX1, iconsY0);
+    icon->SetPosition(x, y);
 
-    mSliderBlobs = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
-    mSliderBlobs->SetMinMax(minInvest, maxBlobs);
-    mSliderBlobs->SetValue(minInvest + (maxBlobs - minInvest) / 2);
-    mSliderBlobs->SetPosition(icon->GetX() + icon->GetWidth() + marginIconR,
-                              icon->GetY() + (icon->GetHeight() - mSliderBlobs->GetHeight()) / 2);
-
-    label = new sgui::Label(std::to_string(mSliderBlobs->GetValue()).c_str(), fontLabel, this);
-    label->SetColor(colorLabel);
-    label->SetPosition(mSliderBlobs->GetX() + mSliderBlobs->GetWidth() + marginSliderR,
-                       mSliderBlobs->GetY());
-
-    mSliderBlobs->SetOnValueChanged([this, label](int val)
-    {
-        label->SetText(std::to_string(val).c_str());
-
-        OnInvestmentChanged();
-    });
-
-    // DIAMONDS
+    // DIAMONDS - SLIDER
     const int playerDiamonds = player->GetStat(Player::Stat::DIAMONDS).GetValue();
     const int maxTempleDiamonds = temple->GetMaxInvestableBlobs();
     const int maxDiamonds =  playerDiamonds < maxTempleDiamonds ? playerDiamonds : maxTempleDiamonds;
 
-    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_ICON_DIAMONDS);
-
-    icon = new sgui::Image(tex, this);
-    icon->SetColor(colorHeader);
-    icon->SetPosition(iconsX1, iconsY1);
-
     mSliderDiamonds = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
     mSliderDiamonds->SetMinMax(minInvest, maxDiamonds);
-    mSliderDiamonds->SetValue(minInvest + (maxBlobs - minInvest) / 2);
+    mSliderDiamonds->SetValue(minInvest + (maxDiamonds - minInvest) / 2);
     mSliderDiamonds->SetPosition(icon->GetX() + icon->GetWidth() + marginIconR,
                                  icon->GetY() + (icon->GetHeight() - mSliderDiamonds->GetHeight()) / 2);
 
     label = new sgui::Label(std::to_string(mSliderDiamonds->GetValue()).c_str(), fontLabel, this);
-    label->SetColor(colorLabel);
+    label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(mSliderDiamonds->GetX() + mSliderDiamonds->GetWidth() + marginSliderR,
                        mSliderDiamonds->GetY());
 
@@ -256,41 +250,76 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
         OnInvestmentChanged();
     });
 
+    y += icon->GetHeight() + marginResourceB;
+
+    // BLOBS - ICON
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_BLOBS_24);
+    icon = new sgui::Image(tex, this);
+    icon->SetPosition(x, y);
+
+
+    // BLOBS - SLIDER
+    const int playerBlobs = player->GetStat(Player::Stat::BLOBS).GetValue();
+    const int maxTempleBlobs = temple->GetMaxInvestableBlobs();
+    const int maxBlobs =  playerBlobs < maxTempleBlobs ? playerBlobs : maxTempleBlobs;
+
+    mSliderBlobs = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderBlobs->SetMinMax(minInvest, maxBlobs);
+    mSliderBlobs->SetValue(minInvest + (maxBlobs - minInvest) / 2);
+    mSliderBlobs->SetPosition(icon->GetX() + icon->GetWidth() + marginIconR,
+                              icon->GetY() + (icon->GetHeight() - mSliderBlobs->GetHeight()) / 2);
+
+    label = new sgui::Label(std::to_string(mSliderBlobs->GetValue()).c_str(), fontLabel, this);
+    label->SetColor(WidgetsConstants::colorDialogText);
+    label->SetPosition(mSliderBlobs->GetX() + mSliderBlobs->GetWidth() + marginSliderR,
+                       mSliderBlobs->GetY());
+
+    mSliderBlobs->SetOnValueChanged([this, label](int val)
+    {
+        label->SetText(std::to_string(val).c_str());
+
+        OnInvestmentChanged();
+    });
+
     // -- OUTCOME PANEL --
-    mHeaderTurns = new graphic::Text(sm->GetCString("TURNS_REQUIRED"), fontHeader);
-    mHeaderTurns->SetColor(colorHeader);
-    RegisterRenderable(mHeaderTurns);
+    const int headerSize2 = 24;
+    const int textSize2 = 20;
+
+    fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, headerSize2, graphic::Font::NORMAL);
+    fontLabel = fm->GetFont(WidgetsConstants::FontFileText, textSize2, graphic::Font::NORMAL);
+
+    const int marginHeaderOutcomeB = 10;
+    y += (2 * marginPanelV) + barH;
+
+    header = new sgui::Label(sm->GetCString("TURNS_REQUIRED"), fontHeader, this);
+    header->SetColor(WidgetsConstants::colorDialogHeader2);
+    x = (w / 4) - (header->GetWidth() / 2);
+    header->SetPosition(x, y);
+
+    y += header->GetHeight() + marginHeaderOutcomeB;
 
     mLabelTurns = new sgui::Label(fontLabel, this);
-    mLabelTurns->SetColor(colorLabel);
+    mLabelTurns->SetColor(WidgetsConstants::colorDialogText);
+    mLabelTurns->SetY(y);
 
-    mHeaderSuccess = new graphic::Text(sm->GetCString("SUCCESS_PROB"), fontHeader);
-    mHeaderSuccess->SetColor(colorHeader);
-    RegisterRenderable(mHeaderSuccess);
+    y = header->GetY();
+
+    header = new sgui::Label(sm->GetCString("SUCCESS_PROB"), fontHeader, this);
+    header->SetColor(WidgetsConstants::colorDialogHeader2);
+    x = w - (w / 4) - (header->GetWidth() / 2);
+    header->SetPosition(x, y);
+
+    y += header->GetHeight() + marginHeaderOutcomeB;
 
     mLabelSuccess = new sgui::Label(fontLabel, this);
-    mLabelSuccess->SetColor(colorLabel);
-
-    // -- BUTTONS --
-    const int blockW = (w - (marginSide * 2)) / 2;
-
-    // BUTTON ABORT
-    mBtnAbort = new ButtonExploreTemple(this);
-    mBtnAbort->SetLabel(sm->GetCString("ABORT"));
-    mBtnAbort->SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
+    mLabelSuccess->SetColor(WidgetsConstants::colorDialogText);
+    mLabelSuccess->SetY(y);
 
     // BUTTON EXPLORE
     mBtnExplore = new ButtonExploreTemple(this);
     mBtnExplore->SetLabel(sm->GetCString("EXPLORE"));
-
-    // position buttons
-    const int button1X0 = marginSide + (blockW - mBtnAbort->GetWidth()) / 2;
-    const int buttonsY = h - marginButtonsB - mBtnAbort->GetHeight();
-
-    mBtnAbort->SetPosition(button1X0, buttonsY);
-
-    const int button2X0 = marginSide + blockW + (blockW - mBtnExplore->GetWidth()) / 2;
-    mBtnExplore->SetPosition(button2X0, buttonsY);
+    mBtnExplore->SetPosition((w - mBtnExplore->GetWidth()) / 2,
+                             h - mBtnExplore->GetHeight() - WidgetsConstants::MarginDialogContentB);
 
     // INIT VALUES
     OnInvestmentChanged();
@@ -298,7 +327,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
 
 void DialogExploreTemple::SetFunctionOnCancel(const std::function<void()> & f)
 {
-    mBtnAbort->AddOnClickFunction(f);
+    mBtnClose->AddOnClickFunction(f);
 }
 
 void DialogExploreTemple::SetFunctionOnExplore(const std::function<void()> & f)
@@ -313,6 +342,8 @@ void DialogExploreTemple::HandlePositionChanged()
 
 void DialogExploreTemple::OnInvestmentChanged()
 {
+    const int w = GetWidth();
+
     // update invested resources
     mTemple->SetInvestedResources(mSliderMoney->GetValue(), mSliderMaterial->GetValue(),
                                   mSliderBlobs->GetValue(), mSliderDiamonds->GetValue());
@@ -321,6 +352,7 @@ void DialogExploreTemple::OnInvestmentChanged()
     const int turns = mTemple->GetExplorationTurns();
 
     mLabelTurns->SetText(std::to_string(turns).c_str());
+    mLabelTurns->SetX((w / 4) - (mLabelTurns->GetWidth() / 2));
 
     // update success rate
     const int success = mTemple->GetExplorationSuccessRate();
@@ -329,59 +361,22 @@ void DialogExploreTemple::OnInvestmentChanged()
     ss << success << "%";
 
     mLabelSuccess->SetText(ss.str().c_str());
-
-    // reposition elements
-    SetPositions();
+    mLabelSuccess->SetX(w - (w / 4) - (mLabelSuccess->GetWidth() / 2));
 }
 
 void DialogExploreTemple::SetPositions()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
-    const int w = mBg->GetWidth();
-    const int blockW = (w - (marginSide * 2)) / 2;
+    const int y = GetScreenY();
+    int x = GetScreenX();
 
     // BACKGROUND
-    mBg->SetPosition(x0, y0);
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
 
-    // HORIZ LINE 1
-    const int lineX = x0 + (w - mLineH1->GetWidth()) / 2;
-    const int line1Y = y0 + 280;
-    mLineH1->SetPosition(lineX, line1Y);
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
 
-    // HORIZ LINE 2
-    const int line2Y = y0 + 410;
-    mLineH2->SetPosition(lineX, line2Y);
-
-    // -- INVESTING PANEL --
-    const int marginPanel1V = 85;
-
-    // HEADER INVEST
-    const int headerInvestX = x0 + marginSide;
-    const int headerInvestY = y0 + marginPanel1V;
-    mHeaderInvest->SetPosition(headerInvestX, headerInvestY);
-
-    // -- OUTCOME PANEL --
-    const int marginPanel2V = 40;
-    const int marginHeaderB = 5;
-
-    // HEADER TURNS
-    const int headerTurnsX = x0 + marginSide + (blockW - mHeaderTurns->GetWidth()) / 2;
-    const int headerTurnsY = line1Y + marginPanel2V;
-    mHeaderTurns->SetPosition(headerTurnsX, headerTurnsY);
-
-    // LABEL TURNS
-    const int labelTurnsX = headerTurnsX + (mHeaderTurns->GetWidth() - mLabelTurns->GetWidth()) / 2 - x0;
-    const int labelTurnsY = headerTurnsY + mHeaderTurns->GetHeight() + marginHeaderB - y0;
-    mLabelTurns->SetPosition(labelTurnsX, labelTurnsY);
-
-    // HEADER SUCCESS
-    const int headerSuccessX = x0 + marginSide + blockW + (blockW - mHeaderSuccess->GetWidth()) / 2;
-    mHeaderSuccess->SetPosition(headerSuccessX, headerTurnsY);
-
-    // LABEL SUCCESS
-    const int labelSuccessX = headerSuccessX + (mHeaderSuccess->GetWidth() - mLabelSuccess->GetWidth()) / 2  - x0;
-    mLabelSuccess->SetPosition(labelSuccessX, labelTurnsY);
+    mBgR->SetPosition(x, y);
 }
 
 // ===== DIALOG EXPLORE TEMPLE OUTCOME =====
@@ -406,13 +401,31 @@ DialogExploreTempleOutcome::DialogExploreTempleOutcome(Player * player, Temple *
 
     const Temple::ExplorationOutcomeCategory oc = temple->GetExplorationOutcomeCategory();
 
-    // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_BACKGROUND);
-    mBg = new graphic::Image(tex);
-    RegisterRenderable(mBg);
+    // -- BACKGROUND --
+    const int w = 904;
+    graphic::Texture * tex;
 
-    const int w = mBg->GetWidth();
-    const int h = mBg->GetHeight();
+    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_BG_L);
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
+
+    const int wL = mBgL->GetWidth();
+    const int h = mBgL->GetHeight();
+
+    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
+
+    const int wR = mBgR->GetWidth();
+
+    tex = tm->GetSprite(SpriteFileDialogExploreTempleExp, ID_DLG_EXTM_BG_C);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(tex);
+    RegisterRenderable(mBgC);
+
+    const int wC = w - wL - wR;
+    mBgC->SetWidth(wC);
+
     SetSize(w, h);
 
     // TITLE
@@ -427,6 +440,7 @@ DialogExploreTempleOutcome::DialogExploreTempleOutcome(Player * player, Temple *
     title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
 
+    /*
     // EXPLANATION
     const int descAreaW = w - (marginSide * 2);
     const int descAreaH = 115;
@@ -517,6 +531,7 @@ DialogExploreTempleOutcome::DialogExploreTempleOutcome(Player * player, Temple *
         const int button2X0 = marginSide + blockW + (blockW - mBtnOutcome2->GetWidth()) / 2;
         mBtnOutcome2->SetPosition(button2X0, buttonsY);
     }
+*/
 }
 
 void DialogExploreTempleOutcome::SetFunctionOnClose(const std::function<void()> & f)
@@ -544,6 +559,8 @@ void DialogExploreTempleOutcome::HandlePositionChanged()
 
 void DialogExploreTempleOutcome::SetPositions()
 {
+
+    /*
     const int x0 = GetScreenX();
     const int y0 = GetScreenY();
     const int w = mBg->GetWidth();
@@ -574,6 +591,7 @@ void DialogExploreTempleOutcome::SetPositions()
         const int desc2X = header2X - x0;
         mDescOutc2->SetPosition(desc2X, descY);
     }
+*/
 }
 
 } // namespace game
