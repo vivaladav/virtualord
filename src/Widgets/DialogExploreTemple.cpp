@@ -138,12 +138,11 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, headerSize, graphic::Font::NORMAL);
     auto fontLabel = fm->GetFont(WidgetsConstants::FontFileText, textSize, graphic::Font::NORMAL);
 
-    const int marginHeaderB = 20;
+    const int marginHeaderB = 15;
     const int marginIconR = 20;
     const int marginSliderR = 20;
     const int marginResourceB = 55;
-    const int marginPanelV = 40;
-    const int barH = 3;
+    const int marginPanelV = 37;
     const int blockResW = 510;
     const int minInvest = 0;
 
@@ -289,7 +288,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     fontLabel = fm->GetFont(WidgetsConstants::FontFileText, textSize2, graphic::Font::NORMAL);
 
     const int marginHeaderOutcomeB = 10;
-    y += (2 * marginPanelV) + barH;
+    y += icon->GetHeight() + (2 * marginPanelV);
 
     header = new sgui::Label(sm->GetCString("TURNS_REQUIRED"), fontHeader, this);
     header->SetColor(WidgetsConstants::colorDialogHeader2);
