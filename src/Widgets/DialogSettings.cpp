@@ -488,8 +488,36 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
 
     auto tm = graphic::TextureManager::Instance();
 
+    // LANGUAGE
+    auto label = new sgui::Label(mSM->GetCString("LANGUAGE"), font, panel);
+    mHeadersGame.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    mComboLang = new SettingsComboBox(panel);
+
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ENG")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_FRA")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_GER")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ITA")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_SPA")));
+
+    mComboLang->SetActiveItem(mGame->GetLanguage());
+
+    x += blockSettingW;
+    y += (label->GetHeight() - mComboLang->GetHeight()) * 0.5;
+    mComboLang->SetPosition(x, y);
+
+    mComboLang->SetOnActiveChanged([this](int ind)
+    {
+        mGame->SetLanguage(static_cast<LanguageId>(ind));
+    });
+
     // MAP SCROLLING SPEED
-    auto label = new sgui::Label(mSM->GetCString("MAP_SCROLL_SPEED"), font, panel);
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("MAP_SCROLL_SPEED"), font, panel);
     mHeadersGame.emplace_back(label);
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
@@ -626,34 +654,6 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
     cb->AddOnToggleFunction([this](bool checked)
     {
         mGame->SetTutorialEnabled(checked);
-    });
-
-    // LANGUAGE
-    x = contX0;
-    y += blockSettingH;
-
-    label = new sgui::Label(mSM->GetCString("LANGUAGE"), font, panel);
-    mHeadersGame.emplace_back(label);
-    label->SetColor(colorTxt);
-    label->SetPosition(x, y);
-
-    mComboLang = new SettingsComboBox(panel);
-
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ENG")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_FRA")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_GER")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ITA")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_SPA")));
-
-    mComboLang->SetActiveItem(mGame->GetLanguage());
-
-    x += blockSettingW;
-    y += (label->GetHeight() - mComboLang->GetHeight()) * 0.5;
-    mComboLang->SetPosition(x, y);
-
-    mComboLang->SetOnActiveChanged([this](int ind)
-    {
-        mGame->SetLanguage(static_cast<LanguageId>(ind));
     });
 }
 
