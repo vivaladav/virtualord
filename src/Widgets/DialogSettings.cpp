@@ -640,6 +640,8 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
     mComboLang = new SettingsComboBox(panel);
 
     mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ENG")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_FRA")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_GER")));
     mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ITA")));
     mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_SPA")));
 
@@ -1005,9 +1007,13 @@ void DialogSettings::OnStringsChanged()
     const char * strIdsLanguage[] =
     {
         "LANG_ENG",
+        "LANG_FRA",
+        "LANG_GER",
         "LANG_ITA",
         "LANG_SPA",
     };
+
+    static_assert((sizeof(strIdsLanguage) / sizeof(char *)) == NUM_LANGUAGES);
 
     for(unsigned int i = 0; i < NUM_LANGUAGES; ++i)
     {

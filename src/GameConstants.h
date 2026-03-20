@@ -45,6 +45,8 @@ enum GameCursorId : unsigned int
 enum LanguageId : unsigned int
 {
     LANG_ENGLISH,
+    LANG_FRENCH,
+    LANG_GERMAN,
     LANG_ITALIAN,
     LANG_SPANISH,
 

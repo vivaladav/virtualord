@@ -369,9 +369,13 @@ void Game::SetLanguage(LanguageId lang)
     const char * languages[] =
     {
         "en.txt",
+        "fr.txt",
+        "de.txt",
         "it.txt",
         "es.txt",
     };
+
+    static_assert((sizeof(languages) / sizeof(char *)) == NUM_LANGUAGES);
 
     sm->LoadStringsFromPackage(languages[lang]);
 }

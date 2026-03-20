@@ -365,6 +365,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Added tooltips to explain object attributes in all dialogs showing them.\n"
                   "- Added support for hidden mission goals.\n"
                   "- Added tooltip explaining faction turn energy.\n"
+                  "- Added French and German translations.\n"
                   "\nCHANGES\n"
                   "- Hit points no longer shown on self-destruction.\n"
                   "- No longer pre-loading everything at the beginning, but"
