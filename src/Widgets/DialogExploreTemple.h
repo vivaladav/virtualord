@@ -63,7 +63,6 @@ private:
     GameSliderH * mSliderBlobs = nullptr;
     GameSliderH * mSliderDiamonds = nullptr;
 
-    Player * mPlayer = nullptr;
     Temple * mTemple = nullptr;
 };
 
@@ -88,20 +87,9 @@ private:
     sgl::graphic::Image * mBgC = nullptr;
     sgl::graphic::Image * mBgR = nullptr;
 
-    sgl::graphic::Image * mLine = nullptr;
-
-    sgl::sgui::AbstractButton * mBtnClose = nullptr;
-    sgl::sgui::AbstractButton * mBtnOutcome1 = nullptr;
-    sgl::sgui::AbstractButton * mBtnOutcome2 = nullptr;
-
-    sgl::graphic::Text * mHeaderOutc1 = nullptr;
-    sgl::graphic::Text * mHeaderOutc2 = nullptr;
-
-    sgl::sgui::TextArea * mDescOutc1 = nullptr;
-    sgl::sgui::TextArea * mDescOutc2 = nullptr;
-
-    Player * mPlayer = nullptr;
-    Temple * mTemple = nullptr;
+    GameButton * mBtnClose = nullptr;
+    GameButton * mBtnOutcome1 = nullptr;
+    GameButton * mBtnOutcome2 = nullptr;
 };
 
 } // namespace game

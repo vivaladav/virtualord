@@ -80,8 +80,7 @@ namespace game
 
 // ===== DIALOG EXPLORE TEMPLE =====
 DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
-    : mPlayer(player)
-    , mTemple(temple)
+    : mTemple(temple)
 {
     using namespace sgl;
 
@@ -380,8 +379,6 @@ void DialogExploreTemple::SetPositions()
 
 // ===== DIALOG EXPLORE TEMPLE OUTCOME =====
 DialogExploreTempleOutcome::DialogExploreTempleOutcome(Player * player, Temple * temple)
-    : mPlayer(player)
-    , mTemple(temple)
 {
     using namespace sgl;
 
@@ -390,7 +387,7 @@ DialogExploreTempleOutcome::DialogExploreTempleOutcome(Player * player, Temple *
     auto sm = utilities::StringManager::Instance();
 
     const int headerFontSize = 22;
-    const int labelFontSize = 22;
+    const int labelFontSize = 20;
     const unsigned int colorHeader = 0x9dcbe2ff;
     const unsigned int colorLabel = 0x70a7c2ff;
 
@@ -404,20 +401,20 @@ DialogExploreTempleOutcome::DialogExploreTempleOutcome(Player * player, Temple *
     const int w = 904;
     graphic::Texture * tex;
 
-    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_BG_L);
+    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM2_BG_L);
     mBgL = new graphic::Image(tex);
     RegisterRenderable(mBgL);
 
     const int wL = mBgL->GetWidth();
     const int h = mBgL->GetHeight();
 
-    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_BG_R);
+    tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM2_BG_R);
     mBgR = new graphic::Image(tex);
     RegisterRenderable(mBgR);
 
     const int wR = mBgR->GetWidth();
 
-    tex = tm->GetSprite(SpriteFileDialogExploreTempleExp, ID_DLG_EXTM_BG_C);
+    tex = tm->GetSprite(SpriteFileDialogExploreTempleExp, ID_DLG_EXTM2_BG_C);
     tex->SetScaleMode(graphic::TSCALE_NEAREST);
     mBgC = new graphic::Image(tex);
     RegisterRenderable(mBgC);
@@ -428,28 +425,28 @@ DialogExploreTempleOutcome::DialogExploreTempleOutcome(Player * player, Temple *
     SetSize(w, h);
 
     // TITLE
-    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 32,
-                                 graphic::Font::NORMAL);
+    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                                 WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
 
-    sgui::Label * title = new sgui::Label(sm->GetCString("TEMPLE_OUTCOME"),
-                                          fontTitle, this);
+    auto title = new sgui::Label(sm->GetCString("TEMPLE_OUTCOME"), fontTitle, this);
 
-    const int titleX = (w - title->GetWidth()) / 2;
-    const int titleY = 10;
+    const int titleX = WidgetsConstants::MarginDialogTitleL;
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
     title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
 
-    /*
-    // EXPLANATION
-    const int descAreaW = w - (marginSide * 2);
-    const int descAreaH = 115;
+    // -- CONTENT --
+    const int descAreaW = w - WidgetsConstants::MarginDialogContentL -
+                          WidgetsConstants::MarginDialogContentR;
+    const int descAreaH = 75;
+    const int marginDescB = 15;
+
+    int x = WidgetsConstants::MarginDialogContentL;
+    int y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
     auto textDesc = new sgui::TextArea(descAreaW, descAreaH, fontLabel, false, this);
-    textDesc->SetColor(colorLabel);
-
-    const int textX = marginSide;
-    const int textY = marginPanel1V;
-    textDesc->SetPosition(textX, textY);
+    textDesc->SetColor(WidgetsConstants::colorDialogText);
+    textDesc->SetPosition(x, y);
 
     // EXPLORATION GAVE NOTHING
     if(oc == Temple::EXP_OUTC_NOTHING)
@@ -459,9 +456,9 @@ DialogExploreTempleOutcome::DialogExploreTempleOutcome(Player * player, Temple *
         mBtnClose = new ButtonExploreTemple(this);
         mBtnClose->SetLabel(sm->GetCString("LEAVE"));
 
-        const int buttonX = (w - mBtnClose->GetWidth()) / 2;
-        const int buttonY = h - marginButtonsB - mBtnClose->GetHeight();
-        mBtnClose->SetPosition(buttonX, buttonY);
+        x = (w - mBtnClose->GetWidth()) / 2;
+        y = h - mBtnClose->GetHeight() - WidgetsConstants::MarginDialogContentB;
+        mBtnClose->SetPosition(x, y);
     }
     // EXPLORATION GAVE REWARD OR PUNISHMENT
     else
@@ -469,68 +466,85 @@ DialogExploreTempleOutcome::DialogExploreTempleOutcome(Player * player, Temple *
         const Temple::ExplorationOutcome o1 = temple->GetExplorationOutcome1();
         const Temple::ExplorationOutcome o2 = temple->GetExplorationOutcome2();
 
+        // DESCRIPTION
+        if(oc == Temple::EXP_OUTC_GOOD)
+            textDesc->SetText(sm->GetCString("TO_DESC_GOOD"));
+        else
+            textDesc->SetText(sm->GetCString("TO_DESC_BAD"));
+
+        y += descAreaH + marginDescB;
+
         // VERTICAL BAR
-        tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_LINE_V);
-        mLine = new graphic::Image(tex);
-        RegisterRenderable(mLine);
+        tex = tm->GetSprite(SpriteFileDialogExploreTemple, ID_DLG_EXTM_LINE_VERT);
+        auto line = new sgui::Image(tex, this);
 
-        // -- BUTTONS --
-        mBtnOutcome1 = new ButtonExploreTemple(this);
-        mBtnOutcome2 = new ButtonExploreTemple(this);
+        x = (w - line->GetWidth()) / 2;
+        line->SetPosition(x, y);
 
-        // -- HEADER --
+        // -- OUTCOME --
         auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, headerFontSize,
                                       graphic::Font::NORMAL);
 
-        // -- OUTCOME TEXT --
-        const int outcAreaW = w / 2 - (marginSide * 2);
-        const int outcAreaH = 150;
+        sgui::Label * labelHeader1 = nullptr;
+        sgui::Label * labelHeader2 = nullptr;
 
-        const char * desc1 = temple->GetExplorationOutcomeString(o1);
-        mDescOutc1 = new sgui::TextArea(outcAreaW, outcAreaH, desc1, fontLabel, false, this);
-        mDescOutc1->SetColor(colorLabel);
+        // BUTTONS OUTCOME
+        mBtnOutcome1 = new ButtonExploreTemple(this);
+        mBtnOutcome1->SetLabel(sm->GetCString("SELECT"));
 
-        const char * desc2 = temple->GetExplorationOutcomeString(o2);
-        mDescOutc2 = new sgui::TextArea(outcAreaW, outcAreaH, desc2, fontLabel, false, this);
-        mDescOutc2->SetColor(colorLabel);
+        x = (w / 4) - (mBtnOutcome1->GetWidth() / 2);
+        y = h - mBtnOutcome1->GetHeight() - WidgetsConstants::MarginDialogContentB;
+        mBtnOutcome1->SetPosition(x, y);
+
+        mBtnOutcome2 = new ButtonExploreTemple(this);
+        mBtnOutcome2->SetLabel(sm->GetCString("SELECT"));
+
+        x = w - (w / 4) - (mBtnOutcome2->GetWidth() / 2);
+        mBtnOutcome2->SetPosition(x, y);
 
         // GOOD OUTCOME
         if(oc == Temple::EXP_OUTC_GOOD)
         {
-            textDesc->SetText(sm->GetCString("TO_DESC_GOOD"));
-
-            mHeaderOutc1 = new graphic::Text(sm->GetCString("REWARD_1"), fontHeader);
-            mHeaderOutc2 = new graphic::Text(sm->GetCString("REWARD_2"), fontHeader);
-
-            mBtnOutcome1->SetLabel(sm->GetCString("SELECT"));
-            mBtnOutcome2->SetLabel(sm->GetCString("SELECT"));
+            labelHeader1 = new sgui::Label(sm->GetCString("REWARD_1"), fontHeader, this);
+            labelHeader2 = new sgui::Label(sm->GetCString("REWARD_2"), fontHeader, this);
         }
         // BAD OUTCOME
         else
         {
-            textDesc->SetText(sm->GetCString("TO_DESC_BAD"));
-
-            mHeaderOutc1 = new graphic::Text(sm->GetCString("CURSE_1"), fontHeader);
-            mHeaderOutc2 = new graphic::Text(sm->GetCString("CURSE_2"), fontHeader);
-
-            mBtnOutcome1->SetLabel(sm->GetCString("SELECT"));
-            mBtnOutcome2->SetLabel(sm->GetCString("SELECT"));
+            labelHeader1 = new sgui::Label(sm->GetCString("CURSE_1"), fontHeader, this);
+            labelHeader2 = new sgui::Label(sm->GetCString("CURSE_2"), fontHeader, this);
         }
 
-        RegisterRenderable(mHeaderOutc1);
-        RegisterRenderable(mHeaderOutc2);
+        // HEADER
+        x = WidgetsConstants::MarginDialogContentL;
+        y = line->GetY();
+        labelHeader1->SetPosition(x, y);
 
-        // position buttons
-        const int blockW = (w - (marginSide * 2)) / 2;
-        const int button1X0 = marginSide + (blockW - mBtnOutcome1->GetWidth()) / 2;
-        const int buttonsY = h - marginButtonsB - mBtnOutcome1->GetHeight();
+        x = line->GetX() + WidgetsConstants::MarginDialogContentL;
+        labelHeader2->SetPosition(x, y);
 
-        mBtnOutcome1->SetPosition(button1X0, buttonsY);
+        // -- OUTCOME TEXT --
+        const int marginDescT = 20;
 
-        const int button2X0 = marginSide + blockW + (blockW - mBtnOutcome2->GetWidth()) / 2;
-        mBtnOutcome2->SetPosition(button2X0, buttonsY);
+        const int outcAreaW = w / 2 - WidgetsConstants::MarginDialogContentL -
+                              WidgetsConstants::MarginDialogContentR;
+        const int outcAreaH = 150;
+
+        x = WidgetsConstants::MarginDialogContentL;
+        y += labelHeader1->GetHeight() + marginDescT;
+
+        const char * desc1 = temple->GetExplorationOutcomeString(o1);
+        auto labelDesc1 = new sgui::TextArea(outcAreaW, outcAreaH, desc1, fontLabel, false, this);
+        labelDesc1->SetColor(WidgetsConstants::colorDialogText);
+        labelDesc1->SetPosition(x, y);
+
+        x = line->GetX() + WidgetsConstants::MarginDialogContentL;
+
+        const char * desc2 = temple->GetExplorationOutcomeString(o2);
+        auto labelDesc2 = new sgui::TextArea(outcAreaW, outcAreaH, desc2, fontLabel, false, this);
+        labelDesc2->SetColor(WidgetsConstants::colorDialogText);
+        labelDesc2->SetPosition(x, y);
     }
-*/
 }
 
 void DialogExploreTempleOutcome::SetFunctionOnClose(const std::function<void()> & f)
@@ -558,39 +572,17 @@ void DialogExploreTempleOutcome::HandlePositionChanged()
 
 void DialogExploreTempleOutcome::SetPositions()
 {
-
-    /*
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
-    const int w = mBg->GetWidth();
-    const int h = mBg->GetHeight();
-    const int blockW = (w - (marginSide * 2)) / 2;
+    const int y = GetScreenY();
+    int x = GetScreenX();
 
     // BACKGROUND
-    mBg->SetPosition(x0, y0);
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
 
-    // VERTICAL LINE
-    if(mLine != nullptr)
-    {
-        const int lineX = x0 + (w - mLine->GetWidth()) / 2;
-        const int line1Y = y0 + h - marginButtonsB - mLine->GetHeight();
-        mLine->SetPosition(lineX, line1Y);
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
 
-        const int header1X = x0 + marginSide;
-        const int headersY = y0 + 209;
-        mHeaderOutc1->SetPosition(header1X, headersY);
-
-        const int header2X = lineX + mLine->GetWidth() + marginSide;
-        mHeaderOutc2->SetPosition(header2X, headersY);
-
-        const int desc1X = header1X - x0;
-        const int descY = 255;
-        mDescOutc1->SetPosition(desc1X, descY);
-
-        const int desc2X = header2X - x0;
-        mDescOutc2->SetPosition(desc2X, descY);
-    }
-*/
+    mBgR->SetPosition(x, y);
 }
 
 } // namespace game
