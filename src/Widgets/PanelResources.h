@@ -18,6 +18,8 @@ class GameSimpleTooltip;
 class Player;
 class ResourceTooltip;
 
+enum ExtendedResource : unsigned int;
+
 class PanelResources : public sgl::sgui::Widget, public sgl::utilities::StringsChangeListener
 {
 public:
@@ -28,7 +30,7 @@ public:
 private:
     void HandlePositionChanged() override;
 
-    ResourceTooltip * AssignResourceTooltip(sgl::sgui::Widget * target, const char * text);
+    ResourceTooltip * AssignResourceTooltip(sgl::sgui::Widget * target, ExtendedResource res);
     GameSimpleTooltip * AssignSimpleTooltip(sgl::sgui::Widget * target, const char * text);
     void CreateTooltip(sgl::sgui::Widget * tt, sgl::sgui::Widget * target, int showingMs);
 

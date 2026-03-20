@@ -532,10 +532,10 @@ void ScreenInit::SetupPermanentTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // RESOURCE BAR TOOLTIP
-            { 0, 0, 250, 155 },
+            { 0, 0, 304, 214 },
             // GAME TOOLTIP
-            { 251, 0, 50, 50 },
-            { 251, 51, 50, 50 },
+            { 305, 0, 50, 50 },
+            { 305, 51, 50, 50 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileTooltips, rects);

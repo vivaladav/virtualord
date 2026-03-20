@@ -20,13 +20,16 @@ namespace game
 
 class Game;
 
+enum ExtendedResource : unsigned int;
+
 class ResourceTooltip : public sgl::sgui::Widget
 {
 public:
-    ResourceTooltip(const char * title);
+    ResourceTooltip(ExtendedResource res);
 
-    void SetTitle(const char * text);
-    void SetValues(int resIn, int resOut);
+    void UpdateStrings();
+
+    void SetValues(int val, int maxVal, int resIn, int resOut);
 
 protected:
     void HandlePositionChanged() override;
@@ -38,10 +41,14 @@ private:
 
 private:
     sgl::graphic::Image * mBg = nullptr;
-    sgl::graphic::Text * mTitle = nullptr;
+    sgl::sgui::Label * mHeader1 = nullptr;
+    sgl::sgui::Label * mHeader2 = nullptr;
+    sgl::sgui::Label * mLabelVal = nullptr;
     sgl::sgui::Label * mLabelIn = nullptr;
     sgl::sgui::Label * mLabelOut = nullptr;
     sgl::sgui::Label * mLabelTot = nullptr;
+
+    ExtendedResource mRes;
 
     unsigned int mIn = -1;
     unsigned int mOut = -1;

@@ -85,14 +85,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(srd, sm->GetCString("MONEY_TURN"));
+        auto tt = AssignResourceTooltip(srd, ER_MONEY);
         mGameTooltips[st] = tt;
 
         srd->SetFunctionOnShowingTooltip([this, tt]
         {
+            const int resVal = mPlayer->GetStat(Player::MONEY).GetValue();
+            const int resMax = 0;
             const int resIn = mPlayer->GetResourceProduction(ER_MONEY);
             const int resOut = mPlayer->GetResourceConsumption(ER_MONEY);
-            tt->SetValues(resIn, resOut);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -116,14 +118,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(rd, sm->GetCString("ENERGY_TURN"));
+        auto tt = AssignResourceTooltip(rd, ER_ENERGY);
         mGameTooltips[st] = tt;
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
+            const int resVal = mPlayer->GetStat(Player::ENERGY).GetValue();
+            const int resMax = mPlayer->GetStat(Player::ENERGY).GetMax();
             const int resIn = mPlayer->GetResourceProduction(ER_ENERGY);
             const int resOut = mPlayer->GetResourceConsumption(ER_ENERGY);
-            tt->SetValues(resIn, resOut);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -151,14 +155,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(rd, sm->GetCString("MATERIAL_TURN"));
+        auto tt = AssignResourceTooltip(rd, ER_MATERIAL);
         mGameTooltips[st] = tt;
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
+            const int resVal = mPlayer->GetStat(Player::MATERIAL).GetValue();
+            const int resMax = mPlayer->GetStat(Player::MATERIAL).GetMax();
             const int resIn = mPlayer->GetResourceProduction(ER_MATERIAL);
             const int resOut = mPlayer->GetResourceConsumption(ER_MATERIAL);
-            tt->SetValues(resIn, resOut);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -186,14 +192,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(rd, sm->GetCString("DIAMONDS_TURN"));
+        auto tt = AssignResourceTooltip(rd, ER_DIAMONDS);
         mGameTooltips[st] = tt;
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
+            const int resVal = mPlayer->GetStat(Player::DIAMONDS).GetValue();
+            const int resMax = mPlayer->GetStat(Player::DIAMONDS).GetMax();
             const int resIn = mPlayer->GetResourceProduction(ER_DIAMONDS);
             const int resOut = mPlayer->GetResourceConsumption(ER_DIAMONDS);
-            tt->SetValues(resIn, resOut);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -221,14 +229,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(rd, sm->GetCString("BLOBS_TURN"));
+        auto tt = AssignResourceTooltip(rd, ER_BLOBS);
         mGameTooltips[st] = tt;
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
+            const int resVal = mPlayer->GetStat(Player::BLOBS).GetValue();
+            const int resMax = mPlayer->GetStat(Player::BLOBS).GetMax();
             const int resIn = mPlayer->GetResourceProduction(ER_BLOBS);
             const int resOut = mPlayer->GetResourceConsumption(ER_BLOBS);
-            tt->SetValues(resIn, resOut);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -255,14 +265,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(srd, sm->GetCString("RESEARCH_TURN"));
+        auto tt = AssignResourceTooltip(srd, ER_RESEARCH);
         mGameTooltips[st] = tt;
 
         srd->SetFunctionOnShowingTooltip([this, tt]
         {
+            const int resVal = mPlayer->GetStat(Player::RESEARCH).GetValue();
+            const int resMax = 0;
             const int resIn = mPlayer->GetResourceProduction(ER_RESEARCH);
             const int resOut = mPlayer->GetResourceConsumption(ER_RESEARCH);
-            tt->SetValues(resIn, resOut);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -294,11 +306,12 @@ PanelResources::~PanelResources()
     }
 }
 
-ResourceTooltip * PanelResources::AssignResourceTooltip(sgl::sgui::Widget * target, const char * text)
+ResourceTooltip * PanelResources::AssignResourceTooltip(sgl::sgui::Widget * target,
+                                                        ExtendedResource res)
 {
     const int showingMs = 5000;
 
-    auto tt = new ResourceTooltip(text);
+    auto tt = new ResourceTooltip(res);
     CreateTooltip(tt, target, showingMs);
 
     return tt;
@@ -325,24 +338,8 @@ void PanelResources::OnStringsChanged()
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
-    if(mGameMap)
-    {
-        mGameTooltips[Player::Stat::MONEY]->SetTitle(sm->GetCString("MONEY_TURN"));
-        mGameTooltips[Player::Stat::ENERGY]->SetTitle(sm->GetCString("ENERGY_TURN"));
-        mGameTooltips[Player::Stat::MATERIAL]->SetTitle(sm->GetCString("MATERIAL_TURN"));
-        mGameTooltips[Player::Stat::BLOBS]->SetTitle(sm->GetCString("BLOBS_TURN"));
-        mGameTooltips[Player::Stat::DIAMONDS]->SetTitle(sm->GetCString("DIAMONDS_TURN"));
-        mGameTooltips[Player::Stat::RESEARCH]->SetTitle(sm->GetCString("RESEARCH_TURN"));
-    }
-    else
-    {
-        mSimpleTooltips[Player::Stat::MONEY]->SetText(sm->GetCString("MONEY"));
-        mSimpleTooltips[Player::Stat::ENERGY]->SetText(sm->GetCString("ENERGY"));
-        mSimpleTooltips[Player::Stat::MATERIAL]->SetText(sm->GetCString("MATERIAL"));
-        mSimpleTooltips[Player::Stat::BLOBS]->SetText(sm->GetCString("BLOBS"));
-        mSimpleTooltips[Player::Stat::DIAMONDS]->SetText(sm->GetCString("DIAMONDS"));
-        mSimpleTooltips[Player::Stat::RESEARCH]->SetText(sm->GetCString("RESEARCH_PTS"));
-    }
+    for(unsigned int i = 0; i < Player::Stat::NUM_PSTATS; ++i)
+        mGameTooltips[i]->UpdateStrings();
 }
 
 void PanelResources::HandlePositionChanged()
