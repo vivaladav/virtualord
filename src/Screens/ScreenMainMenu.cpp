@@ -375,6 +375,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- First planet is now small (5 missions, 3 mandatory).\n"
                   "- Added research points as resource to dialog trading.\n"
                   "- New faction selection screen.\n"
+                  "- New UI graphics for dialogs, in-game panels and tooltips.\n"
                   "\nFIXES\n"
                   "- Fixed sliders showing wrong values and graphics when step is not 1.\n"
                   "- Fixed initial material value bigger than storage capacity.\n"
