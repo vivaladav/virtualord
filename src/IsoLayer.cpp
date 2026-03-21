@@ -100,8 +100,7 @@ bool IsoLayer::AddObject(IsoObject * obj, unsigned int r, unsigned int c)
 
     // store object
     InsertObjectInMap(obj);
-
-    UpdateRenderList();
+    InsertObjectInRenderList(obj);
 
     return true;
 }
@@ -194,8 +193,7 @@ bool IsoLayer::MoveObject(unsigned int r0, unsigned int c0,
 
     // add object back
     InsertObjectInMap(obj);
-
-    UpdateRenderList();
+    InsertObjectInRenderList(obj);
 
     return true;
 }
@@ -208,7 +206,7 @@ void IsoLayer::SetObjectVisible(IsoObject * obj, bool visible)
     {
         // object is not already in
         if(std::find(mRenderList.begin(), mRenderList.end(), obj) == mRenderList.end())
-            UpdateRenderList();
+            InsertObjectInRenderList(obj);
     }
     else
         RemoveObjectFromRenderList(obj);
@@ -302,10 +300,34 @@ void IsoLayer::RemoveObjectFromRenderList(IsoObject * obj)
         mRenderList.erase(it);
 }
 
+void IsoLayer::InsertObjectInRenderList(IsoObject * obj)
+{
+    const int objYC = obj->GetY() + (obj->GetHeight() / 2);
+
+    // find where to insert the object
+    auto it = mRenderList.begin();
+
+    while(it != mRenderList.end())
+    {
+        const auto o = *it;
+        const int oYC = o->GetY() + (o->GetHeight() / 2);
+
+        if(oYC < objYC)
+            ++it;
+        else
+            break;
+    }
+
+    // insert the object to the list
+    mRenderList.insert(it, obj);
+}
+
 void IsoLayer::UpdateRenderList()
 {
+    // clear list
     mRenderList.clear();
 
+    // add all objects in rendering area
     const int cols = mMap->GetNumCols();
 
     for(unsigned int r = mRenderingR0; r < mRenderingR1; ++r)
@@ -322,6 +344,15 @@ void IsoLayer::UpdateRenderList()
                 mRenderList.push_back(obj);
         }
     }
+
+    // sort objects based on Y
+    std::sort(mRenderList.begin(), mRenderList.end(), [](IsoObject * o1, IsoObject * o2)
+    {
+        const int y1 = o1->GetY() + (o1->GetHeight() / 2);
+        const int y2 = o2->GetY() + (o2->GetHeight() / 2);
+
+        return y1 < y2;
+    });
 }
 
 void IsoLayer::ClearObjectFromMap(IsoObject * obj)

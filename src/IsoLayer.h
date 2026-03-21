@@ -69,6 +69,7 @@ private:
 
     void RemoveObjectFromRenderList(IsoObject * obj);
 
+    void InsertObjectInRenderList(IsoObject * obj);
     void UpdateRenderList();
 
     void ClearObjectFromMap(IsoObject * obj);

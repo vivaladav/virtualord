@@ -377,9 +377,11 @@ void ScreenMainMenu::CreateChangelog()
                   "- Added research points as resource to dialog trading.\n"
                   "- New faction selection screen.\n"
                   "- New UI graphics for dialogs, in-game panels and tooltips.\n"
+                  "- Optimized rendering of isometric objects.\n"
                   "\nFIXES\n"
                   "- Fixed sliders showing wrong values and graphics when step is not 1.\n"
                   "- Fixed initial material value bigger than storage capacity.\n"
+                  "- Fixed rendering order of isometric objects not right in a few cases.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
