@@ -2308,25 +2308,104 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
     }
 }
 
-void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
+void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & clickCell)
 {
     // check destination is visible
-    const int ClickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
-    const bool clickVisible = mLocalPlayer->IsCellVisible(ClickInd);
+    const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
 
-    if(!clickVisible)
+    if(!mLocalPlayer->IsCellVisible(clickInd))
     {
         unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"), 2.f);
         return;
     }
 
+    // destination is walkable -> try to generate a path and move
     const Cell2D selCell(unit->GetRow0(), unit->GetCol0());
 
+    if(clickCell != selCell && !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+        return ;
+    }
+
+    // destination is visible and walkable or conquering unit cell
+    // init start for empty path
+    sgl::ai::Pathfinder::PathOptions po = sgl::ai::Pathfinder::INCLUDE_START;
+    unsigned int startR = selCell.row;
+    unsigned int startC = selCell.col;
+
+    // continue building path
+    if(!mConquestPath.empty())
+    {
+        // reclicked on same cell of last path -> double click -> finalize path
+        if(mConquestPath.back() == clickInd)
+        {
+            // start conquest
+            auto cp = new ConquerPath(unit, mIsoMap, mGameMap, this);
+            cp->SetPathCells(mConquestPath);
+
+            if(mGameMap->ConquerCells(cp))
+            {
+                mConquestPath.clear();
+
+                ClearCellOverlays();
+
+                // store active action
+                mObjActionsToDo.emplace_back(unit, GameObjectActionType::CONQUER_CELL,
+                                             [](bool){});
+
+                // disable action buttons
+                mHUD->SetLocalActionsEnabled(false);
+
+                unit->SetActiveAction(GameObjectActionType::IDLE);
+                unit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
+            }
+            else
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUEST"), 2.f);
+
+            return ;
+        }
+        // continue pathfinfing from latest click
+        else
+        {
+            po = sgl::ai::Pathfinder::NO_OPTION;
+
+            const unsigned int pathInd = mConquestPath.back();
+            startR = pathInd / mIsoMap->GetNumCols();
+            startC = pathInd % mIsoMap->GetNumCols();
+        }
+    }
+
+    const auto path = mPathfinder->MakePath(startR, startC, clickCell.row,
+                                            clickCell.col, po);
+
+    // empty path -> nothing to do
+    if(path.empty())
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 3.f);
+        return ;
+    }
+
+    mConquestPath.reserve(mConquestPath.size() + path.size());
+    mConquestPath.insert(mConquestPath.end(), path.begin(), path.end());
+}
+
+void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
+{
+    // check destination is visible
+    const int ClickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
+
+    if(!mLocalPlayer->IsCellVisible(ClickInd))
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"), 2.f);
+        return;
+    }
+
     // check destination is walkable
-    const bool clickWalkable = mGameMap->IsCellWalkable(clickCell.row, clickCell.col);
+    const Cell2D selCell(unit->GetRow0(), unit->GetCol0());
 
     // destination is walkable -> try to generate a path and move
-    if(clickWalkable)
+    if(mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
     {
         SetupUnitMove(unit, selCell, clickCell, false);
         return ;
@@ -2707,74 +2786,7 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
         else if(action == GameObjectActionType::HEAL)
             SetupUnitHeal(selUnit, clickObj, mLocalPlayer);
         else if(action == GameObjectActionType::CONQUER_CELL)
-        {
-            const Player * player = GetGame()->GetPlayerByFaction(selUnit->GetFaction());
-            const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
-
-            // destination is visible and walkable or conquering unit cell
-            if(mLocalPlayer->IsCellVisible(clickInd) &&
-               (mGameMap->IsCellWalkable(clickCell.row, clickCell.col) || clickCell == selCell))
-            {
-                // init start for empty path
-                sgl::ai::Pathfinder::PathOptions po = sgl::ai::Pathfinder::INCLUDE_START;
-                unsigned int startR = selCell.row;
-                unsigned int startC = selCell.col;
-
-                // continue building path
-                if(!mConquestPath.empty())
-                {
-                    // reclicked on same cell of last path -> double click -> finalize path
-                    if(mConquestPath.back() == clickInd)
-                    {
-                        // start conquest
-                        auto cp = new ConquerPath(selUnit, mIsoMap, mGameMap, this);
-                        cp->SetPathCells(mConquestPath);
-
-                        if(mGameMap->ConquerCells(cp))
-                        {
-                            mConquestPath.clear();
-
-                            ClearCellOverlays();
-
-                            // store active action
-                            mObjActionsToDo.emplace_back(selUnit, action, [](bool){});
-
-                            // disable action buttons
-                            mHUD->SetLocalActionsEnabled(false);
-
-                            selUnit->SetActiveAction(GameObjectActionType::IDLE);
-                            selUnit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
-                        }
-                        else
-                            selUnit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUEST"), 2.f);
-
-                        return ;
-                    }
-                    // continue pathfinfing from latest click
-                    else
-                    {
-                        po = sgl::ai::Pathfinder::NO_OPTION;
-
-                        const unsigned int pathInd = mConquestPath.back();
-                        startR = pathInd / mIsoMap->GetNumCols();
-                        startC = pathInd % mIsoMap->GetNumCols();
-                    }
-                }
-
-                const auto path = mPathfinder->MakePath(startR, startC, clickCell.row,
-                                                        clickCell.col, po);
-
-                // empty path -> nothing to do
-                if(path.empty())
-                {
-                    selUnit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 3.f);
-                    return ;
-                }
-
-                mConquestPath.reserve(mConquestPath.size() + path.size());
-                mConquestPath.insert(mConquestPath.end(), path.begin(), path.end());
-            }
-        }
+            HandleUnitCellConquestOnMouseUp(selUnit, clickCell);
         else if(action == GameObjectActionType::BUILD_WALL)
             HandleUnitBuildWallOnMouseUp(selUnit, clickCell);
         else if (action == GameObjectActionType::BUILD_STRUCTURE)
@@ -3107,7 +3119,7 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     ConquerPath cp(unit, mIsoMap, mGameMap, this);
     cp.SetPathCells(totPath);
 
-    mConquestIndicators[lastIdx]->SetCost(cp.GetPathCost());
+    mConquestIndicators[lastIdx]->SetCost(cp.GetPathEnergyCost());
 }
 
 void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
