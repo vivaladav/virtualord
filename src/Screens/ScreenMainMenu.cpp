@@ -346,7 +346,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.0 - \"???????\"", font, content);
+    auto title = new sgui::Label("0.6.0 - \"Yeah, Science!\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
