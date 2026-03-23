@@ -74,6 +74,31 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
 
     buttonY += button->GetHeight() + VMARGIN;
 
+    // -- WARNING TOOLTIP --
+    auto tooltipWarning = new sgui::Image("UI/main_menu_warning_bg.png");
+
+    auto fontHeader = fm->GetFont("Lato-Regular.ttf", 26, graphic::Font::NORMAL);
+    auto fontText = fm->GetFont("Lato-Regular.ttf", 16, graphic::Font::NORMAL);
+
+    const int marginHeraderT = 10;
+    const int marginHeraderB = 10;
+    auto header = new sgui::Label(sm->GetCString("WARNING"), fontHeader, tooltipWarning);
+    header->SetColor(0xf5f5a3ff);
+    header->SetPosition((tooltipWarning->GetWidth() - header->GetWidth()) / 2, marginHeraderT);
+
+    const int marginTextH = 20;
+    const int textH = 60;
+    auto text = new sgui::TextArea(tooltipWarning->GetWidth() - (marginTextH * 2), textH,
+                                   fontText, false, tooltipWarning);
+    text->SetColor(0xe5e5b3b2);
+    text->SetText(sm->GetCString("WARN_MM"));
+    text->SetPosition(marginTextH, header->GetY() + header->GetHeight() + marginHeraderB);
+
+    // assign it to NEW GAME button
+    button->SetTooltip(tooltipWarning);
+    button->SetTooltipShowingTime(7000);
+    button->SetTooltipDelay(500);
+
     // -- BUTTON SETTINGS --
     button = new ButtonMainMenu(sm->GetCString("SETTINGS"), panelButtons);
     button->SetY(buttonY);
