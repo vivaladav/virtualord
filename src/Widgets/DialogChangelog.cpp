@@ -4,6 +4,8 @@
 #include "Widgets/WidgetsConstants.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
+#include <sgl/core/event/MouseButtonEvent.h>
+#include <sgl/core/event/MouseMotionEvent.h>
 #include <sgl/core/event/MouseWheelEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
@@ -282,6 +284,27 @@ void DialogChangelog::PositionElements()
     const int contX = marginL;
     const int contY = 66;
     mContArea->SetPosition(contX, contY);
+}
+
+void DialogChangelog::HandleMouseButtonDown(sgl::core::MouseButtonEvent & event)
+{
+    sgl::sgui::Widget::HandleMouseButtonDown(event);
+
+    event.SetConsumed();
+}
+
+void DialogChangelog::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
+{
+    sgl::sgui::Widget::HandleMouseButtonUp(event);
+
+    event.SetConsumed();
+}
+
+void DialogChangelog::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
+{
+    sgl::sgui::Widget::HandleMouseMotion(event);
+
+    event.SetConsumed();
 }
 
 } // namespace game

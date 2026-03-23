@@ -45,6 +45,10 @@ private:
 
     void PositionElements();
 
+    void HandleMouseButtonDown(sgl::core::MouseButtonEvent & event) override;
+    void HandleMouseButtonUp(sgl::core::MouseButtonEvent & event) override;
+    void HandleMouseMotion(sgl::core::MouseMotionEvent & event) override;
+
 private:
     sgl::graphic::Image * mBg = nullptr;
     sgl::graphic::Text * mTitle = nullptr;
