@@ -602,8 +602,8 @@ void ScreenInit::SetupPermanentTextures()
             { 230, 108, 150, 12 },
             { 230, 121, 154, 16 },
             // CHECKBOX
-            { 313, 0, 24, 24 },
-            { 338, 0, 24, 24 },
+            { 289, 0, 24, 24 },
+            { 314, 0, 24, 24 },
             { 363, 0, 24, 24 },
             // BUTTON DIALOG STANDARD
             { 0, 138, 300, 44 },
