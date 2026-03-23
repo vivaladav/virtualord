@@ -10,9 +10,9 @@
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Text.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/sgui/Label.h>
 #include <sgl/sgui/ScrollArea.h>
 #include <sgl/sgui/Scrollbar.h>
-#include <sgl/sgui/TextArea.h>
 #include <sgl/utilities/StringManager.h>
 
 // anonymous namespace for local "private" classes
@@ -32,7 +32,7 @@ public:
 
         // BACKGROUND
         auto tm = graphic::TextureManager::Instance();
-        auto tex = tm->GetSprite(SpriteFileMainMenu, IND_MM_BTN_CLOSE);
+        auto tex = tm->GetSprite(SpriteFileDialogChangelog, ID_DLG_CHLG_BTN_CLOSE);
         mBg = new graphic::Image(tex);
         RegisterRenderable(mBg);
 
@@ -70,8 +70,8 @@ public:
 
         auto tm = graphic::TextureManager::Instance();
 
-        mBg->SetTexture(tm->GetSprite(SpriteFileMainMenu, IND_MM_SCROLLBAR));
-        mButton->SetTexture(tm->GetSprite(SpriteFileMainMenu, IND_MM_BTN_SCROLLBAR));
+        mBg->SetTexture(tm->GetSprite(SpriteFileDialogChangelog, ID_DLG_CHLG_BG_SCROLLBAR));
+        mButton->SetTexture(tm->GetSprite(SpriteFileDialogChangelog, ID_DLG_CHLG_BTN_SCROLLBAR));
 
         UpdatePositions();
         UpdateGraphics(GetState());
@@ -129,7 +129,7 @@ class ChangelogArea : public sgl::sgui::ScrollArea
 {
 public:
     ChangelogArea(sgl::sgui::Widget * parent)
-        : sgl::sgui::ScrollArea(460, 360, parent)
+        : sgl::sgui::ScrollArea(485, 360, parent)
         , mScrollbar(new ChangelogScrollbar(this))
     {
         mScrollbar->SetOnValueChanged([this](int val)
@@ -183,7 +183,7 @@ private:
 private:
     static const int CONT_X0 = 20;
     static const int CONT_Y0 = 20;
-    static const int CONT_W = 390;
+    static const int CONT_W = 415;
     static const int CONT_H = 320;
 
     ChangelogScrollbar * mScrollbar = nullptr;
@@ -196,75 +196,27 @@ namespace game
 
 // ===== BUTTON CHANGELOG =====
 ButtonChangelog::ButtonChangelog()
+    : GameButton(SpriteFileDialogChangelog,
+                 { ID_DLG_CHLG_BTN_UP_BG_NORMAL, ID_DLG_CHLG_BTN_UP_BG_NORMAL,
+                   ID_DLG_CHLG_BTN_UP_BG_OVER, ID_DLG_CHLG_BTN_UP_BG_PUSHED,
+                   ID_DLG_CHLG_BTN_UP_BG_NORMAL },
+                 { WidgetsConstants::colorDialogButtonNormal,
+                   WidgetsConstants::colorDialogButtonDisabled,
+                   WidgetsConstants::colorDialogButtonOver,
+                   WidgetsConstants::colorDialogButtonPushed,
+                   WidgetsConstants::colorDialogButtonChecked }, nullptr)
 {
     using namespace sgl;
 
-    // BACKGROUND
-    auto tm = graphic::TextureManager::Instance();
-    auto tex = tm->GetSprite(SpriteFileMainMenu, IND_MM_BTN_UPDATES);
-    mBg = new graphic::Image(tex);
-    RegisterRenderable(mBg);
+    const int size = 20;
 
-    SetSize(mBg->GetWidth(), mBg->GetHeight());
+    auto fm = graphic::FontManager::Instance();
+    auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
+    SetLabelFont(fnt);
 
     // TEXT
-    auto sm = utilities::StringManager::Instance();
-    auto fm = graphic::FontManager::Instance();
-    auto font = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
-
-    // hack to make text vertical adding new lines after every character
-    const std::string & text = sm->GetString("UPDATES");
-    const unsigned int lenText = text.length();
-    const unsigned int endText = lenText - 1;
-    std::string vtext((lenText * 2) - 1, 0);
-
-    for(unsigned int i = 0; i < endText; ++i)
-    {
-        vtext[i * 2] = text[i];
-        vtext[(i * 2) + 1] = '\n';
-    }
-
-    // add last chracter
-    vtext[vtext.length() - 1] = text[lenText - 1];
-
-    // create text area
-    mLabel = new sgui::TextArea(GetWidth(), GetHeight(), font, false, this);
-    mLabel->setTextAlignment(sgui::TextArea::ALIGN_H_CENTER, sgui::TextArea::ALIGN_V_CENTER);
-    mLabel->SetText(vtext.c_str());
-
-    UpdateLabel(sgui::AbstractButton::VisualState::NORMAL);
-}
-
-void ButtonChangelog::HandlePositionChanged()
-{
-    PositionElements();
-}
-
-void ButtonChangelog::OnStateChanged(sgl::sgui::AbstractButton::VisualState state)
-{
-    UpdateLabel(state);
-}
-
-void ButtonChangelog::PositionElements()
-{
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
-
-    mBg->SetPosition(x0, y0);
-}
-
-void ButtonChangelog::UpdateLabel(sgl::sgui::AbstractButton::VisualState state)
-{
-    const unsigned int colorsLabel[NUM_VISUAL_STATES] =
-    {
-        0xb9ced9ff,
-        0x35464dff,
-        0xcfe6f2ff,
-        0xaec2ccff,
-        0xaec2ccff
-    };
-
-    mLabel->SetColor(colorsLabel[state]);
+    auto sm = sgl::utilities::StringManager::Instance();
+    SetLabel(sm->GetCString("UPDATES"));
 }
 
 // ===== DIALOG CHANGELOG =====
@@ -274,7 +226,7 @@ DialogChangelog::DialogChangelog()
 
     // BACKGROUND
     auto tm = graphic::TextureManager::Instance();
-    auto tex = tm->GetSprite(SpriteFileMainMenu, IND_MM_DIALOG_UPDATES);
+    auto tex = tm->GetSprite(SpriteFileDialogChangelog, ID_DLG_CHLG_BG);
     mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 

@@ -52,7 +52,7 @@ void StateLeavePregame::DestroyPregameTextures()
     // BACKGROUNDS PREGAME
     tm->DestroyTexture("main_menu_bg.png");
     // UI PREGAME
-    tm->DestroySprite(SpriteFileMainMenu);
+    tm->DestroySprite(SpriteFileDialogChangelog);
     tm->DestroyTexture("UI/main_menu_build_badge.png");
     tm->DestroyTexture("UI/main_menu_warning_bg.png");
     // MAIN MENU BUTTONS

@@ -6,6 +6,23 @@ namespace game
 // MOUSE CURSOR
 extern const char SpriteFileCursor[];
 
+// DIALOG CHANGELOG
+extern const char SpriteFileDialogChangelog[];
+
+enum SpriteIdDialogChangelog : unsigned int
+{
+    // CHANGELOG DIALOG
+    ID_DLG_CHLG_BG,
+    ID_DLG_CHLG_BTN_CLOSE,
+    ID_DLG_CHLG_BTN_SCROLLBAR,
+    ID_DLG_CHLG_BG_SCROLLBAR,
+
+    // BUTTON UPDATES
+    ID_DLG_CHLG_BTN_UP_BG_NORMAL,
+    ID_DLG_CHLG_BTN_UP_BG_OVER,
+    ID_DLG_CHLG_BTN_UP_BG_PUSHED,
+};
+
 // DIALOG END MISSION
 extern const char SpriteFileDialogEndMission[];
 
@@ -436,19 +453,6 @@ enum SpriteIdPanelSelectedObject : unsigned int
     ID_PAN_SELOBJ_ICON_ACT_MOVE,
     ID_PAN_SELOBJ_ICON_ACT_INFO,
     ID_PAN_SELOBJ_ICON_ACT_UPGRADE,
-};
-
-// MAIN MENU
-extern const char SpriteFileMainMenu[];
-
-enum SpriteIdMainMenu : unsigned int
-{
-    // CHANGELOG DIALOG
-    IND_MM_BTN_UPDATES,
-    IND_MM_BTN_CLOSE,
-    IND_MM_BTN_SCROLLBAR,
-    IND_MM_DIALOG_UPDATES,
-    IND_MM_SCROLLBAR,
 };
 
 // MAIN MENU BUTTONS

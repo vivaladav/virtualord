@@ -356,14 +356,17 @@ void ScreenInit::SetupPregameTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // CHANGELOG DIALOG
-            { 0, 0, 35, 450 },
-            { 537, 0, 30, 30 },
-            { 537, 31, 24, 30 },
-            { 36, 0, 500, 450 },
-            { 537, 62, 20, 360 },
+            { 0, 0, 525, 450 },
+            { 526, 0, 30, 30 },
+            { 526, 31, 24, 30 },
+            { 526, 62, 20, 360 },
+            // BUTTON UPDATES
+            { 0, 451, 475, 35 },
+            { 0, 487, 475, 35 },
+            { 0, 523, 475, 35 },
         };
 
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], SpriteFileMainMenu, rects);
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], SpriteFileDialogChangelog, rects);
 
         tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], "UI/main_menu_build_badge.png");
 

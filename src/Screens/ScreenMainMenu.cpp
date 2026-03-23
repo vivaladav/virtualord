@@ -29,6 +29,11 @@
 #include <sgl/utilities/System.h>
 #include <sgl/utilities/StringManager.h>
 
+namespace
+{
+const int buttonsCX = 450;
+}
+
 namespace game
 {
 
@@ -117,16 +122,16 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     button->AddOnClickFunction([game] { game->Exit(); });
 
     // position buttons panel
-    const int centerX = 450;
-    const int containerX = centerX - panelButtons->GetWidth() * 0.5f;
+    const int containerX = buttonsCX - panelButtons->GetWidth() * 0.5f;
     const int containerY = 280;
     panelButtons->SetPosition(containerX, containerY);
 
     // -- BUTTON WISHLIST --
     auto btnWishlist = new ButtonMainMenuWishlist(nullptr);
 
-    int buttonX = centerX - btnWishlist->GetWidth() * 0.5f;
-    buttonY = screenH - 100 - btnWishlist->GetHeight();
+    const int marginBottom = 150;
+    int buttonX = buttonsCX - btnWishlist->GetWidth() * 0.5f;
+    buttonY = screenH - marginBottom - btnWishlist->GetHeight();
 
     btnWishlist->AddOnClickFunction([]
     {
@@ -136,29 +141,6 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     });
 
     btnWishlist->SetPosition(buttonX, buttonY);
-
-    // -- WARNING PANEL --
-    const int marginWarningB = 100;
-    auto panelWarning = new sgui::Image("UI/main_menu_warning_bg.png");
-    panelWarning->SetPosition(centerX - panelWarning->GetWidth() / 2,
-                              buttonY - panelWarning->GetHeight() - marginWarningB);
-
-    auto fontHeader = fm->GetFont("Lato-Regular.ttf", 26, graphic::Font::NORMAL);
-    auto fontText = fm->GetFont("Lato-Regular.ttf", 16, graphic::Font::NORMAL);
-
-    const int marginHeraderT = 10;
-    const int marginHeraderB = 10;
-    auto header = new sgui::Label(sm->GetCString("WARNING"), fontHeader, panelWarning);
-    header->SetColor(0xf5f5a3ff);
-    header->SetPosition((panelWarning->GetWidth() - header->GetWidth()) / 2, marginHeraderT);
-
-    const int marginTextH = 20;
-    const int textH = 60;
-    auto text = new sgui::TextArea(panelWarning->GetWidth() - (marginTextH * 2), textH,
-                               fontText, false, panelWarning);
-    text->SetColor(0xe5e5b3b2);
-    text->SetText(sm->GetCString("WARN_MM"));
-    text->SetPosition(marginTextH, header->GetY() + header->GetHeight() + marginHeraderB);
 
     // -- SOCIAL BUTTONS --
     auto panelSocial = new sgui::Widget;
@@ -210,7 +192,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
 
     // position panel social buttons
     const int psMarginTop = 25;
-    const int psX = centerX - panelSocial->GetWidth() * 0.5f;
+    const int psX = buttonsCX - panelSocial->GetWidth() * 0.5f;
     const int psY = btnWishlist->GetY() + btnWishlist->GetHeight() + psMarginTop;
     panelSocial->SetPosition(psX, psY);
 
@@ -326,8 +308,8 @@ void ScreenMainMenu::CreateChangelog()
 
     // BUTTON
     mButtonChangelog = new ButtonChangelog;
-    const int btnChangelogX = screenW - mButtonChangelog->GetWidth();
-    const int btnChangelogY = (screenH - mButtonChangelog->GetHeight()) / 2;
+    const int btnChangelogX = buttonsCX - (mButtonChangelog->GetWidth() / 2);
+    const int btnChangelogY = screenH - mButtonChangelog->GetHeight();
     mButtonChangelog->SetPosition(btnChangelogX, btnChangelogY);
 
     mButtonChangelog->AddOnClickFunction([this]
@@ -339,8 +321,8 @@ void ScreenMainMenu::CreateChangelog()
 
     // DIALOG
     mDialogChangelog = new DialogChangelog;
-    const int dialogChangelogX = screenW - mDialogChangelog->GetWidth();
-    const int dialogChangelogY = (screenH - mDialogChangelog->GetHeight()) / 2;
+    const int dialogChangelogX = btnChangelogX;
+    const int dialogChangelogY = screenH - mDialogChangelog->GetHeight();
     mDialogChangelog->SetPosition(dialogChangelogX, dialogChangelogY);
     mDialogChangelog->SetVisible(false);
 
