@@ -2,6 +2,7 @@
 
 #include <sgl/sgui/AbstractButton.h>
 
+#include <array>
 #include <unordered_map>
 #include <vector>
 
