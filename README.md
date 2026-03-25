@@ -25,8 +25,14 @@ You can also follow all the less frequent updates on social media:
 
 
 ## Current status
-0.5.0 - alpha
+**0.6.0 - alpha**
 
-![Virtualord, red faction](https://i.imgur.com/kd7t8QM.jpeg)
-![Virtualord, green faction](https://i.imgur.com/lWqvZhE.jpeg)
-![Virtualord, blue faction](https://i.imgur.com/5Evlx6l.jpeg)
+click to enlarge the images
+
+<img src="https://i.imgur.com/PYeMVMz.jpeg" title ="Virtualord, faction Zulox" alt="Virtualord, faction Zulox" width="640" height="auto" />
+<img src="https://i.imgur.com/wvJJQIo.jpeg" title ="Virtualord, faction Domens" alt="Virtualord, faction Domens" width="640" height="auto" />
+<img src="https://i.imgur.com/zi3o8xP.jpeg" title ="Virtualord, faction Alphen" alt="Virtualord, faction Alphen" width="640" height="auto" />
+<img src="https://i.imgur.com/jBlERws.jpeg" title ="Virtualord, create new structure dialog" alt="Virtualord, create new structure dialog" width="640" height="auto" />
+
+
+More screenshots and videos available on the [Steam page](https://store.steampowered.com/app/1607580/Virtualord_The_Virtual_Conqueror/?utm_source=github&utm_medium=web&utm_campaign=ongoing&utm_content=readme&utm_term=link) of Virtualord.
