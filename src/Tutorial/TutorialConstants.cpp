@@ -12,7 +12,7 @@ const unsigned int TutorialConstants::colorTextContinue = 0xb3a180ff;
 const unsigned int TutorialConstants::colorTextOld = 0x93866cff;
 
 const int TutorialConstants::infoPlanetMapX = 560;
-const int TutorialConstants::infoPlanetMapY = 100;
+const int TutorialConstants::infoPlanetMapY = 750;
 const int TutorialConstants::infoPlanetMapW = 800;
 const int TutorialConstants::infoPlanetMapH = 125;
 

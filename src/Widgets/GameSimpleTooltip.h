@@ -30,9 +30,10 @@ private:
     void SetPositions();
 
 private:
-    sgl::graphic::Image * mBgLeft = nullptr;
-    sgl::graphic::Image * mBgCont = nullptr;
-    sgl::graphic::Image * mBgRight = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
+
     sgl::graphic::Text * mLabel = nullptr;
 };
 

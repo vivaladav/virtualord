@@ -4,7 +4,6 @@
 
 #include <array>
 #include <functional>
-#include <vector>
 
 namespace sgl
 {
@@ -27,8 +26,6 @@ class Game;
 class Player;
 class Screen;
 
-enum ResourceType : unsigned int;
-
 class DialogTrading : public sgl::sgui::Widget
 {
 public:
@@ -38,10 +35,23 @@ public:
     void SetFunctionOnClose(const std::function<void()> & f);
 
 private:
-    void AddResBlock(int x0, int y0, ResourceType res, sgl::graphic::Font * font);
-    void AddStockBlock(int x0, int y0, int bW, ResourceType res, sgl::graphic::Font * font);
-    void AddBuyBlock(int x0, int y0, int bW, ResourceType res, sgl::graphic::Font * font);
-    void AddSellBlock(int x0, int y0, int bW, ResourceType res, sgl::graphic::Font * font);
+    enum TradedResources : unsigned int
+    {
+        TR_ENERGY,
+        TR_MATERIAL,
+        TR_DIAMONDS,
+        TR_BLOBS,
+        TR_RESEARCH,
+
+        NUM_TRADED_RES,
+
+        TR_NULL
+    };
+
+    void AddResBlock(int x0, int y0, TradedResources res, sgl::graphic::Font * font);
+    void AddStockBlock(int x0, int y0, int bW, TradedResources res, sgl::graphic::Font * font);
+    void AddBuyBlock(int x0, int y0, int bW, TradedResources res, sgl::graphic::Font * font);
+    void AddSellBlock(int x0, int y0, int bW, TradedResources res, sgl::graphic::Font * font);
 
     void HandlePositionChanged() override;
 
@@ -53,28 +63,39 @@ private:
     int GetCurrentGain() const;
     void UpdateLabelTotalGain();
 
-    void IncBuyQuantity(ResourceType res, sgl::sgui::Label * label);
-    void DecBuyQuantity(ResourceType res, sgl::sgui::Label * label);
-    void IncSellQuantity(ResourceType res, sgl::sgui::Label * label);
-    void DecSellQuantity(ResourceType res, sgl::sgui::Label * label);
+    void IncBuyQuantity(TradedResources res, sgl::sgui::Label * label);
+    void DecBuyQuantity(TradedResources res, sgl::sgui::Label * label);
+    void IncSellQuantity(TradedResources res, sgl::sgui::Label * label);
+    void DecSellQuantity(TradedResources res, sgl::sgui::Label * label);
 
     void UpdateStockLabel(unsigned int statId);
+
+    void UpdateButtons();
 
     void Buy();
     void Sell();
 
 private:
-    static const int TRADED_RES = 4;
+    std::array<int, NUM_TRADED_RES> mBuy;
+    std::array<int, NUM_TRADED_RES> mSell;
 
-    std::array<int, TRADED_RES> mBuy;
-    std::array<int, TRADED_RES> mSell;
+    std::array<sgl::sgui::Label *, NUM_TRADED_RES> mLabelStock;
+    std::array<sgl::sgui::Label *, NUM_TRADED_RES> mLabelBuy;
+    std::array<sgl::sgui::Label *, NUM_TRADED_RES> mLabelSell;
 
-    std::array<sgl::sgui::Label *, TRADED_RES> mLabelStock;
-    std::array<sgl::sgui::Label *, TRADED_RES> mLabelBuy;
-    std::array<sgl::sgui::Label *, TRADED_RES> mLabelSell;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
 
-    sgl::graphic::Image * mBg = nullptr;
     sgl::sgui::AbstractButton * mButtonClose = nullptr;
+
+    std::array<sgl::sgui::AbstractButton *, NUM_TRADED_RES> mButtonsBuyMinus;
+    std::array<sgl::sgui::AbstractButton *, NUM_TRADED_RES> mButtonsBuyPlus;
+    std::array<sgl::sgui::AbstractButton *, NUM_TRADED_RES> mButtonsSellMinus;
+    std::array<sgl::sgui::AbstractButton *, NUM_TRADED_RES> mButtonsSellPlus;
+
+    sgl::sgui::AbstractButton * mButtonBuy = nullptr;
+    sgl::sgui::AbstractButton * mButtonSell = nullptr;
 
     sgl::sgui::Label * mLabelTotBuy = nullptr;
     sgl::sgui::Label * mLabelTotSell = nullptr;
@@ -82,7 +103,7 @@ private:
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
 
-    std::vector<unsigned int> mCallbackValIds;
+    std::array<unsigned int, NUM_TRADED_RES> mCallbackValIds;
 };
 
 } // namespace game

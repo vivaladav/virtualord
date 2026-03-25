@@ -45,6 +45,8 @@ enum GameCursorId : unsigned int
 enum LanguageId : unsigned int
 {
     LANG_ENGLISH,
+    LANG_FRENCH,
+    LANG_GERMAN,
     LANG_ITALIAN,
     LANG_SPANISH,
 
@@ -72,7 +74,8 @@ enum MapLayers : unsigned int
 enum MissionCategory : unsigned int
 {
     MC_COLLECTION,      // collect resources
-    MC_CONSTRUCTION,    // build something
+    MC_CONQUEST,        // conquest
+    MC_CREATION,        // build something
     MC_DESTRUCTION,     // destroy enemies
     MC_PRODUCTION,      // produce resources
     MC_RESCUE,          // rescue something
@@ -145,18 +148,42 @@ enum ResourceType : unsigned int
     RES_INVALID
 };
 
-enum TerritoryStatus : unsigned int
+enum ExtendedResource : unsigned int
 {
-    TER_ST_UNEXPLORED,
-    TER_ST_FREE,
-    TER_ST_OCCUPIED,
-    TER_ST_OCCUPIED_UNEXPLORED,
-    TER_ST_UNREACHABLE,
-    TER_ST_UNAVAILABLE,
+    ER_ENERGY,
+    ER_MATERIAL,
+    ER_DIAMONDS,
+    ER_BLOBS,
+    ER_MONEY,
+    ER_RESEARCH,
 
-    NUM_TERRITORY_STATUSES,
+    NUM_EXTENDED_RESOURCES,
 
-    TER_ST_UNKNOWN
+    ER_INVALID
+};
+
+enum TechUpgradeId : unsigned int
+{
+    TECH_UP_BASE_IMPROVE_1,
+    TECH_UP_BASE_IMPROVE_2,
+    TECH_UP_BASE_IMPROVE_3,
+    TECH_UP_BASE_IMPROVE_4,
+    TECH_UP_BASE_IMPROVE_5,
+    TECH_UP_RADAR_STATION,
+    TECH_UP_RADAR_TOWER,
+    TECH_UP_STORAGE_STRUCTS,
+    TECH_UP_STORAGE_ENERGY_1,
+    TECH_UP_STORAGE_ENERGY_2,
+    TECH_UP_STORAGE_MATERIAL_1,
+    TECH_UP_STORAGE_MATERIAL_2,
+    TECH_UP_STORAGE_DIAMONDS_1,
+    TECH_UP_STORAGE_DIAMONDS_2,
+    TECH_UP_STORAGE_BLOBS_1,
+    TECH_UP_STORAGE_BLOBS_2,
+
+    NUM_TECH_UPGRADES,
+
+    TECH_UP_NULL
 };
 
 enum ParticlesUpdaterId : unsigned int
@@ -166,37 +193,6 @@ enum ParticlesUpdaterId : unsigned int
     PU_HIT_POINTS,
     PU_OUTPUT,
     PU_SINGLE_LASER
-};
-
-enum Planets : unsigned int
-{
-    PLANET_1,
-
-    NUM_PLANETS,
-
-    PLANET_UNKNOWN
-};
-
-enum TutorialId : unsigned int
-{
-    TUTORIAL_MISSION_INTRO,
-    TUTORIAL_PLANET_MAP,
-
-    NUM_TUTORIALS,
-
-    TUTORIAL_UNKNOWN
-};
-
-enum TutorialState : unsigned int
-{
-    TS_TODO,
-    TS_IN_PROGRESS,
-    TS_DONE,
-    TS_ABORTED,
-
-    NUM_TUTORIAL_STATES,
-
-    TS_UNKNOWN
 };
 
 enum TurnStage : unsigned int
@@ -211,6 +207,5 @@ enum TurnStage : unsigned int
 
 extern const char * FACTIONS_NAME[NUM_FACTIONS];
 extern const char * MISSION_CATEGORY_TITLE[NUM_MISSION_CATEGORIES];
-extern const char * PLANETS_NAME[NUM_PLANETS];
 
 } // namespace game

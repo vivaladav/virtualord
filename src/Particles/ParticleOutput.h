@@ -42,6 +42,7 @@ private:
     float mSpeed = 0.f;
     float mAlpha = 255.f;
     float mDecaySpeed = 1.f;
+    float mTimerLife = 1.f;
 };
 
 inline float ParticleOutput::GetSpeed() const { return mSpeed; }

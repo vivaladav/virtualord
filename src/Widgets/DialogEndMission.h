@@ -19,8 +19,8 @@ class Screen;
 class DialogEndMission : public sgl::sgui::Widget
 {
 public:
-    DialogEndMission(int time, int territoryConquered, int enemiesKilled,
-                     int casualties, bool victory);
+    DialogEndMission(unsigned int time, unsigned int territoryConquered, unsigned int enemiesKilled,
+                     unsigned int casualties, unsigned int turns, bool victory);
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
@@ -31,7 +31,10 @@ private:
     void SetPositions();
 
 private:
-    sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
+
     sgl::sgui::AbstractButton * mButton = nullptr;
 };
 

@@ -7,12 +7,11 @@
 #include "GameConstants.h"
 #include "GameMapCell.h"
 #include "AI/PlayerAI.h"
-#include "GameObjects/Base.h"
 #include "GameObjects/Blobs.h"
 #include "GameObjects/Diamonds.h"
 #include "GameObjects/GameObjectsGroup.h"
 #include "GameObjects/LootBox.h"
-#include "GameObjects/ResourceGenerator.h"
+#include "GameObjects/ResourceStorage.h"
 #include "GameObjects/Structure.h"
 #include "GameObjects/Unit.h"
 
@@ -24,15 +23,11 @@ namespace game
 
 constexpr float MAX_ENERGY0 = 100.f;
 
-// NOTE these will be replaced by dynamic values soon
-constexpr int ENERGY_PER_CELL = 1;
-
 Player::Player(const char * name, int pid)
     : mDummyStat(INVALID_STAT, 0)
     , mName(name)
     , mOnNumCellsChanged([](int){})
     , mOnNumUnitsChanged([](){})
-    , mOnResourcesChanged([](){})
     , mOnTurnEnergyChanged([](){})
     , mOnTurnMaxEnergyChanged([](){})
     , mPlayerId(pid)
@@ -45,6 +40,7 @@ Player::Player(const char * name, int pid)
     mStats.emplace_back(Stat::ENERGY, 0);
     mStats.emplace_back(Stat::MATERIAL, 0);
     mStats.emplace_back(Stat::MONEY, 0);
+    mStats.emplace_back(Stat::RESEARCH, 0);
 
     for(StatValue & val : mStats)
         val.SetMin(0);
@@ -52,14 +48,15 @@ Player::Player(const char * name, int pid)
     mStats[Stat::BLOBS].SetMax(100);
     mStats[Stat::DIAMONDS].SetMax(100);
     mStats[Stat::ENERGY].SetMax(1000);
-    mStats[Stat::MATERIAL].SetMax(500);
+    mStats[Stat::MATERIAL].SetMax(1000);
     mStats[Stat::MONEY].SetMax(99999999);
+    mStats[Stat::RESEARCH].SetMax(999999);
 
-    // init vectors of resource generators
-    mResGeneratorsMap.insert({ RES_ENERGY, {} });
-    mResGeneratorsMap.insert({ RES_MATERIAL1, {} });
-    mResGeneratorsMap.insert({ RES_DIAMONDS, {} });
-    mResGeneratorsMap.insert({ RES_BLOBS, {} });
+    // -- UPGRADES --
+    for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
+        mUpgrades.emplace(static_cast<TechUpgradeId>(i), false);
+
+    mUpgrades.emplace(TECH_UP_NULL, false);
 }
 
 Player::~Player()
@@ -244,7 +241,7 @@ void Player::SetResource(Stat sid, int val)
 
     mStats[sid].SetValue(val);
 
-    mOnResourcesChanged();
+    NotifyResourcesChanged();
 }
 
 void Player::SumResource(Stat sid, int val)
@@ -254,29 +251,59 @@ void Player::SumResource(Stat sid, int val)
 
     mStats[sid].SumValue(val);
 
-    mOnResourcesChanged();
+    NotifyResourcesChanged();
 }
 
-void Player::SetResourceMax(Stat sid, int val)
+void Player::SetResourceMax(Stat sid, int max)
 {
     if(sid >= NUM_PSTATS)
         return ;
 
-    mStats[sid].SetMax(val);
+    const int oldVal = mStats[sid].GetValue();
+
+    mStats[sid].SetMax(max);
+
+    const int newVal = mStats[sid].GetValue();
+
+    if(oldVal != newVal)
+        NotifyResourcesChanged();
 }
 
-void Player::SumResourceMax(Stat sid, int val)
+void Player::SumResourceMax(Stat sid, int sum)
 {
     if(sid >= NUM_PSTATS)
         return ;
 
+    const int oldVal = mStats[sid].GetValue();
     const int max = mStats[sid].GetMax();
-    int newMax = max + val;
+    int newMax = max + sum;
 
     if(newMax < 0)
         newMax = 0;
 
     mStats[sid].SetMax(newMax);
+
+    const int newVal = mStats[sid].GetValue();
+
+    if(oldVal != newVal)
+        NotifyResourcesChanged();
+}
+
+unsigned int Player::AddOnResourcesChanged(const std::function<void()> & f)
+{
+    static unsigned int num = 0;
+
+    mOnResourcesChanged.emplace(++num, f);
+
+    return num;
+}
+
+void Player::RemoveOnResourcesChanged(unsigned int funId)
+{
+    auto it = mOnResourcesChanged.find(funId);
+
+    if(it != mOnResourcesChanged.end())
+        mOnResourcesChanged.erase(it);
 }
 
 unsigned int Player::AddOnResourceChanged(Stat sid, const std::function<void (const StatValue *,
@@ -315,75 +342,154 @@ void Player::SumCells(int val)
     mOnNumCellsChanged(mNumCells);
 }
 
-int Player::GetMoneySpentPerTurn() const
+void Player::HandleCollectable(GameObject * collected, GameObject * collector)
 {
-    // TODO
-    return 0;
-}
-
-void Player::UpdateResources()
-{
-    // energy
-    const int energyProd = GetResourceProduction(ResourceType::RES_ENERGY);
-    const int energyUsed = GetResourceConsumption(ResourceType::RES_ENERGY);
-    const int energyDiff = energyProd - energyUsed;
-
-    bool changed = false;
-
-    if(energyDiff != 0)
-    {
-        mStats[Player::Stat::ENERGY].SumValue(energyDiff);
-        changed = true;
-    }
-
-    // material 1
-    const int materialProd = GetResourceProduction(ResourceType::RES_MATERIAL1);
-
-    if(materialProd != 0)
-    {
-        mStats[Player::Stat::MATERIAL].SumValue(materialProd);
-        changed = true;
-    }
-
-    if(changed)
-        mOnResourcesChanged();
-}
-
-void Player::HandleCollectable(GameObject * obj)
-{
-    const GameObjectTypeId type = obj->GetObjectType();
+    const GameObjectTypeId type = collected->GetObjectType();
 
     // DIAMONDS
     if(type == ObjectData::TYPE_DIAMONDS)
     {
-        auto d = static_cast<Diamonds *>(obj);
+        auto d = static_cast<Diamonds *>(collected);
         mStats[Stat::DIAMONDS].SumValue(d->GetNum());
     }
     else if(type == ObjectData::TYPE_BLOBS)
     {
-        auto d = static_cast<Blobs *>(obj);
+        auto d = static_cast<Blobs *>(collected);
         mStats[Stat::BLOBS].SumValue(d->GetNum());
     }
-    else if(type == ObjectData::TYPE_LOOTBOX)
+    else if(type == ObjectData::TYPE_LOOTBOX || type == ObjectData::TYPE_LOOTBOX2)
     {
-        auto lb = static_cast<LootBox *>(obj);
+        auto lb = static_cast<LootBox *>(collected);
         auto type = static_cast<Player::Stat>(lb->GetPrizeType());
 
         std::cout << "Player::HandleCollectable | LootBox type: " << type
                   << " - quantity: " << lb->GetPrizeQuantity() << std::endl;
 
-        mStats[type].SumValue(lb->GetPrizeQuantity());
+        if(type != INVALID_STAT)
+            mStats[type].SumValue(lb->GetPrizeQuantity());
+        // special case -> exploding lootbox
+        else
+        {
+            const float damage = collected->GetEnergy();
+            collector->Hit(damage, nullptr, false);
+        }
     }
     else
     {
-        std::cerr << "Player::HandleCollectable | don't know how to handle this object type: " << type << std::endl;
+        std::cerr << "Player::HandleCollectable | don't know how to handle this object type: "
+                  << type << std::endl;
         return ;
     }
 
-    mOnResourcesChanged();
+    NotifyResourcesChanged();
 
     // notify collection
-    static_cast<Collectable *>(obj)->Collected(this);
+    static_cast<Collectable *>(collected)->Collected(this);
+}
+
+void Player::ClearUpgrades()
+{
+    for(auto it : mUpgrades)
+        it.second = false;
+}
+
+void Player::UnlockUpgrade(TechUpgradeId upgrade)
+{
+    auto it = mUpgrades.find(upgrade);
+
+    if(it == mUpgrades.end())
+        return ;
+
+    it->second = true;
+
+    switch(upgrade)
+    {
+        case TECH_UP_BASE_IMPROVE_1:
+            mBaseProdMult *= 1.05f;
+        break;
+
+        case TECH_UP_BASE_IMPROVE_2:
+            mBaseProdMult *= 1.10f;
+        break;
+
+        case TECH_UP_BASE_IMPROVE_3:
+            mBaseProdMult *= 1.15f;
+        break;
+
+        case TECH_UP_BASE_IMPROVE_4:
+            mBaseProdMult *= 1.20f;
+        break;
+
+        case TECH_UP_BASE_IMPROVE_5:
+            mBaseProdMult *= 1.25f;
+        break;
+
+        case TECH_UP_RADAR_STATION:
+            AddAvailableStructure(ObjectData::TYPE_RADAR_STATION);
+        break;
+
+        case TECH_UP_RADAR_TOWER:
+            AddAvailableStructure(ObjectData::TYPE_RADAR_TOWER);
+        break;
+
+        case TECH_UP_STORAGE_STRUCTS:
+            AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_BLOBS);
+            AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_DIAMONDS);
+            AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_ENERGY);
+            AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_MATERIAL);
+        break;
+
+        case TECH_UP_STORAGE_ENERGY_1:
+            UpgradeResourceStorage(RES_ENERGY, 1.25f);
+        break;
+
+        case TECH_UP_STORAGE_ENERGY_2:
+            UpgradeResourceStorage(RES_ENERGY, 1.5f);
+        break;
+
+        case TECH_UP_STORAGE_MATERIAL_1:
+            UpgradeResourceStorage(RES_MATERIAL1, 1.25f);
+        break;
+
+        case TECH_UP_STORAGE_MATERIAL_2:
+            UpgradeResourceStorage(RES_MATERIAL1, 1.5f);
+        break;
+
+        case TECH_UP_STORAGE_DIAMONDS_1:
+            UpgradeResourceStorage(RES_DIAMONDS, 1.25f);
+        break;
+
+        case TECH_UP_STORAGE_DIAMONDS_2:
+            UpgradeResourceStorage(RES_DIAMONDS, 1.5f);
+        break;
+
+        case TECH_UP_STORAGE_BLOBS_1:
+            UpgradeResourceStorage(RES_BLOBS, 1.25f);
+            break;
+
+        case TECH_UP_STORAGE_BLOBS_2:
+            UpgradeResourceStorage(RES_BLOBS, 1.5f);
+        break;
+
+        default:
+        break;
+    }
+}
+
+void Player::OnNewTurn()
+{
+    // update turns counter
+    ++mTurnsPlayed;
+
+    // consume energy of own cells
+    const int energy = GetCellsEnergyUsed();
+
+    if(energy > 0)
+    {
+        mStats[ENERGY].SumValue(-energy);
+
+        NotifyResourcesChanged();
+    }
 }
 
 void Player::AdjustTurnMaxEnergy()
@@ -555,88 +661,73 @@ void Player::SetSelectedObject(GameObject * obj)
     }
 }
 
-void Player::AddResourceGenerator(ResourceGenerator * gen)
+int Player::GetResourceProduction(ExtendedResource type) const
 {
-    const ResourceType type = gen->GetResourceType();
+    int tot = 0;
 
-    mResGeneratorsMap[type].push_back(gen);
-    mResGenerators.push_back(gen);
-}
-
-void Player::RemoveResourceGenerator(ResourceGenerator * gen)
-{
-    const ResourceType type = gen->GetResourceType();
-    std::vector<ResourceGenerator *> & generators = mResGeneratorsMap[type];
-
-    // remove generator from map
-    auto itM = generators.begin();
-
-    while(itM != generators.end())
+    for(const auto s : mStructures)
     {
-        if(*itM == gen)
-        {
-            generators.erase(itM);
-            break;
-        }
-        else
-            ++itM;
+        if(s->IsLinked())
+            tot += s->GetResourceProduction(type);
     }
 
-    // remove generator from list
-    auto itL = mResGenerators.begin();
-
-    while(itL != mResGenerators.end())
-    {
-        if(*itL == gen)
-        {
-            mResGenerators.erase(itL);
-            break;
-        }
-        else
-            ++itL;
-    }
+    return tot;
 }
 
-int Player::GetResourceProduction(ResourceType type) const
+int Player::GetResourceConsumption(ExtendedResource type) const
 {
-    int res = 0;
+    int tot = 0;
 
-    auto it = mResGeneratorsMap.find(type);
-
-    // can't find resource type
-    if(mResGeneratorsMap.end() == it)
-        return 0;
-
-    const std::vector<ResourceGenerator *> & generators = it->second;
-
-    for(const ResourceGenerator * resGen : generators)
+    // consider usage from structures
+    for(const auto s : mStructures)
     {
-        if(resGen->GetCell()->linked)
-              res += resGen->GetOutput();
+        if(s->IsLinked())
+            tot += s->GetResourceUsage(type);
     }
 
-    // resource generated by base
-    if(RES_ENERGY == type)
-        res +=  mBase->GetOutputEnergy();
-    else if(RES_MATERIAL1 == type)
-        res += mBase->GetOutputMaterial();
+    // energy used by cells too
+    if(ER_ENERGY == type)
+        tot += GetCellsEnergyUsed();
 
-    return res;
+    return tot;
 }
 
-int Player::GetResourceConsumption(ResourceType type) const
+int Player::GetCellsEnergyUsed() const
 {
-    switch(type)
-    {
-        case RES_ENERGY:
-        {
-            return mNumCells * ENERGY_PER_CELL;
-        }
-        break;
+    const int energyPerCell = 1;
+    return mNumCells * energyPerCell;
+}
 
-        default:
-            return 0;
-        break;
+void Player::NotifyResourcesChanged()
+{
+    for(auto & it : mOnResourcesChanged)
+        it.second();
+}
+
+void Player::UpgradeResourceStorage(ResourceType res, float mult)
+{
+    const GameObjectTypeId objectTypes[] =
+    {
+        ObjectData::TYPE_RES_STORAGE_ENERGY,
+        ObjectData::TYPE_RES_STORAGE_MATERIAL,
+        ObjectData::TYPE_RES_STORAGE_DIAMONDS,
+        ObjectData::TYPE_RES_STORAGE_BLOBS,
+    };
+
+    if(res == RES_ENERGY)
+        mStorageEnergyMult *= mult;
+    else if(res == RES_MATERIAL1)
+        mStorageMaterialMult *= mult;
+    else if(res == RES_DIAMONDS)
+        mStorageDiamondsMult *= mult;
+    else if(res == RES_BLOBS)
+        mStorageBlobsMult *= mult;
+
+    // notify existing structures
+    for(auto s : mStructures)
+    {
+        if(s->GetObjectType() == objectTypes[res])
+            static_cast<ResourceStorage *>(s)->OnCapacityUpgraded();
     }
 }
 

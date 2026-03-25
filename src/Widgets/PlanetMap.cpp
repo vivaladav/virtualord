@@ -1,6 +1,7 @@
 #include "Widgets/PlanetMap.h"
 
 #include "GameConstants.h"
+#include "MapsRegistry.h"
 #include "Widgets/GameUIData.h"
 
 #include <sgl/core/Point.h>
@@ -11,6 +12,8 @@
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/AbstractButton.h>
 #include <sgl/sgui/AbstractButtonsGroup.h>
+
+#include <cassert>
 
 // anonymous namespace for local "private" classes
 namespace
@@ -112,7 +115,7 @@ private:
         {
             const int idPerFaction = 2;
             const int spriteId0 = mMain ? IND_PM_MAIN_CELL_F1 : IND_PM_CELL_F1;
-            const int spriteId = IND_PM_CELL_F1 + (mFaction * idPerFaction) +
+            const int spriteId = spriteId0 + (mFaction * idPerFaction) +
                                  static_cast<int>(IsChecked());
 
             tex = tm->GetSprite(SpriteFilePlanetMap, spriteId);
@@ -198,7 +201,7 @@ namespace game
 {
 
 // ===== PLANET MAP =====
-PlanetMap::PlanetMap()
+PlanetMap::PlanetMap(PlanetSize ps)
     : sgl::sgui::Widget(nullptr)
 {
     using namespace sgl;
@@ -210,26 +213,55 @@ PlanetMap::PlanetMap()
     mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 
+    const int dimS = 500;
+    const int dimM = 600;
+
+    if(ps == PLANET_SIZE_S)
+        mBg->SetSize(dimS, dimS);
+    else if(ps == PLANET_SIZE_M)
+        mBg->SetSize(dimM, dimM);
+
     SetSize(mBg->GetWidth(), mBg->GetHeight());
 
     // CREATE BUTTONS MISSION
-    const core::Pointd2D buttonsPos[MAX_MISSIONS] =
-    {
-        { 314, 60 },
-        { 314, 578 },
-        { 115, 146 },
-        { 513, 146 },
-        { 115, 492 },
-        { 513, 492 },
-        { 115, 319 },
-        { 513, 319 },
-        { 302, 309 },
-    };
+    std::vector<core::Pointd2D> buttonsPos;
 
+    if(ps == PLANET_SIZE_S)
+    {
+        buttonsPos.emplace_back(214, 34);
+        buttonsPos.emplace_back(214, 404);
+        buttonsPos.emplace_back(71, 219);
+        buttonsPos.emplace_back(356, 219);
+        buttonsPos.emplace_back(202, 209);
+    }
+    else if(ps == PLANET_SIZE_M)
+    {
+        buttonsPos.emplace_back(93, 121);
+        buttonsPos.emplace_back(435, 121);
+        buttonsPos.emplace_back(93, 417);
+        buttonsPos.emplace_back(435, 417);
+        buttonsPos.emplace_back(93, 269);
+        buttonsPos.emplace_back(435, 269);
+        buttonsPos.emplace_back(252, 259);
+    }
+    else
+    {
+        buttonsPos.emplace_back(314, 60);
+        buttonsPos.emplace_back(314, 578);
+        buttonsPos.emplace_back(115, 146);
+        buttonsPos.emplace_back(513, 146);
+        buttonsPos.emplace_back(115, 492);
+        buttonsPos.emplace_back(513, 492);
+        buttonsPos.emplace_back(115, 319);
+        buttonsPos.emplace_back(513, 319);
+        buttonsPos.emplace_back(302, 309);
+    }
+
+    const unsigned int numMissions = buttonsPos.size();
     mButtonsMission = new sgui::AbstractButtonsGroup;
     ButtonMission * mainBtn = nullptr;
 
-    for(int i = 0; i < MAX_MISSIONS; ++i)
+    for(int i = 0; i < numMissions; ++i)
     {
         auto btn = new ButtonMission(this);
         btn->SetPosition(buttonsPos[i].x, buttonsPos[i].y);
@@ -238,6 +270,8 @@ PlanetMap::PlanetMap()
 
         mainBtn = btn;
     }
+
+    assert(mainBtn != nullptr);
 
     mainBtn->SetMain(true);
 }

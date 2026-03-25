@@ -114,7 +114,7 @@ void PathIndicator::SetCost(int cost)
 
     //create icon
     auto tm = graphic::TextureManager::Instance();
-    graphic::Texture * tex = tm->GetSprite(SpriteFileGameUIShared, ID_UIS_ICON_W_RES_ENERGY_16);
+    graphic::Texture * tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_W_RES_ENERGY_16);
 
     mIconCost = new graphic::Image(tex);
 

@@ -1,17 +1,16 @@
 #pragma once
 
-#include "GameButton.h"
+#include "Widgets/GameButton.h"
 
 namespace game
 {
-
-class ButtonDialogSelect : public GameButton
+class ButtonDialogOk : public GameButton
 {
 public:
-    ButtonDialogSelect(sgl::sgui::Widget * parent = nullptr);
+    ButtonDialogOk(const char * text, sgl::sgui::Widget * parent);
 
-private:
     void HandleMouseOver() override;
+
     void HandleButtonDown() override;
 };
 

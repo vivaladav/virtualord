@@ -168,40 +168,26 @@ void IsoMap::SetVisibleArea(int x, int y, int w, int h)
     const int y1 = y + h;
 
     // TOP LEFT
-    Cell2D TL = CellFromWorldPoint(x, y);
-
-    if(TL.col < 0)
-        TL.col = 0;
-
-    mRenderingC0 = TL.col;
+    const Cell2D TL = CellFromWorldPoint(x, y);
+    mRenderingC0 = (TL.col < 0) ? 0 : TL.col;
 
     // TOP RIGHT
-    Cell2D TR = CellFromWorldPoint(x1, y);
-
-    if(TR.row < 0)
-        TR.row = 0;
-
-    mRenderingR0 = TR.row;
+    const Cell2D TR = CellFromWorldPoint(x1, y);
+    mRenderingR0 = (TR.row < 0) ? 0 : TR.row;
 
     // BOTTOM LEFT
-    Cell2D BL = CellFromWorldPoint(x, y1);
+    const Cell2D BL = CellFromWorldPoint(x, y1);
+    mRenderingR1 = BL.row + 1;
 
-    ++BL.row;
-
-    if(BL.row > static_cast<int>(mRows))
-        BL.row = mRows;
-
-    mRenderingR1 = BL.row;
+    if(mRenderingR1 > mRows)
+        mRenderingR1 = mRows;
 
     // BOTTOM RIGHT
-    Cell2D BR = CellFromWorldPoint(x1, y1);
+    const Cell2D BR = CellFromWorldPoint(x1, y1);
+    mRenderingC1 = BR.col + 1;
 
-    ++BR.col;
-
-    if(BR.col > static_cast<int>(mCols))
-        BR.col = mCols;
-
-    mRenderingC1 = BR.col;
+    if(mRenderingC1 > mCols)
+        mRenderingC1 = mCols;
 
     // UPDATE LAYERS
     for(IsoLayer * layer : mLayersRenderList)

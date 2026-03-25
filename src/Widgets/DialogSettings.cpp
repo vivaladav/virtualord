@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "GameConstants.h"
+#include "Widgets/ButtonDialogClose.h"
 #include "Widgets/ButtonPanelTab.h"
 #include "Widgets/GameSliderH.h"
 #include "Widgets/GameUIData.h"
@@ -19,7 +20,7 @@
 #include <sgl/graphic/Window.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
-#include <sgl/sgui/AbstractButtonsGroup.h>
+#include <sgl/sgui/ButtonsGroup.h>
 #include <sgl/sgui/ComboBox.h>
 #include <sgl/sgui/ComboBoxItem.h>
 #include <sgl/sgui/Image.h>
@@ -43,47 +44,13 @@ constexpr unsigned int sizeTxt = 22;
 constexpr int blockSettingW = 500;
 constexpr int blockSettingH = 90;
 
+constexpr int panelContentW = 1100;
 constexpr int contX0 = 30;
 constexpr int contY0 = 40;
 
 constexpr int minResW = 1024;
 constexpr float minResRatio = 1.25f;
 constexpr int minRefresh = 60;
-
-// ====== BUTTON CLOSE =====
-class ButtonCloseSettings : public sgl::sgui::ImageButton
-{
-public:
-    ButtonCloseSettings(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({
-                                    IND_SET_BTN_X_NORMAL,
-                                    IND_SET_BTN_X_DISABLED,
-                                    IND_SET_BTN_X_OVER,
-                                    IND_SET_BTN_X_PUSHED,
-                                    IND_SET_BTN_X_NORMAL
-                                },
-                                SpriteFileSettings, parent)
-    {
-        SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
-    }
-
-private:
-    void HandleMouseOver() override
-    {
-        sgl::sgui::AbstractButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-02.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_click-02.ogg");
-    }
-};
 
 // ====== COMBOBOX =====
 class SettingsComboBox : public sgl::sgui::ComboBox
@@ -122,25 +89,25 @@ private:
         // BODY
         const unsigned int texIds[NUM_VISUAL_STATES] =
         {
-            IND_SET_CB_NORMAL,
-            IND_SET_CB_DISABLED,
-            IND_SET_CB_OVER,
-            IND_SET_CB_PUSHED,
-            IND_SET_CB_NORMAL,
+            ID_DLG_SETT_CB_NORMAL,
+            ID_DLG_SETT_CB_DISABLED,
+            ID_DLG_SETT_CB_OVER,
+            ID_DLG_SETT_CB_PUSHED,
+            ID_DLG_SETT_CB_NORMAL,
         };
 
         auto tm = graphic::TextureManager::Instance();
-        graphic::Texture * tex = tm->GetSprite(SpriteFileSettings, texIds[state]);
+        graphic::Texture * tex = tm->GetSprite(SpriteFileDialogSettings, texIds[state]);
         SetBodyTexture(tex);
 
         // TEXT
         const unsigned int txtColors[NUM_VISUAL_STATES] =
         {
-            0xd7eaf4ff,
-            0x506c7cff,
-            0xebf4f9ff,
-            0xc3dfeeff,
-            0xd7eaf4ff
+            WidgetsConstants::colorDialogButtonNormal,
+            WidgetsConstants::colorDialogButtonDisabled,
+            WidgetsConstants::colorDialogButtonOver,
+            WidgetsConstants::colorDialogButtonPushed,
+            WidgetsConstants::colorDialogButtonChecked
         };
 
         SetLabelColor(txtColors[state]);
@@ -223,28 +190,28 @@ private:
         // BODY
         const unsigned int texIds[NUM_VISUAL_STATES] =
             {
-                IND_SET_CBI_NORMAL,
-                IND_SET_CBI_DISABLED,
-                IND_SET_CBI_OVER,
-                IND_SET_CBI_PUSHED,
-                IND_SET_CBI_NORMAL,
+                ID_DLG_SETT_CBI_NORMAL,
+                ID_DLG_SETT_CBI_DISABLED,
+                ID_DLG_SETT_CBI_OVER,
+                ID_DLG_SETT_CBI_PUSHED,
+                ID_DLG_SETT_CBI_NORMAL,
             };
 
         auto tm = TextureManager::Instance();
-        Texture * tex = tm->GetSprite(SpriteFileSettings, texIds[state]);
+        Texture * tex = tm->GetSprite(SpriteFileDialogSettings, texIds[state]);
         mBody->SetTexture(tex);
 
         SetSize(mBody->GetWidth(), mBody->GetHeight());
 
         // TEXT
         const unsigned int txtColors[NUM_VISUAL_STATES] =
-            {
-                0xd7eaf4ff,
-                0x506c7cff,
-                0xebf4f9ff,
-                0xc3dfeeff,
-                0xd7eaf4ff
-            };
+        {
+            WidgetsConstants::colorDialogButtonNormal,
+            WidgetsConstants::colorDialogButtonDisabled,
+            WidgetsConstants::colorDialogButtonOver,
+            WidgetsConstants::colorDialogButtonPushed,
+            WidgetsConstants::colorDialogButtonChecked
+        };
 
         mLabel->SetColor(txtColors[state]);
     }
@@ -326,36 +293,18 @@ private:
         using namespace sgl;
 
         auto tm = graphic::TextureManager::Instance();
-        graphic::Texture * tex = nullptr;
 
-        if(IsChecked())
+        const unsigned int texIDs[] =
         {
-            if(IsEnabled())
-            {
-                if(MOUSE_OVER == state)
-                    tex = tm->GetSprite(SpriteFileSettings, IND_SET_CHB_CHECKED_OVER);
-                else if(PUSHED == state)
-                    tex = tm->GetSprite(SpriteFileSettings, IND_SET_CHB_CHECKED_PUSHED);
-                else
-                    tex = tm->GetSprite(SpriteFileSettings, IND_SET_CHB_CHECKED_NORMAL);
-            }
-            else
-                tex = tm->GetSprite(SpriteFileSettings, IND_SET_CHB_CHECKED_DISABLED);
-        }
-        else
-        {
-            if(IsEnabled())
-            {
-                if(MOUSE_OVER == state)
-                    tex = tm->GetSprite(SpriteFileSettings, IND_SET_CHB_OVER);
-                else if(PUSHED == state)
-                    tex = tm->GetSprite(SpriteFileSettings, IND_SET_CHB_PUSHED);
-                else
-                    tex = tm->GetSprite(SpriteFileSettings, IND_SET_CHB_NORMAL);
-            }
-            else
-                tex = tm->GetSprite(SpriteFileSettings, IND_SET_CHB_DISABLED);
-        }
+            ID_DLG_SETT_CHB_NORMAL,
+            ID_DLG_SETT_CHB_DISABLED,
+            ID_DLG_SETT_CHB_OVER,
+            ID_DLG_SETT_CHB_PUSHED,
+            ID_DLG_SETT_CHB_CHECKED,
+        };
+
+        auto tex = tm->GetSprite(SpriteFileDialogSettings, texIDs[state]);
+
 
         mBg->SetTexture(tex);
 
@@ -373,63 +322,14 @@ private:
     sgl::graphic::Image * mBg = nullptr;
 };
 
-// ====== PANEL CONTENT ======
-class PanelContentSettings : public sgl::sgui::Widget
+class SliderSettings : public GameSliderH
 {
 public:
-    PanelContentSettings(int h, sgl::sgui::Widget * parent)
-        : sgl::sgui::Widget(parent)
+    SliderSettings(sgl::sgui::Widget * parent)
+        : GameSliderH(SpriteFileDialogSettings, ID_DLG_SETT_SLIDER_BG,
+                      ID_DLG_SETT_SLIDER_BAR, ID_DLG_SETT_SLIDER_BUTTON, parent)
     {
-        using namespace sgl;
-
-        auto tm = graphic::TextureManager::Instance();
-        graphic::Texture * tex;
-
-        tex = tm->GetSprite(SpriteFileSettingsExp, IND_SET_PANEL2_TOP);
-        mImgTop = new graphic::Image(tex);
-        RegisterRenderable(mImgTop);
-
-        tex = tm->GetSprite(SpriteFileSettingsExp, IND_SET_PANEL2_BOTTOM);
-        mImgBot = new graphic::Image(tex);
-        RegisterRenderable(mImgBot);
-
-        tex = tm->GetSprite(SpriteFileSettingsExp, IND_SET_PANEL2_MID);
-        tex->SetScaleMode(graphic::TSCALE_NEAREST);
-        mImgMid = new graphic::Image(tex);
-        mImgMid->SetHeight(h - mImgTop->GetHeight() - mImgBot->GetHeight());
-        RegisterRenderable(mImgMid);
-
-        SetSize(mImgTop->GetWidth(), h);
-
-        UpdatePositions();
     }
-
-private:
-    void HandlePositionChanged() override
-    {
-        UpdatePositions();
-    }
-
-    void UpdatePositions()
-    {
-        const int x0 = GetScreenX();
-        const int y0 = GetScreenY();
-
-        // BACKGROUND
-        int y = y0;
-        mImgTop->SetPosition(x0, y);
-
-        y += mImgTop->GetHeight();
-        mImgMid->SetPosition(x0, y);
-
-        y += mImgMid->GetHeight();
-        mImgBot->SetPosition(x0, y);
-    }
-
-private:
-    sgl::graphic::Image * mImgTop = nullptr;
-    sgl::graphic::Image * mImgMid = nullptr;
-    sgl::graphic::Image * mImgBot = nullptr;
 };
 
 } // namespace
@@ -449,61 +349,67 @@ DialogSettings::DialogSettings(Game * game)
 
     mSM->AddListener(this);
 
-    // MAIN PANEL
-    auto tex = tm->GetSprite(SpriteFileSettings, IND_SET_PANEL);
-    mBg = new graphic::Image(tex);
-    RegisterRenderable(mBg);
+    // BACKGROUND
+    const int w = 1184;
+    graphic::Texture * tex;
 
-    SetSize(mBg->GetWidth(), mBg->GetHeight());
+    tex = tm->GetSprite(SpriteFileDialogSettings, ID_DLG_UP_BG_L);
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
 
-    const int marginContTop = 5;
-    const int marginContLeft = 50;
-    const int marginButtonsTop = 65;
-    const int marginPanelTop = 105;
+    const int wL = mBgL->GetWidth();
+    const int h = mBgL->GetHeight();
 
-    int x, y;
+    tex = tm->GetSprite(SpriteFileDialogSettings, ID_DLG_UP_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
 
-    // BUTTON BACK
-    mButtonBack = new ButtonCloseSettings(this);
-    mButtonBack->SetX(GetWidth() - mButtonBack->GetWidth());
+    const int wR = mBgR->GetWidth();
+
+    tex = tm->GetTexture(SpriteFileDialogSettingsExp);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(tex);
+    RegisterRenderable(mBgC);
+
+    const int wC = w - wL - wR;
+    mBgC->SetWidth(wC);
+
+    SetSize(w, h);
+
+    // BUTTON CLOSE
+    mButtonClose = new ButtonDialogClose(this);
+    mButtonClose->SetX(w - mButtonClose->GetWidth());
 
     // TITLE
-    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 30, graphic::Font::NORMAL);
-    mTitle = new sgui::Label(mSM->GetCString("SETTINGS"), font, this);
+    auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                                 WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
 
+    mTitle = new sgui::Label(mSM->GetCString("SETTINGS"), fontTitle, this);
+
+    const int titleX = WidgetsConstants::MarginDialogTitleL;
+    const int titleY = (WidgetsConstants::DialogTitleBarH - mTitle->GetHeight()) / 2;
+    mTitle->SetPosition(titleX, titleY);
     mTitle->SetColor(WidgetsConstants::colorDialogTitle);
-    mTitle->SetPosition(marginContLeft, marginContTop);
 
     // BUTTONS PANEL
-    mGroupButtons = new sgl::sgui::AbstractButtonsGroup;
-
-    x = marginContLeft;
-    y = marginButtonsTop;
+    mGroupButtons = new sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
 
     auto btn = new ButtonPanelTab(mSM->GetCString("GAME"), this);
     mButtonsTabs.emplace_back(btn);
-    btn->SetPosition(x, y);
     mGroupButtons->AddButton(btn);
 
-    x += btn->GetWidth();
 
     btn = new ButtonPanelTab(mSM->GetCString("AUDIO"), this);
     mButtonsTabs.emplace_back(btn);
-    btn->SetPosition(x, y);
     mGroupButtons->AddButton(btn);
-
-    x += btn->GetWidth();
 
     btn = new ButtonPanelTab(mSM->GetCString("VIDEO"), this);
     mButtonsTabs.emplace_back(btn);
-    btn->SetPosition(x, y);
     mGroupButtons->AddButton(btn);
 
-    x += btn->GetWidth();
 
     btn = new ButtonPanelTab(mSM->GetCString("CONTROLS"), this);
     mButtonsTabs.emplace_back(btn);
-    btn->SetPosition(x, y);
     mGroupButtons->AddButton(btn);
 
     mGroupButtons->SetFunctionOnToggle([this](unsigned int index, bool checked)
@@ -512,8 +418,12 @@ DialogSettings::DialogSettings(Game * game)
             mPanels[i]->SetVisible(i == index);
     });
 
+    int x = WidgetsConstants::MarginDialogContentL + (panelContentW - mGroupButtons->GetWidth()) / 2;
+    int y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+    mGroupButtons->SetPosition(x, y);
+
     // PANEL CONTENT
-    x = marginContLeft;
+    x = WidgetsConstants::MarginDialogContentL;
     y += btn->GetHeight();
 
     CreatePanelGame(this);
@@ -539,7 +449,7 @@ DialogSettings::~DialogSettings()
 
 void DialogSettings::AddOnCloseClickedFunction(const std::function<void()> & f)
 {
-    mButtonBack->AddOnClickFunction(f);
+    mButtonClose->AddOnClickFunction(f);
 }
 
 void DialogSettings::HandlePositionChanged()
@@ -549,10 +459,17 @@ void DialogSettings::HandlePositionChanged()
 
 void DialogSettings::SetPositions()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
+    const int y = GetScreenY();
+    int x = GetScreenX();
 
-    mBg->SetPosition(x0, y0);
+    // BACKGROUND
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
+
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
+
+    mBgR->SetPosition(x, y);
 }
 
 void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
@@ -560,7 +477,7 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
     using namespace sgl;
 
     const int h = 650;
-    auto panel = new PanelContentSettings(h, parent);
+    auto panel = new sgui::Widget(parent);
     mPanels[Panel::GAME] = panel;
 
     int x = contX0;
@@ -571,19 +488,43 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
 
     auto tm = graphic::TextureManager::Instance();
 
-    // MAP SCROLLING SPEED
-    auto label = new sgui::Label(mSM->GetCString("MAP_SCROLL_SPEED"), font, panel);
+    // LANGUAGE
+    auto label = new sgui::Label(mSM->GetCString("LANGUAGE"), font, panel);
     mHeadersGame.emplace_back(label);
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    graphic::Texture * texSliderBg = tm->GetSprite(SpriteFileSettingsExp,IND_SET_SLIDERH_BG);
-    graphic::Texture * texSliderBar = tm->GetSprite(SpriteFileSettingsExp,IND_SET_SLIDERH_BAR);
-    graphic::Texture * texSliderBtn = tm->GetSprite(SpriteFileSettingsExp,IND_SET_SLIDERH_BUTTON);
+    mComboLang = new SettingsComboBox(panel);
+
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ENG")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_FRA")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_GER")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ITA")));
+    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_SPA")));
+
+    mComboLang->SetActiveItem(mGame->GetLanguage());
+
+    x += blockSettingW;
+    y += (label->GetHeight() - mComboLang->GetHeight()) * 0.5;
+    mComboLang->SetPosition(x, y);
+
+    mComboLang->SetOnActiveChanged([this](int ind)
+    {
+        mGame->SetLanguage(static_cast<LanguageId>(ind));
+    });
+
+    // MAP SCROLLING SPEED
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("MAP_SCROLL_SPEED"), font, panel);
+    mHeadersGame.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
 
     const int minSpeed = 1;
     const int maxSpeed = 10;
-    auto slider = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, panel);
+    auto slider = new SliderSettings(panel);
     slider->SetMinMax(minSpeed, maxSpeed);
     slider->SetValue(mGame->GetMapScrollingSpeed());
 
@@ -612,7 +553,7 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    slider = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, panel);
+    slider = new SliderSettings(panel);
     slider->SetMinMax(minSpeed, maxSpeed);
     slider->SetValue(mGame->GetMapDraggingSpeed());
 
@@ -714,40 +655,13 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
     {
         mGame->SetTutorialEnabled(checked);
     });
-
-    // LANGUAGE
-    x = contX0;
-    y += blockSettingH;
-
-    label = new sgui::Label(mSM->GetCString("LANGUAGE"), font, panel);
-    mHeadersGame.emplace_back(label);
-    label->SetColor(colorTxt);
-    label->SetPosition(x, y);
-
-    mComboLang = new SettingsComboBox(panel);
-
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ENG")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ITA")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_SPA")));
-
-    mComboLang->SetActiveItem(mGame->GetLanguage());
-
-    x += blockSettingW;
-    y += (label->GetHeight() - mComboLang->GetHeight()) * 0.5;
-    mComboLang->SetPosition(x, y);
-
-    mComboLang->SetOnActiveChanged([this](int ind)
-    {
-        mGame->SetLanguage(static_cast<LanguageId>(ind));
-    });
 }
 
 void DialogSettings::CreatePanelAudio(sgl::sgui::Widget *parent)
 {
     using namespace sgl;
 
-    const int h = 450;
-    auto panel = new PanelContentSettings(h, parent);
+    auto panel = new sgui::Widget(parent);
     mPanels[Panel::AUDIO] = panel;
 
     int x = contX0;
@@ -819,11 +733,7 @@ void DialogSettings::CreatePanelAudio(sgl::sgui::Widget *parent)
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    graphic::Texture * texSliderBg = tm->GetSprite(SpriteFileSettingsExp,IND_SET_SLIDERH_BG);
-    graphic::Texture * texSliderBar = tm->GetSprite(SpriteFileSettingsExp,IND_SET_SLIDERH_BAR);
-    graphic::Texture * texSliderBtn = tm->GetSprite(SpriteFileSettingsExp,IND_SET_SLIDERH_BUTTON);
-
-    auto slider = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, panel);
+    auto slider = new SliderSettings(panel);
     slider->SetMinMax(volumeMin, volumeMax);
     slider->SetStep(volumeStep);
     slider->SetValue(am->GetVolumeMusic());
@@ -852,7 +762,7 @@ void DialogSettings::CreatePanelAudio(sgl::sgui::Widget *parent)
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    slider = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, panel);
+    slider = new SliderSettings(panel);
     slider->SetMinMax(volumeMin, volumeMax);
     slider->SetStep(volumeStep);
     slider->SetValue(am->GetVolumeSound());
@@ -881,8 +791,7 @@ void DialogSettings::CreatePanelVideo(sgl::sgui::Widget * parent)
 {
     using namespace sgl;
 
-    const int h = 340;
-    auto panel = new PanelContentSettings(h, parent);
+    auto panel = new sgui::Widget(parent);
     mPanels[Panel::VIDEO] = panel;
 
     int x = contX0;
@@ -1009,8 +918,10 @@ void DialogSettings::CreatePanelVideo(sgl::sgui::Widget * parent)
 
 void DialogSettings::CreatePanelControls(sgl::sgui::Widget * parent)
 {
-    const int h = 650;
-    mPanels[Panel::CONTROLS] = new PanelContentSettings(h, parent);
+    using namespace sgl;
+
+    auto panel = new sgui::Widget(parent);
+    mPanels[Panel::CONTROLS] = panel;
 }
 
 void DialogSettings::UpdateCurrentResolution()
@@ -1096,9 +1007,13 @@ void DialogSettings::OnStringsChanged()
     const char * strIdsLanguage[] =
     {
         "LANG_ENG",
+        "LANG_FRA",
+        "LANG_GER",
         "LANG_ITA",
         "LANG_SPA",
     };
+
+    static_assert((sizeof(strIdsLanguage) / sizeof(char *)) == NUM_LANGUAGES);
 
     for(unsigned int i = 0; i < NUM_LANGUAGES; ++i)
     {

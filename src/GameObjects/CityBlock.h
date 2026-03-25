@@ -39,6 +39,8 @@ public:
 
     void OnNewTurn(PlayerFaction faction) override;
 
+    int GetResourceProduction(ExtendedResource res) const override;
+
 private:
     void UpdateGraphics() override;
 

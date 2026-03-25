@@ -581,8 +581,8 @@ void PanelSelectedObject::UpdateBarLevel()
 {
     auto tm = sgl::graphic::TextureManager::Instance();
 
-    const unsigned int barLvlTexId = ID_PAN_SELOBJ_SBAR_1 + mObj->GetExperienceLevel();
-    auto tex = tm->GetSprite(SpriteFilePanelSelectedObject, barLvlTexId);
+    const unsigned int barLvlTexId = ID_STARS_BAR_1 + mObj->GetExperienceLevel();
+    auto tex = tm->GetSprite(SpriteFileUIShared, barLvlTexId);
     mBarLvl->SetTexture(tex);
 }
 

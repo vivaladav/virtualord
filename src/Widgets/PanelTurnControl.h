@@ -22,6 +22,7 @@ namespace game
 {
 
 class DigitsDisplay;
+class GameSimpleTooltip;
 class Player;
 
 class PanelTurnControl : public sgl::sgui::Widget
@@ -51,6 +52,8 @@ private:
     sgl::sgui::ProgressBar * mEnergyBar = nullptr;
     DigitsDisplay * mDigits = nullptr;
     sgl::sgui::ImageButton * mButtonEndTurn = nullptr;
+
+    GameSimpleTooltip * mTooltipEnergy = nullptr;
 
     sgl::sgui::Label * mText = nullptr;
 

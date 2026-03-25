@@ -9,6 +9,9 @@
 #include "States/StateFactionSelection.h"
 #include "States/StateGame.h"
 #include "States/StateInit.h"
+#include "States/StateInitGame.h"
+#include "States/StateLeaveGame.h"
+#include "States/StateLeavePregame.h"
 #include "States/StateMainMenu.h"
 #include "States/StateNewGame.h"
 #include "States/StatePlanetMap.h"
@@ -81,7 +84,6 @@ Game::Game(int argc, char * argv[])
     sm->RegisterPackage("data/text/game.bin");
 
     SetLanguage(LANG_ENGLISH);
-    //SetLanguage(LANG_ITALIAN);
 
     const std::string title = std::string("Virtualord - v. ") + std::string(VERSION);
     mWin = graphic::Window::Create(title.c_str(), 0, 0, this);
@@ -104,6 +106,9 @@ Game::Game(int argc, char * argv[])
     mStateMan->AddState(new StateFactionSelection(this));
     mStateMan->AddState(new StateGame(this));
     mStateMan->AddState(new StateInit(this));
+    mStateMan->AddState(new StateInitGame(this));
+    mStateMan->AddState(new StateLeaveGame(this));
+    mStateMan->AddState(new StateLeavePregame(this));
     mStateMan->AddState(new StateMainMenu(this));
     mStateMan->AddState(new StateNewGame(this));
     mStateMan->AddState(new StatePlanetMap(this));
@@ -164,15 +169,11 @@ void Game::InitGameData()
 {
     // -- MAPS --
     // PLANET 1
-    mMapsReg->CreatePlanet(PLANET_1);
+    mMapsReg->CreatePlanet(PLANET_1, PLANET_SIZE_S);
     //               planetId, file, occupier, status
     mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", NO_FACTION, TER_ST_UNEXPLORED);
-    mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", NO_FACTION, TER_ST_UNEXPLORED);
-    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", NO_FACTION, TER_ST_UNREACHABLE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", NO_FACTION, TER_ST_UNREACHABLE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
+    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", NO_FACTION, TER_ST_UNEXPLORED);
     mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", NO_FACTION, TER_ST_UNREACHABLE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", NO_FACTION, TER_ST_UNREACHABLE);
     mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", NO_FACTION, TER_ST_UNREACHABLE);
     mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
 }
@@ -180,7 +181,6 @@ void Game::InitGameData()
 void Game::ClearGameData()
 {
     mMapsReg->ClearData();
-
     ClearPlayers();
 }
 
@@ -205,37 +205,43 @@ const std::string & Game::GetCurrentMapFile() const
     return mMapsReg->GetMapFile(mCurrPlanet, mCurrTerritory);
 }
 
-int Game::GetResourcePriceBuy(ResourceType t) const
+int Game::GetResourcePriceBuy(ExtendedResource t) const
 {
     // TODO make it change depending on territory/planet
-
-    const int price[NUM_RESOURCES] =
+    const int price[] =
     {
         60,
         70,
         120,
-        170
+        170,
+        1,
+        250,
     };
 
-    if(t < NUM_RESOURCES)
+    static_assert(sizeof(price) / sizeof(int) == NUM_EXTENDED_RESOURCES);
+
+    if(t < NUM_EXTENDED_RESOURCES)
         return price[t];
     else
         return 0;
 }
 
-int Game::GetResourcePriceSell(ResourceType t) const
+int Game::GetResourcePriceSell(ExtendedResource t) const
 {
     // TODO make it change depending on territory/planet
-
-    const int price[NUM_RESOURCES] =
+    const int price[] =
     {
         50,
         60,
         100,
-        150
+        150,
+        1,
+        175,
     };
 
-    if(t < NUM_RESOURCES)
+    static_assert(sizeof(price) / sizeof(int) == NUM_EXTENDED_RESOURCES);
+
+    if(t < NUM_EXTENDED_RESOURCES)
         return price[t];
     else
         return 0;
@@ -243,7 +249,10 @@ int Game::GetResourcePriceSell(ResourceType t) const
 
 int Game::GetActiveStateId() const { return mStateMan->GetActiveStateId(); }
 
-void Game::RequestNextActiveState(StateId sid) { mStateMan->RequestNextActiveState(sid); }
+void Game::RequestNextActiveState(StateId sid, sgl::utilities::StateData * data)
+{
+    mStateMan->RequestNextActiveState(sid, data);
+}
 
 void Game::SetMapDraggingSpeed(int val)
 {
@@ -360,9 +369,13 @@ void Game::SetLanguage(LanguageId lang)
     const char * languages[] =
     {
         "en.txt",
+        "fr.txt",
+        "de.txt",
         "it.txt",
         "es.txt",
     };
+
+    static_assert((sizeof(languages) / sizeof(char *)) == NUM_LANGUAGES);
 
     sm->LoadStringsFromPackage(languages[lang]);
 }

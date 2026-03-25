@@ -16,30 +16,36 @@ namespace game
 {
 
 enum PlayerFaction : unsigned int;
+enum PlanetSize : unsigned int;
 enum TerritoryStatus : unsigned int;
 
-/* MAP SCHEME
+/* ----- MAP SCHEME -----
  *
- * full planet
+ * LARGE
  *
- *      0
- * 2        3
- * 6    8   7
- * 4        5
- *      1
+ *     0
+ * 2       3
+ * 6   8   7
+ * 4       5
+ *     1
  *
- * small planet
+ * MEDIUM
+ *
+ * 0       1
+ * 4   6   5
+ * 2       3
+ *
+ * SMALL
  *
  *      0
  *  2   4   3
  *      1
- *
  */
 
 class PlanetMap : public sgl::sgui::Widget
 {
 public:
-    PlanetMap();
+    PlanetMap(PlanetSize ps);
     ~PlanetMap();
 
     void SetFunctionOnToggle(const std::function<void(unsigned int, bool)> & f);
@@ -55,8 +61,6 @@ private:
     void HandlePositionChanged() override;
 
 private:
-    static const unsigned int MAX_MISSIONS = 9;
-
     sgl::sgui::AbstractButtonsGroup * mButtonsMission;
 
     sgl::graphic::Image * mBg = nullptr;

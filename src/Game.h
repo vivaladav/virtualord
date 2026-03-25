@@ -22,7 +22,11 @@ namespace sgl
 
     namespace sgui { class Stage; }
 
-    namespace utilities { class StateManager; }
+    namespace utilities
+    {
+        class StateData;
+        class StateManager;
+    }
 }
 
 namespace game
@@ -33,11 +37,11 @@ class ObjectsDataRegistry;
 class Player;
 class TutorialManager;
 
+enum ExtendedResource : unsigned int;
 enum GameCursorId : unsigned int;
 enum LanguageId : unsigned int;
-enum Planets : unsigned int;
+enum PlanetId : unsigned int;
 enum PlayerFaction : unsigned int;
-enum ResourceType : unsigned int;
 enum StateId : int;
 
 enum Difficulty : unsigned int
@@ -70,17 +74,17 @@ public:
     const std::string & GetCurrentMapFile() const;
     unsigned int GetCurrentTerritory() const;
     void SetCurrentTerritory(unsigned int territory);
-    Planets GetCurrentPlanet() const;
-    void SetCurrentPlanet(Planets planet);
+    PlanetId GetCurrentPlanet() const;
+    void SetCurrentPlanet(PlanetId planet);
 
-    int GetResourcePriceBuy(ResourceType t) const;
-    int GetResourcePriceSell(ResourceType t) const;
+    int GetResourcePriceBuy(ExtendedResource t) const;
+    int GetResourcePriceSell(ExtendedResource t) const;
 
     void SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
     // GAME STATE
     int GetActiveStateId() const;
-    void RequestNextActiveState(StateId sid);
+    void RequestNextActiveState(StateId sid, sgl::utilities::StateData * data = nullptr);
 
     Difficulty GetDifficulty() const;
     void SetDifficulty(Difficulty level);
@@ -158,7 +162,7 @@ private:
     PlayerFaction mLocalFaction;
 
     unsigned int mCurrMap = 0;
-    Planets mCurrPlanet;
+    PlanetId mCurrPlanet;
     unsigned int mCurrTerritory = 0;
 
     unsigned int mRandSeed = 0;
@@ -184,8 +188,8 @@ inline void Game::SetCurrentTerritory(unsigned int territory)
     mCurrTerritory = territory;
 }
 
-inline Planets Game::GetCurrentPlanet() const { return mCurrPlanet; }
-inline void Game::SetCurrentPlanet(Planets planet) { mCurrPlanet = planet; }
+inline PlanetId Game::GetCurrentPlanet() const { return mCurrPlanet; }
+inline void Game::SetCurrentPlanet(PlanetId planet) { mCurrPlanet = planet; }
 
 inline void Game::SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {

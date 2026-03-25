@@ -37,7 +37,7 @@ private:
 
     int mFontSize = 19;
 
-    unsigned int mColorZeros = 0x454f54FF;
+    unsigned int mColorZeros = 0x576a75ff;
     unsigned int mColorDigits = 0xE3E6e8FF;
 
     sgl::graphic::Renderable * mTxtZeros = nullptr;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sgl/sgui/AbstractButton.h>
+#include "Widgets/GameButton.h"
 
 #include <functional>
 
@@ -14,6 +14,7 @@ namespace sgl
 
     namespace sgui
     {
+        class Label;
         class ScrollArea;
         class TextArea;
     }
@@ -23,22 +24,10 @@ namespace game
 {
 
 // ===== BUTTON CHANGELOG =====
-class ButtonChangelog : public sgl::sgui::AbstractButton
+class ButtonChangelog : public GameButton
 {
 public:
     ButtonChangelog();
-
-private:
-    void HandlePositionChanged() override;
-
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override;
-
-    void PositionElements();
-    void UpdateLabel(sgl::sgui::AbstractButton::VisualState state);
-
-private:
-    sgl::graphic::Image * mBg = nullptr;
-    sgl::sgui::TextArea * mLabel = nullptr;
 };
 
 // ===== DIALOG CHANGELOG =====
@@ -55,6 +44,10 @@ private:
     void HandlePositionChanged() override;
 
     void PositionElements();
+
+    void HandleMouseButtonDown(sgl::core::MouseButtonEvent & event) override;
+    void HandleMouseButtonUp(sgl::core::MouseButtonEvent & event) override;
+    void HandleMouseMotion(sgl::core::MouseMotionEvent & event) override;
 
 private:
     sgl::graphic::Image * mBg = nullptr;

@@ -1,6 +1,6 @@
 #include "TutorialManager.h"
 
-#include "GameConstants.h"
+#include "Tutorial/TutorialConstants.h"
 #include "Tutorial/TutorialGameIntro.h"
 #include "Tutorial/TutorialPlanetMap.h"
 

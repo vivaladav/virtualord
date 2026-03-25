@@ -5,6 +5,12 @@
 namespace game
 {
 
+BaseGameState::BaseGameState(unsigned int screenId, Game * game)
+    : sgl::utilities::State(screenId)
+    , mGame(game)
+{
+}
+
 BaseGameState::~BaseGameState()
 {
     delete mScreen;

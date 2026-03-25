@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "GameConstants.h"
+#include "MapsRegistry.h"
 #include "Player.h"
 #include "AI/PlayerAI.h"
 #include "GameObjects/GameObject.h"
@@ -22,7 +23,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
 {
     const int MAX_UNITS0 = 6;
     const int startEnergy = 1000;
-    const int startMaterial = 750;
+    const int startMaterial = 1000;
     const int startMoney = 1000;
     const int startDiamonds = 10;
     const int startBlobs = 10;
@@ -39,15 +40,9 @@ ScreenNewGame::ScreenNewGame(Game * game)
     p->AddAvailableStructure(ObjectData::TYPE_DEFENSIVE_TOWER);
     p->AddAvailableStructure(ObjectData::TYPE_HOSPITAL);
     p->AddAvailableStructure(ObjectData::TYPE_PRACTICE_TARGET);
-    p->AddAvailableStructure(ObjectData::TYPE_RADAR_STATION);
-    p->AddAvailableStructure(ObjectData::TYPE_RADAR_TOWER);
     p->AddAvailableStructure(ObjectData::TYPE_RESEARCH_CENTER);
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR);
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT);
-    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_BLOBS);
-    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_DIAMONDS);
-    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_ENERGY);
-    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_MATERIAL);
     p->AddAvailableStructure(ObjectData::TYPE_SPAWN_TOWER);
     p->AddAvailableStructure(ObjectData::TYPE_TRADING_POST);
     p->AddAvailableStructure(ObjectData::TYPE_WALL_GATE);

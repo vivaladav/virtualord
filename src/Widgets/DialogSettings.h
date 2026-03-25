@@ -12,7 +12,7 @@ namespace sgl
     namespace sgui
     {
         class AbstractButton;
-        class AbstractButtonsGroup;
+        class ButtonsGroup;
         class ComboBox;
         class ImageButton;
         class Label;
@@ -67,13 +67,15 @@ private:
 
     sgl::sgui::Label * mTitle = nullptr;
 
-    sgl::sgui::AbstractButtonsGroup * mGroupButtons = nullptr;
+    sgl::sgui::ButtonsGroup * mGroupButtons = nullptr;
 
     sgl::sgui::Widget * mPanels[NUM_PANELS];
 
-    sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
 
-    sgl::sgui::ImageButton * mButtonBack = nullptr;
+    sgl::sgui::ImageButton * mButtonClose = nullptr;
 
     sgl::sgui::ComboBox * mComboLang = nullptr;
     sgl::sgui::ComboBox * mComboRes = nullptr;

@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.20.0)
 
-project(virtualord LANGUAGES CXX VERSION 0.5.0)
+project(virtualord LANGUAGES CXX VERSION 0.6.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -50,6 +50,8 @@ add_executable(
     src/MapsRegistry.cpp
     src/MissionGoal.h
     src/MissionGoal.cpp
+    src/MissionGoalsTracker.h
+    src/MissionGoalsTracker.cpp
     src/Player.h
     src/Player.cpp
     src/StatValue.h
@@ -184,6 +186,8 @@ add_executable(
     src/Particles/UpdaterOutput.cpp
     src/Particles/UpdaterSingleLaser.h
     src/Particles/UpdaterSingleLaser.cpp
+    src/Screens/DummyScreen.h
+    src/Screens/DummyScreen.cpp
     src/Screens/Screen.h
     src/Screens/Screen.cpp
     src/Screens/ScreenFactionSelection.h
@@ -192,6 +196,8 @@ add_executable(
     src/Screens/ScreenGame.cpp
     src/Screens/ScreenInit.h
     src/Screens/ScreenInit.cpp
+    src/Screens/ScreenInitGame.h
+    src/Screens/ScreenInitGame.cpp
     src/Screens/ScreenMainMenu.h
     src/Screens/ScreenMainMenu.cpp
     src/Screens/ScreenNewGame.h
@@ -212,6 +218,12 @@ add_executable(
     src/States/StateGame.cpp
     src/States/StateInit.h
     src/States/StateInit.cpp
+    src/States/StateInitGame.h
+    src/States/StateInitGame.cpp
+    src/States/StateLeaveGame.h
+    src/States/StateLeaveGame.cpp
+    src/States/StateLeavePregame.h
+    src/States/StateLeavePregame.cpp
     src/States/StateMainMenu.h
     src/States/StateMainMenu.cpp
     src/States/StateNewGame.h
@@ -311,18 +323,14 @@ add_executable(
     src/Tutorial/TutorialStep.cpp
     src/Widgets/BlinkingIconEnergy.h
     src/Widgets/BlinkingIconEnergy.cpp
-    src/Widgets/ButtonDialogAction.h
-    src/Widgets/ButtonDialogAction.cpp
     src/Widgets/ButtonDialogArrows.h
     src/Widgets/ButtonDialogArrows.cpp
     src/Widgets/ButtonDialogBack.h
     src/Widgets/ButtonDialogBack.cpp
     src/Widgets/ButtonDialogClose.h
     src/Widgets/ButtonDialogClose.cpp
-    src/Widgets/ButtonDialogContinue.h
-    src/Widgets/ButtonDialogContinue.cpp
-    src/Widgets/ButtonDialogSelect.h
-    src/Widgets/ButtonDialogSelect.cpp
+    src/Widgets/ButtonDialogOk.h
+    src/Widgets/ButtonDialogOk.cpp
     src/Widgets/ButtonMainMenu.h
     src/Widgets/ButtonMainMenu.cpp
     src/Widgets/ButtonMainMenuSocial.h
@@ -343,6 +351,8 @@ add_executable(
     src/Widgets/ButtonUnitsSelector.cpp
     src/Widgets/ButtonPanelTab.h
     src/Widgets/ButtonPanelTab.cpp
+    src/Widgets/ButtonTechUpgrade.h
+    src/Widgets/ButtonTechUpgrade.cpp
     src/Widgets/ButtonsPanel.h
     src/Widgets/ButtonsPanel.cpp
     src/Widgets/CountdownLabel.h
@@ -355,6 +365,8 @@ add_executable(
     src/Widgets/DialogExit.cpp
     src/Widgets/DialogExploreTemple.h
     src/Widgets/DialogExploreTemple.cpp
+    src/Widgets/DialogFactionSelection.h
+    src/Widgets/DialogFactionSelection.cpp
     src/Widgets/DialogMissionGoals.h
     src/Widgets/DialogMissionGoals.cpp
     src/Widgets/DialogNewElement.h
@@ -363,8 +375,12 @@ add_executable(
     src/Widgets/DialogNewMiniUnitsSquad.cpp
     src/Widgets/DialogObject.h
     src/Widgets/DialogObject.cpp
+    src/Widgets/DialogResearch.h
+    src/Widgets/DialogResearch.cpp
     src/Widgets/DialogSettings.h
     src/Widgets/DialogSettings.cpp
+    src/Widgets/DialogTechTree.h
+    src/Widgets/DialogTechTree.cpp
     src/Widgets/DialogTrading.h
     src/Widgets/DialogTrading.cpp
     src/Widgets/DialogUpgrade.h
@@ -441,6 +457,8 @@ add_executable(
     src/Widgets/WidgetsConstants.cpp
     src/Widgets/Test/TestComboBox.h
     src/Widgets/Test/TestComboBox.cpp
+    src/Widgets/Test/TestProgressBar.h
+    src/Widgets/Test/TestProgressBar.cpp
     src/Widgets/Test/TestSliderH.h
     src/Widgets/Test/TestSliderH.cpp
     src/Widgets/Tutorial/FocusArea.h

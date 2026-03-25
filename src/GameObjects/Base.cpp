@@ -4,26 +4,29 @@
 #include "GameData.h"
 #include "GameMap.h"
 #include "IsoObject.h"
+#include "Player.h"
 #include "Particles/DataParticleOutput.h"
 #include "Particles/UpdaterOutput.h"
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
 
+#include <cmath>
+
 namespace game
 {
 
 Base::Base(const ObjectData & data, const ObjectInitData & initData)
     : Structure(data, initData)
-    , mOutputEnergy(15)
-    , mOutputMaterial(5)
+    , mOutputEnergy(20)
+    , mOutputMaterial(10)
 {
     SetImage();
 }
 
 void Base::OnNewTurn(PlayerFaction faction)
 {
-    GameObject::OnNewTurn(faction);
+    Structure::OnNewTurn(faction);
 
     // not linked yet -> exit
     if(!IsLinked())
@@ -50,18 +53,36 @@ void Base::OnNewTurn(PlayerFaction faction)
     const float y12 = isoObj->GetY();
     const float y3 = isoObj->GetY() - margin3;
 
-    const float speed = 40.f;
-    const float decaySpeed = 125.f;
-
-    const DataParticleOutput pd1(mOutputEnergy, OT_ENERGY, x1, y12, speed, decaySpeed);
+    const int energy = GetResourceProduction(ER_ENERGY);
+    const DataParticleOutput pd1(energy, OT_ENERGY, x1, y12);
     pu->AddParticle(pd1);
 
-    const DataParticleOutput pd2(mOutputMaterial, OT_MATERIAL, x2, y12, speed, decaySpeed);
+    const int material = GetResourceProduction(ER_MATERIAL);
+    const DataParticleOutput pd2(material, OT_MATERIAL, x2, y12);
     pu->AddParticle(pd2);
 
-    const int money = GetGameMap()->GetFactionMoneyPerTurn(faction);
-    const DataParticleOutput pd3(money, OT_MONEY, x3, y3, speed, decaySpeed);
+    const int money = GetResourceProduction(ER_MONEY);
+    const DataParticleOutput pd3(money, OT_MONEY, x3, y3);
     pu->AddParticle(pd3);
+}
+
+int Base::GetResourceProduction(ExtendedResource res) const
+{
+    auto p = GetOwner();
+
+    if(p == nullptr)
+        return 0;
+
+    const float mult = p->GetBaseProductionMult();
+
+    if(res == ER_ENERGY)
+        return std::roundf(mult * mOutputEnergy);
+    else if(res == ER_MATERIAL)
+        return std::roundf(mult * mOutputMaterial);
+    else if(res == ER_MONEY)
+        return std::roundf(mult * GetGameMap()->GetFactionMoneyPerTurn(GetFaction()));
+    else
+        return 0;
 }
 
 void Base::UpdateGraphics()

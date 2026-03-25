@@ -10,6 +10,7 @@
 #include "Widgets/SimpleResourceDisplay.h"
 #include "Widgets/WidgetsConstants.h"
 
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
@@ -17,40 +18,62 @@
 
 #include <sgl/sgui/Image.h>
 
+#include <cassert>
+
 namespace game
 {
 
 PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget * parent)
     : sgl::sgui::Widget(parent)
-    , mBg(new sgl::graphic::Image)
     , mPlayer(player)
     , mGameMap(gm)
 {
-    auto sm = sgl::utilities::StringManager::Instance();
+    using namespace sgl;
+
+    auto sm = utilities::StringManager::Instance();
     sm->AddListener(this);
 
-    RegisterRenderable(mBg);
-    SetBg();
-
-    mGameTooltips.assign(Player::Stat::NUM_PSTATS, nullptr);
-    mSimpleTooltips.assign(Player::Stat::NUM_PSTATS, nullptr);
-
-    // TODO change this to have dynamic slots added/removed at runtime
-    const int slotW = 150;
-    const int slots = 5;
-    const int slotsW = slotW * slots;
-    const int x0 = (GetWidth() - slotsW) * 0.5f;
-
-    int slotX = x0;
+    // -- BACKGROUND --
+    const int marginL = -30;
+    const int slotW = 160;
+    const int slots = 6;
+    const int slotsW = slotW * slots + (2 * marginL);
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = nullptr;
 
+    tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_BG_L);
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
+
+    tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
+
+    tex = tm->GetTexture(SpriteFileResourcesBarExp);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(tex);
+    mBgC->SetWidth(slotsW);
+    RegisterRenderable(mBgC);
+
+    const int totW = mBgL->GetWidth() + slotsW + mBgR->GetWidth();
+
+    SetSize(totW, mBgL->GetHeight());
+
+    // -- SLOTS --
+    const int x0 = mBgL->GetWidth();
+
+    int slotX = x0 + marginL;
+
     const int numDigitsMoney = 8;
+    const int numDigitsResearch = 6;
     const int numDigits = 5;
 
     mCallbackValIds.resize(Player::Stat::NUM_PSTATS, 0);
     mCallbackRangeIds.resize(Player::Stat::NUM_PSTATS, 0);
+
+    mGameTooltips.assign(Player::Stat::NUM_PSTATS, nullptr);
+    mSimpleTooltips.assign(Player::Stat::NUM_PSTATS, nullptr);
 
     // MONEY
     auto st = Player::Stat::MONEY;
@@ -62,14 +85,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(srd, sm->GetCString("MONEY_TURN"));
+        auto tt = AssignResourceTooltip(srd, ER_MONEY);
         mGameTooltips[st] = tt;
 
         srd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mGameMap->GetFactionMoneyPerTurn(mPlayer->GetFaction());
-            const int resOut = mPlayer->GetMoneySpentPerTurn();
-            tt->SetValues(resIn, resOut);
+            const int resVal = mPlayer->GetStat(Player::MONEY).GetValue();
+            const int resMax = 0;
+            const int resIn = mPlayer->GetResourceProduction(ER_MONEY);
+            const int resOut = mPlayer->GetResourceConsumption(ER_MONEY);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -93,14 +118,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(rd, sm->GetCString("ENERGY_TURN"));
+        auto tt = AssignResourceTooltip(rd, ER_ENERGY);
         mGameTooltips[st] = tt;
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_ENERGY);
-            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_ENERGY);
-            tt->SetValues(resIn, resOut);
+            const int resVal = mPlayer->GetStat(Player::ENERGY).GetValue();
+            const int resMax = mPlayer->GetStat(Player::ENERGY).GetMax();
+            const int resIn = mPlayer->GetResourceProduction(ER_ENERGY);
+            const int resOut = mPlayer->GetResourceConsumption(ER_ENERGY);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -128,14 +155,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(rd, sm->GetCString("MATERIAL_TURN"));
+        auto tt = AssignResourceTooltip(rd, ER_MATERIAL);
         mGameTooltips[st] = tt;
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_MATERIAL1);
-            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_MATERIAL1);
-            tt->SetValues(resIn, resOut);
+            const int resVal = mPlayer->GetStat(Player::MATERIAL).GetValue();
+            const int resMax = mPlayer->GetStat(Player::MATERIAL).GetMax();
+            const int resIn = mPlayer->GetResourceProduction(ER_MATERIAL);
+            const int resOut = mPlayer->GetResourceConsumption(ER_MATERIAL);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -163,14 +192,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(rd, sm->GetCString("DIAMONDS_TURN"));
+        auto tt = AssignResourceTooltip(rd, ER_DIAMONDS);
         mGameTooltips[st] = tt;
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_DIAMONDS);
-            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_DIAMONDS);
-            tt->SetValues(resIn, resOut);
+            const int resVal = mPlayer->GetStat(Player::DIAMONDS).GetValue();
+            const int resMax = mPlayer->GetStat(Player::DIAMONDS).GetMax();
+            const int resIn = mPlayer->GetResourceProduction(ER_DIAMONDS);
+            const int resOut = mPlayer->GetResourceConsumption(ER_DIAMONDS);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -198,14 +229,16 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
 
     if(mGameMap)
     {
-        auto tt = AssignResourceTooltip(rd, sm->GetCString("BLOBS_TURN"));
+        auto tt = AssignResourceTooltip(rd, ER_BLOBS);
         mGameTooltips[st] = tt;
 
         rd->SetFunctionOnShowingTooltip([this, tt]
         {
-            const int resIn = mPlayer->GetResourceProduction(ResourceType::RES_BLOBS);
-            const int resOut = mPlayer->GetResourceConsumption(ResourceType::RES_BLOBS);
-            tt->SetValues(resIn, resOut);
+            const int resVal = mPlayer->GetStat(Player::BLOBS).GetValue();
+            const int resMax = mPlayer->GetStat(Player::BLOBS).GetMax();
+            const int resIn = mPlayer->GetResourceProduction(ER_BLOBS);
+            const int resOut = mPlayer->GetResourceConsumption(ER_BLOBS);
+            tt->SetValues(resVal, resMax, resIn, resOut);
         });
     }
     else
@@ -219,6 +252,38 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     {
         rd->SetValueMinMax(val->GetMin(), val->GetMax());
     });
+
+    slotX += slotW;
+
+    // RESEARCH POINTS
+    st = Player::Stat::RESEARCH;
+    const StatValue & researchPts = player->GetStat(st);
+    tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_RESEARCH);
+    srd = new SimpleResourceDisplay(tex, numDigitsResearch, this);
+    srd->SetValue(researchPts.GetValue());
+    srd->SetPosition(slotX + (slotW - srd->GetWidth()) * 0.5f, (GetHeight() - srd->GetHeight()) * 0.5f);
+
+    if(mGameMap)
+    {
+        auto tt = AssignResourceTooltip(srd, ER_RESEARCH);
+        mGameTooltips[st] = tt;
+
+        srd->SetFunctionOnShowingTooltip([this, tt]
+        {
+            const int resVal = mPlayer->GetStat(Player::RESEARCH).GetValue();
+            const int resMax = 0;
+            const int resIn = mPlayer->GetResourceProduction(ER_RESEARCH);
+            const int resOut = mPlayer->GetResourceConsumption(ER_RESEARCH);
+            tt->SetValues(resVal, resMax, resIn, resOut);
+        });
+    }
+    else
+        mSimpleTooltips[st] = AssignSimpleTooltip(srd, sm->GetCString("RESEARCH_PTS"));
+
+    mCallbackValIds[st] = player->AddOnResourceChanged(st, [srd](const StatValue *, int, int newVal)
+    {
+        srd->SetValue(newVal);
+    });
 }
 
 PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
@@ -228,44 +293,25 @@ PanelResources::PanelResources(Player * player, sgl::sgui::Widget * parent)
 
 PanelResources::~PanelResources()
 {
+    assert(mCallbackValIds.size() == Player::NUM_PSTATS);
+    assert(mCallbackRangeIds.size() == Player::NUM_PSTATS);
+
     // CLEAR OBSERVERS FROM PLAYER STATS
-    auto st = Player::Stat::MONEY;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
+    for(unsigned int i = 0; i < Player::NUM_PSTATS; ++i)
+    {
+        const auto st = static_cast<Player::Stat>(i);
 
-    st = Player::Stat::ENERGY;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
-    mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[st]);
-
-    st = Player::Stat::MATERIAL;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
-    mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[st]);
-
-    st = Player::Stat::DIAMONDS;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
-    mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[st]);
-
-    st = Player::Stat::BLOBS;
-    mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
-    mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[st]);
+        mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[i]);
+        mPlayer->RemoveOnResourceRangeChanged(st, mCallbackRangeIds[i]);
+    }
 }
 
-void PanelResources::SetBg()
-{
-    // NOTE in the future this will chose the right bg based on the number of slots
-    auto * tm = sgl::graphic::TextureManager::Instance();
-
-    sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileResourcesBar, IND_RESBAR_BG);
-
-    mBg->SetTexture(tex);
-
-    SetSize(tex->GetWidth(), tex->GetHeight());
-}
-
-ResourceTooltip * PanelResources::AssignResourceTooltip(sgl::sgui::Widget * target, const char * text)
+ResourceTooltip * PanelResources::AssignResourceTooltip(sgl::sgui::Widget * target,
+                                                        ExtendedResource res)
 {
     const int showingMs = 5000;
 
-    auto tt = new ResourceTooltip(text);
+    auto tt = new ResourceTooltip(res);
     CreateTooltip(tt, target, showingMs);
 
     return tt;
@@ -292,27 +338,24 @@ void PanelResources::OnStringsChanged()
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
-    if(mGameMap)
-    {
-        mGameTooltips[Player::Stat::MONEY]->SetTitle(sm->GetCString("MONEY_TURN"));
-        mGameTooltips[Player::Stat::ENERGY]->SetTitle(sm->GetCString("ENERGY_TURN"));
-        mGameTooltips[Player::Stat::MATERIAL]->SetTitle(sm->GetCString("MATERIAL_TURN"));
-        mGameTooltips[Player::Stat::BLOBS]->SetTitle(sm->GetCString("BLOBS_TURN"));
-        mGameTooltips[Player::Stat::DIAMONDS]->SetTitle(sm->GetCString("DIAMONDS_TURN"));
-    }
-    else
-    {
-        mSimpleTooltips[Player::Stat::MONEY]->SetText(sm->GetCString("MONEY"));
-        mSimpleTooltips[Player::Stat::ENERGY]->SetText(sm->GetCString("ENERGY"));
-        mSimpleTooltips[Player::Stat::MATERIAL]->SetText(sm->GetCString("MATERIAL"));
-        mSimpleTooltips[Player::Stat::BLOBS]->SetText(sm->GetCString("BLOBS"));
-        mSimpleTooltips[Player::Stat::DIAMONDS]->SetText(sm->GetCString("DIAMONDS"));
-    }
+    for(unsigned int i = 0; i < Player::Stat::NUM_PSTATS; ++i)
+        mGameTooltips[i]->UpdateStrings();
 }
 
 void PanelResources::HandlePositionChanged()
 {
-    mBg->SetPosition(GetScreenX(), GetScreenY());
+    const int x0 = GetScreenX();
+    const int y0 = GetScreenY();
+
+    int x = x0;
+
+    mBgL->SetPosition(x, y0);
+    x+= mBgL->GetWidth();
+
+    mBgC->SetPosition(x, y0);
+    x+= mBgC->GetWidth();
+
+    mBgR->SetPosition(x, y0);
 }
 
 } // namespace game

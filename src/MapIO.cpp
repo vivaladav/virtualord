@@ -13,7 +13,7 @@
 namespace game
 {
 
-const std::string MapIO::MAP_VERSION("0.2.4");
+const std::string MapIO::MAP_VERSION("0.3.2");
 
 const std::string MapIO::MAP_TAG_COMMENT("#");
 const std::string MapIO::MAP_TAG_GOAL("G");
@@ -115,8 +115,9 @@ bool MapIO::Save(const std::string & filename, const std::vector<GameMapCell> & 
     fs << "# ====== GOALS =====\n";
 
     for(const MissionGoal & g : goals)
-        fs << MAP_TAG_GOAL << " " << g.IsPrimary() << " "
-           << MissionGoal::GeTypeString(g.GetType()) << " " << g.GetQuantity() << "\n";
+        fs << MAP_TAG_GOAL << " " << g.IsPrimary() << " " << g.IsHidden() << " "
+           << g.GetType() << " " << g.GetQuantity() << " "
+           << g.GetExtraValue() << "\n";
 
     // save map size
     fs << "# ====== MAP =====\n";
@@ -166,7 +167,7 @@ bool MapIO::Save(const std::string & filename, const std::vector<GameMapCell> & 
     for(const GameObject * obj : objects)
     {
         fs << MapLayers::REGULAR_OBJECTS << " "
-           << ObjectData::GetObjectTypeStr(obj->GetObjectType()) << " "
+           << obj->GetObjectType() << " "
            << obj->GetObjectVariant() << " "
            << obj->GetFaction() << " "
            << obj->GetRow0() << " " << obj->GetCol0() << "\n";
@@ -270,17 +271,24 @@ void MapIO::ReadHeader(std::fstream & fs)
             bool primary = false;
             ss >> primary;
 
+            // check if hidden goal
+            bool hidden = false;
+            ss >> hidden;
+
             // goal type
-            std::string gt;
-            ss >> gt;
-            const std::size_t type = std::hash<std::string>{}(gt);
+            MissionGoalType type = MissionGoal::TYPE_NULL;
+            ss >> type;
 
             // quantity data
             unsigned int quantity = 0;
             ss >> quantity;
 
+            // extra value
+            unsigned int extraVal = 0;
+            ss >> extraVal;
+
             // store goal
-            mGoals.emplace_back(type, quantity, primary);
+            mGoals.emplace_back(type, quantity, extraVal, primary, hidden);
 
             // assign category based on first primary goal
             if(primary && MC_UNKNOWN == mCategory)
@@ -383,10 +391,8 @@ void MapIO::ReadObjectsData(std::fstream & fs)
         ss.str(line);
 
         MapObjectEntry e;
-        std::string objIdStr;
 
-        ss >> e.layerId >> objIdStr >> e.variantId >> e.faction >> e.r0 >> e.c0;
-        e.typeId = std::hash<std::string>{}(objIdStr);
+        ss >> e.layerId >> e.typeId >> e.variantId >> e.faction >> e.r0 >> e.c0;
 
         mObjEntries.emplace_back(e);
     }

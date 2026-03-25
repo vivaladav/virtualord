@@ -9,7 +9,7 @@ namespace game
 
 {
 
-const std::array<unsigned int, sgl::sgui::PushButton::NUM_VISUAL_STATES> texIds =
+const std::array<unsigned int, sgl::sgui::AbstractButton::NUM_VISUAL_STATES> texIds =
 {
     ID_PAN_SELOBJ_BTN_NORMAL,
     ID_PAN_SELOBJ_BTN_NORMAL,

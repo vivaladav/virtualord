@@ -8,7 +8,9 @@
 #include "GameUIData.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
+#include "MissionGoalsTracker.h"
 #include "Player.h"
+#include "GameObjects/Base.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Structure.h"
 #include "GameObjects/Temple.h"
@@ -27,6 +29,8 @@
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/DialogNewMiniUnitsSquad.h"
 #include "Widgets/DialogObject.h"
+#include "Widgets/DialogResearch.h"
+#include "Widgets/DialogTechTree.h"
 #include "Widgets/DialogTrading.h"
 #include "Widgets/DialogUpgrade.h"
 #include "Widgets/GameMapProgressBar.h"
@@ -70,13 +74,6 @@ GameHUD::GameHUD(ScreenGame * screen)
 
     // LOCAL PLAYER
     Player * player = game->GetLocalPlayer();
-
-    // react to local player changes in stats
-    player->SetOnResourcesChanged([this]
-    {
-        if(mDialogNewElement != nullptr)
-            mDialogNewElement->CheckBuild();
-    });
 
     // TOP RESOURCE BAR
     mPanelRes = new PanelResources(player, mScreen->mGameMap, this);
@@ -189,7 +186,6 @@ GameHUD::~GameHUD()
     Player * player = mScreen->GetGame()->GetLocalPlayer();
 
     player->SetOnNumUnitsChanged([]{});
-    player->SetOnResourcesChanged([]{});
 }
 
 void GameHUD::SetMiniMapEnabled(bool val)
@@ -244,6 +240,8 @@ void GameHUD::ShowPanelSelfDestruction()
 
                                                  mScreen->mGameMap->RemoveAndDestroyObject(obj);
 
+                                                 TrackSelfDestruction(obj);
+
                                                  HidePanelSelfDestruction();
                                              });
 
@@ -252,6 +250,8 @@ void GameHUD::ShowPanelSelfDestruction()
                                             {
                                                 auto obj = mScreen->mLocalPlayer->GetSelectedObject();
                                                 obj->SelfDestroy();
+
+                                                TrackSelfDestruction(obj);
 
                                                 HidePanelSelfDestruction();
                                             });
@@ -376,7 +376,7 @@ void GameHUD::ShowDialogMissionGoals()
     mScreen->SetPause(true);
 
     Game * game = mScreen->GetGame();
-    mDialogMissionGoals = new DialogMissionGoals(mScreen);
+    mDialogMissionGoals = new DialogMissionGoals(mScreen->mTrackerMG);
     mDialogMissionGoals->SetFocus();
 
     mDialogMissionGoals->AddFunctionOnClose([this]
@@ -428,14 +428,16 @@ void GameHUD::ShowDialogEndMission(bool won)
     // stats
     GameMap * gm = mScreen->mGameMap;
 
-    const PlayerFaction pf = mScreen->GetGame()->GetLocalPlayerFaction();
-    const int territory = gm->GetControlMap()->GetPercentageControlledByFaction(pf);
+    const Player * p = mScreen->GetGame()->GetLocalPlayer();
+    const PlayerFaction pf = p->GetFaction();
+    const unsigned int turns = p->GetTurnsPlayed();
+    const unsigned int territory = gm->GetControlMap()->GetPercentageControlledByFaction(pf);
     const unsigned int killed = gm->GetEnemiesKilled(pf);
     const unsigned int casualties = gm->GetCasualties(pf);
     const unsigned int played = mScreen->GetPlayTimeInSec();
 
     // create dialog
-    mDialogEnd = new DialogEndMission(played, territory, killed, pf, won);
+    mDialogEnd = new DialogEndMission(played, territory, killed, pf, turns, won);
     mDialogEnd->SetFocus();
 
     mDialogEnd->SetFunctionOnClose([this, won]
@@ -678,31 +680,30 @@ void GameHUD::HideDialogNewElement()
     mScreen->SetPause(false);
 }
 
-void GameHUD::ShowMissionCountdown(int secs)
+void GameHUD::ShowMissionCountdown(unsigned int turns)
 {
     const Player * p = mScreen->GetGame()->GetLocalPlayer();
     const PlayerFaction pf = p->GetFaction();
-    const auto bases = p->GetStructuresByType(ObjectData::TYPE_BASE);
 
-    // this shouldn't happen
-    if(bases.empty())
-        return ;
+    mCountdownLabel = new CountdownLabel(pf, turns, this);
 
-    const Structure * base = bases[0];
-    const IsoObject * isoObj = base->GetIsoObject();
-
-    mCountdownLabel = new CountdownLabel(pf, secs, this);
-
-    const int x0 = isoObj->GetX() + (isoObj->GetWidth() - mCountdownLabel->GetWidth()) / 2;
-    const int y0 = isoObj->GetY() - mCountdownLabel->GetHeight();
-
-    mCountdownLabel->SetPosition(x0, y0);
+    PositionMissionCountdown();
 }
 
 void GameHUD::HideMissionCountdown()
 {
     delete mCountdownLabel;
     mCountdownLabel = nullptr;
+}
+
+void GameHUD::AddPlayedTurn()
+{
+    if(mCountdownLabel == nullptr)
+        return ;
+
+    mCountdownLabel->AddPlayedTurn();
+
+    PositionMissionCountdown();
 }
 
 void GameHUD::ShowGoalCompletedIcon()
@@ -851,6 +852,90 @@ void GameHUD::HideDialogNewMiniUnitsSquad()
     // schedule dialog deletion
     mDialogNewMiniUnits->DeleteLater();
     mDialogNewMiniUnits = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
+}
+
+void GameHUD::ShowDialogResearch(ResearchCenter * rc)
+{
+    if(mDialogResearch != nullptr)
+        return ;
+
+    mScreen->ShowScreenOverlay();
+
+    ++mVisibleDialogs;
+
+    mScreen->SetPause(true);
+
+    Game * game = mScreen->GetGame();
+    mDialogResearch = new DialogResearch(game->GetLocalPlayer(), rc);
+    mDialogResearch->SetFocus();
+
+    mDialogResearch->SetFunctionOnClose([this]
+    {
+        HideDialogResearch();
+    });
+
+    TemporaryClosePanels();
+
+    // position dialog
+    CenterWidget(mDialogResearch);
+}
+
+void GameHUD::HideDialogResearch()
+{
+    --mVisibleDialogs;
+
+    mScreen->HideScreenOverlay();
+
+    ReopenPanels();
+
+    // schedule dialog deletion
+    mDialogResearch->DeleteLater();
+    mDialogResearch = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
+}
+
+void GameHUD::ShowDialogTechTree()
+{
+    if(mDialogTechTree != nullptr)
+        return ;
+
+    mScreen->ShowScreenOverlay();
+
+    ++mVisibleDialogs;
+
+    mScreen->SetPause(true);
+
+    Game * game = mScreen->GetGame();
+    mDialogTechTree = new DialogTechTree(game->GetLocalPlayer());
+    mDialogTechTree->SetFocus();
+
+    mDialogTechTree->SetFunctionOnClose([this]
+    {
+        HideDialogTechTree();
+    });
+
+    TemporaryClosePanels();
+
+    // position dialog
+    CenterWidget(mDialogTechTree);
+}
+
+void GameHUD::HideDialogTechTree()
+{
+    --mVisibleDialogs;
+
+    mScreen->HideScreenOverlay();
+
+    ReopenPanels();
+
+    // schedule dialog deletion
+    mDialogTechTree->DeleteLater();
+    mDialogTechTree = nullptr;
 
     // un-pause game
     mScreen->SetPause(false);
@@ -1143,6 +1228,18 @@ void GameHUD::PositionOptionsPanelOverObjectActions(sgl::sgui::Widget * panel, u
     panel->SetPosition(panelX, panelY);
 }
 
+void GameHUD::PositionMissionCountdown()
+{
+    const Player * p = mScreen->GetGame()->GetLocalPlayer();
+    const PlayerFaction pf = p->GetFaction();
+    const Base * base = p->GetBase();
+    const IsoObject * isoObj = base->GetIsoObject();
+    const int x0 = isoObj->GetX() + (isoObj->GetWidth() - mCountdownLabel->GetWidth()) / 2;
+    const int y0 = isoObj->GetY() - mCountdownLabel->GetHeight();
+
+    mCountdownLabel->SetPosition(x0, y0);
+}
+
 void GameHUD::ResumeGameFromExit()
 {
     if(0 == mVisibleDialogs)
@@ -1170,6 +1267,14 @@ void GameHUD::CenterWidget(sgl::sgui::Widget * w)
     const int posX = (renderer->GetWidth() - w->GetWidth()) / 2;
     const int posY = (renderer->GetHeight() - w->GetHeight()) / 2;
     w->SetPosition(posX, posY);
+}
+
+void GameHUD::TrackSelfDestruction(GameObject * obj)
+{
+    const GameObjectCategoryId cat = obj->GetObjectCategory();
+
+    if(cat == ObjectData::CAT_UNIT || cat == ObjectData::CAT_STRUCTURE)
+        mScreen->mTrackerMG->AddObjectSelfDestructed();
 }
 
 void GameHUD::OnStringsChanged()

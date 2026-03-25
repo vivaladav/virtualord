@@ -11,9 +11,10 @@
 #include <sgl/graphic/Text.h>
 #include <sgl/graphic/Texture.h>
 
+// anonymous namespace for private stuff
 namespace
 {
-    constexpr int marginCont = 10;
+constexpr int marginL = 30;
 }
 
 namespace game
@@ -25,23 +26,20 @@ GameSimpleTooltip::GameSimpleTooltip(const char * text)
 
     auto tm = graphic::TextureManager::Instance();
 
-    const int marginL = 40;
-    const int marginT = 8;
-
     // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_LEFT);
+    graphic::Texture * tex = tm->GetSprite(SpriteFileTooltips, ID_TOOLTIP_GAME_BG_L);
+
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
+
+    tex = tm->GetSprite(SpriteFileTooltips, ID_TOOLTIP_GAME_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
+
+    tex = tm->GetSprite(SpriteFileTooltipsExp, ID_TOOLTIP_GAME_BG_C);
     tex->SetScaleMode(graphic::TSCALE_NEAREST);
-
-    mBgLeft = new graphic::Image(tex);
-    RegisterRenderable(mBgLeft);
-
-    tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_CONT);
-    mBgCont = new graphic::Image(tex);
-    RegisterRenderable(mBgCont);
-
-    tex = tm->GetSprite(SpriteFileTooltipsExp, IND_TOOLTIP_SIMPLE_RIGHT);
-    mBgRight = new graphic::Image(tex);
-    RegisterRenderable(mBgRight);
+    mBgC = new graphic::Image(tex);
+    RegisterRenderable(mBgC);
 
     // LABEL
     SetText(text);
@@ -57,20 +55,19 @@ void GameSimpleTooltip::SetText(const char * text)
         delete mLabel;
     }
 
-    const unsigned int color = 0x98bbd9ff;
     auto fm = graphic::FontManager::Instance();
     auto font = fm->GetFont(WidgetsConstants::FontFileText, 16, graphic::Font::NORMAL);
 
     mLabel = new graphic::Text(text, font);
-    mLabel->SetColor(color);
+    mLabel->SetColor(WidgetsConstants::colorTooltipText);
     RegisterRenderable(mLabel);
 
     // SET SIZES
-    const int contentW = mLabel->GetWidth() + (marginCont * 2);
-    const int w = mBgLeft->GetWidth() + contentW + mBgRight->GetWidth();
-    const int h = mBgCont->GetHeight();
+    const int contentW = mLabel->GetWidth() - (mBgL->GetWidth() - marginL);
+    const int w = mBgL->GetWidth() + contentW + mBgR->GetWidth();
+    const int h = mBgC->GetHeight();
 
-    mBgCont->SetWidth(contentW);
+    mBgC->SetWidth(contentW);
 
     SetSize(w, h);
 
@@ -92,20 +89,17 @@ void GameSimpleTooltip::SetPositions()
     int x = x0;
     int y = y0;
 
-    mBgLeft->SetPosition(x, y);
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
 
-    x += mBgLeft->GetWidth();
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
 
-    mBgCont->SetPosition(x, y);
-
-    x += mBgCont->GetWidth();
-
-    mBgRight->SetPosition(x, y);
+    mBgR->SetPosition(x, y);
 
     // LABEL
-    const int labelX = mBgCont->GetX() +
-                       (mBgCont->GetWidth() - mLabel->GetWidth()) / 2;
-    const int labelY = y0 + (mBgCont->GetHeight() - mLabel->GetHeight()) / 2;
+    const int labelX = x0 + marginL;
+    const int labelY = y0 + (mBgC->GetHeight() - mLabel->GetHeight()) / 2;
 
     mLabel->SetPosition(labelX, labelY);
 }

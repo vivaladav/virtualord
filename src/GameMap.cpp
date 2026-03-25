@@ -7,6 +7,7 @@
 #include "IsoLayer.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
+#include "MissionGoalsTracker.h"
 #include "Player.h"
 #include "AI/ConquerPath.h"
 #include "AI/ObjectPath.h"
@@ -538,7 +539,7 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new Wall(data, initData, variant);
     else if(ObjectData::TYPE_WALL_GATE == type)
         o2a.obj = new WallGate(data, initData, variant);
-    else if(ObjectData::TYPE_LOOTBOX == type)
+    else if(ObjectData::TYPE_LOOTBOX == type || ObjectData::TYPE_LOOTBOX2 == type)
         o2a.obj = new LootBox(data, initData);
     else if(ObjectData::TYPE_TEMPLE == type)
         o2a.obj = new Temple(data, initData);
@@ -781,13 +782,17 @@ void GameMap::InitCities()
     }
 }
 
-void GameMap::RegisterEnemyKill(GameObject * killer)
+void GameMap::RegisterEnemyKill(GameObject * killer, GameObject * victim)
 {
     // TODO assign experience points based on kill maybe
     const int experienceKill = 100;
     killer->SumExperience(experienceKill);
 
     ++mEnemiesKilled[killer->GetFaction()];
+
+    // track kill for mission goals
+    auto trackerMG = mScreenGame->GetMissionGoalsTracker();
+    trackerMG->AddObjectDestroyedByCategory(victim->GetObjectCategory());
 }
 
 bool GameMap::AreObjectsAdjacent(const GameObject * obj1, const GameObject * obj2) const
@@ -1079,11 +1084,8 @@ void GameMap::BuildStructure(const Cell2D & cell, Player * player, GameObjectTyp
     // propagate effects of conquest
     for(int r = obj->GetRow1(); r <= obj->GetRow0(); ++r)
     {
-        const int ind0 = r * mCols;
-
         for(int c = obj->GetCol1(); c <= obj->GetCol0(); ++c)
         {
-            const int ind = ind0 + c;
             UpdateInfluencedCells(r, c);
         }
     }
@@ -1268,30 +1270,6 @@ void GameMap::StartConquerStructure(const Cell2D & end, Player * player)
 {
     // take player's energy
     player->SumResource(Player::Stat::ENERGY, -COST_CONQUEST_RES_GEN);
-
-    // mark object cells as changing
-    const int ind1 = end.row * mCols + end.col;
-    GameObject * obj = mCells[ind1].objTop;
-
-    for(int r = obj->GetRow1(); r <= obj->GetRow0(); ++r)
-    {
-        const unsigned int indBase = r * mCols;
-
-        for(int c = obj->GetCol1(); c <= obj->GetCol0(); ++c)
-            const unsigned int ind = indBase + c;
-    }
-}
-
-void GameMap::AbortConquerStructure(GameObject * target)
-{
-    // mark object cells as not changing
-    for(int r = target->GetRow1(); r <= target->GetRow0(); ++r)
-    {
-        const unsigned int indBase = r * mCols;
-
-        for(int c = target->GetCol1(); c <= target->GetCol0(); ++c)
-            const unsigned int ind = indBase + c;
-    }
 }
 
 void GameMap::ConquerStructure(const Cell2D & end, Player * player)
@@ -1333,16 +1311,6 @@ void GameMap::ConquerStructure(const Cell2D & end, Player * player)
 
         if(prevOwner)
             prevOwner->RemoveStructure(st);
-
-        if(obj->GetObjectCategory() == ObjectData::CAT_RES_GENERATOR)
-        {
-            auto rg = static_cast<ResourceGenerator *>(obj);
-
-            player->AddResourceGenerator(rg);
-
-            if(prevOwner)
-                prevOwner->RemoveResourceGenerator(rg);
-        }
     }
 
     // update map
@@ -2908,11 +2876,6 @@ bool GameMap::IsAreaFree(int brR, int brC, int rows, int cols)
 
 void GameMap::OnNewTurn(PlayerFaction faction)
 {
-    // assign money to faction based on map influence
-    const int money = GetFactionMoneyPerTurn(faction);
-    auto p = mGame->GetPlayerByFaction(faction);
-    p->SumResource(Player::MONEY, money);
-
     // notify all objects
     for(GameObject * obj : mObjects)
         obj->OnNewTurn(faction);
@@ -3420,8 +3383,6 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
     if(o2a.owner != nullptr)
     {
         // register objects to Player
-        if(o2a.obj->GetObjectCategory() == ObjectData::CAT_RES_GENERATOR)
-            o2a.owner->AddResourceGenerator(static_cast<ResourceGenerator *>(o2a.obj));
         if(o2a.obj->IsStructure())
             o2a.owner->AddStructure(static_cast<Structure *>(o2a.obj));
 
@@ -3469,13 +3430,7 @@ void GameMap::DestroyObject(GameObject * obj)
             owner->RemoveUnit(static_cast<Unit *>(obj));
         // remove structure
         else if(obj->IsStructure())
-        {
             owner->RemoveStructure(static_cast<Structure *>(obj));
-
-            // remove resource generator
-            if(obj->GetObjectCategory() == ObjectData::CAT_RES_GENERATOR)
-                owner->RemoveResourceGenerator(static_cast<ResourceGenerator *>(obj));
-        }
     }
 
     // generic cells update

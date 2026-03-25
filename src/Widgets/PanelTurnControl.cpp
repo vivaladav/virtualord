@@ -130,6 +130,23 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     mDigits->SetColorZeros(colorZeros);
     mDigits->SetValue(energy);
 
+    // tooltip turn energy
+    const float timeTooltip = 3000.f;
+    auto sm = utilities::StringManager::Instance();
+    mTooltipEnergy = new GameSimpleTooltip(sm->GetCString("TT_FACT_ENERGY"));
+
+    mIconEnergy->SetTooltip(mTooltipEnergy);
+    mIconEnergy->SetTooltipDelay(WidgetsConstants::timeTooltipButtonDelay);
+    mIconEnergy->SetTooltipShowingTime(timeTooltip);
+
+    mEnergyBar->SetTooltip(mTooltipEnergy);
+    mEnergyBar->SetTooltipDelay(WidgetsConstants::timeTooltipButtonDelay);
+    mEnergyBar->SetTooltipShowingTime(timeTooltip);
+
+    mDigits->SetTooltip(mTooltipEnergy);
+    mDigits->SetTooltipDelay(WidgetsConstants::timeTooltipButtonDelay);
+    mDigits->SetTooltipShowingTime(timeTooltip);
+
     // BUTTON END TURN
     mButtonEndTurn = new ButtonEndTurn(this);
 

@@ -61,7 +61,13 @@ private:
 private:
     std::vector<ObjectVisualAttribute *> mAttributes;
 
-    sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
+
+    sgl::sgui::Widget * mPanelPreview = nullptr;
+    sgl::sgui::Widget * mPanelDescription = nullptr;
+    sgl::sgui::Widget * mPanelConfig = nullptr;
 
     sgl::sgui::AbstractButton * mBtnClose = nullptr;
     sgl::sgui::AbstractButton * mBtnLeft = nullptr;

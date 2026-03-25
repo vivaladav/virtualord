@@ -18,7 +18,7 @@ namespace game
 class ScreenInit : public Screen
 {
 public:
-    ScreenInit(Game * game);
+    ScreenInit(Game * game, bool firstInit);
     ~ScreenInit();
 
     void Update(float delta) override;
@@ -27,22 +27,21 @@ public:
 private:
     void UpdateStatus();
 
-    void SetupLoadPackages();
     void SetupFonts();
     void SetupMouseCursors();
     void SetupMusic();
     void SetupSFX();
-    void SetupTextures();
+    void SetupPermanentTextures();
+    void SetupPregameTextures();
 
 private:
     enum TexPackages : unsigned int
     {
-        PACKAGE_IMGS_BACKGROUNDS,
-        PACKAGE_IMGS_GAME,
+        PACKAGE_IMGS_BACKGROUNDS_PREGAME,
+        PACKAGE_IMGS_BACKGROUNDS_PERM,
         PACKAGE_IMGS_TEST,
-        PACKAGE_IMGS_UI_GAME,
-        PACKAGE_IMGS_UI_OTHERS,
-        PACKAGE_IMGS_UI_TUTORIAL,
+        PACKAGE_IMGS_UI_PREGAME,
+        PACKAGE_IMGS_UI_PERM,
 
         NUM_DATA_PACKAGES
     };

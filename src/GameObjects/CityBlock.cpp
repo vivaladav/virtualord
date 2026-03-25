@@ -30,7 +30,7 @@ CityBlock::CityBlock(const ObjectData & data, const ObjectInitData & initData,
 
 void CityBlock::OnNewTurn(PlayerFaction faction)
 {
-    GameObject::OnNewTurn(faction);
+    Structure::OnNewTurn(faction);
 
     // not linked yet -> exit
     if(!IsLinked())
@@ -40,10 +40,6 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
     if(faction != GetFaction())
         return ;
 
-    // AI -> exit
-    if(!IsFactionLocal())
-        return ;
-
     auto g = static_cast<CityGroup *>(GetGroup());
 
     // city not conquered yet -> exit
@@ -51,8 +47,12 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
         return ;
 
     // assign money
-    const int money = 50;
-    GetOwner()->SumResource(Player::MONEY, money);
+    const int money = GetResourceProduction(ER_MONEY);
+
+    // VISUAL NOTIFICATION
+    // AI -> exit
+    if(!IsFactionLocal())
+        return ;
 
     // emit notification
     auto partMan = GetParticlesManager();
@@ -64,11 +64,19 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
     const float x = isoObj->GetX() + isoObj->GetWidth() / 2;
     const float y = isoObj->GetY() - marginV;
 
-    const float speed = 45.f;
-    const float decaySpeed = 120.f;
-
-    const DataParticleOutput pd(money, OT_MONEY, x, y, speed, decaySpeed);
+    const DataParticleOutput pd(money, OT_MONEY, x, y);
     pu->AddParticle(pd);
+}
+
+int CityBlock::GetResourceProduction(ExtendedResource res) const
+{
+    if(res == ER_MONEY)
+    {
+        const int money = 50;
+        return money;
+    }
+    else
+        return 0;
 }
 
 void CityBlock::UpdateGraphics()

@@ -1,0 +1,129 @@
+#include "States/StateLeaveGame.h"
+
+#include "Game.h"
+#include "GameData.h"
+#include "Screens/DummyScreen.h"
+#include "States/StatesIds.h"
+#include "Widgets/GameUIData.h"
+
+#include <sgl/graphic/TextureManager.h>
+
+namespace game
+{
+
+StateLeaveGame::StateLeaveGame(Game * game)
+    : BaseGameState(StateId::LEAVE_GAME, game)
+{
+}
+
+void StateLeaveGame::OnActive()
+{
+    mScreen = new DummyScreen(mGame);
+
+    DestroyTextures();
+
+    mGame->RequestNextActiveState(StateId::INIT);
+}
+
+void StateLeaveGame::OnInactive()
+{
+    delete mScreen;
+    mScreen = nullptr;
+}
+
+void StateLeaveGame::DestroyTextures()
+{
+    auto tm = sgl::graphic::TextureManager::Instance();
+
+    // ===== GAME =====
+    // CELLS
+    tm->DestroySprite(SpriteFileCells);
+    // CITY
+    tm->DestroySprite(SpriteFileCity);
+    // COLLECTIBLES
+    tm->DestroySprite(SpriteCollectiblesFile);
+    // INDICATORS
+    tm->DestroySprite(SpriteFileMapIndicators);
+    // MINI UNITS
+    tm->DestroySprite(SpriteFileMiniUnits);
+    // PARTICLES
+    tm->DestroySprite(SpriteFileParticles);
+    // ROCKS
+    tm->DestroySprite(SpriteRocksFile);
+    // SCENE ELEMENTS
+    tm->DestroySprite(SpriteFileSceneElements);
+    // STRUCTURES
+    tm->DestroySprite(SpriteFileStructures);
+    // TREES
+    tm->DestroySprite(SpriteFileTrees);
+    // UNITS
+    tm->DestroySprite(SpriteFileUnits);
+    // UNIT PARTICLES
+    tm->DestroySprite(SpriteFileUnitsParticles);
+    // WALLS
+    tm->DestroySprite(SpriteFileWalls);
+
+    // ===== UI GAME =====
+    // DIALOG EXIT
+    tm->DestroySprite(SpriteFileDialogExit);
+    tm->DestroyTexture(SpriteFileDialogExitExp);
+    // DIALOG EXPLORE TEMPLE
+    tm->DestroySprite(SpriteFileDialogExploreTemple);
+    // DIALOG MISSION GOALS
+    tm->DestroySprite(SpriteFileDialogMissionGoals);
+    tm->DestroySprite(SpriteFileDialogMissionGoalsExp);
+    // DIALOG OBJECT
+    tm->DestroySprite(SpriteFileDialogObject);
+    tm->DestroySprite(SpriteFileDialogObjectExp);
+    // DIALOG RESEARCH
+    tm->DestroySprite(SpriteFileDialogResearch);
+    tm->DestroyTexture(SpriteFileDialogResearchExp);
+    // DIALOG TECH TREE
+    tm->DestroySprite(SpriteFileDialogTechTree);
+    tm->DestroyTexture(SpriteFileDialogTechTreeExp);
+    // DIALOG TRADING
+    tm->DestroySprite(SpriteFileDialogTrading);
+    tm->DestroySprite(SpriteFileDialogTradingExp);
+    // DIALOG UPGRADE
+    tm->DestroySprite(SpriteFileDialogUpgrade);
+    tm->DestroyTexture(SpriteFileDialogUpgradeExp);
+    // FACTION SELECTION
+    tm->DestroySprite(SpriteFileDialogFactionSelection);
+    // GAME UI
+    tm->DestroySprite(SpriteFileGameUI);
+    tm->DestroySprite(SpriteFileGameUIExp);
+    // PANEL HIT
+    tm->DestroyTexture(SpriteFilePanelHit);
+    // MAP UI
+    tm->DestroySprite(SpriteFilePanelMinimap);
+    // PANEL SELECTED OBJECT
+    tm->DestroySprite(SpriteFilePanelSelectedObject);
+    // PANEL TURN CONTROL
+    tm->DestroySprite(SpriteFilePanelTurnControl);
+    // MAP UI
+    tm->DestroySprite(SpriteFileMapUI);
+    // END MISSION DIALOG
+    tm->DestroySprite(SpriteFileDialogEndMission);
+    tm->DestroyTexture(SpriteFileDialogEndMissionExp);
+    // NEW ELEMENT DIALOG
+    tm->DestroySprite(SpriteFileDialogNewElement);
+    tm->DestroySprite(SpriteFileDialogNewElementExp);
+    // NEW MINI UNITS SQUAD DIALOG
+    tm->DestroyTexture(SpriteFileDialogNewMiniUnits);
+    // OBJECT ACTION BUTTON
+    tm->DestroySprite(SpriteFileObjActionButton);
+    // PLANET MAP
+    tm->DestroySprite(SpriteFilePlanetMap);
+    tm->DestroySprite(SpriteFilePlanetMap2);
+    // RESOURCES BAR
+    tm->DestroySprite(SpriteFileResourcesBar);
+    tm->DestroyTexture(SpriteFileResourcesBarExp);
+    // QUICK UNIT SELECTION
+    tm->DestroySprite(SpriteFileUnitQuickSel);
+
+    // ===== UI TUTORIAL =====
+    tm->DestroySprite(SpriteFileTutorial);
+    tm->DestroySprite(SpriteFileTutorialExp);
+}
+
+} // namespace game

@@ -157,7 +157,7 @@ bool Unit::CanConquer() const
 
 float Unit::GetTimeConquestCell() const
 {
-    const float maxTime = 2.5f;
+    const float maxTime = 2.f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONQUEST));
 }
 

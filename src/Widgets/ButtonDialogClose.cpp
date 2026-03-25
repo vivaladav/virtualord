@@ -10,9 +10,9 @@ namespace game
 {
 
 ButtonDialogClose::ButtonDialogClose(sgl::sgui::Widget * parent)
-    : sgl::sgui::ImageButton({ ID_DLG_DESTR_BTN_CLOSE_NORMAL, ID_DLG_DESTR_BTN_CLOSE_DISABLED,
-                               ID_DLG_DESTR_BTN_CLOSE_OVER, ID_DLG_DESTR_BTN_CLOSE_PUSHED,
-                               ID_DLG_DESTR_BTN_CLOSE_PUSHED }, SpriteFileDialogDestruction, parent)
+    : sgl::sgui::ImageButton({ ID_BTN_DLG_CLOSE_NORMAL, ID_BTN_DLG_CLOSE_DISABLED,
+                               ID_BTN_DLG_CLOSE_OVER, ID_BTN_DLG_CLOSE_PUSHED,
+                               ID_BTN_DLG_CLOSE_PUSHED }, SpriteFileUIShared, parent)
 {
     SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
 }

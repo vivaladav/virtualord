@@ -9,6 +9,7 @@
 #include "IsoMap.h"
 #include "MapIO.h"
 #include "MapsRegistry.h"
+#include "MissionGoalsTracker.h"
 #include "Player.h"
 #include "AI/ConquerPath.h"
 #include "AI/ObjectPath.h"
@@ -20,6 +21,7 @@
 #include "GameObjects/MiniUnit.h"
 #include "GameObjects/MiniUnitsGroup.h"
 #include "GameObjects/ObjectsDataRegistry.h"
+#include "GameObjects/ResearchCenter.h"
 #include "GameObjects/SpawningTower.h"
 #include "GameObjects/Temple.h"
 #include "GameObjects/Unit.h"
@@ -38,7 +40,7 @@
 #include "Particles/UpdaterOutput.h"
 #include "Particles/UpdaterSingleLaser.h"
 #include "States/StatesIds.h"
-#include "Tutorial/Tutorial.h"
+#include "Tutorial/TutorialConstants.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/GameHUD.h"
@@ -99,6 +101,10 @@ ScreenGame::ScreenGame(Game * game)
 
     InitParticlesSystem();
 
+
+    // MISSION GOALS
+    mTrackerMG = new MissionGoalsTracker(game, mLocalPlayer);
+
     // -- ISOMETRIC MAP --
     CreateIsoMap();
     CreateLayers();
@@ -106,9 +112,9 @@ ScreenGame::ScreenGame(Game * game)
     // create game map
     mGameMap = new GameMap(GetGame(), this, mIsoMap);
 
-    LoadMapFile();
+    mTrackerMG->SetControlMap(mGameMap->GetControlMap());
 
-    TrackResourcesForGoals();
+    LoadMapFile();
 
     // center map on screen
     const int mapH = mIsoMap->GetHeight();
@@ -157,21 +163,34 @@ ScreenGame::ScreenGame(Game * game)
     mPathfinder->SetMap(mGameMap);
 
     // -- PLAYERS --
-    for(int i = 0; i < GetGame()->GetNumPlayers(); ++i)
+    const unsigned int numPlayers = game->GetNumPlayers();
+
+    for(int i = 0; i < numPlayers; ++i)
     {
         Player * p = game->GetPlayerByIndex(i);
 
         p->ResetTurnEnergy();
 
+        // AI players
         if(p->IsAI())
         {
             p->GetAI()->SetGameMap(mGameMap);
             mAiPlayers.push_back(p);
+
+            p->ResetTurnsPlayed();
+        }
+        // local player
+        else
+        {
+            // first turn is always played by local player
+            p->ResetTurnsPlayed(1);
         }
     }
 
     // UI
     CreateUI();
+
+    mTrackerMG->SetGameHUD(mHUD);
 
     // OVERLAYS
     mPathOverlay = new PathOverlay(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
@@ -196,15 +215,14 @@ ScreenGame::ScreenGame(Game * game)
         {
             tutMan->CreateTutorial(TUTORIAL_MISSION_INTRO, this);
             tutMan->StartTutorial();
-            mTutorialStarted = true;
+
+            mTrackerMG->SetTutorialStarted();
         }
     }
 }
 
 ScreenGame::~ScreenGame()
 {
-    ClearResourcesTracking();
-
     // clear Players
     Game * game = GetGame();
 
@@ -239,6 +257,8 @@ ScreenGame::~ScreenGame()
     for(auto it : mStructIndicators)
         delete it.second;
 
+    delete mTrackerMG;
+
     delete mTempStructIndicator;
 
     delete mIsoMap;
@@ -271,6 +291,7 @@ void ScreenGame::Update(float delta)
 
     // keep track of time played (while not paused)
     mTimePlayed += delta;
+    mTrackerMG->SetPlayedTime(mTimePlayed);
 
     // -- PARTICLES --
     mPartMan->Update(delta);
@@ -398,6 +419,7 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     mHUD->ShowPanelObjectActions(obj);
     mHUD->ShowPanelSelectedObject(obj);
 
+    // set UI focus
     sgl::sgui::Stage::Instance()->SetFocus();
 }
 
@@ -449,47 +471,6 @@ void ScreenGame::SetPause(bool paused)
     mHUD->SetEnabled(!paused);
 
     mHUD->UpdatePanelTurnControl();
-}
-
-void ScreenGame::CollectMissionGoalReward(unsigned int index)
-{
-    if(index >= mMissionGoals.size())
-        return ;
-
-    MissionGoal & g = mMissionGoals[index];
-
-    if(g.IsRewardCollected())
-        return ;
-
-    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
-    {
-        Player::BLOBS,
-        Player::DIAMONDS,
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::MONEY
-    };
-
-    const MissionReward rewardIds[NUM_MISSION_REWARDS] =
-    {
-        MR_BLOBS,
-        MR_DIAMONDS,
-        MR_ENERGY,
-        MR_MATERIAL,
-        MR_MONEY,
-    };
-
-    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
-    {
-        const int reward = g.GetRewardByType(rewardIds[i]);
-
-        if(reward > 0)
-            mLocalPlayer->SumResource(resourceIds[i], reward);
-    }
-
-    g.SetRewardCollected();
-
-    UpdateGoalCompletedIcon();
 }
 
 void ScreenGame::SetLocalTurnStage(TurnStage ts)
@@ -731,6 +712,19 @@ void ScreenGame::CreateUI()
         ShowActiveMiniUnitIndicators(static_cast<MiniUnit *>(mu), mCurrCell);
     });
 
+    // control research of research center
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_RESEARCH, [this]
+    {
+        auto rc = static_cast<ResearchCenter *>(mLocalPlayer->GetSelectedObject());
+        mHUD->ShowDialogResearch(rc);
+    });
+
+    // open tech tree
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_TECH_TREE, [this]
+    {
+        mHUD->ShowDialogTechTree();
+    });
+
     // WALL GATE
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_OPEN_GATE,
                                        [this, panelObjActions]
@@ -845,10 +839,12 @@ void ScreenGame::CreateUI()
         CancelObjectAction(selObj);
     });
 
-    // MISSION COUNTDOWN if needed by primary goal
-    for(const MissionGoal & g : mMissionGoals)
+    // MISSION COUNTDOWN if needed
+    const std::vector<MissionGoal> goals = mTrackerMG->GetGoals();
+
+    for(const MissionGoal & g : goals)
     {
-        if(g.IsPrimary() && g.GetType() == MissionGoal::TYPE_RESIST_TIME)
+        if(g.GetType() == MissionGoal::TYPE_RESIST_TURNS)
         {
             mHUD->ShowMissionCountdown(g.GetQuantity());
             break;
@@ -917,8 +913,7 @@ void ScreenGame::LoadMapFile()
     mGameMap->InitCities();
 
     // get mission data
-    mMissionGoals = mio.GetMissionGoals();
-    SetMissionRewards();
+    mTrackerMG->SetGoals(mio.GetMissionGoals());
 }
 
 void ScreenGame::OnKeyDown(sgl::core::KeyboardEvent & event)
@@ -1575,7 +1570,6 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
                     mGameMap->AbortBuildWalls(obj);
                 else if(actType == GameObjectActionType::CONQUER_STRUCTURE)
                 {
-                    mGameMap->AbortConquerStructure(act.target);
                     act.progressBar->DeleteLater();
                     ap->StopSound("game/conquer-02.ogg");
                 }
@@ -1728,158 +1722,7 @@ void ScreenGame::UpdateGameEnd()
         return ;
     }
 
-    // map already completed
-    if(mMapCompleted)
-        return ;
-
-    // check goals
-    unsigned int primaryGoals = 0;
-    unsigned int completedPrimaryGoals = 0;
-
-    for(MissionGoal & g : mMissionGoals)
-    {
-        if(g.IsPrimary())
-            ++primaryGoals;
-
-        const bool completed = CheckIfGoalCompleted(g);
-
-        if(completed)
-        {
-            if(g.IsPrimary())
-                ++completedPrimaryGoals;
-
-            if(!g.IsRewardCollected())
-                mHUD->ShowGoalCompletedIcon();
-        }
-    }
-
-    if(completedPrimaryGoals == primaryGoals)
-        mMapCompleted = true;
-}
-
-bool ScreenGame::CheckIfGoalCompleted(MissionGoal & g)
-{
-    if(g.IsCompleted())
-        return true;
-
-    const auto gt = g.GetType();
-
-    if(gt == MissionGoal::TYPE_COLLECT_BLOBS)
-    {
-        if(mResourcesGained[MR_BLOBS] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_BLOBS] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_COLLECT_DIAMONDS)
-    {
-        if(mResourcesGained[MR_DIAMONDS] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_DIAMONDS] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_COMPLETE_TUTORIAL)
-    {
-        Game * game = GetGame();
-
-        if(game->IsTutorialEnabled() && mTutorialStarted)
-        {
-            auto tutMan = game->GetTutorialManager();
-
-            if(tutMan->GetTutorialState(TUTORIAL_MISSION_INTRO) != TS_DONE)
-            {
-                auto tut = tutMan->GetTutorial();
-
-                if(tut != nullptr)
-                    g.SetProgress(tut->GetNumStepsDone() * 100 / tut->GetNumStepsAtStart());
-
-                return false;
-            }
-        }
-        else
-            return false;
-    }
-    else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_BASE)
-    {
-        // check if destroyed all enemy bases
-        for(Player * p : mAiPlayers)
-        {
-            if(p->HasStructure(ObjectData::TYPE_BASE))
-                return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_DESTROY_ALL_ENEMIES)
-    {
-        // check if destroyed all enemies
-        for(Player * p : mAiPlayers)
-        {
-            if(p->GetNumObjects() > 0)
-                return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_GAIN_MONEY)
-    {
-        if(mResourcesGained[MR_MONEY] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_MONEY] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_MINE_ENERGY)
-    {
-        if(mResourcesGained[MR_ENERGY] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_ENERGY] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_MINE_MATERIAL)
-    {
-        if(mResourcesGained[MR_MATERIAL] < g.GetQuantity())
-        {
-            g.SetProgress(mResourcesGained[MR_MATERIAL] * 100 / g.GetQuantity());
-
-            return false;
-        }
-    }
-    else if(gt == MissionGoal::TYPE_RESIST_TIME)
-    {
-        // check elapsed time
-        const unsigned int playedTime = GetPlayTimeInSec();
-
-        if(playedTime < g.GetQuantity())
-        {
-            g.SetProgress(playedTime * 100 / g.GetQuantity());
-
-            return false;
-        }
-
-        mHUD->HideMissionCountdown();
-    }
-    else
-        return false;
-
-    g.SetCompleted();
-
-    return true;
-}
-
-void ScreenGame::UpdateGoalCompletedIcon()
-{
-    for(MissionGoal & g : mMissionGoals)
-    {
-        // there's still some reward to collect -> do not hide
-        if(g.IsCompleted() && !g.IsRewardCollected())
-            return;
-    }
-
-    mHUD->HideGoalCompletedIcon();
+    mTrackerMG->Update();
 }
 
 void ScreenGame::HandleGameOver()
@@ -1916,7 +1759,7 @@ void ScreenGame::AssignMapToFaction(PlayerFaction faction)
     MapsRegistry * mapReg = game->GetMapsRegistry();
 
     const unsigned int territory = game->GetCurrentTerritory();
-    const Planets planet = game->GetCurrentPlanet();
+    const PlanetId planet = game->GetCurrentPlanet();
 
     mapReg->SetMapOccupier(planet, territory, faction);
     mapReg->SetMapStatus(planet, territory, TER_ST_OCCUPIED);
@@ -1978,6 +1821,9 @@ bool ScreenGame::SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, Game
         auto mu = mGameMap->CreateMiniUnit(type, gen, cell, elements, player);
 
         assert(mu != nullptr);
+
+        if(player->IsLocal())
+            mTrackerMG->AddMiniUnitCreated();
 
         mu->SetGroup(group);
 
@@ -2045,6 +1891,9 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
         gen->SetCurrentAction(GameObjectActionType::IDLE);
 
         mGameMap->CreateUnit(type, cell, player);
+
+        if(player->IsLocal())
+            mTrackerMG->AddUnitCreated();
 
         // add unit to map if cell is visible to local player
         if(mGameMap->IsCellVisibleToLocalPlayer(cell.row, cell.col))
@@ -2122,6 +1971,9 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
         // clear action data once the action is completed
         SetObjectActionCompleted(unit);
 
+        // register conquest
+        mTrackerMG->AddStructureConquered(objStruct->GetObjectType());
+
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/conquer-02.ogg", 250);
     });
@@ -2185,6 +2037,9 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
 
         // clear action data once the action is completed
         SetObjectActionCompleted(unit);
+
+        if(player->IsLocal())
+            mTrackerMG->AddStructureBuilt(st);
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/build-01.ogg", 250);
@@ -2402,6 +2257,8 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
                              "start: " << start.row << "," << start.col
                           << " - target: " << oldTarget.row << "," << oldTarget.col << std::endl;
 
+                delete cp;
+
                 return false;
             }
         }
@@ -2417,6 +2274,8 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
                       << " - CONNECT STRUCTURE FAILED (no path) - "
                          "start: " << start.row << "," << start.col
                       << " - target: " << target.row << "," << target.col << std::endl;
+
+            delete cp;
 
             return false;
         }
@@ -2449,25 +2308,104 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
     }
 }
 
-void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
+void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & clickCell)
 {
     // check destination is visible
-    const int ClickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
-    const bool clickVisible = mLocalPlayer->IsCellVisible(ClickInd);
+    const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
 
-    if(!clickVisible)
+    if(!mLocalPlayer->IsCellVisible(clickInd))
     {
         unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"), 2.f);
         return;
     }
 
+    // destination is walkable -> try to generate a path and move
     const Cell2D selCell(unit->GetRow0(), unit->GetCol0());
 
+    if(clickCell != selCell && !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+        return ;
+    }
+
+    // destination is visible and walkable or conquering unit cell
+    // init start for empty path
+    sgl::ai::Pathfinder::PathOptions po = sgl::ai::Pathfinder::INCLUDE_START;
+    unsigned int startR = selCell.row;
+    unsigned int startC = selCell.col;
+
+    // continue building path
+    if(!mConquestPath.empty())
+    {
+        // reclicked on same cell of last path -> double click -> finalize path
+        if(mConquestPath.back() == clickInd)
+        {
+            // start conquest
+            auto cp = new ConquerPath(unit, mIsoMap, mGameMap, this);
+            cp->SetPathCells(mConquestPath);
+
+            if(mGameMap->ConquerCells(cp))
+            {
+                mConquestPath.clear();
+
+                ClearCellOverlays();
+
+                // store active action
+                mObjActionsToDo.emplace_back(unit, GameObjectActionType::CONQUER_CELL,
+                                             [](bool){});
+
+                // disable action buttons
+                mHUD->SetLocalActionsEnabled(false);
+
+                unit->SetActiveAction(GameObjectActionType::IDLE);
+                unit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
+            }
+            else
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUEST"), 2.f);
+
+            return ;
+        }
+        // continue pathfinfing from latest click
+        else
+        {
+            po = sgl::ai::Pathfinder::NO_OPTION;
+
+            const unsigned int pathInd = mConquestPath.back();
+            startR = pathInd / mIsoMap->GetNumCols();
+            startC = pathInd % mIsoMap->GetNumCols();
+        }
+    }
+
+    const auto path = mPathfinder->MakePath(startR, startC, clickCell.row,
+                                            clickCell.col, po);
+
+    // empty path -> nothing to do
+    if(path.empty())
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 3.f);
+        return ;
+    }
+
+    mConquestPath.reserve(mConquestPath.size() + path.size());
+    mConquestPath.insert(mConquestPath.end(), path.begin(), path.end());
+}
+
+void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
+{
+    // check destination is visible
+    const int ClickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
+
+    if(!mLocalPlayer->IsCellVisible(ClickInd))
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"), 2.f);
+        return;
+    }
+
     // check destination is walkable
-    const bool clickWalkable = mGameMap->IsCellWalkable(clickCell.row, clickCell.col);
+    const Cell2D selCell(unit->GetRow0(), unit->GetCol0());
 
     // destination is walkable -> try to generate a path and move
-    if(clickWalkable)
+    if(mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
     {
         SetupUnitMove(unit, selCell, clickCell, false);
         return ;
@@ -2848,74 +2786,7 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
         else if(action == GameObjectActionType::HEAL)
             SetupUnitHeal(selUnit, clickObj, mLocalPlayer);
         else if(action == GameObjectActionType::CONQUER_CELL)
-        {
-            const Player * player = GetGame()->GetPlayerByFaction(selUnit->GetFaction());
-            const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
-
-            // destination is visible and walkable or conquering unit cell
-            if(mLocalPlayer->IsCellVisible(clickInd) &&
-               (mGameMap->IsCellWalkable(clickCell.row, clickCell.col) || clickCell == selCell))
-            {
-                // init start for empty path
-                sgl::ai::Pathfinder::PathOptions po = sgl::ai::Pathfinder::INCLUDE_START;
-                unsigned int startR = selCell.row;
-                unsigned int startC = selCell.col;
-
-                // continue building path
-                if(!mConquestPath.empty())
-                {
-                    // reclicked on same cell of last path -> double click -> finalize path
-                    if(mConquestPath.back() == clickInd)
-                    {
-                        // start conquest
-                        auto cp = new ConquerPath(selUnit, mIsoMap, mGameMap, this);
-                        cp->SetPathCells(mConquestPath);
-
-                        if(mGameMap->ConquerCells(cp))
-                        {
-                            mConquestPath.clear();
-
-                            ClearCellOverlays();
-
-                            // store active action
-                            mObjActionsToDo.emplace_back(selUnit, action, [](bool){});
-
-                            // disable action buttons
-                            mHUD->SetLocalActionsEnabled(false);
-
-                            selUnit->SetActiveAction(GameObjectActionType::IDLE);
-                            selUnit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
-                        }
-                        else
-                            selUnit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUEST"), 2.f);
-
-                        return ;
-                    }
-                    // continue pathfinfing from latest click
-                    else
-                    {
-                        po = sgl::ai::Pathfinder::NO_OPTION;
-
-                        const unsigned int pathInd = mConquestPath.back();
-                        startR = pathInd / mIsoMap->GetNumCols();
-                        startC = pathInd % mIsoMap->GetNumCols();
-                    }
-                }
-
-                const auto path = mPathfinder->MakePath(startR, startC, clickCell.row,
-                                                        clickCell.col, po);
-
-                // empty path -> nothing to do
-                if(path.empty())
-                {
-                    selUnit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 3.f);
-                    return ;
-                }
-
-                mConquestPath.reserve(mConquestPath.size() + path.size());
-                mConquestPath.insert(mConquestPath.end(), path.begin(), path.end());
-            }
-        }
+            HandleUnitCellConquestOnMouseUp(selUnit, clickCell);
         else if(action == GameObjectActionType::BUILD_WALL)
             HandleUnitBuildWallOnMouseUp(selUnit, clickCell);
         else if (action == GameObjectActionType::BUILD_STRUCTURE)
@@ -3248,7 +3119,7 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     ConquerPath cp(unit, mIsoMap, mGameMap, this);
     cp.SetPathCells(totPath);
 
-    mConquestIndicators[lastIdx]->SetCost(cp.GetPathCost());
+    mConquestIndicators[lastIdx]->SetCost(cp.GetPathEnergyCost());
 }
 
 void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
@@ -3552,173 +3423,6 @@ void ScreenGame::AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, 
     mm->AddElement(cell.row, cell.col, data.GetRows(), data.GetCols(), mtype, f);
 }
 
-void ScreenGame::SetMissionRewards()
-{
-    // init support data
-    mResourcesGained.resize(NUM_MISSION_REWARDS, 0);
-
-    // set rewards for all goals
-    for(MissionGoal & g : mMissionGoals)
-    {
-        const auto gt = g.GetType();
-
-        if(gt == MissionGoal::TYPE_COLLECT_BLOBS)
-        {
-            const int divDiamonds = 10;
-            const int diamonds = g.GetQuantity() / divDiamonds;
-            g.SetRewardByType(MR_DIAMONDS, diamonds);
-
-            const int multMoney = 5;
-            const int money = g.GetQuantity() * multMoney;
-            g.SetRewardByType(MR_MONEY, money);
-        }
-        else if(gt == MissionGoal::TYPE_COLLECT_DIAMONDS)
-        {
-            const int divBlobs = 10;
-            const int blobs = g.GetQuantity() / divBlobs;
-            g.SetRewardByType(MR_BLOBS, blobs);
-
-            const int multMoney = 5;
-            const int money = g.GetQuantity() * multMoney;
-            g.SetRewardByType(MR_MONEY, money);
-        }
-        else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_BASE)
-        {
-            const int money = 10000;
-
-            g.SetRewardByType(MR_MONEY, money);
-        }
-        else if(gt == MissionGoal::TYPE_DESTROY_ALL_ENEMIES)
-        {
-            const int money = 15000;
-
-            g.SetRewardByType(MR_MONEY, money);
-        }
-        else if(gt == MissionGoal::TYPE_GAIN_MONEY)
-        {
-            const int divBlobs = 100;
-            const int blobs = g.GetQuantity() / divBlobs;
-            g.SetRewardByType(MR_BLOBS, blobs);
-
-            const int divDiamonds = 100;
-            const int diamonds = g.GetQuantity() / divDiamonds;
-            g.SetRewardByType(MR_DIAMONDS, diamonds);
-
-            const int divEnergy = 50;
-            const int energy = g.GetQuantity() / divEnergy;
-            g.SetRewardByType(MR_ENERGY, energy);
-
-            const int divMaterial = 10;
-            const int material = g.GetQuantity() / divMaterial;
-            g.SetRewardByType(MR_MATERIAL, material);
-        }
-        else if(gt == MissionGoal::TYPE_MINE_MATERIAL)
-        {
-            const int divEnergy = 10;
-            const int energy = g.GetQuantity() / divEnergy;
-            g.SetRewardByType(MR_ENERGY, energy);
-
-            const int divMoney = 2;
-            const int money = g.GetQuantity() / divMoney;
-            g.SetRewardByType(MR_MONEY, money);
-        }
-        else if(gt == MissionGoal::TYPE_MINE_ENERGY)
-        {
-            const int divMaterial = 10;
-            const int material = g.GetQuantity() / divMaterial;
-            g.SetRewardByType(MR_MATERIAL, material);
-
-            const int divMoney = 2;
-            const int money = g.GetQuantity() / divMoney;
-            g.SetRewardByType(MR_MONEY, money);
-        }
-        else if(gt == MissionGoal::TYPE_RESIST_TIME)
-        {
-            const int blobs = g.GetQuantity();
-            g.SetRewardByType(MR_BLOBS, blobs);
-
-            const int diamonds = g.GetQuantity();
-            g.SetRewardByType(MR_DIAMONDS, diamonds);
-
-            const int multMoney = 100;
-            const int money = g.GetQuantity() * multMoney;
-            g.SetRewardByType(MR_MONEY, money);
-        }
-        else if(gt == MissionGoal::TYPE_COMPLETE_TUTORIAL)
-        {
-            const int blobs = 25;
-            g.SetRewardByType(MR_BLOBS, blobs);
-
-            const int diamonds = 25;
-            g.SetRewardByType(MR_DIAMONDS, diamonds);
-
-            const int energy = 100;
-            g.SetRewardByType(MR_ENERGY, energy);
-
-            const int material = 100;
-            g.SetRewardByType(MR_MATERIAL, material);
-        }
-        else
-            std::cout << "[WAR] Mission Goal type unknown: " << g.GetType() << std::endl;
-    }
-}
-
-void ScreenGame::TrackResourcesForGoals()
-{
-    mResourceTrackers.resize(NUM_MISSION_REWARDS, 0);
-
-    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
-    {
-        Player::BLOBS,
-        Player::DIAMONDS,
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::MONEY
-    };
-
-    const MissionReward rewardIds[NUM_MISSION_REWARDS] =
-    {
-        MR_BLOBS,
-        MR_DIAMONDS,
-        MR_ENERGY,
-        MR_MATERIAL,
-        MR_MONEY,
-    };
-
-    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
-    {
-        const Player::Stat resId = resourceIds[i];
-        const unsigned int rewId = rewardIds[i];
-
-        mResourceTrackers[rewId] = mLocalPlayer->AddOnResourceChanged(resId,
-            [this, rewId](const StatValue *, int oldVal, int newVal)
-            {
-                if(newVal > oldVal)
-                    mResourcesGained[rewId] += newVal - oldVal;
-            });
-    }
-}
-
-void ScreenGame::ClearResourcesTracking()
-{
-    const Player::Stat resourceIds[NUM_MISSION_REWARDS] =
-    {
-        Player::BLOBS,
-        Player::DIAMONDS,
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::MONEY
-    };
-
-    for(unsigned int i = 0; i < NUM_MISSION_REWARDS; ++i)
-    {
-        const Player::Stat resId = resourceIds[i];
-        const int funId = mResourceTrackers[i];
-
-        mLocalPlayer->RemoveOnResourceChanged(resId, funId);
-    }
-}
-
 void ScreenGame::EndTurn()
 {
     Game * game = GetGame();
@@ -3742,18 +3446,25 @@ void ScreenGame::EndTurn()
 
     std::cout << "ScreenGame::EndTurn - START PLAYER " << mActivePlayerIdx << std::endl;
 
+    // reset flag for local turn init
+    if(IsCurrentTurnLocal())
+        mLocalTurnInitDone = false;
+
     // update active player data
     Player * p = game->GetPlayerByIndex(mActivePlayerIdx);
     const PlayerFaction activeFaction = p->GetFaction();
 
     p->ResetTurnEnergy();
-    p->UpdateResources();
+    p->OnNewTurn();
 
     mGameMap->OnNewTurn(activeFaction);
 
     // new active player is local player
     if(IsCurrentTurnLocal())
     {
+        mTrackerMG->AddPlayedTurns();
+        mHUD->AddPlayedTurn();
+
         if(!mGameMap->IsDoingAutomaticMoves())
             InitLocalTurn();
     }
@@ -3767,6 +3478,10 @@ void ScreenGame::EndTurn()
 
 void ScreenGame::InitLocalTurn()
 {
+    if(mLocalTurnInitDone)
+        return;
+
+    std::cout << "ScreenGame::InitLocalTurn - turn: " << mLocalPlayer->GetTurnsPlayed() << std::endl;
     SetLocalTurnStage(TURN_STAGE_PLAY);
 
     mHUD->SetLocalActionsEnabled(true);
@@ -3775,6 +3490,8 @@ void ScreenGame::InitLocalTurn()
 
     // reset focus to Stage
     sgl::sgui::Stage::Instance()->SetFocus();
+
+    mLocalTurnInitDone = true;
 }
 
 void ScreenGame::ReselectLastSelected()

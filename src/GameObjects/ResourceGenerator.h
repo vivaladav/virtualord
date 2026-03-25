@@ -12,10 +12,11 @@ class ResourceGenerator : public Structure
 public:
     ResourceGenerator(const ObjectData & data, const ObjectInitData & initData);
 
-    int GetOutput() const;
     void ScaleOutput(float mult);
 
     ResourceType GetResourceType() const;
+
+    int GetResourceProduction(ExtendedResource res) const override;
 
     void OnNewTurn(PlayerFaction faction) override;
 
@@ -32,8 +33,6 @@ private:
 
     int mOutput = 0;
 };
-
-inline int ResourceGenerator::GetOutput() const { return mOutput; }
 
 inline ResourceType ResourceGenerator::GetResourceType() const { return mResource; }
 

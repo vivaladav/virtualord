@@ -60,10 +60,7 @@ void Blobs::Collected(Player * collector)
     const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
     const float y0 = isoObj->GetY() - isoObj->GetHeight() * 0.25f;
 
-    const float speed = 50.f;
-    const float decaySpeed = 150.f;
-
-    DataParticleOutput pd(mNum, OT_BLOBS, x0, y0, speed, decaySpeed);
+    DataParticleOutput pd(mNum, OT_BLOBS, x0, y0);
 
     pu->AddParticle(pd);
 

@@ -36,7 +36,7 @@ public:
 
     ConquerState GetState() const;
 
-    float GetPathCost() const;
+    float GetPathEnergyCost() const;
 
     void SetPathCells(const std::vector<unsigned int> & cells);
 
@@ -95,7 +95,7 @@ inline Unit * ConquerPath::GetUnit() const { return mUnit; }
 
 inline ConquerPath::ConquerState ConquerPath::GetState() const { return mState; }
 
-inline float ConquerPath::GetPathCost() const { return mCost; }
+inline float ConquerPath::GetPathEnergyCost() const { return mCost; }
 
 inline bool ConquerPath::HasStarted() const { return mState != READY; }
 

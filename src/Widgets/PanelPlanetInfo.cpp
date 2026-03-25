@@ -1,6 +1,7 @@
 #include "Widgets/PanelPlanetInfo.h"
 
 #include "GameConstants.h"
+#include "MapsRegistry.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
 

@@ -6,8 +6,8 @@
 #include "States/StatesIds.h"
 #include "Widgets/ButtonMainMenu.h"
 #include "Widgets/ButtonUnitsSelector.h"
-#include "Widgets/GameProgressBar.h"
 #include "Widgets/Test/TestComboBox.h"
+#include "Widgets/Test/TestProgressBar.h"
 #include "Widgets/Test/TestSliderH.h"
 
 #include <sgl/core/Timer.h>
@@ -60,7 +60,7 @@ ScreenTest::ScreenTest(Game * game)
     mRenderables.emplace_back(img);
 
     img = new Image(tex);
-    img->SetPosition(300, 32);
+    img->SetPosition(250, 32);
     img->ScaleH(2.f);
     img->SetRotation(45.f);
     img->SetColor(0x3366F0FF);
@@ -188,10 +188,11 @@ void ScreenTest::TestSGui()
     using namespace sgl::graphic;
     using namespace sgl::sgui;
 
+    const int Y0 = 20;
     const int marginV = 50;
 
     Widget * container = new Widget;
-    container->SetPosition(600, 20);
+    container->SetPosition(400, Y0);
 
     FontManager * fm = FontManager::Instance();
 
@@ -298,11 +299,14 @@ void ScreenTest::TestSGui()
            ta->setTextAlignmentVertical(static_cast<TextArea::Alignment>(ind + TextArea::ALIGN_V_TOP));
     });
 
+    // ===== COL 3 =====
     // -- BUTTONS GROUP --
+    const int col3X = 500;
+
     font = fm->GetFont("Lato-Bold.ttf", 24, Font::NORMAL);
 
     label = new Label("BUTTONS GROUP", font, container);
-    label->SetX(400);
+    label->SetX(col3X);
 
     ButtonsGroup * bg = new ButtonsGroup(ButtonsGroup::HORIZONTAL, container);
     bg->SetPosition(label->GetX(), label->GetHeight() + 50);
@@ -340,23 +344,23 @@ void ScreenTest::TestSGui()
     font = fm->GetFont("Lato-Bold.ttf", 24, Font::NORMAL);
 
     label = new Label("PROGRESS BAR", font, container);
-    label->SetX(700);
+    label->SetPosition(col3X, 160);
 
     const int pbX = label->GetX();
     const int pbY = label->GetY() + label->GetHeight() + 50;
     const int marginbBars = 25;
 
-    mPb0 = new GameProgressBar(FACTION_1, minProgress, maxProgress, container);
+    mPb0 = new TestProgressBar(FACTION_1, minProgress, maxProgress, container);
     mPb0->SetPosition(pbX, pbY);
     mPb0->SetValue(0);
     mPb0->AddFunctionOnCompleted([]{ std::cout << "TEST PROGRESS 0 100%" << std::endl; });
 
-    mPb1 = new GameProgressBar(FACTION_2, minProgress, maxProgress, container);
+    mPb1 = new TestProgressBar(FACTION_2, minProgress, maxProgress, container);
     mPb1->SetPosition(pbX, pbY + mPb0->GetHeight() + marginbBars);
     mPb1->SetValue(0);
     mPb1->AddFunctionOnCompleted([]{ std::cout << "TEST PROGRESS 1 100%" << std::endl; });
 
-    mPb2 = new GameProgressBar(FACTION_3, minProgress, maxProgress, container);
+    mPb2 = new TestProgressBar(FACTION_3, minProgress, maxProgress, container);
     mPb2->SetPosition(pbX, mPb1->GetY() + mPb1->GetHeight() + marginbBars);
     mPb2->SetValue(0);
     mPb2->AddFunctionOnCompleted([]{ std::cout << "TEST PROGRESS 2 100%" << std::endl; });
@@ -372,8 +376,8 @@ void ScreenTest::TestSGui()
     });
 
     // -- SET ALPHA --
-    int wX = 1300;
-    int wY = button->GetY() + button->GetHeight() * 2;
+    int wX = 900;
+    int wY = button->GetY() + button->GetHeight() + 70;
 
     auto container2 = new Widget;
     container2->SetPosition(wX, wY);
@@ -391,7 +395,7 @@ void ScreenTest::TestSGui()
     button->AddOnClickFunction([container2]{ container2->SetAlpha(255); });
 
     // -- COMBO BOX --
-    wY = 500;
+    wY = 640;
 
     auto container3 = new Widget;
     container3->SetPosition(wX, wY);
@@ -416,7 +420,7 @@ void ScreenTest::TestSGui()
     });
 
     // SLIDER
-    wY = 650;
+    wY = 800;
     auto container4 = new Widget;
     container4->SetPosition(wX, wY);
 
@@ -454,8 +458,26 @@ void ScreenTest::TestSGui()
         label->SetText(std::to_string(val).c_str());
     });
 
+    wY += slider->GetHeight() * 2;
+
+    // SLIDER TEST STEP
+    slider = new TestSliderH(container4);
+    slider->SetMinMax(0, 25);
+    slider->SetStep(10);
+    slider->SetY(wY);
+
+    label = new Label(std::to_string(slider->GetValue()).c_str(), font, container4);
+    label->SetPosition(slider->GetX() + slider->GetWidth() + 50, slider->GetY());
+
+    slider->SetOnValueChanged([label](int val)
+                              {
+                                  label->SetText(std::to_string(val).c_str());
+                              });
+
+    // ===== COL 4 =====
     // SCROLL BAR
-    wY = 850;
+    wX = 1450;
+    wY = Y0;
     auto container5 = new Widget;
     container5->SetPosition(wX, wY);
 

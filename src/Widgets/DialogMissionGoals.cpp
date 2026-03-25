@@ -1,7 +1,10 @@
 #include "Widgets/DialogMissionGoals.h"
 
+#include "GameConstants.h"
 #include "MissionGoal.h"
-#include "Screens/ScreenGame.h"
+#include "MissionGoalsTracker.h"
+#include "Widgets/ButtonDialogClose.h"
+#include "Widgets/GameButton.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/ProgressBarObjectVisualStat.h"
 #include "Widgets/WidgetsConstants.h"
@@ -21,7 +24,6 @@
 #include <sgl/sgui/Label.h>
 #include <sgl/utilities/StringManager.h>
 
-#include <cmath>
 #include <iomanip>
 #include <sstream>
 
@@ -31,57 +33,28 @@ namespace
 
 using namespace game;
 
-// ====== BUTTON CLOSE =====
-class ButtonCloseDMG : public sgl::sgui::ImageButton
-{
-public:
-    ButtonCloseDMG(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({
-                                    ID_DLG_MGOALS_BTN_CLOSE_NORMAL,
-                                    ID_DLG_MGOALS_BTN_CLOSE_DISABLED,
-                                    ID_DLG_MGOALS_BTN_CLOSE_OVER,
-                                    ID_DLG_MGOALS_BTN_CLOSE_PUSHED,
-                                    ID_DLG_MGOALS_BTN_CLOSE_NORMAL
-                                 },
-                                 SpriteFileDialogMissionGoals, parent)
-    {
-        SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
-    }
-
-private:
-    void HandleMouseOver() override
-    {
-        sgl::sgui::AbstractButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-02.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_click-02.ogg");
-    }
-};
+constexpr int rowW = 1200;
+constexpr int rowH = 80;
 
 // ====== BUTTON END =====
-class ButtonEndMission : public sgl::sgui::ImageButton
+class ButtonEndMission : public GameButton
 {
 public:
     ButtonEndMission(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({
-                                     ID_DLG_MGOALS_BTN_END_NORMAL,
-                                     ID_DLG_MGOALS_BTN_END_DISABLED,
-                                     ID_DLG_MGOALS_BTN_END_OVER,
-                                     ID_DLG_MGOALS_BTN_END_PUSHED,
-                                     ID_DLG_MGOALS_BTN_END_NORMAL
-                                 },
-                                 SpriteFileDialogMissionGoals, parent)
+        : GameButton(SpriteFileDialogMissionGoals,
+                     { ID_DLG_MGOALS_BTN_END_NORMAL, ID_DLG_MGOALS_BTN_END_DISABLED,
+                       ID_DLG_MGOALS_BTN_END_OVER, ID_DLG_MGOALS_BTN_END_PUSHED,
+                       ID_DLG_MGOALS_BTN_END_NORMAL },
+                     {
+                         WidgetsConstants::colorDialogButtonOkNormal,
+                         WidgetsConstants::colorDialogButtonOkDisabled,
+                         WidgetsConstants::colorDialogButtonOkOver,
+                         WidgetsConstants::colorDialogButtonOkPushed,
+                         WidgetsConstants::colorDialogButtonOkChecked }, parent)
     {
         using namespace sgl;
 
+        // LABEL
         auto fm = graphic::FontManager::Instance();
         const int size = 18;
 
@@ -93,25 +66,9 @@ public:
     }
 
 private:
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        sgl::sgui::ImageButton::OnStateChanged(state);
-
-        const unsigned int colorsLabel[NUM_VISUAL_STATES] =
-        {
-            0xd7f4deff,
-            0x436f4dff,
-            0xebf9eeff,
-            0xc3eeceff,
-            0xc3eeceff
-        };
-
-        SetLabelColor(colorsLabel[state]);
-    }
-
     void HandleMouseOver() override
     {
-        sgl::sgui::AbstractButton::HandleMouseOver();
+        GameButton::HandleMouseOver();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_over-02.ogg");
@@ -119,7 +76,7 @@ private:
 
     void HandleButtonDown() override
     {
-        sgl::sgui::AbstractButton::HandleButtonDown();
+        GameButton::HandleButtonDown();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_click-02.ogg");
@@ -127,21 +84,23 @@ private:
 };
 
 // ====== BUTTON COLLECT =====
-class ButtonCollect : public sgl::sgui::ImageButton
+class ButtonCollect : public GameButton
 {
 public:
     ButtonCollect(sgl::sgui::Widget * parent)
-        : sgl::sgui::ImageButton({
-                                     ID_DLG_MGOALS_BTN_COLLECT_NORMAL,
-                                     ID_DLG_MGOALS_BTN_COLLECT_DISABLED,
-                                     ID_DLG_MGOALS_BTN_COLLECT_OVER,
-                                     ID_DLG_MGOALS_BTN_COLLECT_PUSHED,
-                                     ID_DLG_MGOALS_BTN_COLLECT_NORMAL
-                                 },
-                                 SpriteFileDialogMissionGoals, parent)
+        : GameButton(SpriteFileDialogMissionGoals,
+                     { ID_DLG_MGOALS_BTN_COLLECT_NORMAL, ID_DLG_MGOALS_BTN_COLLECT_DISABLED,
+                       ID_DLG_MGOALS_BTN_COLLECT_OVER, ID_DLG_MGOALS_BTN_COLLECT_PUSHED,
+                       ID_DLG_MGOALS_BTN_COLLECT_NORMAL },
+                     { WidgetsConstants::colorDialogButtonNormal,
+                       WidgetsConstants::colorDialogButtonDisabled,
+                       WidgetsConstants::colorDialogButtonOver,
+                       WidgetsConstants::colorDialogButtonPushed,
+                       WidgetsConstants::colorDialogButtonChecked }, parent)
     {
         using namespace sgl;
 
+        // LABEL
         auto fm = graphic::FontManager::Instance();
         const int size = 18;
 
@@ -153,25 +112,9 @@ public:
     }
 
 private:
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        sgl::sgui::ImageButton::OnStateChanged(state);
-
-        const unsigned int colorsLabel[NUM_VISUAL_STATES] =
-            {
-                0xc3dfeeff,
-                0x4d6673ff,
-                0xebf4f9ff,
-                0xc3dfeeff,
-                0xc3dfeeff
-            };
-
-        SetLabelColor(colorsLabel[state]);
-    }
-
     void HandleMouseOver() override
     {
-        sgl::sgui::AbstractButton::HandleMouseOver();
+        GameButton::HandleMouseOver();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_over-02.ogg");
@@ -179,7 +122,7 @@ private:
 
     void HandleButtonDown() override
     {
-        sgl::sgui::AbstractButton::HandleButtonDown();
+        GameButton::HandleButtonDown();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_click-02.ogg");
@@ -192,30 +135,32 @@ namespace game
 {
 
 // ===== DIALOG =====
-DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
-    : mScreen(screen)
+DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
+    : mTrackerMG(mgt)
 {
     using namespace sgl;
 
-    const std::vector<MissionGoal> & goals = mScreen->GetMissionGoals();
+    const std::vector<MissionGoal> & goals = mTrackerMG->GetGoals();
 
     auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
 
     // -- define content height based on goals --
-    int contentH = 0;
+    auto texRow1 = tm->GetSprite(SpriteFileDialogMissionGoalsExp, ID_DLG_MGOALS_BG_ROW1);
+    texRow1->SetScaleMode(graphic::TSCALE_NEAREST);
+    auto texRow2 = tm->GetSprite(SpriteFileDialogMissionGoalsExp, ID_DLG_MGOALS_BG_ROW2);
+    texRow1->SetScaleMode(graphic::TSCALE_NEAREST);
+    auto texHeaderBar = tm->GetSprite(SpriteFileDialogMissionGoalsExp, ID_DLG_MGOALS_SECTION_LINE);
+    texHeaderBar->SetScaleMode(graphic::TSCALE_NEAREST);
 
-    graphic::Texture * texRow1 = tm->GetSprite(SpriteFileDialogMissionGoals, ID_DLG_MGOALS_BG_ROW1);
-    graphic::Texture * texRow2 = tm->GetSprite(SpriteFileDialogMissionGoals, ID_DLG_MGOALS_BG_ROW2);
-
-    const int rowH = texRow1->GetHeight();
     const int marginRowV = 5;
     const int headerGoalH = 20;
-    const int marginHeaderGoalH = 20;
+    const int marginHeaderGoalH = 25;
     const int marginGoalsGroupH = 40;
     const int marginGoals2GroupH = 35;
-    const int endButtonAreaH = 65;
+    const int paddingHeaderGoalH = 5;
+    const int endButtonAreaH = 45;
 
     const unsigned int numGoals = goals.size();
     unsigned int numPrimaryGoals = 0;
@@ -234,6 +179,8 @@ DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
         else
             ++numSecondaryGoals;
     }
+
+    int contentH = WidgetsConstants::MarginDialogContentT;
 
     if(numPrimaryGoals > 0)
         contentH += headerGoalH + marginHeaderGoalH;
@@ -268,26 +215,24 @@ DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
     SetSize(w, h);
 
     // BUTTON CLOSE
-    mBtnClose = new ButtonCloseDMG(this);
+    mBtnClose = new ButtonDialogClose(this);
 
     const int buttonX = w - mBtnClose->GetWidth();
     const int buttonY = 0;
     mBtnClose->SetPosition(buttonX, buttonY);
 
     // -- CONTENT --
-    const int marginL = 40;
-
     // TITLE
-    const int sizeTitle = 28;
-    const int marginTitleT = 14;
-
-    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle, sizeTitle, graphic::Font::NORMAL);
+    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                            WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
     auto title = new sgui::Label(sm->GetCString("MISSION_GOALS"), font, this);
     title->SetColor(WidgetsConstants::colorDialogTitle);
-    title->SetPosition(marginL, marginTitleT);
 
-    int contentX = marginL;
-    int contentY = mBgTop->GetHeight();
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
+    title->SetPosition(WidgetsConstants::MarginDialogTitleL, titleY);
+
+    int contentX = WidgetsConstants::MarginDialogContentL;
+    int contentY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
     // PRIMARY GOALS
     const unsigned int colorHeader = 0xdbe9f0ff;
@@ -299,6 +244,10 @@ DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
         auto labelHeader = new sgui::Label(sm->GetCString("PRIMARY_GOALS"), font, this);
         labelHeader->SetColor(colorHeader);
         labelHeader->SetPosition(contentX, contentY);
+
+        auto headerBar = new sgui::Image(texHeaderBar, this);
+        headerBar->SetImageWidth(rowW);
+        headerBar->SetPosition(contentX, contentY + labelHeader->GetHeight() + paddingHeaderGoalH);
 
         contentY += labelHeader->GetHeight() + marginHeaderGoalH;
 
@@ -324,6 +273,10 @@ DialogMissionGoals::DialogMissionGoals(ScreenGame * screen)
         auto labelHeader = new sgui::Label(sm->GetCString("SECONDARY_GOALS"), font, this);
         labelHeader->SetColor(colorHeader);
         labelHeader->SetPosition(contentX, contentY);
+
+        auto headerBar = new sgui::Image(texHeaderBar, this);
+        headerBar->SetImageWidth(rowW);
+        headerBar->SetPosition(contentX, contentY + labelHeader->GetHeight() + paddingHeaderGoalH);
 
         contentY += labelHeader->GetHeight() + marginHeaderGoalH;
 
@@ -375,7 +328,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 {
     using namespace sgl;
 
-    const std::vector<MissionGoal> & goals = mScreen->GetMissionGoals();
+    const std::vector<MissionGoal> & goals = mTrackerMG->GetGoals();
     const MissionGoal & g = goals[goalInd];
 
     auto fm = graphic::FontManager::Instance();
@@ -389,14 +342,15 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     // body
     auto bg = new sgui::Image(texBg, this);
+    bg->SetImageSize(rowW, rowH);
 
     // CHECKBOX
     const int marginCheckboxR = 10;
 
     auto tm = graphic::TextureManager::Instance();
-    const unsigned int texId = g.IsCompleted() ? ID_DLG_MGOALS_CHECKBOX_CHECKED :
-                                                 ID_DLG_MGOALS_CHECKBOX_NORMAL;
-    auto texCheckbox = tm->GetSprite(SpriteFileDialogMissionGoals, texId);
+    const unsigned int texId = g.IsCompleted() ? ID_CHECKBOX_CHECKED :
+                                                 ID_CHECKBOX_NORMAL;
+    auto texCheckbox = tm->GetSprite(SpriteFileUIShared, texId);
 
     auto checkbox = new sgui::Image(texCheckbox, bg);
     checkbox->SetPosition(contX, contY);
@@ -407,8 +361,11 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     const int sizeDesc = 20;
     const unsigned int colorData = 0x8cbfd9ff;
 
-    auto font = fm->GetFont(WidgetsConstants::FontFileText, sizeDesc, graphic::Font::NORMAL);
-    auto labelDesc = new sgui::Label(g.GetDescription().c_str(), font, bg);
+    const std::string desc = g.IsHidden() ? sm->GetString("HIDDEN_GOAL") :
+                             g.GetDescription();
+
+    auto fontDesc = fm->GetFont(WidgetsConstants::FontFileText, sizeDesc, graphic::Font::NORMAL);
+    auto labelDesc = new sgui::Label(desc.c_str(), fontDesc, bg);
     labelDesc->SetColor(colorData);
     labelDesc->SetPosition(contX, contY);
 
@@ -429,9 +386,16 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     contX += labelHeader->GetWidth() + marginHeaderH;
 
-    if(g.IsProgressUnknown())
+    auto fontData = fm->GetFont(WidgetsConstants::FontFileText, size2, graphic::Font::NORMAL);
+    sgui::Label * labelData = nullptr;
+
+    if(g.IsFailed())
+        labelData = new sgui::Label("-", fontData, bg);
+    else if(g.IsProgressUnknown() || g.IsHidden())
+        labelData = new sgui::Label("?", fontData, bg);
+
+    if(labelData != nullptr)
     {
-        auto labelData = new sgui::Label("?", font, bg);
         labelData->SetColor(colorData);
         labelData->SetPosition(contX, contY);
     }
@@ -454,10 +418,12 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
     contX += labelHeader->GetWidth() + marginHeaderH;
 
-    // collected
-    if(g.IsRewardCollected())
+    // collected or failed
+    if(g.IsRewardCollected() || g.IsFailed() || g.IsHidden())
     {
-        auto labelData = new sgui::Label("-", font, bg);
+        const char * textReward = g.IsHidden() ? "?" : "-";
+
+        auto labelData = new sgui::Label(textReward, fontData, bg);
         labelData->SetColor(colorData);
         labelData->SetPosition(contX, contY);
     }
@@ -467,18 +433,19 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
         const int rewardMargin = 5;
         const int rewardMarginIcon = 30;
 
-        const unsigned int iconIds[NUM_MISSION_REWARDS] =
+        const unsigned int iconIds[NUM_EXTENDED_RESOURCES] =
         {
-            ID_DLG_MGOALS_ICON_BLOBS,
-            ID_DLG_MGOALS_ICON_DIAMONDS,
-            ID_DLG_MGOALS_ICON_ENERGY,
-            ID_DLG_MGOALS_ICON_MATERIAL,
-            ID_DLG_MGOALS_ICON_MONEY,
+            ID_UIS_ICON_C_RES_ENERGY_24,
+            ID_UIS_ICON_C_RES_MATERIAL_24,
+            ID_UIS_ICON_C_RES_DIAMONDS_24,
+            ID_UIS_ICON_C_RES_BLOBS_24,
+            ID_UIS_ICON_C_RES_MONEY_24,
+            ID_UIS_ICON_C_RES_RESEARCH_24,
         };
 
-        for(unsigned int r = 0; r < NUM_MISSION_REWARDS; ++r)
+        for(unsigned int r = 0; r < NUM_EXTENDED_RESOURCES; ++r)
         {
-            const int reward = g.GetRewardByType(static_cast<MissionReward>(r));
+            const int reward = g.GetRewardByType(static_cast<ExtendedResource>(r));
 
             // no reward for this type
             if(reward <= 0)
@@ -501,7 +468,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
             contX += labelData->GetWidth() + rewardMargin;
 
-            auto texIcon = tm->GetSprite(SpriteFileDialogMissionGoals, iconIds[r]);
+            auto texIcon = tm->GetSprite(SpriteFileUIShared, iconIds[r]);
             auto icon = new sgui::Image(texIcon, bg);
             icon->SetPosition(contX, contY + ((labelData->GetHeight() - icon->GetHeight()) / 2));
 
@@ -512,23 +479,61 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
     // REWARD COLLECTION
     const int paddingCenterToR = 120;
 
-    // label collected
-    const unsigned int colorCollected = 0x67e486ff;
+    // label collected OR failed
     const int sizeCollected = 22;
-    font = fm->GetFont(WidgetsConstants::FontFileText, sizeDesc, graphic::Font::NORMAL);
+    auto fontOutcome = fm->GetFont(WidgetsConstants::FontFileStrongText, sizeDesc,
+                                   graphic::Font::NORMAL);
 
-    auto labelData = new sgui::Label(sm->GetCString("COLLECTED_REW"), font, bg);
-    labelData->SetColor(colorCollected);
+    if(g.IsFailed())
+    {
+        labelData = new sgui::Label(sm->GetCString("GOAL_FAILED"), fontOutcome, bg);
+        labelData->SetColor(WidgetsConstants::colorDialogBad);
+    }
+    else if(g.GetExtraValue() > 0 && !g.IsCompleted())
+    {
+        const MissionGoalType goalType = g.GetType();
+
+        std::ostringstream ss;
+
+        if(goalType == MissionGoal::TYPE_TERRITORY_CONTROL_TIME)
+        {
+            const unsigned int secsInMin = 60;
+            const unsigned int timeLimit = g.GetExtraValue() * secsInMin;
+            const unsigned int timePlayed = mTrackerMG->GetPlayedTime();
+            const unsigned int timeLeft = timeLimit - timePlayed;
+
+            const unsigned int minutes = timeLeft / secsInMin;
+            const unsigned int seconds = timeLeft - (minutes * secsInMin);
+            ss << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) <<  seconds;
+        }
+        else if(goalType == MissionGoal::TYPE_TERRITORY_CONTROL_TURNS)
+        {
+            const unsigned int turnsLimit = g.GetExtraValue();
+            const unsigned int turnsPlayed = mTrackerMG->GetPlayedTurns();
+            const unsigned int turnsLeft = turnsLimit - turnsPlayed;
+
+            ss << turnsLeft;
+        }
+
+        labelData = new sgui::Label(ss.str().c_str(), fontOutcome, bg);
+        labelData->SetColor(WidgetsConstants::colorDialogText);
+    }
+    // leave COLLECTED label as default
+    else
+    {
+        labelData = new sgui::Label(sm->GetCString("COLLECTED_REW"), fontOutcome, bg);
+        labelData->SetColor(WidgetsConstants::colorDialogGood);
+    }
 
     contX = bg->GetWidth() - paddingCenterToR - (labelData->GetWidth() / 2);
     contY = (bg->GetHeight() - labelData->GetHeight()) / 2;
     labelData->SetPosition(contX, contY);
 
-    labelData->SetVisible(g.IsRewardCollected());
-
-    // not collected yet -> button
-    if(!g.IsRewardCollected())
+    // not collected or failed yet and no extra value -> show button
+    if(!g.IsRewardCollected() && !g.IsFailed() && !(g.GetExtraValue() > 0 && !g.IsCompleted()))
     {
+        labelData->SetVisible(false);
+
         auto btn = new ButtonCollect(bg);
 
         contX = bg->GetWidth() - paddingCenterToR - (btn->GetWidth() / 2);
@@ -539,7 +544,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
         btn->AddOnClickFunction([this, btn, labelData, goalInd]
         {
-            mScreen->CollectMissionGoalReward(goalInd);
+            mTrackerMG->CollectMissionGoalReward(goalInd);
 
             btn->SetVisible(false);
             labelData->SetVisible(true);
@@ -553,7 +558,7 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
 void DialogMissionGoals::CheckIfEndAllowed()
 {
-    const std::vector<MissionGoal> & goals = mScreen->GetMissionGoals();
+    const std::vector<MissionGoal> & goals = mTrackerMG->GetGoals();
 
     for(const MissionGoal & g : goals)
     {
@@ -575,19 +580,16 @@ void DialogMissionGoals::HandlePositionChanged()
 
 void DialogMissionGoals::SetPositions()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
+    const int x = GetScreenX();
+    int y = GetScreenY();
 
-    // BACKGROUND
-    int y = y0;
-
-    mBgTop->SetPosition(x0, y);
+    mBgTop->SetPosition(x, y);
 
     y += mBgTop->GetHeight();
-    mBgMid->SetPosition(x0, y);
+    mBgMid->SetPosition(x, y);
 
     y += mBgMid->GetHeight();
-    mBgBot->SetPosition(x0, y);
+    mBgBot->SetPosition(x, y);
 }
 
 } // namespace game

@@ -10,23 +10,18 @@ class Base : public Structure
 public:
     Base(const ObjectData & data, const ObjectInitData & initData);
 
-    int GetOutputEnergy() const;
-    int GetOutputMaterial() const;
-
     void OnNewTurn(PlayerFaction faction) override;
 
-protected:
-    void UpdateGraphics() override;
+    int GetResourceProduction(ExtendedResource res) const override;
 
 private:
+    void UpdateGraphics() override;
+
     void SetImage();
 
 private:
-    int mOutputEnergy = 0;
-    int mOutputMaterial = 0;
+    float mOutputEnergy = 0.f;
+    float mOutputMaterial = 0.f;
 };
-
-inline int Base::GetOutputEnergy() const { return mOutputEnergy; }
-inline int Base::GetOutputMaterial() const { return mOutputMaterial; }
 
 } // namespace game

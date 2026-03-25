@@ -50,8 +50,14 @@ private:
 
     const ObjectsDataRegistry * mObjDataReg;
 
-    sgl::graphic::Image * mBg = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
+
     sgl::sgui::AbstractButton * mBtnClose = nullptr;
+
+    sgl::sgui::Widget * mPanelImg = nullptr;
+    sgl::sgui::Widget * mPanelStats = nullptr;
 
     sgl::sgui::Label * mTitle = nullptr;
     sgl::sgui::Image * mImg = nullptr;

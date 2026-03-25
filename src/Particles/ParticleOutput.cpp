@@ -32,6 +32,7 @@ void ParticleOutput::SetData(const DataParticleOutput & data)
     // init data
     mSpeed = -data.speed;
     mDecaySpeed = data.decaySpeed;
+    mTimerLife = data.timeLife;
 
     const float maxAlpha = 255.f;
     mAlpha = maxAlpha;
@@ -68,6 +69,11 @@ void ParticleOutput::SetData(const DataParticleOutput & data)
         case OT_MONEY:
             iconTexId = ID_PART_ICON_MONEY;
             color = 0x81e481ff;
+        break;
+
+        case OT_RESEARCH:
+            iconTexId = ID_PART_ICON_RESEARCH;
+            color = 0x9eccfaff;
         break;
 
         default: break;
@@ -112,6 +118,16 @@ void ParticleOutput::SetStart(int x0, int y0)
 
 void ParticleOutput::Update(float delta)
 {
+    // UPDATE LIFE
+    mTimerLife -= delta;
+
+    if(mTimerLife < 0.f)
+    {
+        SetDone();
+        return ;
+    }
+
+    // UPDATE PARTICLE
     const float speed = mSpeed * delta;
     const float alphaDecay = mDecaySpeed * delta;
 
@@ -131,7 +147,7 @@ void ParticleOutput::Update(float delta)
     mIcon->SetAlpha(alpha);
     mTxt->SetAlpha(alpha);
 
-    // DONE!
+    // alpha is too low -> DONE
     if(mAlpha < minAlpha)
          SetDone();
 }

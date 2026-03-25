@@ -5,6 +5,7 @@
 #include "MapsRegistry.h"
 #include "Player.h"
 #include "States/StatesIds.h"
+#include "Tutorial/TutorialConstants.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonPlanetMap.h"
 #include "Widgets/DialogExit.h"
@@ -94,10 +95,13 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     mLabelDate->SetColor(colorHeader);
 
     // -- PLANET --
-    mPlanet = new PlanetMap;
+    const PlanetId planetId = game->GetCurrentPlanet();
+    auto mapReg = game->GetMapsRegistry();
+
+    mPlanet = new PlanetMap(mapReg->GetPlanetSize(planetId));
 
     const int planetX = (mBg->GetWidth() - mPlanet->GetWidth()) * 0.5f;
-    const int planetY = (mBg->GetHeight() - mPlanet->GetHeight()) * 0.5f;
+    const int planetY = 190;
     mPlanet->SetPosition(planetX, planetY);
 
     UpdatePlanetButtons();
@@ -118,7 +122,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
             mPanelConquerAI->SetVisible(false);
 
             auto game = GetGame();
-            const int planetId = game->GetCurrentPlanet();
+            const PlanetId planetId = game->GetCurrentPlanet();
             auto mapReg = game->GetMapsRegistry();
 
             const TerritoryStatus status = mapReg->GetMapStatus(planetId, ind);
@@ -204,7 +208,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         player->SumResource(Player::Stat::MATERIAL, -costExploreMaterial);
 
         // handle the result
-        const int planetId = game->GetCurrentPlanet();
+        const PlanetId planetId = game->GetCurrentPlanet();
         const int territory = mPlanet->GetSelectedTerritoryId();
         auto mapReg = game->GetMapsRegistry();
 
@@ -307,7 +311,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         const int territory = mPlanet->GetSelectedTerritoryId();
         const bool res = TryToConquerTerritory(territory);
 
-        const int planetId = game->GetCurrentPlanet();
+        const PlanetId planetId = game->GetCurrentPlanet();
         const PlayerFaction pf = game->GetLocalPlayerFaction();
 
         MapsRegistry * mapReg = game->GetMapsRegistry();
@@ -417,11 +421,10 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     buttonLeave->AddOnClickFunction([this]
     {
         // TODO change to galaxy screen
-        GetGame()->RequestNextActiveState(StateId::MAIN_MENU);
+        GetGame()->RequestNextActiveState(StateId::LEAVE_GAME);
     });
 
-    const int planetId = game->GetCurrentPlanet();
-    SetPlanetName(PLANETS_NAME[planetId]);
+    SetPlanetName(MapsRegistry::PLANETS_NAME[planetId]);
 
     // TEST - REMOVE LATER
     SetDate("001 - 2200");
@@ -497,7 +500,7 @@ void ScreenPlanetMap::SetDate(const char * date)
 void ScreenPlanetMap::ShowInfo(int territory)
 {
     auto game = GetGame();
-    const int planetId = game->GetCurrentPlanet();
+    const PlanetId planetId = game->GetCurrentPlanet();
     auto mapReg = game->GetMapsRegistry();
 
     // PANEL RESOURCES
@@ -528,7 +531,7 @@ bool ScreenPlanetMap::TryToConquerTerritory(int index)
     auto game = GetGame();
     auto mapReg = game->GetMapsRegistry();
 
-    const int planetId = game->GetCurrentPlanet();
+    const PlanetId planetId = game->GetCurrentPlanet();
     const TerritoryStatus status = mapReg->GetMapStatus(planetId, index);
 
     float probSuccess = 50.f;
@@ -556,7 +559,7 @@ void ScreenPlanetMap::UpdatePlanetButtons()
 {
     Game * game = GetGame();
 
-    const int planetId = game->GetCurrentPlanet();
+    const PlanetId planetId = game->GetCurrentPlanet();
     auto mapReg = game->GetMapsRegistry();
 
     const int numMaps = mapReg->GetNumMaps(planetId);

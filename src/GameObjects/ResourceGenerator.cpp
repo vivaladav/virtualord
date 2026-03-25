@@ -47,8 +47,19 @@ void ResourceGenerator::ScaleOutput(float mult)
         mOutput = std::roundf(output);
 }
 
+int ResourceGenerator::GetResourceProduction(ExtendedResource res) const
+{
+    if((res == ER_ENERGY && mResource == RES_ENERGY) ||
+       (res == ER_MATERIAL && mResource == RES_MATERIAL1))
+        return mOutput;
+    else
+        return 0;
+}
+
 void ResourceGenerator::OnNewTurn(PlayerFaction faction)
 {
+    Structure::OnNewTurn(faction);
+
     // not linked yet -> exit
     if(!IsLinked())
         return ;
@@ -80,10 +91,7 @@ void ResourceGenerator::OnNewTurn(PlayerFaction faction)
     const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
     const float y0 = isoObj->GetY() - isoObj->GetHeight() * 0.1f;
 
-    const float speed = 40.f;
-    const float decaySpeed = 125.f;
-
-    DataParticleOutput pd(mOutput, outputType, x0, y0, speed, decaySpeed);
+    DataParticleOutput pd(mOutput, outputType, x0, y0);
 
     pu->AddParticle(pd);
 }

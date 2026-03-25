@@ -15,7 +15,6 @@ namespace sgl
     namespace sgui
     {
         class AbstractButton;
-        class AbstractButtonsGroup;
         class ButtonsGroup;
         class Label;
         class TextArea;
@@ -46,8 +45,6 @@ public:
 
     DialogNewElement(ElemType type, Player * player, const ObjectsDataRegistry * dataReg);
     ~DialogNewElement();
-
-    void CheckBuild();
 
     void SetFunctionOnBuild(const std::function<void()> & f);
     void SetFunctionOnClose(const std::function<void()> & f);
@@ -81,11 +78,10 @@ private:
 
     std::vector<GameObjectTypeId> mTypes;
 
-    sgl::graphic::Image * mBgTop = nullptr;
-    sgl::graphic::Image * mBgMid = nullptr;
-    sgl::graphic::Image * mBgBtm = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
 
-    sgl::sgui::Label * mTitle = nullptr;
     sgl::sgui::ButtonsGroup * mSlots = nullptr;
 
     sgl::sgui::TextArea * mDescription = nullptr;
@@ -96,7 +92,7 @@ private:
     sgl::sgui::AbstractButton * mBtnLeft = nullptr;
     sgl::sgui::AbstractButton * mBtnRight = nullptr;
 
-    sgl::sgui::AbstractButtonsGroup * mButtonsStructures = nullptr;
+    sgl::sgui::ButtonsGroup * mButtonsStructures = nullptr;
 
     Player * mPlayer = nullptr;
 

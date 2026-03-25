@@ -27,6 +27,8 @@ class DialogMissionGoals;
 class DialogNewElement;
 class DialogNewMiniUnitsSquad;
 class DialogObject;
+class DialogResearch;
+class DialogTechTree;
 class DialogTrading;
 class DialogUpgrade;
 class GameMapProgressBar;
@@ -41,6 +43,7 @@ class PanelSelfDestruction;
 class PanelShotType;
 class PanelTurnControl;
 class Player;
+class ResearchCenter;
 class ScreenGame;
 class Temple;
 
@@ -88,8 +91,9 @@ public:
     void HideDialogNewElement();
     DialogNewElement * GetDialogNewElement();
 
-    void ShowMissionCountdown(int secs);
+    void ShowMissionCountdown(unsigned int turns);
     void HideMissionCountdown();
+    void AddPlayedTurn();
 
     void ShowGoalCompletedIcon();
     void HideGoalCompletedIcon();
@@ -105,6 +109,12 @@ public:
 
     void ShowDialogNewMiniUnitsSquad(GameObject * spawner);
     void HideDialogNewMiniUnitsSquad();
+
+    void ShowDialogResearch(ResearchCenter * rc);
+    void HideDialogResearch();
+
+    void ShowDialogTechTree();
+    void HideDialogTechTree();
 
     void ShowDialogTrading();
     void HideDialogTrading();
@@ -131,12 +141,15 @@ private:
     void ReopenPanels();
 
     void PositionOptionsPanelOverObjectActions(sgl::sgui::Widget * panel, unsigned int button);
+    void PositionMissionCountdown();
 
     void ResumeGameFromExit();
 
     GameMapProgressBar * CreateProgressBar(float time, PlayerFaction faction);
 
     void CenterWidget(sgl::sgui::Widget * w);
+
+    void TrackSelfDestruction(GameObject * obj);
 
     void OnStringsChanged() override;
 
@@ -160,6 +173,8 @@ private:
     DialogNewElement * mDialogNewElement = nullptr;
     DialogNewMiniUnitsSquad * mDialogNewMiniUnits = nullptr;
     DialogObject * mDialogObj = nullptr;
+    DialogResearch * mDialogResearch = nullptr;
+    DialogTechTree * mDialogTechTree = nullptr;
     DialogTrading * mDialogTrading = nullptr;
     DialogUpgrade * mDialogUpgrade = nullptr;
 

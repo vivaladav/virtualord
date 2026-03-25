@@ -1454,9 +1454,10 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     for(unsigned int i = 0; i < numCollectables; i++)
     {
         const GameObject * c = mCollectables[i];
+        const GameObjectTypeId type = c->GetObjectType();
 
-        // no lootbox
-        if(c->GetObjectType() != ObjectData::TYPE_LOOTBOX)
+        // no lootbox or special lootbox
+        if(type != ObjectData::TYPE_LOOTBOX && type != ObjectData::TYPE_LOOTBOX2)
             continue;
 
         // basic logic, collect closest one
@@ -1472,6 +1473,10 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     // none found
     if(bestInd == numCollectables)
         return ;
+
+    // double negative bonus for health in case unit is collecting a special LootBox
+    if(mCollectables[bestInd]->GetObjectType() == ObjectData::TYPE_LOOTBOX2)
+        priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // bonus distance
     const float bonusDist = -25.f;

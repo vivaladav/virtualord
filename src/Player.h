@@ -18,8 +18,10 @@ class ResourceGenerator;
 class Structure;
 class Unit;
 
+enum ExtendedResource : unsigned int;
 enum ResourceType : unsigned int;
 enum PlayerFaction : unsigned int;
+enum TechUpgradeId : unsigned int;
 
 class Player
 {
@@ -31,6 +33,7 @@ public:
         ENERGY,
         MATERIAL,
         MONEY,
+        RESEARCH,
 
         NUM_PSTATS,
 
@@ -91,7 +94,8 @@ public:
     void SumResource(Stat sid, int val);
     void SetResourceMax(Stat sid, int val);
     void SumResourceMax(Stat sid, int val);
-    void SetOnResourcesChanged(const std::function<void()> & f);
+    unsigned int AddOnResourcesChanged(const std::function<void()> & f);
+    void RemoveOnResourcesChanged(unsigned int funId);
     unsigned int AddOnResourceChanged(Stat sid, const std::function<void(const StatValue *,
                                                                          int, int)> & f);
     unsigned int AddOnResourceRangeChanged(Stat sid, const std::function<void(const StatValue *)> & f);
@@ -101,8 +105,6 @@ public:
     int GetNumCells() const;
     void SumCells(int val);
     void SetOnNumCellsChanged(const std::function<void(int)> & f);
-
-    int GetMoneySpentPerTurn() const;
 
     void SetOnNumUnitsChanged(const std::function<void()> & f);
 
@@ -126,16 +128,24 @@ public:
     void SetSelectedObject(GameObject * obj);
     bool HasSelectedObject() const;
 
-    void AddResourceGenerator(ResourceGenerator * gen);
-    void RemoveResourceGenerator(ResourceGenerator * gen);
+    int GetResourceProduction(ExtendedResource type) const;
+    int GetResourceConsumption(ExtendedResource type) const;
 
-    int GetResourceProduction(ResourceType type) const;
-    int GetResourceConsumption(ResourceType type) const;
-    void UpdateResources();
+    void HandleCollectable(GameObject * collected, GameObject * collector);
 
-    void HandleCollectable(GameObject * obj);
+    // -- upgrades --
+    void ClearUpgrades();
+    bool IsUpgradeUnlocked(TechUpgradeId upgrade) const;
+    void UnlockUpgrade(TechUpgradeId upgrade);
+
+    float GetBaseProductionMult() const;
+    float GetStorageEnergyMult() const;
+    float GetStorageMaterialMult() const;
+    float GetStorageDiamondsMult() const;
+    float GetStorageBlobsMult() const;
 
     // -- TURN --
+    void OnNewTurn();
     float GetTurnEnergy() const;
     float GetTurnMaxEnergy() const;
     void AdjustTurnMaxEnergy();
@@ -143,6 +153,9 @@ public:
     void SumTurnEnergy(float val);
     void SetOnTurnEnergyChanged(const std::function<void()> & f);
     void SetOnTurnMaxEnergyChanged(const std::function<void()> & f);
+
+    unsigned int GetTurnsPlayed() const;
+    void ResetTurnsPlayed(unsigned int start = 0);
 
     // -- AI --
     bool IsAI() const;
@@ -152,6 +165,14 @@ public:
     bool IsLocal() const;
 
 private:
+    int GetCellsEnergyUsed() const;
+    void NotifyResourcesChanged();
+
+    void UpgradeResourceStorage(ResourceType res, float mult);
+
+private:
+    std::unordered_map<TechUpgradeId, bool> mUpgrades;
+
     std::vector<Unit *> mUnits;
     std::vector<Structure *> mStructures;
     std::vector<ResourceGenerator *> mResGenerators;
@@ -169,13 +190,11 @@ private:
 
     std::string mName;
 
+    std::unordered_map<unsigned int, std::function<void()>> mOnResourcesChanged;
     std::function<void(int)> mOnNumCellsChanged;
     std::function<void()> mOnNumUnitsChanged;
-    std::function<void()> mOnResourcesChanged;
     std::function<void()> mOnTurnEnergyChanged;
     std::function<void()> mOnTurnMaxEnergyChanged;
-
-    std::unordered_map<ResourceType, std::vector<ResourceGenerator *>> mResGeneratorsMap;
 
     PlayerAI * mAI = nullptr;
 
@@ -190,8 +209,17 @@ private:
     float mTurnEnergy;
     float mTurnMaxEnergy;
 
+    unsigned int mTurnsPlayed = 0;
+
     int mNumCells = 0;
     unsigned int mMaxUnits = 0;
+
+    // -- upgrades --
+    float mBaseProdMult = 1.f;
+    float mStorageEnergyMult = 1.f;
+    float mStorageMaterialMult = 1.f;
+    float mStorageDiamondsMult = 1.f;
+    float mStorageBlobsMult = 1.f;
 };
 
 inline PlayerFaction Player::GetFaction() const { return mFaction; }
@@ -259,8 +287,6 @@ inline bool Player::HasEnough(Stat sid, int val)
         return false;
 }
 
-inline void Player::SetOnResourcesChanged(const std::function<void()> & f) { mOnResourcesChanged = f; }
-
 inline int Player::GetNumCells() const { return mNumCells; }
 inline void Player::SetOnNumCellsChanged(const std::function<void(int)> & f)
 {
@@ -290,6 +316,22 @@ inline const std::vector<GameObjectTypeId> & Player::GetAvailableMiniUnits() con
 inline GameObject * Player::GetSelectedObject() const { return mSelObj; }
 inline bool Player::HasSelectedObject() const { return mSelObj != nullptr; }
 
+inline bool Player::IsUpgradeUnlocked(TechUpgradeId upgrade) const
+{
+    auto it = mUpgrades.find(upgrade);
+
+    if(it != mUpgrades.end())
+        return it->second;
+    else
+        return false;
+}
+
+inline float Player::GetBaseProductionMult() const { return mBaseProdMult; }
+inline float Player::GetStorageEnergyMult() const { return mStorageEnergyMult; }
+inline float Player::GetStorageMaterialMult() const { return mStorageMaterialMult; }
+inline float Player::GetStorageDiamondsMult() const { return mStorageDiamondsMult; }
+inline float Player::GetStorageBlobsMult() const { return mStorageBlobsMult; }
+
 inline float Player::GetTurnEnergy() const { return mTurnEnergy; }
 inline float Player::GetTurnMaxEnergy() const { return mTurnMaxEnergy; }
 
@@ -301,6 +343,9 @@ inline void Player::SetOnTurnMaxEnergyChanged(const std::function<void()> & f)
 {
     mOnTurnMaxEnergyChanged = f;
 }
+
+inline unsigned int Player::GetTurnsPlayed() const { return mTurnsPlayed; }
+inline void Player::ResetTurnsPlayed(unsigned int start) { mTurnsPlayed = start; }
 
 inline bool Player::IsAI() const { return mAI != nullptr; }
 inline PlayerAI * Player::GetAI() { return mAI; }

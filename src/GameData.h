@@ -202,6 +202,9 @@ enum SpriteCollectiblesId : unsigned int
     // LOOT BOX
     IND_LOOTBOX,
     IND_LOOTBOX_SEL,
+    // LOOT BOX LVL2
+    IND_LOOTBOX_L2,
+    IND_LOOTBOX_L2_SEL,
 };
 
 // INDICATORS
@@ -428,6 +431,7 @@ enum SpriteIdParticles : unsigned int
     ID_PART_ICON_MATERIAL,
     ID_PART_ICON_DIAMONDS,
     ID_PART_ICON_BLOBS,
+    ID_PART_ICON_RESEARCH,
 
     // UPGRADE ICON
     ID_PART_ICON_UPGRADE,

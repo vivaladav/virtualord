@@ -2,8 +2,10 @@
 
 #include "Game.h"
 #include "GameConstants.h"
+#include "MapsRegistry.h"
 #include "Version.h"
 #include "States/StatesIds.h"
+#include "States/StateLeavePregame.h"
 #include "Widgets/ButtonMainMenu.h"
 #include "Widgets/ButtonMainMenuSocial.h"
 #include "Widgets/ButtonMainMenuWishlist.h"
@@ -26,6 +28,11 @@
 #include <sgl/sgui/TextArea.h>
 #include <sgl/utilities/System.h>
 #include <sgl/utilities/StringManager.h>
+
+namespace
+{
+const int buttonsCX = 450;
+}
 
 namespace game
 {
@@ -65,10 +72,37 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     {
         // TODO REMOVE WHEN PLANET SELECTION IS DONE
         game->SetCurrentPlanet(PLANET_1);
-        game->RequestNextActiveState(StateId::FACTION_SEL);
+
+        StateDataLeavePregame data(StateId::INIT_GAME);
+        game->RequestNextActiveState(StateId::LEAVE_PREGAME, &data);
     });
 
     buttonY += button->GetHeight() + VMARGIN;
+
+    // -- WARNING TOOLTIP --
+    auto tooltipWarning = new sgui::Image("UI/main_menu_warning_bg.png");
+
+    auto fontHeader = fm->GetFont("Lato-Regular.ttf", 26, graphic::Font::NORMAL);
+    auto fontText = fm->GetFont("Lato-Regular.ttf", 16, graphic::Font::NORMAL);
+
+    const int marginHeraderT = 10;
+    const int marginHeraderB = 10;
+    auto header = new sgui::Label(sm->GetCString("WARNING"), fontHeader, tooltipWarning);
+    header->SetColor(0xf5f5a3ff);
+    header->SetPosition((tooltipWarning->GetWidth() - header->GetWidth()) / 2, marginHeraderT);
+
+    const int marginTextH = 20;
+    const int textH = 60;
+    auto text = new sgui::TextArea(tooltipWarning->GetWidth() - (marginTextH * 2), textH,
+                                   fontText, false, tooltipWarning);
+    text->SetColor(0xe5e5b3b2);
+    text->SetText(sm->GetCString("WARN_MM"));
+    text->SetPosition(marginTextH, header->GetY() + header->GetHeight() + marginHeraderB);
+
+    // assign it to NEW GAME button
+    button->SetTooltip(tooltipWarning);
+    button->SetTooltipShowingTime(7000);
+    button->SetTooltipDelay(250);
 
     // -- BUTTON SETTINGS --
     button = new ButtonMainMenu(sm->GetCString("SETTINGS"), panelButtons);
@@ -88,16 +122,16 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     button->AddOnClickFunction([game] { game->Exit(); });
 
     // position buttons panel
-    const int centerX = 450;
-    const int containerX = centerX - panelButtons->GetWidth() * 0.5f;
+    const int containerX = buttonsCX - panelButtons->GetWidth() * 0.5f;
     const int containerY = 280;
     panelButtons->SetPosition(containerX, containerY);
 
     // -- BUTTON WISHLIST --
     auto btnWishlist = new ButtonMainMenuWishlist(nullptr);
 
-    int buttonX = centerX - btnWishlist->GetWidth() * 0.5f;
-    buttonY = screenH - 100 - btnWishlist->GetHeight();
+    const int marginBottom = 150;
+    int buttonX = buttonsCX - btnWishlist->GetWidth() * 0.5f;
+    buttonY = screenH - marginBottom - btnWishlist->GetHeight();
 
     btnWishlist->AddOnClickFunction([]
     {
@@ -107,29 +141,6 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     });
 
     btnWishlist->SetPosition(buttonX, buttonY);
-
-    // -- WARNING PANEL --
-    const int marginWarningB = 100;
-    auto panelWarning = new sgui::Image("UI/main_menu_warning_bg.png");
-    panelWarning->SetPosition(centerX - panelWarning->GetWidth() / 2,
-                              buttonY - panelWarning->GetHeight() - marginWarningB);
-
-    auto fontHeader = fm->GetFont("Lato-Regular.ttf", 26, graphic::Font::NORMAL);
-    auto fontText = fm->GetFont("Lato-Regular.ttf", 16, graphic::Font::NORMAL);
-
-    const int marginHeraderT = 10;
-    const int marginHeraderB = 10;
-    auto header = new sgui::Label(sm->GetCString("WARNING"), fontHeader, panelWarning);
-    header->SetColor(0xf5f5a3ff);
-    header->SetPosition((panelWarning->GetWidth() - header->GetWidth()) / 2, marginHeraderT);
-
-    const int marginTextH = 20;
-    const int textH = 60;
-    auto text = new sgui::TextArea(panelWarning->GetWidth() - (marginTextH * 2), textH,
-                               fontText, false, panelWarning);
-    text->SetColor(0xe5e5b3b2);
-    text->SetText(sm->GetCString("WARN_MM"));
-    text->SetPosition(marginTextH, header->GetY() + header->GetHeight() + marginHeraderB);
 
     // -- SOCIAL BUTTONS --
     auto panelSocial = new sgui::Widget;
@@ -181,7 +192,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
 
     // position panel social buttons
     const int psMarginTop = 25;
-    const int psX = centerX - panelSocial->GetWidth() * 0.5f;
+    const int psX = buttonsCX - panelSocial->GetWidth() * 0.5f;
     const int psY = btnWishlist->GetY() + btnWishlist->GetHeight() + psMarginTop;
     panelSocial->SetPosition(psX, psY);
 
@@ -297,8 +308,8 @@ void ScreenMainMenu::CreateChangelog()
 
     // BUTTON
     mButtonChangelog = new ButtonChangelog;
-    const int btnChangelogX = screenW - mButtonChangelog->GetWidth();
-    const int btnChangelogY = (screenH - mButtonChangelog->GetHeight()) / 2;
+    const int btnChangelogX = buttonsCX - (mButtonChangelog->GetWidth() / 2);
+    const int btnChangelogY = screenH - mButtonChangelog->GetHeight();
     mButtonChangelog->SetPosition(btnChangelogX, btnChangelogY);
 
     mButtonChangelog->AddOnClickFunction([this]
@@ -310,8 +321,8 @@ void ScreenMainMenu::CreateChangelog()
 
     // DIALOG
     mDialogChangelog = new DialogChangelog;
-    const int dialogChangelogX = screenW - mDialogChangelog->GetWidth();
-    const int dialogChangelogY = (screenH - mDialogChangelog->GetHeight()) / 2;
+    const int dialogChangelogX = btnChangelogX;
+    const int dialogChangelogY = screenH - mDialogChangelog->GetHeight();
     mDialogChangelog->SetPosition(dialogChangelogX, dialogChangelogY);
     mDialogChangelog->SetVisible(false);
 
@@ -335,7 +346,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.5.0 - \"Up, Up, Upgrade\"", font, content);
+    auto title = new sgui::Label("0.6.0 - \"Yeah, Science!\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -346,40 +357,40 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "- Show path overlay when planning unit's move.\n"
-                  "- Collecting blobs and diamonds show the number collected.\n"
-                  "- New SFX for laser weapon, structures, collectables, units and mini-units.\n"
-                  "- Added multi-language support.\n"
-                  "- Added Italian and Spanish translations.\n"
-                  "- Units and stuctures can be upgraded after gaining enough"
-                  " experience to level up.\n"
-                  "- New conquerable structure: City.\n"
-                  "- Camera automatically moves over visible AI units when they do something.\n"
-                  "- Added several AI actions.\n"
+                  "- New exploding loot-box.\n"
+                  "- Introduced research points generated by research center.\n"
+                  "- New research dialog to control production of research center.\n"
+                  "- New tech tree dialog available from research center.\n"
+                  "- Introduced first upgrades unlockable from the tech tree dialog.\n"
+                  "- New mission goal: generate research points.\n"
+                  "- New mission goals: create units and mini-units.\n"
+                  "- New mission goals: create structures and create specific structures.\n"
+                  "- New mission goals: conquer structures and conquer specific structures.\n"
+                  "- New mission goals: control territory also with time and turns limit.\n"
+                  "- New mission goals: destroy enemy units and structures.\n"
+                  "- Introduced support for 3 sizes of planet.\n"
+                  "- Added tooltips to explain object attributes in all dialogs showing them.\n"
+                  "- Added support for hidden mission goals.\n"
+                  "- Added tooltip explaining faction turn energy.\n"
+                  "- Added French and German translations.\n"
                   "\nCHANGES\n"
-                  "- Unit movements are limited to visible cells.\n"
-                  "- New look&feel for tutorial panels.\n"
-                  "- New game starts directly playing first mission.\n"
-                  "- Quitting to planet map screen makes mission fail.\n"
-                  "- Improved attack range indicator visibility.\n"
+                  "- Hit points no longer shown on self-destruction.\n"
+                  "- No longer pre-loading everything at the beginning, but"
+                  " loading assets based on game section.\n"
+                  "- Improved animation of output particles.\n"
+                  "- No tutorial mission goals if tutorial is disabled.\n"
+                  "- Change mission goal resist X time to resist X turns.\n"
+                  "- First planet is now small (5 missions, 3 mandatory).\n"
+                  "- Added research points as resource to dialog trading.\n"
+                  "- New faction selection screen.\n"
+                  "- New UI graphics for dialogs, in-game panels and tooltips.\n"
+                  "- Optimized rendering of isometric objects.\n"
+                  "- New layout for CHANGELOG dialog and button in main menu.\n"
+                  "- Added more info text for when cell conquest fails.\n"
                   "\nFIXES\n"
-                  "- Fixed energy cost computation of unit moves.\n"
-                  "- Hide path overlay when not needed during tutorial.\n"
-                  "- Get rid of random focus area in top-left corner of planet map tutorial.\n"
-                  "- Fixed many memory leaks.\n"
-                  "- Fixed unit disappearing when building structure.\n"
-                  "- Fixed possible crash when AI collects lootbox.\n"
-                  "- Fixed possible crash when AI builds structure.\n"
-                  "- Fixed possible crash when ending turn right after the tutorial.\n"
-                  "- Fixed mission progression in planet map.\n"
-                  "- Fixed object actions panel appearing with no object selected.\n"
-                  "- Tutorial is not repeated after quitting it.\n"
-                  "- Fixed AI structures showing blinking icon.\n"
-                  "- Fixed Base not restoring energy on new turn.\n"
-                  "- Fixed energy consumption not refrecting conquered cells as it should.\n"
-                  "- Fixed state icons of destroyed object not destroyed.\n"
-                  "- Fixed cancelling some actions has no effect.\n"
-                  "- Removed legacy code that was causing some rare bugs when building.\n"
+                  "- Fixed sliders showing wrong values and graphics when step is not 1.\n"
+                  "- Fixed initial material value bigger than storage capacity.\n"
+                  "- Fixed rendering order of isometric objects not right in a few cases.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

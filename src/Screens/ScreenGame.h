@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Cell2D.h"
-#include "MissionGoal.h"
 #include "Screen.h"
 #include "GameObjects/GameObjectAction.h"
 #include "GameObjects/GameObjectTypes.h"
@@ -35,6 +34,7 @@ class IsoLayer;
 class IsoMap;
 class MiniMap;
 class MiniUnit;
+class MissionGoalsTracker;
 class PathIndicator;
 class PathOverlay;
 class Player;
@@ -87,12 +87,10 @@ public:
     MiniMap * GetMiniMap() const;
     void SetMiniMapEnabled(bool val);
 
+    MissionGoalsTracker * GetMissionGoalsTracker() const;
+
     bool GetPaused() const;
     void SetPause(bool paused);
-
-    // MISSION GOALS
-    const std::vector<MissionGoal> & GetMissionGoals() const;
-    void CollectMissionGoalReward(unsigned int index);
 
     // TURN SYSTEM
     void SetLocalTurnStage(TurnStage ts);
@@ -125,8 +123,6 @@ private:
     void CancelMiniUnitsGroupPath(GameObjectsGroup * group);
 
     void UpdateGameEnd();
-    bool CheckIfGoalCompleted(MissionGoal & g);
-    void UpdateGoalCompletedIcon();
     void HandleGameOver();
     void HandleGameWon();
     void AssignMapToFaction(PlayerFaction faction);
@@ -152,6 +148,7 @@ private:
                        const std::function<void(bool)> & onDone = [](bool){});
     bool SetupConnectCellsAI(Unit * unit, const std::function<void(bool)> & onDone = [](bool){});
 
+    void HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & clickCell);
     void HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell);
     void HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & clickCell);
     void HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickCell);
@@ -180,14 +177,10 @@ private:
 
     void AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, PlayerFaction f);
 
-    // MISSION GOALS
-    void SetMissionRewards();
-    void TrackResourcesForGoals();
-    void ClearResourcesTracking();
-
     // TURN
     void EndTurn();
     void InitLocalTurn();
+    unsigned int GetNumLocalTurns() const;
 
     void ReselectLastSelected();
 
@@ -214,9 +207,7 @@ private:
     std::vector<GameObjectAction> mObjActions;
     std::vector<GameObjectAction> mObjActionsToDo;
 
-    std::vector<MissionGoal> mMissionGoals;
-    std::vector<int> mResourcesGained;
-    std::vector<unsigned int> mResourceTrackers;
+    MissionGoalsTracker * mTrackerMG = nullptr;
 
     CameraMapController * mCamController = nullptr;
 
@@ -255,9 +246,9 @@ private:
 
     float mTimePlayed = 0.f;
 
-    bool mMapCompleted = false;
     bool mPaused = false;
-    bool mTutorialStarted = false;
+
+    bool mLocalTurnInitDone = false;
 };
 
 inline void ScreenGame::SetObjectActionCompleted(GameObject * obj)
@@ -276,12 +267,9 @@ inline const sgl::graphic::ParticlesManager * ScreenGame::GetParticlesManager() 
 
 inline GameHUD * ScreenGame::GetHUD() const { return mHUD; }
 
-inline bool ScreenGame::GetPaused() const { return mPaused; }
+inline MissionGoalsTracker * ScreenGame::GetMissionGoalsTracker() const { return mTrackerMG; }
 
-inline const std::vector<MissionGoal> & ScreenGame::GetMissionGoals() const
-{
-    return mMissionGoals;
-}
+inline bool ScreenGame::GetPaused() const { return mPaused; }
 
 inline bool ScreenGame::IsCurrentTurnLocal() const { return mActivePlayerIdx == 0; }
 

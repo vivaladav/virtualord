@@ -5,8 +5,9 @@
 #include "GameObjects/GameObject.h"
 #include "GameObjects/ObjectData.h"
 #include "GameObjects/ObjectsDataRegistry.h"
-#include "Widgets/ButtonDialogAction.h"
 #include "Widgets/ButtonDialogArrows.h"
+#include "Widgets/ButtonDialogClose.h"
+#include "Widgets/ButtonDialogOk.h"
 #include "Widgets/ButtonPanelTab.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/ObjectVisualAttribute.h"
@@ -40,68 +41,6 @@ using namespace game;
 
 constexpr int NUM_SLOTS = 6;
 
-// ===== BUTTON CLOSE =====
-
-class ButtonCloseDNE : public sgl::sgui::AbstractButton
-{
-public:
-    ButtonCloseDNE(sgl::sgui::Widget * parent)
-        : AbstractButton(parent)
-        , mBody(new sgl::graphic::Image)
-    {
-        SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
-
-        // register graphic elements
-        RegisterRenderable(mBody);
-
-        // set initial visual state
-        SetState(NORMAL);
-    }
-
-private:
-    void HandleMouseOver() override
-    {
-        sgl::sgui::AbstractButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-02.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/dialog_close-01.ogg");
-    }
-
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        const unsigned int texIds[NUM_VISUAL_STATES] =
-        {
-            IND_DLG_NEWE_CLOSE_NORMAL,
-            IND_DLG_NEWE_CLOSE_NORMAL,     // button can't be disabled
-            IND_DLG_NEWE_CLOSE_OVER,
-            IND_DLG_NEWE_CLOSE_PUSHED,
-            IND_DLG_NEWE_CLOSE_NORMAL,     // button can't be checked
-        };
-
-        auto tm = sgl::graphic::TextureManager::Instance();
-        sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, texIds[state]);
-        mBody->SetTexture(tex);
-
-        SetSize(mBody->GetWidth(), mBody->GetHeight());
-    }
-
-    void HandlePositionChanged() override
-    {
-        mBody->SetPosition(GetScreenX(), GetScreenY());
-    }
-
-private:
-    sgl::graphic::Image * mBody = nullptr;
-};
-
 // ===== BUTTON SLOT =====
 
 class ButtonSlot : public sgl::sgui::AbstractButton
@@ -110,27 +49,27 @@ public:
     ButtonSlot(int index)
         : mBody(new sgl::graphic::Image)
     {
-        using namespace sgl::graphic;
+        using namespace sgl;
 
         SetShortcutKey(KEYS[index]);
 
         SetCheckable(true);
 
-        auto fm = FontManager::Instance();
+        auto fm = graphic::FontManager::Instance();
 
         // TITLE
-        auto tm = sgl::graphic::TextureManager::Instance();
-        sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_PANEL_NORMAL);
-        auto font = fm->GetFont(WidgetsConstants::FontFileButton, 16, Font::NORMAL);
-        mTitle = new sgl::sgui::TextArea(tex->GetWidth(), TITLE_H, font, false, this);
-        mTitle->setTextAlignment(sgl::sgui::TextArea::ALIGN_H_CENTER, sgl::sgui::TextArea::ALIGN_V_CENTER);
+        auto tm = graphic::TextureManager::Instance();
+        auto tex = tm->GetSprite(SpriteFileDialogNewElement, ID_DLG_NEWEL_PAN_IMG_NORMAL);
+        auto font = fm->GetFont(WidgetsConstants::FontFileButton, 16, graphic::Font::NORMAL);
+        mTitle = new sgui::TextArea(tex->GetWidth(), TITLE_H, font, false, this);
+        mTitle->setTextAlignment(sgui::TextArea::ALIGN_H_CENTER, sgui::TextArea::ALIGN_V_CENTER);
 
         // IMAGE
-        mImage = new DummyRenderable;
+        mImage = new graphic::DummyRenderable;
 
         // SHORTCUT
-        font = fm->GetFont(WidgetsConstants::FontFileShortcut, 12, Font::NORMAL);
-        mShortcut = new Text(SHORTCUTS[index], font);
+        font = fm->GetFont(WidgetsConstants::FontFileShortcut, 12, graphic::Font::NORMAL);
+        mShortcut = new graphic::Text(SHORTCUTS[index], font);
         mShortcut->SetColor(0xd5daddff);
 
         // register graphic elements
@@ -139,7 +78,8 @@ public:
         RegisterRenderable(mShortcut);
 
         // set initial visual state
-        SetState(NORMAL);
+        InitState(NORMAL);
+        UpdateGraphics(NORMAL);
     }
 
     void ClearData()
@@ -235,13 +175,20 @@ private:
 
     void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
     {
+        sgl::sgui::AbstractButton::OnStateChanged(state);
+
+        UpdateGraphics(state);
+    }
+
+    void UpdateGraphics(sgl::sgui::AbstractButton::VisualState state)
+    {
         const unsigned int texIds[NUM_VISUAL_STATES] =
         {
-            IND_DLG_NEWE_PANEL_NORMAL,
-            IND_DLG_NEWE_PANEL_DISABLED,
-            IND_DLG_NEWE_PANEL_OVER,
-            IND_DLG_NEWE_PANEL_SEL,
-            IND_DLG_NEWE_PANEL_SEL,
+            ID_DLG_NEWEL_PAN_IMG_NORMAL,
+            ID_DLG_NEWEL_PAN_IMG_DISABLED,
+            ID_DLG_NEWEL_PAN_IMG_OVER,
+            ID_DLG_NEWEL_PAN_IMG_NORMAL,
+            ID_DLG_NEWEL_PAN_IMG_CHECKED,
         };
 
         auto tm = sgl::graphic::TextureManager::Instance();
@@ -341,11 +288,10 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
 
-    const int marginL = 40;
-    const int marginT = 8;
-
-    int midBgH = 470;
-    int slotsY0 = 65;
+    const int paddingPanelH = 40;
+    const int slotsX0 = WidgetsConstants::MarginDialogContentL + paddingPanelH;
+    int slotsY0 = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT +
+                  WidgetsConstants::PaddingPanelDialogT;
 
     if(ETYPE_UNITS_BARRACKS == type)
     {
@@ -383,47 +329,112 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
                 mTypes.push_back(t);
         }
     }
+
+    // -- BACKGROUND --
+    const int w = 1364;
+    graphic::Texture * texL;
+    graphic::Texture * texC;
+    graphic::Texture * texR;
+
+    if(type == ETYPE_STRUCTURES)
+    {
+        texL = tm->GetSprite(SpriteFileDialogNewElement, ID_DLG_NEWE_S_BG_L);
+        texR = tm->GetSprite(SpriteFileDialogNewElement, ID_DLG_NEWE_S_BG_R);
+        texC = tm->GetSprite(SpriteFileDialogNewElementExp, ID_DLG_NEWE_S_BG_C);
+    }
     else
     {
-        midBgH = 515;
-        slotsY0 = 110;
+        texL = tm->GetSprite(SpriteFileDialogNewElement, ID_DLG_NEWE_U_BG_L);
+        texR = tm->GetSprite(SpriteFileDialogNewElement, ID_DLG_NEWE_U_BG_R);
+        texC = tm->GetSprite(SpriteFileDialogNewElementExp, ID_DLG_NEWE_U_BG_C);
     }
 
-    // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileDialogNewElementExp, IND_DLG_NEWE_BG_TOP);
-    tex->SetScaleMode(graphic::TSCALE_NEAREST);
-    mBgTop = new graphic::Image(tex);
-    RegisterRenderable(mBgTop);
+    mBgL = new graphic::Image(texL);
+    RegisterRenderable(mBgL);
 
-    tex = tm->GetSprite(SpriteFileDialogNewElementExp, IND_DLG_NEWE_BG_MID);
-    tex->SetScaleMode(graphic::TSCALE_NEAREST);
-    mBgMid = new graphic::Image(tex);
-    mBgMid->SetHeight(midBgH);
-    RegisterRenderable(mBgMid);
+    const int wL = mBgL->GetWidth();
+    const int h = mBgL->GetHeight();
 
-    tex = tm->GetSprite(SpriteFileDialogNewElementExp, IND_DLG_NEWE_BG_BTM);
-    tex->SetScaleMode(graphic::TSCALE_NEAREST);
-    mBgBtm = new graphic::Image(tex);
-    RegisterRenderable(mBgBtm);
+    mBgR = new graphic::Image(texR);
+    RegisterRenderable(mBgR);
 
-    const int w = mBgTop->GetWidth();
-    const int h = mBgTop->GetHeight() + mBgMid->GetHeight() + mBgBtm->GetHeight();
+    const int wR = mBgR->GetWidth();
+
+    texC->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(texC);
+    RegisterRenderable(mBgC);
+
+    const int wC = w - wL - wR;
+    mBgC->SetWidth(wC);
+
     SetSize(w, h);
 
     // CLOSE BUTTON
-    mBtnClose = new ButtonCloseDNE(this);
+    mBtnClose = new ButtonDialogClose(this);
     mBtnClose->SetX(GetWidth() - mBtnClose->GetWidth());
 
     // TITLE
-    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle, 28, sgl::graphic::Font::NORMAL);
+    auto font = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
+                            WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
+
+    sgui::Label * title = nullptr;
 
     if(ETYPE_STRUCTURES == type)
-        mTitle = new sgui::Label(sm->GetCString("CREATE_NEW_STRUCTURE"), font, this);
+        title = new sgui::Label(sm->GetCString("CREATE_NEW_STRUCTURE"), font, this);
     else
-        mTitle = new sgui::Label(sm->GetCString("CREATE_NEW_UNIT"), font, this);
+        title = new sgui::Label(sm->GetCString("CREATE_NEW_UNIT"), font, this);
+    title->SetColor(WidgetsConstants::colorDialogTitle);
 
-    mTitle->SetColor(0xf1f2f4ff);
-    mTitle->SetPosition(marginL, marginT);
+    const int titleY = (WidgetsConstants::DialogTitleBarH - title->GetHeight()) / 2;
+    title->SetPosition(WidgetsConstants::MarginDialogTitleL, titleY);
+
+    // structures are grouped by categoy
+    if(ETYPE_STRUCTURES == type)
+    {
+        mButtonsStructures = new sgl::sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
+
+        auto btn = new ButtonPanelTab(sm->GetCString("GENERIC_STRUCT"), this);
+        mButtonsStructures->AddButton(btn);
+
+        btn = new ButtonPanelTab(sm->GetCString("DEFENSE"), this);
+        mButtonsStructures->AddButton(btn);
+
+        btn = new ButtonPanelTab(sm->GetCString("RESOURCES"), this);
+        mButtonsStructures->AddButton(btn);
+
+        btn = new ButtonPanelTab(sm->GetCString("TECHNOLOGY"), this);
+        mButtonsStructures->AddButton(btn);
+
+        mButtonsStructures->SetFunctionOnToggle([this](unsigned int ind, bool checked)
+                                                {
+                                                    if(!checked)
+                                                        return ;
+
+                                                    const unsigned int NUM_CAT = 4;
+
+                                                    if(ind >= NUM_CAT)
+                                                        return ;
+
+                                                    const ObjFamily categories[NUM_CAT] =
+                                                        {
+                                                            OCAT_GENERIC,
+                                                            OCAT_DEFENSE,
+                                                            OCAT_RESOURCES,
+                                                            OCAT_TECHNOLOGY,
+                                                        };
+
+                                                    ShowStructuresByFamily(categories[ind]);
+                                                });
+
+
+        const int panelContentW = 1280;
+        const int btnsX = WidgetsConstants::MarginDialogContentL +
+                          (panelContentW - mButtonsStructures->GetWidth()) / 2;
+        const int btnsY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+        mButtonsStructures->SetPosition(btnsX, btnsY);
+
+        slotsY0 += btn->GetHeight();
+    }
 
     // SLOTS
     mSlots = new sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
@@ -445,15 +456,15 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
         mSlots->AddButton(slot);
     }
 
-    mSlots->SetPosition(marginL, slotsY0);
+    mSlots->SetPosition(slotsX0, slotsY0);
 
     const int marginButtonsLR = 10;
 
     const int numData = mTypes.size();
 
     mBtnLeft = new ButtonDialogArrowLeft(this);
-    const int posLX = mSlots->GetX() - mBtnLeft->GetWidth() - marginButtonsLR;
-    const int posLY = mSlots->GetY() + (mSlots->GetHeight() - mBtnLeft->GetHeight()) * 0.5f;
+    const int posLX = slotsX0 - mBtnLeft->GetWidth() - marginButtonsLR;
+    const int posLY = slotsY0 + (mSlots->GetHeight() - mBtnLeft->GetHeight()) * 0.5f;
     mBtnLeft->SetPosition(posLX, posLY);
     mBtnLeft->SetEnabled(false);
 
@@ -482,12 +493,10 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     });
 
     // INFO PANEL
-    const int slotsMarginBottom = 15;
-
-    const int panelY0 = slotsY0 + mSlots->GetHeight() + slotsMarginBottom;
-    tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_INFO);
+    const int panelY0 = slotsY0 + mSlots->GetHeight();
+    auto tex = tm->GetSprite(SpriteFileDialogNewElement, ID_DLG_NEWEL_PAN_INFO);
     auto panelInfo = new sgui::Image(tex, this);
-    panelInfo->SetPosition(marginL, panelY0);
+    panelInfo->SetPosition(slotsX0, panelY0);
 
     const unsigned int colorHeader = 0xf1f2f4ff;
     const unsigned int colorText = 0xb6c0c9ff;
@@ -495,11 +504,11 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, 18, sgl::graphic::Font::NORMAL);
     auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 17, sgl::graphic::Font::NORMAL);
 
-    const int marginPanelXY0 = 10;
-    const int marginPanelBlock = 20;
+    const int marginPanelXY0 = 15;
+    const int marginPanelBlock = 15;
     const int marginPanelIconH = 5;
     const int marginPanelIconV = 5;
-    const int marginPanelIconBlock = 85;
+    const int marginPanelIconBlock = 80;
     const int marginPanelDataV = 5;
 
     // header DESCRIPTION
@@ -511,7 +520,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
     // description text area
     const int areaW = panelInfo->GetWidth() - (2 * marginPanelXY0);
-    const int areaH = 85;
+    const int areaH = 80;
     mDescription = new sgui::TextArea(areaW, areaH, fontText, false, panelInfo);
     mDescription->SetColor(colorText);
     mDescription->SetPosition(marginPanelXY0, contY);
@@ -540,7 +549,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     contY = headerCat->GetY() + headerCat->GetHeight() + marginPanelDataV;
 
     // data cost 1
-    tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ICON_ENERGY);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_ENERGY_24);
     auto imgIcon = new sgui::Image(tex, panelInfo);
     imgIcon->SetPosition(marginPanelXY0, contY);
 
@@ -555,7 +564,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     contY = imgIcon->GetY();
 
     // data cost 2
-    tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ICON_MATERIAL);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MATERIAL_24);
     imgIcon = new sgui::Image(tex, panelInfo);
     imgIcon->SetPosition(contX, contY);
 
@@ -570,7 +579,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     contY = imgIcon->GetY();
 
     // data cost 3
-    tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ICON_DIAMOND);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_DIAMONDS_24);
     imgIcon = new sgui::Image(tex, panelInfo);
     imgIcon->SetPosition(contX, contY);
 
@@ -585,7 +594,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     contY = imgIcon->GetY();
 
     // data cost 4
-    tex = tm->GetSprite(SpriteFileDialogNewElement, IND_DLG_NEWE_ICON_BLOB);
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_BLOBS_24);
     imgIcon = new sgui::Image(tex, panelInfo);
     imgIcon->SetPosition(contX, contY);
 
@@ -597,9 +606,8 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
     mLabelsCost[3]->SetPosition(contX, contY);
 
     // ATTRIBUTE PANELS
-    const int panelsX0 = marginL + panelInfo->GetWidth();
+    const int panelsX0 = slotsX0 + panelInfo->GetWidth();
     const int panelsY0 = panelY0;
-    const int panelBorder = 1;
     int panelsX = panelsX0;
     int panelsY = panelsY0;
 
@@ -616,76 +624,24 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 
             mVisAtt[ind] = panAtt;
 
-            panelsX += panAtt->GetWidth() - panelBorder;
+            panelsX += panAtt->GetWidth();
         }
 
         panelsX = panelsX0;
-        panelsY += mVisAtt[0]->GetHeight() - panelBorder;
+        panelsY += mVisAtt[0]->GetHeight();
     }
 
     // BUTTON BUILD
-    mBtnBuild = new ButtonDialogAction(sm->GetCString("BUILD"), "B", core::KeyboardEvent::KEY_B, this);
-    const ObjectVisualAttribute * lastPanel = mVisAtt[NUM_VIS_ATT - 1];
-    const int btnX = lastPanel->GetX() + lastPanel->GetWidth() - mBtnBuild->GetWidth();
-    const int marginBtnTop = 15;
-    const int btnY = lastPanel->GetY() + lastPanel->GetHeight() + marginBtnTop;
+    mBtnBuild = new ButtonDialogOk(sm->GetCString("BUILD"), this);
+    const int btnX = GetWidth() - WidgetsConstants::MarginDialogContentR - mBtnBuild->GetWidth();
+    const int marginButtonB = 20;
+    const int btnY = GetHeight() - marginButtonB - mBtnBuild->GetHeight();
     mBtnBuild->SetPosition(btnX, btnY);
 
-    // structures are grouped by categoy
-    if(ETYPE_STRUCTURES == type)
-    {
-        mButtonsStructures = new sgl::sgui::AbstractButtonsGroup;
-
-        const int btnY = 55;
-        int btnX = marginL;
-
-        auto btn = new ButtonPanelTab(sm->GetCString("GENERIC_STRUCT"), this);
-        btn->SetPosition(btnX, btnY);
-        mButtonsStructures->AddButton(btn);
-
-        btnX += btn->GetWidth();
-
-        btn = new ButtonPanelTab(sm->GetCString("DEFENSE"), this);
-        btn->SetPosition(btnX, btnY);
-        mButtonsStructures->AddButton(btn);
-
-        btnX += btn->GetWidth();
-
-        btn = new ButtonPanelTab(sm->GetCString("RESOURCES"), this);
-        btn->SetPosition(btnX, btnY);
-        mButtonsStructures->AddButton(btn);
-
-        btnX += btn->GetWidth();
-
-        btn = new ButtonPanelTab(sm->GetCString("TECHNOLOGY"), this);
-        btn->SetPosition(btnX, btnY);
-        mButtonsStructures->AddButton(btn);
-
-        mButtonsStructures->SetFunctionOnToggle([this](unsigned int ind, bool checked)
-        {
-            if(!checked)
-                return ;
-
-            const unsigned int NUM_CAT = 4;
-
-            if(ind >= NUM_CAT)
-                return ;
-
-            const ObjFamily categories[NUM_CAT] =
-            {
-                OCAT_GENERIC,
-                OCAT_DEFENSE,
-                OCAT_RESOURCES,
-                OCAT_TECHNOLOGY,
-            };
-
-            ShowStructuresByFamily(categories[ind]);
-        });
-
-        mButtonsStructures->SetButtonChecked(0, true);
-    }
-    else
+    if(type != ETYPE_STRUCTURES)
         UpdateSlots();
+    else
+        mButtonsStructures->SetButtonChecked(0, true);
 
     PositionElements();
 
@@ -697,12 +653,6 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
 DialogNewElement::~DialogNewElement()
 {
     delete mButtonsStructures;
-}
-
-void DialogNewElement::CheckBuild()
-{
-    const int ind = GetSelectedIndex();
-    CheckBuild(ind);
 }
 
 void DialogNewElement::SetFunctionOnBuild(const std::function<void()> & f)
@@ -792,7 +742,6 @@ void DialogNewElement::ShowData(int ind)
     assert(ind < mTypes.size());
 
     const GameObjectTypeId t = mTypes[ind];
-    const PlayerFaction f = mPlayer->GetFaction();
     const ObjectData & data = mDataReg->GetObjectData(t);
 
     auto sm = sgl::utilities::StringManager::Instance();
@@ -817,7 +766,12 @@ void DialogNewElement::ShowData(int ind)
         const int val = data.GetAttribute(static_cast<ObjAttId>(i));
 
         if(val > 0)
-            mVisAtt[attsAdded++]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[i]), val);
+        {
+            mVisAtt[attsAdded]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[i]), val);
+            mVisAtt[attsAdded]->SetTooltipData(sm->GetCString(ObjectData::STR_ATTRIBUTE_TOOLTIPS[i]));
+
+            ++attsAdded;
+        }
     }
 
     // WEAPON ATTRIBUTES
@@ -833,7 +787,14 @@ void DialogNewElement::ShowData(int ind)
             const auto attId = static_cast<ObjAttId>(FIRST_WEAPON_ATTRIBUTE + i);
 
             const int val = wAttributes.at(attId);
-            mVisAtt[attsAdded++]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[attId]), val);
+
+            if(val > 0)
+            {
+                mVisAtt[attsAdded]->SetData(sm->GetCString(ObjectData::STR_ATTRIBUTES[attId]), val);
+                mVisAtt[attsAdded]->SetTooltipData(sm->GetCString(ObjectData::STR_ATTRIBUTE_TOOLTIPS[attId]));
+
+                ++attsAdded;
+            }
         }
     }
 
@@ -845,7 +806,6 @@ void DialogNewElement::ShowData(int ind)
 void DialogNewElement::CheckBuild(int ind)
 {
     const GameObjectTypeId t = mTypes[ind];
-    const PlayerFaction f = mPlayer->GetFaction();
     const ObjectData & data = mDataReg->GetObjectData(t);
 
     const auto & costs = data.GetCosts();
@@ -880,19 +840,16 @@ void DialogNewElement::HandlePositionChanged()
 
 void DialogNewElement::PositionElements()
 {
-    const int x0 = GetScreenX();
-    const int y0 = GetScreenY();
+    const int y = GetScreenY();
+    int x = GetScreenX();
 
-    // BACKGROUND
-    int y = y0;
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
 
-    mBgTop->SetPosition(x0, y);
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
 
-    y += mBgTop->GetHeight();
-    mBgMid->SetPosition(x0, y);
-
-    y += mBgMid->GetHeight();
-    mBgBtm->SetPosition(x0, y);
+    mBgR->SetPosition(x, y);
 }
 
 } // namespace game

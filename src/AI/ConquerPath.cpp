@@ -310,12 +310,14 @@ void ConquerPath::UpdateMove(float delta)
         const GameMapCell & targetCell = mGameMap->GetCell(targetRow, targetCol);
 
         // collect collectable object, if any
-        if(targetCell.objTop != nullptr &&
-           targetCell.objTop->GetObjectCategory() == ObjectData::CAT_COLLECTABLE)
-        {
-            player->HandleCollectable(targetCell.objTop);
+        GameObject * collectable = targetCell.objTop;
 
-            mGameMap->RemoveAndDestroyObject(targetCell.objTop);
+        if(collectable != nullptr &&
+           collectable->GetObjectCategory() == ObjectData::CAT_COLLECTABLE)
+        {
+            player->HandleCollectable(collectable, mUnit);
+
+            mGameMap->RemoveAndDestroyObject(collectable);
         }
 
         // handle moving object
@@ -335,10 +337,19 @@ void ConquerPath::UpdateMove(float delta)
 
 void ConquerPath::UpdatePathCost()
 {
-    // TODO proper cost computation
+    if(mCells.empty())
+    {
+        mCost = 0;
+        return ;
+    }
+
+    // TODO check if cells of mCells path are already conquered to give true cost
+
     // use set to ignore repeated cells
     const std::unordered_set<unsigned int> cells(mCells.begin(), mCells.end());
-    mCost = (cells.size() - 1) * 0.5f;
+
+    mCost = (mCells.size() - 1) * mUnit->GetEnergyForActionStep(MOVE) +
+            cells.size() * mUnit->GetEnergyForActionStep(CONQUER_CELL);
 }
 
 bool ConquerPath::Fail()

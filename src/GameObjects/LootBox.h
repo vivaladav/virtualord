@@ -15,6 +15,7 @@ public:
         LB_ENERGY,
         LB_MATERIAL,
         LB_MONEY,
+        LB_RESEARCH,
 
         NUM_LB_PRIZES,
 
@@ -29,12 +30,12 @@ public:
 
     void Collected(Player * collector) override;
 
-protected:
+private:
     void UpdateGraphics() override;
 
-private:
-    void SetImage();
+    void SetPrize();
 
+    void SetImage();
     void SetObjColors();
 
 private:

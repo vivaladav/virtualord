@@ -14,6 +14,7 @@ namespace sgl
 
     namespace sgui
     {
+        class AbstractButton;
         class Label;
         class TextArea;
     }
@@ -47,17 +48,14 @@ private:
     void SetPositions();
 
 private:
-    sgl::graphic::Image * mBg = nullptr;
-    sgl::graphic::Image * mLineH1 = nullptr;
-    sgl::graphic::Image * mLineH2 = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
 
-    sgl::graphic::Text * mHeaderInvest = nullptr;
-    sgl::graphic::Text * mHeaderTurns = nullptr;
-    sgl::graphic::Text * mHeaderSuccess = nullptr;
     sgl::sgui::Label * mLabelTurns = nullptr;
     sgl::sgui::Label * mLabelSuccess = nullptr;
 
-    GameButton * mBtnAbort = nullptr;
+    sgl::sgui::AbstractButton * mBtnClose = nullptr;
     GameButton * mBtnExplore = nullptr;
 
     GameSliderH * mSliderMoney = nullptr;
@@ -65,7 +63,6 @@ private:
     GameSliderH * mSliderBlobs = nullptr;
     GameSliderH * mSliderDiamonds = nullptr;
 
-    Player * mPlayer = nullptr;
     Temple * mTemple = nullptr;
 };
 
@@ -86,21 +83,13 @@ private:
     void SetPositions();
 
 private:
-    sgl::graphic::Image * mBg = nullptr;
-    sgl::graphic::Image * mLine = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
 
     GameButton * mBtnClose = nullptr;
     GameButton * mBtnOutcome1 = nullptr;
     GameButton * mBtnOutcome2 = nullptr;
-
-    sgl::graphic::Text * mHeaderOutc1 = nullptr;
-    sgl::graphic::Text * mHeaderOutc2 = nullptr;
-
-    sgl::sgui::TextArea * mDescOutc1 = nullptr;
-    sgl::sgui::TextArea * mDescOutc2 = nullptr;
-
-    Player * mPlayer = nullptr;
-    Temple * mTemple = nullptr;
 };
 
 } // namespace game
