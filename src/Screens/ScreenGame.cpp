@@ -555,9 +555,6 @@ void ScreenGame::CreateUI()
 {
     using namespace sgl;
 
-    const int rendW = graphic::Renderer::Instance()->GetWidth();
-    const int rendH = graphic::Renderer::Instance()->GetHeight();
-
     // init HUD layer
     mHUD = new GameHUD(this);
 
@@ -2215,7 +2212,6 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
 
     // find closest linked cell
     const PlayerFaction faction = unit->GetFaction();
-    const Player * player = GetGame()->GetPlayerByFaction(faction);
     const Cell2D start(unit->GetRow0(), unit->GetCol0());
     Cell2D target;
 
@@ -2530,8 +2526,6 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
     const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
     const bool diffClick = unitCell != clickCell;
 
-    const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
-
     // not clicking on unit cell, destination is visible and walkable
     if(!diffClick || !mLocalPlayer->IsCellVisible(clickInd) ||
        !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
@@ -2642,8 +2636,6 @@ void ScreenGame::HandleMiniUnitSetTargetOnMouseUp(GameObject * obj, const Cell2D
     using namespace sgl;
 
     const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
-
-    const Player * player = GetGame()->GetPlayerByFaction(obj->GetFaction());
 
     // destination is NOT visible and walkable
     if(!mLocalPlayer->IsCellVisible(clickInd) ||
