@@ -46,12 +46,12 @@ add_executable(
     src/IsoObject.cpp
     src/MapIO.h
     src/MapIO.cpp
-    src/MapsRegistry.h
-    src/MapsRegistry.cpp
     src/MissionGoal.h
     src/MissionGoal.cpp
     src/MissionGoalsTracker.h
     src/MissionGoalsTracker.cpp
+    src/Planet.h
+    src/Planet.cpp
     src/Player.h
     src/Player.cpp
     src/StatValue.h

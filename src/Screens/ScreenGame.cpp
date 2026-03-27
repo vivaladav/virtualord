@@ -8,8 +8,8 @@
 #include "IsoLayer.h"
 #include "IsoMap.h"
 #include "MapIO.h"
-#include "MapsRegistry.h"
 #include "MissionGoalsTracker.h"
+#include "Planet.h"
 #include "Player.h"
 #include "AI/ConquerPath.h"
 #include "AI/ObjectPath.h"
@@ -1756,16 +1756,15 @@ void ScreenGame::HandleGameWon()
 void ScreenGame::AssignMapToFaction(PlayerFaction faction)
 {
     Game * game = GetGame();
-    MapsRegistry * mapReg = game->GetMapsRegistry();
 
     const unsigned int territory = game->GetCurrentTerritory();
-    const PlanetId planet = game->GetCurrentPlanet();
+    Planet * planet = game->GetCurrentPlanet();
 
-    mapReg->SetMapOccupier(planet, territory, faction);
-    mapReg->SetMapStatus(planet, territory, TER_ST_OCCUPIED);
+    planet->SetMapOccupier(territory, faction);
+    planet->SetMapStatus(territory, TER_ST_OCCUPIED);
 
     if(faction == mLocalPlayer->GetFaction())
-        mapReg->SetMapMissionCompleted(planet, territory);
+        planet->SetMapMissionCompleted(territory);
 
     game->RequestNextActiveState(StateId::PLANET_MAP);
 }

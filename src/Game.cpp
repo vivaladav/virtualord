@@ -1,7 +1,7 @@
 #include "Game.h"
 
 #include "GameConstants.h"
-#include "MapsRegistry.h"
+#include "Planet.h"
 #include "Player.h"
 #include "Version.h"
 #include "GameObjects/ObjectsDataRegistry.h"
@@ -51,7 +51,6 @@ bool Game::GOD_MODE = false;
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
     , mTutMan(new TutorialManager)
-    , mMapsReg(new MapsRegistry)
     , mObjsRegistry(new ObjectsDataRegistry)
     , mLocalFaction(NO_FACTION)
     , mCurrPlanet(PLANET_UNKNOWN)
@@ -148,9 +147,9 @@ Game::~Game()
     // delete states and screens
     delete mStateMan;
 
-    delete mMapsReg;
     delete mObjsRegistry;
 
+    ClearPlanets();
     ClearPlayers();
 
     sgui::Stage::Destroy();
@@ -167,20 +166,24 @@ Game::~Game()
 
 void Game::InitGameData()
 {
+    Planet * planet = nullptr;
+
     // -- MAPS --
     // PLANET 1
-    mMapsReg->CreatePlanet(PLANET_1, PLANET_SIZE_S);
-    //               planetId, file, occupier, status
-    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", NO_FACTION, TER_ST_UNEXPLORED);
-    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", NO_FACTION, TER_ST_UNEXPLORED);
-    mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", NO_FACTION, TER_ST_UNREACHABLE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", NO_FACTION, TER_ST_UNREACHABLE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
+    planet = new Planet(PLANET_1, PLANET_SIZE_S);
+    planet->AddMap("data/maps/80x80-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+    planet->AddMap("data/maps/60x60-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+    planet->AddMap("data/maps/40x40-01.map", NO_FACTION, TER_ST_UNREACHABLE);
+    planet->AddMap("data/maps/20x20-empty.map", NO_FACTION, TER_ST_UNREACHABLE);
+    planet->AddMap("data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
+
+    mPlanets.emplace(PLANET_1, planet);
 }
 
 void Game::ClearGameData()
 {
-    mMapsReg->ClearData();
+    ClearPlanets();
+
     ClearPlayers();
 }
 
@@ -200,9 +203,36 @@ void Game::SetCurrentCursor(GameCursorId curId)
     sgl::sgui::Stage::Instance()->SetCursor(it->second);
 }
 
+Planet * Game::GetPlanet(PlanetId planetId) const
+{
+    auto it = mPlanets.find(planetId);
+
+    if(it != mPlanets.end())
+        return it->second;
+    else
+        return nullptr;
+}
+
 const std::string & Game::GetCurrentMapFile() const
 {
-    return mMapsReg->GetMapFile(mCurrPlanet, mCurrTerritory);
+    static const std::string empty;
+
+    auto it = mPlanets.find(mCurrPlanet);
+
+    if(it != mPlanets.end())
+        return it->second->GetMapFile(mCurrTerritory);
+    else
+        return empty;
+}
+
+Planet * Game::GetCurrentPlanet() const
+{
+    auto it = mPlanets.find(mCurrPlanet);
+
+    if(it != mPlanets.end())
+        return it->second;
+    else
+        return nullptr;
 }
 
 int Game::GetResourcePriceBuy(ExtendedResource t) const
@@ -344,6 +374,14 @@ void Game::ClearPlayers()
         delete p;
 
     mPlayers.clear();
+}
+
+void Game::ClearPlanets()
+{
+    for(auto it : mPlanets)
+        delete it.second;
+
+    mPlanets.clear();
 }
 
 Player * Game::GetPlayerByFaction(PlayerFaction faction) const

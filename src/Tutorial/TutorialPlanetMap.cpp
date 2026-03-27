@@ -1,7 +1,7 @@
 #include "Tutorial/TutorialPlanetMap.h"
 
 #include "Game.h"
-#include "MapsRegistry.h"
+#include "Planet.h"
 #include "Player.h"
 #include "Screens/ScreenPlanetMap.h"
 #include "Tutorial/StepDelay.h"
@@ -34,19 +34,19 @@ TutorialPlanetMap::TutorialPlanetMap(Screen * screen)
     assert(mScreen != nullptr);
 
     const auto game = mScreen->GetGame();
-    const auto mr = game->GetMapsRegistry();
+    const auto planet = game->GetCurrentPlanet();
     const auto localPlayer = game->GetLocalPlayer();
     const PlayerFaction localFaction = localPlayer->GetFaction();
 
     AddStep([] { return new StepDelay(1.f); });
-    AddStep([mr, localFaction]
+    AddStep([planet, localFaction]
         {
-            const bool won = mr->GetMapOccupier(PLANET_1, mission0) == localFaction;
+            const bool won = planet->GetMapOccupier(mission0) == localFaction;
             return new StepPlanetMapIntro(won);
         });
-    AddStep([this, mr, localFaction]
+    AddStep([this, planet, localFaction]
         {
-            const bool won = mr->GetMapOccupier(PLANET_1, mission0) == localFaction;
+            const bool won = planet->GetMapOccupier(mission0) == localFaction;
             return new StepPlanetMapSelectTerritory(mScreen->mPlanet, won);
         });
     AddStep([] { return new StepDelay(0.5f); });

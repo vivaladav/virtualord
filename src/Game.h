@@ -32,8 +32,8 @@ namespace sgl
 namespace game
 {
 
-class MapsRegistry;
 class ObjectsDataRegistry;
+class Planet;
 class Player;
 class TutorialManager;
 
@@ -71,10 +71,12 @@ public:
     void RegisterCursor(GameCursorId curId, sgl::graphic::Cursor * cursor);
     void SetCurrentCursor(GameCursorId curId);
 
+    // -- planets --
+    Planet * GetPlanet(PlanetId pid) const;
     const std::string & GetCurrentMapFile() const;
     unsigned int GetCurrentTerritory() const;
     void SetCurrentTerritory(unsigned int territory);
-    PlanetId GetCurrentPlanet() const;
+    Planet * GetCurrentPlanet() const;
     void SetCurrentPlanet(PlanetId planet);
 
     int GetResourcePriceBuy(ExtendedResource t) const;
@@ -89,12 +91,10 @@ public:
     Difficulty GetDifficulty() const;
     void SetDifficulty(Difficulty level);
 
-    MapsRegistry * GetMapsRegistry() const;
     const ObjectsDataRegistry * GetObjectsRegistry() const;
 
     // -- players --
     Player * AddPlayer(const char * name, int pid);
-    void ClearPlayers();
 
     int GetNumPlayers() const;
 
@@ -132,12 +132,17 @@ public:
     TutorialManager * GetTutorialManager() const;
 
 private:
+    void ClearPlayers();
+    void ClearPlanets();
+
     void NotifyOnSettingsChanged();
 
     void Update(float delta) override;
 
 private:
     std::vector<Player *> mPlayers;
+
+    std::unordered_map<PlanetId, Planet *> mPlanets;
 
     std::map<unsigned int, std::function<void()>> mOnSettingsChanged;
 
@@ -154,7 +159,6 @@ private:
 
     TutorialManager * mTutMan = nullptr;
 
-    MapsRegistry * mMapsReg = nullptr;
     ObjectsDataRegistry * mObjsRegistry = nullptr;
 
     Difficulty mDiff = EASY;
@@ -188,7 +192,6 @@ inline void Game::SetCurrentTerritory(unsigned int territory)
     mCurrTerritory = territory;
 }
 
-inline PlanetId Game::GetCurrentPlanet() const { return mCurrPlanet; }
 inline void Game::SetCurrentPlanet(PlanetId planet) { mCurrPlanet = planet; }
 
 inline void Game::SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
@@ -202,7 +205,6 @@ inline void Game::SetClearColor(unsigned char r, unsigned char g, unsigned char 
 inline Difficulty Game::GetDifficulty() const { return mDiff; }
 inline void Game::SetDifficulty(Difficulty level) { mDiff = level; }
 
-inline MapsRegistry * Game::GetMapsRegistry() const { return mMapsReg; }
 inline const ObjectsDataRegistry * Game::GetObjectsRegistry() const { return mObjsRegistry; }
 
 inline int Game::GetNumPlayers() const { return mPlayers.size(); }

@@ -2,7 +2,7 @@
 
 #include "Game.h"
 #include "GameConstants.h"
-#include "MapsRegistry.h"
+#include "Planet.h"
 #include "Player.h"
 #include "States/StatesIds.h"
 #include "Tutorial/TutorialConstants.h"
@@ -95,10 +95,9 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     mLabelDate->SetColor(colorHeader);
 
     // -- PLANET --
-    const PlanetId planetId = game->GetCurrentPlanet();
-    auto mapReg = game->GetMapsRegistry();
+    const Planet * planet = game->GetCurrentPlanet();
 
-    mPlanet = new PlanetMap(mapReg->GetPlanetSize(planetId));
+    mPlanet = new PlanetMap(planet->GetSize());
 
     const int planetX = (mBg->GetWidth() - mPlanet->GetWidth()) * 0.5f;
     const int planetY = 190;
@@ -122,11 +121,10 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
             mPanelConquerAI->SetVisible(false);
 
             auto game = GetGame();
-            const PlanetId planetId = game->GetCurrentPlanet();
-            auto mapReg = game->GetMapsRegistry();
+            const Planet * planet = game->GetCurrentPlanet();
 
-            const TerritoryStatus status = mapReg->GetMapStatus(planetId, ind);
-            const PlayerFaction occupier = mapReg->GetMapOccupier(planetId, ind);
+            const TerritoryStatus status = planet->GetMapStatus(ind);
+            const PlayerFaction occupier = planet->GetMapOccupier(ind);
             const bool playerOccupier = game->GetLocalPlayerFaction() == occupier;
             mPanelActions->UpdateButtons(status, playerOccupier);
 
@@ -208,11 +206,10 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         player->SumResource(Player::Stat::MATERIAL, -costExploreMaterial);
 
         // handle the result
-        const PlanetId planetId = game->GetCurrentPlanet();
+        Planet * planet = game->GetCurrentPlanet();
         const int territory = mPlanet->GetSelectedTerritoryId();
-        auto mapReg = game->GetMapsRegistry();
 
-        const PlayerFaction occupier = mapReg->GetMapOccupier(planetId, territory);
+        const PlayerFaction occupier = planet->GetMapOccupier(territory);
 
         if(occupier != NO_FACTION)
         {
@@ -225,13 +222,13 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
             if(res)
             {
-                mapReg->SetMapStatus(planetId, territory, TER_ST_OCCUPIED);
+                planet->SetMapStatus(territory, TER_ST_OCCUPIED);
 
                 ShowInfo(territory);
             }
             else
             {
-                mapReg->SetMapStatus(planetId, territory, TER_ST_OCCUPIED_UNEXPLORED);
+                planet->SetMapStatus(territory, TER_ST_OCCUPIED_UNEXPLORED);
 
                 // PANEL INFO
                 const unsigned int size = 0;
@@ -246,7 +243,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         }
         else
         {
-            mapReg->SetMapStatus(planetId, territory, TER_ST_FREE);
+            planet->SetMapStatus(territory, TER_ST_FREE);
 
             mPanelExplore->ShowResult(true);
 
@@ -254,7 +251,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         }
 
         // update panel actions
-        const TerritoryStatus status = mapReg->GetMapStatus(planetId, territory);
+        const TerritoryStatus status = planet->GetMapStatus(territory);
         const bool playerOccupier = game->GetLocalPlayerFaction() == occupier;
 
         mPanelActions->UpdateButtons(status, playerOccupier);
@@ -289,10 +286,8 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     });
 
     // PANEL ACTION CONQUER AI
-    mPanelConquerAI = new PanelPlanetActionConquerAI(player, costConquestMoney,
-                                                     costConquestEnergy,
-                                                     costConquestMaterial,
-                                                     costConquestDiamonds);
+    mPanelConquerAI = new PanelPlanetActionConquerAI(player, costConquestMoney, costConquestEnergy,
+                                                     costConquestMaterial, costConquestDiamonds);
     mPanelConquerAI->SetY(panActionsY);
     mPanelConquerAI->SetVisible(false);
 
@@ -311,19 +306,18 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         const int territory = mPlanet->GetSelectedTerritoryId();
         const bool res = TryToConquerTerritory(territory);
 
-        const PlanetId planetId = game->GetCurrentPlanet();
         const PlayerFaction pf = game->GetLocalPlayerFaction();
 
-        MapsRegistry * mapReg = game->GetMapsRegistry();
+        Planet * planet = game->GetCurrentPlanet();
 
         // conquest successful
         if(res)
         {
             // update data
             const TerritoryStatus status = TER_ST_OCCUPIED;
-            mapReg->SetMapStatus(planetId, territory, status);
-            mapReg->SetMapOccupier(planetId, territory, pf);
-            mapReg->SetMapMissionCompleted(planetId, territory);
+            planet->SetMapStatus(territory, status);
+            planet->SetMapOccupier(territory, pf);
+            planet->SetMapMissionCompleted(territory);
 
             UpdatePlanetButtons();
 
@@ -332,16 +326,11 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
             const int multRes1 = 100;
             const int multRes2 = 10;
 
-            player->SumResource(Player::Stat::MONEY,
-                                multMoney * mapReg->GetMapValue(planetId, territory));
-            player->SumResource(Player::Stat::ENERGY,
-                                multRes1 * mapReg->GetMapEnergy(planetId, territory));
-            player->SumResource(Player::Stat::MATERIAL,
-                                multRes1 * mapReg->GetMapMaterial(planetId, territory));
-            player->SumResource(Player::Stat::BLOBS,
-                                multRes2 * mapReg->GetMapBlobs(planetId, territory));
-            player->SumResource(Player::Stat::DIAMONDS,
-                                multRes2 * mapReg->GetMapDiamonds(planetId, territory));
+            player->SumResource(Player::Stat::MONEY, multMoney * planet->GetMapValue(territory));
+            player->SumResource(Player::Stat::ENERGY, multRes1 * planet->GetMapEnergy(territory));
+            player->SumResource(Player::Stat::MATERIAL, multRes1 * planet->GetMapMaterial(territory));
+            player->SumResource(Player::Stat::BLOBS, multRes2 * planet->GetMapBlobs(territory));
+            player->SumResource(Player::Stat::DIAMONDS, multRes2 * planet->GetMapDiamonds(territory));
 
             // update UI
             mPlanet->SetButtonState(territory, pf, status);
@@ -353,7 +342,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         else
         {
             // decide winning fation
-            PlayerFaction faction = mapReg->GetMapOccupier(planetId, territory);
+            PlayerFaction faction = planet->GetMapOccupier(territory);
 
             if(NO_FACTION == faction)
             {
@@ -367,15 +356,15 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
                 faction = static_cast<PlayerFaction>(f);
 
-                mapReg->SetMapOccupier(planetId, territory, faction);
+                planet->SetMapOccupier(territory, faction);
             }
 
             // update status
-            const TerritoryStatus prevStatus = mapReg->GetMapStatus(planetId, territory);
+            const TerritoryStatus prevStatus = planet->GetMapStatus(territory);
             const TerritoryStatus status = prevStatus == TER_ST_FREE ?
                                            TER_ST_OCCUPIED : TER_ST_OCCUPIED_UNEXPLORED;
 
-            mapReg->SetMapStatus(planetId, territory, status);
+            planet->SetMapStatus(territory, status);
 
             // update UI
             mPlanet->SetButtonState(territory, faction, status);
@@ -424,7 +413,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         GetGame()->RequestNextActiveState(StateId::LEAVE_GAME);
     });
 
-    SetPlanetName(MapsRegistry::PLANETS_NAME[planetId]);
+    SetPlanetName(Planet::PLANETS_NAME[planet->GetPlanetId()]);
 
     // TEST - REMOVE LATER
     SetDate("001 - 2200");
@@ -500,27 +489,22 @@ void ScreenPlanetMap::SetDate(const char * date)
 void ScreenPlanetMap::ShowInfo(int territory)
 {
     auto game = GetGame();
-    const PlanetId planetId = game->GetCurrentPlanet();
-    auto mapReg = game->GetMapsRegistry();
+    const Planet * planet = game->GetCurrentPlanet();
 
     // PANEL RESOURCES
     mPanelResources->SetEnabled(true);
-    mPanelResources->SetResourceValue(RES_ENERGY,
-                                      mapReg->GetMapEnergy(planetId, territory));
-    mPanelResources->SetResourceValue(RES_MATERIAL1,
-                                      mapReg->GetMapMaterial(planetId, territory));
-    mPanelResources->SetResourceValue(RES_BLOBS,
-                                      mapReg->GetMapBlobs(planetId, territory));
-    mPanelResources->SetResourceValue(RES_DIAMONDS,
-                                      mapReg->GetMapDiamonds(planetId, territory));
+    mPanelResources->SetResourceValue(RES_ENERGY, planet->GetMapEnergy(territory));
+    mPanelResources->SetResourceValue(RES_MATERIAL1, planet->GetMapMaterial(territory));
+    mPanelResources->SetResourceValue(RES_BLOBS, planet->GetMapBlobs(territory));
+    mPanelResources->SetResourceValue(RES_DIAMONDS, planet->GetMapDiamonds(territory));
 
     // PANEL INFO
-    const int rows = mapReg->GetMapRows(planetId, territory);
-    const int cols = mapReg->GetMapCols(planetId, territory);
-    const int value = mapReg->GetMapValue(planetId, territory);
-    const PlayerFaction occupier = mapReg->GetMapOccupier(planetId, territory);
-    const TerritoryStatus status = mapReg->GetMapStatus(planetId, territory);
-    const MissionCategory mission = mapReg->GetMapMission(planetId, territory);
+    const int rows = planet->GetMapRows(territory);
+    const int cols = planet->GetMapCols(territory);
+    const int value = planet->GetMapValue(territory);
+    const PlayerFaction occupier = planet->GetMapOccupier(territory);
+    const TerritoryStatus status = planet->GetMapStatus(territory);
+    const MissionCategory mission = planet->GetMapMission(territory);
 
     mPanelInfo->SetEnabled(true);
     mPanelInfo->SetData(rows, cols, status, occupier, value, mission);
@@ -528,11 +512,8 @@ void ScreenPlanetMap::ShowInfo(int territory)
 
 bool ScreenPlanetMap::TryToConquerTerritory(int index)
 {
-    auto game = GetGame();
-    auto mapReg = game->GetMapsRegistry();
-
-    const PlanetId planetId = game->GetCurrentPlanet();
-    const TerritoryStatus status = mapReg->GetMapStatus(planetId, index);
+    const Planet * planet = GetGame()->GetCurrentPlanet();
+    const TerritoryStatus status = planet->GetMapStatus(index);
 
     float probSuccess = 50.f;
 
@@ -557,17 +538,14 @@ bool ScreenPlanetMap::TryToConquerTerritory(int index)
 
 void ScreenPlanetMap::UpdatePlanetButtons()
 {
-    Game * game = GetGame();
+    const Planet * planet = GetGame()->GetCurrentPlanet();
 
-    const PlanetId planetId = game->GetCurrentPlanet();
-    auto mapReg = game->GetMapsRegistry();
-
-    const int numMaps = mapReg->GetNumMaps(planetId);
+    const int numMaps = planet->GetNumMaps();
 
     for(int i = 0; i < numMaps; ++i)
     {
-        const PlayerFaction occupier = mapReg->GetMapOccupier(planetId, i);
-        const TerritoryStatus ts = mapReg->GetMapStatus(planetId, i);
+        const PlayerFaction occupier = planet->GetMapOccupier(i);
+        const TerritoryStatus ts = planet->GetMapStatus(i);
 
         mPlanet->SetButtonState(i, occupier, ts);
     }

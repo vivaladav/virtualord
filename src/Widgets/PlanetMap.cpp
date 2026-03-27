@@ -1,7 +1,7 @@
 #include "Widgets/PlanetMap.h"
 
 #include "GameConstants.h"
-#include "MapsRegistry.h"
+#include "Planet.h"
 #include "Widgets/GameUIData.h"
 
 #include <sgl/core/Point.h>

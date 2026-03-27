@@ -2,7 +2,7 @@
 
 #include "Game.h"
 #include "GameConstants.h"
-#include "MapsRegistry.h"
+#include "Planet.h"
 #include "Version.h"
 #include "States/StatesIds.h"
 #include "States/StateLeavePregame.h"
