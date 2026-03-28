@@ -4,6 +4,8 @@
 #include "IsoLayer.h"
 #include "Indicators/PathIndicator.h"
 
+#include <cassert>
+
 namespace game
 {
 
@@ -35,6 +37,8 @@ void PathOverlay::SetPath(const std::vector<unsigned int> & path, PlayerFaction 
     // empty path -> nothing to do
     if(path.empty())
         return ;
+
+    assert(path.size() > 1);
 
     // clear existing indicators
     ClearPath();
