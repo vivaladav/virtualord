@@ -4104,6 +4104,10 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
         return ;
     }
 
+    // list empty -> nothing to do
+    if(mMiniUnitsGroupsToMove.empty())
+        return ;
+
     auto prevMU = static_cast<MiniUnit *>(prevOP->GetObject());
     auto group = mMiniUnitsGroupsToMove.back();
 
@@ -4206,6 +4210,10 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
 
 void GameMap::ClearMiniUnitsGroupMoveCompleted(bool finished)
 {
+    // list empty -> nothing to do
+    if(mMiniUnitsGroupsToMove.empty())
+        return ;
+
     auto group = mMiniUnitsGroupsToMove.back();
 
     // finished completely -> clear group path
@@ -4257,6 +4265,10 @@ void GameMap::ClearMiniUnitsGroupMoveFailed()
 
 void GameMap::ClearMovingMiniUnitsGroup()
 {
+    // list empty -> nothing to do
+    if(mMiniUnitsGroupsToMove.empty())
+        return ;
+
     const PlayerFaction faction = mMiniUnitsGroupsToMove.back()->GetFaction();
 
     // clear element from list
