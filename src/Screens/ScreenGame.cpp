@@ -2662,7 +2662,7 @@ void ScreenGame::HandleMiniUnitSetTargetOnMouseUp(GameObject * obj, const Cell2D
         const Cell2D start(o->GetRow0(), o->GetCol0());
 
         const auto p = mPathfinder->MakePath(start.row, start.col, clickCell.row, clickCell.col,
-                                             ai::Pathfinder::NO_OPTION);
+                                             ai::Pathfinder::INCLUDE_START);
 
         if(path.empty() || (!p.empty() && p.size() < path.size()))
             path = std::move(p);

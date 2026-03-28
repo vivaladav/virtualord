@@ -4228,7 +4228,7 @@ void GameMap::ClearMiniUnitsGroupMoveCompleted(bool finished)
         group->DoForAll([this, target, &path](GameObject * o)
         {
             const auto p = mPathfinder->MakePath(o->GetRow0(), o->GetCol0(), target.row, target.col,
-                                                 sgl::ai::Pathfinder::NO_OPTION);
+                                                 sgl::ai::Pathfinder::INCLUDE_START);
 
             if(path.empty() || (!p.empty() && p.size() < path.size()))
                 path = std::move(p);
