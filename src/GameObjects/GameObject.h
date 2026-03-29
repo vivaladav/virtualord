@@ -35,6 +35,7 @@ enum GameObjectActionType : unsigned int
     BUILD_WALL,
     HEAL,
     SPAWN,
+    OPEN_LOOTBOX,
 
     // WALL GATE
     TOGGLE_GATE,

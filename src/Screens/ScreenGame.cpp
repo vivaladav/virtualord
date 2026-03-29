@@ -18,6 +18,7 @@
 #include "GameObjects/Base.h"
 #include "GameObjects/DefensiveTower.h"
 #include "GameObjects/Hospital.h"
+#include "GameObjects/LootBox.h"
 #include "GameObjects/MiniUnit.h"
 #include "GameObjects/MiniUnitsGroup.h"
 #include "GameObjects/ObjectsDataRegistry.h"
@@ -1924,6 +1925,57 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
     return true;
 }
 
+bool ScreenGame::SetupObjectInteraction(Unit * unit, const Cell2D & end, Player * player,
+                            const std::function<void(bool)> & onDone)
+{
+    const Cell2D start(unit->GetRow0(), unit->GetCol0());
+
+    // create and init progress bar
+    auto pb = mHUD->CreateProgressBarInCell(start, unit->GetTimeOpenLootbox(), player->GetFaction());
+
+    pb->AddFunctionOnCompleted([this, start, end, player, unit]
+    {
+        const GameMapCell & targetCell = mGameMap->GetCell(end.row, end.col);
+
+        if(targetCell.objTop->GetObjectType() == ObjectData::TYPE_LOOTBOX ||
+            targetCell.objTop->GetObjectType() == ObjectData::TYPE_LOOTBOX2)
+        {
+            auto lb = static_cast<LootBox *>(targetCell.objTop);
+            lb->Open(player);
+        }
+
+        unit->ActionStepCompleted(OPEN_LOOTBOX);
+
+        // clear action data once the action is completed
+        SetObjectActionCompleted(unit);
+
+        auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
+        ap->FadeOutSound("game/conquer-02.ogg", 250);
+    });
+
+    // store active action
+    const GameMapCell & targetCell = mGameMap->GetCell(end.row, end.col);
+
+    mObjActionsToDo.emplace_back(unit, targetCell.objTop, OPEN_LOOTBOX,
+                                 start, pb, onDone);
+
+    unit->SetActiveAction(IDLE);
+    unit->SetCurrentAction(OPEN_LOOTBOX);
+
+    // disable actions panel (if action is done by local player)
+    if(player->IsLocal())
+        mHUD->SetLocalActionsEnabled(false);
+
+    // play sound
+    if(unit->IsVisible())
+    {
+        auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
+        ap->PlaySoundLoop("game/conquer-02.ogg");
+    }
+
+    return true;
+}
+
 bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const Cell2D & end,
                                         Player * player, const std::function<void(bool)> & onDone)
 {
@@ -1980,7 +2032,7 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     const GameMapCell & targetCell = mGameMap->GetCell(end.row, end.col);
 
     mObjActionsToDo.emplace_back(unit, targetCell.objTop, GameObjectActionType::CONQUER_STRUCTURE,
-                             start, pb, onDone);
+                                 start, pb, onDone);
 
     unit->SetActiveAction(GameObjectActionType::IDLE);
     unit->SetCurrentAction(GameObjectActionType::CONQUER_STRUCTURE);
@@ -2412,45 +2464,78 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
     const GameMapCell & clickGameCell = mGameMap->GetCell(ClickInd);
     const GameObject * clickObj = clickGameCell.objTop;
 
-    // there's an object and it can't be conquered -> exit
-    if(!clickObj->CanBeConquered())
+    // object can be conquered
+    if(clickObj->CanBeConquered())
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_BE_CONQUERED"), 3.f);
-        return ;
-    }
-
-    // unit can't conquer
-    if(!unit->CanConquer())
-    {
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"), 2.f);
-        return ;
-    }
-
-    // object is adjacent -> try to interact
-    if(mGameMap->AreObjectsAdjacent(unit, clickObj))
-        SetupStructureConquest(unit, selCell, clickCell, mLocalPlayer);
-    // object is far -> move close and then try to conquer
-    else
-    {
-        Cell2D target = mGameMap->GetAdjacentMoveTarget(selCell, clickObj);
-
-        // failed to find a suitable target
-        if(-1 == target.row || -1 == target.col)
+        // unit can't conquer
+        if(!unit->CanConquer())
         {
-            unit->ShowWarning(mSM->GetCString("WARN_CANT_CELL"), 3.f);
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"), 2.f);
             return ;
         }
 
-        SetupUnitMove(unit, selCell, target, false,
-            [this, unit, clickCell](bool successful)
+        // object is adjacent -> try to interact
+        if(mGameMap->AreObjectsAdjacent(unit, clickObj))
+            SetupStructureConquest(unit, selCell, clickCell, mLocalPlayer);
+        // object is far -> move close and then try to conquer
+        else
+        {
+            Cell2D target = mGameMap->GetAdjacentMoveTarget(selCell, clickObj);
+
+            // failed to find a suitable target
+            if(-1 == target.row || -1 == target.col)
             {
-                if(successful)
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_CELL"), 3.f);
+                return ;
+            }
+
+            SetupUnitMove(unit, selCell, target, false,
+                [this, unit, clickCell](bool successful)
                 {
-                    const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
-                    SetupStructureConquest(unit, currCell, clickCell, mLocalPlayer);
-                }
-            });
+                    if(successful)
+                    {
+                        const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
+                        SetupStructureConquest(unit, currCell, clickCell, mLocalPlayer);
+                    }
+                });
+        }
     }
+    else if(clickObj->GetObjectCategory() == ObjectData::CAT_INTERACTIVE)
+    {
+        // unit can't interact
+        if(!unit->CanConquer())
+        {
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_INTERACT"), 2.f);
+            return ;
+        }
+
+        // object is adjacent -> try to interact
+        if(mGameMap->AreObjectsAdjacent(unit, clickObj))
+            SetupObjectInteraction(unit, clickCell, mLocalPlayer);
+        // object is far -> move close and then try to conquer
+        else
+        {
+            Cell2D target = mGameMap->GetAdjacentMoveTarget(selCell, clickObj);
+
+            // failed to find a suitable target
+            if(-1 == target.row || -1 == target.col)
+            {
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_CELL"), 3.f);
+                return ;
+            }
+
+            SetupUnitMove(unit, selCell, target, false,
+                          [this, unit, clickCell](bool successful)
+                          {
+                              if(successful)
+                              {
+                                  SetupObjectInteraction(unit, clickCell, mLocalPlayer);
+                              }
+                          });
+        }
+    }
+    else
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_BE_CONQUERED"), 3.f);
 }
 
 void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & clickCell)

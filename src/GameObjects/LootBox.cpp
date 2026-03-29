@@ -41,11 +41,8 @@ LootBox::LootBox(const ObjectData & data, const ObjectInitData & initData)
        SetPrize();
 }
 
-/*
-void LootBox::Collected(Player * collector)
+void LootBox::Open(Player * p)
 {
-    Collectable::Collected(collector);
-
     auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
 
     // Lootbox has to explode
@@ -61,7 +58,7 @@ void LootBox::Collected(Player * collector)
     }
 
     // do not show anyting for AI players
-    if(collector->IsAI())
+    if(p ->IsAI())
         return ;
 
     // emit notification
@@ -94,7 +91,6 @@ void LootBox::Collected(Player * collector)
     if(IsVisible())
         ap->PlaySound("game/collect-01.ogg");
 }
-*/
 
 void LootBox::UpdateGraphics()
 {

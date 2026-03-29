@@ -41,6 +41,7 @@ public:
     bool CanConquer() const;
     float GetTimeConquestCell() const;
     float GetTimeConquestStructure() const;
+    float GetTimeOpenLootbox() const;
 
     // spawning
     bool CanSpawn() const;

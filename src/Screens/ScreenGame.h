@@ -134,6 +134,8 @@ private:
                            int squads, int elements, const std::function<void(bool)> & onDone = [](bool){});
     bool SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * player,
                       const std::function<void(bool)> & onDone = [](bool){});
+    bool SetupObjectInteraction(Unit * unit, const Cell2D & end, Player * player,
+                                const std::function<void(bool)> & onDone = [](bool){});
     bool SetupStructureConquest(Unit * unit, const Cell2D & start, const Cell2D & end, Player * player,
                                 const std::function<void(bool)> & onDone = [](bool){});
     bool SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, Player * player,

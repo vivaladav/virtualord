@@ -834,6 +834,7 @@ float GameObject::GetActionEnergyCost(GameObjectActionType action) const
         10.f,       // BUILD_WALL
         5.f,        // HEAL
         4.f,        // SPAWN
+        10.f,       // OPEN_LOOTBOX
         1.f,        // TOGGLE_GATE
         0.f,        // SELF_DESTRUCTION
     };
@@ -850,12 +851,13 @@ float GameObject::GetActionExperienceGain(GameObjectActionType action) const
         0,      // SET_TARGET
         1,      // MOVE
         2,      // CONQUER_CELL
-        5,      // CONQUER_STRUCTURE
+        8,      // CONQUER_STRUCTURE
         1,      // ATTACK
         5,      // BUILD_STRUCTURE
         2,      // BUILD_WALL
         2,      // HEAL
         5,      // SPAWN
+        4,      // OPEN_LOOTBOX
         1,      // TOGGLE_GATE
         0,      // SELF_DESTRUCTION
     };

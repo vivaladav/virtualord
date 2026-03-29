@@ -167,6 +167,12 @@ float Unit::GetTimeConquestStructure() const
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONQUEST));
 }
 
+float Unit::GetTimeOpenLootbox() const
+{
+    const float maxTime = 4.f;
+    return GetTime(maxTime, GetAttribute(OBJ_ATT_CONQUEST));
+}
+
 bool Unit::CanSpawn() const
 {
     return GetAttribute(OBJ_ATT_SPAWNING) > 0;
