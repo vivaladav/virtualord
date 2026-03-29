@@ -104,13 +104,13 @@ void ObjectsDataRegistry::InitObjectData()
 
     mDataObjects.emplace(ObjectData::TYPE_LOOTBOX,
         ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 1}}, {}, { IND_LOOTBOX },
-                   SpriteCollectiblesFile, ObjectData::TYPE_LOOTBOX, ObjectData::CAT_COLLECTABLE,
-                   OCO_COLLECTABLE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
+                   SpriteCollectiblesFile, ObjectData::TYPE_LOOTBOX, ObjectData::CAT_INTERACTIVE,
+                   OCO_INTERACTIVE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_LOOTBOX2,
         ObjectData({ {OBJ_ATT_ENERGY, 2}, {OBJ_ATT_HEALTH, 1}}, {}, { IND_LOOTBOX_L2 },
-                   SpriteCollectiblesFile, ObjectData::TYPE_LOOTBOX2, ObjectData::CAT_COLLECTABLE,
-                   OCO_COLLECTABLE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
+                   SpriteCollectiblesFile, ObjectData::TYPE_LOOTBOX2, ObjectData::CAT_INTERACTIVE,
+                   OCO_INTERACTIVE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_MINI_UNIT1,
         ObjectData({ {OBJ_ATT_ENERGY, 4}, {OBJ_ATT_VIEW_RANGE, 5}, {OBJ_ATT_REGENERATION, 3},

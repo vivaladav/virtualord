@@ -357,6 +357,7 @@ void Player::HandleCollectable(GameObject * collected, GameObject * collector)
         auto d = static_cast<Blobs *>(collected);
         mStats[Stat::BLOBS].SumValue(d->GetNum());
     }
+    /*
     else if(type == ObjectData::TYPE_LOOTBOX || type == ObjectData::TYPE_LOOTBOX2)
     {
         auto lb = static_cast<LootBox *>(collected);
@@ -374,6 +375,7 @@ void Player::HandleCollectable(GameObject * collected, GameObject * collector)
             collector->Hit(damage, nullptr, false);
         }
     }
+    */
     else
     {
         std::cerr << "Player::HandleCollectable | don't know how to handle this object type: "

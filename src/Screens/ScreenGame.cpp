@@ -1327,6 +1327,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             }
             break;
 
+            /*
             case AIA_UNIT_COLLECT_LOOTBOX:
             {
                 auto unit = static_cast<Unit *>(action->ObjSrc);
@@ -1339,6 +1340,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 PrintAction(turnAI, action, done, player);
             }
             break;
+            */
 
             case AIA_UNIT_BUILD_STRUCTURE:
             {

@@ -139,6 +139,7 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::DESCRIPTIONS
 const GameObjectCategoryId ObjectData::CAT_NULL = 0;
 
 const GameObjectCategoryId ObjectData::CAT_COLLECTABLE = 9419833046200742204u;
+const GameObjectCategoryId ObjectData::CAT_INTERACTIVE = 3041904281647136161u;
 const GameObjectCategoryId ObjectData::CAT_MINI_UNIT = 13146483742249843079u;
 const GameObjectCategoryId ObjectData::CAT_RES_GENERATOR = 7012214588672144715u;
 const GameObjectCategoryId ObjectData::CAT_RES_STORAGE = 12817435265416001740u;
@@ -174,6 +175,7 @@ const char * ObjectData::STR_CLASS[NUM_OBJ_CLASSES] =
 
     // OTHERS
     "COLLECTABLE",
+    "INTERACTIVE_OBJ",
     "SCENE"
 };
 

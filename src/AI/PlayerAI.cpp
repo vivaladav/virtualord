@@ -723,7 +723,7 @@ void PlayerAI::AddActionsUnit(Unit * u)
     // COLLECTABLES
     AddActionUnitCollectBlobs(u);
     AddActionUnitCollectDiamonds(u);
-    AddActionUnitCollectLootbox(u);
+    //AddActionUnitCollectLootbox(u);
 }
 
 void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
@@ -1428,6 +1428,7 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
     AddNewAction(action);
 }
 
+/*
 void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
 {
     // DEFINE INITIAL PRIORITY
@@ -1496,6 +1497,7 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     // push action to the queue
     AddNewAction(action);
 }
+*/
 
 void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 {

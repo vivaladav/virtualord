@@ -41,6 +41,7 @@ enum ObjClass : unsigned int
 
     // OTHERS
     OCO_COLLECTABLE,
+    OCO_INTERACTIVE,
     OCO_SCENE,
 
     NUM_OBJ_CLASSES,
@@ -131,6 +132,7 @@ public:
     static const GameObjectCategoryId CAT_NULL;
 
     static const GameObjectCategoryId CAT_COLLECTABLE;
+    static const GameObjectCategoryId CAT_INTERACTIVE;
     static const GameObjectCategoryId CAT_MINI_UNIT;
     static const GameObjectCategoryId CAT_RES_GENERATOR;
     static const GameObjectCategoryId CAT_RES_STORAGE;

@@ -85,7 +85,7 @@ private:
     void AddActionUnitBuildRadarStructure(Unit * u, GameObjectTypeId structType, int priority0);
     void AddActionUnitCollectBlobs(Unit * u);
     void AddActionUnitCollectDiamonds(Unit * u);
-    void AddActionUnitCollectLootbox(Unit * u);
+    //void AddActionUnitCollectLootbox(Unit * u);
     void AddActionUnitConnectStructure(Unit * u);
     void AddActionUnitConquerCity(Unit * u);
     void AddActionUnitConquerResGen(Unit * u, ResourceType type);

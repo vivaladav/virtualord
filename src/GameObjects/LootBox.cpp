@@ -22,7 +22,7 @@ namespace game
 {
 
 LootBox::LootBox(const ObjectData & data, const ObjectInitData & initData)
-    : Collectable(data, initData)
+    : GameObject(data, initData)
 {
     SetImage();
 
@@ -41,6 +41,7 @@ LootBox::LootBox(const ObjectData & data, const ObjectInitData & initData)
        SetPrize();
 }
 
+/*
 void LootBox::Collected(Player * collector)
 {
     Collectable::Collected(collector);
@@ -93,6 +94,7 @@ void LootBox::Collected(Player * collector)
     if(IsVisible())
         ap->PlaySound("game/collect-01.ogg");
 }
+*/
 
 void LootBox::UpdateGraphics()
 {

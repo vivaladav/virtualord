@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Collectable.h"
+#include "GameObject.h"
 
 namespace game
 {
 
-class LootBox : public Collectable
+class LootBox : public GameObject
 {
 public:
     enum Prize : unsigned int
@@ -28,7 +28,7 @@ public:
     int GetPrizeQuantity() const;
     Prize GetPrizeType() const;
 
-    void Collected(Player * collector) override;
+    //void Collected(Player * collector) override;
 
 private:
     void UpdateGraphics() override;
