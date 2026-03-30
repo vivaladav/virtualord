@@ -41,13 +41,17 @@ LootBox::LootBox(const ObjectData & data, const ObjectInitData & initData)
        SetPrize();
 }
 
+bool LootBox::IsExploding() const
+{
+    return GetObjectType() == ObjectData::TYPE_LOOTBOX2 && mPrizeType == LB_NULL;
+}
+
 void LootBox::Open(Player * p)
 {
     auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
 
     // Lootbox has to explode
-    if(GetObjectType() == ObjectData::TYPE_LOOTBOX2 &&
-       mPrizeType == LB_NULL)
+    if(IsExploding())
     {
         SelfDestroy();
 
@@ -55,6 +59,21 @@ void LootBox::Open(Player * p)
             ap->PlaySound("game/explosion-01.ogg");
 
         return ;
+    }
+    // give something to player
+    else
+    {
+        Player::Stat stats[] =
+        {
+            Player::BLOBS,
+            Player::DIAMONDS,
+            Player::ENERGY,
+            Player::MATERIAL,
+            Player::MONEY,
+            Player::RESEARCH,
+        };
+
+        p->SumResource(stats[mPrizeType], mPrizeQuantity);
     }
 
     // do not show anyting for AI players

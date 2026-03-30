@@ -1942,6 +1942,9 @@ bool ScreenGame::SetupObjectInteraction(Unit * unit, const Cell2D & end, Player 
         {
             auto lb = static_cast<LootBox *>(targetCell.objTop);
             lb->Open(player);
+
+            if(!lb->IsExploding())
+                mGameMap->RemoveAndDestroyObject(lb);
         }
 
         unit->ActionStepCompleted(OPEN_LOOTBOX);

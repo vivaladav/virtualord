@@ -25,6 +25,8 @@ public:
 public:
     LootBox(const ObjectData & data, const ObjectInitData & initData);
 
+    bool IsExploding() const;
+
     void Open(Player * p);
 
 private:

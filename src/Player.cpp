@@ -357,25 +357,6 @@ void Player::HandleCollectable(GameObject * collected, GameObject * collector)
         auto d = static_cast<Blobs *>(collected);
         mStats[Stat::BLOBS].SumValue(d->GetNum());
     }
-    /*
-    else if(type == ObjectData::TYPE_LOOTBOX || type == ObjectData::TYPE_LOOTBOX2)
-    {
-        auto lb = static_cast<LootBox *>(collected);
-        auto type = static_cast<Player::Stat>(lb->GetPrizeType());
-
-        std::cout << "Player::HandleCollectable | LootBox type: " << type
-                  << " - quantity: " << lb->GetPrizeQuantity() << std::endl;
-
-        if(type != INVALID_STAT)
-            mStats[type].SumValue(lb->GetPrizeQuantity());
-        // special case -> exploding lootbox
-        else
-        {
-            const float damage = collected->GetEnergy();
-            collector->Hit(damage, nullptr, false);
-        }
-    }
-    */
     else
     {
         std::cerr << "Player::HandleCollectable | don't know how to handle this object type: "
