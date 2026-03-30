@@ -1573,6 +1573,11 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
                     act.progressBar->DeleteLater();
                     ap->StopSound("game/conquer-02.ogg");
                 }
+                else if(actType == GameObjectActionType::OPEN_LOOTBOX)
+                {
+                    act.progressBar->DeleteLater();
+                    ap->StopSound("game/conquer-02.ogg");
+                }
                 else if(actType == GameObjectActionType::ATTACK)
                 {
                     auto unit = static_cast<Unit *>(obj);
@@ -1925,22 +1930,27 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
     return true;
 }
 
-bool ScreenGame::SetupObjectInteraction(Unit * unit, const Cell2D & end, Player * player,
+bool ScreenGame::SetupObjectInteraction(Unit * unit, GameObject * objTarget, Player * player,
                             const std::function<void(bool)> & onDone)
 {
+    // unit doesn't have enough energy
+    if(!unit->HasEnergyForActionStep(OPEN_LOOTBOX))
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        return false;
+    }
+
     const Cell2D start(unit->GetRow0(), unit->GetCol0());
 
     // create and init progress bar
     auto pb = mHUD->CreateProgressBarInCell(start, unit->GetTimeOpenLootbox(), player->GetFaction());
 
-    pb->AddFunctionOnCompleted([this, start, end, player, unit]
+    pb->AddFunctionOnCompleted([this, start, objTarget, player, unit]
     {
-        const GameMapCell & targetCell = mGameMap->GetCell(end.row, end.col);
-
-        if(targetCell.objTop->GetObjectType() == ObjectData::TYPE_LOOTBOX ||
-            targetCell.objTop->GetObjectType() == ObjectData::TYPE_LOOTBOX2)
+        if(objTarget->GetObjectType() == ObjectData::TYPE_LOOTBOX ||
+           objTarget->GetObjectType() == ObjectData::TYPE_LOOTBOX2)
         {
-            auto lb = static_cast<LootBox *>(targetCell.objTop);
+            auto lb = static_cast<LootBox *>(objTarget);
             lb->Open(player);
 
             if(!lb->IsExploding())
@@ -1957,10 +1967,7 @@ bool ScreenGame::SetupObjectInteraction(Unit * unit, const Cell2D & end, Player 
     });
 
     // store active action
-    const GameMapCell & targetCell = mGameMap->GetCell(end.row, end.col);
-
-    mObjActionsToDo.emplace_back(unit, targetCell.objTop, OPEN_LOOTBOX,
-                                 start, pb, onDone);
+    mObjActionsToDo.emplace_back(unit, objTarget, OPEN_LOOTBOX, start, pb, onDone);
 
     unit->SetActiveAction(IDLE);
     unit->SetCurrentAction(OPEN_LOOTBOX);
@@ -2465,7 +2472,7 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
 
     // handle special cases for non-walkable cells
     const GameMapCell & clickGameCell = mGameMap->GetCell(ClickInd);
-    const GameObject * clickObj = clickGameCell.objTop;
+    GameObject * clickObj = clickGameCell.objTop;
 
     // object can be conquered
     if(clickObj->CanBeConquered())
@@ -2514,7 +2521,7 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
 
         // object is adjacent -> try to interact
         if(mGameMap->AreObjectsAdjacent(unit, clickObj))
-            SetupObjectInteraction(unit, clickCell, mLocalPlayer);
+            SetupObjectInteraction(unit, clickObj, mLocalPlayer);
         // object is far -> move close and then try to conquer
         else
         {
@@ -2528,13 +2535,11 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
             }
 
             SetupUnitMove(unit, selCell, target, false,
-                          [this, unit, clickCell](bool successful)
-                          {
-                              if(successful)
-                              {
-                                  SetupObjectInteraction(unit, clickCell, mLocalPlayer);
-                              }
-                          });
+                [this, unit, clickObj](bool successful)
+                {
+                    if(successful)
+                        SetupObjectInteraction(unit, clickObj, mLocalPlayer);
+                });
         }
     }
     else
