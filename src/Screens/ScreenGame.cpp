@@ -31,7 +31,6 @@
 #include "Indicators/AttackRangeIndicator.h"
 #include "Indicators/ConquestIndicator.h"
 #include "Indicators/HealingRangeIndicator.h"
-#include "Indicators/PathIndicator.h"
 #include "Indicators/PathOverlay.h"
 #include "Indicators/StructureIndicator.h"
 #include "Indicators/WallIndicator.h"
@@ -101,7 +100,6 @@ ScreenGame::ScreenGame(Game * game)
     });
 
     InitParticlesSystem();
-
 
     // MISSION GOALS
     mTrackerMG = new MissionGoalsTracker(game, mLocalPlayer);
@@ -195,9 +193,8 @@ ScreenGame::ScreenGame(Game * game)
 
     // OVERLAYS
     mPathOverlay = new PathOverlay(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
+                                   mLocalPlayer->GetFaction(),
                                    mIsoMap->GetNumRows(), mIsoMap->GetNumCols());
-
-    mPathIndicator = new PathIndicator(mLocalPlayer->GetFaction(), true);
 
     // set initial camera position
     CenterCameraOverObject(mLocalPlayer->GetBase());
@@ -240,8 +237,6 @@ ScreenGame::~ScreenGame()
     delete mPartMan;
 
     delete mPathOverlay;
-
-    delete mPathIndicator;
 
     for(auto ind : mAttIndicators)
         delete ind;
@@ -2845,14 +2840,10 @@ void ScreenGame::HandleMiniUnitSetTargetOnMouseUp(GameObject * obj, const Cell2D
         return ;
     }
 
-    mPathOverlay->SetPath(path, obj->GetFaction());
+    mPathOverlay->SetPath(path);
 
     group->SetPath(std::move(path));
     group->SetTarget(clickCell);
-
-    // clear target indicator
-    auto layerInd = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS3);
-    layerInd->ClearObject(mPathIndicator);
 }
 
 void ScreenGame::HandleSelectionClick(sgl::core::MouseButtonEvent & event)
@@ -3022,7 +3013,7 @@ void ScreenGame::ShowActiveMiniUnitIndicators(MiniUnit * mu, const Cell2D & cell
     if(action != SET_TARGET)
         return ;
 
-    auto layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS3);
+    auto layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4);
 
     // check if need to show indicator
     const int destInd = cell.row * mGameMap->GetNumCols() + cell.col;
@@ -3032,21 +3023,9 @@ void ScreenGame::ShowActiveMiniUnitIndicators(MiniUnit * mu, const Cell2D & cell
                                mGameMap->IsCellWalkable(destInd);
 
     if(!showIndicator)
-    {
-        // hide the indicator, if any
-        layer->SetObjectVisible(mPathIndicator, false);
-        return ;
-    }
-
-    // indicator already visible
-    if(layer->HasObject(mPathIndicator))
-    {
-        layer->MoveObject(mPathIndicator, cell.row, cell.col);
-        layer->SetObjectVisible(mPathIndicator, true);
-    }
-    // indicator not visible yet
+        mPathOverlay->HideTarget();
     else
-        layer->AddObject(mPathIndicator, cell.row, cell.col);
+        mPathOverlay->ShowTarget(cell.row, cell.col);
 }
 
 void ScreenGame::ShowAttackIndicators(const GameObject * obj, int range)
@@ -3496,7 +3475,7 @@ void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
     const int energyTurn = mLocalPlayer->GetTurnEnergy();
     const bool doable = energyObj >= cost && energyTurn >= cost;
 
-    mPathOverlay->SetPath(path, obj->GetFaction(), cost, doable);
+    mPathOverlay->SetPath(path, cost, doable);
 }
 
 void ScreenGame::ClearCellOverlays()

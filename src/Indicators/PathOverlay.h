@@ -13,20 +13,27 @@ enum PlayerFaction : unsigned int;
 class PathOverlay
 {
 public:
-    PathOverlay(IsoLayer * layer, int mapRows, int mapCols);
+    PathOverlay(IsoLayer * layer, PlayerFaction faction, int mapRows, int mapCols);
     ~PathOverlay();
 
     void ClearPath();
-    void SetPath(const std::vector<unsigned int> & path, PlayerFaction faction, int cost = -1, bool doable = true);
+    void SetPath(const std::vector<unsigned int> & path, int cost = -1, bool doable = true);
+
+    void HideTarget();
+    void ShowTarget(int row, int col);
 
 private:
-    PathIndicator * GetNewIndicator(PlayerFaction faction, bool doable, bool final);
+    PathIndicator * GetNewIndicator(bool doable, bool final);
 
 private:
-    std::vector<PathIndicator * > mActiveIndicators;
-    std::vector<PathIndicator * > mIndicators;
+    std::vector<PathIndicator *> mActiveIndicators;
+    std::vector<PathIndicator *> mIndicators;
+
+    PathIndicator * mPathTarget = nullptr;
 
     IsoLayer * mLayer = nullptr;
+
+    PlayerFaction mFaction;
 
     unsigned int mNextIndicator = 0;
 

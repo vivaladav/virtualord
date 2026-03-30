@@ -9,8 +9,10 @@
 namespace game
 {
 
-PathOverlay::PathOverlay(IsoLayer * layer, int mapRows, int mapCols)
-    : mLayer(layer)
+PathOverlay::PathOverlay(IsoLayer * layer, PlayerFaction faction, int mapRows, int mapCols)
+    : mPathTarget(new PathIndicator(faction, true))
+    , mLayer(layer)
+    , mFaction(faction)
     , mMapRows(mapRows)
     , mMapCols(mapCols)
 {
@@ -18,6 +20,8 @@ PathOverlay::PathOverlay(IsoLayer * layer, int mapRows, int mapCols)
 
 PathOverlay::~PathOverlay()
 {
+    delete mPathTarget;
+
     for(auto pi : mIndicators)
         delete pi;
 }
@@ -32,13 +36,16 @@ void PathOverlay::ClearPath()
     mNextIndicator = 0;
 }
 
-void PathOverlay::SetPath(const std::vector<unsigned int> & path, PlayerFaction faction, int cost, bool doable)
+void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool doable)
 {
     // empty path -> nothing to do
     if(path.empty())
         return ;
 
     assert(path.size() > 1);
+
+    // remove target
+    mLayer->ClearObject(mPathTarget);
 
     // clear existing indicators
     ClearPath();
@@ -53,7 +60,7 @@ void PathOverlay::SetPath(const std::vector<unsigned int> & path, PlayerFaction 
         const unsigned int row = ind / mMapCols;
         const unsigned int col = ind % mMapCols;
 
-        auto pi = GetNewIndicator(faction, doable, i == lastInd);
+        auto pi = GetNewIndicator(doable, i == lastInd);
         mActiveIndicators.emplace_back(pi);
 
         mLayer->AddObject(pi, row, col);
@@ -62,7 +69,24 @@ void PathOverlay::SetPath(const std::vector<unsigned int> & path, PlayerFaction 
     mActiveIndicators.back()->SetCost(cost);
 }
 
-PathIndicator * PathOverlay::GetNewIndicator(PlayerFaction faction, bool doable, bool final)
+void PathOverlay::HideTarget()
+{
+    mLayer->SetObjectVisible(mPathTarget, false);
+}
+
+void PathOverlay::ShowTarget(int row, int col)
+{
+    if(mLayer->HasObject(mPathTarget))
+    {
+        mLayer->MoveObject(mPathTarget, row, col);
+        mLayer->SetObjectVisible(mPathTarget, true);
+    }
+    // indicator not visible yet
+    else
+        mLayer->AddObject(mPathTarget, row, col);
+}
+
+PathIndicator * PathOverlay::GetNewIndicator(bool doable, bool final)
 {
     PathIndicator * pi = nullptr;
 
@@ -71,14 +95,14 @@ PathIndicator * PathOverlay::GetNewIndicator(PlayerFaction faction, bool doable,
     {
         pi = mIndicators[mNextIndicator];
 
-        pi->SetFaction(faction);
+        pi->SetFaction(mFaction);
         pi->SetFinal(final);
         pi->ClearCost();
     }
     // create new one
     else
     {
-        pi = new PathIndicator(faction, final);
+        pi = new PathIndicator(mFaction, final);
 
         mIndicators.emplace_back(pi);
     }

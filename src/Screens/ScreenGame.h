@@ -35,7 +35,6 @@ class IsoMap;
 class MiniMap;
 class MiniUnit;
 class MissionGoalsTracker;
-class PathIndicator;
 class PathOverlay;
 class Player;
 class PlayerAI;
@@ -234,8 +233,6 @@ private:
 
     // MAP OVERLAYS
     PathOverlay * mPathOverlay = nullptr;
-
-    PathIndicator * mPathIndicator = nullptr;
 
     // TURN MANAGEMENT
     Player * mLocalPlayer = nullptr;
