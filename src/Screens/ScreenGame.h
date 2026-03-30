@@ -136,6 +136,7 @@ private:
                       const std::function<void(bool)> & onDone = [](bool){});
     bool SetupObjectInteraction(Unit * unit, GameObject * objTarget, Player * player,
                                 const std::function<void(bool)> & onDone = [](bool){});
+    bool SetupCellConquest(Unit * unit);
     bool SetupStructureConquest(Unit * unit, const Cell2D & start, const Cell2D & end, Player * player,
                                 const std::function<void(bool)> & onDone = [](bool){});
     bool SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, Player * player,
@@ -228,6 +229,7 @@ private:
     sgl::ai::Pathfinder * mPathfinder = nullptr;
 
     struct Cell2D mCurrCell;
+    Cell2D mCellActionStart;
     sgl::core::Pointd2D mMousePos;
 
     // MAP OVERLAYS
