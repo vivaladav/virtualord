@@ -200,6 +200,9 @@ bool IsoLayer::MoveObject(unsigned int r0, unsigned int c0,
 
 void IsoLayer::SetObjectVisible(IsoObject * obj, bool visible)
 {
+    if(obj->IsVisible() == visible)
+        return ;
+
     obj->SetVisible(visible);
 
     if(visible)
