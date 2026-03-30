@@ -53,6 +53,7 @@ void PlayerAI::PrepareData()
 {
     // clear data
     mCollectables.clear();
+    mInteractiveObjects.clear();
     mOwnStructures.clear();
     mOwnUnits.clear();
     mResGenerators.clear();
@@ -74,6 +75,9 @@ void PlayerAI::PrepareData()
         // store ALL resource generators
         if(objCat == ObjectData::CAT_RES_GENERATOR)
             mResGenerators.push_back(obj);
+        // store ALL interactive objects
+        else if(objCat == ObjectData::CAT_INTERACTIVE)
+            mInteractiveObjects.push_back(obj);
 
         // own stuff
         if(objFaction == factionAI)
@@ -723,7 +727,12 @@ void PlayerAI::AddActionsUnit(Unit * u)
     // COLLECTABLES
     AddActionUnitCollectBlobs(u);
     AddActionUnitCollectDiamonds(u);
-    //AddActionUnitCollectLootbox(u);
+
+    // INTERACTION
+    if(!mInteractiveObjects.empty())
+    {
+        AddActionUnitOpenLootbox(u);
+    }
 }
 
 void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
@@ -1428,8 +1437,7 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
     AddNewAction(action);
 }
 
-/*
-void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
+void PlayerAI::AddActionUnitOpenLootbox(Unit * u)
 {
     // DEFINE INITIAL PRIORITY
     int priority = MAX_PRIORITY;
@@ -1447,14 +1455,14 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
         return ;
 
     // FIND BEST CANDIDATE
-    const unsigned int numCollectables = mCollectables.size();
+    const unsigned int numObjs = mInteractiveObjects.size();
 
-    unsigned int bestInd = numCollectables;
+    unsigned int bestInd = numObjs;
     int minDist = GetMaxDistanceForObject(u);
 
-    for(unsigned int i = 0; i < numCollectables; i++)
+    for(unsigned int i = 0; i < numObjs; i++)
     {
-        const GameObject * c = mCollectables[i];
+        const GameObject * c = mInteractiveObjects[i];
         const GameObjectTypeId type = c->GetObjectType();
 
         // no lootbox or special lootbox
@@ -1472,11 +1480,11 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     }
 
     // none found
-    if(bestInd == numCollectables)
+    if(bestInd == numObjs)
         return ;
 
     // double negative bonus for health in case unit is collecting a special LootBox
-    if(mCollectables[bestInd]->GetObjectType() == ObjectData::TYPE_LOOTBOX2)
+    if(mInteractiveObjects[bestInd]->GetObjectType() == ObjectData::TYPE_LOOTBOX2)
         priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // bonus distance
@@ -1489,15 +1497,14 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
 
     // CREATE ACTION
     auto action = new ActionAI;
-    action->type = AIA_UNIT_COLLECT_LOOTBOX;
+    action->type = AIA_UNIT_OPEN_LOOTBOX;
     action->ObjSrc = u;
-    action->ObjDst = mCollectables[bestInd];
+    action->ObjDst = mInteractiveObjects[bestInd];
     action->priority = priority;
 
     // push action to the queue
     AddNewAction(action);
 }
-*/
 
 void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 {

@@ -1328,20 +1328,43 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             }
             break;
 
-            /*
-            case AIA_UNIT_COLLECT_LOOTBOX:
+            case AIA_UNIT_OPEN_LOOTBOX:
             {
                 auto unit = static_cast<Unit *>(action->ObjSrc);
+                auto obj = action->ObjDst;
+                const Cell2D start(unit->GetRow0(), unit->GetCol0());
+                const Cell2D end(obj->GetRow0(), obj->GetCol0());
 
-                const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
-                const Cell2D cellDest(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
+                // unit and generator are next to each other
+                if(mGameMap->AreObjectsOrthoAdjacent(unit, obj))
+                    done = SetupObjectInteraction(unit, obj, player, basicOnDone);
+                // unit needs to move to the generator
+                else
+                {
+                    Cell2D target = mGameMap->GetOrthoAdjacentMoveTarget(start, action->ObjDst);
 
-                done = SetupUnitMove(unit, cellUnit, cellDest, true, basicOnDone);
+                    // failed to find a suitable target
+                    if(-1 == target.row || -1 == target.col)
+                        done = false;
+                    else
+                    {
+                        done = SetupUnitMove(unit, start, target, true,
+                                [this, unit, obj, player, basicOnDone](bool successful)
+                                {
+                                    if(successful)
+                                    {
+                                        if(!SetupObjectInteraction(unit, obj, player, basicOnDone))
+                                            basicOnDone(false);
+                                    }
+                                    else
+                                        basicOnDone(false);
+                                });
+                    }
+                }
 
                 PrintAction(turnAI, action, done, player);
             }
             break;
-            */
 
             case AIA_UNIT_BUILD_STRUCTURE:
             {
@@ -1931,7 +1954,7 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
 }
 
 bool ScreenGame::SetupObjectInteraction(Unit * unit, GameObject * objTarget, Player * player,
-                            const std::function<void(bool)> & onDone)
+                                        const std::function<void(bool)> & onDone)
 {
     // unit doesn't have enough energy
     if(!unit->HasEnergyForActionStep(OPEN_LOOTBOX))
