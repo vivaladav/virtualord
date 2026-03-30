@@ -185,7 +185,9 @@ bool IsoLayer::MoveObject(unsigned int r0, unsigned int c0,
 
     // remove object
     ClearObjectFromMap(obj);
-    RemoveObjectFromRenderList(obj);
+
+    if(obj->IsVisible())
+        RemoveObjectFromRenderList(obj);
 
     // need to update object position before adding it again
     obj->SetRow(r1);
@@ -193,7 +195,9 @@ bool IsoLayer::MoveObject(unsigned int r0, unsigned int c0,
 
     // add object back
     InsertObjectInMap(obj);
-    InsertObjectInRenderList(obj);
+
+    if(obj->IsVisible())
+        InsertObjectInRenderList(obj);
 
     return true;
 }
