@@ -303,7 +303,6 @@ void ScreenMainMenu::CreateChangelog()
 {
     using namespace sgl;
 
-    const int screenW = graphic::Renderer::Instance()->GetWidth();
     const int screenH = graphic::Renderer::Instance()->GetHeight();
 
     // BUTTON
@@ -363,6 +362,7 @@ void ScreenMainMenu::CreateChangelog()
                   "\n"
                   "\nFIXES\n"
                   "- Fixed crash when mini-units move only 1 cell.\n"
+                  "- Fixed camera never stopping scrolling when opening a dialog.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

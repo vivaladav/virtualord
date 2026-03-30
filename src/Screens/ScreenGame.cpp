@@ -461,13 +461,15 @@ void ScreenGame::SetPause(bool paused)
 {
     mPaused = paused;
 
-    // pause sounds that are playing
     auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
 
     if(mPaused)
+        // pause sounds that are playing
         ap->PauseSounds();
     else
         ap->ResumeSounds();
+
+    mCamController->SetEnabled(!paused);
 
     mHUD->SetEnabled(!paused);
 
@@ -667,8 +669,6 @@ void ScreenGame::CreateUI()
         HideActionPanels();
 
         mConquestPath.clear();
-
-        ShowConquestIndicator(unit, mCurrCell);
     });
 
     // move

@@ -57,6 +57,8 @@ private:
     sgl::core::Pointd2D GetVectorPojection(const sgl::core::Pointd2D & a0, const sgl::core::Pointd2D & b0,
                                            const sgl::core::Pointd2D & p) const;
 
+    void ClearMovement();
+
 private:
     sgl::graphic::Camera * mCamera = nullptr;
 
@@ -91,21 +93,6 @@ inline const sgl::graphic::Camera * CameraMapController::GetCamera() const
 }
 
 inline bool CameraMapController::IsEnabled() const { return mEnabled; }
-inline void CameraMapController::SetEnabled(bool enabled)
-{
-    mEnabled = enabled;
-
-    // make sure scrolling and dragging don't get in a weird state
-    if(!enabled)
-    {
-        mDirX = 0;
-        mDirY = 0;
-
-        mDragging = false;
-        mDragX = 0;
-        mDragY = 0;
-    }
-}
 
 inline void CameraMapController::SetDraggingSpeed(int val)
 {

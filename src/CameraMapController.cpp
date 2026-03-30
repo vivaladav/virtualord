@@ -27,6 +27,14 @@ CameraMapController::CameraMapController(sgl::graphic::Camera * cam, Game * game
 {
 }
 
+void CameraMapController::SetEnabled(bool enabled)
+{
+    mEnabled = enabled;
+
+    if(!enabled)
+        ClearMovement();
+}
+
 void CameraMapController::SetMapArea(const sgl::core::Pointd2D & t, const sgl::core::Pointd2D & r,
                                      const sgl::core::Pointd2D & b, const sgl::core::Pointd2D & l)
 {
@@ -175,8 +183,11 @@ void CameraMapController::HandleMouseButtonUp(sgl::core::MouseButtonEvent & even
 
 void CameraMapController::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
 {
+    if(!mEnabled)
+        return;
+
     // -- DRAGGING --
-    if(mEnabled && mGame->IsMapDragging() && event.IsButtonPushed(sgl::core::MouseEvent::BUTTON_LEFT))
+    if(mGame->IsMapDragging() && event.IsButtonPushed(sgl::core::MouseEvent::BUTTON_LEFT))
     {
         const int minDrag = 5;
 
@@ -194,7 +205,7 @@ void CameraMapController::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
     }
 
     // -- MAP SCROLLING ON EDGES --
-    if(!mEnabled || !mGame->IsMapScrollingOnEdges())
+    if(!mGame->IsMapScrollingOnEdges())
         return ;
 
     const int screenX = event.GetX();
@@ -249,18 +260,28 @@ void CameraMapController::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
 
 void CameraMapController::HandleMouseLeftWindow()
 {
+    ClearMovement();
+}
+
+void CameraMapController::ClearMovement()
+{
+    mDragging = false;
+
+    mKeyScrollX = false;
+    mKeyScrollY = false;
     mMouseScrollX = false;
     mMouseScrollY = false;
 
-    if(!mKeyScrollX)
-        mDirX = NO_SCROLL;
-
-    if(!mKeyScrollY)
-        mDirY = NO_SCROLL;
+    mDirX = NO_SCROLL;
+    mDirY = NO_SCROLL;
+    mDragX = NO_SCROLL;
+    mDragY = NO_SCROLL;
 }
-
 void CameraMapController::Update(float delta)
 {
+    if(!mEnabled)
+        return;
+
     const float halfP = 0.5f;
 
     // NOTE formula to check if center is inside the map area:
