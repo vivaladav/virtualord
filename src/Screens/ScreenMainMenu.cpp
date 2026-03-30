@@ -359,6 +359,7 @@ void ScreenMainMenu::CreateChangelog()
     text->SetText("NEW FEATURES\n"
                   "\n"
                   "\nCHANGES\n"
+                  "- Loot boxes now require unit interaction to get loot.\n"
                   "\n"
                   "\nFIXES\n"
                   "- Fixed crash when mini-units move only 1 cell.\n"
