@@ -1599,7 +1599,7 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
                 else if(actType == GameObjectActionType::OPEN_LOOTBOX)
                 {
                     act.progressBar->DeleteLater();
-                    ap->StopSound("game/conquer-02.ogg");
+                    ap->StopSound("game/conquer-04.ogg");
                 }
                 else if(actType == GameObjectActionType::ATTACK)
                 {
@@ -1986,7 +1986,7 @@ bool ScreenGame::SetupObjectInteraction(Unit * unit, GameObject * objTarget, Pla
         SetObjectActionCompleted(unit);
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
-        ap->FadeOutSound("game/conquer-02.ogg", 250);
+        ap->FadeOutSound("game/conquer-04.ogg", 250);
     });
 
     // store active action
@@ -2003,7 +2003,7 @@ bool ScreenGame::SetupObjectInteraction(Unit * unit, GameObject * objTarget, Pla
     if(unit->IsVisible())
     {
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
-        ap->PlaySoundLoop("game/conquer-02.ogg");
+        ap->PlaySoundLoop("game/conquer-04.ogg");
     }
 
     return true;
