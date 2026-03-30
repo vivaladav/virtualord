@@ -3013,8 +3013,6 @@ void ScreenGame::ShowActiveMiniUnitIndicators(MiniUnit * mu, const Cell2D & cell
     if(action != SET_TARGET)
         return ;
 
-    auto layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4);
-
     // check if need to show indicator
     const int destInd = cell.row * mGameMap->GetNumCols() + cell.col;
 

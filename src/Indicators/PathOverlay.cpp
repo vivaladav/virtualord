@@ -95,7 +95,6 @@ PathIndicator * PathOverlay::GetNewIndicator(bool doable, bool final)
     {
         pi = mIndicators[mNextIndicator];
 
-        pi->SetFaction(mFaction);
         pi->SetFinal(final);
         pi->ClearCost();
     }

@@ -20,7 +20,6 @@ public:
     PathIndicator(PlayerFaction faction, bool final = false);
     ~PathIndicator();
 
-    void SetFaction(PlayerFaction faction);
     void SetFinal(bool final);
     void SetDoable(bool doable);
 

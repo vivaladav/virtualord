@@ -34,19 +34,6 @@ PathIndicator::~PathIndicator()
     delete mTextCost;
 }
 
-void PathIndicator::SetFaction(PlayerFaction faction)
-{
-    assert(faction != NO_FACTION);
-
-    // nothing changed
-    if(faction == mFaction)
-        return ;
-
-    mFaction = faction;
-
-    UpdateTexture();
-}
-
 void PathIndicator::SetFinal(bool final)
 {
     // nothing changed
