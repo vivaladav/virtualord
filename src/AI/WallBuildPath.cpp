@@ -86,7 +86,7 @@ bool WallBuildPath::InitNextBuild()
     if(!mGameMap->CanBuildWall(nextCell, player, mLevel))
     {
         // remove current indicator
-        layerOverlay->ClearObject(mIndicators[mNextCell]);
+        layerOverlay->RemoveObject(mIndicators[mNextCell]);
 
         --mNextCell;
 
@@ -102,7 +102,7 @@ bool WallBuildPath::InitNextBuild()
     mGameMap->StartBuildWall(nextCell, player, mLevel);
 
     // clear indicator before starting construction
-    layerOverlay->ClearObject(mIndicators[mNextCell - 1]);
+    layerOverlay->RemoveObject(mIndicators[mNextCell - 1]);
 
     GameHUD * HUD = mScreen->GetHUD();
     mProgressBar = HUD->CreateProgressBarInCell(nextCell, mUnit->GetTimeBuildWall(),

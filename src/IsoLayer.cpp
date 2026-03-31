@@ -105,7 +105,7 @@ bool IsoLayer::AddObject(IsoObject * obj, unsigned int r, unsigned int c)
     return true;
 }
 
-void IsoLayer::ClearObject(IsoObject * obj)
+void IsoLayer::RemoveObject(IsoObject * obj)
 {
     if(nullptr == obj)
         return ;
@@ -122,7 +122,7 @@ void IsoLayer::ClearObject(IsoObject * obj)
  * @param r Row index, starting from 0
  * @param c Col index, starting from 0
  */
-void IsoLayer::ClearObject(unsigned int r, unsigned int c)
+void IsoLayer::RemoveObject(unsigned int r, unsigned int c)
 {
     const unsigned int rows = mMap->GetNumRows();
     const unsigned int cols = mMap->GetNumCols();
@@ -288,7 +288,7 @@ void IsoLayer::ClearObject(unsigned int index)
 {
     IsoObject * obj = mObjectsMap[index];
 
-    ClearObject(obj);
+    RemoveObject(obj);
 }
 
 void IsoLayer::RemoveObjectFromList(IsoObject * obj)

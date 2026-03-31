@@ -3470,7 +3470,7 @@ void ScreenGame::ClearTempStructIndicator()
     if(mTempStructIndicator)
     {
         IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4);
-        layer->ClearObject(mTempStructIndicator);
+        layer->RemoveObject(mTempStructIndicator);
 
         delete mTempStructIndicator;
         mTempStructIndicator = nullptr;

@@ -32,7 +32,7 @@ void PathOverlay::ClearPath()
 {
     for(auto pi : mActiveIndicators)
     {
-        mLayer->ClearObject(pi);
+        mLayer->RemoveObject(pi);
 
         mAvailableIndicators.emplace_back(pi);
     }
@@ -49,7 +49,7 @@ void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool
     assert(path.size() > 1);
 
     // remove target
-    mLayer->ClearObject(mPathTarget);
+    mLayer->RemoveObject(mPathTarget);
 
     // clear existing indicators
     ClearPath();

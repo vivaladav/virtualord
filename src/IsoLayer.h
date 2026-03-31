@@ -39,8 +39,8 @@ public:
     bool HasObject(IsoObject * obj) const;
     bool HasObject(unsigned int r, unsigned int c) const;
     bool AddObject(IsoObject * obj, unsigned int r, unsigned int c);
-    void ClearObject(IsoObject * obj);
-    void ClearObject(unsigned int r, unsigned int c);
+    void RemoveObject(IsoObject * obj);
+    void RemoveObject(unsigned int r, unsigned int c);
     bool MoveObject(IsoObject * obj, unsigned int r, unsigned int c, bool updatePosition = true);
     bool MoveObject(unsigned int r0, unsigned int c0, unsigned int r1, unsigned int c1,
                     bool updatePosition = true);

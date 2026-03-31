@@ -3459,7 +3459,7 @@ void GameMap::DestroyObject(GameObject * obj)
     // remove iso object from layer
     IsoObject * isoObj = obj->GetIsoObject();
     IsoLayer * layer = isoObj->GetLayer();
-    layer->ClearObject(isoObj);
+    layer->RemoveObject(isoObj);
 
     // finally delete the object
     delete obj;

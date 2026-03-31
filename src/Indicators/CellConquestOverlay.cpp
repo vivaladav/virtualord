@@ -30,7 +30,7 @@ void CellConquestOverlay::ClearPath()
 {
     for(auto pi : mActiveIndicators)
     {
-        mLayer->ClearObject(pi);
+        mLayer->RemoveObject(pi);
 
         mAvailableIndicators.emplace_back(pi);
     }
@@ -48,7 +48,7 @@ void CellConquestOverlay::PopFrontPath()
     mActiveIndicators.pop_front();
 
     // remove indicator from layer
-    mLayer->ClearObject(ind);
+    mLayer->RemoveObject(ind);
 
     // add indicator back to available ones
     mAvailableIndicators.emplace_back(ind);
@@ -61,7 +61,7 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int co
         return ;
 
     // remove target
-    mLayer->ClearObject(mTarget);
+    mLayer->RemoveObject(mTarget);
 
     // clear existing indicators
     ClearPath();
