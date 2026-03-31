@@ -27,15 +27,13 @@ private:
 
 private:
     std::vector<PathIndicator *> mActiveIndicators;
-    std::vector<PathIndicator *> mIndicators;
+    std::vector<PathIndicator *> mAvailableIndicators;
 
     PathIndicator * mPathTarget = nullptr;
 
     IsoLayer * mLayer = nullptr;
 
     PlayerFaction mFaction;
-
-    unsigned int mNextIndicator = 0;
 
     int mMapCols = 0;
 };

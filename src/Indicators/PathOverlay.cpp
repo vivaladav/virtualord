@@ -21,18 +21,23 @@ PathOverlay::~PathOverlay()
 {
     delete mPathTarget;
 
-    for(auto pi : mIndicators)
+    for(auto pi : mActiveIndicators)
+        delete pi;
+
+    for(auto pi : mAvailableIndicators)
         delete pi;
 }
 
 void PathOverlay::ClearPath()
 {
     for(auto pi : mActiveIndicators)
+    {
         mLayer->ClearObject(pi);
 
-    mActiveIndicators.clear();
+        mAvailableIndicators.emplace_back(pi);
+    }
 
-    mNextIndicator = 0;
+    mActiveIndicators.clear();
 }
 
 void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool doable)
@@ -89,23 +94,18 @@ PathIndicator * PathOverlay::GetNewIndicator(bool doable, bool final)
 {
     PathIndicator * pi = nullptr;
 
+    // create new indicator
+    if(mAvailableIndicators.empty())
+        pi = new PathIndicator(mFaction, final);
     // reuse existing indicator
-    if(mNextIndicator < mIndicators.size())
+    else
     {
-        pi = mIndicators[mNextIndicator];
+        pi = mAvailableIndicators.back();
+        mAvailableIndicators.pop_back();
 
         pi->SetFinal(final);
         pi->ClearCost();
     }
-    // create new one
-    else
-    {
-        pi = new PathIndicator(mFaction, final);
-
-        mIndicators.emplace_back(pi);
-    }
-
-    ++mNextIndicator;
 
     pi->SetDoable(doable);
 
