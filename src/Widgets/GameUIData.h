@@ -563,6 +563,15 @@ enum SpriteIdPanelTurnControl : unsigned int
     ID_TURN_CONTROL_ICON,
 };
 
+// PANEL UNIT ACTIONS
+extern const char SpriteFilePanelUnitActions[];
+
+enum SpriteIdPanelUnitActions : unsigned int
+{
+    // ENERGY USAGE
+    ID_PUA_ENERGY_BG,
+};
+
 // PLANET MAP
 extern const char SpriteFilePlanetMap[];
 

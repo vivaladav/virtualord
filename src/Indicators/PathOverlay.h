@@ -6,6 +6,7 @@ namespace game
 {
 
 class IsoLayer;
+class PanelUnitEnergyUsage;
 class PathIndicator;
 
 enum PlayerFaction : unsigned int;
@@ -32,6 +33,8 @@ private:
     PathIndicator * mPathTarget = nullptr;
 
     IsoLayer * mLayer = nullptr;
+
+    PanelUnitEnergyUsage * mPanelCost = nullptr;
 
     PlayerFaction mFaction;
 

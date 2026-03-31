@@ -3,6 +3,7 @@
 #include "GameConstants.h"
 #include "IsoLayer.h"
 #include "Indicators/PathIndicator.h"
+#include "Widgets/PanelUnitEnergyUsage.h"
 
 #include <cassert>
 
@@ -12,9 +13,11 @@ namespace game
 PathOverlay::PathOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols)
     : mPathTarget(new PathIndicator(faction, true))
     , mLayer(layer)
+    , mPanelCost(new PanelUnitEnergyUsage)
     , mFaction(faction)
     , mMapCols(mapCols)
 {
+    mPanelCost->SetVisible(false);
 }
 
 PathOverlay::~PathOverlay()
@@ -70,7 +73,19 @@ void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool
         mLayer->AddObject(pi, row, col);
     }
 
-    mActiveIndicators.back()->SetCost(cost);
+    if(cost > 0)
+    {
+        mPanelCost->SetValue(cost);
+        mPanelCost->SetVisible(true);
+
+        auto last = mActiveIndicators.back();
+
+        const int x = last->GetX() + (last->GetWidth() - mPanelCost->GetWidth()) / 2;
+        const int y = last->GetY() - mPanelCost->GetHeight();
+        mPanelCost->SetPosition(x, y);
+    }
+    else
+        mPanelCost->SetVisible(false);
 }
 
 void PathOverlay::HideTarget()
@@ -104,7 +119,6 @@ PathIndicator * PathOverlay::GetNewIndicator(bool doable, bool final)
         mAvailableIndicators.pop_back();
 
         pi->SetFinal(final);
-        pi->ClearCost();
     }
 
     pi->SetDoable(doable);

@@ -3186,7 +3186,6 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     if(-1 == mCellActionStart.row)
     {
         mOverlayCellConquest->ShowTarget(dest.row, dest.col);
-
         return;
     }
 

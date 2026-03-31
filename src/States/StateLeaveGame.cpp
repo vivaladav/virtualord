@@ -100,6 +100,8 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFilePanelSelectedObject);
     // PANEL TURN CONTROL
     tm->DestroySprite(SpriteFilePanelTurnControl);
+    // PANEL UNIT ACTIONS
+    tm->DestroySprite(SpriteFilePanelUnitActions);
     // MAP UI
     tm->DestroySprite(SpriteFileMapUI);
     // END MISSION DIALOG

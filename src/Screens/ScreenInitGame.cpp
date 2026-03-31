@@ -1493,6 +1493,18 @@ void ScreenInitGame::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelTurnControl, rects);
     });
 
+    // PANEL UNIT ACTIONS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // ENERGY USAGE
+            { 0, 0, 96, 49 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelUnitActions, rects);
+    });
+
     // MAP UI
     mJobs.emplace_back([this, tm]
     {

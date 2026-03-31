@@ -1,6 +1,5 @@
 #include "Indicators/CellConquestOverlay.h"
 
-#include "GameConstants.h"
 #include "IsoLayer.h"
 #include "Indicators/ConquestIndicator.h"
 
