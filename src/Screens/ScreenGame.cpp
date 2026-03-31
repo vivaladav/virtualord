@@ -1716,9 +1716,6 @@ void ScreenGame::FinalizeObjectAction(const GameObjectAction & action, bool succ
     if(obj->GetFaction() == mLocalPlayer->GetFaction())
         mHUD->SetLocalActionsEnabled(true);
 
-    if(obj->IsFactionLocal())
-        ClearCellOverlays();
-
     // reset object's active action to default
     obj->SetActiveActionToDefault();
     // reset current action to idle
@@ -2016,7 +2013,7 @@ bool ScreenGame::SetupObjectInteraction(Unit * unit, GameObject * objTarget, Pla
 
 bool ScreenGame::SetupCellConquest(Unit * unit)
 {
-    auto cp = new ConquerPath(unit, mIsoMap, mGameMap, this);
+    auto cp = new ConquerPath(unit, mGameMap, this, mOverlayCellConquest);
     cp->SetPathCells(mConquestPath);
 
     if(mGameMap->ConquerCells(cp))
@@ -2342,7 +2339,7 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
         return false;
     }
 
-    auto cp = new ConquerPath(unit, mIsoMap, mGameMap, this);
+    auto cp = new ConquerPath(unit, mGameMap, this);
 
     // special case: unit is already next to target
     if(mGameMap->AreCellsOrthoAdjacent(start, target))
@@ -2482,8 +2479,6 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
                               {
                                   if(successful)
                                     SetupCellConquest(unit);
-
-                                  ClearTempStructIndicator();
                               });
             }
 
@@ -3230,7 +3225,7 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     totPath = mConquestPath;
     totPath.insert(totPath.end(), path.begin(), path.end());
 
-    ConquerPath cp(unit, mIsoMap, mGameMap, this);
+    ConquerPath cp(unit, mGameMap, this);
     cp.SetPathCells(totPath);
 
     mOverlayCellConquest->SetPath(totPath, cp.GetPathEnergyCost());

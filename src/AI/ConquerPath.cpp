@@ -1,15 +1,13 @@
 #include "AI/ConquerPath.h"
 
 #include "Game.h"
-#include "GameConstants.h"
 #include "GameMap.h"
 #include "IsoLayer.h"
-#include "IsoMap.h"
 #include "IsoObject.h"
 #include "Player.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Unit.h"
-#include "Indicators/ConquestIndicator.h"
+#include "Indicators/CellConquestOverlay.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/GameMapProgressBar.h"
@@ -23,20 +21,18 @@
 namespace game
 {
 
-ConquerPath::ConquerPath(Unit * unit, IsoMap * im, GameMap * gm, ScreenGame * sg)
-    : mUnit(unit)
-    , mIsoMap(im)
+ConquerPath::ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, CellConquestOverlay * overlay)
+    : mOverlay(overlay)
+    , mUnit(unit)
     , mGameMap(gm)
     , mScreen(sg)
 {
-    mLocalPlayer = sg->GetGame()->GetPlayerByFaction(unit->GetFaction())->IsLocal();
 }
 
 ConquerPath::~ConquerPath()
 {
-    // delete the ConquestIndicators
-    for(auto ind : mIndicators)
-        delete ind;
+    if(mOverlay)
+        mOverlay->ClearPath();
 }
 
 bool ConquerPath::Start()
@@ -44,9 +40,6 @@ bool ConquerPath::Start()
     // do nothing if already started
     if(mState != READY)
         return false;
-
-    if(mLocalPlayer)
-        CreateIndicators();
 
     mNextCell = 0;
 
@@ -67,10 +60,6 @@ void ConquerPath::Abort()
 void ConquerPath::InstantAbort()
 {
     // clear progress bar
-    const unsigned int nextInd = mCells[mNextCell];
-    const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-    const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
-
     if(mProgressBar)
     {
         mProgressBar->DeleteLater();
@@ -80,9 +69,8 @@ void ConquerPath::InstantAbort()
         ap->StopSound("game/conquer-01.ogg");
     }
 
-    // clear indicators
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-    layerOverlay->ClearObjects();
+    if(mOverlay)
+        mOverlay->ClearPath();
 
     // set new state
     mState = ABORTED;
@@ -94,27 +82,6 @@ void ConquerPath::Update(float delta)
         UpdateMove(delta);
 }
 
-void ConquerPath::CreateIndicators()
-{
-    IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-
-    const PlayerFaction faction = mUnit->GetFaction();
-
-    // do not create indicator for cell 0 as it's current under conquest
-    for(unsigned int i = 1; i < mCells.size(); ++i)
-    {
-        ConquestIndicator * ind = new ConquestIndicator(faction);
-            mIndicators.emplace_back(ind);
-
-        // add indicator to layer
-        const unsigned int pathInd = mCells[i];
-        const unsigned int indRow = pathInd / mIsoMap->GetNumCols();
-        const unsigned int indCol = pathInd % mIsoMap->GetNumCols();
-
-        layer->AddObject(ind, indRow, indCol);
-    }
-}
-
 bool ConquerPath::InitNextConquest()
 {
     // not enough resources -> FAIL
@@ -122,20 +89,15 @@ bool ConquerPath::InitNextConquest()
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
-    const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-    const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
+    const unsigned int nextRow = nextInd / mGameMap->GetNumCols();
+    const unsigned int nextCol = nextInd % mGameMap->GetNumCols();
     const Cell2D nextCell(nextRow, nextCol);
 
     Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
 
     // can't conquer current cell -> try to move to next one
     if(!mGameMap->CanConquerCell(mUnit, nextCell, player))
     {
-        // remove current indicator
-        if(mLocalPlayer && mNextCell < mIndicators.size())
-            layerOverlay->ClearObject(mIndicators[mNextCell]);
-
         ++mNextCell;
 
         if(mNextCell < mCells.size())
@@ -147,13 +109,16 @@ bool ConquerPath::InitNextConquest()
     // start conquest
     mState = CONQUERING;
 
+    if(mOverlay != nullptr)
+        mOverlay->PopFrontPath();
+
     mGameMap->StartConquerCell(nextCell, player);
 
     GameHUD * HUD = mScreen->GetHUD();
     mProgressBar = HUD->CreateProgressBarInCell(nextCell, mUnit->GetTimeConquestCell(),
                                                 player->GetFaction());
 
-    mProgressBar->AddFunctionOnCompleted([this, nextCell, player, layerOverlay]
+    mProgressBar->AddFunctionOnCompleted([this, nextCell, player]
     {
         mProgressBar = nullptr;
 
@@ -167,13 +132,7 @@ bool ConquerPath::InitNextConquest()
         ++mNextCell;
 
         if(mNextCell < mCells.size())
-        {
             InitNextMove();
-
-            // remove current indicator
-            if(mLocalPlayer)
-                layerOverlay->ClearObject(mIndicators[mNextCell - 1]);
-        }
         else
             Finish();
     });
@@ -195,8 +154,8 @@ bool ConquerPath::InitNextMove()
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
-    const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-    const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
+    const unsigned int nextRow = nextInd / mGameMap->GetNumCols();
+    const unsigned int nextCol = nextInd % mGameMap->GetNumCols();
 
     const GameMapCell & nextCell = mGameMap->GetCell(nextRow, nextCol);
 
@@ -302,8 +261,8 @@ void ConquerPath::UpdateMove(float delta)
         mGameMap->DelPlayerObjVisibility(mUnit, player);
 
         const unsigned int targetInd = mCells[mNextCell];
-        const unsigned int targetRow = targetInd / mIsoMap->GetNumCols();
-        const unsigned int targetCol = targetInd % mIsoMap->GetNumCols();
+        const unsigned int targetRow = targetInd / mGameMap->GetNumCols();
+        const unsigned int targetCol = targetInd % mGameMap->GetNumCols();
 
         const GameMapCell & targetCell = mGameMap->GetCell(targetRow, targetCol);
 
@@ -352,12 +311,8 @@ void ConquerPath::UpdatePathCost()
 
 bool ConquerPath::Fail()
 {
-    //clear overlays
-    if(mLocalPlayer)
-    {
-        IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-        layerOverlay->ClearObjects();
-    }
+    if(mOverlay)
+        mOverlay->ClearPath();
 
     if(HasStarted())
         // clear action data once the action is completed

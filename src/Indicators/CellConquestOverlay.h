@@ -1,5 +1,6 @@
 #pragma once
 
+#include <deque>
 #include <vector>
 
 namespace game
@@ -17,6 +18,7 @@ public:
     ~CellConquestOverlay();
 
     void ClearPath();
+    void PopFrontPath();
     void SetPath(const std::vector<unsigned int> & path, int cost = -1);
 
     void HideTarget();
@@ -26,16 +28,14 @@ private:
     ConquestIndicator * GetNewIndicator();
 
 private:
-    std::vector<ConquestIndicator *> mActiveIndicators;
-    std::vector<ConquestIndicator *> mIndicators;
+    std::deque<ConquestIndicator *> mActiveIndicators;
+    std::deque<ConquestIndicator *> mAvailableIndicators;
 
     ConquestIndicator * mTarget = nullptr;
 
     IsoLayer * mLayer = nullptr;
 
     PlayerFaction mFaction;
-
-    unsigned int mNextIndicator = 0;
 
     int mMapCols = 0;
 };

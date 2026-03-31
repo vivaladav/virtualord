@@ -5,10 +5,9 @@
 namespace game
 {
 
-class ConquestIndicator;
+class CellConquestOverlay;
 class GameMap;
 class GameMapProgressBar;
-class IsoMap;
 class ScreenGame;
 class Unit;
 
@@ -29,7 +28,7 @@ public:
     };
 
 public:
-    ConquerPath(Unit * unit, IsoMap * im, GameMap * gm, ScreenGame * sg);
+    ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, CellConquestOverlay * overlay = nullptr);
     ~ConquerPath();
 
     Unit * GetUnit() const;
@@ -48,8 +47,6 @@ public:
     void Update(float delta);
 
 private:
-    void CreateIndicators();
-
     bool InitNextConquest();
     bool InitNextMove();
 
@@ -63,13 +60,12 @@ private:
 private:
     std::vector<unsigned int> mCells;
 
-    std::vector<ConquestIndicator *> mIndicators;
+    CellConquestOverlay * mOverlay = nullptr;
 
     GameMapProgressBar * mProgressBar = nullptr;
 
     Unit * mUnit = nullptr;
 
-    IsoMap * mIsoMap = nullptr;
     GameMap * mGameMap = nullptr;
 
     ScreenGame * mScreen = nullptr;
@@ -87,8 +83,6 @@ private:
     float mVelY = 0.f;
     float mTargetX = 0.f;
     float mTargetY = 0.f;
-
-    bool mLocalPlayer = false;
 };
 
 inline Unit * ConquerPath::GetUnit() const { return mUnit; }

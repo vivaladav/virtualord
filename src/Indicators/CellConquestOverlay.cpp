@@ -19,18 +19,39 @@ CellConquestOverlay::~CellConquestOverlay()
 {
     delete mTarget;
 
-    for(auto pi : mIndicators)
+    for(auto pi : mActiveIndicators)
+        delete pi;
+
+    for(auto pi : mAvailableIndicators)
         delete pi;
 }
 
 void CellConquestOverlay::ClearPath()
 {
     for(auto pi : mActiveIndicators)
+    {
         mLayer->ClearObject(pi);
 
-    mActiveIndicators.clear();
+        mAvailableIndicators.emplace_back(pi);
+    }
 
-    mNextIndicator = 0;
+    mActiveIndicators.clear();
+}
+
+void CellConquestOverlay::PopFrontPath()
+{
+    if(mActiveIndicators.empty())
+        return ;
+
+    // remove front from active indicators
+    auto ind = mActiveIndicators.front();
+    mActiveIndicators.pop_front();
+
+    // remove indicator from layer
+    mLayer->ClearObject(ind);
+
+    // add indicator back to available ones
+    mAvailableIndicators.emplace_back(ind);
 }
 
 void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int cost)
@@ -84,20 +105,15 @@ ConquestIndicator * CellConquestOverlay::GetNewIndicator()
 {
     ConquestIndicator * pi = nullptr;
 
-    // reuse existing indicator
-    if(mNextIndicator < mIndicators.size())
-    {
-        pi = mIndicators[mNextIndicator];
-    }
-    // create new one
-    else
-    {
+    // create new indicator
+    if(mAvailableIndicators.empty())
         pi = new ConquestIndicator(mFaction);
-
-        mIndicators.emplace_back(pi);
+    else
+    // reuse existing indicator
+    {
+        pi = mAvailableIndicators.back();
+        mAvailableIndicators.pop_back();
     }
-
-    ++mNextIndicator;
 
     return pi;
 }
