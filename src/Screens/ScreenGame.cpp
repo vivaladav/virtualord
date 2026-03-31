@@ -667,6 +667,8 @@ void ScreenGame::CreateUI()
 
         mCellActionStart.row = -1;
         mCellActionStart.col = -1;
+
+        mOverlayCellConquest->ShowTarget(mCurrCell.row, mCurrCell.col);
     });
 
     // move
@@ -2447,6 +2449,8 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
         mCellActionStart.row = clickCell.row;
         mCellActionStart.col = clickCell.col;
 
+        mOverlayCellConquest->HideTarget();
+
         ShowConquestIndicator(unit, mCurrCell);
     }
 
@@ -3160,15 +3164,14 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
 
 void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
 {
-    // first point not set yet
-    if(-1 == mCellActionStart.row)
-        return;
-
     const bool currInside = mIsoMap->IsCellInside(dest);
 
     // mouse outside the map
     if(!currInside)
+    {
+        mOverlayCellConquest->HideTarget();
         return ;
+    }
 
     const int currInd = dest.row * mGameMap->GetNumCols() + dest.col;
 
@@ -3179,7 +3182,18 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     const bool canConquer = currVisible && (currWalkable || currIsUnitCell);
 
     if(!canConquer)
+    {
+        mOverlayCellConquest->HideTarget();
         return ;
+    }
+
+    // first point not set yet
+    if(-1 == mCellActionStart.row)
+    {
+        mOverlayCellConquest->ShowTarget(dest.row, dest.col);
+
+        return;
+    }
 
     sgl::ai::Pathfinder::PathOptions po;
     unsigned int startR;
@@ -3446,10 +3460,14 @@ void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
 void ScreenGame::ClearCellOverlays()
 {
     mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2)->ClearObjects();
-
     mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS3)->ClearObjects();
-
     mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4)->ClearObjects();
+
+    mOverlayCellConquest->ClearPath();
+    mOverlayCellConquest->HideTarget();
+
+    mOverlayPath->ClearPath();
+    mOverlayPath->HideTarget();
 }
 
 void ScreenGame::ClearTempStructIndicator()
