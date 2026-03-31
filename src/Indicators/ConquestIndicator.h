@@ -12,10 +12,8 @@ enum PlayerFaction : unsigned int;
 class ConquestIndicator : public IsoObject
 {
 public:
-    ConquestIndicator();
+    ConquestIndicator(PlayerFaction faction);
     ~ConquestIndicator();
-
-    void SetFaction(PlayerFaction faction);
 
     void SetCost(float val);
     void ShowCost(bool val);

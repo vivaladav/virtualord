@@ -103,7 +103,7 @@ void ConquerPath::CreateIndicators()
     // do not create indicator for cell 0 as it's current under conquest
     for(unsigned int i = 1; i < mCells.size(); ++i)
     {
-        ConquestIndicator * ind = new ConquestIndicator;
+        ConquestIndicator * ind = new ConquestIndicator(faction);
             mIndicators.emplace_back(ind);
 
         // add indicator to layer
@@ -112,8 +112,6 @@ void ConquerPath::CreateIndicators()
         const unsigned int indCol = pathInd % mIsoMap->GetNumCols();
 
         layer->AddObject(ind, indRow, indCol);
-
-        ind->SetFaction(faction);
     }
 }
 

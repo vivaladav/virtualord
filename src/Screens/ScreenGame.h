@@ -23,7 +23,7 @@ namespace game
 
 class AttackRangeIndicator;
 class CameraMapController;
-class ConquestIndicator;
+class CellConquestOverlay;
 class GameHUD;
 class GameMap;
 class GameObject;
@@ -196,7 +196,6 @@ private:
 
     std::vector<Player *> mAiPlayers;
 
-    std::vector<ConquestIndicator *> mConquestIndicators;
     std::unordered_map<GameObjectTypeId, StructureIndicator *> mStructIndicators;
     std::vector<WallIndicator *> mWallIndicators;
     std::vector<AttackRangeIndicator *> mAttIndicators;
@@ -232,7 +231,8 @@ private:
     sgl::core::Pointd2D mMousePos;
 
     // MAP OVERLAYS
-    PathOverlay * mPathOverlay = nullptr;
+    CellConquestOverlay * mOverlayCellConquest = nullptr;
+    PathOverlay * mOverlayPath = nullptr;
 
     // TURN MANAGEMENT
     Player * mLocalPlayer = nullptr;

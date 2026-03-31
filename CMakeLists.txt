@@ -149,6 +149,8 @@ add_executable(
     src/GameObjectTools/WeaponData.cpp
     src/Indicators/AttackRangeIndicator.h
     src/Indicators/AttackRangeIndicator.cpp
+    src/Indicators/CellConquestOverlay.h
+    src/Indicators/CellConquestOverlay.cpp
     src/Indicators/ConquestIndicator.h
     src/Indicators/ConquestIndicator.cpp
     src/Indicators/HealingRangeIndicator.h

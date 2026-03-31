@@ -1,31 +1,29 @@
-#include "Indicators/PathOverlay.h"
+#include "Indicators/CellConquestOverlay.h"
 
 #include "GameConstants.h"
 #include "IsoLayer.h"
-#include "Indicators/PathIndicator.h"
-
-#include <cassert>
+#include "Indicators/ConquestIndicator.h"
 
 namespace game
 {
 
-PathOverlay::PathOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols)
-    : mPathTarget(new PathIndicator(faction, true))
+CellConquestOverlay::CellConquestOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols)
+    : mTarget(new ConquestIndicator(faction))
     , mLayer(layer)
     , mFaction(faction)
     , mMapCols(mapCols)
 {
 }
 
-PathOverlay::~PathOverlay()
+CellConquestOverlay::~CellConquestOverlay()
 {
-    delete mPathTarget;
+    delete mTarget;
 
     for(auto pi : mIndicators)
         delete pi;
 }
 
-void PathOverlay::ClearPath()
+void CellConquestOverlay::ClearPath()
 {
     for(auto pi : mActiveIndicators)
         mLayer->ClearObject(pi);
@@ -35,31 +33,28 @@ void PathOverlay::ClearPath()
     mNextIndicator = 0;
 }
 
-void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool doable)
+void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int cost)
 {
     // empty path -> nothing to do
     if(path.empty())
         return ;
 
-    assert(path.size() > 1);
-
     // remove target
-    mLayer->ClearObject(mPathTarget);
+    mLayer->ClearObject(mTarget);
 
     // clear existing indicators
     ClearPath();
 
     // create new indicators
     const unsigned int pathSize = path.size();
-    const unsigned int lastInd = pathSize - 1;
 
-    for(unsigned int i = 1; i < pathSize; ++i)
+    for(unsigned int i = 0; i < pathSize; ++i)
     {
         const unsigned int ind = path[i];
         const unsigned int row = ind / mMapCols;
         const unsigned int col = ind % mMapCols;
 
-        auto pi = GetNewIndicator(doable, i == lastInd);
+        auto pi = GetNewIndicator();
         mActiveIndicators.emplace_back(pi);
 
         mLayer->AddObject(pi, row, col);
@@ -68,46 +63,41 @@ void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool
     mActiveIndicators.back()->SetCost(cost);
 }
 
-void PathOverlay::HideTarget()
+void CellConquestOverlay::HideTarget()
 {
-    mLayer->SetObjectVisible(mPathTarget, false);
+    mLayer->SetObjectVisible(mTarget, false);
 }
 
-void PathOverlay::ShowTarget(int row, int col)
+void CellConquestOverlay::ShowTarget(int row, int col)
 {
-    if(mLayer->HasObject(mPathTarget))
+    if(mLayer->HasObject(mTarget))
     {
-        mLayer->MoveObject(mPathTarget, row, col);
-        mLayer->SetObjectVisible(mPathTarget, true);
+        mLayer->MoveObject(mTarget, row, col);
+        mLayer->SetObjectVisible(mTarget, true);
     }
     // indicator not visible yet
     else
-        mLayer->AddObject(mPathTarget, row, col);
+        mLayer->AddObject(mTarget, row, col);
 }
 
-PathIndicator * PathOverlay::GetNewIndicator(bool doable, bool final)
+ConquestIndicator * CellConquestOverlay::GetNewIndicator()
 {
-    PathIndicator * pi = nullptr;
+    ConquestIndicator * pi = nullptr;
 
     // reuse existing indicator
     if(mNextIndicator < mIndicators.size())
     {
         pi = mIndicators[mNextIndicator];
-
-        pi->SetFinal(final);
-        pi->ClearCost();
     }
     // create new one
     else
     {
-        pi = new PathIndicator(mFaction, final);
+        pi = new ConquestIndicator(mFaction);
 
         mIndicators.emplace_back(pi);
     }
 
     ++mNextIndicator;
-
-    pi->SetDoable(doable);
 
     return pi;
 }

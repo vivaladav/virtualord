@@ -29,7 +29,7 @@
 #include "GameObjects/WallGate.h"
 #include "GameObjectTools/Weapon.h"
 #include "Indicators/AttackRangeIndicator.h"
-#include "Indicators/ConquestIndicator.h"
+#include "Indicators/CellConquestOverlay.h"
 #include "Indicators/HealingRangeIndicator.h"
 #include "Indicators/PathOverlay.h"
 #include "Indicators/StructureIndicator.h"
@@ -192,9 +192,11 @@ ScreenGame::ScreenGame(Game * game)
     mTrackerMG->SetGameHUD(mHUD);
 
     // OVERLAYS
-    mPathOverlay = new PathOverlay(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
-                                   mLocalPlayer->GetFaction(),
-                                   mIsoMap->GetNumRows(), mIsoMap->GetNumCols());
+    mOverlayCellConquest = new CellConquestOverlay(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
+                                                   mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
+
+    mOverlayPath = new PathOverlay(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
+                                   mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
 
     // set initial camera position
     CenterCameraOverObject(mLocalPlayer->GetBase());
@@ -236,15 +238,13 @@ ScreenGame::~ScreenGame()
     delete mPathfinder;
     delete mPartMan;
 
-    delete mPathOverlay;
+    delete mOverlayCellConquest;
+    delete mOverlayPath;
 
     for(auto ind : mAttIndicators)
         delete ind;
 
     for(auto ind : mHealIndicators)
-        delete ind;
-
-    for(auto ind : mConquestIndicators)
         delete ind;
 
     for(auto ind : mWallIndicators)
@@ -408,7 +408,7 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
             auto group = static_cast<MiniUnitsGroup *>(obj->GetGroup());
 
             if(group->HasPathSet())
-                mPathOverlay->SetPath(group->GetPath(), obj->GetFaction());
+                mOverlayPath->SetPath(group->GetPath(), obj->GetFaction());
         }
     }
 
@@ -1733,7 +1733,7 @@ void ScreenGame::CancelMiniUnitsGroupPath(GameObjectsGroup * group)
     if(nullptr == muGroup)
         return ;
 
-    mPathOverlay->ClearPath();
+    mOverlayPath->ClearPath();
 
     muGroup->ClearPath();
 
@@ -2021,8 +2021,6 @@ bool ScreenGame::SetupCellConquest(Unit * unit)
     {
         mConquestPath.clear();
 
-        ClearCellOverlays();
-
         // store active action
         mObjActionsToDo.emplace_back(unit, GameObjectActionType::CONQUER_CELL,
                                      [](bool){});
@@ -2307,7 +2305,7 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
         {
             mHUD->SetLocalActionsEnabled(false);
 
-            ClearCellOverlays();
+            mOverlayPath->ClearPath();
         }
 
         // store active action
@@ -2840,7 +2838,7 @@ void ScreenGame::HandleMiniUnitSetTargetOnMouseUp(GameObject * obj, const Cell2D
         return ;
     }
 
-    mPathOverlay->SetPath(path);
+    mOverlayPath->SetPath(path);
 
     group->SetPath(std::move(path));
     group->SetTarget(clickCell);
@@ -3021,9 +3019,9 @@ void ScreenGame::ShowActiveMiniUnitIndicators(MiniUnit * mu, const Cell2D & cell
                                mGameMap->IsCellWalkable(destInd);
 
     if(!showIndicator)
-        mPathOverlay->HideTarget();
+        mOverlayPath->HideTarget();
     else
-        mPathOverlay->ShowTarget(cell.row, cell.col);
+        mOverlayPath->ShowTarget(cell.row, cell.col);
 }
 
 void ScreenGame::ShowAttackIndicators(const GameObject * obj, int range)
@@ -3166,11 +3164,6 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     if(-1 == mCellActionStart.row)
         return;
 
-    IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2);
-
-    // first clear all objects from the layer
-    layer->ClearObjects();
-
     const bool currInside = mIsoMap->IsCellInside(dest);
 
     // mouse outside the map
@@ -3223,36 +3216,10 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     totPath = mConquestPath;
     totPath.insert(totPath.end(), path.begin(), path.end());
 
-    const unsigned int lastIdx = totPath.size() - 1;
-    const PlayerFaction faction = mLocalPlayer->GetFaction();
-
-    for(unsigned int i = 0; i < totPath.size(); ++i)
-    {
-        ConquestIndicator * ind = nullptr;
-
-        if(i < mConquestIndicators.size())
-            ind = mConquestIndicators[i];
-        else
-        {
-            ind = new ConquestIndicator;
-            mConquestIndicators.emplace_back(ind);
-        }
-
-        // add indicator to layer
-        const unsigned int pathInd = totPath[i];
-        const unsigned int indRow = pathInd / mIsoMap->GetNumCols();
-        const unsigned int indCol = pathInd % mIsoMap->GetNumCols();
-
-        layer->AddObject(ind, indRow, indCol);
-
-        ind->SetFaction(faction);
-        ind->ShowCost(i == lastIdx);
-    }
-
     ConquerPath cp(unit, mIsoMap, mGameMap, this);
     cp.SetPathCells(totPath);
 
-    mConquestIndicators[lastIdx]->SetCost(cp.GetPathEnergyCost());
+    mOverlayCellConquest->SetPath(totPath, cp.GetPathEnergyCost());
 }
 
 void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
@@ -3417,7 +3384,7 @@ void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
     // cell outside the map
     if(!mIsoMap->IsCellInside(dest))
     {
-        mPathOverlay->ClearPath();
+        mOverlayPath->ClearPath();
         return ;
     }
 
@@ -3427,7 +3394,7 @@ void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
 
     if(!destVisible)
     {
-        mPathOverlay->ClearPath();
+        mOverlayPath->ClearPath();
         return ;
     }
 
@@ -3442,7 +3409,7 @@ void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
         // can't be conquered or adjacent -> no move
         if(!destObj->CanBeConquered() || mGameMap->AreObjectsAdjacent(obj, destObj))
         {
-            mPathOverlay->ClearPath();
+            mOverlayPath->ClearPath();
             return ;
         }
 
@@ -3453,7 +3420,7 @@ void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
         // failed to find a suitable target
         if(-1 == destFinal.row || -1 == destFinal.col)
         {
-            mPathOverlay->ClearPath();
+            mOverlayPath->ClearPath();
             return ;
         }
     }
@@ -3473,7 +3440,7 @@ void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
     const int energyTurn = mLocalPlayer->GetTurnEnergy();
     const bool doable = energyObj >= cost && energyTurn >= cost;
 
-    mPathOverlay->SetPath(path, cost, doable);
+    mOverlayPath->SetPath(path, cost, doable);
 }
 
 void ScreenGame::ClearCellOverlays()

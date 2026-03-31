@@ -16,21 +16,11 @@
 namespace game
 {
 
-ConquestIndicator::ConquestIndicator()
+ConquestIndicator::ConquestIndicator(PlayerFaction faction)
     : IsoObject(1, 1)
     , mTxtDummy(new sgl::graphic::DummyRenderable)
     , mTxtCost(new sgl::graphic::DummyRenderable)
     , mCurrTxt(mTxtDummy)
-{
-}
-
-ConquestIndicator::~ConquestIndicator()
-{
-    delete mTxtDummy;
-    delete mTxtCost;
-}
-
-void ConquestIndicator::SetFaction(PlayerFaction faction)
 {
     using namespace sgl::graphic;
 
@@ -38,9 +28,14 @@ void ConquestIndicator::SetFaction(PlayerFaction faction)
     const unsigned int indSprite = IND_CONQUEST_F1 + faction;
 
     auto tm = TextureManager::Instance();
-    Texture * tex = tm->GetSprite(SpriteFileMapIndicators, indSprite);
-
+    auto tex = tm->GetSprite(SpriteFileMapIndicators, indSprite);
     SetTexture(tex);
+}
+
+ConquestIndicator::~ConquestIndicator()
+{
+    delete mTxtDummy;
+    delete mTxtCost;
 }
 
 void ConquestIndicator::SetCost(float val)

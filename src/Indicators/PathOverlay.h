@@ -13,7 +13,7 @@ enum PlayerFaction : unsigned int;
 class PathOverlay
 {
 public:
-    PathOverlay(IsoLayer * layer, PlayerFaction faction, int mapRows, int mapCols);
+    PathOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols);
     ~PathOverlay();
 
     void ClearPath();
@@ -37,7 +37,6 @@ private:
 
     unsigned int mNextIndicator = 0;
 
-    int mMapRows = 0;
     int mMapCols = 0;
 };
 
