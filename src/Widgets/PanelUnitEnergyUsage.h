@@ -24,6 +24,7 @@ public:
     PanelUnitEnergyUsage();
 
     void SetValue(int val);
+    void SetDoable(bool doable);
 
 private:
     void HandlePositionChanged() override;
@@ -35,6 +36,8 @@ private:
 
     sgl::sgui::Label * mLabel = nullptr;
     sgl::sgui::Image * mIcon = nullptr;
+
+    bool mDoable = true;
 };
 
 } // namespace game

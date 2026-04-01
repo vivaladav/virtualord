@@ -66,6 +66,19 @@ void PanelUnitEnergyUsage::SetValue(int val)
     mLabel->SetPosition(x, y);
 }
 
+void PanelUnitEnergyUsage::SetDoable(bool doable)
+{
+    if(doable == mDoable)
+        return ;
+
+    mDoable = doable;
+
+    if(mDoable)
+        mLabel->SetColor(WidgetsConstants::colorPanelText);
+    else
+        mLabel->SetColor(WidgetsConstants::colorDialogBad);
+}
+
 void PanelUnitEnergyUsage::HandlePositionChanged()
 {
     UpdatePositions();

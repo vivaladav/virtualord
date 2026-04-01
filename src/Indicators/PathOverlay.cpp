@@ -41,6 +41,8 @@ void PathOverlay::ClearPath()
     }
 
     mActiveIndicators.clear();
+
+    mPanelCost->SetVisible(false);
 }
 
 void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool doable)
@@ -76,6 +78,7 @@ void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool
     if(cost > 0)
     {
         mPanelCost->SetValue(cost);
+        mPanelCost->SetDoable(doable);
         mPanelCost->SetVisible(true);
 
         auto last = mActiveIndicators.back();
