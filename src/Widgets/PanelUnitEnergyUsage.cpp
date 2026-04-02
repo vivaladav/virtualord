@@ -10,7 +10,6 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/Label.h>
-#include <sgl/utilities/StringManager.h>
 
 #include <string>
 
@@ -27,7 +26,6 @@ PanelUnitEnergyUsage::PanelUnitEnergyUsage()
 
     auto tm = graphic::TextureManager::Instance();
     auto fm = graphic::FontManager::Instance();
-    auto sm = utilities::StringManager::Instance();
 
     // BACKGROUND
     RegisterRenderable(mBg);
