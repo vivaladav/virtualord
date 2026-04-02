@@ -439,6 +439,8 @@ add_executable(
     src/Widgets/PanelTurnControl.cpp
     src/Widgets/PanelUnitEnergyUsage.h
     src/Widgets/PanelUnitEnergyUsage.cpp
+    src/Widgets/PanelUnitResourcesUsage.h
+    src/Widgets/PanelUnitResourcesUsage.cpp
     src/Widgets/PlanetMap.h
     src/Widgets/PlanetMap.cpp
     src/Widgets/ProgressBarObjectVisualStat.h

@@ -1501,6 +1501,9 @@ void ScreenInitGame::SetupTextures()
             // ENERGY USAGE
             { 0, 0, 96, 49 },
             { 0, 50, 96, 49 },
+            // RESOURCES USAGE
+            { 97, 0, 174, 116 },
+            { 272, 0, 174, 116 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelUnitActions, rects);

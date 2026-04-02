@@ -2,6 +2,7 @@
 
 #include "IsoLayer.h"
 #include "Indicators/ConquestIndicator.h"
+#include "Widgets/PanelUnitResourcesUsage.h"
 
 namespace game
 {
@@ -9,9 +10,11 @@ namespace game
 CellConquestOverlay::CellConquestOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols)
     : mTarget(new ConquestIndicator(faction))
     , mLayer(layer)
+    , mPanelCost(new PanelUnitResourcesUsage)
     , mFaction(faction)
     , mMapCols(mapCols)
 {
+    mPanelCost->SetVisible(false);
 }
 
 CellConquestOverlay::~CellConquestOverlay()
@@ -35,6 +38,8 @@ void CellConquestOverlay::ClearPath()
     }
 
     mActiveIndicators.clear();
+
+    mPanelCost->SetVisible(false);
 }
 
 void CellConquestOverlay::PopFrontPath()
@@ -80,7 +85,20 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int co
         mLayer->AddObject(pi, row, col);
     }
 
-    mActiveIndicators.back()->SetCost(cost);
+    if(cost > 0)
+    {
+        mPanelCost->SetValue(cost);
+        //mPanelCost->SetDoable(doable);
+        mPanelCost->SetVisible(true);
+
+        auto last = mActiveIndicators.back();
+
+        const int x = last->GetX() + (last->GetWidth() - mPanelCost->GetWidth()) / 2;
+        const int y = last->GetY() - mPanelCost->GetHeight();
+        mPanelCost->SetPosition(x, y);
+    }
+    else
+        mPanelCost->SetVisible(false);
 }
 
 void CellConquestOverlay::HideTarget()

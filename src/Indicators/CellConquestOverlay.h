@@ -8,6 +8,7 @@ namespace game
 
 class IsoLayer;
 class ConquestIndicator;
+class PanelUnitResourcesUsage;
 
 enum PlayerFaction : unsigned int;
 
@@ -34,6 +35,8 @@ private:
     ConquestIndicator * mTarget = nullptr;
 
     IsoLayer * mLayer = nullptr;
+
+    PanelUnitResourcesUsage * mPanelCost = nullptr;
 
     PlayerFaction mFaction;
 

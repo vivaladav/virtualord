@@ -571,6 +571,9 @@ enum SpriteIdPanelUnitActions : unsigned int
     // ENERGY USAGE
     ID_PUA_ENERGY_BG,
     ID_PUA_ENERGY_BG2,
+    // RESOURCES USAGE
+    ID_PUA_RESOURCES_BG,
+    ID_PUA_RESOURCES_BG2,
 };
 
 // PLANET MAP
