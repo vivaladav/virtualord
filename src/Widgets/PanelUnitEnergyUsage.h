@@ -16,8 +16,6 @@ namespace sgl
 namespace game
 {
 
-class GameObject;
-
 class PanelUnitEnergyUsage : public sgl::sgui::Widget
 {
 public:
@@ -29,6 +27,7 @@ public:
 private:
     void HandlePositionChanged() override;
 
+    void UpdateGraphics();
     void UpdatePositions();
 
 private:

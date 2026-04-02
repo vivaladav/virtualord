@@ -18,6 +18,7 @@ namespace game
 {
 
 PanelUnitEnergyUsage::PanelUnitEnergyUsage()
+    : mBg(new sgl::graphic::Image)
 {
     using namespace sgl;
 
@@ -29,23 +30,19 @@ PanelUnitEnergyUsage::PanelUnitEnergyUsage()
     auto sm = utilities::StringManager::Instance();
 
     // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFilePanelUnitActions, ID_PUA_ENERGY_BG);
-    mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 
-    const int w = mBg->GetWidth();
-    const int h = mBg->GetHeight();
-    SetSize(w, h);
-
     // ENERGY COST
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_ENERGY_16);
+    mIcon = new sgui::Image(tex, this);
+
     const int sizeText = 16;
     auto font = fm->GetFont(WidgetsConstants::FontFilePanelText, sizeText, graphic::Font::NORMAL);
 
     mLabel = new sgui::Label(font, this);
-    mLabel->SetColor(WidgetsConstants::colorPanelText);
 
-    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_ENERGY_16);
-    mIcon = new sgui::Image(tex, this);
+    // init graphics
+    UpdateGraphics();
 }
 
 void PanelUnitEnergyUsage::SetValue(int val)
@@ -73,15 +70,47 @@ void PanelUnitEnergyUsage::SetDoable(bool doable)
 
     mDoable = doable;
 
-    if(mDoable)
-        mLabel->SetColor(WidgetsConstants::colorPanelText);
-    else
-        mLabel->SetColor(WidgetsConstants::colorDialogBad);
+    UpdateGraphics();
 }
 
 void PanelUnitEnergyUsage::HandlePositionChanged()
 {
     UpdatePositions();
+}
+
+void PanelUnitEnergyUsage::UpdateGraphics()
+{
+    using namespace sgl;
+
+    // INIT VARIABLES
+    unsigned int texId;
+    unsigned int colorTxt;
+
+    if(mDoable)
+    {
+        texId = ID_PUA_ENERGY_BG;
+        colorTxt = WidgetsConstants::colorPanelText;
+
+    }
+    else
+    {
+        texId = ID_PUA_ENERGY_BG2;
+        colorTxt = WidgetsConstants::colorDialogBad;
+    }
+
+    // BACKGROUND
+    auto tm = graphic::TextureManager::Instance();
+    auto tex = tm->GetSprite(SpriteFilePanelUnitActions, texId);
+    mBg->SetTexture(tex);
+
+    // LABEL
+    mLabel->SetColor(colorTxt);
+
+    // UPDATE SIZE
+    const int w = mBg->GetWidth();
+    const int h = mBg->GetHeight();
+    SetSize(w, h);
+
 }
 
 void PanelUnitEnergyUsage::UpdatePositions()
