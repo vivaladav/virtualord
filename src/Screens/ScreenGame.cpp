@@ -2449,7 +2449,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
 
         mOverlayCellConquest->HideTarget();
 
-        ShowConquestIndicator(unit, mCurrCell);
+        ShowCellConquestIndicator(unit, mCurrCell);
     }
 
     // destination is visible and walkable or conquering unit cell
@@ -3002,7 +3002,7 @@ void ScreenGame::ShowActiveUnitIndicators(Unit * unit, const Cell2D & cell)
     if(action == GameObjectActionType::MOVE)
         ShowMoveIndicator(unit, cell);
     else if(action == GameObjectActionType::CONQUER_CELL)
-        ShowConquestIndicator(unit, cell);
+        ShowCellConquestIndicator(unit, cell);
     else if(action == GameObjectActionType::BUILD_WALL)
         ShowBuildWallIndicator(unit, cell);
     else if(action == GameObjectActionType::BUILD_STRUCTURE)
@@ -3166,7 +3166,7 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
     layer->SetObjectVisible(ind, showIndicator);
 }
 
-void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
+void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
 {
     const bool currInside = mIsoMap->IsCellInside(dest);
 
@@ -3199,7 +3199,9 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     const bool currWalkable = mGameMap->IsCellWalkable(currInd);
     const bool currIsUnitCell = dest.row == unit->GetRow0() && dest.col == unit->GetCol0();
 
-    const bool canConquer = currVisible && (currWalkable || currIsUnitCell);
+    // do not allow when cell not visible or not walkable, unless it's unit cell at the start
+    const bool canConquer = currVisible &&
+                            (currWalkable || (currIsUnitCell && mConquestPath.empty()));
 
     if(!canConquer)
     {
@@ -3241,7 +3243,10 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
 
     // this should never happen, but just in case
     if(path.empty() && mConquestPath.empty())
+    {
+        mOverlayCellConquest->HideTarget();
         return ;
+    }
 
     // check no cell of current path is crossing existing path
     const unsigned int pathSize = path.size();
