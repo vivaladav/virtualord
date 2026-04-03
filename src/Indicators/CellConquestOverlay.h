@@ -22,8 +22,14 @@ public:
     void PopFrontPath();
     void SetPath(const std::vector<unsigned int> & path, int cost = -1);
 
+    void HidePanelCost();
+
     void HideTarget();
     void ShowTarget(int row, int col);
+    bool IsTargetVisible() const;
+
+    bool IsValid() const;
+    void SetValid(bool valid);
 
 private:
     ConquestIndicator * GetNewIndicator();
@@ -41,6 +47,10 @@ private:
     PlayerFaction mFaction;
 
     int mMapCols = 0;
+
+    bool mValid = true;
 };
+
+inline bool CellConquestOverlay::IsValid() const { return mValid; }
 
 } // namespace game

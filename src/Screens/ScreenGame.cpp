@@ -238,9 +238,6 @@ ScreenGame::~ScreenGame()
     delete mPathfinder;
     delete mPartMan;
 
-    delete mOverlayCellConquest;
-    delete mOverlayPath;
-
     for(auto ind : mAttIndicators)
         delete ind;
 
@@ -2464,6 +2461,12 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
     // continue building path
     if(!mConquestPath.empty())
     {
+        if(!mOverlayCellConquest->IsValid())
+        {
+            unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+            return ;
+        }
+
         // reclicked on same cell of last path -> double click -> finalize path
         if(mConquestPath.back() == clickInd)
         {
@@ -2471,6 +2474,8 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
             const Cell2D cellStart(pathInd / mIsoMap->GetNumCols(),
                                    pathInd % mIsoMap->GetNumCols());
             const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+
+            mOverlayCellConquest->HidePanelCost();
 
             // unit is already on start cell -> start conquest immediately
             if(cellStart == cellUnit)
@@ -3165,6 +3170,8 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
 {
     const bool currInside = mIsoMap->IsCellInside(dest);
 
+    mOverlayCellConquest->SetValid(false);
+
     // mouse outside the map
     if(!currInside)
     {
@@ -3173,6 +3180,20 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     }
 
     const int currInd = dest.row * mGameMap->GetNumCols() + dest.col;
+
+    // do not allow crossing paths
+    if(std::find(mConquestPath.begin(), mConquestPath.end(), currInd) != mConquestPath.end())
+    {
+        // hide target
+        mOverlayCellConquest->HideTarget();
+
+        // clear current path
+        ConquerPath cp(unit, mGameMap, this);
+        cp.SetPathCells(mConquestPath);
+        mOverlayCellConquest->SetPath(mConquestPath, cp.GetPathEnergyCost());
+
+        return ;
+    }
 
     const bool currVisible = mLocalPlayer->IsCellVisible(currInd);
     const bool currWalkable = mGameMap->IsCellWalkable(currInd);
@@ -3222,8 +3243,27 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     if(path.empty() && mConquestPath.empty())
         return ;
 
+    // check no cell of current path is crossing existing path
+    const unsigned int pathSize = path.size();
+
+    for(unsigned int i = 0; i < pathSize; ++i)
+    {
+        if(std::find(mConquestPath.begin(), mConquestPath.end(), path[i]) != mConquestPath.end())
+        {
+            // hide target
+            mOverlayCellConquest->HideTarget();
+
+            // clear current path
+            ConquerPath cp(unit, mGameMap, this);
+            cp.SetPathCells(mConquestPath);
+            mOverlayCellConquest->SetPath(mConquestPath, cp.GetPathEnergyCost());
+
+            return ;
+        }
+    }
+
     std::vector<unsigned int> totPath;
-    totPath.reserve(mConquestPath.size() + path.size());
+    totPath.reserve(mConquestPath.size() + pathSize);
 
     totPath = mConquestPath;
     totPath.insert(totPath.end(), path.begin(), path.end());
@@ -3231,6 +3271,7 @@ void ScreenGame::ShowConquestIndicator(Unit * unit, const Cell2D & dest)
     ConquerPath cp(unit, mGameMap, this);
     cp.SetPathCells(totPath);
 
+    mOverlayCellConquest->SetValid(true);
     mOverlayCellConquest->SetPath(totPath, cp.GetPathEnergyCost());
 }
 

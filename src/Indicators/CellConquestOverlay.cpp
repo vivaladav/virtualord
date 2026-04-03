@@ -85,7 +85,7 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int co
         mLayer->AddObject(pi, row, col);
     }
 
-    if(cost > 0)
+    if(cost > 0 && mValid)
     {
         mPanelCost->SetValue(cost);
         //mPanelCost->SetDoable(doable);
@@ -99,6 +99,11 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int co
     }
     else
         mPanelCost->SetVisible(false);
+}
+
+void CellConquestOverlay::HidePanelCost()
+{
+    mPanelCost->SetVisible(false);
 }
 
 void CellConquestOverlay::HideTarget()
@@ -116,6 +121,25 @@ void CellConquestOverlay::ShowTarget(int row, int col)
     // indicator not visible yet
     else
         mLayer->AddObject(mTarget, row, col);
+}
+
+bool CellConquestOverlay::IsTargetVisible() const
+{
+    return mTarget->IsVisible();
+}
+
+void CellConquestOverlay::SetValid(bool valid)
+{
+    if(mValid == valid)
+        return;
+
+    mValid = valid;
+
+    if(!mValid)
+    {
+        HideTarget();
+        mPanelCost->SetVisible(false);
+    }
 }
 
 ConquestIndicator * CellConquestOverlay::GetNewIndicator()
