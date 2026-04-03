@@ -260,6 +260,10 @@ ScreenGame::~ScreenGame()
     delete mIsoMap;
     delete mGameMap;
 
+    // NOTE delete overlays after GameMap because they're still used by its destructors
+    delete mOverlayCellConquest;
+    delete mOverlayPath;
+
     delete mCamController;
 
     auto stage = sgl::sgui::Stage::Instance();
