@@ -3181,7 +3181,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
 
         if(lastR != dest.row && lastC != dest.col)
         {
-            ClearTempCellConquestPath(unit);
+            ClearTempCellConquestPath(unit, true);
             return ;
         }
     }
@@ -3191,7 +3191,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     // mouse outside the map
     if(!currInside)
     {
-        ClearTempCellConquestPath(unit);
+        ClearTempCellConquestPath(unit, false);
         return ;
     }
 
@@ -3200,7 +3200,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     // do not allow crossing paths
     if(std::find(mConquestPath.begin(), mConquestPath.end(), currInd) != mConquestPath.end())
     {
-        ClearTempCellConquestPath(unit);
+        ClearTempCellConquestPath(unit, true);
         return ;
     }
 
@@ -3214,7 +3214,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
 
     if(!canConquer)
     {
-        ClearTempCellConquestPath(unit);
+        ClearTempCellConquestPath(unit, false);
         return ;
     }
 
@@ -3253,7 +3253,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     // this should never happen, but just in case
     if(path.empty() && mConquestPath.empty())
     {
-        ClearTempCellConquestPath(unit);
+        ClearTempCellConquestPath(unit, false);
         return ;
     }
 
@@ -3264,7 +3264,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     {
         if(std::find(mConquestPath.begin(), mConquestPath.end(), path[i]) != mConquestPath.end())
         {
-            ClearTempCellConquestPath(unit);
+            ClearTempCellConquestPath(unit, true);
             return ;
         }
     }
@@ -3284,15 +3284,16 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     mOverlayCellConquest->SetPath(totPath, cp.GetPathEnergyCost());
 }
 
-void ScreenGame::ClearTempCellConquestPath(Unit * unit)
+void ScreenGame::ClearTempCellConquestPath(Unit * unit, bool showTarget)
 {
-    // hide target
-    mOverlayCellConquest->HideTarget();
-
     // clear current path
     ConquerPath cp(unit, mGameMap, this);
     cp.SetPathCells(mConquestPath);
     mOverlayCellConquest->SetPath(mConquestPath, cp.GetPathEnergyCost());
+
+    // show invalid target
+    if(showTarget)
+        mOverlayCellConquest->ShowTarget(mCurrCell.row, mCurrCell.col, false);
 }
 
 void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)

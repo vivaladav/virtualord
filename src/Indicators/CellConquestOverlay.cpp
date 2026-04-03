@@ -111,7 +111,7 @@ void CellConquestOverlay::HideTarget()
     mLayer->SetObjectVisible(mTarget, false);
 }
 
-void CellConquestOverlay::ShowTarget(int row, int col)
+void CellConquestOverlay::ShowTarget(int row, int col, bool valid)
 {
     if(mLayer->HasObject(mTarget))
     {
@@ -120,7 +120,13 @@ void CellConquestOverlay::ShowTarget(int row, int col)
     }
     // indicator not visible yet
     else
+    {
+        mTarget->SetVisible(true);
         mLayer->AddObject(mTarget, row, col);
+    }
+
+    const int alpha = valid ? 255 : 150;
+    mTarget->SetAlpha(alpha);
 }
 
 bool CellConquestOverlay::IsTargetVisible() const
@@ -136,10 +142,7 @@ void CellConquestOverlay::SetValid(bool valid)
     mValid = valid;
 
     if(!mValid)
-    {
-        HideTarget();
         mPanelCost->SetVisible(false);
-    }
 }
 
 ConquestIndicator * CellConquestOverlay::GetNewIndicator()

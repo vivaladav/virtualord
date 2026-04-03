@@ -25,7 +25,7 @@ public:
     void HidePanelCost();
 
     void HideTarget();
-    void ShowTarget(int row, int col);
+    void ShowTarget(int row, int col, bool valid = true);
     bool IsTargetVisible() const;
 
     bool IsValid() const;
