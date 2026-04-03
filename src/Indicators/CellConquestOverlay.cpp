@@ -87,7 +87,7 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int co
 
     if(cost > 0 && mValid)
     {
-        mPanelCost->SetValue(cost);
+        mPanelCost->SetValues(cost, 0, 0);
         //mPanelCost->SetDoable(doable);
         mPanelCost->SetVisible(true);
 

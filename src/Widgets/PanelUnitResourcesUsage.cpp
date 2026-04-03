@@ -20,19 +20,98 @@ PanelUnitResourcesUsage::PanelUnitResourcesUsage()
 {
     using namespace sgl;
 
+    auto fm = graphic::FontManager::Instance();
+    auto sm = utilities::StringManager::Instance();
+    auto tm = graphic::TextureManager::Instance();
+
+    const int marginL = 15;
+    const int marginT = 15;
+    const int marginHeaderB = 2;
+    const int marginIconR = 5;
+    const int marginIconB = 10;
+
+    int x = marginL;
+    int y = marginT;
+
     // panel is part of the game scene
     SetCamera(graphic::Camera::GetDefaultCamera());
 
     // BACKGROUND
     RegisterRenderable(mBg);
 
+    // UNIT
+    // header
+    const int sizeHeader = 16;
+    auto fontHeader = fm->GetFont(WidgetsConstants::FontFileText, sizeHeader, graphic::Font::NORMAL);
+    auto labelHeader = new sgui::Label(sm->GetCString("UNIT"), fontHeader, this);
+    labelHeader->SetColor(WidgetsConstants::colorPanelHeader);
+    labelHeader->SetPosition(x, y);
+
+    y += labelHeader->GetHeight() + marginHeaderB;
+
+    // icon energy
+    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_ENERGY_16);
+    auto icon = new sgui::Image(tex, this);
+    icon->SetPosition(x, y);
+
+    // value unit energy
+    x += icon->GetWidth() + marginIconR;
+
+    const int sizeData = 16;
+    auto fontData = fm->GetFont(WidgetsConstants::FontFileText, sizeData, graphic::Font::NORMAL);
+    mLabelUnitEnergy = new sgui::Label("0", fontData, this);
+    mLabelUnitEnergy->SetPosition(x, y + (icon->GetHeight() - mLabelUnitEnergy->GetHeight()) / 2);
+    mLabelUnitEnergy->SetColor(WidgetsConstants::colorPanelText);
+
+    y += icon->GetHeight() + marginIconB;
+
+    // RESOURCES
+    // header
+    x = marginL;
+
+    labelHeader = new sgui::Label(sm->GetCString("RESOURCES"), fontHeader, this);
+    labelHeader->SetColor(WidgetsConstants::colorPanelHeader);
+    labelHeader->SetPosition(x, y);
+
+    y += labelHeader->GetHeight() + marginHeaderB;
+
+    // icon energy
+    icon = new sgui::Image(tex, this);
+    icon->SetPosition(x, y);
+
+    // value resources energy
+    x += icon->GetWidth() + marginIconR;
+
+    mLabelResEnergy = new sgui::Label("0", fontData, this);
+    mLabelResEnergy->SetPosition(x, y + (icon->GetHeight() - mLabelUnitEnergy->GetHeight()) / 2);
+    mLabelResEnergy->SetColor(WidgetsConstants::colorPanelText);
+
+    // icon material
+    const int blockResW = 80;
+    x = icon->GetX() + blockResW;
+
+    tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_MATERIAL_16);
+    icon = new sgui::Image(tex, this);
+    icon->SetPosition(x, y);
+
+    // value resources material
+    x += icon->GetWidth() + marginIconR;
+
+    mLabelResMaterial = new sgui::Label("0", fontData, this);
+    mLabelResMaterial->SetPosition(x, y + (icon->GetHeight() - mLabelResMaterial->GetHeight()) / 2);
+    mLabelResMaterial->SetColor(WidgetsConstants::colorPanelText);
+
     // init graphics
     UpdateGraphics();
 }
 
-void PanelUnitResourcesUsage::SetValue(int val)
+void PanelUnitResourcesUsage::SetValues(int unitEnergy, int resEnergy, int resMaterial)
 {
-
+    // unit
+    mLabelUnitEnergy->SetText(std::to_string(unitEnergy).c_str());
+    // resources
+    mLabelResEnergy->SetText(std::to_string(resEnergy).c_str());
+    mLabelResMaterial->SetText(std::to_string(resMaterial).c_str());
 }
 
 void PanelUnitResourcesUsage::SetDoable(bool doable)

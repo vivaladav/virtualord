@@ -6,11 +6,7 @@ namespace sgl
 {
     namespace graphic { class Image; }
 
-    namespace sgui
-    {
-        class Image;
-        class Label;
-    }
+    namespace sgui { class Label; }
 }
 
 namespace game
@@ -21,7 +17,7 @@ class PanelUnitResourcesUsage : public sgl::sgui::Widget
 public:
     PanelUnitResourcesUsage();
 
-    void SetValue(int val);
+    void SetValues(int unitEnergy, int resEnergy, int resMaterial);
     void SetDoable(bool doable);
 
 private:
@@ -32,6 +28,10 @@ private:
 
 private:
     sgl::graphic::Image * mBg = nullptr;
+
+    sgl::sgui::Label * mLabelUnitEnergy = nullptr;
+    sgl::sgui::Label * mLabelResEnergy = nullptr;
+    sgl::sgui::Label * mLabelResMaterial = nullptr;
 
     bool mDoable = true;
 };
