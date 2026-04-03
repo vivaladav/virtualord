@@ -3309,6 +3309,12 @@ void ScreenGame::ClearTempCellConquestPath(Unit * unit, bool showTarget)
     ConquerPath cp(unit, mGameMap, this);
     cp.SetPathCells(mConquestPath);
 
+    // mark overaly as valid
+    // NOTE do it before setting the path
+    const int currInd = mCurrCell.row * mGameMap->GetNumCols() + mCurrCell.col;
+    const bool onLast = currInd == mConquestPath.back();
+    mOverlayCellConquest->SetValid(onLast);
+
     mOverlayCellConquest->SetPath(mConquestPath, cp.GetCostUnitEnergy(),
                                   cp.GetCostResourceEnergy(), cp.GetCostResourceMaterial());
     mOverlayCellConquest->SetCostsDoable(true, true, true);
