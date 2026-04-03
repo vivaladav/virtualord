@@ -18,7 +18,8 @@ public:
     PanelUnitResourcesUsage();
 
     void SetValues(int unitEnergy, int resEnergy, int resMaterial);
-    void SetDoable(bool doable);
+    void SetDoable(bool unitEnergy, bool resEnergy, bool resMaterial);
+    bool IsDoable() const;
 
 private:
     void HandlePositionChanged() override;
@@ -33,7 +34,14 @@ private:
     sgl::sgui::Label * mLabelResEnergy = nullptr;
     sgl::sgui::Label * mLabelResMaterial = nullptr;
 
-    bool mDoable = true;
+    bool mDoableUnitEnergy = true;
+    bool mDoableResEnergy = true;
+    bool mDoableResMaterial = true;
 };
+
+inline bool PanelUnitResourcesUsage::IsDoable() const
+{
+    return mDoableUnitEnergy && mDoableResEnergy && mDoableResMaterial;
+}
 
 } // namespace game

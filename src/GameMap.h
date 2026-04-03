@@ -116,9 +116,7 @@ public:
     bool AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) const;
 
     // cell conquest
-    bool HasResourcesToConquerCell(Unit * unit);
     bool CanConquerCell(Unit * unit, const Cell2D & cell, Player * player);
-    void StartConquerCell(const Cell2D & cell, Player * player);
     void ConquerCell(const Cell2D & cell, Player * player);
     bool ConquerCells(ConquerPath * path);
     bool AbortCellConquest(GameObject * obj);

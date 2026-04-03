@@ -67,7 +67,6 @@ namespace game
 {
 
 // NOTE these will be replaced by dynamic values soon
-constexpr int COST_CONQUEST_CELL = 1;
 constexpr int COST_CONQUEST_RES_GEN = 4;
 
 // ==================== PUBLIC METHODS ====================
@@ -874,18 +873,6 @@ bool GameMap::AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) 
     return (distR == 0 && distC == maxDist) || (distR == maxDist && distC == 0);
 }
 
-bool GameMap::HasResourcesToConquerCell(Unit * unit)
-{
-    // check if unit has enough energy
-    if(!unit->HasEnergyForActionStep(CONQUER_CELL))
-        return false;
-
-    // check if player has enough resources
-    Player * player = mGame->GetPlayerByFaction(unit->GetFaction());
-
-    return player->HasEnough(Player::Stat::MATERIAL, COST_CONQUEST_CELL);
-}
-
 bool GameMap::CanConquerCell(Unit * unit, const Cell2D & cell, Player * player)
 {
     const unsigned int r = static_cast<unsigned int>(cell.row);
@@ -915,15 +902,6 @@ bool GameMap::CanConquerCell(Unit * unit, const Cell2D & cell, Player * player)
         return false;
 
     return true;
-}
-
-void GameMap::StartConquerCell(const Cell2D & cell, Player * player)
-{
-    const int ind = cell.row * mCols + cell.col;
-    GameMapCell & gcell = mCells[ind];
-
-    // take player's energy
-    player->SumResource(Player::Stat::MATERIAL, -COST_CONQUEST_CELL);
 }
 
 void GameMap::ConquerCell(const Cell2D & cell, Player * player)

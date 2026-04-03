@@ -61,7 +61,6 @@ PanelUnitResourcesUsage::PanelUnitResourcesUsage()
     auto fontData = fm->GetFont(WidgetsConstants::FontFileText, sizeData, graphic::Font::NORMAL);
     mLabelUnitEnergy = new sgui::Label("0", fontData, this);
     mLabelUnitEnergy->SetPosition(x, y + (icon->GetHeight() - mLabelUnitEnergy->GetHeight()) / 2);
-    mLabelUnitEnergy->SetColor(WidgetsConstants::colorPanelText);
 
     y += icon->GetHeight() + marginIconB;
 
@@ -84,7 +83,6 @@ PanelUnitResourcesUsage::PanelUnitResourcesUsage()
 
     mLabelResEnergy = new sgui::Label("0", fontData, this);
     mLabelResEnergy->SetPosition(x, y + (icon->GetHeight() - mLabelUnitEnergy->GetHeight()) / 2);
-    mLabelResEnergy->SetColor(WidgetsConstants::colorPanelText);
 
     // icon material
     const int blockResW = 80;
@@ -99,7 +97,6 @@ PanelUnitResourcesUsage::PanelUnitResourcesUsage()
 
     mLabelResMaterial = new sgui::Label("0", fontData, this);
     mLabelResMaterial->SetPosition(x, y + (icon->GetHeight() - mLabelResMaterial->GetHeight()) / 2);
-    mLabelResMaterial->SetColor(WidgetsConstants::colorPanelText);
 
     // init graphics
     UpdateGraphics();
@@ -114,14 +111,30 @@ void PanelUnitResourcesUsage::SetValues(int unitEnergy, int resEnergy, int resMa
     mLabelResMaterial->SetText(std::to_string(resMaterial).c_str());
 }
 
-void PanelUnitResourcesUsage::SetDoable(bool doable)
+void PanelUnitResourcesUsage::SetDoable(bool unitEnergy, bool resEnergy, bool resMaterial)
 {
-    if(doable == mDoable)
-        return ;
+    bool changed = false;
 
-    mDoable = doable;
+    if(unitEnergy != mDoableUnitEnergy)
+    {
+        mDoableUnitEnergy = unitEnergy;
+        changed = true;
+    }
 
-    UpdateGraphics();
+    if(resEnergy != mDoableResEnergy)
+    {
+        mDoableResEnergy = resEnergy;
+        changed = true;
+    }
+
+    if(resMaterial != mDoableResMaterial)
+    {
+        mDoableResMaterial = resMaterial;
+        changed = true;
+    }
+
+    if(changed)
+        UpdateGraphics();
 }
 
 void PanelUnitResourcesUsage::HandlePositionChanged()
@@ -133,18 +146,10 @@ void PanelUnitResourcesUsage::UpdateGraphics()
 {
     using namespace sgl;
 
+    const int doable = mDoableUnitEnergy && mDoableResEnergy && mDoableResMaterial;
+
     // INIT VARIABLES
-    unsigned int texId;
-
-    if(mDoable)
-    {
-        texId = ID_PUA_RESOURCES_BG;
-
-    }
-    else
-    {
-        texId = ID_PUA_RESOURCES_BG2;
-    }
+    const unsigned int texId = doable ? ID_PUA_RESOURCES_BG : ID_PUA_RESOURCES_BG2;
 
     // BACKGROUND
     auto tm = graphic::TextureManager::Instance();
@@ -156,6 +161,23 @@ void PanelUnitResourcesUsage::UpdateGraphics()
     const int h = mBg->GetHeight();
     SetSize(w, h);
 
+    // LABEL UNIT ENERGY
+    if(mDoableUnitEnergy)
+        mLabelUnitEnergy->SetColor(WidgetsConstants::colorPanelText);
+    else
+        mLabelUnitEnergy->SetColor(WidgetsConstants::colorDialogBad);
+
+    // LABEL RESOURCE ENERGY
+    if(mDoableResEnergy)
+        mLabelResEnergy->SetColor(WidgetsConstants::colorPanelText);
+    else
+        mLabelResEnergy->SetColor(WidgetsConstants::colorDialogBad);
+
+    // LABEL RESOURCE MATERIAL
+    if(mDoableResMaterial)
+        mLabelResMaterial->SetColor(WidgetsConstants::colorPanelText);
+    else
+        mLabelResMaterial->SetColor(WidgetsConstants::colorDialogBad);
 }
 
 void PanelUnitResourcesUsage::UpdatePositions()

@@ -827,7 +827,7 @@ float GameObject::GetActionEnergyCost(GameObjectActionType action) const
         10.f,       // BUILD_UNIT
         0.f,        // SET_TARGET
         5.f,        // MOVE
-        10.f,       // CONQUER_CELL
+        5.f,        // CONQUER_CELL
         20.f,       // CONQUER_STRUCTURE
         0.f,        // ATTACK
         30.f,       // BUILD_STRUCTURE

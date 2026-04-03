@@ -16,7 +16,12 @@
 #include <sgl/media/AudioPlayer.h>
 
 #include <cmath>
-#include <unordered_set>
+
+namespace
+{
+constexpr int COST_ENERGY = 5;
+constexpr int COST_MATERIAL = 5;
+}
 
 namespace game
 {
@@ -24,6 +29,7 @@ namespace game
 ConquerPath::ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, CellConquestOverlay * overlay)
     : mOverlay(overlay)
     , mUnit(unit)
+    , mPlayer(sg->GetGame()->GetPlayerByFaction(unit->GetFaction()))
     , mGameMap(gm)
     , mScreen(sg)
 {
@@ -82,10 +88,21 @@ void ConquerPath::Update(float delta)
         UpdateMove(delta);
 }
 
+bool ConquerPath::HasResourcesToConquerCell()
+{
+    // check if unit has enough energy
+    if(!mUnit->HasEnergyForActionStep(CONQUER_CELL))
+        return false;
+
+    // check if player has enough resources
+    return mPlayer->HasEnough(Player::Stat::ENERGY, COST_ENERGY) &&
+           mPlayer->HasEnough(Player::Stat::MATERIAL, COST_MATERIAL);
+}
+
 bool ConquerPath::InitNextConquest()
 {
     // not enough resources -> FAIL
-    if(!mGameMap->HasResourcesToConquerCell(mUnit))
+    if(!HasResourcesToConquerCell())
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
@@ -112,8 +129,11 @@ bool ConquerPath::InitNextConquest()
     if(mOverlay != nullptr)
         mOverlay->PopFrontPath();
 
-    mGameMap->StartConquerCell(nextCell, player);
+    // take resource from player
+    mPlayer->SumResource(Player::Stat::ENERGY, -COST_ENERGY);
+    mPlayer->SumResource(Player::Stat::MATERIAL, -COST_MATERIAL);
 
+    // create progress bar
     GameHUD * HUD = mScreen->GetHUD();
     mProgressBar = HUD->CreateProgressBarInCell(nextCell, mUnit->GetTimeConquestCell(),
                                                 player->GetFaction());
@@ -296,17 +316,23 @@ void ConquerPath::UpdatePathCost()
 {
     if(mCells.empty())
     {
-        mCost = 0;
+        mCostUnitEnergy = 0;
+        mCostResEnergy = 0;
+        mCostResMaterial = 0;
+
         return ;
     }
 
     // TODO check if cells of mCells path are already conquered to give true cost
 
     // use set to ignore repeated cells
-    const std::unordered_set<unsigned int> cells(mCells.begin(), mCells.end());
+    const unsigned int lenPath = mCells.size();
 
-    mCost = (mCells.size() - 1) * mUnit->GetEnergyForActionStep(MOVE) +
-            cells.size() * mUnit->GetEnergyForActionStep(CONQUER_CELL);
+    mCostUnitEnergy = (lenPath - 1) * mUnit->GetEnergyForActionStep(MOVE) +
+                      lenPath * mUnit->GetEnergyForActionStep(CONQUER_CELL);
+
+    mCostResEnergy = lenPath * COST_ENERGY;
+    mCostResMaterial = lenPath * COST_MATERIAL;
 }
 
 bool ConquerPath::Fail()

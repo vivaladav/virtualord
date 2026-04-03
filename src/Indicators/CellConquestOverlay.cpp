@@ -58,7 +58,8 @@ void CellConquestOverlay::PopFrontPath()
     mAvailableIndicators.emplace_back(ind);
 }
 
-void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int cost)
+void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path,
+                                  int costUnitEnergy, int costResEnergy, int costResMaterial)
 {
     // empty path -> nothing to do
     if(path.empty())
@@ -85,10 +86,9 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int co
         mLayer->AddObject(pi, row, col);
     }
 
-    if(cost > 0 && mValid)
+    if(costUnitEnergy > 0 && mValid)
     {
-        mPanelCost->SetValues(cost, 0, 0);
-        //mPanelCost->SetDoable(doable);
+        mPanelCost->SetValues(costUnitEnergy, costResEnergy, costResMaterial);
         mPanelCost->SetVisible(true);
 
         auto last = mActiveIndicators.back();
@@ -99,6 +99,16 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path, int co
     }
     else
         mPanelCost->SetVisible(false);
+}
+
+void CellConquestOverlay::SetCostsDoable(bool unitEnergy, bool resEnergy, bool resMaterial)
+{
+    mPanelCost->SetDoable(unitEnergy, resEnergy, resMaterial);
+}
+
+bool CellConquestOverlay::IsDoable() const
+{
+    return mPanelCost->IsDoable();
 }
 
 void CellConquestOverlay::HidePanelCost()

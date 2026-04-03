@@ -2441,6 +2441,13 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
         return ;
     }
 
+    // conquest doesn't have enought resources
+    if(!mOverlayCellConquest->IsDoable())
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        return ;
+    }
+
     // not clicked any cell yet
     if(-1 == mCellActionStart.row)
     {
@@ -3281,7 +3288,19 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     // mark overaly as valid
     // NOTE do it before setting the path
     mOverlayCellConquest->SetValid(true);
-    mOverlayCellConquest->SetPath(totPath, cp.GetPathEnergyCost());
+
+    const int costUnitEnergy = cp.GetCostUnitEnergy();
+    const int energyObj = unit->GetEnergy();
+    const int energyTurn = mLocalPlayer->GetTurnEnergy();
+    const bool doableUnit = energyObj >= costUnitEnergy && energyTurn >= costUnitEnergy;
+
+    const int costResEnergy = cp.GetCostResourceEnergy();
+    const bool doableResEnergy = mLocalPlayer->HasEnough(Player::ENERGY, costResEnergy);
+    const int costResMaterial = cp.GetCostResourceMaterial();
+    const bool doableResMaterial = mLocalPlayer->HasEnough(Player::MATERIAL, costResMaterial);
+
+    mOverlayCellConquest->SetPath(totPath, costUnitEnergy, costResEnergy, costResMaterial);
+    mOverlayCellConquest->SetCostsDoable(doableUnit, doableResEnergy, doableResMaterial);
 }
 
 void ScreenGame::ClearTempCellConquestPath(Unit * unit, bool showTarget)
@@ -3289,7 +3308,10 @@ void ScreenGame::ClearTempCellConquestPath(Unit * unit, bool showTarget)
     // clear current path
     ConquerPath cp(unit, mGameMap, this);
     cp.SetPathCells(mConquestPath);
-    mOverlayCellConquest->SetPath(mConquestPath, cp.GetPathEnergyCost());
+
+    mOverlayCellConquest->SetPath(mConquestPath, cp.GetCostUnitEnergy(),
+                                  cp.GetCostResourceEnergy(), cp.GetCostResourceMaterial());
+    mOverlayCellConquest->SetCostsDoable(true, true, true);
 
     // show invalid target
     if(showTarget)

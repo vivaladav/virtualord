@@ -8,6 +8,7 @@ namespace game
 class CellConquestOverlay;
 class GameMap;
 class GameMapProgressBar;
+class Player;
 class ScreenGame;
 class Unit;
 
@@ -35,7 +36,9 @@ public:
 
     ConquerState GetState() const;
 
-    float GetPathEnergyCost() const;
+    int GetCostUnitEnergy() const;
+    int GetCostResourceEnergy() const;
+    int GetCostResourceMaterial() const;
 
     void SetPathCells(const std::vector<unsigned int> & cells);
 
@@ -47,6 +50,8 @@ public:
     void Update(float delta);
 
 private:
+    bool HasResourcesToConquerCell();
+
     bool InitNextConquest();
     bool InitNextMove();
 
@@ -65,6 +70,7 @@ private:
     GameMapProgressBar * mProgressBar = nullptr;
 
     Unit * mUnit = nullptr;
+    Player * mPlayer = nullptr;
 
     GameMap * mGameMap = nullptr;
 
@@ -74,7 +80,9 @@ private:
 
     unsigned int mNextCell = 0;
 
-    float mCost = 0.f;
+    int mCostUnitEnergy = 0;
+    int mCostResEnergy = 0;
+    int mCostResMaterial = 0;
 
     // movement
     float mObjX = 0.f;
@@ -89,7 +97,9 @@ inline Unit * ConquerPath::GetUnit() const { return mUnit; }
 
 inline ConquerPath::ConquerState ConquerPath::GetState() const { return mState; }
 
-inline float ConquerPath::GetPathEnergyCost() const { return mCost; }
+inline int ConquerPath::GetCostUnitEnergy() const { return mCostUnitEnergy; }
+inline int ConquerPath::GetCostResourceEnergy() const { return mCostResEnergy; }
+inline int ConquerPath::GetCostResourceMaterial() const { return mCostResMaterial; }
 
 inline bool ConquerPath::HasStarted() const { return mState != READY; }
 
