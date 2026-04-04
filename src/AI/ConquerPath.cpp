@@ -314,25 +314,33 @@ void ConquerPath::UpdateMove(float delta)
 
 void ConquerPath::UpdatePathCost()
 {
+    // reset costs
+    mCostUnitEnergy = 0;
+    mCostResEnergy = 0;
+    mCostResMaterial = 0;
+
+    // empty path -> exit
     if(mCells.empty())
-    {
-        mCostUnitEnergy = 0;
-        mCostResEnergy = 0;
-        mCostResMaterial = 0;
-
         return ;
-    }
 
-    // TODO check if cells of mCells path are already conquered to give true cost
-
-    // use set to ignore repeated cells
+    // define cost checking if cells are already conquered
     const unsigned int lenPath = mCells.size();
 
-    mCostUnitEnergy = (lenPath - 1) * mUnit->GetEnergyForActionStep(MOVE) +
-                      lenPath * mUnit->GetEnergyForActionStep(CONQUER_CELL);
+    mCostUnitEnergy = (lenPath - 1) * mUnit->GetEnergyForActionStep(MOVE);
 
-    mCostResEnergy = lenPath * COST_ENERGY;
-    mCostResMaterial = lenPath * COST_MATERIAL;
+    const PlayerFaction f = mUnit->GetFaction();
+
+    for(unsigned int i = 0; i < lenPath; ++i)
+    {
+        const unsigned int cellInd = mCells[i];
+
+        const Player * owner = mGameMap->GetCell(cellInd).owner;
+        const bool notConquered = owner == nullptr || owner->GetFaction() != f;
+
+        mCostUnitEnergy += notConquered * mUnit->GetEnergyForActionStep(CONQUER_CELL);
+        mCostResEnergy += notConquered * COST_ENERGY;
+        mCostResMaterial += notConquered * COST_MATERIAL;
+    }
 }
 
 bool ConquerPath::Fail()
