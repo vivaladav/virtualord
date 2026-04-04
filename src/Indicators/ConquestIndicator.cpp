@@ -21,4 +21,16 @@ ConquestIndicator::ConquestIndicator(PlayerFaction faction)
     SetTexture(tex);
 }
 
+void ConquestIndicator::SetDoable(bool doable)
+{
+    if(mDoable == doable)
+        return ;
+
+    mDoable = doable;
+
+    const unsigned int alpha[] = { 150, 255};
+
+    SetAlpha(alpha[doable]);
+}
+
 } // namespace game

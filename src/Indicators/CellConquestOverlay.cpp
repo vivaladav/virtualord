@@ -72,6 +72,7 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path,
     ClearPath();
 
     // create new indicators
+    const bool doable = mPanelCost->IsDoable();
     const unsigned int pathSize = path.size();
 
     for(unsigned int i = 0; i < pathSize; ++i)
@@ -81,6 +82,7 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path,
         const unsigned int col = ind % mMapCols;
 
         auto pi = GetNewIndicator();
+        pi->SetDoable(doable);
         mActiveIndicators.emplace_back(pi);
 
         mLayer->AddObject(pi, row, col);
@@ -104,6 +106,11 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path,
 void CellConquestOverlay::SetCostsDoable(bool unitEnergy, bool resEnergy, bool resMaterial)
 {
     mPanelCost->SetDoable(unitEnergy, resEnergy, resMaterial);
+
+    const bool doable = mPanelCost->IsDoable();
+
+    for(auto ind : mActiveIndicators)
+        ind->SetDoable(doable);
 }
 
 bool CellConquestOverlay::IsDoable() const

@@ -11,6 +11,11 @@ class ConquestIndicator : public IsoObject
 {
 public:
     ConquestIndicator(PlayerFaction faction);
+
+    void SetDoable(bool doable);
+
+private:
+    bool mDoable = true;
 };
 
 } // namespace game
