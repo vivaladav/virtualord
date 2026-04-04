@@ -90,7 +90,7 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path,
 
     if(costUnitEnergy > 0 && mValid)
     {
-        mPanelCost->SetValues(costUnitEnergy, costResEnergy, costResMaterial);
+        mPanelCost->SetValues(mCostUnitMove + costUnitEnergy, costResEnergy, costResMaterial);
         mPanelCost->SetVisible(true);
 
         auto last = mActiveIndicators.back();

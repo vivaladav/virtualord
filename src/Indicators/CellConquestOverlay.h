@@ -24,6 +24,8 @@ public:
                  int costUnitEnergy = -1, int costResEnergy = -1, int costResMaterial = -1);
     void SetCostsDoable(bool unitEnergy, bool resEnergy, bool resMaterial);
     bool IsDoable() const;
+    void SetCostEnergyUnitMove(int cost);
+
 
     void HidePanelCost();
 
@@ -50,9 +52,12 @@ private:
     PlayerFaction mFaction;
 
     int mMapCols = 0;
+    int mCostUnitMove = 0;
 
     bool mValid = true;
 };
+
+inline void CellConquestOverlay::SetCostEnergyUnitMove(int cost) { mCostUnitMove = cost; }
 
 inline bool CellConquestOverlay::IsValid() const { return mValid; }
 

@@ -2423,6 +2423,8 @@ bool ScreenGame::SetupConnectCellsAI(Unit * unit, const std::function<void (bool
 
 void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & clickCell)
 {
+    using namespace sgl;
+
     // check destination is visible
     const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
 
@@ -2451,6 +2453,47 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
     // not clicked any cell yet
     if(-1 == mCellActionStart.row)
     {
+        // unit will need to move -> check path cost
+        if(clickCell.row != unit->GetRow0() || clickCell.col != unit->GetCol0())
+        {
+            const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
+                                                         clickCell.row, clickCell.col,
+                                                         ai::Pathfinder::INCLUDE_START);
+
+            // can't find a path to this cell
+            if(pathStart.empty())
+            {
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 2.f);
+                return ;
+            }
+
+            // check cost
+            auto op = ObjectPath(unit, mIsoMap, mGameMap, this);
+            op.SetPath(pathStart);
+
+            const int cost = op.GetPathCost();
+
+            // not enough unit energy
+            if(cost > unit->GetEnergy())
+            {
+                unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+                return ;
+            }
+
+            // not enought energy turn
+            if(cost > mLocalPlayer->GetTurnEnergy())
+            {
+                unit->ShowWarning(mSM->GetCString("WARN_NO_T_ENE"), 2.f);
+                return ;
+            }
+
+            // all good -> store cost
+            mOverlayCellConquest->SetCostEnergyUnitMove(cost);
+        }
+        // conquest starting on unit's cell -> 0 move cost
+        else
+            mOverlayCellConquest->SetCostEnergyUnitMove(0);
+
         mCellActionStart.row = clickCell.row;
         mCellActionStart.col = clickCell.col;
 
@@ -2461,7 +2504,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
 
     // destination is visible and walkable or conquering unit cell
     // init start for empty path
-    sgl::ai::Pathfinder::PathOptions po = sgl::ai::Pathfinder::INCLUDE_START;
+    ai::Pathfinder::PathOptions po = ai::Pathfinder::INCLUDE_START;
     unsigned int startR = clickCell.row;
     unsigned int startC = clickCell.col;
 
@@ -2503,7 +2546,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
         // continue pathfinfing from latest click
         else
         {
-            po = sgl::ai::Pathfinder::NO_OPTION;
+            po = ai::Pathfinder::NO_OPTION;
 
             const unsigned int pathInd = mConquestPath.back();
             startR = pathInd / mIsoMap->GetNumCols();
@@ -3288,9 +3331,8 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     mOverlayCellConquest->SetValid(true);
 
     const int costUnitEnergy = cp.GetCostUnitEnergy();
-    const int energyObj = unit->GetEnergy();
-    const int energyTurn = mLocalPlayer->GetTurnEnergy();
-    const bool doableUnit = energyObj >= costUnitEnergy && energyTurn >= costUnitEnergy;
+    const bool doableUnit = unit->GetEnergy() >= costUnitEnergy &&
+                            mLocalPlayer->GetTurnEnergy() >= costUnitEnergy;
 
     const int costResEnergy = cp.GetCostResourceEnergy();
     const bool doableResEnergy = mLocalPlayer->HasEnough(Player::ENERGY, costResEnergy);
