@@ -3331,8 +3331,9 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     mOverlayCellConquest->SetValid(true);
 
     const int costUnitEnergy = cp.GetCostUnitEnergy();
-    const bool doableUnit = unit->GetEnergy() >= costUnitEnergy &&
-                            mLocalPlayer->GetTurnEnergy() >= costUnitEnergy;
+    const int costUnitEnergyTot =  costUnitEnergy + mOverlayCellConquest->GetCostEnergyUnitMove();
+    const bool doableUnit = unit->GetEnergy() >= costUnitEnergyTot &&
+                            mLocalPlayer->GetTurnEnergy() >= costUnitEnergyTot;
 
     const int costResEnergy = cp.GetCostResourceEnergy();
     const bool doableResEnergy = mLocalPlayer->HasEnough(Player::ENERGY, costResEnergy);

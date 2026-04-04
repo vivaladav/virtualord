@@ -25,6 +25,7 @@ public:
     void SetCostsDoable(bool unitEnergy, bool resEnergy, bool resMaterial);
     bool IsDoable() const;
     void SetCostEnergyUnitMove(int cost);
+    int GetCostEnergyUnitMove() const;
 
 
     void HidePanelCost();
@@ -58,6 +59,7 @@ private:
 };
 
 inline void CellConquestOverlay::SetCostEnergyUnitMove(int cost) { mCostUnitMove = cost; }
+inline int CellConquestOverlay::GetCostEnergyUnitMove() const { return mCostUnitMove; }
 
 inline bool CellConquestOverlay::IsValid() const { return mValid; }
 
