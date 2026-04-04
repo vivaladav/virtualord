@@ -3179,6 +3179,29 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     // NOTE keep this at the top of the function
     mOverlayCellConquest->SetValid(false);
 
+    // check if mouse outside the map
+    const bool currInside = mIsoMap->IsCellInside(dest);
+
+    if(!currInside)
+    {
+        ClearTempCellConquestPath(unit, false);
+        return ;
+    }
+
+    // do not allow when cell not visible or not walkable, unless it's unit cell at the start
+    const int currInd = dest.row * mGameMap->GetNumCols() + dest.col;
+    const bool currVisible = mLocalPlayer->IsCellVisible(currInd);
+    const bool currWalkable = mGameMap->IsCellWalkable(currInd);
+    const bool currIsUnitCell = dest.row == unit->GetRow0() && dest.col == unit->GetCol0();
+    const bool canConquer = currVisible &&
+                            (currWalkable || (currIsUnitCell && mConquestPath.empty()));
+
+    if(!canConquer)
+    {
+        ClearTempCellConquestPath(unit, false);
+        return ;
+    }
+
     // make sure path is continuos or ortogonal
     if(!mConquestPath.empty())
     {
@@ -3193,35 +3216,10 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
         }
     }
 
-    const bool currInside = mIsoMap->IsCellInside(dest);
-
-    // mouse outside the map
-    if(!currInside)
-    {
-        ClearTempCellConquestPath(unit, false);
-        return ;
-    }
-
-    const int currInd = dest.row * mGameMap->GetNumCols() + dest.col;
-
     // do not allow crossing paths
     if(std::find(mConquestPath.begin(), mConquestPath.end(), currInd) != mConquestPath.end())
     {
         ClearTempCellConquestPath(unit, true);
-        return ;
-    }
-
-    const bool currVisible = mLocalPlayer->IsCellVisible(currInd);
-    const bool currWalkable = mGameMap->IsCellWalkable(currInd);
-    const bool currIsUnitCell = dest.row == unit->GetRow0() && dest.col == unit->GetCol0();
-
-    // do not allow when cell not visible or not walkable, unless it's unit cell at the start
-    const bool canConquer = currVisible &&
-                            (currWalkable || (currIsUnitCell && mConquestPath.empty()));
-
-    if(!canConquer)
-    {
-        ClearTempCellConquestPath(unit, false);
         return ;
     }
 
