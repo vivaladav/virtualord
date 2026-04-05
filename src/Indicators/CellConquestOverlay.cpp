@@ -140,6 +140,9 @@ void CellConquestOverlay::HidePanelCost()
 void CellConquestOverlay::HideTarget()
 {
     mLayer->SetObjectVisible(mTarget, false);
+
+    mPanelCost->SetVisible(false);
+    mPanelMoveCost->SetVisible(false);
 }
 
 void CellConquestOverlay::ShowTarget(int row, int col, bool valid)
@@ -158,7 +161,6 @@ void CellConquestOverlay::ShowTarget(int row, int col, bool valid)
 
     const int alpha = valid ? 255 : 150;
     mTarget->SetAlpha(alpha);
-
 
     if(mActiveIndicators.empty())
     {

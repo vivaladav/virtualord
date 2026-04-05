@@ -669,7 +669,7 @@ void ScreenGame::CreateUI()
         mCellActionStart.row = -1;
         mCellActionStart.col = -1;
 
-        mOverlayCellConquest->ShowTarget(mCurrCell.row, mCurrCell.col);
+        ShowCellConquestIndicator(unit, mCurrCell);
     });
 
     // move
@@ -2458,7 +2458,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
         {
             const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
                                                          clickCell.row, clickCell.col,
-                                                         ai::Pathfinder::INCLUDE_START);
+                                                         ai::Pathfinder::ALL_OPTIONS);
 
             // can't find a path to this cell
             if(pathStart.empty())
@@ -3271,7 +3271,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     {
         const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
                                                      dest.row, dest.col,
-                                                     sgl::ai::Pathfinder::INCLUDE_START);
+                                                     sgl::ai::Pathfinder::ALL_OPTIONS);
 
         // can't find a path to this cell
         if(pathStart.empty())
@@ -3389,6 +3389,8 @@ void ScreenGame::ClearTempCellConquestPath(Unit * unit, bool showTarget)
     // show invalid target
     if(showTarget)
         mOverlayCellConquest->ShowTarget(mCurrCell.row, mCurrCell.col, false);
+    else
+        mOverlayCellConquest->HideTarget();
 }
 
 void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
