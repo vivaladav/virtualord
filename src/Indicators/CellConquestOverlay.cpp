@@ -2,6 +2,7 @@
 
 #include "IsoLayer.h"
 #include "Indicators/ConquestIndicator.h"
+#include "Widgets/PanelUnitEnergyUsage.h"
 #include "Widgets/PanelUnitResourcesUsage.h"
 
 namespace game
@@ -11,10 +12,12 @@ CellConquestOverlay::CellConquestOverlay(IsoLayer * layer, PlayerFaction faction
     : mTarget(new ConquestIndicator(faction))
     , mLayer(layer)
     , mPanelCost(new PanelUnitResourcesUsage)
+    , mPanelMoveCost(new PanelUnitEnergyUsage)
     , mFaction(faction)
     , mMapCols(mapCols)
 {
     mPanelCost->SetVisible(false);
+    mPanelMoveCost->SetVisible(false);
 }
 
 CellConquestOverlay::~CellConquestOverlay()
@@ -40,6 +43,7 @@ void CellConquestOverlay::ClearPath()
     mActiveIndicators.clear();
 
     mPanelCost->SetVisible(false);
+    mPanelMoveCost->SetVisible(false);
 }
 
 void CellConquestOverlay::PopFrontPath()
@@ -90,6 +94,8 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path,
 
     if(costUnitEnergy > 0 && mValid)
     {
+        mPanelMoveCost->SetVisible(false);
+
         mPanelCost->SetValues(mCostUnitMove + costUnitEnergy, costResEnergy, costResMaterial);
         mPanelCost->SetVisible(true);
 
@@ -100,7 +106,10 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path,
         mPanelCost->SetPosition(x, y);
     }
     else
+    {
         mPanelCost->SetVisible(false);
+        mPanelMoveCost->SetVisible(true);
+    }
 }
 
 void CellConquestOverlay::SetCostsDoable(bool unitEnergy, bool resEnergy, bool resMaterial)
@@ -116,6 +125,11 @@ void CellConquestOverlay::SetCostsDoable(bool unitEnergy, bool resEnergy, bool r
 bool CellConquestOverlay::IsDoable() const
 {
     return mPanelCost->IsDoable();
+}
+
+void CellConquestOverlay::SetCostMoveDoable(bool doable)
+{
+    mPanelMoveCost->SetDoable(doable);
 }
 
 void CellConquestOverlay::HidePanelCost()
@@ -144,6 +158,19 @@ void CellConquestOverlay::ShowTarget(int row, int col, bool valid)
 
     const int alpha = valid ? 255 : 150;
     mTarget->SetAlpha(alpha);
+
+
+    if(mActiveIndicators.empty())
+    {
+        mPanelMoveCost->SetVisible(true);
+        mPanelMoveCost->SetValue(mCostUnitMove);
+
+        const int x = mTarget->GetX() + (mTarget->GetWidth() - mPanelMoveCost->GetWidth()) / 2;
+        const int y = mTarget->GetY() - mPanelMoveCost->GetHeight();
+        mPanelMoveCost->SetPosition(x, y);
+    }
+    else
+        mPanelMoveCost->SetVisible(false);
 }
 
 bool CellConquestOverlay::IsTargetVisible() const

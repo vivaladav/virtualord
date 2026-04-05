@@ -8,6 +8,7 @@ namespace game
 
 class IsoLayer;
 class ConquestIndicator;
+class PanelUnitEnergyUsage;
 class PanelUnitResourcesUsage;
 
 enum PlayerFaction : unsigned int;
@@ -26,7 +27,7 @@ public:
     bool IsDoable() const;
     void SetCostEnergyUnitMove(int cost);
     int GetCostEnergyUnitMove() const;
-
+    void SetCostMoveDoable(bool doable);
 
     void HidePanelCost();
 
@@ -49,6 +50,7 @@ private:
     IsoLayer * mLayer = nullptr;
 
     PanelUnitResourcesUsage * mPanelCost = nullptr;
+    PanelUnitEnergyUsage * mPanelMoveCost = nullptr;
 
     PlayerFaction mFaction;
 

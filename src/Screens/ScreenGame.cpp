@@ -3269,6 +3269,29 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     // first point not set yet
     if(-1 == mCellActionStart.row)
     {
+        const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
+                                                     dest.row, dest.col,
+                                                     sgl::ai::Pathfinder::INCLUDE_START);
+
+        // can't find a path to this cell
+        if(pathStart.empty())
+        {
+            mOverlayCellConquest->HideTarget();
+            return ;
+        }
+
+        // check cost
+        auto op = ObjectPath(unit, mIsoMap, mGameMap, this);
+        op.SetPath(pathStart);
+
+        const int costEnergy = op.GetPathCost();
+        const bool movDoable = costEnergy <= unit->GetEnergy() &&
+                               costEnergy <= mLocalPlayer->GetTurnEnergy();
+
+        mOverlayCellConquest->SetCostEnergyUnitMove(costEnergy);
+        mOverlayCellConquest->SetCostMoveDoable(movDoable);
+
+        // show target cell
         mOverlayCellConquest->ShowTarget(dest.row, dest.col);
         return;
     }
