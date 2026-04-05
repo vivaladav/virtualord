@@ -2446,7 +2446,13 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
     // conquest doesn't have enought resources
     if(!mOverlayCellConquest->IsDoable())
     {
-        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        if(!mOverlayCellConquest->IsDoableUnit())
+            unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        else if(!mOverlayCellConquest->IsDoableResources())
+            unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        else
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"), 2.f);
+
         return ;
     }
 

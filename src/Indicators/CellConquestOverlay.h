@@ -25,6 +25,8 @@ public:
                  int costUnitEnergy = -1, int costResEnergy = -1, int costResMaterial = -1);
     void SetCostsDoable(bool unitEnergy, bool resEnergy, bool resMaterial);
     bool IsDoable() const;
+    bool IsDoableUnit() const;
+    bool IsDoableResources() const;
     void SetCostEnergyUnitMove(int cost);
     int GetCostEnergyUnitMove() const;
     void SetCostMoveDoable(bool doable);

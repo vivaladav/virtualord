@@ -20,6 +20,8 @@ public:
     void SetValues(int unitEnergy, int resEnergy, int resMaterial);
     void SetDoable(bool unitEnergy, bool resEnergy, bool resMaterial);
     bool IsDoable() const;
+    bool IsDoableUnit() const;
+    bool IsDoableResources() const;
 
 private:
     void HandlePositionChanged() override;
@@ -42,6 +44,11 @@ private:
 inline bool PanelUnitResourcesUsage::IsDoable() const
 {
     return mDoableUnitEnergy && mDoableResEnergy && mDoableResMaterial;
+}
+inline bool PanelUnitResourcesUsage::IsDoableUnit() const { return mDoableUnitEnergy; }
+inline bool PanelUnitResourcesUsage::IsDoableResources() const
+{
+    return mDoableResEnergy && mDoableResMaterial;
 }
 
 } // namespace game

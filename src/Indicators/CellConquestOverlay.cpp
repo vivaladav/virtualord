@@ -122,10 +122,9 @@ void CellConquestOverlay::SetCostsDoable(bool unitEnergy, bool resEnergy, bool r
         ind->SetDoable(doable);
 }
 
-bool CellConquestOverlay::IsDoable() const
-{
-    return mPanelCost->IsDoable();
-}
+bool CellConquestOverlay::IsDoable() const { return mPanelCost->IsDoable(); }
+bool CellConquestOverlay::IsDoableUnit() const { return mPanelCost->IsDoableUnit(); }
+bool CellConquestOverlay::IsDoableResources() const { return mPanelCost->IsDoableResources(); }
 
 void CellConquestOverlay::SetCostMoveDoable(bool doable)
 {
