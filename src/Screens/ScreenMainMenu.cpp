@@ -356,13 +356,16 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "\n"
+                  "- New panel showing energy usage when moving unit.\n"
+                  "- New panel showing resources usage when conquering cells.\n"
                   "\nCHANGES\n"
                   "- Loot boxes now require unit interaction to get loot.\n"
+                  "- Extended and improved cell conquest mechanics.\n"
                   "\n"
                   "\nFIXES\n"
                   "- Fixed crash when mini-units move only 1 cell.\n"
                   "- Fixed camera never stopping scrolling when opening a dialog.\n"
+                  "- Fixed text messed up in dialog settings when changing language.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
