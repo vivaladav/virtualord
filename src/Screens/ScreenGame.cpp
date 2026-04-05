@@ -3346,19 +3346,22 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
 
 void ScreenGame::ClearTempCellConquestPath(Unit * unit, bool showTarget)
 {
-    // clear current path
-    ConquerPath cp(unit, mGameMap, this);
-    cp.SetPathCells(mConquestPath);
+    if(!mConquestPath.empty())
+    {
+        // clear current path
+        ConquerPath cp(unit, mGameMap, this);
+        cp.SetPathCells(mConquestPath);
 
-    // mark overaly as valid
-    // NOTE do it before setting the path
-    const int currInd = mCurrCell.row * mGameMap->GetNumCols() + mCurrCell.col;
-    const bool onLast = currInd == mConquestPath.back();
-    mOverlayCellConquest->SetValid(onLast);
+        // mark overaly as valid
+        // NOTE do it before setting the path
+        const int currInd = mCurrCell.row * mGameMap->GetNumCols() + mCurrCell.col;
+        const bool onLast = currInd == mConquestPath.back();
+        mOverlayCellConquest->SetValid(onLast);
 
-    mOverlayCellConquest->SetPath(mConquestPath, cp.GetCostUnitEnergy(),
-                                  cp.GetCostResourceEnergy(), cp.GetCostResourceMaterial());
-    mOverlayCellConquest->SetCostsDoable(true, true, true);
+        mOverlayCellConquest->SetPath(mConquestPath, cp.GetCostUnitEnergy(),
+                                      cp.GetCostResourceEnergy(), cp.GetCostResourceMaterial());
+        mOverlayCellConquest->SetCostsDoable(true, true, true);
+    }
 
     // show invalid target
     if(showTarget)
