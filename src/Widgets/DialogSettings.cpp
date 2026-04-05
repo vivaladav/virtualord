@@ -989,13 +989,13 @@ void DialogSettings::OnStringsChanged()
     // PANEL GAME - headers
     const char * strIdsGame[] =
     {
+        "LANGUAGE",
         "MAP_SCROLL_SPEED",
         "MAP_DRAG_SPEED",
         "EDGE_MAP_SCROLL",
         "MAP_DRAG",
         "AUTO_END_TURN",
         "TUTORIAL",
-        "LANGUAGE",
     };
 
     unsigned int numLabels = mHeadersGame.size();
