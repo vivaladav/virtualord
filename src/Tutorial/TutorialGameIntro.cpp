@@ -56,7 +56,6 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     auto localBase = local->GetBase();
 
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
-
     AddStep([] { return new StepDelay(1.f); });
     AddStep([] { return new StepGameIntro; });
     AddStep([] { return new StepDelay(0.3f); });
@@ -66,10 +65,12 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelActions] { return new StepGameBaseBuildUnitIcon(panelActions); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this] { return new StepGameBaseBuildUnit(mScreen->mHUD); });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
     AddStep([local] { return new StepGameUnit(local); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
@@ -111,9 +112,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this] { return new StepGameClearSelection(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameStructConnected; });
-
     AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
-
     AddStep([] { return new StepGameMapNavigation; });
 }
 
