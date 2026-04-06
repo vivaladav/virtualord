@@ -12,8 +12,8 @@
 
 namespace
 {
-const int destR = 57;
-const int destC = 13;
+const int destR = 56;
+const int destC = 14;
 }
 
 namespace game
@@ -75,6 +75,12 @@ void StepGameMoveUnit::Update(float)
     {
         if(mUnit->GetRow0() == destR && mUnit->GetCol0() == destC)
             SetDone();
+        // hide focus area when move starts
+        else if(mUnit->GetCurrentAction() == GameObjectActionType::MOVE)
+        {
+            mFocusArea->SetBlinking(false);
+            mFocusArea->SetVisible(false);
+        }
     }
 }
 
