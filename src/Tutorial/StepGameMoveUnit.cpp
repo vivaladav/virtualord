@@ -20,7 +20,7 @@ namespace game
 {
 
 StepGameMoveUnit::StepGameMoveUnit(const Player * p, const IsoMap * isoMap)
-    : TutorialInfoStep(600, 275)
+    : TutorialInfoStep(600, 250)
     , mFocusArea(new FocusArea)
 {
     auto sm = sgl::utilities::StringManager::Instance();

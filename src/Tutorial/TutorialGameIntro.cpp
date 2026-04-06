@@ -13,6 +13,7 @@
 #include "Tutorial/StepGameBaseFeatures.h"
 #include "Tutorial/StepGameClearSelection.h"
 #include "Tutorial/StepGameConquerCells.h"
+#include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerStruct.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEnableCamera.h"
@@ -76,7 +77,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this, local] { return new StepGameMoveUnit(local, mScreen->mIsoMap); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // TODO update based on tutorial map
-    AddStep([] { return new StepGameMoveCamera(200, -100); });
+    AddStep([] { return new StepGameMoveCamera(250, -150); });
     AddStep([this, local]
             {
                 const int genR = 56;
@@ -97,7 +98,15 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepGameEnergyRegeneration; });
     AddStep([] { return new StepGameStructDisconnected; });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
-    AddStep([this, local] { return new StepGameConquerCells(local, mScreen->mIsoMap); });
+    AddStep([this]
+        {
+            const Cell2D & cellActionStart = mScreen->mCellActionStart;
+            return new StepGameConquerCells(mScreen->mIsoMap, cellActionStart);
+        });
+    AddStep([this, local]
+        {
+                return new StepGameConquerCellsEnd(mScreen->mIsoMap, local);
+        });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
     AddStep([this] { return new StepGameClearSelection(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });

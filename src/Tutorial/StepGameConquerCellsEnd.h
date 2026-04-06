@@ -7,21 +7,21 @@ namespace game
 
 class FocusArea;
 class IsoMap;
+class Player;
+class Unit;
 
-struct Cell2D;
-
-class StepGameConquerCells : public TutorialInfoStep
+class StepGameConquerCellsEnd : public TutorialInfoStep
 {
 public:
-    StepGameConquerCells(const IsoMap * isoMap, const Cell2D & cellActionStart);
-    ~StepGameConquerCells();
+    StepGameConquerCellsEnd(const IsoMap * isoMap, const Player * p);
+    ~StepGameConquerCellsEnd();
 
     void Update(float delta) override;
 
 private:
     FocusArea * mFocusArea = nullptr;
 
-    const Cell2D & mCellActionStart;
+    Unit * mUnit = nullptr;
 };
 
 } // namespace game
