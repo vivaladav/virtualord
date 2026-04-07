@@ -64,8 +64,8 @@ StepGameConquerStruct::StepGameConquerStruct(const Player * p, const GameObject 
                                                  energyGen->GetRow0(), energyGen->GetCol0());
 
                            // re-allow unit to move and conquer
-                           auto unit = p->GetUnit(0);
-                           unit->SetActiveAction(GameObjectActionType::MOVE);
+                           mUnit = p->GetUnit(0);
+                           mUnit->SetActiveAction(MOVE);
                        });
 }
 
@@ -78,6 +78,8 @@ void StepGameConquerStruct::Update(float)
 {
     if(mEnergyGen->GetFaction() != NO_FACTION)
         SetDone();
+    else if(mUnit != nullptr && mUnit->GetCurrentAction() == CONQUER_STRUCTURE)
+        mFocusArea->SetVisible(false);
 }
 
 } // namespace game

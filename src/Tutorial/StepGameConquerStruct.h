@@ -11,6 +11,7 @@ class IsoMap;
 class PanelClickFilter;
 class PanelInfoTutorial;
 class Player;
+class Unit;
 
 class StepGameConquerStruct : public TutorialInfoStep
 {
@@ -24,6 +25,7 @@ private:
     FocusArea * mFocusArea = nullptr;
 
     const GameObject * mEnergyGen = nullptr;
+    Unit * mUnit = nullptr;
 };
 
 } // namespace game
