@@ -36,7 +36,6 @@ const char SpriteFileGameUIExp[] = "UI/game_UI-exp.png";
 const char SpriteFileMainMenuButtons[] = "UI/main_menu_buttons.png";
 const char SpriteFileMapUI[] = "UI/map_ui.png";
 const char SpriteFileObjActionButton[] = "UI/object_action_button.png";
-const char SpriteFilePanelHit[] = "UI/panel_hit.png";
 const char SpriteFilePanelMinimap[] = "UI/panel_minimap.png";
 const char SpriteFilePanelSelectedObject[] = "UI/panel_selected_object.png";
 const char SpriteFilePanelTurnControl[] = "UI/panel_turn_control.png";

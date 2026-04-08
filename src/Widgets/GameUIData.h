@@ -487,9 +487,6 @@ enum SpriteIdMainMenuButtons : unsigned int
     NUM_MAIN_MENU_SPRITES
 };
 
-// PANEL HIT
-extern const char SpriteFilePanelHit[];
-
 // MAP PANELS
 extern const char SpriteFilePanelMinimap[];
 
@@ -568,6 +565,8 @@ extern const char SpriteFilePanelUnitActions[];
 
 enum SpriteIdPanelUnitActions : unsigned int
 {
+    // PANEL HIT
+    ID_PANEL_HIT_BG,
     // ENERGY USAGE
     ID_PUA_ENERGY_BG,
     ID_PUA_ENERGY_BG2,

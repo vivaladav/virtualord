@@ -1378,12 +1378,6 @@ void ScreenInitGame::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUIExp, rectsExp);
     });
 
-    // PANEL HIT
-    mJobs.emplace_back([this, tm]
-    {
-        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelHit);
-    });
-
     // MAP UI
     mJobs.emplace_back([this, tm]
     {
@@ -1498,12 +1492,14 @@ void ScreenInitGame::SetupTextures()
     {
         const std::vector<sgl::core::Rectd> rects
         {
+            // PANEL HIT
+            { 0, 0, 120, 164 },
             // ENERGY USAGE
-            { 0, 0, 96, 49 },
-            { 0, 50, 96, 49 },
+            { 121, 117, 96, 49 },
+            { 218, 117, 96, 49 },
             // RESOURCES USAGE
-            { 97, 0, 174, 116 },
-            { 272, 0, 174, 116 },
+            { 121, 0, 174, 116 },
+            { 296, 0, 174, 116 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelUnitActions, rects);

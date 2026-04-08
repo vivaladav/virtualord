@@ -92,8 +92,6 @@ void StateLeaveGame::DestroyTextures()
     // GAME UI
     tm->DestroySprite(SpriteFileGameUI);
     tm->DestroySprite(SpriteFileGameUIExp);
-    // PANEL HIT
-    tm->DestroyTexture(SpriteFilePanelHit);
     // MAP UI
     tm->DestroySprite(SpriteFilePanelMinimap);
     // PANEL SELECTED OBJECT
