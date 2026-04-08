@@ -24,6 +24,8 @@ PanelUnitResourcesUsage::PanelUnitResourcesUsage()
     auto sm = utilities::StringManager::Instance();
     auto tm = graphic::TextureManager::Instance();
 
+    sm->AddListener(this);
+
     const int marginL = 15;
     const int marginT = 15;
     const int marginHeaderB = 2;
@@ -43,11 +45,11 @@ PanelUnitResourcesUsage::PanelUnitResourcesUsage()
     // header
     const int sizeHeader = 16;
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFileText, sizeHeader, graphic::Font::NORMAL);
-    auto labelHeader = new sgui::Label(sm->GetCString("UNIT"), fontHeader, this);
-    labelHeader->SetColor(WidgetsConstants::colorPanelHeader);
-    labelHeader->SetPosition(x, y);
+    mHeaderUnit = new sgui::Label(sm->GetCString("UNIT"), fontHeader, this);
+    mHeaderUnit->SetColor(WidgetsConstants::colorPanelHeader);
+    mHeaderUnit->SetPosition(x, y);
 
-    y += labelHeader->GetHeight() + marginHeaderB;
+    y += mHeaderUnit->GetHeight() + marginHeaderB;
 
     // icon energy
     auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_C_RES_ENERGY_16);
@@ -68,11 +70,11 @@ PanelUnitResourcesUsage::PanelUnitResourcesUsage()
     // header
     x = marginL;
 
-    labelHeader = new sgui::Label(sm->GetCString("RESOURCES"), fontHeader, this);
-    labelHeader->SetColor(WidgetsConstants::colorPanelHeader);
-    labelHeader->SetPosition(x, y);
+    mHeaderRes = new sgui::Label(sm->GetCString("RESOURCES"), fontHeader, this);
+    mHeaderRes->SetColor(WidgetsConstants::colorPanelHeader);
+    mHeaderRes->SetPosition(x, y);
 
-    y += labelHeader->GetHeight() + marginHeaderB;
+    y += mHeaderRes->GetHeight() + marginHeaderB;
 
     // icon energy
     icon = new sgui::Image(tex, this);
@@ -183,6 +185,14 @@ void PanelUnitResourcesUsage::UpdateGraphics()
 void PanelUnitResourcesUsage::UpdatePositions()
 {
     mBg->SetPosition(GetScreenX(), GetScreenY());
+}
+
+void PanelUnitResourcesUsage::OnStringsChanged()
+{
+    auto sm = sgl::utilities::StringManager::Instance();
+
+    mHeaderUnit->SetText(sm->GetCString("UNIT"));
+    mHeaderRes->SetText(sm->GetCString("RESOURCES"));
 }
 
 } // namespace sgl

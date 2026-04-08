@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sgl/sgui/Widget.h>
+#include <sgl/utilities/StringsChangeListener.h>
 
 namespace sgl
 {
@@ -12,7 +13,8 @@ namespace sgl
 namespace game
 {
 
-class PanelUnitResourcesUsage : public sgl::sgui::Widget
+class PanelUnitResourcesUsage : public sgl::sgui::Widget,
+                                public sgl::utilities::StringsChangeListener
 {
 public:
     PanelUnitResourcesUsage();
@@ -29,8 +31,13 @@ private:
     void UpdateGraphics();
     void UpdatePositions();
 
+    void OnStringsChanged() override;
+
 private:
     sgl::graphic::Image * mBg = nullptr;
+
+    sgl::sgui::Label * mHeaderUnit = nullptr;
+    sgl::sgui::Label * mHeaderRes = nullptr;
 
     sgl::sgui::Label * mLabelUnitEnergy = nullptr;
     sgl::sgui::Label * mLabelResEnergy = nullptr;
