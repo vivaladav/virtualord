@@ -24,8 +24,6 @@ PanelUnitResourcesUsage::PanelUnitResourcesUsage()
     auto sm = utilities::StringManager::Instance();
     auto tm = graphic::TextureManager::Instance();
 
-    sm->AddListener(this);
-
     const int marginL = 15;
     const int marginT = 15;
     const int marginHeaderB = 2;

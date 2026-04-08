@@ -63,7 +63,6 @@ GameHUD::GameHUD(ScreenGame * screen)
     using namespace sgl;
 
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     const int rendW = graphic::Renderer::Instance()->GetWidth();
     const int rendH = graphic::Renderer::Instance()->GetHeight();

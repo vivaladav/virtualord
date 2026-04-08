@@ -17,7 +17,6 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     using namespace sgl::core;
 
     auto sm = sgl::utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     SetResizePolicy(ResizePolicy::DYNAMIC);
 

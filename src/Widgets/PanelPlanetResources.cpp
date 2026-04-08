@@ -25,7 +25,6 @@ PanelPlanetResources::PanelPlanetResources()
     auto tm = graphic::TextureManager::Instance();
     auto fm = graphic::FontManager::Instance();
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     // BACKGROUND
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFilePlanetMap2, IND_PM_PANEL_RESOURCES);

@@ -128,7 +128,6 @@ public:
 
         // TOOLTIP
         auto sm = utilities::StringManager::Instance();
-        sm->AddListener(this);
 
         const char * tooltipText[NUM_VISUAL_STAT_TYPES] =
         {
@@ -230,7 +229,6 @@ public:
 
         // TOOLTIP
         auto sm = utilities::StringManager::Instance();
-        sm->AddListener(this);
 
         const char * tooltipText[NUM_OBJECT_FUNCTIONS] =
         {
@@ -316,7 +314,6 @@ PanelSelectedObject::PanelSelectedObject(const ObjectsDataRegistry * odr, sgl::s
     auto tm = graphic::TextureManager::Instance();
     auto fm = graphic::FontManager::Instance();
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     // BACKGROUND
     auto tex = tm->GetSprite(SpriteFilePanelSelectedObject, ID_PAN_SELOBJ_BG);

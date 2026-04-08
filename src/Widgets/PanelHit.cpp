@@ -27,7 +27,6 @@ PanelHit::PanelHit()
     auto tm = graphic::TextureManager::Instance();
     auto fm = graphic::FontManager::Instance();
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     const int sizeHeader = 15;
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFilePanelHeader,

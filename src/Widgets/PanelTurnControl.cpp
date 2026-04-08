@@ -45,7 +45,6 @@ public:
         using namespace sgl;
 
         auto sm = utilities::StringManager::Instance();
-        sm->AddListener(this);
 
         // tooltip
         mTooltip = new GameSimpleTooltip(sm->GetCString("END_TURN"));

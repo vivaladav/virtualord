@@ -108,7 +108,6 @@ ButtonLeavePlanet::ButtonLeavePlanet(sgl::sgui::Widget * parent)
     using namespace sgl;
 
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     const int size = 20;
 

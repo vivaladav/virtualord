@@ -36,7 +36,6 @@ PanelInfoTutorial::PanelInfoTutorial(int w, int h)
 
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     graphic::Texture * tex = nullptr;
 

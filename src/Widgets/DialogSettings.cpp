@@ -347,8 +347,6 @@ DialogSettings::DialogSettings(Game * game)
     auto fm = graphic::FontManager::Instance();
     auto tm = graphic::TextureManager::Instance();
 
-    mSM->AddListener(this);
-
     // BACKGROUND
     const int w = 1184;
     graphic::Texture * tex;
