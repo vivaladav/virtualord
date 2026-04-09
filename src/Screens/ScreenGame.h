@@ -35,7 +35,7 @@ class MiniMap;
 class MiniUnit;
 class MissionGoalsTracker;
 class OverlayCellConquest;
-class PathOverlay;
+class OverlayPath;
 class Player;
 class PlayerAI;
 class StructureIndicator;
@@ -233,7 +233,7 @@ private:
 
     // MAP OVERLAYS
     OverlayCellConquest * mOverlayCellConquest = nullptr;
-    PathOverlay * mOverlayPath = nullptr;
+    OverlayPath * mOverlayPath = nullptr;
 
     // TURN MANAGEMENT
     Player * mLocalPlayer = nullptr;

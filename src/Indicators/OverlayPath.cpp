@@ -10,7 +10,7 @@
 namespace game
 {
 
-PathOverlay::PathOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols)
+OverlayPath::OverlayPath(IsoLayer * layer, PlayerFaction faction, int mapCols)
     : mPathTarget(new PathIndicator(faction, true))
     , mLayer(layer)
     , mPanelCost(new PanelUnitEnergyUsage)
@@ -20,7 +20,7 @@ PathOverlay::PathOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols)
     mPanelCost->SetVisible(false);
 }
 
-PathOverlay::~PathOverlay()
+OverlayPath::~OverlayPath()
 {
     delete mPathTarget;
 
@@ -31,7 +31,7 @@ PathOverlay::~PathOverlay()
         delete pi;
 }
 
-void PathOverlay::ClearPath()
+void OverlayPath::ClearPath()
 {
     for(auto pi : mActiveIndicators)
     {
@@ -45,7 +45,7 @@ void PathOverlay::ClearPath()
     mPanelCost->SetVisible(false);
 }
 
-void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool doable)
+void OverlayPath::SetPath(const std::vector<unsigned int> & path, int cost, bool doable)
 {
     // empty path -> nothing to do
     if(path.empty())
@@ -91,12 +91,12 @@ void PathOverlay::SetPath(const std::vector<unsigned int> & path, int cost, bool
         mPanelCost->SetVisible(false);
 }
 
-void PathOverlay::HideTarget()
+void OverlayPath::HideTarget()
 {
     mLayer->SetObjectVisible(mPathTarget, false);
 }
 
-void PathOverlay::ShowTarget(int row, int col)
+void OverlayPath::ShowTarget(int row, int col)
 {
     if(mLayer->HasObject(mPathTarget))
     {
@@ -108,7 +108,7 @@ void PathOverlay::ShowTarget(int row, int col)
         mLayer->AddObject(mPathTarget, row, col);
 }
 
-PathIndicator * PathOverlay::GetNewIndicator(bool doable, bool final)
+PathIndicator * OverlayPath::GetNewIndicator(bool doable, bool final)
 {
     PathIndicator * pi = nullptr;
 

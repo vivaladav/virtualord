@@ -195,7 +195,7 @@ ScreenGame::ScreenGame(Game * game)
     mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
                                                    mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
 
-    mOverlayPath = new PathOverlay(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
+    mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
                                    mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
 
     // set initial camera position

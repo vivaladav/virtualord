@@ -11,11 +11,11 @@ class PathIndicator;
 
 enum PlayerFaction : unsigned int;
 
-class PathOverlay
+class OverlayPath
 {
 public:
-    PathOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols);
-    ~PathOverlay();
+    OverlayPath(IsoLayer * layer, PlayerFaction faction, int mapCols);
+    ~OverlayPath();
 
     void ClearPath();
     void SetPath(const std::vector<unsigned int> & path, int cost = -1, bool doable = true);
