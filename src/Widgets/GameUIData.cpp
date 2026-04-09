@@ -40,6 +40,7 @@ const char SpriteFilePanelMinimap[] = "UI/panel_minimap.png";
 const char SpriteFilePanelSelectedObject[] = "UI/panel_selected_object.png";
 const char SpriteFilePanelTurnControl[] = "UI/panel_turn_control.png";
 const char SpriteFilePanelUnitActions[] = "UI/panel_unit_actions.png";
+const char SpriteFilePanelUnitActionsExp[] = "UI/panel_unit_actions-exp.png";
 const char SpriteFilePlanetMap[] = "UI/planet_map.png";
 const char SpriteFilePlanetMap2[] = "UI/planet_map-2.png";
 const char SpriteFileResourcesBar[] = "UI/resources_bar.png";

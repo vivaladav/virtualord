@@ -574,6 +574,17 @@ enum SpriteIdPanelUnitActions : unsigned int
     // RESOURCES USAGE
     ID_PUA_RESOURCES_BG,
     ID_PUA_RESOURCES_BG2,
+    // PANEL WARNING
+    ID_PANEL_WARNING_BG_L,
+    ID_PANEL_WARNING_BG_R,
+};
+
+extern const char SpriteFilePanelUnitActionsExp[];
+
+enum SpriteIdPanelUnitActionsExp : unsigned int
+{
+    // PANEL WARNING
+    ID_PANEL_WARNING_BG_C,
 };
 
 // PLANET MAP
@@ -793,8 +804,6 @@ enum SpriteIdUIShared : unsigned int
     ID_UIS_ICON_C_RES_DIAMONDS_16,
     ID_UIS_ICON_C_RES_BLOBS_16,
     ID_UIS_ICON_C_RES_RESEARCH_16,
-    // WARNING ICON
-    ID_UIS_ICON_WARNING,
     // BUTTON DIALOG CLOSE
     ID_BTN_DLG_CLOSE_NORMAL,
     ID_BTN_DLG_CLOSE_DISABLED,

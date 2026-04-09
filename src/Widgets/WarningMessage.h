@@ -4,7 +4,11 @@
 
 namespace sgl
 {
-    namespace graphic { class Renderable; }
+    namespace graphic
+    {
+        class Image;
+        class Renderable;
+    }
 }
 
 namespace game
@@ -27,7 +31,10 @@ private:
     void OnUpdate(float delta) override;
 
 private:
-    sgl::graphic::Renderable * mIcon = nullptr;
+    sgl::graphic::Image * mBgL = nullptr;
+    sgl::graphic::Image * mBgC = nullptr;
+    sgl::graphic::Image * mBgR = nullptr;
+
     sgl::graphic::Renderable * mText = nullptr;
 
     float mTimer = 0.f;

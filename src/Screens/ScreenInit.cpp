@@ -587,8 +587,6 @@ void ScreenInit::SetupPermanentTextures()
             { 201, 17, 16, 16 },
             { 218, 17, 16, 16 },
             { 235, 17, 16, 16 },
-            // WARNING ICON
-            { 252, 0, 36, 32 },
             // BUTTON DIALOG CLOSE
             { 0, 50, 94, 40 },
             { 95, 50, 94, 40 },
@@ -603,9 +601,9 @@ void ScreenInit::SetupPermanentTextures()
             { 230, 108, 150, 12 },
             { 230, 121, 154, 16 },
             // CHECKBOX
-            { 289, 0, 24, 24 },
-            { 314, 0, 24, 24 },
-            { 363, 0, 24, 24 },
+            { 252, 0, 24, 24 },
+            { 278, 0, 24, 24 },
+            { 303, 0, 24, 24 },
             // BUTTON DIALOG STANDARD
             { 0, 138, 300, 44 },
             { 0, 183, 300, 44 },

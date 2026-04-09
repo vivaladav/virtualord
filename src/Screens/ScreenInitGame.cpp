@@ -1501,9 +1501,20 @@ void ScreenInitGame::SetupTextures()
             // RESOURCES USAGE
             { 121, 0, 174, 116 },
             { 296, 0, 174, 116 },
+            // PANEL WARNING
+            { 315, 117, 63, 49 },
+            { 379, 117, 34, 49 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelUnitActions, rects);
+
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // PANEL WARNING
+            { 0, 0, 10, 49 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelUnitActionsExp, rectsExp);
     });
 
     // MAP UI

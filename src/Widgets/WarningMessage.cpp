@@ -7,9 +7,11 @@
 #include <sgl/graphic/DummyRenderable.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/GraphicConstants.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Text.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/graphic/Texture.h>
 
 namespace
 {
@@ -23,15 +25,25 @@ WarningMessage::WarningMessage()
 {
     using namespace sgl;
 
+    auto tm = graphic::TextureManager::Instance();
+
     // use default camera to move according to view
     SetCamera(graphic::Camera::GetDefaultCamera());
 
-    // ICON
-    auto tm = graphic::TextureManager::Instance();
+    // BACKGROUND
+    auto tex = tm->GetSprite(SpriteFilePanelUnitActions, ID_PANEL_WARNING_BG_L);
 
-    auto tex = tm->GetSprite(SpriteFileUIShared, ID_UIS_ICON_WARNING);
-    mIcon = new graphic::Image(tex);
-    RegisterRenderable(mIcon);
+    mBgL = new graphic::Image(tex);
+    RegisterRenderable(mBgL);
+
+    tex = tm->GetSprite(SpriteFilePanelUnitActions, ID_PANEL_WARNING_BG_R);
+    mBgR = new graphic::Image(tex);
+    RegisterRenderable(mBgR);
+
+    tex = tm->GetSprite(SpriteFilePanelUnitActionsExp, ID_PANEL_WARNING_BG_C);
+    tex->SetScaleMode(graphic::TSCALE_NEAREST);
+    mBgC = new graphic::Image(tex);
+    RegisterRenderable(mBgC);
 
     // TEXT
     mText = new graphic::DummyRenderable;
@@ -57,11 +69,14 @@ void WarningMessage::ShowMessage(const char * text, float time)
     mText = new graphic::Text(text, font);
     RegisterRenderable(mText);
 
-    // SIZE
-    const int w = mIcon->GetWidth() + marginR + mText->GetWidth();
-    const int h = mIcon->GetHeight();
+    // SET SIZES
+    const int marginR = -4;
+    const int contentW = mText->GetWidth() + marginR;
+    const int w = mBgL->GetWidth() + contentW + mBgR->GetWidth();
+    const int h = mBgC->GetHeight();
 
-    // update size and positioning
+    mBgC->SetWidth(contentW);
+
     SetSize(w, h);
 
     UpdatePositions();
@@ -89,12 +104,20 @@ void WarningMessage::UpdatePositions()
     const int x0 = GetScreenX();
     const int y0 = GetScreenY();
 
+    // BACKGROUND
     int x = x0;
     int y = y0;
 
-    mIcon->SetPosition(x, y);
+    mBgL->SetPosition(x, y);
+    x += mBgL->GetWidth();
 
-    x += mIcon->GetWidth() + marginR;
+    mBgC->SetPosition(x, y);
+    x += mBgC->GetWidth();
+
+    mBgR->SetPosition(x, y);
+
+    // TEXT
+    x = x0 + mBgL->GetWidth();
     y = y0 + (GetHeight() - mText->GetHeight()) / 2;
     mText->SetPosition(x, y);
 }
