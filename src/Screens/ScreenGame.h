@@ -23,7 +23,6 @@ namespace game
 
 class AttackRangeIndicator;
 class CameraMapController;
-class CellConquestOverlay;
 class GameHUD;
 class GameMap;
 class GameObject;
@@ -35,6 +34,7 @@ class IsoMap;
 class MiniMap;
 class MiniUnit;
 class MissionGoalsTracker;
+class OverlayCellConquest;
 class PathOverlay;
 class Player;
 class PlayerAI;
@@ -232,7 +232,7 @@ private:
     sgl::core::Pointd2D mMousePos;
 
     // MAP OVERLAYS
-    CellConquestOverlay * mOverlayCellConquest = nullptr;
+    OverlayCellConquest * mOverlayCellConquest = nullptr;
     PathOverlay * mOverlayPath = nullptr;
 
     // TURN MANAGEMENT

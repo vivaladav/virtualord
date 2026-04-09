@@ -5,9 +5,9 @@
 namespace game
 {
 
-class CellConquestOverlay;
 class GameMap;
 class GameMapProgressBar;
+class OverlayCellConquest;
 class Player;
 class ScreenGame;
 class Unit;
@@ -29,7 +29,7 @@ public:
     };
 
 public:
-    ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, CellConquestOverlay * overlay = nullptr);
+    ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, OverlayCellConquest * overlay = nullptr);
     ~ConquerPath();
 
     Unit * GetUnit() const;
@@ -65,7 +65,7 @@ private:
 private:
     std::vector<unsigned int> mCells;
 
-    CellConquestOverlay * mOverlay = nullptr;
+    OverlayCellConquest * mOverlay = nullptr;
 
     GameMapProgressBar * mProgressBar = nullptr;
 

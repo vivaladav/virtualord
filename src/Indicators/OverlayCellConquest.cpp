@@ -8,7 +8,7 @@
 namespace game
 {
 
-CellConquestOverlay::CellConquestOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols)
+OverlayCellConquest::OverlayCellConquest(IsoLayer * layer, PlayerFaction faction, int mapCols)
     : mTarget(new ConquestIndicator(faction))
     , mLayer(layer)
     , mPanelCost(new PanelUnitResourcesUsage)
@@ -20,7 +20,7 @@ CellConquestOverlay::CellConquestOverlay(IsoLayer * layer, PlayerFaction faction
     mPanelMoveCost->SetVisible(false);
 }
 
-CellConquestOverlay::~CellConquestOverlay()
+OverlayCellConquest::~OverlayCellConquest()
 {
     delete mTarget;
 
@@ -31,7 +31,7 @@ CellConquestOverlay::~CellConquestOverlay()
         delete pi;
 }
 
-void CellConquestOverlay::ClearPath()
+void OverlayCellConquest::ClearPath()
 {
     for(auto pi : mActiveIndicators)
     {
@@ -46,7 +46,7 @@ void CellConquestOverlay::ClearPath()
     mPanelMoveCost->SetVisible(false);
 }
 
-void CellConquestOverlay::PopFrontPath()
+void OverlayCellConquest::PopFrontPath()
 {
     if(mActiveIndicators.empty())
         return ;
@@ -62,7 +62,7 @@ void CellConquestOverlay::PopFrontPath()
     mAvailableIndicators.emplace_back(ind);
 }
 
-void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path,
+void OverlayCellConquest::SetPath(const std::vector<unsigned int> & path,
                                   int costUnitEnergy, int costResEnergy, int costResMaterial)
 {
     // empty path -> nothing to do
@@ -112,7 +112,7 @@ void CellConquestOverlay::SetPath(const std::vector<unsigned int> & path,
     }
 }
 
-void CellConquestOverlay::SetCostsDoable(bool unitEnergy, bool resEnergy, bool resMaterial)
+void OverlayCellConquest::SetCostsDoable(bool unitEnergy, bool resEnergy, bool resMaterial)
 {
     mPanelCost->SetDoable(unitEnergy, resEnergy, resMaterial);
 
@@ -122,21 +122,21 @@ void CellConquestOverlay::SetCostsDoable(bool unitEnergy, bool resEnergy, bool r
         ind->SetDoable(doable);
 }
 
-bool CellConquestOverlay::IsDoable() const { return mPanelCost->IsDoable(); }
-bool CellConquestOverlay::IsDoableUnit() const { return mPanelCost->IsDoableUnit(); }
-bool CellConquestOverlay::IsDoableResources() const { return mPanelCost->IsDoableResources(); }
+bool OverlayCellConquest::IsDoable() const { return mPanelCost->IsDoable(); }
+bool OverlayCellConquest::IsDoableUnit() const { return mPanelCost->IsDoableUnit(); }
+bool OverlayCellConquest::IsDoableResources() const { return mPanelCost->IsDoableResources(); }
 
-void CellConquestOverlay::SetCostMoveDoable(bool doable)
+void OverlayCellConquest::SetCostMoveDoable(bool doable)
 {
     mPanelMoveCost->SetDoable(doable);
 }
 
-void CellConquestOverlay::HidePanelCost()
+void OverlayCellConquest::HidePanelCost()
 {
     mPanelCost->SetVisible(false);
 }
 
-void CellConquestOverlay::HideTarget()
+void OverlayCellConquest::HideTarget()
 {
     mLayer->SetObjectVisible(mTarget, false);
 
@@ -144,7 +144,7 @@ void CellConquestOverlay::HideTarget()
     mPanelMoveCost->SetVisible(false);
 }
 
-void CellConquestOverlay::ShowTarget(int row, int col, bool valid)
+void OverlayCellConquest::ShowTarget(int row, int col, bool valid)
 {
     if(mLayer->HasObject(mTarget))
     {
@@ -174,12 +174,12 @@ void CellConquestOverlay::ShowTarget(int row, int col, bool valid)
         mPanelMoveCost->SetVisible(false);
 }
 
-bool CellConquestOverlay::IsTargetVisible() const
+bool OverlayCellConquest::IsTargetVisible() const
 {
     return mTarget->IsVisible();
 }
 
-void CellConquestOverlay::SetValid(bool valid)
+void OverlayCellConquest::SetValid(bool valid)
 {
     if(mValid == valid)
         return;
@@ -190,7 +190,7 @@ void CellConquestOverlay::SetValid(bool valid)
         mPanelCost->SetVisible(false);
 }
 
-ConquestIndicator * CellConquestOverlay::GetNewIndicator()
+ConquestIndicator * OverlayCellConquest::GetNewIndicator()
 {
     ConquestIndicator * pi = nullptr;
 

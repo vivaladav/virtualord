@@ -13,11 +13,11 @@ class PanelUnitResourcesUsage;
 
 enum PlayerFaction : unsigned int;
 
-class CellConquestOverlay
+class OverlayCellConquest
 {
 public:
-    CellConquestOverlay(IsoLayer * layer, PlayerFaction faction, int mapCols);
-    ~CellConquestOverlay();
+    OverlayCellConquest(IsoLayer * layer, PlayerFaction faction, int mapCols);
+    ~OverlayCellConquest();
 
     void ClearPath();
     void PopFrontPath();
@@ -62,9 +62,9 @@ private:
     bool mValid = true;
 };
 
-inline void CellConquestOverlay::SetCostEnergyUnitMove(int cost) { mCostUnitMove = cost; }
-inline int CellConquestOverlay::GetCostEnergyUnitMove() const { return mCostUnitMove; }
+inline void OverlayCellConquest::SetCostEnergyUnitMove(int cost) { mCostUnitMove = cost; }
+inline int OverlayCellConquest::GetCostEnergyUnitMove() const { return mCostUnitMove; }
 
-inline bool CellConquestOverlay::IsValid() const { return mValid; }
+inline bool OverlayCellConquest::IsValid() const { return mValid; }
 
 } // namespace game

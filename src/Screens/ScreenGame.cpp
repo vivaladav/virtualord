@@ -192,7 +192,7 @@ ScreenGame::ScreenGame(Game * game)
     mTrackerMG->SetGameHUD(mHUD);
 
     // OVERLAYS
-    mOverlayCellConquest = new CellConquestOverlay(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
+    mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
                                                    mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
 
     mOverlayPath = new PathOverlay(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),

@@ -26,7 +26,7 @@ constexpr int COST_MATERIAL = 5;
 namespace game
 {
 
-ConquerPath::ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, CellConquestOverlay * overlay)
+ConquerPath::ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, OverlayCellConquest * overlay)
     : mOverlay(overlay)
     , mUnit(unit)
     , mPlayer(sg->GetGame()->GetPlayerByFaction(unit->GetFaction()))
