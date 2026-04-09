@@ -358,6 +358,7 @@ void ScreenMainMenu::CreateChangelog()
     text->SetText("NEW FEATURES\n"
                   "- New panel showing energy usage when moving unit.\n"
                   "- New panel showing resources usage when conquering cells.\n"
+                  "- New tech upgrade: practice target.\n"
                   "\nCHANGES\n"
                   "- Loot boxes now require unit interaction to get loot.\n"
                   "- Extended and improved cell conquest mechanics.\n"

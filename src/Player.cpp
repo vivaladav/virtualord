@@ -454,6 +454,10 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
             UpgradeResourceStorage(RES_BLOBS, 1.5f);
         break;
 
+        case TECH_UP_PRACTICE_TARGET:
+            AddAvailableStructure(ObjectData::TYPE_PRACTICE_TARGET);
+        break;
+
         default:
         break;
     }

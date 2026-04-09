@@ -110,6 +110,7 @@ DialogTechTree::DialogTechTree(Player * player)
     mDescriptions.emplace(TECH_UP_STORAGE_DIAMONDS_2, "UPG_STOR_DIA2");
     mDescriptions.emplace(TECH_UP_STORAGE_BLOBS_1, "UPG_STOR_BLO1");
     mDescriptions.emplace(TECH_UP_STORAGE_BLOBS_2, "UPG_STOR_BLO2");
+    mDescriptions.emplace(TECH_UP_PRACTICE_TARGET, "UPG_PTARGET");
 
     // INIT COSTS
     mCosts.emplace(TECH_UP_NULL, 0);
@@ -129,6 +130,7 @@ DialogTechTree::DialogTechTree(Player * player)
     mCosts.emplace(TECH_UP_STORAGE_DIAMONDS_2, 1500);
     mCosts.emplace(TECH_UP_STORAGE_BLOBS_1, 600);
     mCosts.emplace(TECH_UP_STORAGE_BLOBS_2, 1500);
+    mCosts.emplace(TECH_UP_PRACTICE_TARGET, 900);
 
     // -- BACKGROUND --
     const int w = 1904;
@@ -384,6 +386,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         btnUpgrade02->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade02, LINK_VERT, LS_NORTH);
+        AddLinkToUpgrade(btnUpgrade02, LINK_HORIZ, LS_WEST);
 
         btnY -= btnUpgrade02->GetHeight() + buttonsMarginV;
 
@@ -429,8 +432,16 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         AddLinkToUpgrade(btnUpgrade42, LINK_HORIZ, LS_WEST);
 
         // -- COL 3 --
-        btnX = btnUpgrade12->GetX() + btnUpgrade12->GetWidth() + buttonsMarginH;
-        btnY = btnUpgrade12->GetY();
+        btnX += btnUpgrade02->GetWidth() + buttonsMarginH;
+        btnY = upgradesY0;
+
+        auto btnUpgrade03 = GetNewButtonUpgrade(TECH_UP_PRACTICE_TARGET, 0,
+                                                { btnUpgrade02 }, false);
+        btnUpgrade03->SetPosition(btnX, btnY);
+
+        //AddLinkToUpgrade(btnUpgrade03, LINK_HORIZ, LS_WEST);
+
+        btnY -= btnUpgrade03->GetHeight() + buttonsMarginV;
 
         // [1, 3]
         auto btnUpgrade13 = GetNewButtonUpgrade(TECH_UP_STORAGE_ENERGY_2, 2,

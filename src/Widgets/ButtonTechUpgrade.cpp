@@ -72,6 +72,7 @@ ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * 
     mIconsIds.emplace(TECH_UP_STORAGE_DIAMONDS_2, ID_TECH_UP_ICON_STORAGE_DIAMONDS);
     mIconsIds.emplace(TECH_UP_STORAGE_BLOBS_1, ID_TECH_UP_ICON_STORAGE_BLOBS);
     mIconsIds.emplace(TECH_UP_STORAGE_BLOBS_2, ID_TECH_UP_ICON_STORAGE_BLOBS);
+    mIconsIds.emplace(TECH_UP_PRACTICE_TARGET, ID_TECH_UP_ICON_TARGET);
 
     SetUpgrade(upgrade);
 
