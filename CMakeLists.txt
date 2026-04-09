@@ -149,16 +149,16 @@ add_executable(
     src/GameObjectTools/WeaponData.cpp
     src/Indicators/AttackRangeIndicator.h
     src/Indicators/AttackRangeIndicator.cpp
-    src/Indicators/CellConquestOverlay.h
-    src/Indicators/CellConquestOverlay.cpp
     src/Indicators/ConquestIndicator.h
     src/Indicators/ConquestIndicator.cpp
     src/Indicators/HealingRangeIndicator.h
     src/Indicators/HealingRangeIndicator.cpp
+    src/Indicators/OverlayCellConquest.h
+    src/Indicators/OverlayCellConquest.cpp
+    src/Indicators/OverlayPath.h
+    src/Indicators/OverlayPath.cpp
     src/Indicators/PathIndicator.h
     src/Indicators/PathIndicator.cpp
-    src/Indicators/PathOverlay.h
-    src/Indicators/PathOverlay.cpp
     src/Indicators/StructureIndicator.h
     src/Indicators/StructureIndicator.cpp
     src/Indicators/WallIndicator.h

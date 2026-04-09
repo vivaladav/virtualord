@@ -7,7 +7,7 @@
 #include "Player.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Unit.h"
-#include "Indicators/CellConquestOverlay.h"
+#include "Indicators/OverlayCellConquest.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/GameMapProgressBar.h"

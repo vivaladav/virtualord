@@ -1,4 +1,4 @@
-#include "Indicators/CellConquestOverlay.h"
+#include "Indicators/OverlayCellConquest.h"
 
 #include "IsoLayer.h"
 #include "Indicators/ConquestIndicator.h"
