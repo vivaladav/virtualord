@@ -21,7 +21,6 @@ namespace sgl
 namespace game
 {
 
-class AttackRangeIndicator;
 class CameraMapController;
 class GameHUD;
 class GameMap;
@@ -34,6 +33,7 @@ class IsoMap;
 class MiniMap;
 class MiniUnit;
 class MissionGoalsTracker;
+class OverlayAttackRange;
 class OverlayCellConquest;
 class OverlayPath;
 class Player;
@@ -164,7 +164,6 @@ private:
 
     void ShowActiveUnitIndicators(Unit * unit, const Cell2D & cell);
     void ShowActiveMiniUnitIndicators(MiniUnit * mu, const Cell2D & cell);
-    void ShowAttackIndicators(const GameObject * obj, int range);
     void ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCell);
     void ShowBuildWallIndicator(Unit * unit, const Cell2D & dest);
     void ShowCellConquestIndicator(Unit * unit, const Cell2D & dest);
@@ -199,7 +198,6 @@ private:
 
     std::unordered_map<GameObjectTypeId, StructureIndicator *> mStructIndicators;
     std::vector<WallIndicator *> mWallIndicators;
-    std::vector<AttackRangeIndicator *> mAttIndicators;
     std::vector<HealingRangeIndicator *> mHealIndicators;
     StructureIndicator * mTempStructIndicator = nullptr;
 
@@ -232,6 +230,7 @@ private:
     sgl::core::Pointd2D mMousePos;
 
     // MAP OVERLAYS
+    OverlayAttackRange * mOverlayAttack = nullptr;
     OverlayCellConquest * mOverlayCellConquest = nullptr;
     OverlayPath * mOverlayPath = nullptr;
 

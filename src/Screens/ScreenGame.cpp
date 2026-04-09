@@ -28,8 +28,8 @@
 #include "GameObjects/Unit.h"
 #include "GameObjects/WallGate.h"
 #include "GameObjectTools/Weapon.h"
-#include "Indicators/AttackRangeIndicator.h"
 #include "Indicators/HealingRangeIndicator.h"
+#include "Indicators/OverlayAttackRange.h"
 #include "Indicators/OverlayCellConquest.h"
 #include "Indicators/OverlayPath.h"
 #include "Indicators/StructureIndicator.h"
@@ -192,6 +192,8 @@ ScreenGame::ScreenGame(Game * game)
     mTrackerMG->SetGameHUD(mHUD);
 
     // OVERLAYS
+    mOverlayAttack = new OverlayAttackRange(mIsoMap);
+
     mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
                                                    mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
 
@@ -238,9 +240,6 @@ ScreenGame::~ScreenGame()
     delete mPathfinder;
     delete mPartMan;
 
-    for(auto ind : mAttIndicators)
-        delete ind;
-
     for(auto ind : mHealIndicators)
         delete ind;
 
@@ -258,6 +257,7 @@ ScreenGame::~ScreenGame()
     delete mGameMap;
 
     // NOTE delete overlays after GameMap because they're still used by its destructors
+    delete mOverlayAttack;
     delete mOverlayCellConquest;
     delete mOverlayPath;
 
@@ -400,10 +400,7 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
         const GameObjectTypeId type = obj->GetObjectType();
 
         if(type == ObjectData::TYPE_DEFENSIVE_TOWER || type == ObjectData::TYPE_BUNKER)
-        {
-            const int range = obj->GetWeapon()->GetRange();
-            ShowAttackIndicators(obj, range);
-        }
+            mOverlayAttack->Show(obj);
         else if(obj->GetObjectCategory() == ObjectData::CAT_MINI_UNIT)
         {
             auto group = static_cast<MiniUnitsGroup *>(obj->GetGroup());
@@ -624,8 +621,7 @@ void ScreenGame::CreateUI()
         UpdatePanelHit(unit);
 
         // show attack range overlay
-        const int range = unit->GetWeapon()->GetRange();
-        ShowAttackIndicators(unit, range);
+        mOverlayAttack->Show(unit);
     });
 
     // heal
@@ -3088,64 +3084,6 @@ void ScreenGame::ShowActiveMiniUnitIndicators(MiniUnit * mu, const Cell2D & cell
         mOverlayPath->ShowTarget(cell.row, cell.col);
 }
 
-void ScreenGame::ShowAttackIndicators(const GameObject * obj, int range)
-{
-    IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS3);
-
-    const int rows = mIsoMap->GetNumRows();
-    const int cols = mIsoMap->GetNumCols();
-    const int r0 = obj->GetRow0();
-    const int c0 = obj->GetCol0();
-    const int rowTL = obj->GetRow1() - range > 0 ? obj->GetRow1() - range : 0;
-    const int colTL = obj->GetCol1() - range > 0 ? obj->GetCol1() - range : 0;
-    const int rowBR = r0 + range < rows ? r0 + range : rows - 1;
-    const int colBR = c0 + range < cols ? c0 + range : cols - 1;
-
-    const int neededInd = (rowBR - rowTL + 1) * (colBR - colTL + 1);
-    const int existingInd = mAttIndicators.size();
-    const int missingInd = neededInd - existingInd;
-
-    // create missing indicators
-    if(missingInd > 0)
-    {
-        for(int i = 0; i < missingInd; ++i)
-            mAttIndicators.push_back(new AttackRangeIndicator);
-    }
-
-    // init needed indicators
-    for(int i = 0; i < neededInd; ++i)
-    {
-        mAttIndicators[i]->SetVisible(true);
-    }
-
-    // hide other indicators
-    const int existingInd2 = mAttIndicators.size();
-
-    for(int i = neededInd; i < existingInd2; ++i)
-        mAttIndicators[i]->SetVisible(false);
-
-    int ind = 0;
-
-    for(int r = rowTL; r <= rowBR; ++r)
-    {
-        for(int c = colTL; c <= colBR; ++c)
-        {
-            if(r != r0 || c != c0)
-            {
-                layer->AddObject(mAttIndicators[ind], r, c);
-
-                const int distR = std::abs(r - r0);
-                const int distC = std::abs(c - c0);
-                const int dist = distR > distC ? distR : distC;
-
-                mAttIndicators[ind]->SetDistance(dist, range);
-
-                ++ind;
-            }
-        }
-    }
-}
-
 void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCell)
 {
     IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4);
@@ -3625,6 +3563,8 @@ void ScreenGame::ClearCellOverlays()
     mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2)->ClearObjects();
     mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS3)->ClearObjects();
     mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4)->ClearObjects();
+
+    mOverlayAttack->Clear();
 
     mOverlayCellConquest->ClearPath();
     mOverlayCellConquest->HideTarget();

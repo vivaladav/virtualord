@@ -153,6 +153,8 @@ add_executable(
     src/Indicators/ConquestIndicator.cpp
     src/Indicators/HealingRangeIndicator.h
     src/Indicators/HealingRangeIndicator.cpp
+    src/Indicators/OverlayAttackRange.h
+    src/Indicators/OverlayAttackRange.cpp
     src/Indicators/OverlayCellConquest.h
     src/Indicators/OverlayCellConquest.cpp
     src/Indicators/OverlayPath.h
