@@ -1,24 +1,23 @@
-#include "Indicators/OverlayAttackRange.h"
+#include "Indicators/OverlayHealRange.h"
 
 #include "GameConstants.h"
 #include "IsoLayer.h"
 #include "IsoMap.h"
 #include "GameObjects/GameObject.h"
-#include "GameObjectTools/Weapon.h"
-#include "Indicators/AttackRangeIndicator.h"
+#include "Indicators/HealingRangeIndicator.h"
 
 #include <cassert>
 
 namespace game
 {
 
-OverlayAttackRange::OverlayAttackRange(IsoMap * im)
+OverlayHealRange::OverlayHealRange(IsoMap * im)
     : mIsoMap(im)
     , mLayer(im->GetLayer(MapLayers::CELL_OVERLAYS2))
 {
 }
 
-OverlayAttackRange::~OverlayAttackRange()
+OverlayHealRange::~OverlayHealRange()
 {
     for(auto pi : mActiveIndicators)
         delete pi;
@@ -27,7 +26,7 @@ OverlayAttackRange::~OverlayAttackRange()
         delete pi;
 }
 
-void OverlayAttackRange::Clear()
+void OverlayHealRange::Clear()
 {
     for(auto pi : mActiveIndicators)
     {
@@ -39,7 +38,7 @@ void OverlayAttackRange::Clear()
     mActiveIndicators.clear();
 }
 
-void OverlayAttackRange::Show(const GameObject * obj)
+void OverlayHealRange::Show(const GameObject * obj, unsigned int range)
 {
     // clear current indicators
     Clear();
@@ -49,24 +48,22 @@ void OverlayAttackRange::Show(const GameObject * obj)
     const int cols = mIsoMap->GetNumCols();
     const int r0 = obj->GetRow0();
     const int c0 = obj->GetCol0();
-    const int range = obj->GetWeapon()->GetRange();
-    const int rowTL = obj->GetRow1() - range > 0 ? obj->GetRow1() - range : 0;
-    const int colTL = obj->GetCol1() - range > 0 ? obj->GetCol1() - range : 0;
+    const int r1 = obj->GetRow1();
+    const int c1 = obj->GetCol1();
+    const int rowTL = r1 - range > 0 ? r1 - range : 0;
+    const int colTL = c1 - range > 0 ? c1 - range : 0;
     const int rowBR = r0 + range < rows ? r0 + range : rows - 1;
     const int colBR = c0 + range < cols ? c0 + range : cols - 1;
+    const PlayerFaction faction = obj->GetFaction();
 
     for(int r = rowTL; r <= rowBR; ++r)
     {
         for(int c = colTL; c <= colBR; ++c)
         {
-            // skip cell below object
-            if(r != r0 || c != c0)
+            // skip cells below object
+            if(!(r >= r1 && r <= r0 && c >= c1 && c <= c0))
             {
-                const int distR = std::abs(r - r0);
-                const int distC = std::abs(c - c0);
-                const int dist = distR > distC ? distR : distC;
-
-                auto pi = GetNewIndicator(dist, range);
+                auto pi = GetNewIndicator(faction);
                 mActiveIndicators.emplace_back(pi);
 
                 mLayer->AddObject(pi, r, c);
@@ -75,20 +72,20 @@ void OverlayAttackRange::Show(const GameObject * obj)
     }
 }
 
-AttackRangeIndicator * OverlayAttackRange::GetNewIndicator(unsigned int distance, unsigned int range)
+HealingRangeIndicator * OverlayHealRange::GetNewIndicator(PlayerFaction faction)
 {
-    AttackRangeIndicator * ind = nullptr;
+    HealingRangeIndicator * ind = nullptr;
 
     // create new indicator
     if(mAvailableIndicators.empty())
-        ind = new AttackRangeIndicator(distance, range);
+        ind = new HealingRangeIndicator(faction);
     // reuse existing indicator
     else
     {
         ind = mAvailableIndicators.back();
         mAvailableIndicators.pop_back();
 
-        ind->SetDistance(distance, range);
+        ind->SetFaction(faction);
     }
 
     return ind;

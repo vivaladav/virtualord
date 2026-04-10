@@ -10,8 +10,6 @@ class GameObject;
 class IsoLayer;
 class IsoMap;
 
-enum PlayerFaction : unsigned int;
-
 class OverlayAttackRange
 {
 public:

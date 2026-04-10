@@ -28,9 +28,9 @@
 #include "GameObjects/Unit.h"
 #include "GameObjects/WallGate.h"
 #include "GameObjectTools/Weapon.h"
-#include "Indicators/HealingRangeIndicator.h"
 #include "Indicators/OverlayAttackRange.h"
 #include "Indicators/OverlayCellConquest.h"
+#include "Indicators/OverlayHealRange.h"
 #include "Indicators/OverlayPath.h"
 #include "Indicators/StructureIndicator.h"
 #include "Indicators/WallIndicator.h"
@@ -197,6 +197,8 @@ ScreenGame::ScreenGame(Game * game)
     mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
                                                    mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
 
+    mOverlayHeal = new OverlayHealRange(mIsoMap);
+
     mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
                                    mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
 
@@ -240,9 +242,6 @@ ScreenGame::~ScreenGame()
     delete mPathfinder;
     delete mPartMan;
 
-    for(auto ind : mHealIndicators)
-        delete ind;
-
     for(auto ind : mWallIndicators)
         delete ind;
 
@@ -259,6 +258,7 @@ ScreenGame::~ScreenGame()
     // NOTE delete overlays after GameMap because they're still used by its destructors
     delete mOverlayAttack;
     delete mOverlayCellConquest;
+    delete mOverlayHeal;
     delete mOverlayPath;
 
     delete mCamController;
@@ -574,6 +574,8 @@ void ScreenGame::CreateUI()
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_HOSPITAL,
         [this, panelObjActions]
     {
+        ClearCellOverlays();
+
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_HOSPITAL);
     });
 
@@ -634,8 +636,7 @@ void ScreenGame::CreateUI()
         HideActionPanels();
 
         // show healing range overlay
-        const int range = hospital->GetRangeHealing();
-        ShowHealingIndicators(hospital, range);
+        mOverlayHeal->Show(hospital, hospital->GetRangeHealing());
     });
 
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_HEAL_UNIT, [this]
@@ -647,8 +648,7 @@ void ScreenGame::CreateUI()
         HideActionPanels();
 
         // show healing range overlay
-        const int range = unit->GetHealingRange();
-        ShowHealingIndicators(unit, range);
+        mOverlayHeal->Show(unit, unit->GetHealingRange());
     });
 
     // conquer
@@ -3443,57 +3443,6 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     mWallIndicators[lastIndicator]->SetCost(wbp.GetEnergyCost(), wbp.GetMateriaCost());
 }
 
-void ScreenGame::ShowHealingIndicators(const GameObject * obj, int range)
-{
-    IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS3);
-
-    const int rows = mIsoMap->GetNumRows();
-    const int cols = mIsoMap->GetNumCols();
-    const int r0 = obj->GetRow0();
-    const int c0 = obj->GetCol0();
-    const int rowTL = obj->GetRow1() - range > 0 ? obj->GetRow1() - range : 0;
-    const int colTL = obj->GetCol1() - range > 0 ? obj->GetCol1() - range : 0;
-    const int rowBR = r0 + range < rows ? r0 + range : rows - 1;
-    const int colBR = c0 + range < cols ? c0 + range : cols - 1;
-
-    const int neededInd = (rowBR - rowTL + 1) * (colBR - colTL + 1);
-    const int existingInd = mHealIndicators.size();
-    const int missingInd = neededInd - existingInd;
-
-    // create missing indicators
-    if(missingInd > 0)
-    {
-        for(int i = 0; i < missingInd; ++i)
-            mHealIndicators.push_back(new HealingRangeIndicator);
-    }
-
-    // init needed indicators
-    const PlayerFaction faction = obj->GetFaction();
-
-    for(int i = 0; i < neededInd; ++i)
-    {
-        mHealIndicators[i]->SetVisible(true);
-        mHealIndicators[i]->SetFaction(faction);
-    }
-
-    // hide other indicators
-    const int existingInd2 = mHealIndicators.size();
-
-    for(int i = neededInd; i < existingInd2; ++i)
-        mHealIndicators[i]->SetVisible(false);
-
-    int ind = 0;
-
-    for(int r = rowTL; r <= rowBR; ++r)
-    {
-        for(int c = colTL; c <= colBR; ++c)
-        {
-            if(r != r0 || c != c0)
-                layer->AddObject(mHealIndicators[ind++], r, c);
-        }
-    }
-}
-
 void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
 {
     // cell outside the map
@@ -3568,6 +3517,8 @@ void ScreenGame::ClearCellOverlays()
 
     mOverlayCellConquest->ClearPath();
     mOverlayCellConquest->HideTarget();
+
+    mOverlayHeal->Clear();
 
     mOverlayPath->ClearPath();
     mOverlayPath->HideTarget();

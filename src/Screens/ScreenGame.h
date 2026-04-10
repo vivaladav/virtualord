@@ -26,7 +26,6 @@ class GameHUD;
 class GameMap;
 class GameObject;
 class GameObjectsGroup;
-class HealingRangeIndicator;
 class Hospital;
 class IsoLayer;
 class IsoMap;
@@ -35,6 +34,7 @@ class MiniUnit;
 class MissionGoalsTracker;
 class OverlayAttackRange;
 class OverlayCellConquest;
+class OverlayHealRange;
 class OverlayPath;
 class Player;
 class PlayerAI;
@@ -168,7 +168,6 @@ private:
     void ShowBuildWallIndicator(Unit * unit, const Cell2D & dest);
     void ShowCellConquestIndicator(Unit * unit, const Cell2D & dest);
     void ClearTempCellConquestPath(Unit *unit, bool showTarget);
-    void ShowHealingIndicators(const GameObject * obj, int range);
     void ShowMoveIndicator(GameObject * obj, const Cell2D & dest);
     void ClearCellOverlays();
     void ClearTempStructIndicator();
@@ -198,7 +197,6 @@ private:
 
     std::unordered_map<GameObjectTypeId, StructureIndicator *> mStructIndicators;
     std::vector<WallIndicator *> mWallIndicators;
-    std::vector<HealingRangeIndicator *> mHealIndicators;
     StructureIndicator * mTempStructIndicator = nullptr;
 
     std::vector<unsigned int> mConquestPath;
@@ -232,6 +230,7 @@ private:
     // MAP OVERLAYS
     OverlayAttackRange * mOverlayAttack = nullptr;
     OverlayCellConquest * mOverlayCellConquest = nullptr;
+    OverlayHealRange * mOverlayHeal = nullptr;
     OverlayPath * mOverlayPath = nullptr;
 
     // TURN MANAGEMENT

@@ -8,9 +8,10 @@
 namespace game
 {
 
-HealingRangeIndicator::HealingRangeIndicator()
+HealingRangeIndicator::HealingRangeIndicator(PlayerFaction faction)
     : IsoObject(1, 1)
 {
+    SetFaction(faction);
 }
 
 void HealingRangeIndicator::SetFaction(PlayerFaction faction)
