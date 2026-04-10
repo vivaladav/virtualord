@@ -32,7 +32,7 @@
 #include "Indicators/OverlayCellConquest.h"
 #include "Indicators/OverlayHealRange.h"
 #include "Indicators/OverlayPath.h"
-#include "Indicators/StructureIndicator.h"
+#include "Indicators/OverlayStructure.h"
 #include "Indicators/WallIndicator.h"
 #include "Particles/UpdaterDamage.h"
 #include "Particles/UpdaterHealing.h"
@@ -66,7 +66,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <vector>
 
 namespace game
 {
@@ -109,7 +108,7 @@ ScreenGame::ScreenGame(Game * game)
     CreateLayers();
 
     // create game map
-    mGameMap = new GameMap(GetGame(), this, mIsoMap);
+    mGameMap = new GameMap(game, this, mIsoMap);
 
     mTrackerMG->SetControlMap(mGameMap->GetControlMap());
 
@@ -202,6 +201,9 @@ ScreenGame::ScreenGame(Game * game)
     mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
                                    mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
 
+    mOverlayStruct = new OverlayStructure(mIsoMap, game->GetObjectsRegistry(),
+                                          mLocalPlayer->GetFaction());
+
     // set initial camera position
     CenterCameraOverObject(mLocalPlayer->GetBase());
 
@@ -245,12 +247,7 @@ ScreenGame::~ScreenGame()
     for(auto ind : mWallIndicators)
         delete ind;
 
-    for(auto it : mStructIndicators)
-        delete it.second;
-
     delete mTrackerMG;
-
-    delete mTempStructIndicator;
 
     delete mIsoMap;
     delete mGameMap;
@@ -260,6 +257,7 @@ ScreenGame::~ScreenGame()
     delete mOverlayCellConquest;
     delete mOverlayHeal;
     delete mOverlayPath;
+    delete mOverlayStruct;
 
     delete mCamController;
 
@@ -2714,10 +2712,7 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
                 return ;
 
             // add temporary indicator for tower
-            mTempStructIndicator = new StructureIndicator(objData, unit->GetFaction());
-
-            IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4);
-            layer->AddObject(mTempStructIndicator, clickCell.row, clickCell.col);
+            mOverlayStruct->ShowIndicator(st,  clickCell.row, clickCell.col);
 
             // move
             SetupUnitMove(unit, cellUnit, target, false,
@@ -2729,7 +2724,7 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
                     SetupStructureBuilding(unit, clickCell, mLocalPlayer);
                 }
 
-                ClearTempStructIndicator();
+                mOverlayStruct->ClearIndicator();
             });
         }
     }
@@ -3086,16 +3081,12 @@ void ScreenGame::ShowActiveMiniUnitIndicators(MiniUnit * mu, const Cell2D & cell
 
 void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCell)
 {
-    IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4);
-
-    // clear any current indicator
-    layer->ClearObjects();
-
     // check if mouse is inside map
-    const bool currInside = mIsoMap->IsCellInside(currCell);
-
-    if(!currInside)
+    if(!mIsoMap->IsCellInside(currCell))
+    {
+        mOverlayStruct->ClearIndicator();
         return ;
+    }
 
     // check if unit is next to destination or if there's any walkable cell surrounding destination
     const int nextDist = 1;
@@ -3103,7 +3094,10 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
     if((std::abs(unit->GetRow0() - currCell.row) > nextDist ||
          std::abs(unit->GetCol0() - currCell.col) > nextDist) &&
         !mGameMap->IsAnyNeighborCellWalkable(currCell.row, currCell.col))
+    {
+        mOverlayStruct->ClearIndicator();
         return ;
+    }
 
     // check if there's a path between unit and destination
     const auto path = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
@@ -3111,53 +3105,43 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
                                             sgl::ai::Pathfinder::ALL_OPTIONS);
 
     if(path.empty())
-        layer->ClearObjects();
-
-    // get an indicator
-    const GameObjectTypeId st = unit->GetStructureToBuild();
-
-    StructureIndicator * ind = nullptr;
-    auto it = mStructIndicators.find(st);
-
-    if(it != mStructIndicators.end())
-        ind = it->second;
-    else
     {
-        const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
-        ind = new StructureIndicator(dataReg->GetObjectData(st), unit->GetFaction());
-        mStructIndicators.emplace(st, ind);
+        mOverlayStruct->ClearIndicator();
+        return ;
     }
 
-    // add indicator to layer
-    layer->AddObject(ind, currCell.row, currCell.col);
+    const GameObjectTypeId st = unit->GetStructureToBuild();
+    const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
+    const ObjectData &  data = dataReg->GetObjectData(st);
+    const int objR1 = currCell.row - data.GetRows() + 1;
+    const int objC1 = currCell.col - data.GetCols() + 1;
 
-    // set visibility
-    const int indRows = ind->GetRows();
-    const int indCols = ind->GetCols();
-    const int r0 = currCell.row >= indRows ? 1 + currCell.row - indRows : 0;
-    const int c0 = currCell.col >= indCols ? 1 + currCell.col - indCols : 0;
+    // indicator is partially outside the map
+    if(objR1 < 0 || objC1 < 0)
+    {
+        mOverlayStruct->ClearIndicator();
+        return ;
+    }
 
-    bool showIndicator = true;
-
-    for(int r = r0; r <= currCell.row; ++r)
+    // check if all cells for indicator are available
+    for(int r = objR1; r <= currCell.row; ++r)
     {
         const int idx0 = r * mGameMap->GetNumCols();
 
-        for(int c = c0; c <= currCell.col; ++c)
+        for(int c = objC1; c <= currCell.col; ++c)
         {
             const int idx = idx0 + c;
 
-            showIndicator = mLocalPlayer->IsCellVisible(idx) && mGameMap->IsCellWalkable(idx);
-
-            if(!showIndicator)
-                break;
+            if(!mLocalPlayer->IsCellVisible(idx) || !mGameMap->IsCellWalkable(idx))
+            {
+                mOverlayStruct->ClearIndicator();
+                return ;
+            }
         }
-
-        if(!showIndicator)
-            break;
     }
 
-    layer->SetObjectVisible(ind, showIndicator);
+    // all good -> show indicator
+    mOverlayStruct->ShowIndicator(st, currCell.row, currCell.col);
 }
 
 void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
@@ -3509,10 +3493,6 @@ void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
 
 void ScreenGame::ClearCellOverlays()
 {
-    mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2)->ClearObjects();
-    mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS3)->ClearObjects();
-    mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4)->ClearObjects();
-
     mOverlayAttack->Clear();
 
     mOverlayCellConquest->ClearPath();
@@ -3522,18 +3502,8 @@ void ScreenGame::ClearCellOverlays()
 
     mOverlayPath->ClearPath();
     mOverlayPath->HideTarget();
-}
 
-void ScreenGame::ClearTempStructIndicator()
-{
-    if(mTempStructIndicator)
-    {
-        IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4);
-        layer->RemoveObject(mTempStructIndicator);
-
-        delete mTempStructIndicator;
-        mTempStructIndicator = nullptr;
-    }
+    mOverlayStruct->ClearIndicator();
 }
 
 void ScreenGame::UpdatePanelHit(const GameObject * attacker)

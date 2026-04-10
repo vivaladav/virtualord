@@ -8,7 +8,6 @@
 #include <sgl/core/Point.h>
 
 #include <functional>
-#include <unordered_map>
 #include <vector>
 
 namespace sgl
@@ -36,9 +35,9 @@ class OverlayAttackRange;
 class OverlayCellConquest;
 class OverlayHealRange;
 class OverlayPath;
+class OverlayStructure;
 class Player;
 class PlayerAI;
-class StructureIndicator;
 class Unit;
 class WallIndicator;
 
@@ -170,7 +169,6 @@ private:
     void ClearTempCellConquestPath(Unit *unit, bool showTarget);
     void ShowMoveIndicator(GameObject * obj, const Cell2D & dest);
     void ClearCellOverlays();
-    void ClearTempStructIndicator();
 
     void UpdatePanelHit(const GameObject * attacker);
 
@@ -195,9 +193,7 @@ private:
 
     std::vector<Player *> mAiPlayers;
 
-    std::unordered_map<GameObjectTypeId, StructureIndicator *> mStructIndicators;
     std::vector<WallIndicator *> mWallIndicators;
-    StructureIndicator * mTempStructIndicator = nullptr;
 
     std::vector<unsigned int> mConquestPath;
     std::vector<unsigned int> mWallPath;
@@ -232,6 +228,7 @@ private:
     OverlayCellConquest * mOverlayCellConquest = nullptr;
     OverlayHealRange * mOverlayHeal = nullptr;
     OverlayPath * mOverlayPath = nullptr;
+    OverlayStructure * mOverlayStruct = nullptr;
 
     // TURN MANAGEMENT
     Player * mLocalPlayer = nullptr;
