@@ -10,6 +10,7 @@ namespace game
 class IsoLayer;
 class IsoMap;
 class ObjectsDataRegistry;
+class PanelUnitEnergyUsage;
 class StructureIndicator;
 
 enum PlayerFaction : unsigned int;
@@ -21,7 +22,8 @@ public:
     ~OverlayStructure();
 
     void ClearIndicator();
-    void ShowIndicator(GameObjectTypeId type, int row, int col);
+    void ShowIndicator(GameObjectTypeId type, int row, int col,
+                       int unitCost = -1, bool doable = true);
 
 private:
     StructureIndicator * GetNewIndicator(GameObjectTypeId type);
@@ -32,6 +34,8 @@ private:
     StructureIndicator * mIndicator = nullptr;
 
     const ObjectsDataRegistry * mObjDataReg = nullptr;
+
+    PanelUnitEnergyUsage * mPanelUnitCost = nullptr;
 
     IsoMap * mIsoMap = nullptr;
     IsoLayer * mLayer = nullptr;

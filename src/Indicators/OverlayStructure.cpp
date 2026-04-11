@@ -4,6 +4,7 @@
 #include "IsoMap.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "Indicators/StructureIndicator.h"
+#include "Widgets/PanelUnitEnergyUsage.h"
 
 namespace game
 {
@@ -11,10 +12,12 @@ namespace game
 OverlayStructure::OverlayStructure(IsoMap * im, const ObjectsDataRegistry * reg,
                                    PlayerFaction faction)
     : mObjDataReg(reg)
+    , mPanelUnitCost(new PanelUnitEnergyUsage)
     , mIsoMap(im)
     , mLayer(im->GetLayer(MapLayers::CELL_OVERLAYS2))
     , mFaction(faction)
 {
+    mPanelUnitCost->SetVisible(false);
 }
 
 OverlayStructure::~OverlayStructure()
@@ -31,9 +34,12 @@ void OverlayStructure::ClearIndicator()
 
         mIndicator = nullptr;
     }
+
+    mPanelUnitCost->SetVisible(false);
 }
 
-void OverlayStructure::ShowIndicator(GameObjectTypeId type, int row, int col)
+void OverlayStructure::ShowIndicator(GameObjectTypeId type, int row, int col,
+                                     int unitCost, bool doable)
 {
     auto ind = GetNewIndicator(type);
 
@@ -50,6 +56,19 @@ void OverlayStructure::ShowIndicator(GameObjectTypeId type, int row, int col)
     // indicator not visible yet
     else
         mLayer->AddObject(mIndicator, row, col);
+
+    if(unitCost > 0)
+    {
+        mPanelUnitCost->SetValue(unitCost);
+        mPanelUnitCost->SetDoable(doable);
+        mPanelUnitCost->SetVisible(true);
+
+        const int x = mIndicator->GetX() + (mIndicator->GetWidth() - mPanelUnitCost->GetWidth()) / 2;
+        const int y = mIndicator->GetY() - mPanelUnitCost->GetHeight();
+        mPanelUnitCost->SetPosition(x, y);
+    }
+    else
+        mPanelUnitCost->SetVisible(false);
 }
 
 StructureIndicator * OverlayStructure::GetNewIndicator(GameObjectTypeId type)

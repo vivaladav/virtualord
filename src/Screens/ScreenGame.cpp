@@ -2681,52 +2681,44 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
         // if unit is next to any target cell -> try to build
         const int indRows = objData.GetRows();
         const int indCols = objData.GetCols();
-        const int r0 = clickCell.row >= indRows ? 1 + clickCell.row - indRows : 0;
-        const int c0 = clickCell.col >= indCols ? 1 + clickCell.col - indCols : 0;
+        const int r1 = 1 + clickCell.row - indRows;
+        const int c1 = 1 + clickCell.col - indCols;
 
-        bool next2Target = false;
-
-        for(int r = r0; r <= clickCell.row; ++r)
+        for(int r = r1; r <= clickCell.row; ++r)
         {
-            for(int c = c0; c <= clickCell.col; ++c)
+            for(int c = c1; c <= clickCell.col; ++c)
             {
-                next2Target = mGameMap->AreCellsAdjacent(cellUnit, {r, c});
-
-                if(next2Target)
-                    break;
-            }
-
-            if(next2Target)
-                break;
-        }
-
-        if(next2Target)
-            SetupStructureBuilding(unit, clickCell, mLocalPlayer);
-        // unit is far -> move close then try to build
-        else
-        {
-            Cell2D target = mGameMap->GetAdjacentMoveTarget(cellUnit, {r0, c0}, clickCell);
-
-            // failed to find a suitable target
-            if(-1 == target.row || -1 == target.col)
-                return ;
-
-            // add temporary indicator for tower
-            mOverlayStruct->ShowIndicator(st,  clickCell.row, clickCell.col);
-
-            // move
-            SetupUnitMove(unit, cellUnit, target, false,
-                [this, unit, clickCell](bool successful)
-            {
-                if(successful)
+                if(mGameMap->AreCellsAdjacent(cellUnit, {r, c}))
                 {
-                    const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
                     SetupStructureBuilding(unit, clickCell, mLocalPlayer);
-                }
 
-                mOverlayStruct->ClearIndicator();
-            });
+                    return;
+                }
+            }
         }
+
+        // unit is far -> move close then try to build
+        Cell2D target = mGameMap->GetAdjacentMoveTarget(cellUnit, {r1, c1}, clickCell);
+
+        // failed to find a suitable target
+        if(-1 == target.row || -1 == target.col)
+            return ;
+
+        // add temporary indicator for tower
+        mOverlayStruct->ShowIndicator(st,  clickCell.row, clickCell.col);
+
+        // move
+        SetupUnitMove(unit, cellUnit, target, false,
+                      [this, unit, clickCell](bool successful)
+                      {
+                          if(successful)
+                          {
+                              const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
+                              SetupStructureBuilding(unit, clickCell, mLocalPlayer);
+                          }
+
+                          mOverlayStruct->ClearIndicator();
+                      });
     }
 }
 
@@ -3141,7 +3133,15 @@ void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCel
     }
 
     // all good -> show indicator
-    mOverlayStruct->ShowIndicator(st, currCell.row, currCell.col);
+    ObjectPath op(unit, mIsoMap, mGameMap, this);
+    op.SetPath(path);
+
+    const int cost = op.GetPathCost() + unit->GetEnergyForActionStep(BUILD_STRUCTURE);
+    const int energyObj = unit->GetEnergy();
+    const int energyTurn = mLocalPlayer->GetTurnEnergy();
+    const bool doable = energyObj >= cost && energyTurn >= cost;
+
+    mOverlayStruct->ShowIndicator(st, currCell.row, currCell.col, cost, doable);
 }
 
 void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
