@@ -2676,14 +2676,14 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
     const int energyObj = unit->GetEnergy();
     const int energyTurn = mLocalPlayer->GetTurnEnergy();
 
-    if(costUnit > energyTurn)
-    {
-        unit->ShowWarning(mSM->GetCString("WARN_NO_T_ENE"), 2.f);
-        return;
-    }
-    else if(costUnit > energyObj)
+    if(costUnit > energyObj)
     {
         unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        return;
+    }
+    else if(costUnit > energyTurn)
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_NO_T_ENE"), 2.f);
         return;
     }
 
