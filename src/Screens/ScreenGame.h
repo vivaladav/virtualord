@@ -170,6 +170,8 @@ private:
     void ShowMoveIndicator(GameObject * obj, const Cell2D & dest);
     void ClearCellOverlays();
 
+    int CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool building);
+
     void UpdatePanelHit(const GameObject * attacker);
 
     void UpdateCurrentCell();

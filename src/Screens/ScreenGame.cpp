@@ -2666,56 +2666,50 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
 
 void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & clickCell)
 {
-    const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
+    const int costUnit = CheckBuildStructureValid(unit, clickCell, true);
 
-    // destination is visible and walkable
-    if(mLocalPlayer->IsCellVisible(clickInd) && mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    // check failed -> exit
+    if(costUnit == 0)
+        return;
+
+    // check if energy cost is affordable
+    const int energyObj = unit->GetEnergy();
+    const int energyTurn = mLocalPlayer->GetTurnEnergy();
+
+    if(costUnit > energyTurn)
     {
-        const GameMapCell * gmc = unit->GetCell();
-        const Cell2D cellUnit(gmc->row, gmc->col);
+        unit->ShowWarning(mSM->GetCString("WARN_NO_T_ENE"), 2.f);
+        return;
+    }
+    else if(costUnit > energyObj)
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        return;
+    }
 
-        const GameObjectTypeId st = unit->GetStructureToBuild();
-        const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
-        const ObjectData & objData = dataReg->GetObjectData(st);
+    // ALL GOOD -> build
+    const GameObjectTypeId st = unit->GetStructureToBuild();
+    const ObjectData & data = GetGame()->GetObjectsRegistry()->GetObjectData(st);
+    const Cell2D structTL(clickCell.row - data.GetRows() + 1, clickCell.col - data.GetCols() + 1);
+    const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
 
-        // if unit is next to any target cell -> try to build
-        const int indRows = objData.GetRows();
-        const int indCols = objData.GetCols();
-        const int r1 = 1 + clickCell.row - indRows;
-        const int c1 = 1 + clickCell.col - indCols;
-
-        for(int r = r1; r <= clickCell.row; ++r)
-        {
-            for(int c = c1; c <= clickCell.col; ++c)
-            {
-                if(mGameMap->AreCellsAdjacent(cellUnit, {r, c}))
-                {
-                    SetupStructureBuilding(unit, clickCell, mLocalPlayer);
-
-                    return;
-                }
-            }
-        }
-
-        // unit is far -> move close then try to build
-        Cell2D target = mGameMap->GetAdjacentMoveTarget(cellUnit, {r1, c1}, clickCell);
-
-        // failed to find a suitable target
-        if(-1 == target.row || -1 == target.col)
-            return ;
+    // unit adjacent to build area -> start immediately
+    if(mGameMap->IsCellAdjacentToArea(cellUnit, structTL, clickCell))
+        SetupStructureBuilding(unit, clickCell, mLocalPlayer);
+    // unit far from build area -> move first
+    else
+    {
+        const Cell2D target = mGameMap->GetAdjacentMoveTarget(cellUnit, structTL, clickCell);
 
         // add temporary indicator for tower
-        mOverlayStruct->ShowIndicator(st,  clickCell.row, clickCell.col);
+        mOverlayStruct->ShowIndicator(st, clickCell.row, clickCell.col);
 
         // move
         SetupUnitMove(unit, cellUnit, target, false,
                       [this, unit, clickCell](bool successful)
                       {
                           if(successful)
-                          {
-                              const Cell2D currCell(unit->GetRow0(), unit->GetCol0());
                               SetupStructureBuilding(unit, clickCell, mLocalPlayer);
-                          }
 
                           mOverlayStruct->ClearIndicator();
                       });
@@ -3073,75 +3067,19 @@ void ScreenGame::ShowActiveMiniUnitIndicators(MiniUnit * mu, const Cell2D & cell
 
 void ScreenGame::ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCell)
 {
-    // check if mouse is inside map
-    if(!mIsoMap->IsCellInside(currCell))
-    {
+    const int costUnit = CheckBuildStructureValid(unit, currCell, false);
+
+    if(costUnit == 0)
         mOverlayStruct->ClearIndicator();
-        return ;
-    }
-
-    // check if unit is next to destination or if there's any walkable cell surrounding destination
-    const int nextDist = 1;
-
-    if((std::abs(unit->GetRow0() - currCell.row) > nextDist ||
-         std::abs(unit->GetCol0() - currCell.col) > nextDist) &&
-        !mGameMap->IsAnyNeighborCellWalkable(currCell.row, currCell.col))
+    else
     {
-        mOverlayStruct->ClearIndicator();
-        return ;
+        const GameObjectTypeId st = unit->GetStructureToBuild();
+        const int energyObj = unit->GetEnergy();
+        const int energyTurn = mLocalPlayer->GetTurnEnergy();
+        const bool doable = energyObj >= costUnit && energyTurn >= costUnit;
+
+        mOverlayStruct->ShowIndicator(st, currCell.row, currCell.col, costUnit, doable);
     }
-
-    // check if there's a path between unit and destination
-    const auto path = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
-                                            currCell.row, currCell.col,
-                                            sgl::ai::Pathfinder::ALL_OPTIONS);
-
-    if(path.empty())
-    {
-        mOverlayStruct->ClearIndicator();
-        return ;
-    }
-
-    const GameObjectTypeId st = unit->GetStructureToBuild();
-    const ObjectsDataRegistry * dataReg = GetGame()->GetObjectsRegistry();
-    const ObjectData &  data = dataReg->GetObjectData(st);
-    const int objR1 = currCell.row - data.GetRows() + 1;
-    const int objC1 = currCell.col - data.GetCols() + 1;
-
-    // indicator is partially outside the map
-    if(objR1 < 0 || objC1 < 0)
-    {
-        mOverlayStruct->ClearIndicator();
-        return ;
-    }
-
-    // check if all cells for indicator are available
-    for(int r = objR1; r <= currCell.row; ++r)
-    {
-        const int idx0 = r * mGameMap->GetNumCols();
-
-        for(int c = objC1; c <= currCell.col; ++c)
-        {
-            const int idx = idx0 + c;
-
-            if(!mLocalPlayer->IsCellVisible(idx) || !mGameMap->IsCellWalkable(idx))
-            {
-                mOverlayStruct->ClearIndicator();
-                return ;
-            }
-        }
-    }
-
-    // all good -> show indicator
-    ObjectPath op(unit, mIsoMap, mGameMap, this);
-    op.SetPath(path);
-
-    const int cost = op.GetPathCost() + unit->GetEnergyForActionStep(BUILD_STRUCTURE);
-    const int energyObj = unit->GetEnergy();
-    const int energyTurn = mLocalPlayer->GetTurnEnergy();
-    const bool doable = energyObj >= cost && energyTurn >= cost;
-
-    mOverlayStruct->ShowIndicator(st, currCell.row, currCell.col, cost, doable);
 }
 
 void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
@@ -3504,6 +3442,88 @@ void ScreenGame::ClearCellOverlays()
     mOverlayPath->HideTarget();
 
     mOverlayStruct->ClearIndicator();
+}
+
+int ScreenGame::CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool building)
+{
+    // check if mouse is inside map
+    if(!mIsoMap->IsCellInside(dest))
+    {
+        if(building)
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"), 2.f);
+
+        return 0;
+    }
+
+    // check if build area is suitable
+    const GameObjectTypeId st = unit->GetStructureToBuild();
+    const ObjectData & data = GetGame()->GetObjectsRegistry()->GetObjectData(st);
+    const Cell2D structTL(dest.row - data.GetRows() + 1, dest.col - data.GetCols() + 1);
+
+    // build area is partially outside the map
+    if(structTL.row < 0 || structTL.col < 0)
+    {
+        if(building)
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"), 2.f);
+
+        return 0;
+    }
+
+    // check if all cells for indicator are available
+    for(int r = structTL.row; r <= dest.row; ++r)
+    {
+        const int idx0 = r * mGameMap->GetNumCols();
+
+        for(int c = structTL.col; c <= dest.col; ++c)
+        {
+            const int idx = idx0 + c;
+
+            if(!mLocalPlayer->IsCellVisible(idx) || !mGameMap->IsCellWalkable(idx))
+            {
+                if(building)
+                    unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"), 2.f);
+
+                return 0;
+            }
+        }
+    }
+
+    // check if unit is adjacent to area or if it needs to move
+    const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+    int costUnit = unit->GetEnergyForActionStep(BUILD_STRUCTURE);
+
+    if(!mGameMap->IsCellAdjacentToArea(cellUnit, structTL, dest))
+    {
+        const Cell2D target = mGameMap->GetAdjacentMoveTarget(cellUnit, structTL, dest);
+
+        // failed to find a suitable target
+        if(-1 == target.row || -1 == target.col)
+        {
+            if(building)
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"), 2.f);
+
+            return 0;
+        }
+
+        // check if there's a path between unit and target
+        const auto path = mPathfinder->MakePath(cellUnit.row, cellUnit.col, target.row, target.col,
+                                                sgl::ai::Pathfinder::ALL_OPTIONS);
+
+        if(path.empty())
+        {
+            if(building)
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH2C"), 2.f);
+
+            return 0;
+        }
+
+        ObjectPath op(unit, mIsoMap, mGameMap, this);
+        op.SetPath(path);
+
+        costUnit += op.GetPathCost();
+    }
+
+    return costUnit;
 }
 
 void ScreenGame::UpdatePanelHit(const GameObject * attacker)
