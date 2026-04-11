@@ -114,6 +114,7 @@ public:
     bool AreCellsAdjacent(const Cell2D & cell1, const Cell2D & cell2) const;
     bool AreObjectsOrthoAdjacent(const GameObject * obj1, const GameObject * obj2) const;
     bool AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) const;
+    bool IsCellAdjacentToArea(const Cell2D & cell, const Cell2D & areaTL, const Cell2D & areaBR) const;
 
     // cell conquest
     bool CanConquerCell(Unit * unit, const Cell2D & cell, Player * player);

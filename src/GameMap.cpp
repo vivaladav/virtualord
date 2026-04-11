@@ -873,6 +873,20 @@ bool GameMap::AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) 
     return (distR == 0 && distC == maxDist) || (distR == maxDist && distC == 0);
 }
 
+bool GameMap::IsCellAdjacentToArea(const Cell2D & cell, const Cell2D & areaTL, const Cell2D & areaBR) const
+{
+    // cell inside area
+    if(cell.row >= areaTL.row && cell.row <= areaBR.row &&
+       cell.col >= areaTL.col && cell.col <= areaBR.col)
+        return false;
+
+    // check if adjacent
+    const bool insideRows = cell.row >= (areaTL.row - 1) && cell.row <= (areaBR.row + 1);
+    const bool insideCols = cell.col >= (areaTL.col - 1) && cell.col <= (areaBR.row + 1);
+
+    return insideRows && insideCols;
+}
+
 bool GameMap::CanConquerCell(Unit * unit, const Cell2D & cell, Player * player)
 {
     const unsigned int r = static_cast<unsigned int>(cell.row);
