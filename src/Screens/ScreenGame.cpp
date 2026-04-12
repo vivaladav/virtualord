@@ -7,6 +7,7 @@
 #include "GameMap.h"
 #include "IsoLayer.h"
 #include "IsoMap.h"
+#include "IsoObject.h"
 #include "MapIO.h"
 #include "MissionGoalsTracker.h"
 #include "Planet.h"
@@ -33,7 +34,7 @@
 #include "Indicators/OverlayHealRange.h"
 #include "Indicators/OverlayPath.h"
 #include "Indicators/OverlayStructure.h"
-#include "Indicators/WallIndicator.h"
+#include "Indicators/OverlayWall.h"
 #include "Particles/UpdaterDamage.h"
 #include "Particles/UpdaterHealing.h"
 #include "Particles/UpdaterHitPoints.h"
@@ -244,9 +245,6 @@ ScreenGame::~ScreenGame()
     delete mPathfinder;
     delete mPartMan;
 
-    for(auto ind : mWallIndicators)
-        delete ind;
-
     delete mTrackerMG;
 
     delete mIsoMap;
@@ -258,6 +256,7 @@ ScreenGame::~ScreenGame()
     delete mOverlayHeal;
     delete mOverlayPath;
     delete mOverlayStruct;
+    delete mOverlayWall;
 
     delete mCamController;
 
@@ -3261,6 +3260,8 @@ void ScreenGame::ClearTempCellConquestPath(Unit * unit, bool showTarget)
 
 void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
 {
+
+    /*
     IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2);
 
     // first clear all objects from the layer
@@ -3358,6 +3359,7 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     WallBuildPath wbp(unit, mIsoMap, mGameMap, this);
     wbp.SetPathCells(totPath);
     wbp.SetIndicatorsType(cellsPath, mWallIndicators);
+*/
 }
 
 void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)

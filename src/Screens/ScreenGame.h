@@ -36,10 +36,10 @@ class OverlayCellConquest;
 class OverlayHealRange;
 class OverlayPath;
 class OverlayStructure;
+class OverlayWall;
 class Player;
 class PlayerAI;
 class Unit;
-class WallIndicator;
 
 enum PlayerFaction : unsigned int;
 enum TurnStage : unsigned int;
@@ -195,8 +195,6 @@ private:
 
     std::vector<Player *> mAiPlayers;
 
-    std::vector<WallIndicator *> mWallIndicators;
-
     std::vector<unsigned int> mConquestPath;
     std::vector<unsigned int> mWallPath;
 
@@ -231,6 +229,7 @@ private:
     OverlayHealRange * mOverlayHeal = nullptr;
     OverlayPath * mOverlayPath = nullptr;
     OverlayStructure * mOverlayStruct = nullptr;
+    OverlayWall * mOverlayWall = nullptr;
 
     // TURN MANAGEMENT
     Player * mLocalPlayer = nullptr;
