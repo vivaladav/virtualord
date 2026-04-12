@@ -58,8 +58,7 @@ void WallBuildPath::CreateIndicators()
         cellsPath.emplace_back(indRow, indCol);
 
         // create indicator
-        auto ind = new WallIndicator;
-        ind->SetFaction(faction);
+        auto ind = new WallIndicator(faction);
 
         mIndicators.emplace_back(ind);
         layer->AddObject(ind, indRow, indCol);
@@ -307,10 +306,6 @@ void WallBuildPath::InstantAbort()
     // clear progress bar
     if(mNextCell < mCells.size())
     {
-        const unsigned int nextInd = mCells[mNextCell];
-        const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-        const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
-
         if(mProgressBar)
         {
             mProgressBar->DeleteLater();

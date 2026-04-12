@@ -20,25 +20,16 @@ enum PlayerFaction : unsigned int;
 class WallIndicator : public IsoObject
 {
 public:
-    WallIndicator();
-    ~WallIndicator();
+    WallIndicator(PlayerFaction faction);
 
     game::GameObjectVariantId GetBlockType() const;
 
-    void SetCost(unsigned int energy, unsigned int material);
-    void ShowCost(bool val);
-
-    void SetFaction(PlayerFaction faction);
-
     void SetBeforeAfterDirections(int br, int bc, int ar, int ac);
-
-    void Render() override;
 
 private:
     void CreateCostData();
 
     void UpdateImage();
-    void UpdateCostColor();
 
 private:
     enum WallBlock : unsigned int
@@ -55,17 +46,9 @@ private:
         WB_INVALID
     };
 
-    sgl::graphic::Image * mIconEnergy = nullptr;
-    sgl::graphic::Text * mTxtCostEnergy = nullptr;
-    sgl::graphic::Image * mIconMaterial = nullptr;
-    sgl::graphic::Text * mTxtCostMaterial = nullptr;
-    unsigned int mColorCost = 0xFFFFFFFF;
+    WallBlock mBlock = WB_INVALID;
 
     PlayerFaction mFaction;
-    unsigned int mCostEnergy = 0;
-    unsigned int mCostMaterial = 0;
-
-    WallBlock mBlock = WB_INVALID;
 };
 
 } // namespace game

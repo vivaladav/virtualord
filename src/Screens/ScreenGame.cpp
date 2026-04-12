@@ -3339,7 +3339,7 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
             ind = mWallIndicators[i];
         else
         {
-            ind = new WallIndicator;
+            ind = new WallIndicator(faction);
             mWallIndicators.emplace_back(ind);
         }
 
@@ -3350,9 +3350,6 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
         cellsPath.emplace_back(indRow, indCol);
 
         layer->AddObject(ind, indRow, indCol);
-
-        ind->SetFaction(faction);
-        ind->ShowCost(false);
     }
 
     // -- set directions and costs --
@@ -3361,8 +3358,6 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     WallBuildPath wbp(unit, mIsoMap, mGameMap, this);
     wbp.SetPathCells(totPath);
     wbp.SetIndicatorsType(cellsPath, mWallIndicators);
-
-    mWallIndicators[lastIndicator]->SetCost(wbp.GetEnergyCost(), wbp.GetMateriaCost());
 }
 
 void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)

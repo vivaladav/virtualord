@@ -163,6 +163,8 @@ add_executable(
     src/Indicators/OverlayPath.cpp
     src/Indicators/OverlayStructure.h
     src/Indicators/OverlayStructure.cpp
+    src/Indicators/OverlayWall.h
+    src/Indicators/OverlayWall.cpp
     src/Indicators/PathIndicator.h
     src/Indicators/PathIndicator.cpp
     src/Indicators/StructureIndicator.h
