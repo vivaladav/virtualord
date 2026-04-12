@@ -659,9 +659,6 @@ void ScreenGame::CreateUI()
 
         mConquestPath.clear();
 
-        mCellActionStart.row = -1;
-        mCellActionStart.col = -1;
-
         ShowCellConquestIndicator(unit, mCurrCell);
     });
 
@@ -1582,12 +1579,7 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
                 if(actType == GameObjectActionType::MOVE)
                     mGameMap->AbortMove(obj);
                 else if(actType == GameObjectActionType::CONQUER_CELL)
-                {
-                    mCellActionStart.row = -1;
-                    mCellActionStart.col = -1;
-
                     mGameMap->AbortCellConquest(obj);
-                }
                 else if(actType == GameObjectActionType::BUILD_WALL)
                     mGameMap->AbortBuildWalls(obj);
                 else if(actType == GameObjectActionType::CONQUER_STRUCTURE)
@@ -2450,7 +2442,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
     }
 
     // not clicked any cell yet
-    if(-1 == mCellActionStart.row)
+    if(!mOverlayCellConquest->IsCellStartSet())
     {
         // unit will need to move -> check path cost
         if(clickCell.row != unit->GetRow0() || clickCell.col != unit->GetCol0())
@@ -2493,9 +2485,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
         else
             mOverlayCellConquest->SetCostEnergyUnitMove(0);
 
-        mCellActionStart.row = clickCell.row;
-        mCellActionStart.col = clickCell.col;
-
+        mOverlayCellConquest->SetCellStart(clickCell);
         mOverlayCellConquest->HideTarget();
 
         ShowCellConquestIndicator(unit, mCurrCell);
@@ -3132,7 +3122,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     }
 
     // first point not set yet
-    if(-1 == mCellActionStart.row)
+    if(!mOverlayCellConquest->IsCellStartSet())
     {
         const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
                                                      dest.row, dest.col,
@@ -3170,8 +3160,8 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     {
         po = sgl::ai::Pathfinder::INCLUDE_START;
 
-        startR = mCellActionStart.row;
-        startC = mCellActionStart.col;
+        startR = mOverlayCellConquest->GetCellStart().row;
+        startC = mOverlayCellConquest->GetCellStart().col;
     }
     // continue pathfinfing from latest click
     else

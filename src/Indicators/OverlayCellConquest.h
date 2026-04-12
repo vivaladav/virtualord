@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Cell2D.h"
+
 #include <deque>
 #include <vector>
 
@@ -18,6 +20,11 @@ class OverlayCellConquest
 public:
     OverlayCellConquest(IsoLayer * layer, PlayerFaction faction, int mapCols);
     ~OverlayCellConquest();
+
+    const Cell2D & GetCellStart() const;
+    void SetCellStart(int row, int col);
+    void SetCellStart(const Cell2D & start);
+    bool IsCellStartSet() const;
 
     void ClearPath();
     void PopFrontPath();
@@ -43,9 +50,13 @@ public:
 private:
     ConquestIndicator * GetNewIndicator();
 
+    void ResetPath();
+
 private:
     std::deque<ConquestIndicator *> mActiveIndicators;
     std::deque<ConquestIndicator *> mAvailableIndicators;
+
+    Cell2D mCellStart;
 
     ConquestIndicator * mTarget = nullptr;
 
@@ -61,6 +72,18 @@ private:
 
     bool mValid = true;
 };
+
+inline const Cell2D & OverlayCellConquest::GetCellStart() const { return mCellStart; }
+inline void OverlayCellConquest::SetCellStart(int row, int col)
+{
+    mCellStart.row = row;
+    mCellStart.col = col;
+}
+inline void OverlayCellConquest::SetCellStart(const Cell2D & start) { mCellStart = start; }
+inline bool OverlayCellConquest::IsCellStartSet() const
+{
+    return mCellStart.row >= 0 && mCellStart.col >= 0;
+}
 
 inline void OverlayCellConquest::SetCostEnergyUnitMove(int cost) { mCostUnitMove = cost; }
 inline int OverlayCellConquest::GetCostEnergyUnitMove() const { return mCostUnitMove; }

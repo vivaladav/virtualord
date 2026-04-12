@@ -18,6 +18,9 @@ OverlayCellConquest::OverlayCellConquest(IsoLayer * layer, PlayerFaction faction
 {
     mPanelCost->SetVisible(false);
     mPanelMoveCost->SetVisible(false);
+
+    mCellStart.row = -1;
+    mCellStart.col = -1;
 }
 
 OverlayCellConquest::~OverlayCellConquest()
@@ -33,17 +36,11 @@ OverlayCellConquest::~OverlayCellConquest()
 
 void OverlayCellConquest::ClearPath()
 {
-    for(auto pi : mActiveIndicators)
-    {
-        mLayer->RemoveObject(pi);
+    // clear cell start
+    mCellStart.row = -1;
+    mCellStart.col = -1;
 
-        mAvailableIndicators.emplace_back(pi);
-    }
-
-    mActiveIndicators.clear();
-
-    mPanelCost->SetVisible(false);
-    mPanelMoveCost->SetVisible(false);
+    ResetPath();
 }
 
 void OverlayCellConquest::PopFrontPath()
@@ -73,7 +70,7 @@ void OverlayCellConquest::SetPath(const std::vector<unsigned int> & path,
     mLayer->RemoveObject(mTarget);
 
     // clear existing indicators
-    ClearPath();
+    ResetPath();
 
     // create new indicators
     const bool doable = mPanelCost->IsDoable();
@@ -205,6 +202,25 @@ ConquestIndicator * OverlayCellConquest::GetNewIndicator()
     }
 
     return pi;
+}
+
+void OverlayCellConquest::ResetPath()
+{
+    // clear active indicators
+    for(auto pi : mActiveIndicators)
+    {
+        mLayer->RemoveObject(pi);
+
+        mAvailableIndicators.emplace_back(pi);
+    }
+
+    mActiveIndicators.clear();
+
+    // clear panels
+    mPanelCost->SetVisible(false);
+    mPanelCost->SetDoable(true, true, true);
+    mPanelMoveCost->SetVisible(false);
+    mPanelMoveCost->SetDoable(true);
 }
 
 } // namespace game

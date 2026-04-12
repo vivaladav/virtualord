@@ -5,6 +5,7 @@
 #include "GameMap.h"
 #include "Player.h"
 #include "GameObjects/Base.h"
+#include "Indicators/OverlayCellConquest.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameBase.h"
@@ -101,8 +102,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     AddStep([this]
         {
-            const Cell2D & cellActionStart = mScreen->mCellActionStart;
-            return new StepGameConquerCells(mScreen->mIsoMap, cellActionStart);
+            const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+            return new StepGameConquerCells(mScreen->mIsoMap, cellStart);
         });
     AddStep([this, local]
         {
