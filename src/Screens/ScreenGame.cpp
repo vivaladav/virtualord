@@ -2428,7 +2428,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
         return ;
     }
 
-    // conquest doesn't have enought resources
+    // conquest doesn't have enough resources
     if(!mOverlayCellConquest->IsDoable())
     {
         if(!mOverlayCellConquest->IsDoableUnit())
@@ -2707,6 +2707,7 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
 
 void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickCell)
 {
+    /*
     const Cell2D unitCell(unit->GetRow0(), unit->GetCol0());
     const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
     const bool diffClick = unitCell != clickCell;
@@ -2814,6 +2815,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 
     mWallPath.reserve(mWallPath.size() + path.size());
     mWallPath.insert(mWallPath.end(), path.begin(), path.end());
+*/
 }
 
 void ScreenGame::HandleMiniUnitSetTargetOnMouseUp(GameObject * obj, const Cell2D & clickCell)
@@ -3250,6 +3252,10 @@ void ScreenGame::ClearTempCellConquestPath(Unit * unit, bool showTarget)
 
 void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
 {
+    // invalidate overlay
+    // NOTE keep this at the top of the function
+    mOverlayWall->SetValid(false);
+
 
     /*
     IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2);
@@ -3429,6 +3435,9 @@ void ScreenGame::ClearCellOverlays()
     mOverlayPath->HideTarget();
 
     mOverlayStruct->ClearIndicator();
+
+    mOverlayWall->ClearPath();
+    mOverlayWall->HideTarget();
 }
 
 int ScreenGame::CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool building)

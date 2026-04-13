@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Cell2D.h"
+
 #include <deque>
 #include <vector>
 
@@ -18,6 +20,11 @@ class OverlayWall
 public:
     OverlayWall(IsoLayer * layer, PlayerFaction faction, int mapCols);
     ~OverlayWall();
+
+    const Cell2D & GetCellStart() const;
+    void SetCellStart(int row, int col);
+    void SetCellStart(const Cell2D & start);
+    bool IsCellStartSet() const;
 
     void ClearPath();
     void PopFrontPath();
@@ -47,6 +54,8 @@ private:
     std::deque<WallIndicator *> mActiveIndicators;
     std::deque<WallIndicator *> mAvailableIndicators;
 
+    Cell2D mCellStart;
+
     WallIndicator * mTarget = nullptr;
 
     IsoLayer * mLayer = nullptr;
@@ -61,6 +70,18 @@ private:
 
     bool mValid = true;
 };
+
+inline const Cell2D & OverlayWall::GetCellStart() const { return mCellStart; }
+inline void OverlayWall::SetCellStart(int row, int col)
+{
+    mCellStart.row = row;
+    mCellStart.col = col;
+}
+inline void OverlayWall::SetCellStart(const Cell2D & start) { mCellStart = start; }
+inline bool OverlayWall::IsCellStartSet() const
+{
+    return mCellStart.row >= 0 && mCellStart.col >= 0;
+}
 
 inline void OverlayWall::SetCostEnergyUnitMove(int cost) { mCostUnitMove = cost; }
 inline int OverlayWall::GetCostEnergyUnitMove() const { return mCostUnitMove; }
