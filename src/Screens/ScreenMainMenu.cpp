@@ -364,6 +364,7 @@ void ScreenMainMenu::CreateChangelog()
                   "\nCHANGES\n"
                   "- Loot boxes now require unit interaction to get loot.\n"
                   "- Extended and improved cell conquest mechanics.\n"
+                  "- New icon for mission goal completed.\n"
                   "\n"
                   "\nFIXES\n"
                   "- Fixed crash when mini-units move only 1 cell.\n"

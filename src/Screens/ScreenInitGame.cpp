@@ -1363,9 +1363,9 @@ void ScreenInitGame::SetupTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // GOAL COMPLETED
-            { 0, 0, 72, 72 },
-            { 73, 0, 72, 72 },
-            { 146, 0, 72, 72 },
+            { 0, 0, 32, 32 },
+            { 33, 0, 32, 32 },
+            { 66, 0, 32, 32 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUI, rects);

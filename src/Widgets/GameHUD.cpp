@@ -733,8 +733,9 @@ void GameHUD::ShowGoalCompletedIcon()
     const Structure * base = bases[0];
     const IsoObject * isoObj = base->GetIsoObject();
 
+    const int marginIconB = 10;
     const int x = isoObj->GetX() + (isoObj->GetWidth() - mGoalCompletedIcon->GetWidth()) / 2;
-    const int y = isoObj->GetY() + (isoObj->GetHeight() - mGoalCompletedIcon->GetHeight()) / 2;
+    const int y = isoObj->GetY() - mGoalCompletedIcon->GetHeight() - marginIconB;
 
     mGoalCompletedIcon->SetPosition(x, y);
 
