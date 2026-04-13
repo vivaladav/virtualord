@@ -43,6 +43,7 @@ void OverlayPath::ClearPath()
     mActiveIndicators.clear();
 
     mPanelCost->SetVisible(false);
+    mPanelCost->SetDoable(true);
 }
 
 void OverlayPath::SetPath(const std::vector<unsigned int> & path, int cost, bool doable)

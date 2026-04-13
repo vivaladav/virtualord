@@ -36,6 +36,7 @@ void OverlayStructure::ClearIndicator()
     }
 
     mPanelUnitCost->SetVisible(false);
+    mPanelUnitCost->SetDoable(true);
 }
 
 void OverlayStructure::ShowIndicator(GameObjectTypeId type, int row, int col,
