@@ -123,7 +123,12 @@ bool ConquerPath::InitNextConquest()
         ++mNextCell;
 
         if(mNextCell < mCells.size())
+        {
+            if(mOverlay != nullptr)
+                mOverlay->PopFrontPath();
+
             return InitNextMove();
+        }
         else
             return Fail();
     }
