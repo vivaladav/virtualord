@@ -29,10 +29,11 @@ namespace game
 ConquerPath::ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, OverlayCellConquest * overlay)
     : mOverlay(overlay)
     , mUnit(unit)
-    , mPlayer(sg->GetGame()->GetPlayerByFaction(unit->GetFaction()))
     , mGameMap(gm)
     , mScreen(sg)
 {
+    if(sg != nullptr)
+        mPlayer = sg->GetGame()->GetPlayerByFaction(unit->GetFaction());
 }
 
 ConquerPath::~ConquerPath()
@@ -45,6 +46,10 @@ bool ConquerPath::Start()
 {
     // do nothing if already started
     if(mState != READY)
+        return false;
+
+    // object not inizialized properly
+    if(mPlayer == nullptr || mUnit == nullptr || mScreen == nullptr || mGameMap == nullptr)
         return false;
 
     mNextCell = 0;

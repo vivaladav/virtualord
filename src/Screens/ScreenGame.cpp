@@ -192,18 +192,22 @@ ScreenGame::ScreenGame(Game * game)
     mTrackerMG->SetGameHUD(mHUD);
 
     // OVERLAYS
+    const PlayerFaction localFaction = mLocalPlayer->GetFaction();
+
     mOverlayAttack = new OverlayAttackRange(mIsoMap);
 
     mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
-                                                   mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
+                                                   localFaction, mIsoMap->GetNumCols());
 
     mOverlayHeal = new OverlayHealRange(mIsoMap);
 
     mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
-                                   mLocalPlayer->GetFaction(), mIsoMap->GetNumCols());
+                                   localFaction, mIsoMap->GetNumCols());
 
-    mOverlayStruct = new OverlayStructure(mIsoMap, game->GetObjectsRegistry(),
-                                          mLocalPlayer->GetFaction());
+    mOverlayStruct = new OverlayStructure(mIsoMap, game->GetObjectsRegistry(), localFaction);
+
+    mOverlayWall = new OverlayWall(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
+                                   localFaction, mIsoMap->GetNumCols());
 
     // set initial camera position
     CenterCameraOverObject(mLocalPlayer->GetBase());
@@ -657,8 +661,6 @@ void ScreenGame::CreateUI()
         ClearCellOverlays();
         HideActionPanels();
 
-        mConquestPath.clear();
-
         ShowCellConquestIndicator(unit, mCurrCell);
     });
 
@@ -810,7 +812,7 @@ void ScreenGame::CreateUI()
         {
             // clear overlays
             ClearCellOverlays();
-            mConquestPath.clear();
+
             mWallPath.clear();
 
             // reset object action
@@ -2000,12 +2002,10 @@ bool ScreenGame::SetupObjectInteraction(Unit * unit, GameObject * objTarget, Pla
 bool ScreenGame::SetupCellConquest(Unit * unit)
 {
     auto cp = new ConquerPath(unit, mGameMap, this, mOverlayCellConquest);
-    cp->SetPathCells(mConquestPath);
+    cp->SetPathCells(mOverlayCellConquest->GetConquestPath());
 
     if(mGameMap->ConquerCells(cp))
     {
-        mConquestPath.clear();
-
         // store active action
         mObjActionsToDo.emplace_back(unit, GameObjectActionType::CONQUER_CELL,
                                      [](bool){});
@@ -2498,7 +2498,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
     unsigned int startC = clickCell.col;
 
     // continue building path
-    if(!mConquestPath.empty())
+    if(!mOverlayCellConquest->IsConquestPathEmpty())
     {
         if(!mOverlayCellConquest->IsValid())
         {
@@ -2507,11 +2507,11 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
         }
 
         // reclicked on same cell of last path -> double click -> finalize path
-        if(mConquestPath.back() == clickInd)
+        const unsigned int indLast = mOverlayCellConquest->GetConquestPathBack();
+
+        if(indLast == clickInd)
         {
-            const unsigned int pathInd = mConquestPath.front();
-            const Cell2D cellStart(pathInd / mIsoMap->GetNumCols(),
-                                   pathInd % mIsoMap->GetNumCols());
+            const Cell2D & cellStart = mOverlayCellConquest->GetCellStart();
             const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
 
             mOverlayCellConquest->HidePanelCost();
@@ -2537,9 +2537,8 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
         {
             po = ai::Pathfinder::NO_OPTION;
 
-            const unsigned int pathInd = mConquestPath.back();
-            startR = pathInd / mIsoMap->GetNumCols();
-            startC = pathInd % mIsoMap->GetNumCols();
+            startR = indLast / mIsoMap->GetNumCols();
+            startC = indLast % mIsoMap->GetNumCols();
         }
     }
 
@@ -2552,8 +2551,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
         return ;
     }
 
-    mConquestPath.reserve(mConquestPath.size() + path.size());
-    mConquestPath.insert(mConquestPath.end(), path.begin(), path.end());
+    mOverlayCellConquest->AddPathToConquestPath(path);
 }
 
 void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
@@ -3084,7 +3082,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
 
     if(!currInside)
     {
-        ClearTempCellConquestPath(unit, false);
+        mOverlayCellConquest->ClearTempPath(unit, mGameMap, mCurrCell, false);
         return ;
     }
 
@@ -3094,32 +3092,32 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     const bool currWalkable = mGameMap->IsCellWalkable(currInd);
     const bool currIsUnitCell = dest.row == unit->GetRow0() && dest.col == unit->GetCol0();
     const bool canConquer = currVisible &&
-                            (currWalkable || (currIsUnitCell && mConquestPath.empty()));
+                            (currWalkable || (currIsUnitCell && mOverlayCellConquest->IsConquestPathEmpty()));
 
     if(!canConquer)
     {
-        ClearTempCellConquestPath(unit, false);
+        mOverlayCellConquest->ClearTempPath(unit, mGameMap, mCurrCell, false);
         return ;
     }
 
     // make sure path is continuos or ortogonal
-    if(!mConquestPath.empty())
+    if(!mOverlayCellConquest->IsConquestPathEmpty())
     {
-        const unsigned int lastInd = mConquestPath.back();
+        const unsigned int lastInd = mOverlayCellConquest->GetConquestPathBack();
         const int lastR = lastInd / mIsoMap->GetNumCols();
         const int lastC = lastInd % mIsoMap->GetNumCols();
 
         if(lastR != dest.row && lastC != dest.col)
         {
-            ClearTempCellConquestPath(unit, true);
+            mOverlayCellConquest->ClearTempPath(unit, mGameMap, mCurrCell, true);
             return ;
         }
     }
 
     // do not allow crossing paths
-    if(std::find(mConquestPath.begin(), mConquestPath.end(), currInd) != mConquestPath.end())
+    if(mOverlayCellConquest->IsIndexInConquestPath(currInd))
     {
-        ClearTempCellConquestPath(unit, true);
+        mOverlayCellConquest->ClearTempPath(unit, mGameMap, mCurrCell, true);
         return ;
     }
 
@@ -3158,7 +3156,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     unsigned int startC;
 
     // start pathfinding from unit position
-    if(mConquestPath.empty())
+    if(mOverlayCellConquest->IsConquestPathEmpty())
     {
         po = sgl::ai::Pathfinder::INCLUDE_START;
 
@@ -3170,7 +3168,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     {
         po = sgl::ai::Pathfinder::NO_OPTION;
 
-        const unsigned int pathInd = mConquestPath.back();
+        const unsigned int pathInd = mOverlayCellConquest->GetConquestPathBack();
         startR = pathInd / mIsoMap->GetNumCols();
         startC = pathInd % mIsoMap->GetNumCols();
     }
@@ -3179,9 +3177,9 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     const auto path = mPathfinder->MakePath(startR, startC, dest.row, dest.col, po);
 
     // this should never happen, but just in case
-    if(path.empty() && mConquestPath.empty())
+    if(path.empty() && mOverlayCellConquest->IsConquestPathEmpty())
     {
-        ClearTempCellConquestPath(unit, false);
+        mOverlayCellConquest->ClearTempPath(unit, mGameMap, mCurrCell, false);
         return ;
     }
 
@@ -3190,17 +3188,17 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
 
     for(unsigned int i = 0; i < pathSize; ++i)
     {
-        if(std::find(mConquestPath.begin(), mConquestPath.end(), path[i]) != mConquestPath.end())
+        if(mOverlayCellConquest->IsIndexInConquestPath(path[i]))
         {
-            ClearTempCellConquestPath(unit, true);
+            mOverlayCellConquest->ClearTempPath(unit, mGameMap, mCurrCell, true);
             return ;
         }
     }
 
     std::vector<unsigned int> totPath;
-    totPath.reserve(mConquestPath.size() + pathSize);
+    totPath.reserve(mOverlayCellConquest->GetConquestPathSize() + pathSize);
 
-    totPath = mConquestPath;
+    totPath = mOverlayCellConquest->GetConquestPath();
     totPath.insert(totPath.end(), path.begin(), path.end());
 
     ConquerPath cp(unit, mGameMap, this);
@@ -3222,32 +3220,6 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
 
     mOverlayCellConquest->SetPath(totPath, costUnitEnergy, costResEnergy, costResMaterial);
     mOverlayCellConquest->SetCostsDoable(doableUnit, doableResEnergy, doableResMaterial);
-}
-
-void ScreenGame::ClearTempCellConquestPath(Unit * unit, bool showTarget)
-{
-    if(!mConquestPath.empty())
-    {
-        // clear current path
-        ConquerPath cp(unit, mGameMap, this);
-        cp.SetPathCells(mConquestPath);
-
-        // mark overaly as valid
-        // NOTE do it before setting the path
-        const int currInd = mCurrCell.row * mGameMap->GetNumCols() + mCurrCell.col;
-        const bool onLast = currInd == mConquestPath.back();
-        mOverlayCellConquest->SetValid(onLast);
-
-        mOverlayCellConquest->SetPath(mConquestPath, cp.GetCostUnitEnergy(),
-                                      cp.GetCostResourceEnergy(), cp.GetCostResourceMaterial());
-        mOverlayCellConquest->SetCostsDoable(true, true, true);
-    }
-
-    // show invalid target
-    if(showTarget)
-        mOverlayCellConquest->ShowTarget(mCurrCell.row, mCurrCell.col, false);
-    else
-        mOverlayCellConquest->HideTarget();
 }
 
 void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)

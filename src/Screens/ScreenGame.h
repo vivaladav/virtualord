@@ -166,7 +166,6 @@ private:
     void ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCell);
     void ShowBuildWallIndicator(Unit * unit, const Cell2D & dest);
     void ShowCellConquestIndicator(Unit * unit, const Cell2D & dest);
-    void ClearTempCellConquestPath(Unit * unit, bool showTarget);
     void ShowMoveIndicator(GameObject * obj, const Cell2D & dest);
     void ClearCellOverlays();
 
@@ -195,7 +194,6 @@ private:
 
     std::vector<Player *> mAiPlayers;
 
-    std::vector<unsigned int> mConquestPath;
     std::vector<unsigned int> mWallPath;
 
     std::vector<GameObjectAction> mObjActions;

@@ -1,6 +1,7 @@
 #include "Indicators/OverlayCellConquest.h"
 
 #include "IsoLayer.h"
+#include "AI/ConquerPath.h"
 #include "Indicators/ConquestIndicator.h"
 #include "Widgets/PanelUnitEnergyUsage.h"
 #include "Widgets/PanelUnitResourcesUsage.h"
@@ -34,11 +35,48 @@ OverlayCellConquest::~OverlayCellConquest()
         delete pi;
 }
 
+bool OverlayCellConquest::IsIndexInConquestPath(unsigned int ind) const
+{
+    auto it = std::find(mConquestPath.begin(), mConquestPath.end(), ind);
+
+    return it != mConquestPath.end();
+}
+
+void OverlayCellConquest::ClearTempPath(Unit * unit, GameMap * gm, const Cell2D & currCell,
+                                        bool showTarget)
+{
+    if(!IsConquestPathEmpty())
+    {
+        // clear current path
+        ConquerPath cp(unit, gm, nullptr);
+        cp.SetPathCells(mConquestPath);
+
+        // mark overaly as valid
+        // NOTE do it before setting the path
+        const int currInd = (currCell.row * mMapCols) + currCell.col;
+        const bool onLast = currInd == mConquestPath.back();
+        SetValid(onLast);
+
+        SetPath(mConquestPath, cp.GetCostUnitEnergy(), cp.GetCostResourceEnergy(),
+                cp.GetCostResourceMaterial());
+        SetCostsDoable(true, true, true);
+    }
+
+    // show invalid target
+    if(showTarget)
+        ShowTarget(currCell.row, currCell.col, false);
+    else
+        HideTarget();
+}
+
 void OverlayCellConquest::ClearPath()
 {
     // clear cell start
     mCellStart.row = -1;
     mCellStart.col = -1;
+
+    // clear full conquest path
+    mConquestPath.clear();
 
     ResetPath();
 }
@@ -135,7 +173,7 @@ void OverlayCellConquest::HidePanelCost()
 
 void OverlayCellConquest::HideTarget()
 {
-    mLayer->SetObjectVisible(mTarget, false);
+    mLayer->RemoveObject(mTarget);
 
     mPanelCost->SetVisible(false);
     mPanelMoveCost->SetVisible(false);
@@ -150,10 +188,7 @@ void OverlayCellConquest::ShowTarget(int row, int col, bool valid)
     }
     // indicator not visible yet
     else
-    {
-        mTarget->SetVisible(true);
         mLayer->AddObject(mTarget, row, col);
-    }
 
     const int alpha = valid ? 255 : 150;
     mTarget->SetAlpha(alpha);

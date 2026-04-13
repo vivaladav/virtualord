@@ -8,10 +8,12 @@
 namespace game
 {
 
+class GameMap;
 class IsoLayer;
 class ConquestIndicator;
 class PanelUnitEnergyUsage;
 class PanelUnitResourcesUsage;
+class Unit;
 
 enum PlayerFaction : unsigned int;
 
@@ -25,6 +27,15 @@ public:
     void SetCellStart(int row, int col);
     void SetCellStart(const Cell2D & start);
     bool IsCellStartSet() const;
+
+    const std::vector<unsigned int> & GetConquestPath() const;
+    bool IsConquestPathEmpty() const;
+    bool IsIndexInConquestPath(unsigned int ind) const;
+    unsigned int GetConquestPathSize() const;
+    unsigned int GetConquestPathBack() const;
+    void AddPathToConquestPath(const std::vector<unsigned int> & path);
+
+    void ClearTempPath(Unit * unit, GameMap * gm, const Cell2D & currCell, bool showTarget);
 
     void ClearPath();
     void PopFrontPath();
@@ -56,6 +67,8 @@ private:
     std::deque<ConquestIndicator *> mActiveIndicators;
     std::deque<ConquestIndicator *> mAvailableIndicators;
 
+    std::vector<unsigned int> mConquestPath;
+
     Cell2D mCellStart;
 
     ConquestIndicator * mTarget = nullptr;
@@ -83,6 +96,23 @@ inline void OverlayCellConquest::SetCellStart(const Cell2D & start) { mCellStart
 inline bool OverlayCellConquest::IsCellStartSet() const
 {
     return mCellStart.row >= 0 && mCellStart.col >= 0;
+}
+
+inline const std::vector<unsigned int> & OverlayCellConquest::GetConquestPath() const
+{
+    return mConquestPath;
+}
+
+inline bool OverlayCellConquest::IsConquestPathEmpty() const
+{
+    return mConquestPath.empty();
+}
+inline unsigned int OverlayCellConquest::GetConquestPathSize() const { return mConquestPath.size(); }
+inline unsigned int OverlayCellConquest::GetConquestPathBack() const { return mConquestPath.back(); }
+inline void OverlayCellConquest::AddPathToConquestPath(const std::vector<unsigned int> & path)
+{
+    mConquestPath.reserve(mConquestPath.size() + path.size());
+    mConquestPath.insert(mConquestPath.end(), path.begin(), path.end());
 }
 
 inline void OverlayCellConquest::SetCostEnergyUnitMove(int cost) { mCostUnitMove = cost; }
