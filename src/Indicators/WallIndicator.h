@@ -48,7 +48,7 @@ private:
         WB_INVALID
     };
 
-    WallBlock mBlock = WB_INVALID;
+    WallBlock mBlock = WB_HORIZONTAL;
 
     PlayerFaction mFaction;
 

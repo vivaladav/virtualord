@@ -31,7 +31,7 @@ WallBuildPath::~WallBuildPath()
         mOverlay->ClearPath();
 }
 
-void WallBuildPath::SetPathCells(const std::vector<unsigned int> & cells)
+void WallBuildPath::SetPath(const std::vector<unsigned int> & cells)
 {
     mCells = cells;
 

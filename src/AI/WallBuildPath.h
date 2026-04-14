@@ -44,7 +44,7 @@ public:
     int GetCostResourceEnergy() const;
     int GetCostResourceMaterial() const;
 
-    void SetPathCells(const std::vector<unsigned int> & cells);
+    void SetPath(const std::vector<unsigned int> & cells);
 
     unsigned int GetWallLevel() const;
     void SetWallLevel(unsigned int level);

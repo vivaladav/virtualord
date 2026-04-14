@@ -2467,7 +2467,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
                 return ;
             }
 
-            // not enought energy turn
+            // not enough energy turn
             if(cost > mLocalPlayer->GetTurnEnergy())
             {
                 unit->ShowWarning(mSM->GetCString("WARN_NO_T_ENE"), 2.f);
@@ -2701,100 +2701,136 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
 
 void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickCell)
 {
-    /*
-    const Cell2D unitCell(unit->GetRow0(), unit->GetCol0());
-    const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
-    const bool diffClick = unitCell != clickCell;
+    using namespace sgl;
 
-    // not clicking on unit cell, destination is visible and walkable
-    if(!diffClick || !mLocalPlayer->IsCellVisible(clickInd) ||
-       !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    // check destination is visible
+    const int clickInd = clickCell.row * mGameMap->GetNumCols() + clickCell.col;
+
+    if(!mLocalPlayer->IsCellVisible(clickInd))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 3.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"), 2.f);
+        return;
+    }
+
+    // destination is not walkable and not current unit's one
+    const Cell2D selCell(unit->GetRow0(), unit->GetCol0());
+
+    if(clickCell != selCell && !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
         return ;
     }
 
-    // default is starting pathfinding from unit position
-    sgl::ai::Pathfinder::PathOptions po = sgl::ai::Pathfinder::INCLUDE_START;
-    unsigned int startR = unitCell.row;
-    unsigned int startC = unitCell.col;
-
-    if(!mWallPath.empty())
+    // conquest doesn't have enough resources
+    if(!mOverlayWall->IsDoable())
     {
-        // reclicked on same cell of last path -> double click -> finalize path
-        if(mWallPath.back() == clickInd)
+        if(!mOverlayWall->IsDoableUnit())
+            unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        else if(!mOverlayWall->IsDoableResources())
+            unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        else
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD"), 2.f);
+
+        return ;
+    }
+
+    // not clicked any cell yet
+    if(!mOverlayWall->IsCellStartSet())
+    {
+        // unit will need to move -> check path cost
+        if(!mGameMap->AreCellsAdjacent(selCell, clickCell))
         {
-            const unsigned int minPathSize = 2;
+            const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
+                                                         clickCell.row, clickCell.col,
+                                                         ai::Pathfinder::ALL_OPTIONS);
 
-            if(mWallPath.size() > minPathSize)
+            // can't find a path to this cell
+            if(pathStart.empty())
             {
-                auto onFail = [this]
-                {
-                    mWallPath.clear();
-                    ClearCellOverlays();
-                };
-
-                auto onDone = [this, unit, onFail](bool successful)
-                {
-                    if(successful)
-                        StartUnitBuildWall(unit);
-                    else
-                        onFail();
-                };
-
-                const unsigned int prevInd = mWallPath[mWallPath.size() - minPathSize];
-                const int endR = prevInd / mIsoMap->GetNumCols();
-                const int endC = prevInd % mIsoMap->GetNumCols();
-
-                const auto pathMov = mPathfinder->MakePath(unitCell.row, unitCell.col,
-                                                           endR, endC);
-
-                // empty path -> exit
-                if(pathMov.empty())
-                {
-                    onFail();
-                    unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 3.f);
-                    return ;
-                }
-
-                auto op = new ObjectPath(unit, mIsoMap, mGameMap, this);
-                op->SetPath(pathMov);
-
-                // movement failed
-                if(!mGameMap->MoveUnit(op))
-                {
-                    delete op;
-                    onFail();
-                    unit->ShowWarning(mSM->GetCString("WARN_MOV_FAIL"), 2.f);
-                    return;
-                }
-
-                // disable actions panel (if action is done by local player)
-                mHUD->SetLocalActionsEnabled(false);
-
-                // store active action
-                mObjActionsToDo.emplace_back(unit, GameObjectActionType::MOVE, onDone);
-
-                unit->SetActiveAction(GameObjectActionType::IDLE);
-                unit->SetCurrentAction(GameObjectActionType::MOVE);
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 2.f);
+                return ;
             }
-            // only 1 block of wall -> no movement, start building
+
+            // check cost
+            auto op = ObjectPath(unit, mIsoMap, mGameMap, this);
+            op.SetPath(pathStart);
+
+            const int cost = op.GetPathCost();
+
+            // not enough unit energy
+            if(cost > unit->GetEnergy())
+            {
+                unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+                return ;
+            }
+
+            // not enough energy turn
+            if(cost > mLocalPlayer->GetTurnEnergy())
+            {
+                unit->ShowWarning(mSM->GetCString("WARN_NO_T_ENE"), 2.f);
+                return ;
+            }
+
+            // all good -> store cost
+            mOverlayWall->SetCostEnergyUnitMove(cost);
+        }
+        // building starting next unit's cell -> 0 move cost
+        else
+            mOverlayWall->SetCostEnergyUnitMove(0);
+
+        mOverlayWall->SetCellStart(clickCell);
+        mOverlayWall->HideTarget();
+
+        ShowBuildWallIndicator(unit, clickCell);
+    }
+
+    // init start for empty path
+    ai::Pathfinder::PathOptions po = ai::Pathfinder::INCLUDE_START;
+    unsigned int startR = clickCell.row;
+    unsigned int startC = clickCell.col;
+
+    // continue building path
+    if(!mOverlayWall->IsWallPathEmpty())
+    {
+        if(!mOverlayWall->IsValid())
+        {
+            unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+            return ;
+        }
+
+        // reclicked on same cell of last path -> double click -> finalize path
+        const unsigned int indLast = mOverlayWall->GetWallPathBack();
+
+        if(indLast == clickInd)
+        {
+            const Cell2D & cellStart = mOverlayWall->GetCellStart();
+            const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
+
+            mOverlayWall->HidePanelCost();
+
+            // unit is already on start cell -> start conquest immediately
+            if(cellStart == cellUnit)
+                StartUnitBuildWall(unit);
             else
             {
-                if(!StartUnitBuildWall(unit))
-                    unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD"), 3.f);
+                // move to first cell to conquer and then start conquest
+                SetupUnitMove(unit, cellUnit, cellStart, false,
+                              [this, unit, clickCell](bool successful)
+                              {
+                                  if(successful)
+                                      StartUnitBuildWall(unit);
+                              });
             }
 
             return ;
         }
-        // continue wall planning
+        // continue pathfinfing from latest click
         else
         {
-            po = sgl::ai::Pathfinder::NO_OPTION;
+            po = ai::Pathfinder::NO_OPTION;
 
-            const unsigned int pathInd = mWallPath.back();
-            startR = pathInd / mIsoMap->GetNumCols();
-            startC = pathInd % mIsoMap->GetNumCols();
+            startR = indLast / mIsoMap->GetNumCols();
+            startC = indLast % mIsoMap->GetNumCols();
         }
     }
 
@@ -2807,9 +2843,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
         return ;
     }
 
-    mWallPath.reserve(mWallPath.size() + path.size());
-    mWallPath.insert(mWallPath.end(), path.begin(), path.end());
-*/
+    mOverlayWall->AddPathToWallPath(path);
 }
 
 void ScreenGame::HandleMiniUnitSetTargetOnMouseUp(GameObject * obj, const Cell2D & clickCell)
@@ -2982,7 +3016,7 @@ bool ScreenGame::StartUnitBuildWall(Unit * unit)
 {
     // setup build
     auto wbp = new WallBuildPath(unit, mIsoMap, mGameMap, this);
-    wbp->SetPathCells(mOverlayWall->GetWallPath());
+    wbp->SetPath(mOverlayWall->GetWallPath());
     // NOTE only level 0 for now
     wbp->SetWallLevel(0);
 
@@ -3072,9 +3106,7 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
     mOverlayCellConquest->SetValid(false);
 
     // check if mouse outside the map
-    const bool currInside = mIsoMap->IsCellInside(dest);
-
-    if(!currInside)
+    if(!mIsoMap->IsCellInside(dest))
     {
         mOverlayCellConquest->ClearTempPath(unit, mGameMap, mCurrCell, false);
         return ;
@@ -3222,48 +3254,80 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     // NOTE keep this at the top of the function
     mOverlayWall->SetValid(false);
 
-
-    /*
-    IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2);
-
-    // first clear all objects from the layer
-    layer->ClearObjects();
-
-    const bool currInside = mIsoMap->IsCellInside(dest);
-
-    // mouse outside the map
-    if(!currInside)
+    // check if mouse outside the map
+    if(!mIsoMap->IsCellInside(dest))
+    {
+        mOverlayWall->ClearTempPath(unit, mGameMap, mCurrCell, false);
         return ;
+    }
 
+    // do not allow when cell not visible or not walkable
     const int currInd = dest.row * mGameMap->GetNumCols() + dest.col;
-
     const bool currVisible = mLocalPlayer->IsCellVisible(currInd);
     const bool currWalkable = mGameMap->IsCellWalkable(currInd);
-    const bool currIsUnitCell = dest.row == unit->GetRow0() && dest.col == unit->GetCol0();
-
-    const bool canBuild = currVisible && (currWalkable || currIsUnitCell);
+    const bool canBuild = currVisible && currWalkable;
 
     if(!canBuild)
+    {
+        mOverlayWall->ClearTempPath(unit, mGameMap, mCurrCell, false);
         return ;
+    }
+
+    // do not allow crossing paths
+    if(mOverlayWall->IsIndexInWallPath(currInd))
+    {
+        mOverlayWall->ClearTempPath(unit, mGameMap, mCurrCell, true);
+        return ;
+    }
+
+    // first point not set yet
+    if(!mOverlayWall->IsCellStartSet())
+    {
+        const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
+                                                     dest.row, dest.col,
+                                                     sgl::ai::Pathfinder::ALL_OPTIONS);
+
+        // can't find a path to this cell
+        if(pathStart.empty())
+        {
+            mOverlayWall->HideTarget();
+            return ;
+        }
+
+        // check cost
+        auto op = ObjectPath(unit, mIsoMap, mGameMap, this);
+        op.SetPath(pathStart);
+
+        const int costEnergy = op.GetPathCost();
+        const bool movDoable = costEnergy <= unit->GetEnergy() &&
+                               costEnergy <= mLocalPlayer->GetTurnEnergy();
+
+        mOverlayWall->SetCostEnergyUnitMove(costEnergy);
+        mOverlayWall->SetCostMoveDoable(movDoable);
+
+        // show target cell
+        mOverlayWall->ShowTarget(dest.row, dest.col);
+        return;
+    }
 
     sgl::ai::Pathfinder::PathOptions po;
     unsigned int startR;
     unsigned int startC;
 
     // start pathfinding from unit position
-    if(mWallPath.empty())
+    if(mOverlayWall->IsWallPathEmpty())
     {
         po = sgl::ai::Pathfinder::INCLUDE_START;
 
-        startR = unit->GetRow0();
-        startC = unit->GetCol0();
+        startR = mOverlayWall->GetCellStart().row;
+        startC = mOverlayWall->GetCellStart().col;
     }
     // continue pathfinfing from latest click
     else
     {
         po = sgl::ai::Pathfinder::NO_OPTION;
 
-        const unsigned int pathInd = mWallPath.back();
+        const unsigned int pathInd = mOverlayWall->GetWallPathBack();
         startR = pathInd / mIsoMap->GetNumCols();
         startC = pathInd % mIsoMap->GetNumCols();
     }
@@ -3271,57 +3335,50 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     // show path cost when destination is visible
     const auto path = mPathfinder->MakePath(startR, startC, dest.row, dest.col, po);
 
-    // this should not happen
-    if(path.size() < 2 && mWallPath.empty())
-        return ;
-
-    std::vector<unsigned int> totPath;
-    totPath.reserve(mWallPath.size() + path.size());
-
-    totPath = mWallPath;
-    totPath.insert(totPath.end(), path.begin(), path.end());
-
-    const unsigned int lastIdx = totPath.size() - 1;
-
-    const PlayerFaction faction = mLocalPlayer->GetFaction();
-
-    std::vector<Cell2D> cellsPath;
-    cellsPath.reserve(totPath.size());
-
-    // store coordinates of start cell
-    const unsigned int pathInd0 = totPath[0];
-    const unsigned int indRow0 = pathInd0 / mIsoMap->GetNumCols();
-    const unsigned int indCol0 = pathInd0 % mIsoMap->GetNumCols();
-    cellsPath.emplace_back(indRow0, indCol0);
-
-    for(unsigned int i = 0; i < lastIdx; ++i)
+    // this should never happen, but just in case
+    if(path.empty() && mOverlayWall->IsWallPathEmpty())
     {
-        WallIndicator * ind = nullptr;
-
-        if(i < mWallIndicators.size())
-            ind = mWallIndicators[i];
-        else
-        {
-            ind = new WallIndicator(faction);
-            mWallIndicators.emplace_back(ind);
-        }
-
-        // add indicator to layer - skip path[0] as that's start
-        const unsigned int pathInd = totPath[i + 1];
-        const unsigned int indRow = pathInd / mIsoMap->GetNumCols();
-        const unsigned int indCol = pathInd % mIsoMap->GetNumCols();
-        cellsPath.emplace_back(indRow, indCol);
-
-        layer->AddObject(ind, indRow, indCol);
+        mOverlayWall->ClearTempPath(unit, mGameMap, mCurrCell, false);
+        return ;
     }
 
-    // -- set directions and costs --
-    const unsigned int lastIndicator = lastIdx - 1;
+    // check no cell of current path is crossing existing path
+    const unsigned int pathSize = path.size();
 
-    WallBuildPath wbp(unit, mIsoMap, mGameMap, this);
-    wbp.SetPathCells(totPath);
-    wbp.SetIndicatorsType(cellsPath, mWallIndicators);
-*/
+    for(unsigned int i = 0; i < pathSize; ++i)
+    {
+        if(mOverlayWall->IsIndexInWallPath(path[i]))
+        {
+            mOverlayWall->ClearTempPath(unit, mGameMap, mCurrCell, true);
+            return ;
+        }
+    }
+
+    std::vector<unsigned int> totPath;
+    totPath.reserve(mOverlayWall->GetWallPathSize() + pathSize);
+
+    totPath = mOverlayWall->GetWallPath();
+    totPath.insert(totPath.end(), path.begin(), path.end());
+
+    ConquerPath cp(unit, mGameMap, this);
+    cp.SetPathCells(totPath);
+
+    // mark overaly as valid
+    // NOTE do it before setting the path
+    mOverlayWall->SetValid(true);
+
+    const int costUnitEnergy = cp.GetCostUnitEnergy();
+    const int costUnitEnergyTot =  costUnitEnergy + mOverlayWall->GetCostEnergyUnitMove();
+    const bool doableUnit = unit->GetEnergy() >= costUnitEnergyTot &&
+                            mLocalPlayer->GetTurnEnergy() >= costUnitEnergyTot;
+
+    const int costResEnergy = cp.GetCostResourceEnergy();
+    const bool doableResEnergy = mLocalPlayer->HasEnough(Player::ENERGY, costResEnergy);
+    const int costResMaterial = cp.GetCostResourceMaterial();
+    const bool doableResMaterial = mLocalPlayer->HasEnough(Player::MATERIAL, costResMaterial);
+
+    mOverlayWall->SetPath(totPath, costUnitEnergy, costResEnergy, costResMaterial);
+    mOverlayWall->SetCostsDoable(doableUnit, doableResEnergy, doableResMaterial);
 }
 
 void ScreenGame::ShowMoveIndicator(GameObject * obj, const Cell2D & dest)
