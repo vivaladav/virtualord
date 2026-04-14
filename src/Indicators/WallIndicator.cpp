@@ -14,6 +14,7 @@ WallIndicator::WallIndicator(PlayerFaction faction)
     : IsoObject(1, 1)
     , mFaction(faction)
 {
+    UpdateImage();
 }
 
 void WallIndicator::SetBeforeAfterDirections(int br, int bc, int ar, int ac)
@@ -71,6 +72,17 @@ void WallIndicator::SetBeforeAfterDirections(int br, int bc, int ar, int ac)
     UpdateImage();
 }
 
+void WallIndicator::SetDoable(bool doable)
+{
+    if(mDoable == doable)
+        return ;
+
+    mDoable = doable;
+
+    const unsigned int alpha[] = { 150, 255};
+
+    SetAlpha(alpha[doable]);
+}
 
 GameObjectVariantId WallIndicator::GetBlockType() const
 {

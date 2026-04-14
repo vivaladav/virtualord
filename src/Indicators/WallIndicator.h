@@ -26,6 +26,8 @@ public:
 
     void SetBeforeAfterDirections(int br, int bc, int ar, int ac);
 
+    void SetDoable(bool doable);
+
 private:
     void CreateCostData();
 
@@ -49,6 +51,8 @@ private:
     WallBlock mBlock = WB_INVALID;
 
     PlayerFaction mFaction;
+
+    bool mDoable = true;
 };
 
 } // namespace game

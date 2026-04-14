@@ -8,10 +8,12 @@
 namespace game
 {
 
+class GameMap;
 class IsoLayer;
-class WallIndicator;
 class PanelUnitEnergyUsage;
 class PanelUnitResourcesUsage;
+class WallIndicator;
+class Unit;
 
 enum PlayerFaction : unsigned int;
 
@@ -25,6 +27,15 @@ public:
     void SetCellStart(int row, int col);
     void SetCellStart(const Cell2D & start);
     bool IsCellStartSet() const;
+
+    const std::vector<unsigned int> & GetWallPath() const;
+    bool IsWallPathEmpty() const;
+    bool IsIndexInWallPath(unsigned int ind) const;
+    unsigned int GetWallPathSize() const;
+    unsigned int GetWallPathBack() const;
+    void AddPathToWallPath(const std::vector<unsigned int> & path);
+
+    void ClearTempPath(Unit * unit, GameMap * gm, const Cell2D & currCell, bool showTarget);
 
     void ClearPath();
     void PopFrontPath();
@@ -50,9 +61,13 @@ public:
 private:
     WallIndicator * GetNewIndicator();
 
+    void ResetPath();
+
 private:
     std::deque<WallIndicator *> mActiveIndicators;
     std::deque<WallIndicator *> mAvailableIndicators;
+
+    std::vector<unsigned int> mWallPath;
 
     Cell2D mCellStart;
 
@@ -81,6 +96,23 @@ inline void OverlayWall::SetCellStart(const Cell2D & start) { mCellStart = start
 inline bool OverlayWall::IsCellStartSet() const
 {
     return mCellStart.row >= 0 && mCellStart.col >= 0;
+}
+
+inline const std::vector<unsigned int> & OverlayWall::GetWallPath() const
+{
+    return mWallPath;
+}
+
+inline bool OverlayWall::IsWallPathEmpty() const
+{
+    return mWallPath.empty();
+}
+inline unsigned int OverlayWall::GetWallPathSize() const { return mWallPath.size(); }
+inline unsigned int OverlayWall::GetWallPathBack() const { return mWallPath.back(); }
+inline void OverlayWall::AddPathToWallPath(const std::vector<unsigned int> & path)
+{
+    mWallPath.reserve(mWallPath.size() + path.size());
+    mWallPath.insert(mWallPath.end(), path.begin(), path.end());
 }
 
 inline void OverlayWall::SetCostEnergyUnitMove(int cost) { mCostUnitMove = cost; }

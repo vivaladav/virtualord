@@ -606,8 +606,6 @@ void ScreenGame::CreateUI()
         ClearCellOverlays();
         HideActionPanels();
 
-        mWallPath.clear();
-
         ShowBuildWallIndicator(unit, mCurrCell);
     });
 
@@ -812,8 +810,6 @@ void ScreenGame::CreateUI()
         {
             // clear overlays
             ClearCellOverlays();
-
-            mWallPath.clear();
 
             // reset object action
             selObj->SetCurrentAction(GameObjectActionType::IDLE);
@@ -2986,7 +2982,7 @@ bool ScreenGame::StartUnitBuildWall(Unit * unit)
 {
     // setup build
     auto wbp = new WallBuildPath(unit, mIsoMap, mGameMap, this);
-    wbp->SetPathCells(mWallPath);
+    wbp->SetPathCells(mOverlayWall->GetWallPath());
     // NOTE only level 0 for now
     wbp->SetWallLevel(0);
 
@@ -2999,8 +2995,6 @@ bool ScreenGame::StartUnitBuildWall(Unit * unit)
 
             ClearCellOverlays();
         }
-
-        mWallPath.clear();
 
         // store active action
         mObjActionsToDo.emplace_back(unit, GameObjectActionType::BUILD_WALL, [](bool){});

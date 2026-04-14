@@ -1,6 +1,7 @@
 #include "Indicators/OverlayWall.h"
 
 #include "IsoLayer.h"
+#include "AI/ConquerPath.h"
 #include "Indicators/WallIndicator.h"
 #include "Widgets/PanelUnitEnergyUsage.h"
 #include "Widgets/PanelUnitResourcesUsage.h"
@@ -18,6 +19,9 @@ OverlayWall::OverlayWall(IsoLayer * layer, PlayerFaction faction, int mapCols)
 {
     mPanelCost->SetVisible(false);
     mPanelMoveCost->SetVisible(false);
+
+    mCellStart.row = -1;
+    mCellStart.col = -1;
 }
 
 OverlayWall::~OverlayWall()
@@ -31,19 +35,50 @@ OverlayWall::~OverlayWall()
         delete pi;
 }
 
-void OverlayWall::ClearPath()
+bool OverlayWall::IsIndexInWallPath(unsigned int ind) const
 {
-    for(auto pi : mActiveIndicators)
-    {
-        mLayer->RemoveObject(pi);
+    auto it = std::find(mWallPath.begin(), mWallPath.end(), ind);
 
-        mAvailableIndicators.emplace_back(pi);
+    return it != mWallPath.end();
+}
+
+void OverlayWall::ClearTempPath(Unit * unit, GameMap * gm, const Cell2D & currCell,
+                                        bool showTarget)
+{
+    if(!IsWallPathEmpty())
+    {
+        // clear current path
+        ConquerPath cp(unit, gm, nullptr);
+        cp.SetPathCells(mWallPath);
+
+        // mark overaly as valid
+        // NOTE do it before setting the path
+        const int currInd = (currCell.row * mMapCols) + currCell.col;
+        const bool onLast = currInd == mWallPath.back();
+        SetValid(onLast);
+
+        SetPath(mWallPath, cp.GetCostUnitEnergy(), cp.GetCostResourceEnergy(),
+                cp.GetCostResourceMaterial());
+        SetCostsDoable(true, true, true);
     }
 
-    mActiveIndicators.clear();
+    // show invalid target
+    if(showTarget)
+        ShowTarget(currCell.row, currCell.col, false);
+    else
+        HideTarget();
+}
 
-    mPanelCost->SetVisible(false);
-    mPanelMoveCost->SetVisible(false);
+void OverlayWall::ClearPath()
+{
+    // clear cell start
+    mCellStart.row = -1;
+    mCellStart.col = -1;
+
+    // clear full conquest path
+    mWallPath.clear();
+
+    ResetPath();
 }
 
 void OverlayWall::PopFrontPath()
@@ -73,7 +108,7 @@ void OverlayWall::SetPath(const std::vector<unsigned int> & path,
     mLayer->RemoveObject(mTarget);
 
     // clear existing indicators
-    ClearPath();
+    ResetPath();
 
     // create new indicators
     const bool doable = mPanelCost->IsDoable();
@@ -86,7 +121,7 @@ void OverlayWall::SetPath(const std::vector<unsigned int> & path,
         const unsigned int col = ind % mMapCols;
 
         auto pi = GetNewIndicator();
-        //pi->SetDoable(doable);
+        pi->SetDoable(doable);
         mActiveIndicators.emplace_back(pi);
 
         mLayer->AddObject(pi, row, col);
@@ -118,8 +153,8 @@ void OverlayWall::SetCostsDoable(bool unitEnergy, bool resEnergy, bool resMateri
 
     const bool doable = mPanelCost->IsDoable();
 
-    // for(auto ind : mActiveIndicators)
-    //     ind->SetDoable(doable);
+    for(auto ind : mActiveIndicators)
+        ind->SetDoable(doable);
 }
 
 bool OverlayWall::IsDoable() const { return mPanelCost->IsDoable(); }
@@ -138,7 +173,7 @@ void OverlayWall::HidePanelCost()
 
 void OverlayWall::HideTarget()
 {
-    mLayer->SetObjectVisible(mTarget, false);
+    mLayer->RemoveObject(mTarget);
 
     mPanelCost->SetVisible(false);
     mPanelMoveCost->SetVisible(false);
@@ -153,10 +188,7 @@ void OverlayWall::ShowTarget(int row, int col, bool valid)
     }
     // indicator not visible yet
     else
-    {
-        mTarget->SetVisible(true);
         mLayer->AddObject(mTarget, row, col);
-    }
 
     const int alpha = valid ? 255 : 150;
     mTarget->SetAlpha(alpha);
@@ -205,6 +237,25 @@ WallIndicator * OverlayWall::GetNewIndicator()
     }
 
     return pi;
+}
+
+void OverlayWall::ResetPath()
+{
+    // clear active indicators
+    for(auto pi : mActiveIndicators)
+    {
+        mLayer->RemoveObject(pi);
+
+        mAvailableIndicators.emplace_back(pi);
+    }
+
+    mActiveIndicators.clear();
+
+    // clear panels
+    mPanelCost->SetVisible(false);
+    mPanelCost->SetDoable(true, true, true);
+    mPanelMoveCost->SetVisible(false);
+    mPanelMoveCost->SetDoable(true);
 }
 
 } // namespace game
