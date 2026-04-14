@@ -3261,11 +3261,15 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
         return ;
     }
 
-    // do not allow when cell not visible or not walkable
-    const int currInd = dest.row * mGameMap->GetNumCols() + dest.col;
+    // do not allow when cell not visible or not walkable unless it's the unit's cell and
+    // it's the start of the wall path
+    const unsigned int mapCols = mGameMap->GetNumCols();
+    const unsigned int currInd = (dest.row * mapCols) + dest.col;
+    const bool currOnUnit = unit->GetRow0() == dest.row && unit->GetCol0() == dest.col;
     const bool currVisible = mLocalPlayer->IsCellVisible(currInd);
     const bool currWalkable = mGameMap->IsCellWalkable(currInd);
-    const bool canBuild = currVisible && currWalkable;
+    const bool canBuild = currVisible &&
+                          (currWalkable || (currOnUnit && !mOverlayWall->IsCellStartSet()));
 
     if(!canBuild)
     {
@@ -3328,8 +3332,8 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
         po = sgl::ai::Pathfinder::NO_OPTION;
 
         const unsigned int pathInd = mOverlayWall->GetWallPathBack();
-        startR = pathInd / mIsoMap->GetNumCols();
-        startC = pathInd % mIsoMap->GetNumCols();
+        startR = pathInd / mapCols;
+        startC = pathInd % mapCols;
     }
 
     // show path cost when destination is visible
