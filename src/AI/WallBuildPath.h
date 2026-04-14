@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Cell2D.h"
+#include "GameObjects/GameObjectTypes.h"
 
 #include <vector>
 
@@ -10,9 +10,9 @@ namespace game
 class GameMap;
 class GameMapProgressBar;
 class IsoMap;
+class OverlayWall;
 class ScreenGame;
 class Unit;
-class WallIndicator;
 
 class WallBuildPath
 {
@@ -32,15 +32,17 @@ public:
     };
 
 public:
-    WallBuildPath(Unit * unit, IsoMap * im, GameMap * gm, ScreenGame * sg);
+    WallBuildPath(Unit * unit, IsoMap * im, GameMap * gm, ScreenGame * sg,
+                  OverlayWall * ov = nullptr);
     ~WallBuildPath();
 
     Unit * GetUnit() const;
 
     BuildState GetState() const;
 
-    unsigned int GetEnergyCost() const;
-    unsigned int GetMateriaCost() const;
+    int GetCostUnitEnergy() const;
+    int GetCostResourceEnergy() const;
+    int GetCostResourceMaterial() const;
 
     void SetPathCells(const std::vector<unsigned int> & cells);
 
@@ -55,11 +57,8 @@ public:
 
     void Update(float delta);
 
-    void SetIndicatorsType(const std::vector<Cell2D> & cells,
-                           const std::vector<WallIndicator *> & indicators);
-
 private:
-    void CreateIndicators();
+    void SetIndicatorsType();
 
     bool InitNextBuild();
     bool InitNextMove();
@@ -71,10 +70,14 @@ private:
     bool Fail();
     bool Finish();
 
+    int IndToRow(unsigned int ind) const;
+    int IndToCol(unsigned int ind) const;
+
 private:
     std::vector<unsigned int> mCells;
+    std::vector<GameObjectVariantId> mBlockTypes;
 
-    std::vector<WallIndicator *> mIndicators;
+    OverlayWall * mOverlay = nullptr;
 
     GameMapProgressBar * mProgressBar = nullptr;
 
@@ -100,14 +103,17 @@ private:
     unsigned int mTargetRow = 0;
     unsigned int mTargetCol = 0;
 
-    unsigned int mEnergyCost = 0.f;
-    unsigned int mMaterialCost = 0.f;
+    int mCostUnitEnergy = 0;
+    int mCostResEnergy = 0.f;
+    int mCostResMaterial = 0.f;
 
     unsigned int mLevel = 0;
 };
 
-inline WallBuildPath::WallBuildPath(Unit *unit, IsoMap * im, GameMap * gm, ScreenGame * sg)
-    : mUnit(unit)
+inline WallBuildPath::WallBuildPath(Unit *unit, IsoMap * im, GameMap * gm, ScreenGame * sg,
+                                    OverlayWall * ov)
+    : mOverlay(ov)
+    , mUnit(unit)
     , mIsoMap(im)
     , mGameMap(gm)
     , mScreen(sg)
@@ -118,15 +124,9 @@ inline Unit * WallBuildPath::GetUnit() const { return mUnit; }
 
 inline WallBuildPath::BuildState WallBuildPath::GetState() const { return mState; }
 
-inline unsigned int WallBuildPath::GetEnergyCost() const { return mEnergyCost; }
-inline unsigned int WallBuildPath::GetMateriaCost() const { return mMaterialCost; }
-
-inline void WallBuildPath::SetPathCells(const std::vector<unsigned int> & cells)
-{
-    mCells = cells;
-
-    UpdatePathCost();
-}
+inline int WallBuildPath::GetCostUnitEnergy() const { return mCostUnitEnergy; }
+inline int WallBuildPath::GetCostResourceEnergy() const { return mCostResEnergy; }
+inline int WallBuildPath::GetCostResourceMaterial() const { return mCostResMaterial; }
 
 inline unsigned int WallBuildPath::GetWallLevel() const { return mLevel; }
 inline void WallBuildPath::SetWallLevel(unsigned int level) { mLevel = level; }

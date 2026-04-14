@@ -22,7 +22,7 @@ class WallIndicator : public IsoObject
 public:
     WallIndicator(PlayerFaction faction);
 
-    game::GameObjectVariantId GetBlockType() const;
+    GameObjectVariantId GetBlockType() const;
 
     void SetBeforeAfterDirections(int br, int bc, int ar, int ac);
 
