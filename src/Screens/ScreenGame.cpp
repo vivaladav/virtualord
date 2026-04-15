@@ -2712,10 +2712,11 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
         return;
     }
 
-    // destination is not walkable and not current unit's one
-    const Cell2D selCell(unit->GetRow0(), unit->GetCol0());
+    // destination is not walkable and not current unit's one when starting path
+    const Cell2D unitCell(unit->GetRow0(), unit->GetCol0());
 
-    if(clickCell != selCell && !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    if(!(clickCell == unitCell && !mOverlayWall->IsCellStartSet()) &&
+       !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
     {
         unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
         return ;
@@ -2738,7 +2739,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
     if(!mOverlayWall->IsCellStartSet())
     {
         // unit will need to move -> check path cost
-        if(!mGameMap->AreCellsAdjacent(selCell, clickCell))
+        if(!mGameMap->AreCellsAdjacent(unitCell, clickCell) && clickCell != unitCell)
         {
             const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
                                                          clickCell.row, clickCell.col,
@@ -2804,17 +2805,16 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
         if(indLast == clickInd)
         {
             const Cell2D & cellStart = mOverlayWall->GetCellStart();
-            const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
 
             mOverlayWall->HidePanelCost();
 
             // unit is already on start cell -> start conquest immediately
-            if(cellStart == cellUnit)
+            if(cellStart == unitCell || mGameMap->AreCellsAdjacent(unitCell, cellStart))
                 StartUnitBuildWall(unit);
             else
             {
                 // move to first cell to conquer and then start conquest
-                SetupUnitMove(unit, cellUnit, cellStart, false,
+                SetupUnitMove(unit, unitCell, cellStart, false,
                               [this, unit, clickCell](bool successful)
                               {
                                   if(successful)
@@ -3259,13 +3259,14 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
 
     // do not allow when cell not visible or not walkable unless it's the unit's cell and
     // it's the start of the wall path
+    const Cell2D unitCell(unit->GetRow0(), unit->GetCol0());
     const unsigned int mapCols = mGameMap->GetNumCols();
     const unsigned int currInd = (dest.row * mapCols) + dest.col;
-    const bool currOnUnit = unit->GetRow0() == dest.row && unit->GetCol0() == dest.col;
+    const bool unitOnCurr = unitCell.row == dest.row && unitCell.col == dest.col;
     const bool currVisible = mLocalPlayer->IsCellVisible(currInd);
     const bool currWalkable = mGameMap->IsCellWalkable(currInd);
     const bool canBuild = currVisible &&
-                          (currWalkable || (currOnUnit && !mOverlayWall->IsCellStartSet()));
+                          (currWalkable || (unitOnCurr && !mOverlayWall->IsCellStartSet()));
 
     if(!canBuild)
     {
@@ -3283,27 +3284,35 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     // first point not set yet
     if(!mOverlayWall->IsCellStartSet())
     {
-        const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
-                                                     dest.row, dest.col,
-                                                     sgl::ai::Pathfinder::ALL_OPTIONS);
-
-        // can't find a path to this cell
-        if(pathStart.empty())
+        if(!mGameMap->AreCellsAdjacent(unitCell, dest) && !unitOnCurr)
         {
-            mOverlayWall->HideTarget();
-            return ;
+            const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
+                                                         dest.row, dest.col,
+                                                         sgl::ai::Pathfinder::ALL_OPTIONS);
+
+            // can't find a path to this cell
+            if(pathStart.empty())
+            {
+                mOverlayWall->HideTarget();
+                return ;
+            }
+
+            // check cost
+            auto op = ObjectPath(unit, mIsoMap, mGameMap, this);
+            op.SetPath(pathStart);
+
+            const int costEnergy = op.GetPathCost();
+            const bool movDoable = costEnergy <= unit->GetEnergy() &&
+                                   costEnergy <= mLocalPlayer->GetTurnEnergy();
+
+            mOverlayWall->SetCostEnergyUnitMove(costEnergy);
+            mOverlayWall->SetCostMoveDoable(movDoable);
         }
-
-        // check cost
-        auto op = ObjectPath(unit, mIsoMap, mGameMap, this);
-        op.SetPath(pathStart);
-
-        const int costEnergy = op.GetPathCost();
-        const bool movDoable = costEnergy <= unit->GetEnergy() &&
-                               costEnergy <= mLocalPlayer->GetTurnEnergy();
-
-        mOverlayWall->SetCostEnergyUnitMove(costEnergy);
-        mOverlayWall->SetCostMoveDoable(movDoable);
+        else
+        {
+            mOverlayWall->SetCostEnergyUnitMove(0);
+            mOverlayWall->SetCostMoveDoable(true);
+        }
 
         // show target cell
         mOverlayWall->ShowTarget(dest.row, dest.col);
@@ -3360,21 +3369,21 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     totPath = mOverlayWall->GetWallPath();
     totPath.insert(totPath.end(), path.begin(), path.end());
 
-    ConquerPath cp(unit, mGameMap, this);
-    cp.SetPathCells(totPath);
+    WallBuildPath wp(unit, mIsoMap, mGameMap, this, nullptr);
+    wp.SetPath(totPath);
 
     // mark overaly as valid
     // NOTE do it before setting the path
     mOverlayWall->SetValid(true);
 
-    const int costUnitEnergy = cp.GetCostUnitEnergy();
+    const int costUnitEnergy = wp.GetCostUnitEnergy();
     const int costUnitEnergyTot =  costUnitEnergy + mOverlayWall->GetCostEnergyUnitMove();
     const bool doableUnit = unit->GetEnergy() >= costUnitEnergyTot &&
                             mLocalPlayer->GetTurnEnergy() >= costUnitEnergyTot;
 
-    const int costResEnergy = cp.GetCostResourceEnergy();
+    const int costResEnergy = wp.GetCostResourceEnergy();
     const bool doableResEnergy = mLocalPlayer->HasEnough(Player::ENERGY, costResEnergy);
-    const int costResMaterial = cp.GetCostResourceMaterial();
+    const int costResMaterial = wp.GetCostResourceMaterial();
     const bool doableResMaterial = mLocalPlayer->HasEnough(Player::MATERIAL, costResMaterial);
 
     mOverlayWall->SetPath(totPath, costUnitEnergy, costResEnergy, costResMaterial);

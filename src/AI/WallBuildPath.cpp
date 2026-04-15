@@ -162,12 +162,21 @@ bool WallBuildPath::InitNextMove()
     if(numCells == mNextCell)
         return Finish();
 
+    // check if unit is next to only cell
+    const unsigned int indCurr = mCells[mNextCell];
+    const Cell2D cellUnit(mUnit->GetRow0(), mUnit->GetCol0());
+    const Cell2D cellCurr(IndToRow(indCurr), IndToCol(indCurr));
+
+    if(numCells == 1 && mGameMap->AreCellsAdjacent(cellUnit, cellCurr))
+        return InitNextBuild();
+
     // not enough energy -> FAIL
     if(!mUnit->HasEnergyForActionStep(MOVE))
         return Fail();
 
     const unsigned int movCell = mNextCell + 1;
 
+    // last cell of the path -> move outside
     if(movCell == numCells)
     {
         const Cell2D dest = mGameMap->GetNewUnitDestination(mUnit);
@@ -316,15 +325,27 @@ void WallBuildPath::UpdatePathCost()
     if(mCells.empty())
         return ;
 
-    const unsigned int blocks = mCells.size() - 1;
+    const unsigned int numBlocks = mCells.size();
 
     // unit energy
-    mCostUnitEnergy = blocks * (mUnit->GetEnergyForActionStep(MOVE) +
-                                mUnit->GetEnergyForActionStep(BUILD_WALL));
+    bool includeMove = true;
+
+    // special case: 1 block and unit is next to it
+    if(numBlocks == 1)
+    {
+        const unsigned int idx0 = mCells[0];
+        const Cell2D cellUnit(mUnit->GetRow0(), mUnit->GetCol0());
+        const Cell2D cellBlock(IndToRow(idx0), IndToCol(idx0));
+
+        includeMove = !mGameMap->AreCellsAdjacent(cellUnit, cellBlock);
+    }
+
+    mCostUnitEnergy = numBlocks * ((includeMove * mUnit->GetEnergyForActionStep(MOVE)) +
+                                   mUnit->GetEnergyForActionStep(BUILD_WALL));
 
     // resources
-    mCostResEnergy = blocks * Wall::GetCostEnergy(mLevel);
-    mCostResMaterial = blocks * Wall::GetCostMaterial(mLevel);
+    mCostResEnergy = numBlocks * Wall::GetCostEnergy(mLevel);
+    mCostResMaterial = numBlocks * Wall::GetCostMaterial(mLevel);
 }
 
 bool WallBuildPath::Start()
