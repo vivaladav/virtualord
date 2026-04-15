@@ -45,25 +45,27 @@ void WallBuildPath::SetIndicatorsType()
     const unsigned int numCells = mCells.size();
     const unsigned int lastIdx =  numCells - 1;
 
+    // no cells -> exit
+    if(numCells == 0)
+        return ;
+
     mBlockTypes.clear();
     mBlockTypes.reserve(numCells);
 
     WallIndicator wi(NO_FACTION);
 
-    if(0 == lastIdx)
+    // only 1 cell
+    if(numCells == 1)
     {
-        const int br = IndToRow(1) - IndToRow(0);
-        const int bc = IndToCol(1) - IndToCol(0);
-        const int ar = 0;
-        const int ac = 0;
-
-        wi.SetBeforeAfterDirections(br, bc, ar, ac);
+        wi.SetBeforeAfterDirections(0, 0, 0, 0);
         mBlockTypes.emplace_back(wi.GetBlockType());
     }
+    // 2 or more cells
     else
     {
-        const int ar = IndToRow(2) - IndToRow(1);
-        const int ac = IndToCol(2) - IndToCol(1);
+        // first indicator
+        const int ar = IndToRow(mCells[1]) - IndToRow(mCells[0]);
+        const int ac = IndToCol(mCells[1]) - IndToCol(mCells[0]);
 
         wi.SetBeforeAfterDirections(0, 0, ar, ac);
         mBlockTypes.emplace_back(wi.GetBlockType());
@@ -71,11 +73,10 @@ void WallBuildPath::SetIndicatorsType()
         // 2nd to n-1 indicators
         for(unsigned int i = 1; i < lastIdx; ++i)
         {
-            const int br = IndToRow(i + 1) - IndToRow(i);
-            const int bc = IndToCol(i + 1) - IndToCol(i);
-
-            const int ar = IndToRow(i + 2) - IndToRow(i + 1);
-            const int ac = IndToCol(i + 2) - IndToCol(i + 1);
+            const int br = IndToRow(mCells[i]) - IndToRow(mCells[i - 1]);
+            const int bc = IndToCol(mCells[i]) - IndToCol(mCells[i - 1]);
+            const int ar = IndToRow(mCells[i + 2]) - IndToRow(mCells[i + 1]);
+            const int ac = IndToCol(mCells[i + 2]) - IndToCol(mCells[i + 1]);
 
             wi.SetBeforeAfterDirections(br, bc, ar, ac);
             mBlockTypes.emplace_back(wi.GetBlockType());

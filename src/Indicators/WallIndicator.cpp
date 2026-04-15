@@ -23,7 +23,10 @@ void WallIndicator::SetBeforeAfterDirections(int br, int bc, int ar, int ac)
     // +1 direction toward the center
     // 0 no direction
 
-    if(1 == bc)
+    // special case: all directions are 0 (it's the only block of a wall)
+    if(0 == br && 0 == bc && 0 == ar && 0 == ac)
+        mBlock = WB_HORIZONTAL;
+    else if(1 == bc)
     {
         if(1 == ar)
             mBlock = WB_TOP_RIGHT;
@@ -59,6 +62,7 @@ void WallIndicator::SetBeforeAfterDirections(int br, int bc, int ar, int ac)
         else
             mBlock = WB_VERTICAL;
     }
+    // bc and br are 0
     else
     {
         if(1 == ar || -1 == ar)
