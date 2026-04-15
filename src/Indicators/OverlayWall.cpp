@@ -127,6 +127,8 @@ void OverlayWall::SetPath(const std::vector<unsigned int> & path,
         mLayer->AddObject(pi, row, col);
     }
 
+    SetIndicatorsType();
+
     if(costUnitEnergy > 0 && mValid)
     {
         mPanelMoveCost->SetVisible(false);
@@ -256,6 +258,47 @@ void OverlayWall::ResetPath()
     mPanelCost->SetDoable(true, true, true);
     mPanelMoveCost->SetVisible(false);
     mPanelMoveCost->SetDoable(true);
+}
+
+void OverlayWall::SetIndicatorsType()
+{
+    const unsigned int numInd = mActiveIndicators.size();
+    const unsigned int lastIdx =  numInd - 1;
+
+    // no cells -> exit
+    if(numInd == 0)
+        return ;
+
+
+    // only 1 cell
+    if(numInd == 1)
+        mActiveIndicators[0]->SetBeforeAfterDirections(0, 0, 0, 0);
+    // 2 or more cells
+    else
+    {
+        // first indicator
+        const int ar = mActiveIndicators[1]->GetRow() - mActiveIndicators[0]->GetRow();
+        const int ac = mActiveIndicators[1]->GetCol() - mActiveIndicators[0]->GetCol();
+
+        mActiveIndicators[0]->SetBeforeAfterDirections(0, 0, ar, ac);
+
+        // 2nd to n-1 indicators
+        for(unsigned int i = 1; i < lastIdx; ++i)
+        {
+            const int br = mActiveIndicators[i]->GetRow() - mActiveIndicators[i - 1]->GetRow();
+            const int bc = mActiveIndicators[i]->GetCol() - mActiveIndicators[i - 1]->GetCol();
+            const int ar = mActiveIndicators[i + 1]->GetRow() - mActiveIndicators[i]->GetRow();
+            const int ac = mActiveIndicators[i + 1]->GetCol() - mActiveIndicators[i]->GetCol();
+
+            mActiveIndicators[i]->SetBeforeAfterDirections(br, bc, ar, ac);
+        }
+
+        // set directions for last indicator
+        const int br = mActiveIndicators[lastIdx]->GetRow() - mActiveIndicators[lastIdx - 1]->GetRow();
+        const int bc = mActiveIndicators[lastIdx]->GetCol() - mActiveIndicators[lastIdx - 1]->GetCol();
+
+        mActiveIndicators[lastIdx]->SetBeforeAfterDirections(br, bc, 0, 0);
+    }
 }
 
 } // namespace game

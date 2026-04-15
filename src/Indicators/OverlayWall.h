@@ -63,6 +63,8 @@ private:
 
     void ResetPath();
 
+    void SetIndicatorsType();
+
 private:
     std::deque<WallIndicator *> mActiveIndicators;
     std::deque<WallIndicator *> mAvailableIndicators;
