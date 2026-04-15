@@ -44,14 +44,13 @@ void WallBuildPath::SetIndicatorsType()
 {
     const unsigned int numCells = mCells.size();
     const unsigned int lastIdx =  numCells - 1;
-    const unsigned int lastIndicator = lastIdx - 1;
 
     mBlockTypes.clear();
     mBlockTypes.reserve(numCells);
 
     WallIndicator wi(NO_FACTION);
 
-    if(0 == lastIndicator)
+    if(0 == lastIdx)
     {
         const int br = IndToRow(1) - IndToRow(0);
         const int bc = IndToCol(1) - IndToCol(0);
@@ -70,7 +69,7 @@ void WallBuildPath::SetIndicatorsType()
         mBlockTypes.emplace_back(wi.GetBlockType());
 
         // 2nd to n-1 indicators
-        for(unsigned int i = 1; i < lastIndicator; ++i)
+        for(unsigned int i = 1; i < lastIdx; ++i)
         {
             const int br = IndToRow(i + 1) - IndToRow(i);
             const int bc = IndToCol(i + 1) - IndToCol(i);
@@ -98,12 +97,9 @@ bool WallBuildPath::InitNextBuild()
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
-    const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-    const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
-    const Cell2D nextCell(nextRow, nextCol);
+    const Cell2D nextCell(IndToRow(nextInd), IndToCol(nextInd));
 
     Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
 
     // remove current cell from overlay
     if(mOverlay)
@@ -112,9 +108,9 @@ bool WallBuildPath::InitNextBuild()
     // check if building is possible
     if(!mGameMap->CanBuildWall(nextCell, player, mLevel))
     {
-        --mNextCell;
+        ++mNextCell;
 
-        if(mNextCell > 0)
+        if(mNextCell < mCells.size())
             return InitNextMove();
         else
             return Fail();
@@ -129,15 +125,15 @@ bool WallBuildPath::InitNextBuild()
     mProgressBar = HUD->CreateProgressBarInCell(nextCell, mUnit->GetTimeBuildWall(),
                                                 player->GetFaction());
 
-    mProgressBar->AddFunctionOnCompleted([this, nextCell, player, layerOverlay]
+    mProgressBar->AddFunctionOnCompleted([this, nextCell, player]
     {
         mProgressBar = nullptr;
 
-        mGameMap->BuildWall(nextCell, player, mBlockTypes[mNextCell - 1]);
+        mGameMap->BuildWall(nextCell, player, mBlockTypes[mNextCell]);
 
         mUnit->ActionStepCompleted(BUILD_WALL);
 
-        --mNextCell;
+        ++mNextCell;
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/build-02.ogg", 200);
@@ -159,17 +155,34 @@ bool WallBuildPath::InitNextBuild()
 
 bool WallBuildPath::InitNextMove()
 {
+    // all done
+    const unsigned int numCells = mCells.size();
+
+    if(numCells == mNextCell)
+        return Finish();
+
     // not enough energy -> FAIL
     if(!mUnit->HasEnergyForActionStep(MOVE))
         return Fail();
 
-    if(0 == mNextCell)
-        return Finish();
+    const unsigned int movCell = mNextCell + 1;
 
-    const unsigned int movCell = mNextCell - 1;
-    const unsigned int nextInd = mCells[movCell];
-    mTargetRow = nextInd / mIsoMap->GetNumCols();
-    mTargetCol = nextInd % mIsoMap->GetNumCols();
+    if(movCell == numCells)
+    {
+        const Cell2D dest = mGameMap->GetNewUnitDestination(mUnit);
+
+        if(dest.row == -1 || dest.col == -1)
+            return Fail();
+
+        mTargetRow = dest.row;
+        mTargetCol = dest.col;
+    }
+    else
+    {
+        const unsigned int nextInd = mCells[movCell];
+        mTargetRow = nextInd / mIsoMap->GetNumCols();
+        mTargetCol = nextInd % mIsoMap->GetNumCols();
+    }
 
     const GameMapCell & nextCell = mGameMap->GetCell(mTargetRow, mTargetCol);
 
@@ -284,7 +297,7 @@ void WallBuildPath::UpdateMove(float delta)
         // handle next step or termination
         if(ABORTING == mState)
             InstantAbort();
-        else if(0 == mNextCell)
+        else if(mCells.size() == mNextCell)
             Finish();
         else
             InitNextBuild();
@@ -319,10 +332,9 @@ bool WallBuildPath::Start()
     if(HasStarted())
         return false;
 
-    // stat building from last cell
-    mNextCell = mCells.size() - 1;
+    mNextCell = 0;
 
-    return InitNextBuild();
+    return InitNextMove();
 }
 
 void WallBuildPath::Abort()
