@@ -362,9 +362,8 @@ void WallBuildPath::InstantAbort()
         }
     }
 
-    // clear indicators
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-    layerOverlay->ClearObjects();
+    if(mOverlay)
+        mOverlay->ClearPath();
 
     // set new state
     mState = ABORTED;
@@ -378,9 +377,8 @@ void WallBuildPath::Update(float delta)
 
 bool WallBuildPath::Fail()
 {
-    // clear indicators
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-    layerOverlay->ClearObjects();
+    if(mOverlay)
+        mOverlay->ClearPath();
 
     if(HasStarted())
         // clear action data

@@ -3015,7 +3015,7 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
 bool ScreenGame::StartUnitBuildWall(Unit * unit)
 {
     // setup build
-    auto wbp = new WallBuildPath(unit, mIsoMap, mGameMap, this);
+    auto wbp = new WallBuildPath(unit, mIsoMap, mGameMap, this, mOverlayWall);
     wbp->SetPath(mOverlayWall->GetWallPath());
     // NOTE only level 0 for now
     wbp->SetWallLevel(0);
@@ -3024,11 +3024,7 @@ bool ScreenGame::StartUnitBuildWall(Unit * unit)
     {
         // action done by local player
         if(unit->GetFaction() == mLocalPlayer->GetFaction())
-        {
             mHUD->SetLocalActionsEnabled(false);
-
-            ClearCellOverlays();
-        }
 
         // store active action
         mObjActionsToDo.emplace_back(unit, GameObjectActionType::BUILD_WALL, [](bool){});
