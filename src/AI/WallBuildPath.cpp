@@ -75,8 +75,8 @@ void WallBuildPath::SetIndicatorsType()
         {
             const int br = IndToRow(mCells[i]) - IndToRow(mCells[i - 1]);
             const int bc = IndToCol(mCells[i]) - IndToCol(mCells[i - 1]);
-            const int ar = IndToRow(mCells[i + 2]) - IndToRow(mCells[i + 1]);
-            const int ac = IndToCol(mCells[i + 2]) - IndToCol(mCells[i + 1]);
+            const int ar = IndToRow(mCells[i + 1]) - IndToRow(mCells[i]);
+            const int ac = IndToCol(mCells[i + 1]) - IndToCol(mCells[i]);
 
             wi.SetBeforeAfterDirections(br, bc, ar, ac);
             mBlockTypes.emplace_back(wi.GetBlockType());
