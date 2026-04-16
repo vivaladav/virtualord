@@ -328,17 +328,7 @@ void WallBuildPath::UpdatePathCost()
     const unsigned int numBlocks = mCells.size();
 
     // unit energy
-    bool includeMove = true;
-
-    // special case: 1 block and unit is next to it
-    if(numBlocks == 1)
-    {
-        const unsigned int idx0 = mCells[0];
-        const Cell2D cellUnit(mUnit->GetRow0(), mUnit->GetCol0());
-        const Cell2D cellBlock(IndToRow(idx0), IndToCol(idx0));
-
-        includeMove = !mGameMap->AreCellsAdjacent(cellUnit, cellBlock);
-    }
+    bool includeMove = numBlocks > 1;
 
     mCostUnitEnergy = numBlocks * ((includeMove * mUnit->GetEnergyForActionStep(MOVE)) +
                                    mUnit->GetEnergyForActionStep(BUILD_WALL));
