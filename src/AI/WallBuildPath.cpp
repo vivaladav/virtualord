@@ -415,6 +415,9 @@ bool WallBuildPath::Finish()
     else
         mState = COMPLETED;
 
+    if(mOverlay)
+        mOverlay->ClearPath();
+
     return true;
 }
 
