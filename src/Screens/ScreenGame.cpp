@@ -3415,14 +3415,15 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     mOverlayWall->SetValid(true);
 
     const bool notSinglePath = totPath.size() > 1;
-    const int costUnitEnergy = wp.GetCostUnitEnergy();
+    const int costUnitMove = mOverlayWall->GetCostEnergyUnitMove();
     // NOTE bonus cost is added to avoid to recalculate the cost of energy move when a path becomes
     // longer than 1 block after the first click
     const bool addBonusCost = notSinglePath &&
                               unitCell != overlayStart &&
                               !mGameMap->AreCellsAdjacent(unitCell, overlayStart);
     const int costEnergyBonus = unit->GetEnergyForActionStep(MOVE) * addBonusCost;
-    const int costUnitEnergyTot =  costUnitEnergy + costEnergyBonus;
+    const int costUnitEnergy = wp.GetCostUnitEnergy() + costEnergyBonus;
+    const int costUnitEnergyTot = costUnitEnergy + costUnitMove;
     const bool doableUnit = unit->GetEnergy() >= costUnitEnergyTot &&
                             mLocalPlayer->GetTurnEnergy() >= costUnitEnergyTot;
 
@@ -3431,7 +3432,7 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     const int costResMaterial = wp.GetCostResourceMaterial();
     const bool doableResMaterial = mLocalPlayer->HasEnough(Player::MATERIAL, costResMaterial);
 
-    mOverlayWall->SetPath(totPath, costUnitEnergyTot, costResEnergy, costResMaterial);
+    mOverlayWall->SetPath(totPath, costUnitEnergy, costResEnergy, costResMaterial);
     mOverlayWall->SetCostsDoable(doableUnit, doableResEnergy, doableResMaterial);
 }
 

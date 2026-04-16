@@ -179,7 +179,7 @@ bool WallBuildPath::InitNextMove()
     // last cell of the path -> move outside
     if(movCell == numCells)
     {
-        const Cell2D dest = mGameMap->GetNewUnitDestination(mUnit);
+        const Cell2D dest = mGameMap->GetAdjacentMoveTarget(cellUnit, cellCurr);
 
         if(dest.row == -1 || dest.col == -1)
             return Fail();
