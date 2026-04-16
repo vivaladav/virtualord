@@ -816,7 +816,7 @@ bool GameMap::AreCellsAdjacent(const Cell2D & cell1, const Cell2D & cell2) const
 
     const int maxDist = 1;
 
-    return distR <= maxDist && distC <= maxDist;
+    return ((distR + distC) > 0) && distR <= maxDist && distC <= maxDist;
 }
 
 bool GameMap::AreObjectsOrthoAdjacent(const GameObject * obj1, const GameObject * obj2) const
