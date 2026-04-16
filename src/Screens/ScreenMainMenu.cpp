@@ -372,6 +372,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed camera never stopping scrolling when opening a dialog.\n"
                   "- Fixed text messed up in dialog settings when changing language.\n"
                   "- Fixed units building structures in unsuitable places.\n"
+                  "- Fixed miniMap not removed if radar is destroyed.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

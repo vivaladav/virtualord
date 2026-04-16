@@ -3407,14 +3407,12 @@ void GameMap::DestroyObject(GameObject * obj)
 
     if(owner != nullptr)
     {
-        Player * localPlayer = mGame->GetLocalPlayer();
-
         // owner is local Player
-        if(owner == localPlayer)
+        if(owner->IsLocal())
         {
             // update visibility map
             // NOTE only local player for now
-            DelPlayerObjVisibility(obj, localPlayer);
+            DelPlayerObjVisibility(obj, owner);
         }
 
         // remove unit from player
@@ -3452,6 +3450,10 @@ void GameMap::DestroyObject(GameObject * obj)
     IsoObject * isoObj = obj->GetIsoObject();
     IsoLayer * layer = isoObj->GetLayer();
     layer->RemoveObject(isoObj);
+
+    // update linked cells when destroying a radar station to update the minimap visibility
+    if(obj->GetObjectType() == ObjectData::TYPE_RADAR_STATION && owner->IsLocal())
+        UpdateLinkedCells(owner);
 
     // finally delete the object
     delete obj;
