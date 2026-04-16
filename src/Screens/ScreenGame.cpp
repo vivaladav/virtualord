@@ -3148,20 +3148,6 @@ void ScreenGame::ShowCellConquestIndicator(Unit * unit, const Cell2D & dest)
         return ;
     }
 
-    // make sure path is continuos or ortogonal
-    if(!mOverlayCellConquest->IsConquestPathEmpty())
-    {
-        const unsigned int lastInd = mOverlayCellConquest->GetConquestPathBack();
-        const int lastR = lastInd / mIsoMap->GetNumCols();
-        const int lastC = lastInd % mIsoMap->GetNumCols();
-
-        if(lastR != dest.row && lastC != dest.col)
-        {
-            mOverlayCellConquest->ClearTempPath(unit, mGameMap, mCurrCell, true);
-            return ;
-        }
-    }
-
     // do not allow crossing paths
     if(mOverlayCellConquest->IsIndexInConquestPath(currInd))
     {
