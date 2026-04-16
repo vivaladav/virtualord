@@ -1,7 +1,7 @@
 #include "Indicators/OverlayWall.h"
 
 #include "IsoLayer.h"
-#include "AI/ConquerPath.h"
+#include "AI/WallBuildPath.h"
 #include "Indicators/WallIndicator.h"
 #include "Widgets/PanelUnitEnergyUsage.h"
 #include "Widgets/PanelUnitResourcesUsage.h"
@@ -48,8 +48,8 @@ void OverlayWall::ClearTempPath(Unit * unit, GameMap * gm, const Cell2D & currCe
     if(!IsWallPathEmpty())
     {
         // clear current path
-        ConquerPath cp(unit, gm, nullptr);
-        cp.SetPathCells(mWallPath);
+        WallBuildPath wp(unit, nullptr, gm, nullptr, nullptr);
+        wp.SetPath(mWallPath);
 
         // mark overaly as valid
         // NOTE do it before setting the path
@@ -57,8 +57,8 @@ void OverlayWall::ClearTempPath(Unit * unit, GameMap * gm, const Cell2D & currCe
         const bool onLast = currInd == mWallPath.back();
         SetValid(onLast);
 
-        SetPath(mWallPath, cp.GetCostUnitEnergy(), cp.GetCostResourceEnergy(),
-                cp.GetCostResourceMaterial());
+        SetPath(mWallPath, wp.GetCostUnitEnergy(), wp.GetCostResourceEnergy(),
+                wp.GetCostResourceMaterial());
         SetCostsDoable(true, true, true);
     }
 
