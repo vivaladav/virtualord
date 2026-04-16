@@ -2792,9 +2792,6 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
         else
             mOverlayWall->SetCostEnergyUnitMove(0);
 
-        std::cout << "ScreenGame::HandleUnitBuildWallOnMouseUp - GetCostEnergyUnitMove: "
-                  << mOverlayWall->GetCostEnergyUnitMove() << std::endl;
-
         mOverlayWall->SetCellStart(clickCell);
         mOverlayWall->HideTarget();
 
@@ -3354,9 +3351,6 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
             mOverlayWall->SetCostMoveDoable(true);
         }
 
-        std::cout << "ScreenGame::ShowBuildWallIndicator - NO START - GetCostEnergyUnitMove: "
-                  << mOverlayWall->GetCostEnergyUnitMove() << std::endl;
-
         // show target cell
         mOverlayWall->ShowTarget(dest.row, dest.col);
         return;
@@ -3422,17 +3416,13 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
 
     const bool notSinglePath = totPath.size() > 1;
     const int costUnitEnergy = wp.GetCostUnitEnergy();
-    const int costUnitMove = mOverlayWall->GetCostEnergyUnitMove();
+    // NOTE bonus cost is added to avoid to recalculate the cost of energy move when a path becomes
+    // longer than 1 block after the first click
     const bool addBonusCost = notSinglePath && unitCell != startCell;
     const int costEnergyBonus = unit->GetEnergyForActionStep(MOVE) * addBonusCost;
     const int costUnitEnergyTot =  costUnitEnergy + costEnergyBonus;
     const bool doableUnit = unit->GetEnergy() >= costUnitEnergyTot &&
                             mLocalPlayer->GetTurnEnergy() >= costUnitEnergyTot;
-
-    std::cout << "ScreenGame::ShowBuildWallIndicator - costUnitEnergy: " << costUnitEnergy
-              << " - costUnitMove: " << costUnitMove
-              << " - costEnergyBonus: " << costEnergyBonus
-              << " - costUnitEnergyTot: " << costUnitEnergyTot << std::endl;
 
     const int costResEnergy = wp.GetCostResourceEnergy();
     const bool doableResEnergy = mLocalPlayer->HasEnough(Player::ENERGY, costResEnergy);
@@ -3668,7 +3658,9 @@ void ScreenGame::EndTurn()
     Game * game = GetGame();
 
     // END TURN
+#ifdef DEBUG
     std::cout << "ScreenGame::EndTurn - END PLAYER " << mActivePlayerIdx << "\n" << std::endl;
+#endif
 
     // current active player is local player
     if(IsCurrentTurnLocal())
@@ -3684,7 +3676,9 @@ void ScreenGame::EndTurn()
 
     mActivePlayerIdx = (mActivePlayerIdx + 1) % players;
 
+#ifdef DEBUG
     std::cout << "ScreenGame::EndTurn - START PLAYER " << mActivePlayerIdx << std::endl;
+#endif
 
     // reset flag for local turn init
     if(IsCurrentTurnLocal())
@@ -3721,7 +3715,6 @@ void ScreenGame::InitLocalTurn()
     if(mLocalTurnInitDone)
         return;
 
-    std::cout << "ScreenGame::InitLocalTurn - turn: " << mLocalPlayer->GetTurnsPlayed() << std::endl;
     SetLocalTurnStage(TURN_STAGE_PLAY);
 
     mHUD->SetLocalActionsEnabled(true);
