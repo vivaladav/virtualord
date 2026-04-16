@@ -328,7 +328,9 @@ void WallBuildPath::UpdatePathCost()
     const unsigned int numBlocks = mCells.size();
 
     // unit energy
-    bool includeMove = numBlocks > 1;
+    const unsigned int ind0 = mCells[0];
+    const bool unitOnStart = mUnit->GetRow0() == IndToRow(ind0) && mUnit->GetCol0() == IndToCol(ind0);
+    const bool includeMove = numBlocks > 1 || unitOnStart;
 
     mCostUnitEnergy = numBlocks * ((includeMove * mUnit->GetEnergyForActionStep(MOVE)) +
                                    mUnit->GetEnergyForActionStep(BUILD_WALL));

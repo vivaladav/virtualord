@@ -2715,8 +2715,12 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
     // destination is not walkable and not current unit's one when starting path
     const Cell2D unitCell(unit->GetRow0(), unit->GetCol0());
 
-    if(!(clickCell == unitCell && !mOverlayWall->IsCellStartSet()) &&
-       !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
+    const bool unitOnClickCell = clickCell == unitCell;
+    const bool singleBlock = (mOverlayWall->GetWallPathSize() == 1 &&
+                              mOverlayWall->GetWallPathBack() == clickInd);
+    const bool clickCellWalkable = mGameMap->IsCellWalkable(clickCell.row, clickCell.col);
+
+    if(!clickCellWalkable && !(unitOnClickCell && (!mOverlayWall->IsCellStartSet() || singleBlock)))
     {
         unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
         return ;
@@ -2741,8 +2745,17 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
         // unit will need to move -> check path cost
         if(!mGameMap->AreCellsAdjacent(unitCell, clickCell) && clickCell != unitCell)
         {
+            // first move is next to first block
+            const Cell2D cellMoveTarget = mGameMap->GetAdjacentMoveTarget(unitCell, clickCell);
+
+            if(cellMoveTarget.row == -1 || cellMoveTarget.col == -1)
+            {
+                unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+                return ;
+            }
+
             const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
-                                                         clickCell.row, clickCell.col,
+                                                         cellMoveTarget.row, cellMoveTarget.col,
                                                          ai::Pathfinder::ALL_OPTIONS);
 
             // can't find a path to this cell
@@ -2779,6 +2792,9 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
         else
             mOverlayWall->SetCostEnergyUnitMove(0);
 
+        std::cout << "ScreenGame::HandleUnitBuildWallOnMouseUp - GetCostEnergyUnitMove: "
+                  << mOverlayWall->GetCostEnergyUnitMove() << std::endl;
+
         mOverlayWall->SetCellStart(clickCell);
         mOverlayWall->HideTarget();
 
@@ -2813,8 +2829,21 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
                 StartUnitBuildWall(unit);
             else
             {
+                Cell2D cellMoveTarget = cellStart;
+
+                if(mOverlayWall->GetWallPathSize() == 1)
+                {
+                    cellMoveTarget = mGameMap->GetAdjacentMoveTarget(unitCell, cellStart);
+
+                    if(cellMoveTarget.row == -1 || cellMoveTarget.col == -1)
+                    {
+                        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+                        return ;
+                    }
+                }
+
                 // move to first cell to conquer and then start conquest
-                SetupUnitMove(unit, unitCell, cellStart, false,
+                SetupUnitMove(unit, unitCell, cellMoveTarget, false,
                               [this, unit, clickCell](bool successful)
                               {
                                   if(successful)
@@ -2824,7 +2853,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 
             return ;
         }
-        // continue pathfinfing from latest click
+        // continue pathfinding from latest click
         else
         {
             po = ai::Pathfinder::NO_OPTION;
@@ -3260,13 +3289,16 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     // do not allow when cell not visible or not walkable unless it's the unit's cell and
     // it's the start of the wall path
     const Cell2D unitCell(unit->GetRow0(), unit->GetCol0());
+    const Cell2D & overlayStart = mOverlayWall->GetCellStart();
+    const bool startSet = mOverlayWall->IsCellStartSet();
     const unsigned int mapCols = mGameMap->GetNumCols();
     const unsigned int currInd = (dest.row * mapCols) + dest.col;
-    const bool unitOnCurr = unitCell.row == dest.row && unitCell.col == dest.col;
+    const bool unitOnCurr = unitCell == dest;
+    const bool unitOnStart = unitCell == overlayStart;
     const bool currVisible = mLocalPlayer->IsCellVisible(currInd);
     const bool currWalkable = mGameMap->IsCellWalkable(currInd);
     const bool canBuild = currVisible &&
-                          (currWalkable || (unitOnCurr && !mOverlayWall->IsCellStartSet()));
+                          (currWalkable || (startSet && unitOnStart) || (!startSet && unitOnCurr));
 
     if(!canBuild)
     {
@@ -3286,8 +3318,16 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     {
         if(!mGameMap->AreCellsAdjacent(unitCell, dest) && !unitOnCurr)
         {
-            const auto pathStart = mPathfinder->MakePath(unit->GetRow0(), unit->GetCol0(),
-                                                         dest.row, dest.col,
+            const Cell2D moveTarget = mGameMap->GetAdjacentMoveTarget(unitCell, dest);
+
+            if(dest.row == -1 || dest.col == -1)
+            {
+                mOverlayWall->ClearTempPath(unit, mGameMap, mCurrCell, false);
+                return ;
+            }
+
+            const auto pathStart = mPathfinder->MakePath(unitCell.row, unitCell.col,
+                                                         moveTarget.row, moveTarget.col,
                                                          sgl::ai::Pathfinder::ALL_OPTIONS);
 
             // can't find a path to this cell
@@ -3314,22 +3354,25 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
             mOverlayWall->SetCostMoveDoable(true);
         }
 
+        std::cout << "ScreenGame::ShowBuildWallIndicator - NO START - GetCostEnergyUnitMove: "
+                  << mOverlayWall->GetCostEnergyUnitMove() << std::endl;
+
         // show target cell
         mOverlayWall->ShowTarget(dest.row, dest.col);
         return;
     }
 
+    // start point already set -> show design
     sgl::ai::Pathfinder::PathOptions po;
-    unsigned int startR;
-    unsigned int startC;
+    Cell2D startCell;
 
     // start pathfinding from unit position
     if(mOverlayWall->IsWallPathEmpty())
     {
         po = sgl::ai::Pathfinder::INCLUDE_START;
 
-        startR = mOverlayWall->GetCellStart().row;
-        startC = mOverlayWall->GetCellStart().col;
+        startCell.row = mOverlayWall->GetCellStart().row;
+        startCell.col = mOverlayWall->GetCellStart().col;
     }
     // continue pathfinfing from latest click
     else
@@ -3337,12 +3380,13 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
         po = sgl::ai::Pathfinder::NO_OPTION;
 
         const unsigned int pathInd = mOverlayWall->GetWallPathBack();
-        startR = pathInd / mapCols;
-        startC = pathInd % mapCols;
+        startCell.row = pathInd / mapCols;
+        startCell.col = pathInd % mapCols;
     }
 
     // show path cost when destination is visible
-    const auto path = mPathfinder->MakePath(startR, startC, dest.row, dest.col, po);
+    const auto path = mPathfinder->MakePath(startCell.row, startCell.col,
+                                            dest.row, dest.col, po);
 
     // this should never happen, but just in case
     if(path.empty() && mOverlayWall->IsWallPathEmpty())
@@ -3376,17 +3420,26 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     // NOTE do it before setting the path
     mOverlayWall->SetValid(true);
 
+    const bool notSinglePath = totPath.size() > 1;
     const int costUnitEnergy = wp.GetCostUnitEnergy();
-    const int costUnitEnergyTot =  costUnitEnergy + mOverlayWall->GetCostEnergyUnitMove();
+    const int costUnitMove = mOverlayWall->GetCostEnergyUnitMove();
+    const bool addBonusCost = notSinglePath && unitCell != startCell;
+    const int costEnergyBonus = unit->GetEnergyForActionStep(MOVE) * addBonusCost;
+    const int costUnitEnergyTot =  costUnitEnergy + costEnergyBonus;
     const bool doableUnit = unit->GetEnergy() >= costUnitEnergyTot &&
                             mLocalPlayer->GetTurnEnergy() >= costUnitEnergyTot;
+
+    std::cout << "ScreenGame::ShowBuildWallIndicator - costUnitEnergy: " << costUnitEnergy
+              << " - costUnitMove: " << costUnitMove
+              << " - costEnergyBonus: " << costEnergyBonus
+              << " - costUnitEnergyTot: " << costUnitEnergyTot << std::endl;
 
     const int costResEnergy = wp.GetCostResourceEnergy();
     const bool doableResEnergy = mLocalPlayer->HasEnough(Player::ENERGY, costResEnergy);
     const int costResMaterial = wp.GetCostResourceMaterial();
     const bool doableResMaterial = mLocalPlayer->HasEnough(Player::MATERIAL, costResMaterial);
 
-    mOverlayWall->SetPath(totPath, costUnitEnergy, costResEnergy, costResMaterial);
+    mOverlayWall->SetPath(totPath, costUnitEnergyTot, costResEnergy, costResMaterial);
     mOverlayWall->SetCostsDoable(doableUnit, doableResEnergy, doableResMaterial);
 }
 
