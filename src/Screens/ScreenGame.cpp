@@ -3418,7 +3418,9 @@ void ScreenGame::ShowBuildWallIndicator(Unit * unit, const Cell2D & dest)
     const int costUnitEnergy = wp.GetCostUnitEnergy();
     // NOTE bonus cost is added to avoid to recalculate the cost of energy move when a path becomes
     // longer than 1 block after the first click
-    const bool addBonusCost = notSinglePath && unitCell != startCell;
+    const bool addBonusCost = notSinglePath &&
+                              unitCell != overlayStart &&
+                              !mGameMap->AreCellsAdjacent(unitCell, overlayStart);
     const int costEnergyBonus = unit->GetEnergyForActionStep(MOVE) * addBonusCost;
     const int costUnitEnergyTot =  costUnitEnergy + costEnergyBonus;
     const bool doableUnit = unit->GetEnergy() >= costUnitEnergyTot &&
@@ -3714,6 +3716,10 @@ void ScreenGame::InitLocalTurn()
 {
     if(mLocalTurnInitDone)
         return;
+
+#ifdef DEBUG
+    std::cout << "ScreenGame::InitLocalTurn - turn: " << mLocalPlayer->GetTurnsPlayed() << std::endl;
+#endif
 
     SetLocalTurnStage(TURN_STAGE_PLAY);
 
