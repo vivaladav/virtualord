@@ -63,10 +63,10 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([localBase] { return new StepGameBase(localBase); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelActions, panelObj] { return new StepGameBaseFeatures(panelObj, panelActions); });
-    AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
-    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
+    //AddStep([] { return new StepDelay(0.5f); });
+    //AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
+    //AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelActions] { return new StepGameBaseBuildUnitIcon(panelActions); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -82,8 +82,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepGameMoveCamera(250, -150); });
     AddStep([this, local]
             {
-                const int genR = 56;
-                const int genC = 13;
+                const int genR = 31;
+                const int genC = 11;
                 const GameMapCell gmc = mScreen->mGameMap->GetCell(genR, genC);
 
                 return new StepGameConquerStruct(local, gmc.objTop, mScreen->mIsoMap);
