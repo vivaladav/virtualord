@@ -12,8 +12,8 @@
 
 namespace
 {
-const int destR = 56;
-const int destC = 14;
+const int destR = 32;
+const int destC = 11;
 }
 
 namespace game
