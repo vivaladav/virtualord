@@ -79,7 +79,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this, local] { return new StepGameMoveUnit(local, mScreen->mIsoMap); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // TODO update based on tutorial map
-    AddStep([] { return new StepGameMoveCamera(250, -150); });
+    AddStep([] { return new StepGameMoveCamera(450, -150); });
     AddStep([this, local]
             {
                 const int genR = 31;
