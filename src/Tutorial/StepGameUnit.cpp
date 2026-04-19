@@ -14,7 +14,7 @@ namespace game
 {
 
 StepGameUnit::StepGameUnit(const Player * p)
-    : TutorialInfoStep(580, 200)
+    : TutorialInfoStep(550, 200)
     , mFocusArea(new FocusArea)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -25,7 +25,7 @@ StepGameUnit::StepGameUnit(const Player * p)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1250, 450);
+    info->SetPosition(1300, 450);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_UNIT_1"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, p]

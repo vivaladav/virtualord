@@ -14,7 +14,7 @@ namespace game
 {
 
 StepGameEndTurn::StepGameEndTurn(const PanelTurnControl * panel)
-    : TutorialInfoStep(600, 200)
+    : TutorialInfoStep(600, 180)
     , mFocusArea(new FocusArea)
 {
     auto sm = sgl::utilities::StringManager::Instance();

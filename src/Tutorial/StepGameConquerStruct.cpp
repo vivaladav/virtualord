@@ -18,7 +18,7 @@ namespace game
 
 StepGameConquerStruct::StepGameConquerStruct(const Player * p, const GameObject * energyGen,
                                              const IsoMap * isoMap)
-    : TutorialInfoStep(550, 300)
+    : TutorialInfoStep(550, 260)
     , mFocusArea(new FocusArea)
     , mEnergyGen(energyGen)
 {
