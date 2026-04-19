@@ -275,6 +275,8 @@ add_executable(
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/StepGameMapNavigation.h
     src/Tutorial/StepGameMapNavigation.cpp
+    src/Tutorial/StepGameMaterialGenerator.h
+    src/Tutorial/StepGameMaterialGenerator.cpp
     src/Tutorial/StepGameMissionGoalsIcon.h
     src/Tutorial/StepGameMissionGoalsIcon.cpp
     src/Tutorial/StepGameMissionGoalsDialog.h

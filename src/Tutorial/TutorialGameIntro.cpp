@@ -22,6 +22,7 @@
 #include "Tutorial/StepGameEnergyRegeneration.h"
 #include "Tutorial/StepGameIntro.h"
 #include "Tutorial/StepGameMapNavigation.h"
+#include "Tutorial/StepGameMaterialGenerator.h"
 #include "Tutorial/StepGameMissionGoalsIcon.h"
 #include "Tutorial/StepGameMissionGoalsDialog.h"
 #include "Tutorial/StepGameMoveCamera.h"
@@ -115,6 +116,15 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepGameStructConnected; });
     // AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
     // AddStep([] { return new StepGameMapNavigation; });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this, local]
+        {
+            const int genR = 22;
+            const int genC = 10;
+            const GameMapCell gmc = mScreen->mGameMap->GetCell(genR, genC);
+
+            return new StepGameMaterialGenerator(gmc.objTop);
+        });
 }
 
 TutorialGameIntro::~TutorialGameIntro()
