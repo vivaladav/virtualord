@@ -27,7 +27,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1250, 550);
+    info->SetPosition(1250, 450);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_TURN_ENERGY_1"),
                        TutorialConstants::colorText, 9.f, true, true);

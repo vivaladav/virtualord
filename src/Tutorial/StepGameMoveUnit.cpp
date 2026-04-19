@@ -31,7 +31,7 @@ StepGameMoveUnit::StepGameMoveUnit(const Player * p, const IsoMap * isoMap)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(450, 125);
+    info->SetPosition(550, 125);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MOVE_UNIT_1"),
                        TutorialConstants::colorText, 7.f, true, false);

@@ -16,7 +16,7 @@ StepGameEnergyRegeneration::StepGameEnergyRegeneration()
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1250, 600);
+    info->SetPosition(1250, 500);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_ENERGY_REGENERATION_1"),
                        TutorialConstants::colorText, 6.f, true, false);

@@ -13,7 +13,7 @@ namespace game
 {
 
 StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
-    : TutorialInfoStep(590, 200)
+    : TutorialInfoStep(550, 200)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
@@ -27,7 +27,7 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(300, 550);
+    info->SetPosition(200, 550);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_ICON_1"),
                        TutorialConstants::colorText, 5.f, true, false);

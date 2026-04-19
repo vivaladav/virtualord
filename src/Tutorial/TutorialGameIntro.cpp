@@ -113,8 +113,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this] { return new StepGameClearSelection(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameStructConnected; });
-    AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
-    AddStep([] { return new StepGameMapNavigation; });
+    // AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
+    // AddStep([] { return new StepGameMapNavigation; });
 }
 
 TutorialGameIntro::~TutorialGameIntro()
