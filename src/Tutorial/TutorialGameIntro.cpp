@@ -16,6 +16,7 @@
 #include "Tutorial/StepGameConquerCells.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerStruct.h"
+#include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEnableCamera.h"
 #include "Tutorial/StepGameEndTurn.h"
@@ -112,7 +113,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
                 return new StepGameConquerCellsEnd(mScreen->mIsoMap, local);
         });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
-    AddStep([this] { return new StepGameClearSelection(mScreen); });
+    //AddStep([this] { return new StepGameClearSelection(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameStructConnected; });
     // AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
@@ -128,6 +129,14 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
         });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepGameMoveCamera(300, -150); });
+    AddStep([this, local]
+        {
+            const int genR = 22;
+            const int genC = 10;
+            const GameMapCell gmc = mScreen->mGameMap->GetCell(genR, genC);
+
+            return new StepGameConquerStructSimple(local, gmc.objTop, mScreen->mIsoMap);
+        });
 }
 
 TutorialGameIntro::~TutorialGameIntro()

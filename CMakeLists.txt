@@ -263,6 +263,8 @@ add_executable(
     src/Tutorial/StepGameConquerCellsEnd.cpp
     src/Tutorial/StepGameConquerStruct.h
     src/Tutorial/StepGameConquerStruct.cpp
+    src/Tutorial/StepGameConquerStructSimple.h
+    src/Tutorial/StepGameConquerStructSimple.cpp
     src/Tutorial/StepGameDisableCamera.h
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h
