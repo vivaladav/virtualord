@@ -1,6 +1,5 @@
-#include "Tutorial/StepGameConquerCells.h"
+#include "Tutorial/StepGameConquerCellsSimple.h"
 
-#include "Cell2D.h"
 #include "IsoMap.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -9,19 +8,15 @@
 
 #include <sgl/utilities/StringManager.h>
 
-namespace
-{
-const int destR = 32;
-const int destC = 10;
-}
-
 namespace game
 {
 
-StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D & cellStart)
-    : TutorialInfoStep(600, 300)
+StepGameConquerCellsSimple::StepGameConquerCellsSimple(const IsoMap * isoMap, const Cell2D & cellStart,
+                                                       const Cell2D & cellTarget)
+    : TutorialInfoStep(500, 200)
     , mFocusArea(new FocusArea)
     , mCellActionStart(cellStart)
+    , mCellTarget(cellTarget)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
@@ -31,14 +26,12 @@ StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D &
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1250, 350);
+    info->SetPosition(1250, 250);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_1"),
-                       TutorialConstants::colorText, 8.f, true, false);
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_2"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap]
                        {
-                           const sgl::core::Pointd2D pos = isoMap->GetCellPosition(destR, destC);
+                           const auto pos = isoMap->GetCellPosition(mCellTarget.row, mCellTarget.col);
 
                            // FOCUS
                            const int marginW = 5;
@@ -56,19 +49,19 @@ StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D &
                            // CLICK FILTER
                            auto cf = GetClickFilter();
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
-                           cf->SetClickableCell(isoMap, destR, destC);
+                           cf->SetClickableCell(isoMap, mCellTarget.row, mCellTarget.col);
                        });
 }
 
-StepGameConquerCells::~StepGameConquerCells()
+StepGameConquerCellsSimple::~StepGameConquerCellsSimple()
 {
     delete mFocusArea;
 }
 
-void StepGameConquerCells::Update(float)
+void StepGameConquerCellsSimple::Update(float)
 {
 
-    if(mCellActionStart.row == destR && mCellActionStart.col == destC)
+    if(mCellActionStart.row == mCellTarget.row && mCellActionStart.col == mCellTarget.col)
         SetDone();
 }
 

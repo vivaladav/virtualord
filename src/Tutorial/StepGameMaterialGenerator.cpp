@@ -33,7 +33,7 @@ StepGameMaterialGenerator::StepGameMaterialGenerator(const GameObject * material
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(200, 150);
+    info->SetPosition(1150, 350);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_MAT_GEN_1"),
                        TutorialConstants::colorText, 9.f, true, false);

@@ -16,7 +16,7 @@ StepGameStructConnected::StepGameStructConnected()
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(200, 100);
+    info->SetPosition(1150, 450);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_STRUCT_CONNECTED_1"),
                        TutorialConstants::colorText, 10.f, true, false);

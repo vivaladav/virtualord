@@ -10,18 +10,14 @@
 
 #include <sgl/utilities/StringManager.h>
 
-namespace
-{
-const int destR = 38;
-const int destC = 10;
-}
-
 namespace game
 {
 
-StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Player * p)
+StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Player * p,
+                                                 const Cell2D & cellEnd)
     : TutorialInfoStep(600, 200)
     , mFocusArea(new FocusArea)
+    , mCellEnd(cellEnd)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
@@ -36,7 +32,7 @@ StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Pl
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_3"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, p]
                        {
-                           const sgl::core::Pointd2D pos = isoMap->GetCellPosition(destR, destC);
+                           const auto pos = isoMap->GetCellPosition(mCellEnd.row, mCellEnd.col);
 
                            // FOCUS
                            const int marginW = 5;
@@ -54,7 +50,7 @@ StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Pl
                            // CLICK FILTER
                            auto cf = GetClickFilter();
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
-                           cf->SetClickableCell(isoMap, destR, destC);
+                           cf->SetClickableCell(isoMap, mCellEnd.row, mCellEnd.col);
 
                            mUnit = p->GetUnit(0);
                        });
@@ -69,7 +65,7 @@ void StepGameConquerCellsEnd::Update(float)
 {
     if(mUnit != nullptr)
     {
-        if(mUnit->GetRow0() == destR && mUnit->GetCol0() == destC &&
+        if(mUnit->GetRow0() == mCellEnd.row && mUnit->GetCol0() == mCellEnd.col &&
            mUnit->GetCurrentAction() == IDLE)
             SetDone();
         else if(mUnit->GetCurrentAction() == GameObjectActionType::MOVE)
