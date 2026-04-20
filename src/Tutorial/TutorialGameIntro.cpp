@@ -59,7 +59,6 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     auto panelActions = mScreen->mHUD->GetPanelObjectActions();
     auto panelObj = mScreen->mHUD->GetPanelSelectedObject();
     auto panelTurn = mScreen->mHUD->GetPanelTurnControl();
-
     auto localBase = local->GetBase();
 
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
@@ -69,10 +68,6 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([localBase] { return new StepGameBase(localBase); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelActions, panelObj] { return new StepGameBaseFeatures(panelObj, panelActions); });
-    //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
-    //AddStep([] { return new StepDelay(0.5f); });
-    //AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
-    //AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelActions] { return new StepGameBaseBuildUnitIcon(panelActions); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -102,7 +97,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurn(panelTurn); });
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
-    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([] { return new StepDelay(1.0f); });
     AddStep([] { return new StepGameEnergyRegeneration; });
     AddStep([] { return new StepGameStructDisconnected; });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
@@ -116,12 +111,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             const Cell2D cellEnd(38, 10);
             return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd);
         });
-    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
-    //AddStep([this] { return new StepGameClearSelection(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameStructConnected; });
-    // AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
-    // AddStep([] { return new StepGameMapNavigation; });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local]
         {
@@ -131,7 +122,10 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 
             return new StepGameMaterialGenerator(gmc.objTop);
         });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(1.0f); });
     AddStep([] { return new StepGameMoveCamera(300, -150); });
     AddStep([this, local]
         {
@@ -141,9 +135,12 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 
             return new StepGameConquerStructSimple(local, gmc.objTop, mScreen->mIsoMap);
         });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepGameEndTurnIntro(); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(1.0f); });
     AddStep([] { return new StepGameConnectStructIntro(); });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     AddStep([this]
@@ -157,6 +154,18 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             const Cell2D cellEnd(29, 10);
             return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd);
         });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
+
+    // TODO re-add mission goals
+    //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
+    //AddStep([] { return new StepDelay(0.5f); });
+    //AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
+    //AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+
+    // TODO re-add map navigation
+    // AddStep([this] { return new StepGameClearSelection(mScreen); });
+    // AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
+    // AddStep([] { return new StepGameMapNavigation; });
 }
 
 TutorialGameIntro::~TutorialGameIntro()

@@ -19,7 +19,7 @@ namespace game
 {
 
 StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D & cellStart)
-    : TutorialInfoStep(600, 300)
+    : TutorialInfoStep(600, 200)
     , mFocusArea(new FocusArea)
     , mCellActionStart(cellStart)
 {

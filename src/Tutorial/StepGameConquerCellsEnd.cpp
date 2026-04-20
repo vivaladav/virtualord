@@ -15,7 +15,7 @@ namespace game
 
 StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Player * p,
                                                  const Cell2D & cellEnd)
-    : TutorialInfoStep(600, 200)
+    : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
     , mCellEnd(cellEnd)
 {
@@ -68,7 +68,7 @@ void StepGameConquerCellsEnd::Update(float)
         if(mUnit->GetRow0() == mCellEnd.row && mUnit->GetCol0() == mCellEnd.col &&
            mUnit->GetCurrentAction() == IDLE)
             SetDone();
-        else if(mUnit->GetCurrentAction() == GameObjectActionType::MOVE)
+        else if(mUnit->GetCurrentAction() == GameObjectActionType::CONQUER_CELL)
         {
             mFocusArea->SetBlinking(false);
             mFocusArea->SetVisible(false);
