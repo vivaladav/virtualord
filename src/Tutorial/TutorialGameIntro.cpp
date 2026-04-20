@@ -19,6 +19,7 @@
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEnableCamera.h"
 #include "Tutorial/StepGameEndTurn.h"
+#include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameEnergyRegeneration.h"
 #include "Tutorial/StepGameIntro.h"
 #include "Tutorial/StepGameMapNavigation.h"
@@ -125,6 +126,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 
             return new StepGameMaterialGenerator(gmc.objTop);
         });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([] { return new StepGameMoveCamera(300, -150); });
 }
 
 TutorialGameIntro::~TutorialGameIntro()

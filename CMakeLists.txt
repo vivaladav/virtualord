@@ -271,6 +271,8 @@ add_executable(
     src/Tutorial/StepGameEnergyRegeneration.cpp
     src/Tutorial/StepGameEndTurn.h
     src/Tutorial/StepGameEndTurn.cpp
+    src/Tutorial/StepGameEndTurnSimple.h
+    src/Tutorial/StepGameEndTurnSimple.cpp
     src/Tutorial/StepGameIntro.h
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/StepGameMapNavigation.h
