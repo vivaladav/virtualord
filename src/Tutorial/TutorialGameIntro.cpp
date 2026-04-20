@@ -13,6 +13,7 @@
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
 #include "Tutorial/StepGameBaseFeatures.h"
 #include "Tutorial/StepGameClearSelection.h"
+#include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCells.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
@@ -21,6 +22,7 @@
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEnableCamera.h"
 #include "Tutorial/StepGameEndTurn.h"
+#include "Tutorial/StepGameEndTurnIntro.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameEnergyRegeneration.h"
 #include "Tutorial/StepGameIntro.h"
@@ -139,8 +141,10 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 
             return new StepGameConquerStructSimple(local, gmc.objTop, mScreen->mIsoMap);
         });
+    AddStep([] { return new StepGameEndTurnIntro(); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepGameConnectStructIntro(); });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     AddStep([this]
         {

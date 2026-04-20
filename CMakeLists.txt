@@ -257,6 +257,8 @@ add_executable(
     src/Tutorial/StepGameBaseFeatures.cpp
     src/Tutorial/StepGameClearSelection.h
     src/Tutorial/StepGameClearSelection.cpp
+    src/Tutorial/StepGameConnectStructIntro.h
+    src/Tutorial/StepGameConnectStructIntro.cpp
     src/Tutorial/StepGameConquerCells.h
     src/Tutorial/StepGameConquerCells.cpp
     src/Tutorial/StepGameConquerCellsEnd.h
@@ -275,6 +277,8 @@ add_executable(
     src/Tutorial/StepGameEnergyRegeneration.cpp
     src/Tutorial/StepGameEndTurn.h
     src/Tutorial/StepGameEndTurn.cpp
+    src/Tutorial/StepGameEndTurnIntro.h
+    src/Tutorial/StepGameEndTurnIntro.cpp
     src/Tutorial/StepGameEndTurnSimple.h
     src/Tutorial/StepGameEndTurnSimple.cpp
     src/Tutorial/StepGameIntro.h
