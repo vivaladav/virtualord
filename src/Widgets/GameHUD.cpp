@@ -72,10 +72,10 @@ GameHUD::GameHUD(ScreenGame * screen)
     Game * game = mScreen->GetGame();
 
     // LOCAL PLAYER
-    Player * player = game->GetLocalPlayer();
+    Player * local = game->GetLocalPlayer();
 
     // TOP RESOURCE BAR
-    mPanelRes = new PanelResources(player, mScreen->mGameMap, this);
+    mPanelRes = new PanelResources(local, mScreen->mGameMap, this);
     mPanelRes->SetX((rendW - mPanelRes->GetWidth()) / 2);
 
     // MINIMAP
@@ -99,7 +99,7 @@ GameHUD::GameHUD(ScreenGame * screen)
     // QUICK UNIT SELECTION BUTTONS
     mGroupUnitSel = new sgl::sgui::ButtonsGroup(sgl::sgui::ButtonsGroup::HORIZONTAL, this);
 
-    const int numButtons = player->GetMaxUnits();
+    const int numButtons = local->GetMaxUnits();
 
     for(int i = 0; i < numButtons; ++i)
     {
@@ -111,15 +111,15 @@ GameHUD::GameHUD(ScreenGame * screen)
     const int groupY = rendH - mGroupUnitSel->GetHeight();
     mGroupUnitSel->SetPosition(groupX, groupY);
 
-    player->SetOnNumUnitsChanged([this, player]
+    local->SetOnNumUnitsChanged([this, local]
     {
-        const int numUnits = player->GetNumUnits();
-        const int maxUnits = player->GetMaxUnits();
+        const int numUnits = local->GetNumUnits();
+        const int maxUnits = local->GetMaxUnits();
 
         for(int i = 0; i < numUnits; ++i)
         {
             auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
-            b->SetUnit(player->GetUnit(i));
+            b->SetUnit(local->GetUnit(i));
         }
 
         for(int i = numUnits; i < maxUnits; ++i)
@@ -134,8 +134,12 @@ GameHUD::GameHUD(ScreenGame * screen)
     mPanelObjActions->SetVisible(false);
 
     // PANEL TURN CONTROL
-    mPanelTurnCtrl = new PanelTurnControl(player, this);
-    mPanelTurnCtrl->SetFunctionEndTurn([this]
+    mPanelTurnCtrl = new PanelTurnControl(local, this);
+    mPanelTurnCtrl->AddFunctionGoToBase([this, local]
+    {
+        mScreen->CenterCameraOverObject(local->GetBase());
+    });
+    mPanelTurnCtrl->AddFunctionEndTurn([this]
     {
         mScreen->EndTurn();
     });

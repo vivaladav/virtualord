@@ -30,16 +30,69 @@ namespace
 using namespace game;
 
 // ========== BUTTON END TURN ==========
+class ButtonGoToBase : public sgl::sgui::ImageButton, sgl::utilities::StringsChangeListener
+{
+public:
+    ButtonGoToBase(sgl::sgui::Widget * parent)
+        : sgl::sgui::ImageButton({
+                                     ID_TURNC_BTN_BASE_NORMAL,
+                                     ID_TURNC_BTN_BASE_DISABLED,
+                                     ID_TURNC_BTN_BASE_OVER,
+                                     ID_TURNC_BTN_BASE_PUSHED,
+                                     ID_TURNC_BTN_BASE_NORMAL
+                                 }, SpriteFilePanelTurnControl, parent)
+    {
+        using namespace sgl;
+
+        auto sm = utilities::StringManager::Instance();
+
+        // tooltip
+        mTooltip = new GameSimpleTooltip(sm->GetCString("TT_BACK2BASE"));
+        SetTooltip(mTooltip);
+        SetTooltipDelay(WidgetsConstants::timeTooltipButtonDelay);
+
+        // shortcut
+        SetShortcutKey(core::KeyboardEvent::KEY_B, core::KeyboardEvent::MOD_SHIFT);
+    }
+
+    void OnStringsChanged() override
+    {
+        auto sm = sgl::utilities::StringManager::Instance();
+
+        mTooltip->SetText(sm->GetCString("TT_BACK2BASE"));
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::ImageButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::ImageButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+private:
+    GameSimpleTooltip * mTooltip = nullptr;
+};
+
+// ========== BUTTON END TURN ==========
 class ButtonEndTurn : public sgl::sgui::ImageButton, sgl::utilities::StringsChangeListener
 {
 public:
     ButtonEndTurn(sgl::sgui::Widget * parent)
         : sgl::sgui::ImageButton({
-                                    ID_TURN_CONTROL_BUTTON_NORMAL,
-                                    ID_TURN_CONTROL_BUTTON_DISABLED,
-                                    ID_TURN_CONTROL_BUTTON_OVER,
-                                    ID_TURN_CONTROL_BUTTON_PUSHED,
-                                    ID_TURN_CONTROL_BUTTON_NORMAL
+                                    ID_TURNC_BTN_NEXTT_NORMAL,
+                                    ID_TURNC_BTN_NEXTT_DISABLED,
+                                    ID_TURNC_BTN_NEXTT_OVER,
+                                    ID_TURNC_BTN_NEXTT_PUSHED,
+                                    ID_TURNC_BTN_NEXTT_NORMAL
                                  }, SpriteFilePanelTurnControl, parent)
     {
         using namespace sgl;
@@ -103,7 +156,7 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     graphic::Texture * tex = nullptr;
 
     // BACKGROUND
-    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURN_CONTROL_BG);
+    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURNC_BG);
     mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 
@@ -112,7 +165,7 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     SetSize(w, h);
 
     // ICON ENERGY
-    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURN_CONTROL_ICON);
+    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURNC_ICON);
     mIconEnergy = new sgui::Image(tex, this);
 
     // PROGRESS BAR ENERGY
@@ -146,6 +199,9 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     mDigits->SetTooltipDelay(WidgetsConstants::timeTooltipButtonDelay);
     mDigits->SetTooltipShowingTime(timeTooltip);
 
+    // BUTTON GO BACK TO BASE
+    mButtonBase = new ButtonGoToBase(this);
+
     // BUTTON END TURN
     mButtonEndTurn = new ButtonEndTurn(this);
 
@@ -175,15 +231,20 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     });
 
     // POSITION ELEMENTS
+    const int marginButton = 25;
     const int marginIcon = 5;
-    const int marginBar = 10;
-    const int marginDigits = 30;
-    const int totW = mIconEnergy->GetWidth() + marginIcon + mEnergyBar->GetWidth() +
-                     marginBar + mDigits->GetWidth() + marginDigits + mButtonEndTurn->GetWidth();
+    const int marginBar = 5;
+    const int totW = mButtonBase->GetWidth() + marginButton + mIconEnergy->GetWidth() +
+                     marginIcon + mEnergyBar->GetWidth() + marginBar + mDigits->GetWidth() +
+                     marginButton + mButtonEndTurn->GetWidth();
     const int x0 = (w - totW) / 2;
 
     int x = x0;
-    int y = (h - mIconEnergy->GetHeight()) / 2;
+    int y = (h - mButtonBase->GetHeight()) / 2;
+    mButtonBase->SetPosition(x, y);
+
+    x += mButtonBase->GetWidth() + marginButton;
+    y = (h - mIconEnergy->GetHeight()) / 2;
     mIconEnergy->SetPosition(x, y);
 
     x += mIconEnergy->GetWidth() + marginIcon;
@@ -194,7 +255,7 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     y = (h - mDigits->GetHeight()) / 2;
     mDigits->SetPosition(x, y);
 
-    x += mDigits->GetWidth() + marginDigits;
+    x += mDigits->GetWidth() + marginButton;
     y = (h - mButtonEndTurn->GetHeight()) / 2;
     mButtonEndTurn->SetPosition(x, y);
 }
@@ -205,7 +266,12 @@ PanelTurnControl::~PanelTurnControl()
     mPlayer->SetOnTurnMaxEnergyChanged([]{});
 }
 
-void PanelTurnControl::SetFunctionEndTurn(const std::function<void()> & f)
+void PanelTurnControl::AddFunctionGoToBase(const std::function<void()> & f)
+{
+    mButtonBase->AddOnClickFunction(f);
+}
+
+void PanelTurnControl::AddFunctionEndTurn(const std::function<void()> & f)
 {
     mButtonEndTurn->AddOnClickFunction(f);
 }
@@ -220,6 +286,7 @@ void PanelTurnControl::ShowPanel()
     mIconEnergy->SetVisible(true);
     mEnergyBar->SetVisible(true);
     mDigits->SetVisible(true);
+    mButtonBase->SetVisible(true);
     mButtonEndTurn->SetVisible(true);
 
     mText->SetVisible(false);
@@ -230,6 +297,7 @@ void PanelTurnControl::ShowText(const char * text)
     mIconEnergy->SetVisible(false);
     mEnergyBar->SetVisible(false);
     mDigits->SetVisible(false);
+    mButtonBase->SetVisible(false);
     mButtonEndTurn->SetVisible(false);
 
     mText->SetVisible(true);

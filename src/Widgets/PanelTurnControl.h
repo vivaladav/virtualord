@@ -31,7 +31,8 @@ public:
     PanelTurnControl(Player * player, sgl::sgui::Widget * parent);
     ~PanelTurnControl();
 
-    void SetFunctionEndTurn(const std::function<void()> & f);
+    void AddFunctionGoToBase(const std::function<void()> & f);
+    void AddFunctionEndTurn(const std::function<void()> & f);
 
     void SetButtonEndTurnEnabled(bool enabled);
 
@@ -51,6 +52,7 @@ private:
     sgl::sgui::Image * mIconEnergy = nullptr;
     sgl::sgui::ProgressBar * mEnergyBar = nullptr;
     DigitsDisplay * mDigits = nullptr;
+    sgl::sgui::ImageButton * mButtonBase = nullptr;
     sgl::sgui::ImageButton * mButtonEndTurn = nullptr;
 
     GameSimpleTooltip * mTooltipEnergy = nullptr;

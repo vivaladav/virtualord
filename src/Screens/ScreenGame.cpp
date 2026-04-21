@@ -922,12 +922,6 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
 
     if(key == KeyboardEvent::KEY_ESCAPE)
         mHUD->ShowDialogExit();
-    // SHIFT + B -> center camera on own base
-    else if(key == KeyboardEvent::KEY_B)
-    {
-        if(event.IsModShiftDown())
-            CenterCameraOverObject(mLocalPlayer->GetBase());
-    }
 #ifdef DEV_MODE
     // DEBUG: SHIFT+N -> add Experience to selected object
     else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_N)
