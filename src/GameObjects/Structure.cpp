@@ -15,7 +15,7 @@ Structure::Structure(const ObjectData & data, const ObjectInitData & initData)
     SetStructure(true);
     SetStatic(true);
 
-    if(IsFactionLocal())
+    if(IsFactionLocal() && !IsLinked())
         ShowIconEnergy();
     else
         HideIconEnergy();

@@ -373,6 +373,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed text messed up in dialog settings when changing language.\n"
                   "- Fixed units building structures in unsuitable places.\n"
                   "- Fixed miniMap not removed if radar is destroyed.\n"
+                  "- Fixed random blinking energy icon appearing outside the map.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
