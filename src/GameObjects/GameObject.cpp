@@ -406,6 +406,10 @@ void GameObject::UpgradeLevel(const std::vector<int> & attChanges)
     if(IsFactionLocal() && attChanges[OBJ_ATT_VIEW_RANGE] > 0)
         mGameMap->UpdateLocalObjectVisibility(this);
 
+    // update turn energy if unit
+    if(mCategory == ObjectData::CAT_UNIT && mOwner != nullptr)
+        mOwner->AdjustTurnMaxEnergy();
+
     // notify object and observers
     OnAttributeChanged();
 

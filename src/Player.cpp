@@ -10,7 +10,6 @@
 #include "GameObjects/Blobs.h"
 #include "GameObjects/Diamonds.h"
 #include "GameObjects/GameObjectsGroup.h"
-#include "GameObjects/LootBox.h"
 #include "GameObjects/ResourceStorage.h"
 #include "GameObjects/Structure.h"
 #include "GameObjects/Unit.h"
@@ -21,8 +20,6 @@
 namespace game
 {
 
-constexpr float MAX_ENERGY0 = 100.f;
-
 Player::Player(const char * name, int pid)
     : mDummyStat(INVALID_STAT, 0)
     , mName(name)
@@ -32,8 +29,6 @@ Player::Player(const char * name, int pid)
     , mOnTurnMaxEnergyChanged([](){})
     , mPlayerId(pid)
     , mFaction(NO_FACTION)
-    , mTurnEnergy(MAX_ENERGY0)
-    , mTurnMaxEnergy(MAX_ENERGY0)
 {
     mStats.emplace_back(Stat::BLOBS, 0);
     mStats.emplace_back(Stat::DIAMONDS, 0);
@@ -57,6 +52,9 @@ Player::Player(const char * name, int pid)
         mUpgrades.emplace(static_cast<TechUpgradeId>(i), false);
 
     mUpgrades.emplace(TECH_UP_NULL, false);
+
+    // UPDATE VALUES
+    AdjustTurnMaxEnergy();
 }
 
 Player::~Player()
@@ -481,21 +479,24 @@ void Player::OnNewTurn()
 
 void Player::AdjustTurnMaxEnergy()
 {
+    constexpr float maxEnergy0 = 100.f;
+    constexpr float delta = 1.f;
     const float oldMax = mTurnMaxEnergy;
 
     // UPDATE MAX
-    int totUnitsEnergy = 0;
+    float newMax = 0.f;
 
     for(Unit * u : mUnits)
-        totUnitsEnergy += u->GetMaxEnergy();
+        newMax += u->GetMaxEnergy();
 
-    const float maxPerc = 0.75f;
-    float newMax = totUnitsEnergy * maxPerc;
-
-    if(newMax < MAX_ENERGY0)
-        newMax = MAX_ENERGY0;
+    if(newMax < maxEnergy0)
+        newMax = maxEnergy0;
 
     mTurnMaxEnergy = newMax;
+
+    // nothing changed
+    if(std::fabs(mTurnMaxEnergy - oldMax) < delta)
+        return ;
 
     mOnTurnMaxEnergyChanged();
 

@@ -206,8 +206,8 @@ private:
 
     PlayerFaction mFaction;
 
-    float mTurnEnergy;
-    float mTurnMaxEnergy;
+    float mTurnEnergy = 0.f;
+    float mTurnMaxEnergy = 0.f;
 
     unsigned int mTurnsPlayed = 0;
 
