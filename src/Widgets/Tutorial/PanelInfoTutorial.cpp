@@ -219,7 +219,13 @@ void PanelInfoTutorial::ShowCurrentInfo()
 
 void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
 {
-    if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE && mTimerShown > minTimeShown)
+    auto entry = GetCurrentEntry();
+
+    if(nullptr == entry)
+        return;
+
+    if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE && mTimerShown > minTimeShown &&
+       entry->mShowContinue)
     {
         event.SetConsumed();
 
@@ -229,7 +235,13 @@ void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
 
 void PanelInfoTutorial::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
 {
-    if(event.GetButton() == sgl::core::MouseButtonEvent::BUTTON_LEFT && mTimerShown > minTimeShown)
+    auto entry = GetCurrentEntry();
+
+    if(nullptr == entry)
+        return;
+
+    if(event.GetButton() == sgl::core::MouseButtonEvent::BUTTON_LEFT && mTimerShown > minTimeShown &&
+       entry->mShowContinue)
     {
         event.SetConsumed();
 
