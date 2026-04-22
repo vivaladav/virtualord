@@ -182,6 +182,23 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             const Cell2D target(17, 16);
             return new StepGameBuildTowerEnd(mScreen->mIsoMap, local, target);
         });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([] { return new StepGameConnectStructIntro(); });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this]
+            {
+                const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+                const Cell2D target(17, 15);
+                return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target);
+            });
+    AddStep([this, local]
+            {
+                const Cell2D cellEnd(21, 11);
+                return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd);
+            });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([] { return new StepDelay(1.0f); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });

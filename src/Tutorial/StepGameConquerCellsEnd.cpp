@@ -27,7 +27,7 @@ StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Pl
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1250, 350);
+    info->SetPosition(1250, 300);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_3"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, p]
