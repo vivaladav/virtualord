@@ -157,6 +157,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             const Cell2D cellEnd(29, 10);
             return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd);
         });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([] { return new StepDelay(1.0f); });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
     AddStep([this, local] { return new StepGameMoveUnitToCorner(local, mScreen->mIsoMap); });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
@@ -166,6 +168,9 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions); });
     AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD); });
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([] { return new StepDelay(1.0f); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
