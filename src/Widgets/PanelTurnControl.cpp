@@ -306,8 +306,6 @@ void PanelTurnControl::ShowText(const char * text)
     PositionText();
 }
 
-sgl::sgui::AbstractButton * PanelTurnControl::GetButtonEndTurn() const { return mButtonEndTurn; }
-
 void PanelTurnControl::HandlePositionChanged()
 {
     const int x0 = GetScreenX();

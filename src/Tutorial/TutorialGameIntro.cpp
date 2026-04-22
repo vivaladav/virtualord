@@ -9,6 +9,7 @@
 #include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepDelay.h"
+#include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBase.h"
 #include "Tutorial/StepGameBaseBuildUnit.h"
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
@@ -219,6 +220,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
                 return new StepGameWallBuildEnd(mScreen->mIsoMap, local, cellEnd);
             });
     AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameBackToBase(panelTurn); });
+    AddStep([] { return new StepDelay(1.0f); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });

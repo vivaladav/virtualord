@@ -247,6 +247,8 @@ add_executable(
     src/States/StateTest.cpp
     src/Tutorial/StepDelay.h
     src/Tutorial/StepDelay.cpp
+    src/Tutorial/StepGameBackToBase.h
+    src/Tutorial/StepGameBackToBase.cpp
     src/Tutorial/StepGameBase.h
     src/Tutorial/StepGameBase.cpp
     src/Tutorial/StepGameBaseBuildUnit.h
