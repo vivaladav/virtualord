@@ -158,6 +158,12 @@ void PanelInfoTutorial::StartInfo()
     ShowCurrentInfo();
 }
 
+void PanelInfoTutorial::Continue(bool force)
+{
+    if(mTimerShown > minTimeShown || force)
+        ContinueOnInput();
+}
+
 void PanelInfoTutorial::ShowNextInfo()
 {
     if(mInfoEntries.empty())

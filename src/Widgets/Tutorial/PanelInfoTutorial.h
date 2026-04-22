@@ -33,6 +33,8 @@ public:
 
     void StartInfo();
 
+    void Continue(bool force = false);
+
 private:
     void ShowNextInfo();
     void ShowCurrentInfo();
