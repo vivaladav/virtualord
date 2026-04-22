@@ -27,7 +27,7 @@ StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1000, 250);
+    info->SetPosition(900, 250);
 
     info->AddInfoEntry(sm->GetCString("TUT_UPGRADE_1"),
                        TutorialConstants::colorText, 7.f, false, false);

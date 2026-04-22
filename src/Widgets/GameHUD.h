@@ -121,6 +121,7 @@ public:
 
     void ShowDialogUpgrade(GameObject * obj);
     void HideDialogUpgrade();
+    DialogUpgrade * GetDialogUpgrade() const;
 
     void SetLocalActionsEnabled(bool enabled);
 
@@ -206,4 +207,6 @@ inline PanelObjectActions * GameHUD::GetPanelObjectActions() const { return mPan
 inline const PanelSelectedObject * GameHUD::GetPanelSelectedObject() const { return mPanelSelObj; }
 
 inline const PanelTurnControl * GameHUD::GetPanelTurnControl() const { return mPanelTurnCtrl; }
+
+inline DialogUpgrade * GameHUD::GetDialogUpgrade() const { return mDialogUpgrade; }
 } // namespace game

@@ -313,6 +313,8 @@ add_executable(
     src/Tutorial/StepGameUnitConquerCellsIcon.cpp
     src/Tutorial/StepGameUpgradeIntro.h
     src/Tutorial/StepGameUpgradeIntro.cpp
+    src/Tutorial/StepGameUpgradeUnit.h
+    src/Tutorial/StepGameUpgradeUnit.cpp
     src/Tutorial/StepGameWaitTurn.h
     src/Tutorial/StepGameWaitTurn.cpp
     src/Tutorial/StepPlanetMapConquerTerritory.h

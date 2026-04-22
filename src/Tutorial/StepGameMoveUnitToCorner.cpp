@@ -31,7 +31,7 @@ StepGameMoveUnitToCorner::StepGameMoveUnitToCorner(const Player * p, const IsoMa
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(550, 125);
+    info->SetPosition(550, 100);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MOVE_UNIT_3"),
                        TutorialConstants::colorText, 7.f, true, false);

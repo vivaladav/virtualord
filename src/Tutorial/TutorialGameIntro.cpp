@@ -41,6 +41,7 @@
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameUpgradeIntro.h"
+#include "Tutorial/StepGameUpgradeUnit.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Widgets/GameHUD.h"
 #include "Tutorial/TutorialConstants.h"
@@ -161,8 +162,10 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([] { return new StepGameMoveCamera(300, -100); });
+    AddStep([] { return new StepGameMoveCamera(400, -100); });
     AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions); });
+    AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD); });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
