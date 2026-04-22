@@ -32,6 +32,7 @@
 #include "Tutorial/StepGameMissionGoalsDialog.h"
 #include "Tutorial/StepGameMoveCamera.h"
 #include "Tutorial/StepGameMoveUnit.h"
+#include "Tutorial/StepGameMoveUnitToCorner.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameStructConnected.h"
@@ -155,6 +156,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd);
         });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
+    AddStep([this, local] { return new StepGameMoveUnitToCorner(local, mScreen->mIsoMap); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
