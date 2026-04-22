@@ -1,7 +1,8 @@
-#include "Tutorial/StepGameConquerCells.h"
+#include "Tutorial/StepGameWallBuildEnd.h"
 
-#include "Cell2D.h"
 #include "IsoMap.h"
+#include "Player.h"
+#include "GameObjects/Unit.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -9,19 +10,14 @@
 
 #include <sgl/utilities/StringManager.h>
 
-namespace
-{
-const int destR = 32;
-const int destC = 10;
-}
-
 namespace game
 {
 
-StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D & cellStart)
-    : TutorialInfoStep(600, 200)
+StepGameWallBuildEnd::StepGameWallBuildEnd(const IsoMap * isoMap, const Player * p,
+                                                 const Cell2D & cellEnd)
+    : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
-    , mCellActionStart(cellStart)
+    , mCellEnd(cellEnd)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
@@ -31,14 +27,12 @@ StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D &
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1250, 350);
+    info->SetPosition(900, 150);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_1"),
-                       TutorialConstants::colorText, 8.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUIL_WALL_4"),
+                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, p]
                        {
-                           const sgl::core::Pointd2D pos = isoMap->GetCellPosition(destR, destC);
+                           const auto pos = isoMap->GetCellPosition(mCellEnd.row, mCellEnd.col);
 
                            // FOCUS
                            const int marginW = 5;
@@ -56,19 +50,37 @@ StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D &
                            // CLICK FILTER
                            auto cf = GetClickFilter();
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
-                           cf->SetClickableCell(isoMap, destR, destC);
+                           cf->SetClickableCell(isoMap, mCellEnd.row, mCellEnd.col);
+
+                           mUnit = p->GetUnit(0);
                        });
 }
 
-StepGameConquerCells::~StepGameConquerCells()
+StepGameWallBuildEnd::~StepGameWallBuildEnd()
 {
     delete mFocusArea;
 }
 
-void StepGameConquerCells::Update(float)
+void StepGameWallBuildEnd::Update(float)
 {
-    if(mCellActionStart.row == destR && mCellActionStart.col == destC)
-        SetDone();
+    if(nullptr == mUnit)
+        return ;
+
+    if(mBuildStarted)
+    {
+        if(mUnit->GetCurrentAction() == IDLE)
+            SetDone();
+    }
+    else
+    {
+        if(mUnit->GetCurrentAction() == GameObjectActionType::BUILD_WALL)
+        {
+            mFocusArea->SetBlinking(false);
+            mFocusArea->SetVisible(false);
+
+            mBuildStarted = true;
+        }
+    }
 }
 
 } // namespace game

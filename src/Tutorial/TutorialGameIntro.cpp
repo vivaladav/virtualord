@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "GameObjects/Base.h"
 #include "Indicators/OverlayCellConquest.h"
+#include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameBase.h"
@@ -46,6 +47,10 @@
 #include "Tutorial/StepGameUpgradeIntro.h"
 #include "Tutorial/StepGameUpgradeUnit.h"
 #include "Tutorial/StepGameWaitTurn.h"
+#include "Tutorial/StepGameWallBuildEnd.h"
+#include "Tutorial/StepGameWallBuildIcon.h"
+#include "Tutorial/StepGameWallBuildIntro.h"
+#include "Tutorial/StepGameWallBuildStart.h"
 #include "Widgets/GameHUD.h"
 #include "Tutorial/TutorialConstants.h"
 
@@ -199,6 +204,21 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepDelay(1.0f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(1.0f); });
+    AddStep([] { return new StepGameWallBuildIntro(); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
+    AddStep([this]
+            {
+                const Cell2D & cellStart = mScreen->mOverlayWall->GetCellStart();
+                const Cell2D target(17, 15);
+                return new StepGameWallBuildStart(mScreen->mIsoMap, cellStart, target);
+            });
+    AddStep([this, local]
+            {
+                const Cell2D cellEnd(14, 15);
+                return new StepGameWallBuildEnd(mScreen->mIsoMap, local, cellEnd);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });

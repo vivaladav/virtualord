@@ -323,6 +323,14 @@ add_executable(
     src/Tutorial/StepGameUpgradeUnit.cpp
     src/Tutorial/StepGameWaitTurn.h
     src/Tutorial/StepGameWaitTurn.cpp
+    src/Tutorial/StepGameWallBuildEnd.h
+    src/Tutorial/StepGameWallBuildEnd.cpp
+    src/Tutorial/StepGameWallBuildIcon.h
+    src/Tutorial/StepGameWallBuildIcon.cpp
+    src/Tutorial/StepGameWallBuildIntro.h
+    src/Tutorial/StepGameWallBuildIntro.cpp
+    src/Tutorial/StepGameWallBuildStart.h
+    src/Tutorial/StepGameWallBuildStart.cpp
     src/Tutorial/StepPlanetMapConquerTerritory.h
     src/Tutorial/StepPlanetMapConquerTerritory.cpp
     src/Tutorial/StepPlanetMapConquerTerritoryStart.h

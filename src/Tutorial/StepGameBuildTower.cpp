@@ -37,7 +37,7 @@ StepGameBuildTower::StepGameBuildTower(GameHUD * HUD)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(550, 900);
+    info->SetPosition(550, 870);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_3"),
                        TutorialConstants::colorTextAction, 0.f, false, true, [this, HUD, info]
