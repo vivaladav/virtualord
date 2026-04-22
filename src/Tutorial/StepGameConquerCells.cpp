@@ -7,6 +7,7 @@
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
+#include <sgl/core/event/MouseEvent.h>
 #include <sgl/utilities/StringManager.h>
 
 namespace
@@ -57,6 +58,7 @@ StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D &
                            auto cf = GetClickFilter();
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                            cf->SetClickableCell(isoMap, destR, destC);
+                           cf->SetButtonToExclude(sgl::core::MouseEvent::BUTTON_LEFT);
                        });
 }
 
