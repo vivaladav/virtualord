@@ -1,6 +1,7 @@
 ﻿#include "Screens/ScreenGame.h"
 
 #include "CameraMapController.h"
+#include "ControlMap.h"
 #include "Game.h"
 #include "GameConstants.h"
 #include "GameData.h"
@@ -985,6 +986,24 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
         CreateEnemyInCurrentCell(ObjectData::TYPE_UNIT_SOLDIER1);
     else if(event.IsModAltDown() && key == KeyboardEvent::KEY_E)
         CreateEnemyInCurrentCell(ObjectData::TYPE_UNIT_SOLDIER2);
+    // DEBUG: print current stats
+    else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_C)
+    {
+        const PlayerFaction pf = mLocalPlayer->GetFaction();
+        const unsigned int turns = mLocalPlayer->GetTurnsPlayed();
+        const unsigned int territory = mGameMap->GetControlMap()->GetPercentageControlledByFaction(pf);
+        const unsigned int killed = mGameMap->GetEnemiesKilled(pf);
+        const unsigned int casualties = mGameMap->GetCasualties(pf);
+        const unsigned int played = GetPlayTimeInSec();
+
+        std::cout << "PLAYER FACTION: " << pf << "\n"
+                  << "TURNS PLAYED: " << turns  << "\n"
+                  << "TIME PLAYED: " << played  << "\n"
+                  << "TERRITORY CONTROLLED: " << territory  << "%\n"
+                  << "ENEMIS KILLED: " << killed  << "%\n"
+                  << "CASUALTIES: " << casualties  << "%\n"
+                  << std::endl;
+    }
 #endif
 }
 
