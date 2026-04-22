@@ -38,8 +38,8 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
                            auto btn = panel->GetButton(PanelObjectActions::BTN_BUILD_UNIT_BASE);
 
                            const int padding = 10;
-                           const int fX = panel->GetX() + btn->GetX() - padding;
-                           const int fY = panel->GetY() + btn->GetY() - padding;
+                           const int fX = btn->GetScreenX() - padding;
+                           const int fY = btn->GetScreenY() - padding;
                            const int fW = btn->GetWidth() + (padding * 2);
                            const int fH = btn->GetHeight() + (padding * 2);
 
