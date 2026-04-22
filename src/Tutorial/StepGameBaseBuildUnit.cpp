@@ -48,8 +48,8 @@ StepGameBaseBuildUnit::StepGameBaseBuildUnit(GameHUD * HUD)
 
                            // FOCUS
                            const int padding = 10;
-                           const int fX = dialog->GetX() + btn->GetX() - padding;
-                           const int fY = dialog->GetY() + btn->GetY() - padding;
+                           const int fX = btn->GetScreenX() - padding;
+                           const int fY = btn->GetScreenY() - padding;
                            const int fW = btn->GetWidth() + (padding * 2);
                            const int fH = btn->GetHeight() + (padding * 2);
 

@@ -12,6 +12,9 @@
 #include "Tutorial/StepGameBaseBuildUnit.h"
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
 #include "Tutorial/StepGameBaseFeatures.h"
+#include "Tutorial/StepGameBuildTower.h"
+#include "Tutorial/StepGameBuildTowerEnd.h"
+#include "Tutorial/StepGameBuildTowerIntro.h"
 #include "Tutorial/StepGameClearSelection.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCells.h"
@@ -171,6 +174,14 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepDelay(1.0f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(1.0f); });
+    AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
+    AddStep([this] { return new StepGameBuildTower(mScreen->mHUD); });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([this, local]
+        {
+            const Cell2D target(17, 16);
+            return new StepGameBuildTowerEnd(mScreen->mIsoMap, local, target);
+        });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
