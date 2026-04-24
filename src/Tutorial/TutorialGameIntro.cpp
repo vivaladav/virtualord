@@ -135,9 +135,9 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     //     });
     // AddStep([this, local]
     //     {
-    //         const sgl::core::Pointd2D p0(1250, 300);
     //         const (1250, 300);
     //         const Cell2D cellEnd(38, 10);
+    //         const sgl::core::Pointd2D p0(1250, 300);
     //         return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
     //     });
     // AddStep([] { return new StepDelay(0.5f); });
@@ -191,7 +191,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // AddStep([this, local]
     //     {
     //         const Cell2D cellEnd(29, 10);
-    //         return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd);
+    //         const sgl::core::Pointd2D p0(1250, 300);
+    //         return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
     //     });
     // AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     // AddStep([] { return new StepDelay(1.0f); });
@@ -225,19 +226,25 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     //     });
     // AddStep([] { return new StepDelay(1.0f); });
     // // CONNECT DEFENSIVE TOWER
-    // AddStep([] { return new StepGameConnectStructIntro(); });
+    // AddStep([]
+    //     {
+    //         const sgl::core::Pointd2D p0(1250, 200);
+    //         return new StepGameConnectStructIntro(p0);
+    //     });
     // AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     // AddStep([this]
-    //         {
-    //             const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
-    //             const Cell2D target(17, 15);
-    //             return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target);
-    //         });
+    //     {
+    //         const sgl::core::Pointd2D p0(1250, 250);
+    //         const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+    //         const Cell2D target(17, 15);
+    //         return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
+    //     });
     // AddStep([this, local]
-    //         {
-    //             const Cell2D cellEnd(21, 11);
-    //             return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd);
-    //         });
+    //     {
+    //         const Cell2D cellEnd(21, 11);
+    //         const sgl::core::Pointd2D p0(1250, 300);
+    //         return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
+    //     });
     // AddStep([] { return new StepDelay(1.0f); });
     // AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     // AddStep([] { return new StepDelay(1.0f); });
@@ -348,6 +355,33 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             const Cell2D target(37, 26);
             return new StepGameBuildTowerEnd(mScreen->mIsoMap, local, target);
         });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // // CONNECT DEFENSIVE TOWERs
+    AddStep([]
+        {
+            const sgl::core::Pointd2D p0(1100, 450);
+            return new StepGameConnectStructIntro(p0);
+        });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this]
+        {
+            const sgl::core::Pointd2D p0(1100, 450);
+            const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+            const Cell2D target(37, 25);
+            return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
+        });
+    AddStep([this, local]
+        {
+            const Cell2D cellEnd(40, 21);
+            const sgl::core::Pointd2D p0(1100, 450);
+            return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(1.0f); });
 
     // TODO re-add mission goals
