@@ -197,7 +197,12 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // AddStep([] { return new StepDelay(1.0f); });
     // // MOVE UNIT TO VISIBLE CORNER
     // AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
-    // AddStep([this, local] { return new StepGameMoveUnitToCorner(local, mScreen->mIsoMap); });
+    // AddStep([this, local]
+    //         {
+    //             const Cell2D target(17, 15);
+    //             const sgl::core::Pointd2D p0(550, 100);
+    //             return new StepGameMoveUnitToCorner(local, mScreen->mIsoMap, target, p0);
+    //         });
     // AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
     // AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // AddStep([] { return new StepDelay(0.5f); });
@@ -319,7 +324,18 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
         });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(1.0f); });
-
+    // MOVE UNIT TO VISIBLE CORNER
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
+    AddStep([this, local]
+            {
+                const Cell2D target(37, 25);
+                const sgl::core::Pointd2D p0(1050, 300);
+                return new StepGameMoveUnitToCorner(local, mScreen->mIsoMap, target, p0);
+            });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([] { return new StepGameMoveCamera(400, 100); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });

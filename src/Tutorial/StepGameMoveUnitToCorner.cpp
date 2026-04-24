@@ -10,18 +10,14 @@
 
 #include <sgl/utilities/StringManager.h>
 
-namespace
-{
-const int destR = 17;
-const int destC = 15;
-}
-
 namespace game
 {
 
-StepGameMoveUnitToCorner::StepGameMoveUnitToCorner(const Player * p, const IsoMap * isoMap)
+StepGameMoveUnitToCorner::StepGameMoveUnitToCorner(const Player * p, const IsoMap * isoMap,
+                                                   const Cell2D & target, const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(600, 200)
     , mFocusArea(new FocusArea)
+    , mTarget(target)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
@@ -31,14 +27,14 @@ StepGameMoveUnitToCorner::StepGameMoveUnitToCorner(const Player * p, const IsoMa
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(550, 100);
+    info->SetPosition(p0.x, p0.y);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MOVE_UNIT_3"),
                        TutorialConstants::colorText, 7.f, true, false);
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MOVE_UNIT"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, p, isoMap]
                        {
-                           const sgl::core::Pointd2D pos = isoMap->GetCellPosition(destR, destC);
+                           const auto pos = isoMap->GetCellPosition(mTarget.row, mTarget.col);
 
                            // FOCUS
                            const int marginW = 5;
@@ -56,7 +52,7 @@ StepGameMoveUnitToCorner::StepGameMoveUnitToCorner(const Player * p, const IsoMa
                            // CLICK FILTER
                            auto cf = GetClickFilter();
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
-                           cf->SetClickableCell(isoMap, destR, destC);
+                           cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);
 
                            // re-allow unit to move
                            mUnit = p->GetUnit(0);
@@ -73,7 +69,7 @@ void StepGameMoveUnitToCorner::Update(float)
 {
     if(mUnit != nullptr)
     {
-        if(mUnit->GetRow0() == destR && mUnit->GetCol0() == destC)
+        if(mUnit->GetRow0() == mTarget.row && mUnit->GetCol0() == mTarget.col)
             SetDone();
         // hide focus area when move starts
         else if(mUnit->GetCurrentAction() == GameObjectActionType::MOVE)
