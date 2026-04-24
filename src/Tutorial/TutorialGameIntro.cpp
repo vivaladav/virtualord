@@ -380,9 +380,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             const sgl::core::Pointd2D p0(1100, 450);
             return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
         });
-    AddStep([] { return new StepDelay(1.0f); });
-    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([] { return new StepDelay(0.5f); });
+
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });

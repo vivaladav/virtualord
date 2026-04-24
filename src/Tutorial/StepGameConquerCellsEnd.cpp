@@ -74,6 +74,10 @@ void StepGameConquerCellsEnd::Update(float)
         {
             mFocusArea->SetBlinking(false);
             mFocusArea->SetVisible(false);
+
+            // hide info panel while conquest is in progress
+            auto info = GetPanelInfo();
+            info->SetVisible(false);
         }
     }
 }

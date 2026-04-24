@@ -71,7 +71,13 @@ void StepGameConquerStructSimple::Update(float)
         SetDone();
     else if(mUnit != nullptr &&
             (mUnit->GetCurrentAction() == CONQUER_STRUCTURE || mUnit->GetCurrentAction() == MOVE))
+    {
         mFocusArea->SetVisible(false);
+
+        // hide info panel while conquest is in progress
+        auto info = GetPanelInfo();
+        info->SetVisible(false);
+    }
 }
 
 } // namespace game
