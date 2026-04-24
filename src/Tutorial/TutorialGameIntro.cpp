@@ -336,6 +336,19 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameMoveCamera(400, 100); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD DEFENSIVE TOWER
+    AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
+    AddStep([this] { return new StepGameBuildTower(mScreen->mHUD); });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([this, local]
+        {
+            const Cell2D target(37, 26);
+            return new StepGameBuildTowerEnd(mScreen->mIsoMap, local, target);
+        });
+    AddStep([] { return new StepDelay(1.0f); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
