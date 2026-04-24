@@ -89,7 +89,11 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // AddStep([this] { return new StepGameBaseBuildUnit(mScreen->mHUD); });
     // AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     // AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
-    // AddStep([local] { return new StepGameUnit(local); });
+    // AddStep([local]
+    //         {
+    //             const auto unit = local->GetUnit(0);
+    //             return new StepGameUnit(unit);
+    //         });
     // AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // AddStep([] { return new StepDelay(0.5f); });
     // AddStep([this, local] { return new StepGameMoveUnit(local, mScreen->mIsoMap); });
@@ -228,6 +232,15 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([localBase] { return new StepGameSelectBase(localBase); });
     AddStep([panelActions] { return new StepGameBaseBuildUnitStart(panelActions); });
     AddStep([this] { return new StepGameBaseBuildUnitEnd(mScreen->mHUD); });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
+    AddStep([local]
+            {
+                // TODO replace current line with commented one when re-enabling full tutorial
+                // const auto unit = local->GetUnit(1);
+                const auto unit = local->GetUnit(0);
+                return new StepGameUnit(unit);
+            });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });

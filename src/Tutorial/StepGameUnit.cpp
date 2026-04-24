@@ -1,7 +1,6 @@
 #include "Tutorial/StepGameUnit.h"
 
 #include "IsoObject.h"
-#include "Player.h"
 #include "GameObjects/Unit.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -13,9 +12,10 @@
 namespace game
 {
 
-StepGameUnit::StepGameUnit(const Player * p)
+StepGameUnit::StepGameUnit(const Unit * unit)
     : TutorialInfoStep(550, 200)
     , mFocusArea(new FocusArea)
+    , mUnit(unit)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
@@ -28,10 +28,9 @@ StepGameUnit::StepGameUnit(const Player * p)
     info->SetPosition(1300, 450);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_UNIT_1"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, p]
+                       TutorialConstants::colorTextAction, 0.f, false, false, [this]
                        {
                            // FOCUS
-                           mUnit = p->GetUnit(0);
                            const auto isoObj = mUnit->GetIsoObject();
                            const int objX = isoObj->GetX();
                            const int objY = isoObj->GetY();

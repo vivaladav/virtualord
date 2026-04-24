@@ -12,7 +12,7 @@ class Unit;
 class StepGameUnit : public TutorialInfoStep
 {
 public:
-    StepGameUnit(const Player * p);
+    StepGameUnit(const Unit *unit);
     ~StepGameUnit();
 
     void Update(float delta) override;
@@ -20,7 +20,7 @@ public:
 private:
     FocusArea * mFocusArea = nullptr;
 
-    Unit * mUnit = nullptr;
+    const Unit * mUnit = nullptr;
 };
 
 } // namespace game
