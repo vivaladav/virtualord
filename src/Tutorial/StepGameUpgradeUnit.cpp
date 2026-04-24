@@ -32,9 +32,9 @@ StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD)
 
     info->SetPosition(450, 820);
 
-    info->AddInfoEntry(sm->GetCString("TUT_UPGRADE_3"),
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_3"),
                        TutorialConstants::colorText, 10.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_UPGRADE_4"),
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_4"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, HUD, info]
                        {
                            auto dialog = HUD->GetDialogUpgrade();
@@ -58,7 +58,7 @@ StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD)
                            // CLICK FILTER
                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
                        });
-    info->AddInfoEntry(sm->GetCString("TUT_UPGRADE_5"),
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_5"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, HUD]
                        {
                            auto dialog = HUD->GetDialogUpgrade();
