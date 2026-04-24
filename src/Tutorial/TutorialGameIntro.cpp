@@ -12,6 +12,7 @@
 #include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBase.h"
 #include "Tutorial/StepGameBaseBuildUnit.h"
+#include "Tutorial/StepGameBaseBuildUnitEnd.h"
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
 #include "Tutorial/StepGameBaseBuildUnitStart.h"
 #include "Tutorial/StepGameBaseFeatures.h"
@@ -226,7 +227,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // AddStep([] { return new StepDelay(1.0f); });
     AddStep([localBase] { return new StepGameSelectBase(localBase); });
     AddStep([panelActions] { return new StepGameBaseBuildUnitStart(panelActions); });
-
+    AddStep([this] { return new StepGameBaseBuildUnitEnd(mScreen->mHUD); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
