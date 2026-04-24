@@ -15,7 +15,7 @@ namespace game
 {
 
 StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Player * p,
-                                                 const Cell2D & cellEnd)
+                                                 const Cell2D & cellEnd, const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
     , mCellEnd(cellEnd)
@@ -28,7 +28,7 @@ StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Pl
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1250, 300);
+    info->SetPosition(p0.x, p0.y);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_3"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, p]

@@ -3,6 +3,8 @@
 #include "Cell2D.h"
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <sgl/core/Point.h>
+
 namespace game
 {
 
@@ -13,7 +15,7 @@ class StepGameConquerCellsSimple : public TutorialInfoStep
 {
 public:
     StepGameConquerCellsSimple(const IsoMap * isoMap, const Cell2D & cellActionStart,
-                               const Cell2D & cellTarget);
+                               const Cell2D & cellTarget, const sgl::core::Pointd2D & p0);
     ~StepGameConquerCellsSimple();
 
     void Update(float delta) override;

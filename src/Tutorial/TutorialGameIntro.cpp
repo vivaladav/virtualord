@@ -135,8 +135,10 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     //     });
     // AddStep([this, local]
     //     {
+    //         const sgl::core::Pointd2D p0(1250, 300);
+    //         const (1250, 300);
     //         const Cell2D cellEnd(38, 10);
-    //         return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd);
+    //         return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
     //     });
     // AddStep([] { return new StepDelay(0.5f); });
     // AddStep([] { return new StepGameStructConnected; });
@@ -173,13 +175,18 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // AddStep([this] { return new StepGameWaitTurn(mScreen); });
     // AddStep([] { return new StepDelay(1.0f); });
     // // CONNECT MATERIAL GENERATOR
-    // AddStep([] { return new StepGameConnectStructIntro(); });
+    // AddStep([]
+    //     {
+    //         const sgl::core::Pointd2D p0(1250, 200);
+    //         return new StepGameConnectStructIntro(p0);
+    //     });
     // AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     // AddStep([this]
     //     {
+    //         const sgl::core::Pointd2D p0(1250, 250);
     //         const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
     //         const Cell2D target(23, 10);
-    //         return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target);
+    //         return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
     //     });
     // AddStep([this, local]
     //     {
@@ -290,6 +297,29 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });
+    // CONNECT SECOND MATERIAL GENERATOR
+    AddStep([]
+            {
+                const sgl::core::Pointd2D p0(1150, 500);
+                return new StepGameConnectStructIntro(p0);
+            });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this]
+        {
+            const sgl::core::Pointd2D p0(200, 550);
+            const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+            const Cell2D target(41, 19);
+            return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
+        });
+    AddStep([this, local]
+        {
+            const sgl::core::Pointd2D p0(700, 250);
+            const Cell2D cellEnd(41, 11);
+            return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
+        });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([] { return new StepDelay(1.0f); });
+
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });

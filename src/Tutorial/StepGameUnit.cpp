@@ -13,7 +13,7 @@ namespace game
 {
 
 StepGameUnit::StepGameUnit(const Unit * unit)
-    : TutorialInfoStep(550, 200)
+    : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
     , mUnit(unit)
 {
