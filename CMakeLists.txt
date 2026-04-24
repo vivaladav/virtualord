@@ -255,6 +255,8 @@ add_executable(
     src/Tutorial/StepGameBaseBuildUnit.cpp
     src/Tutorial/StepGameBaseBuildUnitIcon.h
     src/Tutorial/StepGameBaseBuildUnitIcon.cpp
+    src/Tutorial/StepGameBaseBuildUnitStart.h
+    src/Tutorial/StepGameBaseBuildUnitStart.cpp
     src/Tutorial/StepGameBaseFeatures.h
     src/Tutorial/StepGameBaseFeatures.cpp
     src/Tutorial/StepGameBuildTower.h
