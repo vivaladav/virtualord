@@ -79,6 +79,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     AddStep([] { return new StepDelay(1.f); });
+
+    // ===== PART 1 =====
     // // INTRO
     // AddStep([] { return new StepGameIntro; });
     // AddStep([] { return new StepDelay(0.3f); });
@@ -135,7 +137,6 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     //     });
     // AddStep([this, local]
     //     {
-    //         const (1250, 300);
     //         const Cell2D cellEnd(38, 10);
     //         const sgl::core::Pointd2D p0(1250, 300);
     //         return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
@@ -267,6 +268,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // // MOVE VIEW BACK TO BASE
     // AddStep([panelTurn] { return new StepGameBackToBase(panelTurn); });
     // AddStep([] { return new StepDelay(1.0f); });
+    // ===== PART 2 =====
     // BUILD SECOND UNIT
     AddStep([localBase] { return new StepGameSelectBase(localBase); });
     AddStep([panelActions] { return new StepGameBaseBuildUnitStart(panelActions); });

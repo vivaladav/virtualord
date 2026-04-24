@@ -81,6 +81,10 @@ void StepGameWallBuildEnd::Update(float)
             mFocusArea->SetVisible(false);
 
             mBuildStarted = true;
+
+            // hide info panel while construction is in progress
+            auto info = GetPanelInfo();
+            info->SetVisible(false);
         }
     }
 }

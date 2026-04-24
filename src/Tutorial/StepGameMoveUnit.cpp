@@ -80,6 +80,10 @@ void StepGameMoveUnit::Update(float)
         {
             mFocusArea->SetBlinking(false);
             mFocusArea->SetVisible(false);
+
+            // hide info panel while move is in progress
+            auto info = GetPanelInfo();
+            info->SetVisible(false);
         }
     }
 }
