@@ -277,6 +277,8 @@ add_executable(
     src/Tutorial/StepGameConquerCellsEnd.cpp
     src/Tutorial/StepGameConquerCellsSimple.h
     src/Tutorial/StepGameConquerCellsSimple.cpp
+    src/Tutorial/StepGameConquerMaterialGenIntro.h
+    src/Tutorial/StepGameConquerMaterialGenIntro.cpp
     src/Tutorial/StepGameConquerStruct.h
     src/Tutorial/StepGameConquerStruct.cpp
     src/Tutorial/StepGameConquerStructSimple.h

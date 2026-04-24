@@ -3,7 +3,6 @@
 #include "GameConstants.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
-#include "Player.h"
 #include "GameObjects/Unit.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -16,12 +15,14 @@
 namespace game
 {
 
-StepGameConquerStructSimple::StepGameConquerStructSimple(const Player * p,
+StepGameConquerStructSimple::StepGameConquerStructSimple(const Unit * unit,
                                                          const GameObject * energyGen,
-                                                         const IsoMap * isoMap)
+                                                         const IsoMap * isoMap,
+                                                         const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
     , mStruct(energyGen)
+    , mUnit(unit)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
@@ -39,11 +40,11 @@ StepGameConquerStructSimple::StepGameConquerStructSimple(const Player * p,
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1300, 200);
+    info->SetPosition(p0.x, p0.y);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT"),
                        TutorialConstants::colorTextAction, 0.f, false, false,
-                       [this, objX, objY, objW, objH, energyGen, isoMap, p]
+                       [this, objX, objY, objW, objH, energyGen, isoMap]
                        {
                            // FOCUS
                            mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
@@ -56,10 +57,6 @@ StepGameConquerStructSimple::StepGameConquerStructSimple(const Player * p,
                            cf->SetButtonToExclude(sgl::core::MouseEvent::BUTTON_LEFT);
                            cf->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
                                                  energyGen->GetRow0(), energyGen->GetCol0());
-
-                           // re-allow unit to move and conquer
-                           mUnit = p->GetUnit(0);
-                           mUnit->SetActiveAction(MOVE);
                        });
 }
 
@@ -72,7 +69,8 @@ void StepGameConquerStructSimple::Update(float)
 {
     if(mStruct->GetFaction() != NO_FACTION)
         SetDone();
-    else if(mUnit != nullptr && mUnit->GetCurrentAction() == CONQUER_STRUCTURE)
+    else if(mUnit != nullptr &&
+            (mUnit->GetCurrentAction() == CONQUER_STRUCTURE || mUnit->GetCurrentAction() == MOVE))
         mFocusArea->SetVisible(false);
 }
 

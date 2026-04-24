@@ -27,7 +27,7 @@ StepGameBackToBase::StepGameBackToBase(const PanelTurnControl * panel)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(800, 150);
+    info->SetPosition(800, 550);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BACK_TO_BASE_1"),
                        TutorialConstants::colorText, 10.f, true, false);

@@ -2,6 +2,8 @@
 
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <sgl/core/Point.h>
+
 namespace game
 {
 
@@ -16,7 +18,8 @@ class Unit;
 class StepGameConquerStructSimple : public TutorialInfoStep
 {
 public:
-    StepGameConquerStructSimple(const Player * p, const GameObject * energyGen, const IsoMap * isoMap);
+    StepGameConquerStructSimple(const Unit * unit, const GameObject * energyGen,
+                                const IsoMap * isoMap, const sgl::core::Pointd2D & p0);
     ~StepGameConquerStructSimple();
 
     void Update(float delta) override;
@@ -25,7 +28,7 @@ private:
     FocusArea * mFocusArea = nullptr;
 
     const GameObject * mStruct = nullptr;
-    Unit * mUnit = nullptr;
+    const Unit * mUnit = nullptr;
 };
 
 } // namespace game
