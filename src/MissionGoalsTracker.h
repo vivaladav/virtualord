@@ -76,7 +76,7 @@ private:
     unsigned int mTotStructuresConquered = 0;
     unsigned int mWallBuilt = 0;
     unsigned int mPlayedTime = 0;
-    unsigned int mPlayedTurns = 0;
+    unsigned int mPlayedTurns = 1;
     unsigned int mSelfDestructed = 0;
 
     bool mMapCompleted = false;

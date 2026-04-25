@@ -290,7 +290,7 @@ void ScreenGame::Update(float delta)
 
     // keep track of time played (while not paused)
     mTimePlayed += delta;
-    mTrackerMG->SetPlayedTime(mTimePlayed);
+    mTrackerMG->SetPlayedTime(GetPlayTimeInSec());
 
     // -- PARTICLES --
     mPartMan->Update(delta);
@@ -2084,7 +2084,8 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
         SetObjectActionCompleted(unit);
 
         // register conquest
-        mTrackerMG->AddStructureConquered(objStruct->GetObjectType());
+        if(player->IsLocal())
+            mTrackerMG->AddStructureConquered(objStruct->GetObjectType());
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/conquer-02.ogg", 250);
