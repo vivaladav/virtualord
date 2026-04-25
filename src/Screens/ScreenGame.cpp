@@ -996,13 +996,17 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
         const unsigned int casualties = mGameMap->GetCasualties(pf);
         const unsigned int played = GetPlayTimeInSec();
 
-        std::cout << "PLAYER FACTION: " << pf << "\n"
+        std::cout << "====== CURRENT GAME STATE ======\n"
+                  << "PLAYER FACTION: " << pf << "\n"
                   << "TURNS PLAYED: " << turns  << "\n"
                   << "TIME PLAYED: " << played  << "\n"
                   << "TERRITORY CONTROLLED: " << territory  << "%\n"
                   << "ENEMIS KILLED: " << killed  << "%\n"
                   << "CASUALTIES: " << casualties  << "%\n"
                   << std::endl;
+
+        mTrackerMG->PrintState();
+        std::cout << "--------------------------------" << std::endl;
     }
 #endif
 }

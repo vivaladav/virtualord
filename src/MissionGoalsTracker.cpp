@@ -9,18 +9,22 @@
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/GameHUD.h"
 
+#ifdef DEV_MODE
+#include <iostream>
+#endif
+
 namespace
 {
 using namespace game;
 
 const Player::Stat resourceIds[] =
 {
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::DIAMONDS,
-        Player::BLOBS,
-        Player::MONEY,
-        Player::RESEARCH,
+    Player::ENERGY,
+    Player::MATERIAL,
+    Player::DIAMONDS,
+    Player::BLOBS,
+    Player::MONEY,
+    Player::RESEARCH,
 };
 
 }
@@ -169,6 +173,27 @@ void MissionGoalsTracker::AddObjectDestroyedByCategory(GameObjectCategoryId cat)
     else
         mCategoriesDestroyed.emplace(cat, 1);
 }
+
+#ifdef DEV_MODE
+void MissionGoalsTracker::PrintState()
+{
+    std::cout << "MissionGoalsTracker::PrintState\n"
+              << "ENERGY: " << mResourcesGained[Player::ENERGY]
+              << " - MATERIAL: " << mResourcesGained[Player::MATERIAL]
+              << " - BLOBS: " << mResourcesGained[Player::BLOBS]
+              << " - DIAMONDS: " << mResourcesGained[Player::DIAMONDS]
+              << " - MONEY: " << mResourcesGained[Player::MONEY]
+              << " - RESEARCH: " << mResourcesGained[Player::RESEARCH] << "\n"
+              << "MINI UNITS CREATED: " << mMiniUnitsCreated
+              << " - UNITS CREATED: " << mUnitsCreated << "\n"
+              << "STRUCTURES BUILT: " << mTotStructuresBuilt
+              << " - STRUCTURES CONQUERED: " << mTotStructuresConquered
+              << " - WALL BUILT: " << mWallBuilt << "\n"
+              << "PLAYED TIME: " << mPlayedTime
+              << " - PLAYED TURNS: " << mPlayedTurns << "\n"
+              << "SELF DESTRUCTED: " << mSelfDestructed << std::endl;
+}
+#endif
 
 bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 {

@@ -45,6 +45,10 @@ public:
     unsigned int GetPlayedTime() const;
     unsigned int GetPlayedTurns() const;
 
+#ifdef DEV_MODE
+    void PrintState();
+#endif
+
 private:
     bool CheckIfGoalCompleted(MissionGoal & g);
 
