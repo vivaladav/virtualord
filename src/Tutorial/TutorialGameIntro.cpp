@@ -9,6 +9,7 @@
 #include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepDelay.h"
+#include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBase.h"
 #include "Tutorial/StepGameBaseBuildUnit.h"
@@ -70,7 +71,10 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 {
     assert(mScreen);
 
-    const Player * local = mScreen->GetGame()->GetLocalPlayer();
+    auto game = mScreen->GetGame();
+
+    const Player * local = game->GetPlayerByIndex(0);
+    const Player * playerAI = game->GetPlayerByIndex(1);
 
     auto panelActions = mScreen->mHUD->GetPanelObjectActions();
     auto panelObj = mScreen->mHUD->GetPanelSelectedObject();
@@ -78,6 +82,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     auto localBase = local->GetBase();
 
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    // make AI idle for now
+    AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), false); });
     AddStep([] { return new StepDelay(1.f); });
 
     // ===== PART 1 =====
