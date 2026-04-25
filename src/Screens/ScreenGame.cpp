@@ -1089,6 +1089,8 @@ void ScreenGame::UpdateAI(float delta)
     PlayerAI * ai = mAiPlayers[turnAI]->GetAI();
     Player * player = ai->GetPlayer();
 
+    ai->Update(delta);
+
     // already doing action -> wait
     if(ai->IsDoingSomething())
         return ;
@@ -1110,8 +1112,8 @@ void ScreenGame::UpdateAI(float delta)
 
     if(player->GetTurnEnergy() < minEnergy)
     {
-        std::cout << "ScreenGame::UpdateAI - AI " << turnAI
-                  << " ==================== END TURN ====================" << std::endl;
+        std::cout << "ScreenGame::UpdateAI - AI " << turnAI << "\n"
+                  << "==================== END TURN ====================" << std::endl;
 
         EndTurn();
         return ;
@@ -1120,6 +1122,7 @@ void ScreenGame::UpdateAI(float delta)
     // make AI decide what to do
     ai->DecideNextAction();
     std::cout << std::endl;
+
     ExecuteAIAction(ai);
 
     std::cout << "----------------------------------------\n" << std::endl;
@@ -1130,7 +1133,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
     // convert player playing turn to AI index
     const int turnAI = mActivePlayerIdx - 1;
 
-    bool done = false;
+    bool finished = false;
 
     Player * player = ai->GetPlayer();
 
@@ -1151,14 +1154,14 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
     };
 
     // execute planned action until one is successful or there's no more actions to do (NOP)
-    while(!done)
+    while(!finished)
     {
         const ActionAI * action = ai->GetNextActionTodo();
 
         if(nullptr == action || AIA_END_TURN == action->type)
         {
-            std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
-                      << " ==================== END TURN ====================" << std::endl;
+            std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI << "\n"
+                      << "==================== END TURN ====================" << std::endl;
 
             if(action != nullptr)
                 delete action;
@@ -1173,8 +1176,10 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             ai->SetActionDone(action);
         };
 
+        // TODO verify if this can be removed for TBS game
         // new higher action for busy object
-        if(action->ObjSrc->IsBusy() && ai->IsActionHighestPriorityForObject(action))
+        if(action->ObjSrc != nullptr && action->ObjSrc->IsBusy() &&
+            ai->IsActionHighestPriorityForObject(action))
         {
             std::cout << "ScreenGame::ExecuteAIAction - AI " << turnAI
                       << " - higher priority action for object" << std::endl;
@@ -1186,6 +1191,17 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
         switch(action->type)
         {
+            case AIA_IDLE_TURN:
+            {
+                auto a = static_cast<const ActionAIIdleTurn *>(action);
+                ai->StartIdleTurn(a->time);
+
+                finished = true;
+
+                PrintAction(turnAI, action, finished, player);
+            }
+            break;
+
             case AIA_UPGRADE_UNIT:
             {
                 auto a = static_cast<const ActionAIUpgradeObject *>(action);
@@ -1194,7 +1210,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 unit->UpgradeLevel(a->attChanges);
 
                 // keep doing things
-                done = false;
+                finished = false;
 
                 PrintAction(turnAI, action, true, player);
             }
@@ -1203,9 +1219,9 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             case AIA_UNIT_ATTACK_ENEMY_UNIT:
             {
                 auto unit = static_cast<Unit *>(action->ObjSrc);
-                done = SetupUnitAttack(unit, action->ObjDst, player, basicOnDone);
+                finished = SetupUnitAttack(unit, action->ObjDst, player, basicOnDone);
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1220,7 +1236,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 // unit and generator are next to each other
                 if(mGameMap->AreObjectsOrthoAdjacent(action->ObjSrc, action->ObjDst))
-                    done = SetupStructureConquest(unit, start, end, player, basicOnDone);
+                    finished = SetupStructureConquest(unit, start, end, player, basicOnDone);
                 // unit needs to move to the generator
                 else
                 {
@@ -1228,10 +1244,10 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                     // failed to find a suitable target
                     if(-1 == target.row || -1 == target.col)
-                        done = false;
+                        finished = false;
                     else
                     {
-                        done = SetupUnitMove(unit, start, target, true,
+                        finished = SetupUnitMove(unit, start, target, true,
                             [this, unit, end, player, basicOnDone](bool successful)
                             {
                                 if(successful)
@@ -1249,7 +1265,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                     }
                 }
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1263,11 +1279,11 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 // unit already on start or next to it
                 if(unitCell == start || (startGM.owner == player &&
                    mGameMap->AreCellsOrthoAdjacent(unitCell, start)))
-                    done = SetupConnectCellsAI(unit, basicOnDone);
+                    finished = SetupConnectCellsAI(unit, basicOnDone);
                 // unit needs to move to the structure
                 else
                 {
-                    done = SetupUnitMove(unit, unitCell, start, true,
+                    finished = SetupUnitMove(unit, unitCell, start, true,
                         [this, unit, start, basicOnDone](bool successful)
                         {
                             if(successful)
@@ -1282,7 +1298,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                         });
                 }
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1290,9 +1306,9 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             {
                 auto a = static_cast<const ActionAINewUnit *>(action);
 
-                done = SetupNewUnit(a->unitType, a->ObjSrc, ai->GetPlayer(), basicOnDone);
+                finished = SetupNewUnit(a->unitType, a->ObjSrc, ai->GetPlayer(), basicOnDone);
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1302,9 +1318,9 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
 
-                done = SetupUnitMove(unit, cellUnit, action->cellDst, true, basicOnDone);
+                finished = SetupUnitMove(unit, cellUnit, action->cellDst, true, basicOnDone);
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1315,9 +1331,9 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
                 const Cell2D cellDest(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
 
-                done = SetupUnitMove(unit, cellUnit, cellDest, true, basicOnDone);
+                finished = SetupUnitMove(unit, cellUnit, cellDest, true, basicOnDone);
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1328,9 +1344,9 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 const Cell2D cellUnit(unit->GetRow0(), unit->GetCol0());
                 const Cell2D cellDest(action->ObjDst->GetRow0(), action->ObjDst->GetCol0());
 
-                done = SetupUnitMove(unit, cellUnit, cellDest, true, basicOnDone);
+                finished = SetupUnitMove(unit, cellUnit, cellDest, true, basicOnDone);
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1343,7 +1359,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                 // unit and generator are next to each other
                 if(mGameMap->AreObjectsOrthoAdjacent(unit, obj))
-                    done = SetupObjectInteraction(unit, obj, player, basicOnDone);
+                    finished = SetupObjectInteraction(unit, obj, player, basicOnDone);
                 // unit needs to move to the generator
                 else
                 {
@@ -1351,10 +1367,10 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                     // failed to find a suitable target
                     if(-1 == target.row || -1 == target.col)
-                        done = false;
+                        finished = false;
                     else
                     {
-                        done = SetupUnitMove(unit, start, target, true,
+                        finished = SetupUnitMove(unit, start, target, true,
                                 [this, unit, obj, player, basicOnDone](bool successful)
                                 {
                                     if(successful)
@@ -1368,7 +1384,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                     }
                 }
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1386,14 +1402,14 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 if(ai->FindWhereToBuildStructure(unit, target))
                 {
                     if(mGameMap->AreCellsAdjacent(cellUnit, target))
-                        done = SetupStructureBuilding(unit, target, player, basicOnDone);
+                        finished = SetupStructureBuilding(unit, target, player, basicOnDone);
                     else
                     {
                         const Cell2D moveTarget = mGameMap->GetAdjacentMoveTarget(cellUnit, target);
 
                         if(moveTarget.row != -1 && moveTarget.col != -1)
                         {
-                            done = SetupUnitMove(unit, cellUnit, moveTarget, true,
+                            finished = SetupUnitMove(unit, cellUnit, moveTarget, true,
                                 [this, unit, target, player, basicOnDone](bool successful)
                                 {
                                     if(successful)
@@ -1415,16 +1431,16 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                                 });
                         }
                         else
-                            done = false;
+                            finished = false;
                     }
                 }
                 else
-                    done = false;
+                    finished = false;
 
-                if(!done)
+                if(!finished)
                     unit->ClearStructureToBuild();
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1442,14 +1458,14 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 if(ai->FindWhereToBuildTower(unit, target))
                 {
                     if(mGameMap->AreCellsAdjacent(cellUnit, target))
-                        done = SetupStructureBuilding(unit, target, player, basicOnDone);
+                        finished = SetupStructureBuilding(unit, target, player, basicOnDone);
                     else
                     {
                         const Cell2D moveTarget = mGameMap->GetAdjacentMoveTarget(cellUnit, target);
 
                         if(moveTarget.row != -1 && moveTarget.col != -1)
                         {
-                            done = SetupUnitMove(unit, cellUnit, moveTarget, true,
+                            finished = SetupUnitMove(unit, cellUnit, moveTarget, true,
                                 [this, unit, target, player, basicOnDone](bool successful)
                                 {
                                     if(successful)
@@ -1471,16 +1487,16 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                                 });
                         }
                         else
-                            done = false;
+                            finished = false;
                     }
                 }
                 else
-                    done = false;
+                    finished = false;
 
-                if(!done)
+                if(!finished)
                     unit->ClearStructureToBuild();
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1490,7 +1506,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                 GameObject * target = action->ObjDst;
 
                 if(unit->IsTargetAttackInRange(target))
-                    done = SetupUnitAttack(unit, target, player, basicOnDone);
+                    finished = SetupUnitAttack(unit, target, player, basicOnDone);
                 else
                 {
                     const Cell2D start(unit->GetRow0(), unit->GetCol0());
@@ -1498,7 +1514,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
 
                     if(mGameMap->FindAttackPosition(unit, action->ObjDst, dest))
                     {
-                        done = SetupUnitMove(unit, start, dest, true,
+                        finished = SetupUnitMove(unit, start, dest, true,
                             [this, unit, target, player, basicOnDone](bool successful)
                             {
                                 if(successful)
@@ -1513,10 +1529,10 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                             });
                     }
                     else
-                        done = false;
+                        finished = false;
                 }
 
-                PrintAction(turnAI, action, done, player);
+                PrintAction(turnAI, action, finished, player);
             }
             break;
 
@@ -1526,7 +1542,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             break;
         }
 
-        if(done)
+        if(finished)
         {
             if(action->ObjSrc != nullptr && action->ObjSrc->IsVisible())
                 CenterCameraOverObject(action->ObjSrc);

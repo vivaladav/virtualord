@@ -15,6 +15,7 @@ enum AIActionType : unsigned int
     AIA_NOP,
 
     AIA_END_TURN,
+    AIA_IDLE_TURN,
     AIA_NEW_UNIT,
     AIA_UNIT_ATTACK_ENEMY_UNIT,
     AIA_UNIT_ATTACK_TREES,
@@ -77,5 +78,11 @@ struct ActionAIUpgradeObject : public ActionAI
     std::vector<int> attChanges;
 };
 
+// ===== ACTION AI IDLE TURN =====
+
+struct ActionAIIdleTurn : public ActionAI
+{
+    float time;
+};
 
 } // namespace game

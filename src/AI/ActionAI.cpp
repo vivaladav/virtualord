@@ -10,6 +10,7 @@ const char * ActionAI::GetTypeStr() const
         "NOP",
 
         "END TURN",
+        "IDLE TURN",
         "NEW UNIT",
         "UNIT ATTACK ENEMY UNIT",
         "UNIT ATTACK TREES",

@@ -46,6 +46,12 @@ public:
     bool FindWhereToBuildStructure(Unit * unit, Cell2D & target) const;
     bool FindWhereToBuildTower(Unit * unit, Cell2D & target) const;
 
+    void SetActive(bool val);
+
+    void StartIdleTurn(float sec);
+
+    void Update(float delta);
+
 private:
     void ClearActionsDone();
     void ClearActionsTodo();
@@ -64,8 +70,11 @@ private:
 
     void AddNewAction(ActionAI * action);
 
+    void SetIdleTurnDone();
+
     // GENERIC ACTIONS
     void AddActionEndTurn();
+    void AddActionIdleTurn(float sec);
     // STRUCTURE ACTIONS
     void AddActionsStructure(Structure * s);
     void AddActionBaseCreateUnit(Structure * base);
@@ -135,6 +144,11 @@ private:
     GameMap * mGm = nullptr;
 
     int mMinPriority = 0;
+
+    float mTimerIdle = 0.f;
+
+    bool mActive = true;
+    bool mIdle = false;
 };
 
 inline void PlayerAI::SetGameMap(GameMap * gm) { mGm = gm; }
@@ -146,6 +160,14 @@ inline bool PlayerAI::IsDoingSomething() const { return !mActionsDoing.empty(); 
 inline void PlayerAI::RegisterActionInProgress(const ActionAI * action)
 {
     mActionsDoing.push_back(action);
+}
+
+inline void PlayerAI::SetActive(bool val) { mActive = val; }
+
+inline void PlayerAI::StartIdleTurn(float sec)
+{
+    mTimerIdle = sec;
+    mIdle = true;
 }
 
 } // namespace game

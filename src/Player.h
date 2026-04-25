@@ -159,7 +159,7 @@ public:
 
     // -- AI --
     bool IsAI() const;
-    PlayerAI * GetAI();
+    PlayerAI * GetAI() const;
     void SetAI(PlayerAI * ai);
 
     bool IsLocal() const;
@@ -348,7 +348,7 @@ inline unsigned int Player::GetTurnsPlayed() const { return mTurnsPlayed; }
 inline void Player::ResetTurnsPlayed(unsigned int start) { mTurnsPlayed = start; }
 
 inline bool Player::IsAI() const { return mAI != nullptr; }
-inline PlayerAI * Player::GetAI() { return mAI; }
+inline PlayerAI * Player::GetAI() const { return mAI; }
 inline void Player::SetAI(PlayerAI * ai) { mAI = ai; }
 
 inline bool Player::IsLocal() const { return nullptr == mAI; }

@@ -37,16 +37,32 @@ PlayerAI::~PlayerAI()
 
 void PlayerAI::DecideNextAction()
 {
+    const bool idleTurnFinished = !mActionsDone.empty() && mActionsDone[0]->type == AIA_IDLE_TURN;
+
     // TODO track time and keep it into consideration when defining priorities
     // TODO use memory pools for actions
     ClearActionsTodo();
     ClearActionsDone();
 
-    PrepareData();
+    if(mActive)
+    {
+        PrepareData();
 
-    UpdatePriorityRange();
+        UpdatePriorityRange();
 
-    AddActions();
+        AddActions();
+    }
+    else
+    {
+        // idle turn just finished -> end turn
+        if(idleTurnFinished)
+            AddActionEndTurn();
+        else
+        {
+            const float idleTime = 1.f;
+            AddActionIdleTurn(idleTime);
+        }
+    }
 }
 
 void PlayerAI::PrepareData()
@@ -438,6 +454,21 @@ bool PlayerAI::FindWhereToBuildTower(Unit * unit, Cell2D & target) const
         return mGm->FindFreeArea(start, rows, cols, radius, target);
 }
 
+void PlayerAI::Update(float delta)
+{
+    if(mIdle)
+    {
+        mTimerIdle -= delta;
+
+        if(mTimerIdle < 0.f)
+        {
+            mIdle = false;
+
+            SetIdleTurnDone();
+        }
+    }
+}
+
 void PlayerAI::ClearActionsDone()
 {
     for(const ActionAI * a : mActionsDone)
@@ -526,6 +557,31 @@ void PlayerAI::AddNewAction(ActionAI * action)
     PushAction(action);
 }
 
+void PlayerAI::SetIdleTurnDone()
+{
+    auto it = mActionsDoing.begin();
+
+    while(it != mActionsDoing.end())
+    {
+        const ActionAI * action = *it;
+
+        if(AIA_IDLE_TURN == action->type)
+        {
+            mActionsDoing.erase(it);
+
+            mActionsDone.push_back(action);
+
+            PrintdActionDebug("PlayerAI::SetIdleTurnDone | IDLE TURN DONE", action);
+
+            return ;
+        }
+        else
+            ++it;
+    }
+
+    std::cout << "PlayerAI::SetIdleTurnDone - can't find action" << std::endl;
+}
+
 void PlayerAI::AddActionEndTurn()
 {
     // create action
@@ -597,6 +653,17 @@ void PlayerAI::AddActionEndTurn()
     // action not added
     else
         delete action;
+}
+
+void PlayerAI::AddActionIdleTurn(float sec)
+{
+    // create action
+    auto action = new ActionAIIdleTurn;
+    action->type = AIA_IDLE_TURN;
+    action->priority = MAX_PRIORITY;
+    action->time = sec;
+
+    PushAction(action);
 }
 
 void PlayerAI::AddActionsStructure(Structure * s)
@@ -2332,6 +2399,11 @@ void PlayerAI::PrintdActionDebug(const char * title, const ActionAI * a)
     {
         auto an = static_cast<const ActionAINewUnit *>(a);
         std::cout << " | UNIT: " << ObjectData::TITLES.at(an->unitType);
+    }
+    else if(AIA_IDLE_TURN == a->type)
+    {
+        auto ait = static_cast<const ActionAIIdleTurn *>(a);
+        std::cout << " | TIME: " << ait->time;
     }
 
     if(a->ObjSrc != nullptr)
