@@ -9,6 +9,22 @@
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/GameHUD.h"
 
+namespace
+{
+using namespace game;
+
+const Player::Stat resourceIds[] =
+{
+        Player::ENERGY,
+        Player::MATERIAL,
+        Player::DIAMONDS,
+        Player::BLOBS,
+        Player::MONEY,
+        Player::RESEARCH,
+};
+
+}
+
 namespace game
 {
 
@@ -21,16 +37,6 @@ MissionGoalsTracker::MissionGoalsTracker(Game * g, Player * p)
     mResourceTrackerIds.assign(NUM_EXTENDED_RESOURCES, 0);
 
     // setup resource trackers
-    const Player::Stat resourceIds[] =
-    {
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::DIAMONDS,
-        Player::BLOBS,
-        Player::MONEY,
-        Player::RESEARCH,
-    };
-
     for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
     {
         const Player::Stat resId = resourceIds[i];
@@ -57,16 +63,6 @@ MissionGoalsTracker::MissionGoalsTracker(Game * g, Player * p)
 
 MissionGoalsTracker::~MissionGoalsTracker()
 {
-    const Player::Stat resourceIds[] =
-    {
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::DIAMONDS,
-        Player::BLOBS,
-        Player::MONEY,
-        Player::RESEARCH,
-    };
-
     for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
     {
         const Player::Stat resId = resourceIds[i];
@@ -185,18 +181,22 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 
     if(gt == MissionGoal::TYPE_COLLECT_BLOBS)
     {
-        if(mResourcesGained[ER_BLOBS] < g.GetQuantity())
+        const auto resId = resourceIds[ER_BLOBS];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_BLOBS] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_COLLECT_DIAMONDS)
     {
-        if(mResourcesGained[ER_DIAMONDS] < g.GetQuantity())
+        const auto resId = resourceIds[ER_DIAMONDS];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_DIAMONDS] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
@@ -384,36 +384,44 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_GAIN_MONEY)
     {
-        if(mResourcesGained[ER_MONEY] < g.GetQuantity())
+        const auto resId = resourceIds[ER_MONEY];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_MONEY] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_GEN_RESEARCH)
     {
-        if(mResourcesGained[Player::RESEARCH] < g.GetQuantity())
+        const auto resId = resourceIds[ER_RESEARCH];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[Player::RESEARCH] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_MINE_ENERGY)
     {
-        if(mResourcesGained[ER_ENERGY] < g.GetQuantity())
+        const auto resId = resourceIds[ER_ENERGY];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_ENERGY] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_MINE_MATERIAL)
     {
-        if(mResourcesGained[ER_MATERIAL] < g.GetQuantity())
+        const auto resId = resourceIds[ER_MATERIAL];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_MATERIAL] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
