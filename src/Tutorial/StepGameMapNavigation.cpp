@@ -16,7 +16,7 @@ StepGameMapNavigation::StepGameMapNavigation()
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1100, 450);
+    info->SetPosition(1100, 400);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MAP_NAVIGATION_1"),
                        TutorialConstants::colorText, 9.f, true, true);
@@ -26,10 +26,6 @@ StepGameMapNavigation::StepGameMapNavigation()
                        TutorialConstants::colorText, 12.f, true, false);
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MAP_NAVIGATION_4"),
                        TutorialConstants::colorText, 10.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MAP_NAVIGATION_5"),
-                       TutorialConstants::colorText, 10.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MAP_NAVIGATION_6"),
-                       TutorialConstants::colorText, 9.f, true, false);
 
     info->SetFunctionOnFinished([this]
     {

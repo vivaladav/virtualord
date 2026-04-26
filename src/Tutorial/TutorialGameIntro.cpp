@@ -406,6 +406,10 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
                 const Cell2D target(17, 18);
                 return new StepGameAddEnemy(mScreen->mGameMap, playerAI, ObjectData::TYPE_UNIT_SOLDIER1, target, true);
             });
+    AddStep([this] { return new StepGameClearSelection(mScreen); });
+    // EXPLAIN CAMERA MOVE AND MOVE TO TOWER 1
+    AddStep([] { return new StepGameMapNavigation; });
+    AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
@@ -413,10 +417,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     //AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
     //AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
 
-    // TODO re-add map navigation
-    // AddStep([this] { return new StepGameClearSelection(mScreen); });
-    // AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
-    // AddStep([] { return new StepGameMapNavigation; });
+
 }
 
 TutorialGameIntro::~TutorialGameIntro()
