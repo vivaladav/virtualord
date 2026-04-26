@@ -5,11 +5,13 @@
 #include "GameMap.h"
 #include "Player.h"
 #include "GameObjects/Base.h"
+#include "GameObjects/ObjectData.h"
 #include "Indicators/OverlayCellConquest.h"
 #include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepAISetActive.h"
+#include "Tutorial/StepGameAddEnemy.h"
 #include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBase.h"
 #include "Tutorial/StepGameBaseBuildUnit.h"
@@ -75,7 +77,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     auto game = mScreen->GetGame();
 
     const Player * local = game->GetPlayerByIndex(0);
-    const Player * playerAI = game->GetPlayerByIndex(1);
+    Player * playerAI = game->GetPlayerByIndex(1);
 
     auto panelActions = mScreen->mHUD->GetPanelObjectActions();
     auto panelObj = mScreen->mHUD->GetPanelSelectedObject();
@@ -226,7 +228,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // // BUILD DEFENSIVE TOWER
     // AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
     // AddStep([this] { return new StepGameBuildTower(mScreen->mHUD); });
-    // AddStep([] { return new StepDelay(1.0f); });
+    // AddStep([] { return new StepDelay(0.5f); });
     // AddStep([this, local]
     //     {
     //         const Cell2D target(17, 16);
@@ -358,7 +360,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // BUILD DEFENSIVE TOWER
     AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
     AddStep([this] { return new StepGameBuildTower(mScreen->mHUD); });
-    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local]
         {
             const Cell2D target(37, 26);
@@ -390,12 +392,17 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
+    // ADD ENEMY NEAR TOWER 1
     AddStep([]
             {
                 const sgl::core::Pointd2D p0(1100, 350);
                 return new StepGameEnemyIntro(p0);
-        });
-
+            });
+    AddStep([this, playerAI]
+            {
+                const Cell2D target(17, 18);
+                return new StepGameAddEnemy(mScreen->mGameMap, playerAI, ObjectData::TYPE_UNIT_SOLDIER1, target, true);
+            });
 
 
     // TODO re-add mission goals

@@ -249,6 +249,8 @@ add_executable(
     src/Tutorial/StepAISetActive.cpp
     src/Tutorial/StepDelay.h
     src/Tutorial/StepDelay.cpp
+    src/Tutorial/StepGameAddEnemy.h
+    src/Tutorial/StepGameAddEnemy.cpp
     src/Tutorial/StepGameBackToBase.h
     src/Tutorial/StepGameBackToBase.cpp
     src/Tutorial/StepGameBase.h
