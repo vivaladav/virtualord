@@ -784,7 +784,7 @@ void GameMap::InitCities()
 void GameMap::RegisterEnemyKill(GameObject * killer, GameObject * victim)
 {
     // TODO assign experience points based on kill maybe
-    const int experienceKill = 100;
+    const int experienceKill = 25;
     killer->SumExperience(experienceKill);
 
     ++mEnemiesKilled[killer->GetFaction()];

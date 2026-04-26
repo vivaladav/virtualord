@@ -299,6 +299,8 @@ add_executable(
     src/Tutorial/StepGameEndTurnSimple.cpp
     src/Tutorial/StepGameEnemyIntro.h
     src/Tutorial/StepGameEnemyIntro.cpp
+    src/Tutorial/StepGameEnemyKilled.h
+    src/Tutorial/StepGameEnemyKilled.cpp
     src/Tutorial/StepGameEnergyRegeneration.h
     src/Tutorial/StepGameEnergyRegeneration.cpp
     src/Tutorial/StepGameIntro.h
@@ -347,6 +349,8 @@ add_executable(
     src/Tutorial/StepGameUpgradeIntro.cpp
     src/Tutorial/StepGameUpgradeUnit.h
     src/Tutorial/StepGameUpgradeUnit.cpp
+    src/Tutorial/StepGameWaitEnemyKilled.h
+    src/Tutorial/StepGameWaitEnemyKilled.cpp
     src/Tutorial/StepGameWaitTurn.h
     src/Tutorial/StepGameWaitTurn.cpp
     src/Tutorial/StepGameWallBuildEnd.h

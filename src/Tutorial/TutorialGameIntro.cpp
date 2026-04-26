@@ -37,6 +37,7 @@
 #include "Tutorial/StepGameEndTurnIntro.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameEnemyIntro.h"
+#include "Tutorial/StepGameEnemyKilled.h"
 #include "Tutorial/StepGameEnergyRegeneration.h"
 #include "Tutorial/StepGameIntro.h"
 #include "Tutorial/StepGameMapNavigation.h"
@@ -61,6 +62,7 @@
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameUpgradeIntro.h"
 #include "Tutorial/StepGameUpgradeUnit.h"
+#include "Tutorial/StepGameWaitEnemyKilled.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/StepGameWallBuildEnd.h"
 #include "Tutorial/StepGameWallBuildIcon.h"
@@ -233,12 +235,12 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameMoveCamera(400, -100); });
     // UPGRADE UNIT
-    AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions); });
-    AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD); });
-    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
-    AddStep([] { return new StepDelay(1.0f); });
-    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([] { return new StepDelay(1.0f); });
+    // AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions); });
+    // AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD); });
+    // AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    // AddStep([] { return new StepDelay(1.0f); });
+    // AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    // AddStep([] { return new StepDelay(1.0f); });
     // BUILD DEFENSIVE TOWER 1
     AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
     AddStep([this] { return new StepGameBuildTower(mScreen->mHUD); });
@@ -279,21 +281,21 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(1.0f); });
     // BUILD WALL FROM TOWER
-    AddStep([] { return new StepGameWallBuildIntro(); });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
-    AddStep([this]
-            {
-                const Cell2D & cellStart = mScreen->mOverlayWall->GetCellStart();
-                const Cell2D target(17, 15);
-                return new StepGameWallBuildStart(mScreen->mIsoMap, cellStart, target);
-            });
-    AddStep([this, local]
-            {
-                const Cell2D cellEnd(14, 15);
-                return new StepGameWallBuildEnd(mScreen->mIsoMap, local, cellEnd);
-            });
-    AddStep([] { return new StepDelay(0.5f); });
+    // AddStep([] { return new StepGameWallBuildIntro(); });
+    // AddStep([] { return new StepDelay(0.5f); });
+    // AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
+    // AddStep([this]
+    //         {
+    //             const Cell2D & cellStart = mScreen->mOverlayWall->GetCellStart();
+    //             const Cell2D target(17, 15);
+    //             return new StepGameWallBuildStart(mScreen->mIsoMap, cellStart, target);
+    //         });
+    // AddStep([this, local]
+    //         {
+    //             const Cell2D cellEnd(14, 15);
+    //             return new StepGameWallBuildEnd(mScreen->mIsoMap, local, cellEnd);
+    //         });
+    // AddStep([] { return new StepDelay(0.5f); });
     // MOVE VIEW BACK TO BASE
     AddStep([panelTurn] { return new StepGameBackToBase(panelTurn); });
     AddStep([] { return new StepDelay(1.0f); });
@@ -386,27 +388,28 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });
     // // CONNECT DEFENSIVE TOWERs
-    AddStep([]
-        {
-            const sgl::core::Pointd2D p0(1100, 450);
-            return new StepGameConnectStructIntro(p0);
-        });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
-    AddStep([this]
-        {
-            const sgl::core::Pointd2D p0(1100, 450);
-            const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
-            const Cell2D target(37, 25);
-            return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
-        });
-    AddStep([this, local]
-        {
-            const auto unit = local->GetUnit(1);
-            const Cell2D cellEnd(40, 21);
-            const sgl::core::Pointd2D p0(1100, 450);
-            return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
-        });
-    AddStep([] { return new StepDelay(0.5f); });
+    // AddStep([]
+    //     {
+    //         const sgl::core::Pointd2D p0(1100, 450);
+    //         return new StepGameConnectStructIntro(p0);
+    //     });
+    // AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    // AddStep([this]
+    //     {
+    //         const sgl::core::Pointd2D p0(1100, 450);
+    //         const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+    //         const Cell2D target(37, 25);
+    //         return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
+    //     });
+    // AddStep([this, local]
+    //     {
+    //         const auto unit = local->GetUnit(1);
+    //         const Cell2D cellEnd(40, 21);
+    //         const sgl::core::Pointd2D p0(1100, 450);
+    //         return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
+    //     });
+    // AddStep([] { return new StepDelay(0.5f); });
+    // ===== PART 3 =====
     // ADD ENEMY NEAR TOWER 1
     AddStep([]
             {
@@ -433,9 +436,9 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this, local]
             {
                 const GameObject * tower = GetObjectInCell(cellDT1);
-                const auto obj = tower->GetIsoObject();
-                const int areaHalfW = 360;
-                const int areaHalfH = 205;
+                const IsoObject * obj = tower->GetIsoObject();
+                const int areaHalfW = 540;
+                const int areaHalfH = 270;
                 const int tlX = obj->GetX() - areaHalfW;
                 const int tlY = obj->GetY() - areaHalfH;
                 const int brX = obj->GetX() + areaHalfW;
@@ -446,10 +449,16 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
                 return new StepGameTestCameraFocus(cam, tlX, tlY, brX, brY);
             });
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    // ENEMY KILL
     AddStep([] { return new StepGameTowerIntro; });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([this] { return new StepGameWaitTurn(mScreen); });
-    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this]
+            {
+                GameObject * enemy = GetObjectInCell(cellEnemy);
+                return new StepGameWaitEnemyKilled(enemy, mScreen->mGameMap);
+            });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([this] { return new StepGameEnemyKilled(); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
