@@ -33,6 +33,7 @@
 #include "Tutorial/StepGameEndTurn.h"
 #include "Tutorial/StepGameEndTurnIntro.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
+#include "Tutorial/StepGameEnemyIntro.h"
 #include "Tutorial/StepGameEnergyRegeneration.h"
 #include "Tutorial/StepGameIntro.h"
 #include "Tutorial/StepGameMapNavigation.h"
@@ -389,6 +390,12 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             return new StepGameConquerCellsEnd(mScreen->mIsoMap, local, cellEnd, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
+    AddStep([]
+            {
+                const sgl::core::Pointd2D p0(1100, 350);
+                return new StepGameEnemyIntro(p0);
+        });
+
 
 
     // TODO re-add mission goals

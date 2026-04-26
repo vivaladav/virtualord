@@ -289,14 +289,16 @@ add_executable(
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h
     src/Tutorial/StepGameEnableCamera.cpp
-    src/Tutorial/StepGameEnergyRegeneration.h
-    src/Tutorial/StepGameEnergyRegeneration.cpp
     src/Tutorial/StepGameEndTurn.h
     src/Tutorial/StepGameEndTurn.cpp
     src/Tutorial/StepGameEndTurnIntro.h
     src/Tutorial/StepGameEndTurnIntro.cpp
     src/Tutorial/StepGameEndTurnSimple.h
     src/Tutorial/StepGameEndTurnSimple.cpp
+    src/Tutorial/StepGameEnemyIntro.h
+    src/Tutorial/StepGameEnemyIntro.cpp
+    src/Tutorial/StepGameEnergyRegeneration.h
+    src/Tutorial/StepGameEnergyRegeneration.cpp
     src/Tutorial/StepGameIntro.h
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/StepGameMapNavigation.h
