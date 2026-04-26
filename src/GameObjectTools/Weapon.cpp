@@ -218,6 +218,8 @@ float Weapon::GetBonusOnAttackMode(float prob) const
         const float bonus = 0.2;
         return prob * bonus;
     }
+    else if(mAttackMode == ATT_PERFECT_SHOT)
+        return 100.f;
     else
         return 0.f;
 }

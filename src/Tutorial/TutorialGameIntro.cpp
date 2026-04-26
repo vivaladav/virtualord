@@ -7,7 +7,6 @@
 #include "Player.h"
 #include "GameObjects/Base.h"
 #include "GameObjects/ObjectData.h"
-#include "GameObjects/Unit.h"
 #include "Indicators/OverlayCellConquest.h"
 #include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
@@ -49,6 +48,8 @@
 #include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameMoveUnitToCorner.h"
 #include "Tutorial/StepGameSelectBase.h"
+#include "Tutorial/StepGameSetObjectAttackMode.h"
+#include "Tutorial/StepGameSetObjectMaxHealth.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameStructConnected.h"
@@ -69,6 +70,18 @@
 #include "Tutorial/TutorialConstants.h"
 
 #include <cassert>
+
+namespace
+{
+using namespace game;
+
+const Cell2D cellDT1(17, 16);
+const Cell2D cellDT2(37, 26);
+const Cell2D cellEnemy(17, 18);
+const Cell2D cellMatGen1(22, 10);
+const Cell2D cellMatGen2(42, 21);
+
+}
 
 namespace game
 {
@@ -124,11 +137,10 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // CONQUER ENERGY GENERATOR
     AddStep([this, local]
             {
-                const int genR = 31;
-                const int genC = 11;
-                const GameMapCell gmc = mScreen->mGameMap->GetCell(genR, genC);
+                const Cell2D cellGen(31, 11);
+                const GameObject * gen = GetObjectInCell(cellGen);
 
-                return new StepGameConquerStruct(local, gmc.objTop, mScreen->mIsoMap);
+                return new StepGameConquerStruct(local, gen, mScreen->mIsoMap);
             });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
@@ -161,11 +173,9 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // CONQUER MATERIAL GENERATOR
     AddStep([this, local]
         {
-            const int genR = 22;
-            const int genC = 10;
-            const GameMapCell gmc = mScreen->mGameMap->GetCell(genR, genC);
+            const GameObject * gen = GetObjectInCell(cellMatGen1);
 
-            return new StepGameMaterialGenerator(gmc.objTop);
+            return new StepGameMaterialGenerator(gen);
         });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
@@ -175,12 +185,10 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this, local]
         {
             const auto unit = local->GetUnit(0);
-            const int genR = 22;
-            const int genC = 10;
-            const GameMapCell gmc = mScreen->mGameMap->GetCell(genR, genC);
+            const GameObject * gen = GetObjectInCell(cellMatGen1);
             const sgl::core::Pointd2D p0(1300, 200);
 
-            return new StepGameConquerStructSimple(unit, gmc.objTop, mScreen->mIsoMap, p0);
+            return new StepGameConquerStructSimple(unit, gen, mScreen->mIsoMap, p0);
         });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
@@ -231,16 +239,20 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepDelay(1.0f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(1.0f); });
-    // BUILD DEFENSIVE TOWER
+    // BUILD DEFENSIVE TOWER 1
     AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
     AddStep([this] { return new StepGameBuildTower(mScreen->mHUD); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local]
         {
             const auto unit = local->GetUnit(0);
-            const Cell2D target(17, 16);
-            return new StepGameBuildTowerEnd(mScreen->mIsoMap, unit, target);
+            return new StepGameBuildTowerEnd(mScreen->mIsoMap, unit, cellDT1);
         });
+    AddStep([this]
+            {
+                GameObject * tower = GetObjectInCell(cellDT1);
+                return new StepGameSetObjectAttackMode(tower, ATT_PERFECT_SHOT);
+            });
     AddStep([] { return new StepDelay(1.0f); });
     // CONNECT DEFENSIVE TOWER
     AddStep([]
@@ -304,22 +316,18 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepGameMoveCamera(500, 200); });
     AddStep([this, local]
         {
-            const int genR = 42;
-            const int genC = 21;
-            const GameMapCell gmc = mScreen->mGameMap->GetCell(genR, genC);
+            const GameObject * gen = GetObjectInCell(cellMatGen2);
 
-            return new StepGameConquerMaterialGenIntro(gmc.objTop);
+            return new StepGameConquerMaterialGenIntro(gen);
         });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
     AddStep([this, local]
         {
             const auto unit = local->GetUnit(1);
-            const int genR = 42;
-            const int genC = 21;
-            const GameMapCell gmc = mScreen->mGameMap->GetCell(genR, genC);
+            const GameObject * gen = GetObjectInCell(cellMatGen2);
             const sgl::core::Pointd2D p0(1150, 450);
 
-            return new StepGameConquerStructSimple(unit, gmc.objTop, mScreen->mIsoMap, p0);
+            return new StepGameConquerStructSimple(unit, gen, mScreen->mIsoMap, p0);
         });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
@@ -370,8 +378,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this, local]
         {
             const auto unit = local->GetUnit(1);
-            const Cell2D target(37, 26);
-            return new StepGameBuildTowerEnd(mScreen->mIsoMap, unit, target);
+            return new StepGameBuildTowerEnd(mScreen->mIsoMap, unit, cellDT2);
         });
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     AddStep([] { return new StepDelay(1.0f); });
@@ -408,8 +415,15 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             });
     AddStep([this, playerAI]
             {
-                const Cell2D target(17, 18);
-                return new StepGameAddEnemy(mScreen->mGameMap, playerAI, ObjectData::TYPE_UNIT_SOLDIER1, target, true);
+                return new StepGameAddEnemy(mScreen->mGameMap, playerAI,
+                                            ObjectData::TYPE_UNIT_SOLDIER1, cellEnemy, true);
+            });
+    AddStep([this]
+            {
+                const float maxHealth = 50.f;
+                GameObject * enemy = GetObjectInCell(cellEnemy);
+
+                return new StepGameSetObjectMaxHealth(enemy, maxHealth);
             });
     AddStep([this] { return new StepGameClearSelection(mScreen); });
     // EXPLAIN CAMERA MOVE AND MOVE TO TOWER 1
@@ -418,8 +432,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
     AddStep([this, local]
             {
-                const auto unit = local->GetUnit(0);
-                const auto obj = unit->GetIsoObject();
+                const GameObject * tower = GetObjectInCell(cellDT1);
+                const auto obj = tower->GetIsoObject();
                 const int areaHalfW = 360;
                 const int areaHalfH = 205;
                 const int tlX = obj->GetX() - areaHalfW;
@@ -431,6 +445,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 
                 return new StepGameTestCameraFocus(cam, tlX, tlY, brX, brY);
             });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     AddStep([] { return new StepGameTowerIntro; });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
@@ -447,6 +462,18 @@ TutorialGameIntro::~TutorialGameIntro()
 {
     // re-enable camera in game in case tutorial is quit
     mScreen->mCamController->SetEnabled(true);
+}
+
+GameObject * TutorialGameIntro::GetObjectInCell(const Cell2D & cell) const
+{
+    const GameMapCell gmc = mScreen->mGameMap->GetCell(cell.row, cell.col);
+    return gmc.objTop;
+}
+
+GameObject *TutorialGameIntro::GetObjectInCell(int r, int c) const
+{
+    const GameMapCell gmc = mScreen->mGameMap->GetCell(r, c);
+    return gmc.objTop;
 }
 
 } // namespace game

@@ -256,6 +256,8 @@ private:
     static unsigned int counter;
 
 private:
+    friend class StepGameSetObjectMaxHealth;
+
     std::map<unsigned int, std::function<void()>> mOnValueChanged;
 
     std::unordered_map<ObjAttId, int> mAttributes;

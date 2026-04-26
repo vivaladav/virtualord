@@ -321,6 +321,10 @@ add_executable(
     src/Tutorial/StepGameMoveUnitToCorner.cpp
     src/Tutorial/StepGameSelectBase.h
     src/Tutorial/StepGameSelectBase.cpp
+    src/Tutorial/StepGameSetObjectAttackMode.h
+    src/Tutorial/StepGameSetObjectAttackMode.cpp
+    src/Tutorial/StepGameSetObjectMaxHealth.h
+    src/Tutorial/StepGameSetObjectMaxHealth.cpp
     src/Tutorial/StepGameSetSelectionActiveAction.h
     src/Tutorial/StepGameSetSelectionActiveAction.cpp
     src/Tutorial/StepGameSetSelectionDefaultAction.h
