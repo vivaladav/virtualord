@@ -313,6 +313,8 @@ add_executable(
     src/Tutorial/StepGameMissionGoalsDialog.cpp
     src/Tutorial/StepGameMoveCamera.h
     src/Tutorial/StepGameMoveCamera.cpp
+    src/Tutorial/StepGameMoveToTower.h
+    src/Tutorial/StepGameMoveToTower.cpp
     src/Tutorial/StepGameMoveUnit.h
     src/Tutorial/StepGameMoveUnit.cpp
     src/Tutorial/StepGameMoveUnitToCorner.h
@@ -327,6 +329,10 @@ add_executable(
     src/Tutorial/StepGameStructConnected.cpp
     src/Tutorial/StepGameStructDisconnected.h
     src/Tutorial/StepGameStructDisconnected.cpp
+    src/Tutorial/StepGameTestCameraFocus.h
+    src/Tutorial/StepGameTestCameraFocus.cpp
+    src/Tutorial/StepGameTowerIntro.h
+    src/Tutorial/StepGameTowerIntro.cpp
     src/Tutorial/StepGameTurnEnergy.h
     src/Tutorial/StepGameTurnEnergy.cpp
     src/Tutorial/StepGameUnit.h

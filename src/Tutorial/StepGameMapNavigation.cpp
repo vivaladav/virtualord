@@ -9,7 +9,7 @@ namespace game
 {
 
 StepGameMapNavigation::StepGameMapNavigation()
-    : TutorialInfoStep(750, 400)
+    : TutorialInfoStep(750, 300)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 

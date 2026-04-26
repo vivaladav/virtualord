@@ -3,9 +3,11 @@
 #include "CameraMapController.h"
 #include "Game.h"
 #include "GameMap.h"
+#include "IsoObject.h"
 #include "Player.h"
 #include "GameObjects/Base.h"
 #include "GameObjects/ObjectData.h"
+#include "GameObjects/Unit.h"
 #include "Indicators/OverlayCellConquest.h"
 #include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
@@ -43,6 +45,7 @@
 #include "Tutorial/StepGameMissionGoalsIcon.h"
 #include "Tutorial/StepGameMissionGoalsDialog.h"
 #include "Tutorial/StepGameMoveCamera.h"
+#include "Tutorial/StepGameMoveToTower.h"
 #include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameMoveUnitToCorner.h"
 #include "Tutorial/StepGameSelectBase.h"
@@ -50,6 +53,8 @@
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameStructConnected.h"
 #include "Tutorial/StepGameStructDisconnected.h"
+#include "Tutorial/StepGameTestCameraFocus.h"
+#include "Tutorial/StepGameTowerIntro.h"
 #include "Tutorial/StepGameTurnEnergy.h"
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
@@ -409,15 +414,33 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this] { return new StepGameClearSelection(mScreen); });
     // EXPLAIN CAMERA MOVE AND MOVE TO TOWER 1
     AddStep([] { return new StepGameMapNavigation; });
+    AddStep([] { return new StepGameMoveToTower; });
     AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
+    AddStep([this, local]
+            {
+                const auto unit = local->GetUnit(0);
+                const auto obj = unit->GetIsoObject();
+                const int areaHalfW = 360;
+                const int areaHalfH = 205;
+                const int tlX = obj->GetX() - areaHalfW;
+                const int tlY = obj->GetY() - areaHalfH;
+                const int brX = obj->GetX() + areaHalfW;
+                const int brY = obj->GetY() + areaHalfH;
+
+                const auto cam = mScreen->mCamController->GetCamera();
+
+                return new StepGameTestCameraFocus(cam, tlX, tlY, brX, brY);
+            });
+    AddStep([] { return new StepGameTowerIntro; });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(0.5f); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
     //AddStep([] { return new StepDelay(0.5f); });
     //AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
     //AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
-
-
 }
 
 TutorialGameIntro::~TutorialGameIntro()
