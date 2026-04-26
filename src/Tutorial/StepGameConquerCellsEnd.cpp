@@ -1,7 +1,6 @@
 #include "Tutorial/StepGameConquerCellsEnd.h"
 
 #include "IsoMap.h"
-#include "Player.h"
 #include "GameObjects/Unit.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -14,10 +13,11 @@
 namespace game
 {
 
-StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Player * p,
+StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Unit * unit,
                                                  const Cell2D & cellEnd, const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
+    , mUnit(unit)
     , mCellEnd(cellEnd)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -31,7 +31,7 @@ StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Pl
     info->SetPosition(p0.x, p0.y);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_3"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, p]
+                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap]
                        {
                            const auto pos = isoMap->GetCellPosition(mCellEnd.row, mCellEnd.col);
 
@@ -53,8 +53,6 @@ StepGameConquerCellsEnd::StepGameConquerCellsEnd(const IsoMap * isoMap, const Pl
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                            cf->SetClickableCell(isoMap, mCellEnd.row, mCellEnd.col);
                            cf->SetButtonToExclude(sgl::core::MouseEvent::BUTTON_LEFT);
-
-                           mUnit = p->GetUnit(0);
                        });
 }
 
@@ -65,20 +63,17 @@ StepGameConquerCellsEnd::~StepGameConquerCellsEnd()
 
 void StepGameConquerCellsEnd::Update(float)
 {
-    if(mUnit != nullptr)
+    if(mUnit->GetRow0() == mCellEnd.row && mUnit->GetCol0() == mCellEnd.col &&
+        mUnit->GetCurrentAction() == IDLE)
+        SetDone();
+    else if(mUnit->GetCurrentAction() == GameObjectActionType::CONQUER_CELL)
     {
-        if(mUnit->GetRow0() == mCellEnd.row && mUnit->GetCol0() == mCellEnd.col &&
-           mUnit->GetCurrentAction() == IDLE)
-            SetDone();
-        else if(mUnit->GetCurrentAction() == GameObjectActionType::CONQUER_CELL)
-        {
-            mFocusArea->SetBlinking(false);
-            mFocusArea->SetVisible(false);
+        mFocusArea->SetBlinking(false);
+        mFocusArea->SetVisible(false);
 
-            // hide info panel while conquest is in progress
-            auto info = GetPanelInfo();
-            info->SetVisible(false);
-        }
+        // hide info panel while conquest is in progress
+        auto info = GetPanelInfo();
+        info->SetVisible(false);
     }
 }
 

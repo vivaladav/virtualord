@@ -13,10 +13,11 @@
 namespace game
 {
 
-StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Player * p,
+StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit * unit,
                                              const Cell2D & cell)
     : TutorialInfoStep(600, 200)
     , mFocusArea(new FocusArea)
+    , mUnit(unit)
     , mTarget(cell)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -30,7 +31,7 @@ StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Player
     info->SetPosition(900, 250);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_5"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, p]
+                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, unit]
                        {
                            const auto pos = isoMap->GetCellPosition(mTarget.row, mTarget.col);
 
@@ -51,8 +52,6 @@ StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Player
                            auto cf = GetClickFilter();
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                            cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);
-
-                           mUnit = p->GetUnit(0);
                        });
 }
 
@@ -63,9 +62,6 @@ StepGameBuildTowerEnd::~StepGameBuildTowerEnd()
 
 void StepGameBuildTowerEnd::Update(float)
 {
-    if(mUnit == nullptr)
-        return ;
-
     if(mBuildStarted)
     {
         if(mUnit->GetCurrentAction() == IDLE)

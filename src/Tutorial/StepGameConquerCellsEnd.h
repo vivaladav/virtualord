@@ -10,13 +10,12 @@ namespace game
 
 class FocusArea;
 class IsoMap;
-class Player;
 class Unit;
 
 class StepGameConquerCellsEnd : public TutorialInfoStep
 {
 public:
-    StepGameConquerCellsEnd(const IsoMap * isoMap, const Player * p, const Cell2D & cellEnd,
+    StepGameConquerCellsEnd(const IsoMap * isoMap, const Unit * unit, const Cell2D & cellEnd,
                             const sgl::core::Pointd2D & p0);
     ~StepGameConquerCellsEnd();
 
@@ -25,7 +24,7 @@ public:
 private:
     FocusArea * mFocusArea = nullptr;
 
-    Unit * mUnit = nullptr;
+    const Unit * mUnit = nullptr;
 
     Cell2D mCellEnd;
 };

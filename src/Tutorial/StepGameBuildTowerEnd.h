@@ -15,7 +15,7 @@ class Unit;
 class StepGameBuildTowerEnd : public TutorialInfoStep
 {
 public:
-    StepGameBuildTowerEnd(const IsoMap * isoMap, const Player * p, const Cell2D & cell);
+    StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit * unit, const Cell2D & cell);
     ~StepGameBuildTowerEnd();
 
     void Update(float delta) override;
@@ -23,7 +23,7 @@ public:
 private:
     FocusArea * mFocusArea = nullptr;
 
-    Unit * mUnit = nullptr;
+    const Unit * mUnit = nullptr;
 
     const Cell2D mTarget;
 
