@@ -97,7 +97,7 @@ float Weapon::GetProbabilityHit(const GameObject * target) const
     const float finalProb = fixedProb + variableProb;
 
     // bonus/malus based on attack mode
-    float bonusProb = GetBonusOnAttackMode(finalProb);
+    float bonusProb = GetBonusHitOnAttackMode(finalProb);
     const float retProb = finalProb + bonusProb;
 
     // clamp
@@ -136,7 +136,7 @@ float Weapon::GetProbabilityFatalHit(const GameObject * target) const
                             (mMaxProbabilityFatal * weightAccuracy * multAccuracy);
 
     // bonus/malus based on attack mode
-    const float bonusProb = GetBonusOnAttackMode(finalProb);
+    const float bonusProb = GetBonusFatalHitOnAttackMode(finalProb);
     const float retProb = finalProb + bonusProb;
 
     // clamp
@@ -201,7 +201,7 @@ bool Weapon::Update(float delta)
     return true;
 }
 
-float Weapon::GetBonusOnAttackMode(float prob) const
+float Weapon::GetBonusHitOnAttackMode(float prob) const
 {
     if(mAttackMode == ATT_QUICK_SHOT)
     {
@@ -220,6 +220,27 @@ float Weapon::GetBonusOnAttackMode(float prob) const
     }
     else if(mAttackMode == ATT_PERFECT_SHOT)
         return 100.f;
+    else
+        return 0.f;
+}
+
+float Weapon::GetBonusFatalHitOnAttackMode(float prob) const
+{
+    if(mAttackMode == ATT_QUICK_SHOT)
+    {
+        const float bonus = -0.1;
+        return prob * bonus;
+    }
+    else if(mAttackMode == ATT_BURST_SHOT)
+    {
+        const float bonus = -0.2;
+        return prob * bonus;
+    }
+    else if(mAttackMode == ATT_AIMED_SHOT)
+    {
+        const float bonus = 0.25;
+        return prob * bonus;
+    }
     else
         return 0.f;
 }

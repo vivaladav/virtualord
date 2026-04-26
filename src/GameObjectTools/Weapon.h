@@ -69,7 +69,8 @@ protected:
     GameObject * mTarget = nullptr;
 
 private:
-    float GetBonusOnAttackMode(float prob) const;
+    float GetBonusHitOnAttackMode(float prob) const;
+    float GetBonusFatalHitOnAttackMode(float prob) const;
 
     virtual void OnShoot(float x0, float y0) = 0;
 
