@@ -365,7 +365,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
         });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(0.5f); });
     // MOVE UNIT TO VISIBLE CORNER
     AddStep([this, local]
             {
@@ -469,6 +470,9 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // AddStep([this] { return new StepGameEnemyKilled(); });
     // AddStep([this] { return new StepGameQuickUnitButton(mScreen->mHUD, indUnit2); });
     // ===== PART 4 =====
+    // TODO remove next 2 steps when trying full tutorial
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
     // BUILD WALL FROM TOWER
     AddStep([] { return new StepGameWallBuildIntro(); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -489,11 +493,11 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b"); });
     AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD, false); });
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
-    AddStep([] { return new StepDelay(1.0f); });
-    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([] { return new StepDelay(1.0f); });
-    // CONQUER SECOND ENERGY GENERATOR
     AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONQUER SECOND ENERGY GENERATOR
     //AddStep([] { return new StepGameMoveCamera(500, 200); });
     AddStep([this, local]
             {
