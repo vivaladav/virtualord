@@ -84,7 +84,7 @@ const Cell2D cellDT2(37, 26);
 const Cell2D cellEnemy(17, 18);
 const Cell2D cellMatGen1(22, 10);
 const Cell2D cellMatGen2(42, 21);
-const Cell2D cellEneGen2(29, 25);
+const Cell2D cellEneGen2(29, 26);
 
 constexpr unsigned int indUnit1 = 0;
 // TODO change this back to 1 when testing full tutorial
