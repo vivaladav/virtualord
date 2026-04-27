@@ -524,6 +524,28 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     // BACK TO UNIT 2
     AddStep([this] { return new StepGameQuickUnitButton(mScreen->mHUD, indUnit2); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONNECT SECOND ENERGY GENERATOR
+    AddStep([]
+            {
+                const sgl::core::Pointd2D p0(1250, 350);
+                return new StepGameConnectStructIntro(p0);
+            });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this]
+            {
+                const sgl::core::Pointd2D p0(1100, 350);
+                const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+                const Cell2D target(30, 26);
+                return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
+            });
+    AddStep([this, local]
+            {
+                const auto unit = local->GetUnit(indUnit2);
+                const sgl::core::Pointd2D p0(1000, 550);
+                const Cell2D cellEnd(36, 26);
+                return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
+            });
 }
 
 TutorialGameIntro::~TutorialGameIntro()
