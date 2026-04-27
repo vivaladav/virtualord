@@ -29,7 +29,7 @@ namespace
 
 using namespace game;
 
-// ========== BUTTON END TURN ==========
+// ========== BUTTON GO TO BASE ==========
 class ButtonGoToBase : public sgl::sgui::ImageButton, sgl::utilities::StringsChangeListener
 {
 public:

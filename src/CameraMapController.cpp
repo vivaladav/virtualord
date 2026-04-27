@@ -46,8 +46,11 @@ void CameraMapController::SetMapArea(const sgl::core::Pointd2D & t, const sgl::c
 
 void CameraMapController::CenterCameraToPoint(int x, int y)
 {
-    if(!mEnabled)
-        return ;
+    // NOTE
+    // I removed the "enabled" check for now as it affects the tutorial a lot.
+    // this should not be a problem, but if a finer control is required it's possible
+    // to add a SetInputEnabled to disable all mouse/keyboard interaction while leaving on
+    // programatically moves like this one
 
     sgl::core::Pointd2D p(x, y);
 
