@@ -466,7 +466,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     //         });
     // AddStep([] { return new StepDelay(1.0f); });
     // AddStep([this] { return new StepGameEnemyKilled(); });
-    // AddStep([this] { return new StepGameQuickUnitButton(mScreen->mHUD, 1); });
+    // AddStep([this] { return new StepGameQuickUnitButton(mScreen->mHUD, indUnit2); });
     // ===== PART 4 =====
     // BUILD WALL FROM TOWER
     AddStep([] { return new StepGameWallBuildIntro(); });
@@ -522,6 +522,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     AddStep([] { return new StepDelay(0.5f); });
+    // BACK TO UNIT 2
+    AddStep([this] { return new StepGameQuickUnitButton(mScreen->mHUD, indUnit2); });
 }
 
 TutorialGameIntro::~TutorialGameIntro()
