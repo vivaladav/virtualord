@@ -515,12 +515,13 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // MOVE VIEW BACK TO BASE
     AddStep([panelTurn] { return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1b"); });
     AddStep([] { return new StepDelay(1.0f); });
-
-    // TODO re-add mission goals
-    //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
-    //AddStep([] { return new StepDelay(0.5f); });
-    //AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
-    //AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    // ===== PART 5 =====
+    // INTRODUCE MISSION GOALS
+    AddStep([localBase] { return new StepGameSelectBase(localBase); });
+    AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
+    AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGameIntro::~TutorialGameIntro()

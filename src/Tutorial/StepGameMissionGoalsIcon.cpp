@@ -27,10 +27,10 @@ StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(290, 550);
+    info->SetPosition(200, 600);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_1"),
-                       TutorialConstants::colorText, 5.f, true, false);
+                       TutorialConstants::colorText, 10.f, true, false);
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_2"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, panel]
                        {

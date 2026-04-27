@@ -11,6 +11,11 @@
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StringManager.h>
 
+namespace
+{
+constexpr int padding = 10;
+}
+
 namespace game
 {
 
@@ -28,59 +33,62 @@ StepGameMissionGoalsDialog::StepGameMissionGoalsDialog(GameHUD * HUD)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(510, 60);
+    info->SetPosition(510, 80);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_1"),
                        TutorialConstants::colorText, 13.f, true, true, [this]
                        {
-                           mFocusArea->SetScreenArea(340, 290, 1240, 160);
-                           mFocusArea->SetBlinking(true);
+                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+                           mFocusArea->SetScreenArea(340, 320, 1230, 160);
+                           mFocusArea->SetBlinking(false);
                            mFocusArea->SetVisible(true);
                        });
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_2"),
                        TutorialConstants::colorText, 9.f, true, true, [this]
                        {
-                           mFocusArea->SetScreenArea(340, 460, 1240, 345);
-                           mFocusArea->SetBlinking(true);
+                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+                           mFocusArea->SetScreenArea(340, 500, 1230, 240);
+                           mFocusArea->SetBlinking(false);
                            mFocusArea->SetVisible(true);
                        });
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_3"),
-                       TutorialConstants::colorText, 12.f, true, true, [this]
+                       TutorialConstants::colorText, 0.f, false, true, [this, info]
                        {
-                           mFocusArea->SetScreenArea(1300, 340, 280, 440);
-                           mFocusArea->SetBlinking(true);
-                           mFocusArea->SetVisible(true);
-                       });
+                           auto dialog = mHUD->GetDialogMissionGoals();
+                           auto btn = dialog->mSecondCollectButtons[0];
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_4"),
-                       TutorialConstants::colorText, 12.f, true, true, [this]
-                       {
-                           const int padding = 10;
-                           auto btn = mHUD->GetDialogMissionGoals()->GetButtonEnd();
+                           // NOTE no need to remove the function later as the dialog is
+                           // destroyed at the end
+                           btn->AddOnClickFunction([info]
+                                                   {
+                                                       info->Continue();
+                                                   });
 
                            const int x = btn->GetScreenX() - padding;
                            const int y = btn->GetScreenY() - padding;
                            const int w = btn->GetWidth() + (2 * padding);
                            const int h = btn->GetHeight() + (2 * padding);
 
+                           GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+
                            mFocusArea->SetScreenArea(x, y, w, h);
+                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
                            mFocusArea->SetBlinking(true);
                            mFocusArea->SetVisible(true);
                        });
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_5"), TutorialConstants::colorText,
-                       6.f, true, true, [this]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_4"), TutorialConstants::colorText,
+                       8.f, true, true, [this]
                         {
+                            mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
                             mFocusArea->SetVisible(false);
                         });
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_6"),
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_5"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this]
                        {
-                           const int padding = 10;
-
                            auto dialog = mHUD->GetDialogMissionGoals();
                            auto btn = dialog->GetButtonClose();
 
