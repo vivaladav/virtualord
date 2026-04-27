@@ -59,14 +59,14 @@ void CameraMapController::CenterCameraToPoint(int x, int y)
         if(y < mMapL.y)
         {
             if(!IsPointInsideTL(p))
-                p = GetVectorPojection(mMapL, mMapT, p);
+                p = GetVectorProjection(mMapL, mMapT, p);
         }
         // BOTTOM - LEFT
         else
         {
             // point not inside -> orthogonal projection
             if(!IsPointInsideBL(p))
-                p = GetVectorPojection(mMapL, mMapB, p);
+                p = GetVectorProjection(mMapL, mMapB, p);
         }
     }
     // RIGHT
@@ -76,17 +76,17 @@ void CameraMapController::CenterCameraToPoint(int x, int y)
         if(y < mMapL.y)
         {
             if(!IsPointInsideTR(p))
-                p = GetVectorPojection(mMapT, mMapR, p);
+                p = GetVectorProjection(mMapT, mMapR, p);
         }
         // BOTTOM - RIGHT
         else
         {
             if(!IsPointInsideTR(p))
-                p = GetVectorPojection(mMapB, mMapR, p);
+                p = GetVectorProjection(mMapB, mMapR, p);
         }
     }
 
-    mCamera->CenterToPoint(x, y);
+    mCamera->CenterToPoint(p.x, p.y);
 }
 
 void CameraMapController::ResetPosition()
@@ -368,9 +368,9 @@ void CameraMapController::Update(float delta)
     }
 }
 
-sgl::core::Pointd2D CameraMapController::GetVectorPojection(const sgl::core::Pointd2D & a0,
-                                                            const sgl::core::Pointd2D & b0,
-                                                            const sgl::core::Pointd2D & p) const
+sgl::core::Pointd2D CameraMapController::GetVectorProjection(const sgl::core::Pointd2D & a0,
+                                                             const sgl::core::Pointd2D & b0,
+                                                             const sgl::core::Pointd2D & p) const
 {
     const int ax = p.x - a0.x;
     const int ay = p.y - a0.y;

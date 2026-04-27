@@ -54,8 +54,9 @@ private:
     bool IsPointInsideBL(const sgl::core::Pointd2D & p) const;
     bool IsPointInsideBR(const sgl::core::Pointd2D & p) const;
 
-    sgl::core::Pointd2D GetVectorPojection(const sgl::core::Pointd2D & a0, const sgl::core::Pointd2D & b0,
-                                           const sgl::core::Pointd2D & p) const;
+    sgl::core::Pointd2D GetVectorProjection(const sgl::core::Pointd2D & a0,
+                                            const sgl::core::Pointd2D & b0,
+                                            const sgl::core::Pointd2D & p) const;
 
     void ClearMovement();
 
