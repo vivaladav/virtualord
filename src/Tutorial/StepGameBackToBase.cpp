@@ -13,7 +13,7 @@
 namespace game
 {
 
-StepGameBackToBase::StepGameBackToBase(const PanelTurnControl * panel)
+StepGameBackToBase::StepGameBackToBase(const PanelTurnControl * panel, const char * text1)
     : TutorialInfoStep(600, 180)
     , mFocusArea(new FocusArea)
     , mButton(panel->GetButtonBackToBase())
@@ -29,7 +29,7 @@ StepGameBackToBase::StepGameBackToBase(const PanelTurnControl * panel)
 
     info->SetPosition(800, 550);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BACK_TO_BASE_1"),
+    info->AddInfoEntry(sm->GetCString(text1),
                        TutorialConstants::colorText, 10.f, true, false);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BACK_TO_BASE_2"),

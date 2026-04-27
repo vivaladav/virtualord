@@ -304,7 +304,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 //             });
 //     AddStep([] { return new StepDelay(0.5f); });
 //     // MOVE VIEW BACK TO BASE
-//     AddStep([panelTurn] { return new StepGameBackToBase(panelTurn); });
+//     AddStep([panelTurn] { return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1"); });
 //     AddStep([] { return new StepDelay(1.0f); });
     // ===== PART 2 =====
     // BUILD SECOND UNIT
@@ -512,6 +512,9 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });
+    // MOVE VIEW BACK TO BASE
+    AddStep([panelTurn] { return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1b"); });
+    AddStep([] { return new StepDelay(1.0f); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });

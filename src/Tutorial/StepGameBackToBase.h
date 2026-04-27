@@ -13,7 +13,7 @@ class PanelTurnControl;
 class StepGameBackToBase : public TutorialInfoStep
 {
 public:
-    StepGameBackToBase(const PanelTurnControl * panel);
+    StepGameBackToBase(const PanelTurnControl * panel, const char * text1);
     ~StepGameBackToBase();
 
 private:
