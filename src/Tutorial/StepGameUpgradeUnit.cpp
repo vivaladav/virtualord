@@ -15,8 +15,8 @@
 namespace game
 {
 
-StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD)
-    : TutorialInfoStep(650, 230)
+StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD, bool showIntro)
+    : TutorialInfoStep(650, showIntro ? 220 : 150)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
 {
@@ -32,8 +32,10 @@ StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD)
 
     info->SetPosition(450, 820);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_3"),
-                       TutorialConstants::colorText, 10.f, true, false);
+    if(showIntro)
+        info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_3"),
+                           TutorialConstants::colorText, 10.f, true, false);
+
     info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_4"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, HUD, info]
                        {

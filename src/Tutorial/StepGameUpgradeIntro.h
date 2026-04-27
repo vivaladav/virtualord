@@ -11,7 +11,7 @@ class PanelObjectActions;
 class StepGameUpgradeIntro : public TutorialInfoStep
 {
 public:
-    StepGameUpgradeIntro(PanelObjectActions * panel);
+    StepGameUpgradeIntro(PanelObjectActions * panel, const char * text1);
     ~StepGameUpgradeIntro();
 
 private:

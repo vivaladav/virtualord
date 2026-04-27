@@ -11,7 +11,7 @@ class FocusArea;
 class StepGameUpgradeUnit : public TutorialInfoStep
 {
 public:
-    StepGameUpgradeUnit(GameHUD * HUD);
+    StepGameUpgradeUnit(GameHUD * HUD, bool showIntro);
     ~StepGameUpgradeUnit();
 
     void OnStart() override;

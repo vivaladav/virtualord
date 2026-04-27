@@ -12,7 +12,7 @@
 namespace game
 {
 
-StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel)
+StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const char * text1)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
@@ -29,8 +29,7 @@ StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel)
 
     info->SetPosition(900, 250);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_1"),
-                       TutorialConstants::colorText, 7.f, true, false);
+    info->AddInfoEntry(sm->GetCString(text1), TutorialConstants::colorText, 8.f, true, false);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_2"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, panel]

@@ -240,8 +240,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 //     AddStep([] { return new StepDelay(0.5f); });
 //     AddStep([] { return new StepGameMoveCamera(400, -100); });
 //     // UPGRADE UNIT
-//     AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions); });
-//     AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD); });
+//     AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1"); });
+//     AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD, true); });
 //     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
 //     AddStep([] { return new StepDelay(1.0f); });
 //     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
@@ -303,7 +303,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 //     AddStep([] { return new StepDelay(0.5f); });
 //     // MOVE VIEW BACK TO BASE
 //     AddStep([panelTurn] { return new StepGameBackToBase(panelTurn); });
-    AddStep([] { return new StepDelay(1.0f); });
+//     AddStep([] { return new StepDelay(1.0f); });
     // ===== PART 2 =====
     // BUILD SECOND UNIT
     AddStep([localBase] { return new StepGameSelectBase(localBase); });
@@ -484,6 +484,13 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
                 return new StepGameWallBuildEnd(mScreen->mIsoMap, local, cellEnd);
             });
     AddStep([] { return new StepDelay(0.5f); });
+    // UPGRADE UNIT
+    AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b"); });
+    AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD, false); });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([] { return new StepDelay(1.0f); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
