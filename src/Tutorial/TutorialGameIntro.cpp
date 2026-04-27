@@ -28,6 +28,7 @@
 #include "Tutorial/StepGameConquerCells.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
+#include "Tutorial/StepGameConquerEnergyGenIntro.h"
 #include "Tutorial/StepGameConquerMaterialGenIntro.h"
 #include "Tutorial/StepGameConquerStruct.h"
 #include "Tutorial/StepGameConquerStructSimple.h"
@@ -83,6 +84,7 @@ const Cell2D cellDT2(37, 26);
 const Cell2D cellEnemy(17, 18);
 const Cell2D cellMatGen1(22, 10);
 const Cell2D cellMatGen2(42, 21);
+const Cell2D cellEneGen2(29, 25);
 
 constexpr unsigned int indUnit1 = 0;
 // TODO change this back to 1 when testing full tutorial
@@ -491,6 +493,27 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([] { return new StepDelay(1.0f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(1.0f); });
+    // CONQUER SECOND ENERGY GENERATOR
+    AddStep([] { return new StepDelay(0.5f); });
+    //AddStep([] { return new StepGameMoveCamera(500, 200); });
+    AddStep([this, local]
+            {
+                const GameObject * gen = GetObjectInCell(cellEneGen2);
+
+                return new StepGameConquerEnergyGenIntro(gen);
+            });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
+    AddStep([this, local]
+            {
+                const auto unit = local->GetUnit(indUnit2);
+                const GameObject * gen = GetObjectInCell(cellEneGen2);
+                const sgl::core::Pointd2D p0(650, 250);
+
+                return new StepGameConquerStructSimple(unit, gen, mScreen->mIsoMap, p0);
+            });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(0.5f); });
 
     // TODO re-add mission goals
     //AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
