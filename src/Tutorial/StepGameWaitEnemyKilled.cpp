@@ -14,6 +14,11 @@ StepGameWaitEnemyKilled::StepGameWaitEnemyKilled(const GameObject * obj, const G
     mClickFilter->SetEnabled(false);
 }
 
+StepGameWaitEnemyKilled::~StepGameWaitEnemyKilled()
+{
+    delete mClickFilter;
+}
+
 void StepGameWaitEnemyKilled::OnStart()
 {
     mClickFilter->SetEnabled(true);

@@ -13,6 +13,7 @@ class StepGameWaitEnemyKilled : public TutorialStep
 {
 public:
     StepGameWaitEnemyKilled(const GameObject * obj, const GameMap * gm);
+    ~StepGameWaitEnemyKilled();
 
     void OnStart() override;
 
