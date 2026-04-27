@@ -49,6 +49,7 @@
 #include "Tutorial/StepGameMoveToTower.h"
 #include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameMoveUnitToCorner.h"
+#include "Tutorial/StepGamePrimaryMissionGoal.h"
 #include "Tutorial/StepGameQuickUnitButton.h"
 #include "Tutorial/StepGameSelectBase.h"
 #include "Tutorial/StepGameSetObjectAttackMode.h"
@@ -518,7 +519,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // ===== PART 5 =====
     // INTRODUCE MISSION GOALS
     AddStep([localBase] { return new StepGameSelectBase(localBase); });
-    AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions); });
+    AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions, true); });
     AddStep([this] { return new StepGameMissionGoalsDialog(mScreen->mHUD); });
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -546,6 +547,14 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
                 const Cell2D cellEnd(36, 26);
                 return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
             });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE VIEW BACK TO BASE
+    AddStep([panelTurn] { return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1c"); });
+    AddStep([] { return new StepDelay(1.0f); });
+    // COLLECT PRIMARY MISSION GOAL
+    AddStep([localBase] { return new StepGameSelectBase(localBase); });
+    AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions, false); });
+    AddStep([this] { return new StepGamePrimaryMissionGoal(mScreen->mHUD); });
 }
 
 TutorialGameIntro::~TutorialGameIntro()

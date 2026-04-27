@@ -12,8 +12,8 @@
 namespace game
 {
 
-StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel)
-    : TutorialInfoStep(600, 200)
+StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel, bool showIntro)
+    : TutorialInfoStep(600, showIntro ? 200 : 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
@@ -29,8 +29,10 @@ StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel)
 
     info->SetPosition(200, 600);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_1"),
-                       TutorialConstants::colorText, 10.f, true, false);
+    if(showIntro)
+        info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_1"),
+                           TutorialConstants::colorText, 10.f, true, false);
+
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_2"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, panel]
                        {
