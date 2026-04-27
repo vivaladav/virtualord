@@ -89,7 +89,7 @@ const Cell2D cellEneGen2(29, 26);
 
 constexpr unsigned int indUnit1 = 0;
 // TODO change this back to 1 when testing full tutorial
-constexpr unsigned int indUnit2 = 0;
+constexpr unsigned int indUnit2 = 1;
 
 }
 
@@ -117,196 +117,197 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), false); });
     AddStep([] { return new StepDelay(1.f); });
 
-//     // ===== PART 1 =====
-//     // INTRO
-//     AddStep([] { return new StepGameIntro; });
-//     AddStep([] { return new StepDelay(0.3f); });
-//     // BASE INTRO
-//     AddStep([localBase] { return new StepGameBase(localBase); });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     AddStep([panelActions, panelObj] { return new StepGameBaseFeatures(panelObj, panelActions); });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     // BUILD NEW UNIT
-//     AddStep([panelActions] { return new StepGameBaseBuildUnitIcon(panelActions); });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     AddStep([this] { return new StepGameBaseBuildUnit(mScreen->mHUD); });
-//     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
-//     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
-//     // MOVE UNIT NEXT TO ENERGY GENERATOR
-//     AddStep([local]
-//             {
-//                 const auto unit = local->GetUnit(indUnit1);
-//                 return new StepGameUnit(unit);
-//             });
-//     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
-//     AddStep([] { return new StepDelay(0.5f); });
+    // ===== PART 1 =====
+    // INTRO
+    AddStep([] { return new StepGameIntro; });
+    AddStep([] { return new StepDelay(0.3f); });
+    // BASE INTRO
+    AddStep([localBase] { return new StepGameBase(localBase); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelActions, panelObj] { return new StepGameBaseFeatures(panelObj, panelActions); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD NEW UNIT
+    AddStep([panelActions] { return new StepGameBaseBuildUnitIcon(panelActions); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this] { return new StepGameBaseBuildUnit(mScreen->mHUD); });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
+    // MOVE UNIT NEXT TO ENERGY GENERATOR
+    AddStep([local]
+            {
+                const auto unit = local->GetUnit(indUnit1);
+                return new StepGameUnit(unit);
+            });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+    AddStep([] { return new StepDelay(0.5f); });
 
-//     AddStep([this, local] { return new StepGameMoveUnit(local, mScreen->mIsoMap); });
-//     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
-//      AddStep([] { return new StepGameMoveCamera(450, -150); });
-//     // CONQUER ENERGY GENERATOR
-//     AddStep([this, local]
-//             {
-//                 const Cell2D cellGen(31, 11);
-//                 const GameObject * gen = GetObjectInCell(cellGen);
+    AddStep([this, local] { return new StepGameMoveUnit(local, mScreen->mIsoMap); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+     AddStep([] { return new StepGameMoveCamera(450, -150); });
+    // CONQUER ENERGY GENERATOR
+    AddStep([this, local]
+            {
+                const Cell2D cellGen(31, 11);
+                const GameObject * gen = GetObjectInCell(cellGen);
 
-//                 return new StepGameConquerStruct(local, gen, mScreen->mIsoMap);
-//             });
-//     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
-//     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     // EXPLAIN ENERGY AND END TURN
-//     AddStep([this] { return new StepGameTurnEnergy(mScreen->mHUD); });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     AddStep([panelTurn] { return new StepGameEndTurn(panelTurn); });
-//     AddStep([this] { return new StepGameWaitTurn(mScreen); });
-//     AddStep([] { return new StepDelay(1.0f); });
-//     AddStep([] { return new StepGameEnergyRegeneration; });
-//     // EXPLAIN STRUCTURE CONNECTIONS AND CONNECT GENERATOR TO BASE
-//     AddStep([] { return new StepGameStructDisconnected; });
-//     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
-//     AddStep([this]
-//         {
-//             const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
-//             return new StepGameConquerCells(mScreen->mIsoMap, cellStart);
-//         });
-//     AddStep([this, local]
-//         {
-//             const auto unit = local->GetUnit(indUnit1);
-//             const Cell2D cellEnd(38, 10);
-//             const sgl::core::Pointd2D p0(1250, 300);
-//             return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
-//         });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     AddStep([] { return new StepGameStructConnected; });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     // CONQUER MATERIAL GENERATOR
-//     AddStep([this, local]
-//         {
-//             const GameObject * gen = GetObjectInCell(cellMatGen1);
+                return new StepGameConquerStruct(local, gen, mScreen->mIsoMap);
+            });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // EXPLAIN ENERGY AND END TURN
+    AddStep([this] { return new StepGameTurnEnergy(mScreen->mHUD); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurn(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([] { return new StepGameEnergyRegeneration; });
+    // EXPLAIN STRUCTURE CONNECTIONS AND CONNECT GENERATOR TO BASE
+    AddStep([] { return new StepGameStructDisconnected; });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this]
+        {
+            const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+            return new StepGameConquerCells(mScreen->mIsoMap, cellStart);
+        });
+    AddStep([this, local]
+        {
+            const auto unit = local->GetUnit(indUnit1);
+            const Cell2D cellEnd(38, 10);
+            const sgl::core::Pointd2D p0(1250, 300);
+            return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([] { return new StepGameStructConnected; });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONQUER MATERIAL GENERATOR
+    AddStep([this, local]
+        {
+            const GameObject * gen = GetObjectInCell(cellMatGen1);
 
-//             return new StepGameMaterialGenerator(gen);
-//         });
-//     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-//     AddStep([this] { return new StepGameWaitTurn(mScreen); });
-//     AddStep([] { return new StepDelay(1.0f); });
-//     AddStep([] { return new StepGameMoveCamera(300, -150); });
-//     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
-//     AddStep([this, local]
-//         {
-//             const auto unit = local->GetUnit(indUnit1);
-//             const GameObject * gen = GetObjectInCell(cellMatGen1);
-//             const sgl::core::Pointd2D p0(1300, 200);
+            return new StepGameMaterialGenerator(gen);
+        });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([] { return new StepGameMoveCamera(300, -150); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
+    AddStep([this, local]
+        {
+            const auto unit = local->GetUnit(indUnit1);
+            const GameObject * gen = GetObjectInCell(cellMatGen1);
+            const sgl::core::Pointd2D p0(1300, 200);
 
-//             return new StepGameConquerStructSimple(unit, gen, mScreen->mIsoMap, p0);
-//         });
-//     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
-//     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
-//     AddStep([] { return new StepGameEndTurnIntro(); });
-//     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-//     AddStep([this] { return new StepGameWaitTurn(mScreen); });
-//     AddStep([] { return new StepDelay(1.0f); });
-//     // CONNECT MATERIAL GENERATOR
-//     AddStep([]
-//         {
-//             const sgl::core::Pointd2D p0(1250, 200);
-//             return new StepGameConnectStructIntro(p0);
-//         });
-//     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
-//     AddStep([this]
-//         {
-//             const sgl::core::Pointd2D p0(1250, 250);
-//             const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
-//             const Cell2D target(23, 10);
-//             return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
-//         });
-//     AddStep([this, local]
-//         {
-//             const auto unit = local->GetUnit(indUnit1);
-//             const Cell2D cellEnd(29, 10);
-//             const sgl::core::Pointd2D p0(1250, 300);
-//             return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
-//         });
-//     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
-//     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-//     AddStep([] { return new StepDelay(1.0f); });
-//     // MOVE UNIT TO VISIBLE CORNER
-//     AddStep([this, local]
-//             {
-//                 const auto unit = local->GetUnit(indUnit1);
-//                 const Cell2D target(17, 15);
-//                 const sgl::core::Pointd2D p0(550, 100);
-//                 return new StepGameMoveUnitToCorner(unit, mScreen->mIsoMap, target, p0);
-//             });
-//     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
-//     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     AddStep([] { return new StepGameMoveCamera(400, -100); });
-//     // UPGRADE UNIT
-//     AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1"); });
-//     AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD, true); });
-//     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
-//     AddStep([] { return new StepDelay(1.0f); });
-//     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-//     AddStep([] { return new StepDelay(1.0f); });
-//     // BUILD DEFENSIVE TOWER 1
-//     AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
-//     AddStep([this] { return new StepGameBuildTower(mScreen->mHUD); });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     AddStep([this, local]
-//         {
-//             const auto unit = local->GetUnit(indUnit1);
-//             return new StepGameBuildTowerEnd(mScreen->mIsoMap, unit, cellDT1);
-//         });
-//     AddStep([this]
-//             {
-//                 GameObject * tower = GetObjectInCell(cellDT1);
-//                 return new StepGameSetObjectAttackMode(tower, ATT_PERFECT_SHOT);
-//             });
-//     AddStep([] { return new StepDelay(1.0f); });
-//     // CONNECT DEFENSIVE TOWER
-//     AddStep([]
-//         {
-//             const sgl::core::Pointd2D p0(1250, 200);
-//             return new StepGameConnectStructIntro(p0);
-//         });
-//     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
-//     AddStep([this]
-//         {
-//             const sgl::core::Pointd2D p0(1250, 250);
-//             const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
-//             const Cell2D target(17, 15);
-//             return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
-//         });
-//     AddStep([this, local]
-//         {
-//             const auto unit = local->GetUnit(indUnit1);
-//             const Cell2D cellEnd(21, 11);
-//             const sgl::core::Pointd2D p0(1250, 300);
-//             return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
-//         });
-//     AddStep([] { return new StepDelay(1.0f); });
-//     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-//     AddStep([] { return new StepDelay(1.0f); });
-//     // BUILD WALL FROM TOWER
-//     AddStep([] { return new StepGameWallBuildIntro(); });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
-//     AddStep([this]
-//             {
-//                 const Cell2D & cellStart = mScreen->mOverlayWall->GetCellStart();
-//                 const Cell2D target(17, 15);
-//                 return new StepGameWallBuildStart(mScreen->mIsoMap, cellStart, target);
-//             });
-//     AddStep([this, local]
-//             {
-//                 const Cell2D cellEnd(14, 15);
-//                 return new StepGameWallBuildEnd(mScreen->mIsoMap, local, cellEnd);
-//             });
-//     AddStep([] { return new StepDelay(0.5f); });
-//     // MOVE VIEW BACK TO BASE
-//     AddStep([panelTurn] { return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1"); });
-//     AddStep([] { return new StepDelay(1.0f); });
+            return new StepGameConquerStructSimple(unit, gen, mScreen->mIsoMap, p0);
+        });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+    AddStep([] { return new StepGameEndTurnIntro(); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    AddStep([] { return new StepDelay(1.0f); });
+    // CONNECT MATERIAL GENERATOR
+    AddStep([]
+        {
+            const sgl::core::Pointd2D p0(1250, 200);
+            return new StepGameConnectStructIntro(p0);
+        });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this]
+        {
+            const sgl::core::Pointd2D p0(1250, 250);
+            const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+            const Cell2D target(23, 10);
+            return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
+        });
+    AddStep([this, local]
+        {
+            const auto unit = local->GetUnit(indUnit1);
+            const Cell2D cellEnd(29, 10);
+            const sgl::core::Pointd2D p0(1250, 300);
+            return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
+        });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([] { return new StepDelay(1.0f); });
+    // MOVE UNIT TO VISIBLE CORNER
+    AddStep([this, local]
+            {
+                const auto unit = local->GetUnit(indUnit1);
+                const Cell2D target(17, 15);
+                const sgl::core::Pointd2D p0(550, 100);
+                return new StepGameMoveUnitToCorner(unit, mScreen->mIsoMap, target, p0);
+            });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([] { return new StepGameMoveCamera(400, -100); });
+    // UPGRADE UNIT
+    AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1"); });
+    AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD, true); });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([] { return new StepDelay(1.0f); });
+    // BUILD DEFENSIVE TOWER 1
+    AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
+    AddStep([this] { return new StepGameBuildTower(mScreen->mHUD); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this, local]
+        {
+            const auto unit = local->GetUnit(indUnit1);
+            return new StepGameBuildTowerEnd(mScreen->mIsoMap, unit, cellDT1);
+        });
+    AddStep([this]
+            {
+                GameObject * tower = GetObjectInCell(cellDT1);
+                return new StepGameSetObjectAttackMode(tower, ATT_PERFECT_SHOT);
+            });
+    AddStep([] { return new StepDelay(1.0f); });
+    // CONNECT DEFENSIVE TOWER
+    AddStep([]
+        {
+            const sgl::core::Pointd2D p0(1250, 200);
+            return new StepGameConnectStructIntro(p0);
+        });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this]
+        {
+            const sgl::core::Pointd2D p0(1250, 250);
+            const Cell2D & cellStart = mScreen->mOverlayCellConquest->GetCellStart();
+            const Cell2D target(17, 15);
+            return new StepGameConquerCellsSimple(mScreen->mIsoMap, cellStart, target, p0);
+        });
+    AddStep([this, local]
+        {
+            const auto unit = local->GetUnit(indUnit1);
+            const Cell2D cellEnd(21, 11);
+            const sgl::core::Pointd2D p0(1250, 300);
+            return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([] { return new StepDelay(1.0f); });
+    // BUILD WALL FROM TOWER
+    AddStep([] { return new StepGameWallBuildIntro(); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
+    AddStep([this]
+            {
+                const Cell2D & cellStart = mScreen->mOverlayWall->GetCellStart();
+                const Cell2D target(17, 15);
+                return new StepGameWallBuildStart(mScreen->mIsoMap, cellStart, target);
+            });
+    AddStep([this, local]
+            {
+                const auto unit = local->GetUnit(indUnit1);
+                const Cell2D cellEnd(14, 15);
+                return new StepGameWallBuildEnd(mScreen->mIsoMap, unit, cellEnd);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE VIEW BACK TO BASE
+    AddStep([panelTurn] { return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1"); });
+    AddStep([] { return new StepDelay(1.0f); });
     // ===== PART 2 =====
     // BUILD SECOND UNIT
     AddStep([localBase] { return new StepGameSelectBase(localBase); });
@@ -419,60 +420,60 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // ===== PART 3 =====
-    // // ADD ENEMY NEAR TOWER 1
-    // AddStep([]
-    //         {
-    //             const sgl::core::Pointd2D p0(1100, 350);
-    //             return new StepGameEnemyIntro(p0);
-    //         });
-    // AddStep([this, playerAI]
-    //         {
-    //             return new StepGameAddEnemy(mScreen->mGameMap, playerAI,
-    //                                         ObjectData::TYPE_UNIT_SOLDIER1, cellEnemy, true);
-    //         });
-    // AddStep([this]
-    //         {
-    //             const float maxHealth = 50.f;
-    //             GameObject * enemy = GetObjectInCell(cellEnemy);
+    // ADD ENEMY NEAR TOWER 1
+    AddStep([]
+            {
+                const sgl::core::Pointd2D p0(1100, 350);
+                return new StepGameEnemyIntro(p0);
+            });
+    AddStep([this, playerAI]
+            {
+                return new StepGameAddEnemy(mScreen->mGameMap, playerAI,
+                                            ObjectData::TYPE_UNIT_SOLDIER1, cellEnemy, true);
+            });
+    AddStep([this]
+            {
+                const float maxHealth = 50.f;
+                GameObject * enemy = GetObjectInCell(cellEnemy);
 
-    //             return new StepGameSetObjectMaxHealth(enemy, maxHealth);
-    //         });
-    // AddStep([this] { return new StepGameClearSelection(mScreen); });
-    // // EXPLAIN CAMERA MOVE AND MOVE TO TOWER 1
-    // AddStep([] { return new StepGameMapNavigation; });
-    // AddStep([] { return new StepGameMoveToTower; });
-    // AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
-    // AddStep([this, local]
-    //         {
-    //             const GameObject * tower = GetObjectInCell(cellDT1);
-    //             const IsoObject * obj = tower->GetIsoObject();
-    //             const int areaHalfW = 540;
-    //             const int areaHalfH = 270;
-    //             const int tlX = obj->GetX() - areaHalfW;
-    //             const int tlY = obj->GetY() - areaHalfH;
-    //             const int brX = obj->GetX() + areaHalfW;
-    //             const int brY = obj->GetY() + areaHalfH;
+                return new StepGameSetObjectMaxHealth(enemy, maxHealth);
+            });
+    AddStep([this] { return new StepGameClearSelection(mScreen); });
+    // EXPLAIN CAMERA MOVE AND MOVE TO TOWER 1
+    AddStep([] { return new StepGameMapNavigation; });
+    AddStep([] { return new StepGameMoveToTower; });
+    AddStep([this] { return new StepGameEnableCamera(mScreen->mCamController); });
+    AddStep([this, local]
+            {
+                const GameObject * tower = GetObjectInCell(cellDT1);
+                const IsoObject * obj = tower->GetIsoObject();
+                const int areaHalfW = 540;
+                const int areaHalfH = 270;
+                const int tlX = obj->GetX() - areaHalfW;
+                const int tlY = obj->GetY() - areaHalfH;
+                const int brX = obj->GetX() + areaHalfW;
+                const int brY = obj->GetY() + areaHalfH;
 
-    //             const auto cam = mScreen->mCamController->GetCamera();
+                const auto cam = mScreen->mCamController->GetCamera();
 
-    //             return new StepGameTestCameraFocus(cam, tlX, tlY, brX, brY);
-    //         });
-    // AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
-    // // ENEMY KILL
-    // AddStep([] { return new StepGameTowerIntro; });
-    // AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    // AddStep([this]
-    //         {
-    //             GameObject * enemy = GetObjectInCell(cellEnemy);
-    //             return new StepGameWaitEnemyKilled(enemy, mScreen->mGameMap);
-    //         });
-    // AddStep([] { return new StepDelay(1.0f); });
-    // AddStep([this] { return new StepGameEnemyKilled(); });
-    // AddStep([this] { return new StepGameQuickUnitButton(mScreen->mHUD, indUnit2); });
+                return new StepGameTestCameraFocus(cam, tlX, tlY, brX, brY);
+            });
+    AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    // ENEMY KILL
+    AddStep([] { return new StepGameTowerIntro; });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([this]
+            {
+                GameObject * enemy = GetObjectInCell(cellEnemy);
+                return new StepGameWaitEnemyKilled(enemy, mScreen->mGameMap);
+            });
+    AddStep([] { return new StepDelay(1.0f); });
+    AddStep([this] { return new StepGameEnemyKilled(); });
+    AddStep([this] { return new StepGameQuickUnitButton(mScreen->mHUD, indUnit2); });
     // ===== PART 4 =====
     // TODO remove next 2 steps when trying full tutorial
-    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([this] { return new StepGameWaitTurn(mScreen); });
+    // AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    // AddStep([this] { return new StepGameWaitTurn(mScreen); });
     // BUILD WALL FROM TOWER
     AddStep([] { return new StepGameWallBuildIntro(); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -485,8 +486,9 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             });
     AddStep([this, local]
             {
+                const auto unit = local->GetUnit(indUnit2);
                 const Cell2D cellEnd(37, 30);
-                return new StepGameWallBuildEnd(mScreen->mIsoMap, local, cellEnd);
+                return new StepGameWallBuildEnd(mScreen->mIsoMap, unit, cellEnd);
             });
     AddStep([] { return new StepDelay(0.5f); });
     // UPGRADE UNIT

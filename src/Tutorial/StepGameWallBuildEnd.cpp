@@ -14,10 +14,11 @@
 namespace game
 {
 
-StepGameWallBuildEnd::StepGameWallBuildEnd(const IsoMap * isoMap, const Player * p,
-                                                 const Cell2D & cellEnd)
+StepGameWallBuildEnd::StepGameWallBuildEnd(const IsoMap * isoMap, const Unit * u,
+                                           const Cell2D & cellEnd)
     : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
+    , mUnit(u)
     , mCellEnd(cellEnd)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -31,7 +32,7 @@ StepGameWallBuildEnd::StepGameWallBuildEnd(const IsoMap * isoMap, const Player *
     info->SetPosition(900, 150);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BUIL_WALL_4"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, p]
+                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, u]
                        {
                            const auto pos = isoMap->GetCellPosition(mCellEnd.row, mCellEnd.col);
 
@@ -53,8 +54,6 @@ StepGameWallBuildEnd::StepGameWallBuildEnd(const IsoMap * isoMap, const Player *
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                            cf->SetClickableCell(isoMap, mCellEnd.row, mCellEnd.col);
                            cf->SetButtonToExclude(sgl::core::MouseEvent::BUTTON_LEFT);
-
-                           mUnit = p->GetUnit(0);
                        });
 }
 
@@ -65,9 +64,6 @@ StepGameWallBuildEnd::~StepGameWallBuildEnd()
 
 void StepGameWallBuildEnd::Update(float)
 {
-    if(nullptr == mUnit)
-        return ;
-
     if(mBuildStarted)
     {
         if(mUnit->GetCurrentAction() == IDLE)
