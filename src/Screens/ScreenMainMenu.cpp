@@ -345,7 +345,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.7.0 - \"???\"", font, content);
+    auto title = new sgui::Label("0.6.5 - \"???\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -361,6 +361,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New tech upgrade: practice target.\n"
                   "- New panel for warning messages of units.\n"
                   "- New panel showing energy usage when building structure.\n"
+                  "- Completed full tutorial for mission 1.\n"
                   "\nCHANGES\n"
                   "- Loot boxes now require unit interaction to get loot.\n"
                   "- Extended and improved cell conquest mechanics.\n"
@@ -375,6 +376,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed miniMap not removed if radar is destroyed.\n"
                   "- Fixed random blinking energy icon appearing outside the map."
                   "- Fixed mission goals not updating progress of goals related to resources.\n"
+                  "- Fixed mission goal completed icon rendered on top of HUD panels.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
