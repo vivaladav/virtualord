@@ -729,7 +729,7 @@ void GameHUD::ShowGoalCompletedIcon()
     auto tm = graphic::TextureManager::Instance();
     auto tex = tm->GetSprite(SpriteFileGameUI, ID_GAMEUI_GOAL_F1 + pf);
 
-    mGoalCompletedIcon = new sgui::Image(tex, this);
+    mGoalCompletedIcon = new sgui::Image(tex);
     // set camera to default to follow screen
     mGoalCompletedIcon->SetCamera(graphic::Camera::GetDefaultCamera());
 
@@ -742,6 +742,9 @@ void GameHUD::ShowGoalCompletedIcon()
     const int y = isoObj->GetY() - mGoalCompletedIcon->GetHeight() - marginIconB;
 
     mGoalCompletedIcon->SetPosition(x, y);
+
+    // make sure icon stays below other UI stuff
+    sgui::Stage::Instance()->MoveChildToBack(mGoalCompletedIcon);
 
     // play sound
     auto player = media::AudioManager::Instance()->GetPlayer();
