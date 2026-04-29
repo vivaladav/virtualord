@@ -144,7 +144,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
 
     AddStep([this, local] { return new StepGameMoveUnit(local, mScreen->mIsoMap); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
-     AddStep([] { return new StepGameMoveCamera(450, -150); });
+     AddStep([] { return new StepGameMoveCamera(450, -150, 300.f); });
     // CONQUER ENERGY GENERATOR
     AddStep([this, local]
             {
@@ -325,7 +325,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // CONQUER SECOND MATERIAL GENERATOR
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([] { return new StepGameMoveCamera(500, 200); });
+    AddStep([] { return new StepGameMoveCamera(500, 200, 500.f); });
     AddStep([this, local]
         {
             const GameObject * gen = GetObjectInCell(cellMatGen2);

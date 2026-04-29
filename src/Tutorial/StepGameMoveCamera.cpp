@@ -10,14 +10,17 @@ namespace game
 {
 
 StepGameMoveCamera::StepGameMoveCamera(int deltaX, int deltaY, float speed)
-    : mCamera(sgl::graphic::Camera::GetDefaultCamera())
+    : StepGameMoveCamera(speed)
+{
+    Move(deltaX, deltaY);
+}
+
+StepGameMoveCamera::StepGameMoveCamera(float speed)
+    : mClickFilter(new PanelClickFilter)
+    , mCamera(sgl::graphic::Camera::GetDefaultCamera())
     , mSpeed(speed)
 {
-    // CLICK FILTER
-    mClickFilter = new PanelClickFilter;
     mClickFilter->SetEnabled(false);
-
-    Move(deltaX, deltaY);
 }
 
 StepGameMoveCamera::~StepGameMoveCamera()
@@ -85,11 +88,28 @@ void StepGameMoveCamera::Update(float delta)
 
 void StepGameMoveCamera::Move(int deltaX, int deltaY)
 {
+    // make sure both delta are not 0 or there's nothing to do
+    if(deltaX == 0 && deltaY == 0)
+    {
+        SetDone();
+        return;
+    }
+
     mTargetX = mCamera->GetX() + deltaX;
     mTargetY = mCamera->GetY() + deltaY;
 
-    float multX = (0 == deltaX || 0 == deltaY) ?
-                  1.f : std::fabs(static_cast<float>(deltaX) / static_cast<float>(deltaY));
+    // set speed multipliers to make sure X and Y movement finish at the same time
+    float multX = 1.f;
+    float multY = 1.f;
+
+    // if any of the 2 deltas is 0 there's no point in calculating the mult
+    if(deltaX != 0 && deltaY != 0)
+    {
+        if(deltaX > deltaY)
+            multX = std::fabs(static_cast<float>(deltaX) / static_cast<float>(deltaY));
+        else
+            multY = std::fabs(static_cast<float>(deltaY) / static_cast<float>(deltaX));
+    }
 
     // X
     mMovingX = true;
@@ -108,9 +128,9 @@ void StepGameMoveCamera::Move(int deltaX, int deltaY)
     mMovingY = true;
 
     if(deltaY > 0)
-        mMovY = mSpeed;
+        mMovY = mSpeed * multY;
     else if(deltaY < 0)
-        mMovY = -mSpeed;
+        mMovY = -mSpeed * multY;
     else
     {
         mMovY = 0.f;

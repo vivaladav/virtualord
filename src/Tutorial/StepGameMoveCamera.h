@@ -22,8 +22,12 @@ public:
 
     void Update(float delta) override;
 
-private:
+protected:
+    StepGameMoveCamera(float speed);
+
     void Move(int deltaX, int deltaY);
+
+    sgl::graphic::Camera * GetCamera() const;
 
 private:
     PanelClickFilter * mClickFilter = nullptr;
@@ -41,5 +45,7 @@ private:
     bool mMovingX = false;
     bool mMovingY = false;
 };
+
+inline sgl::graphic::Camera * StepGameMoveCamera::GetCamera() const { return mCamera; }
 
 } // namespace game
