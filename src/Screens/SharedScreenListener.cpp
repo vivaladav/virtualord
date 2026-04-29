@@ -47,7 +47,7 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
 
     // -- GAME --
     // DEBUG: SHIFT/CTRL + R -> add/remove resources
-    else if(key == KeyboardEvent::KEY_R)
+    else if(key == KeyboardEvent::KEY_C)
     {
         if(mGame->GetNumPlayers() == 0)
             return ;

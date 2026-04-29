@@ -935,8 +935,8 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
     // DEBUG: ALT + U -> toggle UI
     else if(event.IsModAltDown() && key == KeyboardEvent::KEY_U)
         mHUD->SetVisible(!mHUD->IsVisible());
-    // DEBUG: CTRL+P -> Upgrade screen
-    else if(event.IsModCtrlDown() && key == KeyboardEvent::KEY_P)
+    // DEBUG: CTRL + U -> Upgrade screen
+    else if(event.IsModCtrlDown() && key == KeyboardEvent::KEY_U)
     {
         auto selObj = GetGame()->GetLocalPlayer()->GetSelectedObject();
 
@@ -986,8 +986,8 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
         CreateEnemyInCurrentCell(ObjectData::TYPE_UNIT_SOLDIER1);
     else if(event.IsModAltDown() && key == KeyboardEvent::KEY_E)
         CreateEnemyInCurrentCell(ObjectData::TYPE_UNIT_SOLDIER2);
-    // DEBUG: print current stats
-    else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_C)
+    // DEBUG: SHIFT + P -> print current stats
+    else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_P)
     {
         const PlayerFaction pf = mLocalPlayer->GetFaction();
         const unsigned int turns = mLocalPlayer->GetTurnsPlayed();
