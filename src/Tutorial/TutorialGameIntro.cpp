@@ -46,6 +46,7 @@
 #include "Tutorial/StepGameMissionGoalsIcon.h"
 #include "Tutorial/StepGameMissionGoalsDialog.h"
 #include "Tutorial/StepGameMoveCamera.h"
+#include "Tutorial/StepGameMoveCameraOverObject.h"
 #include "Tutorial/StepGameMoveToTower.h"
 #include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameMoveUnitToCorner.h"
@@ -447,7 +448,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             {
                 const GameObject * tower = GetObjectInCell(cellDT1);
                 const IsoObject * obj = tower->GetIsoObject();
-                const int areaHalfW = 540;
+                const int areaHalfW = 480;
                 const int areaHalfH = 270;
                 const int tlX = obj->GetX() - areaHalfW;
                 const int tlY = obj->GetY() - areaHalfH;
@@ -459,6 +460,12 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
                 return new StepGameTestCameraFocus(cam, tlX, tlY, brX, brY);
             });
     AddStep([this] { return new StepGameDisableCamera(mScreen->mCamController); });
+    AddStep([this]
+            {
+                const GameObject * tower = GetObjectInCell(cellDT1);
+
+                return new StepGameMoveCameraOverObject(tower);
+            });
     // ENEMY KILL
     AddStep([] { return new StepGameTowerIntro; });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
@@ -491,6 +498,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
                 return new StepGameWallBuildEnd(mScreen->mIsoMap, unit, cellEnd);
             });
     AddStep([] { return new StepDelay(0.5f); });
+    AddStep([] { return new StepGameMoveCamera(500, 0); });
     // UPGRADE UNIT
     AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b"); });
     AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD, false); });
@@ -500,7 +508,6 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER SECOND ENERGY GENERATOR
-    //AddStep([] { return new StepGameMoveCamera(500, 200); });
     AddStep([this, local]
             {
                 const GameObject * gen = GetObjectInCell(cellEneGen2);
