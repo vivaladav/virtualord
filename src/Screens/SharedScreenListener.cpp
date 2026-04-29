@@ -10,6 +10,8 @@
 #include <sgl/media/AudioPlayer.h>
 
 #ifdef DEV_MODE
+#include <sgl/sgui/Stage.h>
+
 #include <iostream>
 #endif
 
@@ -79,7 +81,10 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
         Game::GOD_MODE = !Game::GOD_MODE;
         std::cout << "GOD MODE: " << (Game::GOD_MODE ? "ON" : "OFF") << std::endl;
     }
-#endif
+    // ALT + M -> toggle mouse cursor visibility
+    else if(key == KeyboardEvent::KEY_M && event.IsModAltDown())
+        sgl::sgui::Stage::Instance()->ToggleCursorVisibility();
+#endif // DEV_MODE
 
     // -- AUDIO --
     else if(event.IsModAltDown())
