@@ -54,7 +54,7 @@ StepGameMissionGoalsDialog::StepGameMissionGoalsDialog(GameHUD * HUD)
                        });
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_3"),
-                       TutorialConstants::colorText, 0.f, false, true, [this, info]
+                       TutorialConstants::colorTextAction, 0.f, false, true, [this, info]
                        {
                            auto dialog = mHUD->GetDialogMissionGoals();
                            auto btn = dialog->mSecondCollectButtons[0];
