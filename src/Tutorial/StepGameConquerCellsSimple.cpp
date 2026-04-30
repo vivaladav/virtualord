@@ -14,7 +14,7 @@ namespace game
 
 StepGameConquerCellsSimple::StepGameConquerCellsSimple(const IsoMap * isoMap, const Cell2D & cellStart,
                                                        const Cell2D & cellTarget, const sgl::core::Pointd2D & p0)
-    : TutorialInfoStep(500, 150)
+    : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
     , mCellActionStart(cellStart)
     , mCellTarget(cellTarget)

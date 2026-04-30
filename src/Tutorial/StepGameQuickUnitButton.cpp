@@ -27,7 +27,7 @@ StepGameQuickUnitButton::StepGameQuickUnitButton(GameHUD * hud, int indButton)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(450, 600);
+    info->SetPosition(450, 620);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_QUICK_SEL_1"),
                        TutorialConstants::colorText, 7.f, true, false);

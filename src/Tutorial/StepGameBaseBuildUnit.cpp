@@ -15,7 +15,7 @@ namespace game
 {
 
 StepGameBaseBuildUnit::StepGameBaseBuildUnit(GameHUD * HUD)
-    : TutorialInfoStep(530, 200)
+    : TutorialInfoStep(570, 200)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
 {
@@ -29,7 +29,7 @@ StepGameBaseBuildUnit::StepGameBaseBuildUnit(GameHUD * HUD)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(40, 860);
+    info->SetPosition(600, 850);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_1"),
                        TutorialConstants::colorText, 8.f, true, false);

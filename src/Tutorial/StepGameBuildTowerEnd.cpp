@@ -15,7 +15,7 @@ namespace game
 
 StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit * unit,
                                              const Cell2D & cell)
-    : TutorialInfoStep(600, 200)
+    : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
     , mUnit(unit)
     , mTarget(cell)

@@ -23,7 +23,7 @@ namespace game
 {
 
 StepGameBuildTower::StepGameBuildTower(GameHUD * HUD)
-    : TutorialInfoStep(550, 150)
+    : TutorialInfoStep(550, 140)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
 {

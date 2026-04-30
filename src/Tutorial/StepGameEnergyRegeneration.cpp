@@ -9,7 +9,7 @@ namespace game
 {
 
 StepGameEnergyRegeneration::StepGameEnergyRegeneration()
-    : TutorialInfoStep(600, 325)
+    : TutorialInfoStep(600, 300)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 

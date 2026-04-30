@@ -14,7 +14,7 @@ namespace game
 {
 
 StepGameEndTurnSimple::StepGameEndTurnSimple(const PanelTurnControl * panel)
-    : TutorialInfoStep(600, 150)
+    : TutorialInfoStep(600, 120)
     , mFocusArea(new FocusArea)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -26,7 +26,7 @@ StepGameEndTurnSimple::StepGameEndTurnSimple(const PanelTurnControl * panel)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1250, 650);
+    info->SetPosition(1250, 700);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_END_TURN_2"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, panel]

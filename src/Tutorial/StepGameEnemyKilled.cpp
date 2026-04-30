@@ -21,7 +21,6 @@ StepGameEnemyKilled::StepGameEnemyKilled()
     info->AddInfoEntry(sm->GetCString("TUT_GAME_ENEMY1_KILLED"),
                        TutorialConstants::colorText, 10.f, true, false);
 
-
     info->SetFunctionOnFinished([this]
     {
         SetDone();

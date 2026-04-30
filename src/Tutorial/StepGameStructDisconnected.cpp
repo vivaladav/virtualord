@@ -9,7 +9,7 @@ namespace game
 {
 
 StepGameStructDisconnected::StepGameStructDisconnected()
-    : TutorialInfoStep(600, 350)
+    : TutorialInfoStep(600, 320)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 

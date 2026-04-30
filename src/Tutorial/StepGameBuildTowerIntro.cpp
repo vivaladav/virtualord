@@ -13,7 +13,7 @@ namespace game
 {
 
 StepGameBuildTowerIntro::StepGameBuildTowerIntro(PanelObjectActions * panel)
-    : TutorialInfoStep(550, 150)
+    : TutorialInfoStep(570, 180)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {

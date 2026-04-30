@@ -9,7 +9,7 @@ namespace game
 {
 
 StepGameStructConnected::StepGameStructConnected()
-    : TutorialInfoStep(750, 330)
+    : TutorialInfoStep(750, 300)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 

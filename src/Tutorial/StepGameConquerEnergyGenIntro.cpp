@@ -33,7 +33,7 @@ StepGameConquerEnergyGenIntro::StepGameConquerEnergyGenIntro(const GameObject * 
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(600, 250);
+    info->SetPosition(500, 250);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_ENE_GEN"),
                        TutorialConstants::colorText, 10.f, true, false, [this]

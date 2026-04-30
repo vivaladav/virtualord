@@ -325,7 +325,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // CONQUER SECOND MATERIAL GENERATOR
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([] { return new StepGameMoveCamera(500, 200, 500.f); });
+    AddStep([] { return new StepGameMoveCamera(500, 200); });
     AddStep([this, local]
         {
             const GameObject * gen = GetObjectInCell(cellMatGen2);
@@ -448,8 +448,8 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             {
                 const GameObject * tower = GetObjectInCell(cellDT1);
                 const IsoObject * obj = tower->GetIsoObject();
-                const int areaHalfW = 480;
-                const int areaHalfH = 270;
+                const int areaHalfW = 360;
+                const int areaHalfH = 200;
                 const int tlX = obj->GetX() - areaHalfW;
                 const int tlY = obj->GetY() - areaHalfH;
                 const int brX = obj->GetX() + areaHalfW;
@@ -498,7 +498,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
                 return new StepGameWallBuildEnd(mScreen->mIsoMap, unit, cellEnd);
             });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([] { return new StepGameMoveCamera(500, 0); });
+    AddStep([] { return new StepGameMoveCamera(500, 0, 500.f); });
     // UPGRADE UNIT
     AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b"); });
     AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD, false); });
@@ -519,7 +519,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             {
                 const auto unit = local->GetUnit(indUnit2);
                 const GameObject * gen = GetObjectInCell(cellEneGen2);
-                const sgl::core::Pointd2D p0(650, 250);
+                const sgl::core::Pointd2D p0(550, 250);
 
                 return new StepGameConquerStructSimple(unit, gen, mScreen->mIsoMap, p0);
             });

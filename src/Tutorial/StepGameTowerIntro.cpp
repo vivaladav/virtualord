@@ -9,14 +9,14 @@ namespace game
 {
 
 StepGameTowerIntro::StepGameTowerIntro()
-    : TutorialInfoStep(550, 150)
+    : TutorialInfoStep(600, 150)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1100, 550);
+    info->SetPosition(1150, 550);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_TOWER_INTRO"),
                        TutorialConstants::colorText, 10.f, true, false);
