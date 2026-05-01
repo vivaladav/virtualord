@@ -464,7 +464,9 @@ void ScreenGame::SetPause(bool paused)
     else
         ap->ResumeSounds();
 
-    mCamController->SetEnabled(!paused);
+    // do not control camera if a tutorial is running as it's handled by it
+    if(!GetGame()->GetTutorialManager()->HasActiveTutorial())
+        mCamController->SetEnabled(!paused);
 
     mHUD->SetEnabled(!paused);
 

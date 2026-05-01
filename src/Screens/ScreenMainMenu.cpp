@@ -378,6 +378,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed mission goals not updating progress of goals related to resources.\n"
                   "- Fixed mission goal completed icon rendered on top of HUD panels.\n"
                   "- Fixed units not having default action set to move after quitting the tutorial.\n"
+                  "- Fixed camera re-enabled in tutorial after opening exit dialog.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
