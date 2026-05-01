@@ -362,6 +362,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New panel for warning messages of units.\n"
                   "- New panel showing energy usage when building structure.\n"
                   "- Completed full tutorial for mission 1.\n"
+                  "- Added new type of trees.\n"
                   "\nCHANGES\n"
                   "- Loot boxes now require unit interaction to get loot.\n"
                   "- Extended and improved cell conquest mechanics.\n"
