@@ -102,7 +102,10 @@ void LootBox::Open(Player * p)
     static_assert(static_cast<unsigned int>(NUM_OUTPUT_TYPES) ==
                   static_cast<unsigned int>(NUM_LB_PRIZES));
 
-    DataParticleOutput pd(mPrizeQuantity, ot[mPrizeType], x0, y0);
+    const float speed = 40.f;
+    const float decaySpeed = 100.f;
+    const float timeLife = 1.f;
+    DataParticleOutput pd(mPrizeQuantity, ot[mPrizeType], x0, y0, speed, decaySpeed, timeLife);
 
     pu->AddParticle(pd);
 
