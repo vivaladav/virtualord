@@ -86,6 +86,7 @@ void PlayerAI::PrepareData()
     for(GameObject * obj : objects)
     {
         const GameObjectCategoryId objCat = obj->GetObjectCategory();
+        const GameObjectTypeId objType = obj->GetObjectType();
         const PlayerFaction objFaction = obj->GetFaction();
 
         // store ALL resource generators
@@ -102,7 +103,7 @@ void PlayerAI::PrepareData()
             if(obj->IsStructure())
                 mOwnStructures.push_back(obj);
             // own units
-            else if(obj->GetObjectCategory() == ObjectData::CAT_UNIT)
+            else if(objCat == ObjectData::CAT_UNIT)
                 mOwnUnits.push_back(obj);
         }
         // enemies
@@ -118,7 +119,7 @@ void PlayerAI::PrepareData()
                 if(obj->IsStructure())
                     mVisibleEnemyStructures.push_back(obj);
                 // enemy units
-                else if(obj->GetObjectCategory() == ObjectData::CAT_UNIT)
+                else if(objCat == ObjectData::CAT_UNIT)
                     mVisibleEnemyUnits.push_back(obj);
             }
         }
@@ -129,7 +130,7 @@ void PlayerAI::PrepareData()
             if(obj->CanBeCollected())
                 mCollectables.push_back(obj);
             // store all trees
-            else if(obj->GetObjectType() == ObjectData::TYPE_TREES)
+            else if(objType == ObjectData::TYPE_TREES1 || objType == ObjectData::TYPE_TREES2)
                 mTrees.push_back(obj);
         }
     }

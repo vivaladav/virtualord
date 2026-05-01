@@ -40,7 +40,8 @@ const GameObjectTypeId ObjectData::TYPE_ROCKS = 642473717644353764u;
 const GameObjectTypeId ObjectData::TYPE_SPAWN_TOWER = 3913629860324638827u;
 const GameObjectTypeId ObjectData::TYPE_TEMPLE = 5444014183845484671u;
 const GameObjectTypeId ObjectData::TYPE_TRADING_POST = 8633289264715340838u;
-const GameObjectTypeId ObjectData::TYPE_TREES = 2838858888503128034u;
+const GameObjectTypeId ObjectData::TYPE_TREES1 = 1043979647186399953u;
+const GameObjectTypeId ObjectData::TYPE_TREES2 = 152210149742476428u;
 const GameObjectTypeId ObjectData::TYPE_UNIT_MEDIC1 = 11104197402347881621u;
 const GameObjectTypeId ObjectData::TYPE_UNIT_SCOUT1 = 5683934829746184003u;
 const GameObjectTypeId ObjectData::TYPE_UNIT_SOLDIER1 = 4212048785386180u;
@@ -81,7 +82,8 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::TITLES =
     { ObjectData::TYPE_SPAWN_TOWER, "SPAWN_TOWER"},
     { ObjectData::TYPE_TEMPLE, "TEMPLE"},
     { ObjectData::TYPE_TRADING_POST, "TRADING_POST"},
-    { ObjectData::TYPE_TREES, "TREES"},
+    { ObjectData::TYPE_TREES1, "TREES"},
+    { ObjectData::TYPE_TREES2, "TREES"},
     { ObjectData::TYPE_UNIT_MEDIC1, "UNIT_MEDIC1"},
     { ObjectData::TYPE_UNIT_SCOUT1, "UNIT_SCOUT1"},
     { ObjectData::TYPE_UNIT_SOLDIER1, "UNIT_SOLDIER1"},
@@ -122,7 +124,8 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::DESCRIPTIONS
     { ObjectData::TYPE_ROCKS, "DESC_ROCKS"},
     { ObjectData::TYPE_SPAWN_TOWER, "DESC_SPAWN_TOWER"},
     { ObjectData::TYPE_TEMPLE, "DESC_TEMPLE"},
-    { ObjectData::TYPE_TREES, "DESC_TREES"},
+    { ObjectData::TYPE_TREES1, "DESC_TREES"},
+    { ObjectData::TYPE_TREES2, "DESC_TREES"},
     { ObjectData::TYPE_TRADING_POST, "DESC_TRADING_POST"},
     { ObjectData::TYPE_UNIT_MEDIC1, "DESC_UNIT_MEDIC1"},
     { ObjectData::TYPE_UNIT_SCOUT1, "DESC_UNIT_SCOUT1"},

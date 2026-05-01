@@ -277,9 +277,14 @@ void ObjectsDataRegistry::InitObjectData()
                    ObjectData::TYPE_TRADING_POST, ObjectData::CAT_STRUCTURE,
                    OCS_TRADING, OCAT_GENERIC, WeaponData::TYPE_NULL, 3, 3));
 
-    mDataObjects.emplace(ObjectData::TYPE_TREES,
+    mDataObjects.emplace(ObjectData::TYPE_TREES1,
         ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 1}, {OBJ_ATT_RESISTANCE, 1} }, {},
-                   { TREE1_1T_1 }, SpriteFileTrees, ObjectData::TYPE_TREES, ObjectData::CAT_SCENE_OBJ,
+                   { TREE1_1T_1 }, SpriteFileTrees, ObjectData::TYPE_TREES1, ObjectData::CAT_SCENE_OBJ,
+                   OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
+
+    mDataObjects.emplace(ObjectData::TYPE_TREES2,
+        ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 1}, {OBJ_ATT_RESISTANCE, 1} }, {},
+                   { TREE2_1T_1 }, SpriteFileTrees, ObjectData::TYPE_TREES2, ObjectData::CAT_SCENE_OBJ,
                    OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_UNIT_MEDIC1,
