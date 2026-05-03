@@ -765,10 +765,38 @@ enum SpriteIdTrees : unsigned int
     TREE2_4T_6,
     TREE2_4T_7,
 
+    // TREE TYPE 3
+    // 1 tree
+    TREE3_1T_1,
+    TREE3_1T_2,
+    TREE3_1T_3,
+    TREE3_1T_4,
+    TREE3_1T_5,
+    TREE3_1T_6,
+    TREE3_1T_7,
+    // 2 trees
+    TREE3_2T_1,
+    TREE3_2T_2,
+    TREE3_2T_3,
+    TREE3_2T_4,
+    TREE3_2T_5,
+    TREE3_2T_6,
+    TREE3_2T_7,
+    // 3 trees
+    TREE3_3T_1,
+    TREE3_3T_2,
+    TREE3_3T_3,
+    TREE3_3T_4,
+    TREE3_3T_5,
+    TREE3_3T_6,
+    TREE3_3T_7,
+
     NUM_TREE1_VARIANTS = 8,
     MAX_TREE1_TREES = 4,
     NUM_TREE2_VARIANTS = 7,
     MAX_TREE2_TREES = 4,
+    NUM_TREE3_VARIANTS = 7,
+    MAX_TREE3_TREES = 3,
 };
 
 // UNITS

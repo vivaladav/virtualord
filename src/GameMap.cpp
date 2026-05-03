@@ -512,7 +512,8 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new Diamonds(data, initData);
     else if(ObjectData::TYPE_BLOBS == type)
         o2a.obj  = new Blobs(data, initData);
-    else if(ObjectData::TYPE_TREES1 == type || ObjectData::TYPE_TREES2 == type)
+    else if(ObjectData::TYPE_TREES1 == type || ObjectData::TYPE_TREES2 == type ||
+            ObjectData::TYPE_TREES3 == type)
         o2a.obj  = new Trees(data, initData, variant);
     else if(ObjectData::TYPE_RADAR_STATION == type)
         o2a.obj = new RadarStation(data, initData);

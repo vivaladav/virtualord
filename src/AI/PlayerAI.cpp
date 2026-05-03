@@ -130,7 +130,8 @@ void PlayerAI::PrepareData()
             if(obj->CanBeCollected())
                 mCollectables.push_back(obj);
             // store all trees
-            else if(objType == ObjectData::TYPE_TREES1 || objType == ObjectData::TYPE_TREES2)
+            else if(objType == ObjectData::TYPE_TREES1 || objType == ObjectData::TYPE_TREES2 ||
+                    objType == ObjectData::TYPE_TREES3)
                 mTrees.push_back(obj);
         }
     }

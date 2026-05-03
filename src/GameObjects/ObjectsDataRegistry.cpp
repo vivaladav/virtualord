@@ -287,6 +287,11 @@ void ObjectsDataRegistry::InitObjectData()
                    { TREE2_1T_1 }, SpriteFileTrees, ObjectData::TYPE_TREES2, ObjectData::CAT_SCENE_OBJ,
                    OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
 
+    mDataObjects.emplace(ObjectData::TYPE_TREES3,
+        ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 1}, {OBJ_ATT_RESISTANCE, 1} }, {},
+                   { TREE3_1T_1 }, SpriteFileTrees, ObjectData::TYPE_TREES3, ObjectData::CAT_SCENE_OBJ,
+                   OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
+
     mDataObjects.emplace(ObjectData::TYPE_UNIT_MEDIC1,
         ObjectData({ {OBJ_ATT_ENERGY, 5}, {OBJ_ATT_VIEW_RANGE, 5}, {OBJ_ATT_REGENERATION, 6},
                      {OBJ_ATT_RESISTANCE, 4}, {OBJ_ATT_SHIELD, 4},  {OBJ_ATT_SPEED, 2},

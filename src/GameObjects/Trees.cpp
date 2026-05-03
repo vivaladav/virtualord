@@ -28,6 +28,11 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
         mNumVariants = NUM_TREE2_VARIANTS;
         mMaxNum = MAX_TREE2_TREES;
     }
+    else if(type == ObjectData::TYPE_TREES3)
+    {
+        mNumVariants = NUM_TREE3_VARIANTS;
+        mMaxNum = MAX_TREE3_TREES;
+    }
     else
     {
         mNumVariants = NUM_TREE1_VARIANTS;
@@ -189,6 +194,8 @@ void Trees::SetImage()
 
     if(type == ObjectData::TYPE_TREES2)
         spriteId0 = TREE2_1T_1;
+    else if(type == ObjectData::TYPE_TREES3)
+        spriteId0 = TREE3_1T_1;
 
     const unsigned int baseSpriteId = spriteId0 + (mNumVariants * (mNumTrees - 1));
     const unsigned int spriteId = baseSpriteId + mVariant;
@@ -211,6 +218,16 @@ void Trees::SetObjColors()
         mObjColors.push_back(0x4d4933ff);
         mObjColors.push_back(0x35392dff);
         mObjColors.push_back(0x2b2922ff);
+    }
+    else if(type == ObjectData::TYPE_TREES3)
+    {
+        mObjColors.push_back(0x96a96fff);
+        mObjColors.push_back(0x7d9056ff);
+        mObjColors.push_back(0x536039ff);
+        mObjColors.push_back(0xa3b87aff);
+        mObjColors.push_back(0x37392dff);
+        mObjColors.push_back(0x727255ff);
+        mObjColors.push_back(0x464a36ff);
     }
     else
     {
