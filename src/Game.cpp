@@ -135,12 +135,10 @@ Game::Game(int argc, char * argv[])
     AddMouseListener(mStage);
 
 #ifdef DEV_MODE
-    const float timeAutohide = 1.f;
-#else
-    const float timeAutohide = 2.f;
+    mTimeAutoHideMouse = 1.f;
 #endif
 
-    mStage->AutoHideInactiveCursor(true, timeAutohide);
+    mStage->AutoHideInactiveCursor(true, mTimeAutoHideMouse);
 }
 
 Game::~Game()

@@ -123,6 +123,8 @@ public:
     bool IsTutorialEnabled() const;
     void SetTutorialEnabled(bool val);
 
+    float GetTimeAutoHideMouse() const;
+
     unsigned int AddOnSettingsChangedFunction(const std::function<void()> & f);
     void RemoveOnSettingsChangedFunction(unsigned int fId);
 
@@ -175,6 +177,7 @@ private:
     LanguageId mLanguage;
     int mMapDraggingSpeed = 5;
     int mMapScrollingSpeed = 6;
+    float mTimeAutoHideMouse = 2.f;
     bool mMapDragging = true;
     bool mMapScrollingOnEdges = true;
     bool mAutoEndTurn = true;
@@ -269,6 +272,8 @@ inline void Game::SetAutoEndTurn(bool val)
 
 inline bool Game::IsTutorialEnabled() const { return mTutorialEnabled; }
 inline void Game::SetTutorialEnabled(bool val) { mTutorialEnabled = val; }
+
+inline float Game::GetTimeAutoHideMouse() const { return mTimeAutoHideMouse; }
 
 inline void Game::SetRandSeed(unsigned int seed) { mRandSeed = seed; }
 inline unsigned int Game::GetRandSeed() const { return mRandSeed; }

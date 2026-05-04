@@ -26,6 +26,7 @@
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/ImageButton.h>
 #include <sgl/sgui/Label.h>
+#include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StringManager.h>
 
 #include <iostream>
@@ -41,7 +42,7 @@ constexpr unsigned int colorTxt = 0x73a6bfff;
 constexpr unsigned int colorTxtSlider = 0xadc2ccff;
 constexpr unsigned int sizeTxt = 22;
 
-constexpr int blockSettingW = 500;
+constexpr int blockSettingW = 600;
 constexpr int blockSettingH = 90;
 
 constexpr int panelContentW = 1100;
@@ -895,6 +896,28 @@ void DialogSettings::CreatePanelVideo(sgl::sgui::Widget * parent)
     y += (label->GetHeight() - mComboVMode->GetHeight()) / 2;
     mComboVMode->SetPosition(x, y);
 
+    // AUTO HIDE MOUSE
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("AUTO_HIDE_MOUSE"), font, panel);
+    mHeadersVideo.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    auto stage = sgui::Stage::Instance();
+    auto cb = new SettingsCheckbox(panel);
+    cb->SetChecked(stage->IsAutoHidingCursor());
+
+    x += blockSettingW;
+    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
+    cb->SetPosition(x, y);
+
+    cb->AddOnToggleFunction([this, stage](bool checked)
+                            {
+                                stage->AutoHideInactiveCursor(checked, mGame->GetTimeAutoHideMouse());
+                            });
+
     // VSYNC
     // TODO
     /*
@@ -1040,6 +1063,7 @@ void DialogSettings::OnStringsChanged()
     {
         "RESOLUTION",
         "VIDEO_MODE",
+        "AUTO_HIDE_MOUSE",
     };
 
     numLabels = mHeadersVideo.size();
