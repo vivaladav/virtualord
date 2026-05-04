@@ -133,6 +133,14 @@ Game::Game(int argc, char * argv[])
     mStage = sgui::Stage::Create();
     AddKeyboardListener(mStage);
     AddMouseListener(mStage);
+
+#ifdef DEV_MODE
+    const float timeAutohide = 1.f;
+#else
+    const float timeAutohide = 2.f;
+#endif
+
+    mStage->AutoHideInactiveCursor(true, timeAutohide);
 }
 
 Game::~Game()

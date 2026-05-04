@@ -363,6 +363,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New panel showing energy usage when building structure.\n"
                   "- Completed full tutorial for mission 1.\n"
                   "- Added 2 new types of trees.\n"
+                  "- Mouse cursor is automatically hidden when not moving it for 2 seconds.\n"
                   "\nCHANGES\n"
                   "- Loot boxes now require unit interaction to get loot.\n"
                   "- Extended and improved cell conquest mechanics.\n"
