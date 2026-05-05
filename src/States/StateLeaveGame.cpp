@@ -48,10 +48,8 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFileMiniUnits);
     // PARTICLES
     tm->DestroySprite(SpriteFileParticles);
-    // ROCKS
-    tm->DestroySprite(SpriteRocksFile);
     // SCENE ELEMENTS
-    tm->DestroySprite(SpriteFileSceneElements);
+    tm->DestroySprite(SpriteFileSceneObjects);
     // STRUCTURES
     tm->DestroySprite(SpriteFileStructures);
     // TREES

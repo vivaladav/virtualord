@@ -130,7 +130,7 @@ void ObjectsDataRegistry::InitObjectData()
 
     mDataObjects.emplace(ObjectData::TYPE_MOUNTAINS,
         ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 9}, {OBJ_ATT_RESISTANCE, 7} }, {},
-                   { ID_SCENE_MOUNTAIN_1 }, SpriteFileSceneElements, ObjectData::TYPE_MOUNTAINS,
+                   { ID_MOUNTAIN1_1 }, SpriteFileSceneObjects, ObjectData::TYPE_MOUNTAINS,
                    ObjectData::CAT_SCENE_OBJ, OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 2, 2));
 
     mDataObjects.emplace(ObjectData::TYPE_PRACTICE_TARGET,
@@ -246,8 +246,8 @@ void ObjectsDataRegistry::InitObjectData()
 
     mDataObjects.emplace(ObjectData::TYPE_ROCKS,
         ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 6}, {OBJ_ATT_RESISTANCE, 6} }, {},
-                   { ROCKS_ROW_1 }, SpriteRocksFile, ObjectData::TYPE_ROCKS, ObjectData::CAT_SCENE_OBJ,
-                   OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
+                   { ID_ROCKS1_01 }, SpriteFileSceneObjects, ObjectData::TYPE_ROCKS,
+                   ObjectData::CAT_SCENE_OBJ, OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_SPAWN_TOWER,
         ObjectData({ {OBJ_ATT_ENERGY, 6}, {OBJ_ATT_VIEW_RANGE, 4}, {OBJ_ATT_REGENERATION, 3},

@@ -52,14 +52,13 @@ void SceneObject::SetImage()
 
     if(type == ObjectData::TYPE_ROCKS)
     {
-        const unsigned int spriteId = SpriteRocksId::ROCKS_ROW_END_L_1 + mVariant;
-        tex = tm->GetSprite(SpriteRocksFile, spriteId);
+        const unsigned int spriteId = ID_ROCKS1_01 + mVariant;
+        tex = tm->GetSprite(SpriteFileSceneObjects, spriteId);
     }
     else if(type == ObjectData::TYPE_MOUNTAINS)
     {
-        const int sel = static_cast<int>(IsSelected());
-        const unsigned int spriteId = ID_SCENE_MOUNTAIN_L + mVariant + (sel * NUM_MOUNTAINS_SPRITES);
-        tex = tm->GetSprite(SpriteFileSceneElements, spriteId);
+        const unsigned int spriteId = ID_MOUNTAIN1_L + mVariant;
+        tex = tm->GetSprite(SpriteFileSceneObjects, spriteId);
     }
     // this should never happen
     else
@@ -72,12 +71,24 @@ void SceneObject::SetObjColors()
 {
     mObjColors.clear();
 
-    mObjColors.push_back(0xad9485ff);
-    mObjColors.push_back(0xa38776ff);
-    mObjColors.push_back(0x997966ff);
-    mObjColors.push_back(0x7a6152ff);
-    mObjColors.push_back(0x6b5548ff);
-    mObjColors.push_back(0x584a41ff);
+    const GameObjectTypeId type = GetObjectType();
+
+    if(type == ObjectData::TYPE_MOUNTAINS)
+    {
+        mObjColors.push_back(0xad9485ff);
+        mObjColors.push_back(0xa38776ff);
+        mObjColors.push_back(0x997966ff);
+        mObjColors.push_back(0x7a6152ff);
+        mObjColors.push_back(0x6b5548ff);
+        mObjColors.push_back(0x584a41ff);
+    }
+    else if(type == ObjectData::TYPE_ROCKS)
+    {
+        mObjColors.push_back(0x999999ff);
+        mObjColors.push_back(0x808080ff);
+        mObjColors.push_back(0x666666ff);
+        mObjColors.push_back(0x333333ff);
+    }
 }
 
 } // namespace game
