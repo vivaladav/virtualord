@@ -8,29 +8,31 @@ extern const char SpriteFileCells[];
 
 enum SpriteIdCells : unsigned int
 {
-    IND_EMPTY,                          // 0
-    IND_SCENE_ROCKS,
-    IND_SCENE_ROCKS_SURR,
-    IND_NO_FACTION_OBJ,
-    IND_BLOBS_SOURCE,
-    IND_DIAMONDS_SOURCE,
-    IND_BLOBS_SURR,
-    IND_DIAMONDS_SURR,
-    IND_TREES1,
-    IND_TREES1_SURR,
-    IND_F1,                             // 10
-    IND_F1_CONNECTED,
-    IND_F1_INFLUENCED,
-    IND_F2,
-    IND_F2_CONNECTED,
-    IND_F2_INFLUENCED,
-    IND_F3,
-    IND_F3_CONNECTED,
-    IND_F3_INFLUENCED,
-    IND_FOG_OF_WAR,
-    IND_NO_FACTION_OBJ_SURR,            // 20
+    ID_TILE_EMPTY,                          // 0
+    ID_TILE_MOUNTAINS,
+    ID_TILE_MOUNTAINS_SURR,
+    ID_TILE_NO_FACTION_OBJ,
+    ID_TILE_BLOBS_SOURCE,
+    ID_TILE_DIAMONDS_SOURCE,
+    ID_TILE_BLOBS_SURR,
+    ID_TILE_DIAMONDS_SURR,
+    ID_TILE_TREES1,
+    ID_TILE_TREES1_SURR,
+    ID_TILE_F1,                             // 10
+    ID_TILE_F1_CONNECTED,
+    ID_TILE_F1_INFLUENCED,
+    ID_TILE_F2,
+    ID_TILE_F2_CONNECTED,
+    ID_TILE_F2_INFLUENCED,
+    ID_TILE_F3,
+    ID_TILE_F3_CONNECTED,
+    ID_TILE_F3_INFLUENCED,
+    ID_TILE_FOG_OF_WAR,
+    ID_TILE_NO_FACTION_OBJ_SURR,            // 20
+    ID_TILE_ROCKS,
+    ID_TILE_ROCKS_SURR,
 
-    NUM_IND_CELLS
+    NUM_TILE_CELL_IDS
 };
 
 // CITY

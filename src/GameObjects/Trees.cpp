@@ -140,7 +140,7 @@ void Trees::SpawnTree(int r0, int c0)
     gm->CreateObject(MapLayers::REGULAR_OBJECTS, GetObjectType(), variant, NO_FACTION, r0, c0, false);
 
     // set cell type of new tree
-    gm->SetCellType(r0, c0, TREES1);
+    gm->SetCellType(r0, c0, CT_TREES1);
 
     // set cell type of surrounding cells
     const int rows = gm->GetNumRows();
@@ -162,7 +162,7 @@ void Trees::SpawnTree(int r0, int c0)
 
             if(!GameMapCell::IsTypePrimary(cell.basicType))
             {
-                gm->SetCellType(r, c, TREES1_SURR);
+                gm->SetCellType(r, c, CT_TREES1_SURR);
                 gm->UpdateCellType(ind, cell);
             }
         }

@@ -2967,56 +2967,59 @@ void GameMap::ClearCell(GameMapCell & gcell)
         mCollGen.erase(it);
     }
 
-    gcell.currType = EMPTY;
+    gcell.currType = CT_EMPTY;
 }
 
 int GameMap::DefineCellType(unsigned int ind, const GameMapCell & cell)
 {
     // if cell is not visible it's always Fog Of War
     if(!mGame->GetLocalPlayer()->IsCellVisible(ind))
-        return FOG_OF_WAR;
+        return CT_FOG_OF_WAR;
 
     // scene cell
-    if(SCENE_ROCKS == cell.currType || DIAMONDS_SOURCE == cell.currType ||
-       BLOBS_SOURCE == cell.currType || TREES1 == cell.currType)
+    const bool sceneCell = CT_MOUNTAINS == cell.currType || CT_DIAMONDS_SOURCE == cell.currType ||
+                           CT_BLOBS_SOURCE == cell.currType || CT_TREES1 == cell.currType ||
+                           CT_ROCKS == cell.currType;
+
+    if(sceneCell)
         return cell.currType;
 
     const PlayerFaction ownerFaction = cell.owner ? cell.owner->GetFaction() : NO_FACTION;
 
-    int type = EMPTY;
+    int type = CT_EMPTY;
 
     switch(ownerFaction)
     {
         case FACTION_1:
             if(cell.linked)
-                type = F1_CONNECTED;
+                type = CT_F1_CONNECTED;
             else
-                type = F1;
+                type = CT_F1;
         break;
 
         case FACTION_2:
             if(cell.linked)
-                type = F2_CONNECTED;
+                type = CT_F2_CONNECTED;
             else
-                type = F2;
+                type = CT_F2;
         break;
 
         case FACTION_3:
             if(cell.linked)
-                type = F3_CONNECTED;
+                type = CT_F3_CONNECTED;
             else
-                type = F3;
+                type = CT_F3;
         break;
 
         // no owner
         default:
         {
             if(0 == cell.influencer)
-                type = F1_INFLUENCED;
+                type = CT_F1_INFLUENCED;
             else if(1 == cell.influencer)
-                type = F2_INFLUENCED;
+                type = CT_F2_INFLUENCED;
             else if(2 == cell.influencer)
-                type = F3_INFLUENCED;
+                type = CT_F3_INFLUENCED;
             // no influence
             else
                 type = cell.basicType;

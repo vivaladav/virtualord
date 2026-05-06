@@ -537,7 +537,7 @@ void ScreenGame::CreateIsoMap()
 
     // iso map
     mIsoMap = new IsoMap(TILE_W);
-    mIsoMap->SetTiles(SpriteFileCells, NUM_IND_CELLS);
+    mIsoMap->SetTiles(SpriteFileCells, NUM_TILE_CELL_IDS);
 }
 
 void ScreenGame::CreateLayers()
@@ -882,9 +882,9 @@ void ScreenGame::LoadMapFile()
             mGameMap->SetCellType(ind, t);
 
             // create collectable generators
-            if(t == BLOBS_SOURCE)
+            if(t == CT_BLOBS_SOURCE)
                 mGameMap->CreateCollectableGenerator(r, c, RES_BLOBS);
-            else if(t == DIAMONDS_SOURCE)
+            else if(t == CT_DIAMONDS_SOURCE)
                 mGameMap->CreateCollectableGenerator(r, c, RES_DIAMONDS);
         }
     }

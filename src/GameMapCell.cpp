@@ -9,17 +9,18 @@ namespace game
 
 const std::unordered_set<CellTypes> GameMapCell::PRIMARY_TYPES =
 {
-    SCENE_ROCKS,
-    NO_FACTION_OBJ,
-    BLOBS_SOURCE,
-    DIAMONDS_SOURCE,
-    TREES1,
-    F1,
-    F1_CONNECTED,
-    F2,
-    F2_CONNECTED,
-    F3,
-    F3_CONNECTED,
+    CT_MOUNTAINS,
+    CT_NO_FACTION_OBJ,
+    CT_BLOBS_SOURCE,
+    CT_DIAMONDS_SOURCE,
+    CT_TREES1,
+    CT_F1,
+    CT_F1_CONNECTED,
+    CT_F2,
+    CT_F2_CONNECTED,
+    CT_F3,
+    CT_F3_CONNECTED,
+    CT_ROCKS,
 };
 
 GameMapCell::GameMapCell()
