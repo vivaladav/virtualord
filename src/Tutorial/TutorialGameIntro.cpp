@@ -176,7 +176,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
         {
             const auto unit = local->GetUnit(indUnit1);
             const Cell2D cellEnd(38, 10);
-            const sgl::core::Pointd2D p0(1250, 300);
+            const sgl::core::Pointd2D p0(1150, 500);
             return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
@@ -226,7 +226,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
         {
             const auto unit = local->GetUnit(indUnit1);
             const Cell2D cellEnd(29, 10);
-            const sgl::core::Pointd2D p0(1250, 300);
+            const sgl::core::Pointd2D p0(1150, 500);
             return new StepGameConquerCellsEnd(mScreen->mIsoMap, unit, cellEnd, p0);
         });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
@@ -237,7 +237,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             {
                 const auto unit = local->GetUnit(indUnit1);
                 const Cell2D target(17, 15);
-                const sgl::core::Pointd2D p0(550, 100);
+                const sgl::core::Pointd2D p0(1000, 100);
                 return new StepGameMoveUnitToCorner(unit, mScreen->mIsoMap, target, p0);
             });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
@@ -304,11 +304,16 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             {
                 const auto unit = local->GetUnit(indUnit1);
                 const Cell2D cellEnd(14, 15);
-                return new StepGameWallBuildEnd(mScreen->mIsoMap, unit, cellEnd);
+                const sgl::core::Pointd2D p0(900, 150);
+                return new StepGameWallBuildEnd(mScreen->mIsoMap, unit, cellEnd, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE VIEW BACK TO BASE
-    AddStep([panelTurn] { return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1"); });
+    AddStep([panelTurn]
+    {
+        const sgl::core::Pointd2D p0(800, 600);
+        return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1", p0);
+    });
     AddStep([] { return new StepDelay(1.0f); });
     // ===== PART 2 =====
     // BUILD SECOND UNIT
@@ -338,7 +343,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
         {
             const auto unit = local->GetUnit(indUnit2);
             const GameObject * gen = GetObjectInCell(cellMatGen2);
-            const sgl::core::Pointd2D p0(1150, 450);
+            const sgl::core::Pointd2D p0(1150, 500);
 
             return new StepGameConquerStructSimple(unit, gen, mScreen->mIsoMap, p0);
         });
@@ -496,10 +501,11 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             {
                 const auto unit = local->GetUnit(indUnit2);
                 const Cell2D cellEnd(37, 30);
-                return new StepGameWallBuildEnd(mScreen->mIsoMap, unit, cellEnd);
+                const sgl::core::Pointd2D p0(900, 250);
+                return new StepGameWallBuildEnd(mScreen->mIsoMap, unit, cellEnd, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([] { return new StepGameMoveCamera(500, 0, 500.f); });
+    AddStep([] { return new StepGameMoveCamera(500, 0, 600.f); });
     // UPGRADE UNIT
     AddStep([panelActions] { return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b"); });
     AddStep([this] { return new StepGameUpgradeUnit(mScreen->mHUD, false); });
@@ -528,7 +534,11 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this] { return new StepGameWaitTurn(mScreen); });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE VIEW BACK TO BASE
-    AddStep([panelTurn] { return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1b"); });
+    AddStep([panelTurn]
+            {
+                const sgl::core::Pointd2D p0(800, 550);
+                return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1b", p0);
+            });
     AddStep([] { return new StepDelay(1.0f); });
     // ===== PART 5 =====
     // INTRODUCE MISSION GOALS
@@ -563,7 +573,11 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
             });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE VIEW BACK TO BASE
-    AddStep([panelTurn] { return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1c"); });
+    AddStep([panelTurn]
+            {
+                const sgl::core::Pointd2D p0(800, 500);
+                return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1c", p0);
+            });
     AddStep([] { return new StepDelay(1.0f); });
     // COLLECT PRIMARY MISSION GOAL
     AddStep([localBase] { return new StepGameSelectBase(localBase); });

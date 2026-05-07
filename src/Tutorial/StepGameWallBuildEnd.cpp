@@ -15,7 +15,7 @@ namespace game
 {
 
 StepGameWallBuildEnd::StepGameWallBuildEnd(const IsoMap * isoMap, const Unit * u,
-                                           const Cell2D & cellEnd)
+                                           const Cell2D & cellEnd, const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
     , mUnit(u)
@@ -29,7 +29,7 @@ StepGameWallBuildEnd::StepGameWallBuildEnd(const IsoMap * isoMap, const Unit * u
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(900, 150);
+    info->SetPosition(p0.x, p0.y);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BUIL_WALL_4"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, u]

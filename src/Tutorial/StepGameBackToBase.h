@@ -2,6 +2,8 @@
 
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <sgl/core/Point.h>
+
 namespace sgl { namespace sgui { class AbstractButton; } }
 
 namespace game
@@ -13,7 +15,8 @@ class PanelTurnControl;
 class StepGameBackToBase : public TutorialInfoStep
 {
 public:
-    StepGameBackToBase(const PanelTurnControl * panel, const char * text1);
+    StepGameBackToBase(const PanelTurnControl * panel, const char * text1,
+                       const sgl::core::Pointd2D & p0);
     ~StepGameBackToBase();
 
 private:

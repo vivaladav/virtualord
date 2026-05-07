@@ -3,6 +3,8 @@
 #include "Cell2D.h"
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <sgl/core/Point.h>
+
 namespace game
 {
 
@@ -13,7 +15,8 @@ class Unit;
 class StepGameWallBuildEnd : public TutorialInfoStep
 {
 public:
-    StepGameWallBuildEnd(const IsoMap * isoMap, const Unit * u, const Cell2D & cellEnd);
+    StepGameWallBuildEnd(const IsoMap * isoMap, const Unit * u, const Cell2D & cellEnd,
+                         const sgl::core::Pointd2D & p0);
     ~StepGameWallBuildEnd();
 
     void Update(float delta) override;

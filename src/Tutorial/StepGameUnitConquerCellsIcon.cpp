@@ -27,7 +27,7 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1100, 600);
+    info->SetPosition(1100, 650);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_UNIT_CONQUE_CELLS_ICON_1"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, panel]
