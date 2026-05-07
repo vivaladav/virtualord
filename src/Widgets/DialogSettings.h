@@ -37,10 +37,10 @@ private:
 
     void SetPositions();
 
-    void CreatePanelGame(sgl::sgui::Widget * parent);
-    void CreatePanelAudio(sgl::sgui::Widget * parent);
-    void CreatePanelVideo(sgl::sgui::Widget * parent);
-    void CreatePanelControls(sgl::sgui::Widget * parent);
+    void CreatePanelGame();
+    void CreatePanelAudio();
+    void CreatePanelVideo();
+    void CreatePanelControls();
 
     void UpdateCurrentResolution();
 

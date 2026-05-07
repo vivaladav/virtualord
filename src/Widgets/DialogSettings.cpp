@@ -425,16 +425,16 @@ DialogSettings::DialogSettings(Game * game)
     x = WidgetsConstants::MarginDialogContentL;
     y += btn->GetHeight();
 
-    CreatePanelGame(this);
+    CreatePanelGame();
     mPanels[Panel::GAME]->SetPosition(x, y);
 
-    CreatePanelAudio(this);
+    CreatePanelAudio();
     mPanels[Panel::AUDIO]->SetPosition(x, y);
 
-    CreatePanelVideo(this);
+    CreatePanelVideo();
     mPanels[Panel::VIDEO]->SetPosition(x, y);
 
-    CreatePanelControls(this);
+    CreatePanelControls();
     mPanels[Panel::CONTROLS]->SetPosition(x, y);
 
     // default panel is GAME
@@ -471,12 +471,12 @@ void DialogSettings::SetPositions()
     mBgR->SetPosition(x, y);
 }
 
-void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
+void DialogSettings::CreatePanelGame()
 {
     using namespace sgl;
 
     const int h = 650;
-    auto panel = new sgui::Widget(parent);
+    auto panel = new sgui::Widget(this);
     mPanels[Panel::GAME] = panel;
 
     int x = contX0;
@@ -484,8 +484,6 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
 
     auto fm = graphic::FontManager::Instance();
     auto font = fm->GetFont(WidgetsConstants::FontFileText, sizeTxt, graphic::Font::NORMAL);
-
-    auto tm = graphic::TextureManager::Instance();
 
     // LANGUAGE
     auto label = new sgui::Label(mSM->GetCString("LANGUAGE"), font, panel);
@@ -512,107 +510,6 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
         mGame->SetLanguage(static_cast<LanguageId>(ind));
     });
 
-    // MAP SCROLLING SPEED
-    x = contX0;
-    y += blockSettingH;
-
-    label = new sgui::Label(mSM->GetCString("MAP_SCROLL_SPEED"), font, panel);
-    mHeadersGame.emplace_back(label);
-    label->SetColor(colorTxt);
-    label->SetPosition(x, y);
-
-    const int minSpeed = 1;
-    const int maxSpeed = 10;
-    auto slider = new SliderSettings(panel);
-    slider->SetMinMax(minSpeed, maxSpeed);
-    slider->SetValue(mGame->GetMapScrollingSpeed());
-
-    x += blockSettingW;
-    y += (label->GetHeight() - slider->GetHeight()) * 0.5;
-    slider->SetPosition(x, y);
-
-    const int marginSliderR = 30;
-    label = new sgui::Label(std::to_string(slider->GetValue()).c_str(), font, panel);
-    label->SetColor(colorTxtSlider);
-    label->SetPosition(slider->GetX() + slider->GetWidth() + marginSliderR, slider->GetY());
-
-    slider->SetOnValueChanged([this, label](int val)
-    {
-        mGame->SetMapScrollingSpeed(val);
-
-        label->SetText(std::to_string(val).c_str());
-    });
-
-    // MAP DRAGGING SPEED
-    x = contX0;
-    y += blockSettingH;
-
-    label = new sgui::Label(mSM->GetCString("MAP_DRAG_SPEED"), font, panel);
-    mHeadersGame.emplace_back(label);
-    label->SetColor(colorTxt);
-    label->SetPosition(x, y);
-
-    slider = new SliderSettings(panel);
-    slider->SetMinMax(minSpeed, maxSpeed);
-    slider->SetValue(mGame->GetMapDraggingSpeed());
-
-    x += blockSettingW;
-    y += (label->GetHeight() - slider->GetHeight()) * 0.5;
-    slider->SetPosition(x, y);
-
-    label = new sgui::Label(std::to_string(slider->GetValue()).c_str(), font, panel);
-    label->SetColor(colorTxtSlider);
-    label->SetPosition(slider->GetX() + slider->GetWidth() + marginSliderR, slider->GetY());
-
-    slider->SetOnValueChanged([this, label](int val)
-    {
-        mGame->SetMapDraggingSpeed(val);
-
-        label->SetText(std::to_string(val).c_str());
-    });
-
-    // MAP SCROLLING
-    x = contX0;
-    y += blockSettingH;
-
-    label = new sgui::Label(mSM->GetCString("EDGE_MAP_SCROLL"), font, panel);
-    mHeadersGame.emplace_back(label);
-    label->SetColor(colorTxt);
-    label->SetPosition(x, y);
-
-    auto cb = new SettingsCheckbox(panel);
-    cb->SetChecked(mGame->IsMapScrollingOnEdges());
-
-    x += blockSettingW;
-    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
-    cb->SetPosition(x, y);
-
-    cb->AddOnToggleFunction([this](bool checked)
-    {
-        mGame->SetMapScrollingOnEdges(checked);
-    });
-
-    // MAP DRAGGING
-    x = contX0;
-    y += blockSettingH;
-
-    label = new sgui::Label(mSM->GetCString("MAP_DRAG"), font, panel);
-    mHeadersGame.emplace_back(label);
-    label->SetColor(colorTxt);
-    label->SetPosition(x, y);
-
-    cb = new SettingsCheckbox(panel);
-    cb->SetChecked(mGame->IsMapDragging());
-
-    x += blockSettingW;
-    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
-    cb->SetPosition(x, y);
-
-    cb->AddOnToggleFunction([this](bool checked)
-    {
-        mGame->SetMapDragging(checked);
-    });
-
     // AUTO END TURN
     x = contX0;
     y += blockSettingH;
@@ -622,7 +519,7 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    cb = new SettingsCheckbox(panel);
+    auto cb = new SettingsCheckbox(panel);
     cb->SetChecked(mGame->IsAutoEndTurnEnabled());
 
     x += blockSettingW;
@@ -656,11 +553,11 @@ void DialogSettings::CreatePanelGame(sgl::sgui::Widget * parent)
     });
 }
 
-void DialogSettings::CreatePanelAudio(sgl::sgui::Widget *parent)
+void DialogSettings::CreatePanelAudio()
 {
     using namespace sgl;
 
-    auto panel = new sgui::Widget(parent);
+    auto panel = new sgui::Widget(this);
     mPanels[Panel::AUDIO] = panel;
 
     int x = contX0;
@@ -671,8 +568,6 @@ void DialogSettings::CreatePanelAudio(sgl::sgui::Widget *parent)
 
     auto am = media::AudioManager::Instance();
     auto ap = am->GetPlayer();
-
-    auto tm = graphic::TextureManager::Instance();
 
     // MUSIC ENABLED
     auto label = new sgui::Label(mSM->GetCString("MUSIC"), font, panel);
@@ -786,11 +681,11 @@ void DialogSettings::CreatePanelAudio(sgl::sgui::Widget *parent)
     });
 }
 
-void DialogSettings::CreatePanelVideo(sgl::sgui::Widget * parent)
+void DialogSettings::CreatePanelVideo()
 {
     using namespace sgl;
 
-    auto panel = new sgui::Widget(parent);
+    auto panel = new sgui::Widget(this);
     mPanels[Panel::VIDEO] = panel;
 
     int x = contX0;
@@ -937,12 +832,116 @@ void DialogSettings::CreatePanelVideo(sgl::sgui::Widget * parent)
     */
 }
 
-void DialogSettings::CreatePanelControls(sgl::sgui::Widget * parent)
+void DialogSettings::CreatePanelControls()
 {
     using namespace sgl;
 
-    auto panel = new sgui::Widget(parent);
+    auto panel = new sgui::Widget(this);
     mPanels[Panel::CONTROLS] = panel;
+
+    int x = contX0;
+    int y = contY0;
+
+    auto fm = graphic::FontManager::Instance();
+    auto font = fm->GetFont(WidgetsConstants::FontFileText, sizeTxt, graphic::Font::NORMAL);
+
+    // EDGE MAP SCROLLING
+    auto label = new sgui::Label(mSM->GetCString("EDGE_MAP_SCROLL"), font, panel);
+    mHeadersGame.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    auto cb = new SettingsCheckbox(panel);
+    cb->SetChecked(mGame->IsMapScrollingOnEdges());
+
+    x += blockSettingW;
+    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
+    cb->SetPosition(x, y);
+
+    cb->AddOnToggleFunction([this](bool checked)
+                            {
+                                mGame->SetMapScrollingOnEdges(checked);
+                            });
+
+    // MAP SCROLLING SPEED
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("MAP_SCROLL_SPEED"), font, panel);
+    mHeadersGame.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    const int minSpeed = 1;
+    const int maxSpeed = 10;
+    auto slider = new SliderSettings(panel);
+    slider->SetMinMax(minSpeed, maxSpeed);
+    slider->SetValue(mGame->GetMapScrollingSpeed());
+
+    x += blockSettingW;
+    y += (label->GetHeight() - slider->GetHeight()) * 0.5;
+    slider->SetPosition(x, y);
+
+    const int marginSliderR = 30;
+    label = new sgui::Label(std::to_string(slider->GetValue()).c_str(), font, panel);
+    label->SetColor(colorTxtSlider);
+    label->SetPosition(slider->GetX() + slider->GetWidth() + marginSliderR, slider->GetY());
+
+    slider->SetOnValueChanged([this, label](int val)
+                              {
+                                  mGame->SetMapScrollingSpeed(val);
+
+                                  label->SetText(std::to_string(val).c_str());
+                              });
+
+    // MAP DRAGGING
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("MAP_DRAG"), font, panel);
+    mHeadersGame.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    cb = new SettingsCheckbox(panel);
+    cb->SetChecked(mGame->IsMapDragging());
+
+    x += blockSettingW;
+    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
+    cb->SetPosition(x, y);
+
+    cb->AddOnToggleFunction([this](bool checked)
+                            {
+                                mGame->SetMapDragging(checked);
+                            });
+
+    // MAP DRAGGING SPEED
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("MAP_DRAG_SPEED"), font, panel);
+    mHeadersGame.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    slider = new SliderSettings(panel);
+    slider->SetMinMax(minSpeed, maxSpeed);
+    slider->SetValue(mGame->GetMapDraggingSpeed());
+
+    x += blockSettingW;
+    y += (label->GetHeight() - slider->GetHeight()) * 0.5;
+    slider->SetPosition(x, y);
+
+    label = new sgui::Label(std::to_string(slider->GetValue()).c_str(), font, panel);
+    label->SetColor(colorTxtSlider);
+    label->SetPosition(slider->GetX() + slider->GetWidth() + marginSliderR, slider->GetY());
+
+    slider->SetOnValueChanged([this, label](int val)
+                              {
+                                  mGame->SetMapDraggingSpeed(val);
+
+                                  label->SetText(std::to_string(val).c_str());
+                              });
 }
 
 void DialogSettings::UpdateCurrentResolution()
