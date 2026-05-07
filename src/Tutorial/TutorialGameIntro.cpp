@@ -488,6 +488,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     // AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     // AddStep([this] { return new StepGameWaitTurn(mScreen); });
     // BUILD WALL FROM TOWER
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameWallBuildIntro(); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
