@@ -371,6 +371,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Extended and improved cell conquest mechanics.\n"
                   "- New icon for mission goal completed.\n"
                   "- Extended and improved wall building.\n"
+                  "- Moved map navigation options to panel CONTROLS in Settings.\n"
                   "\n"
                   "\nFIXES\n"
                   "- Fixed crash when mini-units move only 1 cell.\n"
