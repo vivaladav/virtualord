@@ -345,7 +345,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.5 - \"???\"", font, content);
+    auto title = new sgui::Label("0.6.5 - \"Virtualord 101\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
