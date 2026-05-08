@@ -372,7 +372,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New icon for mission goal completed.\n"
                   "- Extended and improved wall building.\n"
                   "- Moved map navigation options to panel CONTROLS in Settings.\n"
-                  "\n"
+                  "- Redesigned layout of settings dialog.\n"
                   "\nFIXES\n"
                   "- Fixed crash when mini-units move only 1 cell.\n"
                   "- Fixed camera never stopping scrolling when opening a dialog.\n"

@@ -62,6 +62,7 @@ private:
     std::vector<sgl::sgui::Label *> mHeadersGame;
     std::vector<sgl::sgui::Label *> mHeadersAudio;
     std::vector<sgl::sgui::Label *> mHeadersVideo;
+    std::vector<sgl::sgui::Label *> mHeadersControls;
 
     Game * mGame = nullptr;
 

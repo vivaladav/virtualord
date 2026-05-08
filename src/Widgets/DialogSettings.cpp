@@ -29,6 +29,7 @@
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StringManager.h>
 
+#include <cassert>
 #include <iostream>
 #include <sstream>
 
@@ -48,6 +49,7 @@ constexpr int blockSettingH = 90;
 constexpr int panelContentW = 1100;
 constexpr int contX0 = 30;
 constexpr int contY0 = 40;
+constexpr int marginPanelH = 30;
 
 constexpr int minResW = 1024;
 constexpr float minResRatio = 1.25f;
@@ -397,7 +399,6 @@ DialogSettings::DialogSettings(Game * game)
     mButtonsTabs.emplace_back(btn);
     mGroupButtons->AddButton(btn);
 
-
     btn = new ButtonPanelTab(mSM->GetCString("AUDIO"), this);
     mButtonsTabs.emplace_back(btn);
     mGroupButtons->AddButton(btn);
@@ -405,7 +406,6 @@ DialogSettings::DialogSettings(Game * game)
     btn = new ButtonPanelTab(mSM->GetCString("VIDEO"), this);
     mButtonsTabs.emplace_back(btn);
     mGroupButtons->AddButton(btn);
-
 
     btn = new ButtonPanelTab(mSM->GetCString("CONTROLS"), this);
     mButtonsTabs.emplace_back(btn);
@@ -501,8 +501,9 @@ void DialogSettings::CreatePanelGame()
 
     mComboLang->SetActiveItem(mGame->GetLanguage());
 
-    x += blockSettingW;
+    x = panelContentW - mComboLang->GetWidth() - marginPanelH;
     y += (label->GetHeight() - mComboLang->GetHeight()) * 0.5;
+
     mComboLang->SetPosition(x, y);
 
     mComboLang->SetOnActiveChanged([this](int ind)
@@ -522,7 +523,7 @@ void DialogSettings::CreatePanelGame()
     auto cb = new SettingsCheckbox(panel);
     cb->SetChecked(mGame->IsAutoEndTurnEnabled());
 
-    x += blockSettingW;
+    x = panelContentW - cb->GetWidth() - marginPanelH;
     y += (label->GetHeight() - cb->GetHeight()) * 0.5;
     cb->SetPosition(x, y);
 
@@ -543,7 +544,7 @@ void DialogSettings::CreatePanelGame()
     cb = new SettingsCheckbox(panel);
     cb->SetChecked(mGame->IsTutorialEnabled());
 
-    x += blockSettingW;
+    x = panelContentW - cb->GetWidth() - marginPanelH;
     y += (label->GetHeight() - cb->GetHeight()) * 0.5;
     cb->SetPosition(x, y);
 
@@ -578,7 +579,7 @@ void DialogSettings::CreatePanelAudio()
     auto cb = new SettingsCheckbox(panel);
     cb->SetChecked(ap->IsMusicEnabled());
 
-    x += blockSettingW;
+    x = panelContentW - cb->GetWidth() - marginPanelH;
     y += (label->GetHeight() - cb->GetHeight()) * 0.5;
     cb->SetPosition(x, y);
 
@@ -591,30 +592,9 @@ void DialogSettings::CreatePanelAudio()
             ap->PlayMusic("menus/menu_01.ogg");
     });
 
-    // SOUNDS ENABLED
-    x = contX0;
-    y = contY0 + blockSettingH;
-
-    label = new sgui::Label(mSM->GetCString("SFX"), font, panel);
-    mHeadersAudio.emplace_back(label);
-    label->SetColor(colorTxt);
-    label->SetPosition(x, y);
-
-    cb = new SettingsCheckbox(panel);
-    cb->SetChecked(ap->IsSoundEnabled());
-
-    x += blockSettingW;
-    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
-    cb->SetPosition(x, y);
-
-    cb->AddOnToggleFunction([ap](bool checked)
-    {
-        ap->SetSoundEnabled(checked);
-    });
-
     // MUSIC VOLUME
     x = contX0;
-    y = contY0 + blockSettingH * 2;
+    y = contY0 + blockSettingH;
 
     const int volumeMin = 0;
     const int volumeMax = 100;
@@ -632,19 +612,43 @@ void DialogSettings::CreatePanelAudio()
     slider->SetStep(volumeStep);
     slider->SetValue(am->GetVolumeMusic());
 
-    x += blockSettingW;
+    label = new sgui::Label(std::to_string(volumeMax).c_str(), font, panel);
+    label->SetColor(colorTxtSlider);
+
+    x = panelContentW - slider->GetWidth() - marginPanelH - marginSliderR - label->GetWidth();
     y += (label->GetHeight() - slider->GetHeight()) * 0.5;
     slider->SetPosition(x, y);
 
-    label = new sgui::Label(std::to_string(slider->GetValue()).c_str(), font, panel);
-    label->SetColor(colorTxtSlider);
     label->SetPosition(slider->GetX() + slider->GetWidth() + marginSliderR, slider->GetY());
 
-    slider->SetOnValueChanged([label, am](int val)
-    {
-        am->SetVolumeMusic(val);
+    label->SetText(std::to_string(slider->GetValue()).c_str());
 
-        label->SetText(std::to_string(val).c_str());
+    slider->SetOnValueChanged([label, am](int val)
+                              {
+                                  am->SetVolumeMusic(val);
+
+                                  label->SetText(std::to_string(val).c_str());
+                              });
+
+    // SOUNDS ENABLED
+    x = contX0;
+    y = contY0 + blockSettingH * 2;
+
+    label = new sgui::Label(mSM->GetCString("SFX"), font, panel);
+    mHeadersAudio.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    cb = new SettingsCheckbox(panel);
+    cb->SetChecked(ap->IsSoundEnabled());
+
+    x = panelContentW - cb->GetWidth() - marginPanelH;
+    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
+    cb->SetPosition(x, y);
+
+    cb->AddOnToggleFunction([ap](bool checked)
+    {
+        ap->SetSoundEnabled(checked);
     });
 
     // SOUNDS VOLUME
@@ -661,13 +665,16 @@ void DialogSettings::CreatePanelAudio()
     slider->SetStep(volumeStep);
     slider->SetValue(am->GetVolumeSound());
 
-    x += blockSettingW;
+    label = new sgui::Label(std::to_string(volumeMax).c_str(), font, panel);
+    label->SetColor(colorTxtSlider);
+
+    x = panelContentW - slider->GetWidth() - marginPanelH - marginSliderR - label->GetWidth();
     y += (label->GetHeight() - slider->GetHeight()) * 0.5;
     slider->SetPosition(x, y);
 
-    label = new sgui::Label(std::to_string(slider->GetValue()).c_str(), font, panel);
-    label->SetColor(colorTxtSlider);
     label->SetPosition(slider->GetX() + slider->GetWidth() + marginSliderR, slider->GetY());
+
+    label->SetText(std::to_string(slider->GetValue()).c_str());
 
     slider->SetOnValueChanged([label, am](int val)
     {
@@ -755,7 +762,7 @@ void DialogSettings::CreatePanelVideo()
         win->SetDisplayMode(item->GetDisplay(), item->GetMode());
     });
 
-    x += blockSettingW;
+    x = panelContentW - mComboRes->GetWidth() - marginPanelH;
     y += (label->GetHeight() - mComboRes->GetHeight()) * 0.5;
     mComboRes->SetPosition(x, y);
 
@@ -787,7 +794,7 @@ void DialogSettings::CreatePanelVideo()
 
     mComboRes->SetEnabled(videoMode != sgl::graphic::Window::VM_BORDERLESS);
 
-    x += blockSettingW;
+    x = panelContentW - mComboVMode->GetWidth() - marginPanelH;
     y += (label->GetHeight() - mComboVMode->GetHeight()) / 2;
     mComboVMode->SetPosition(x, y);
 
@@ -804,7 +811,7 @@ void DialogSettings::CreatePanelVideo()
     auto cb = new SettingsCheckbox(panel);
     cb->SetChecked(stage->IsAutoHidingCursor());
 
-    x += blockSettingW;
+    x = panelContentW - cb->GetWidth() - marginPanelH;
     y += (label->GetHeight() - cb->GetHeight()) * 0.5;
     cb->SetPosition(x, y);
 
@@ -847,14 +854,14 @@ void DialogSettings::CreatePanelControls()
 
     // EDGE MAP SCROLLING
     auto label = new sgui::Label(mSM->GetCString("EDGE_MAP_SCROLL"), font, panel);
-    mHeadersGame.emplace_back(label);
+    mHeadersControls.emplace_back(label);
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
     auto cb = new SettingsCheckbox(panel);
     cb->SetChecked(mGame->IsMapScrollingOnEdges());
 
-    x += blockSettingW;
+    x = panelContentW - cb->GetWidth() - marginPanelH;
     y += (label->GetHeight() - cb->GetHeight()) * 0.5;
     cb->SetPosition(x, y);
 
@@ -868,7 +875,7 @@ void DialogSettings::CreatePanelControls()
     y += blockSettingH;
 
     label = new sgui::Label(mSM->GetCString("MAP_SCROLL_SPEED"), font, panel);
-    mHeadersGame.emplace_back(label);
+    mHeadersControls.emplace_back(label);
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
@@ -878,14 +885,17 @@ void DialogSettings::CreatePanelControls()
     slider->SetMinMax(minSpeed, maxSpeed);
     slider->SetValue(mGame->GetMapScrollingSpeed());
 
-    x += blockSettingW;
+    const int marginSliderR = 30;
+    label = new sgui::Label(std::to_string(maxSpeed).c_str(), font, panel);
+    label->SetColor(colorTxtSlider);
+
+    x = panelContentW - slider->GetWidth() - marginPanelH - marginSliderR - label->GetWidth();
     y += (label->GetHeight() - slider->GetHeight()) * 0.5;
     slider->SetPosition(x, y);
 
-    const int marginSliderR = 30;
-    label = new sgui::Label(std::to_string(slider->GetValue()).c_str(), font, panel);
-    label->SetColor(colorTxtSlider);
     label->SetPosition(slider->GetX() + slider->GetWidth() + marginSliderR, slider->GetY());
+
+    label->SetText(std::to_string(slider->GetValue()).c_str());
 
     slider->SetOnValueChanged([this, label](int val)
                               {
@@ -899,14 +909,14 @@ void DialogSettings::CreatePanelControls()
     y += blockSettingH;
 
     label = new sgui::Label(mSM->GetCString("MAP_DRAG"), font, panel);
-    mHeadersGame.emplace_back(label);
+    mHeadersControls.emplace_back(label);
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
     cb = new SettingsCheckbox(panel);
     cb->SetChecked(mGame->IsMapDragging());
 
-    x += blockSettingW;
+    x = panelContentW - cb->GetWidth() - marginPanelH;
     y += (label->GetHeight() - cb->GetHeight()) * 0.5;
     cb->SetPosition(x, y);
 
@@ -920,7 +930,7 @@ void DialogSettings::CreatePanelControls()
     y += blockSettingH;
 
     label = new sgui::Label(mSM->GetCString("MAP_DRAG_SPEED"), font, panel);
-    mHeadersGame.emplace_back(label);
+    mHeadersControls.emplace_back(label);
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
@@ -928,13 +938,16 @@ void DialogSettings::CreatePanelControls()
     slider->SetMinMax(minSpeed, maxSpeed);
     slider->SetValue(mGame->GetMapDraggingSpeed());
 
-    x += blockSettingW;
+    label = new sgui::Label(std::to_string(slider->GetValue()).c_str(), font, panel);
+    label->SetColor(colorTxtSlider);
+
+    x = panelContentW - slider->GetWidth() - marginPanelH - marginSliderR - label->GetWidth();
     y += (label->GetHeight() - slider->GetHeight()) * 0.5;
     slider->SetPosition(x, y);
 
-    label = new sgui::Label(std::to_string(slider->GetValue()).c_str(), font, panel);
-    label->SetColor(colorTxtSlider);
     label->SetPosition(slider->GetX() + slider->GetWidth() + marginSliderR, slider->GetY());
+
+    label->SetText(std::to_string(slider->GetValue()).c_str());
 
     slider->SetOnValueChanged([this, label](int val)
                               {
@@ -1000,6 +1013,8 @@ void DialogSettings::OnStringsChanged()
 
     const unsigned int numButtonsTabs = mButtonsTabs.size();
 
+    assert((sizeof(strIdsButtonsTabs) / sizeof(char *) == numButtonsTabs));
+
     for(unsigned int i = 0; i < numButtonsTabs; ++i)
     {
         auto btn = static_cast<ButtonPanelTab *>(mButtonsTabs[i]);
@@ -1010,15 +1025,13 @@ void DialogSettings::OnStringsChanged()
     const char * strIdsGame[] =
     {
         "LANGUAGE",
-        "MAP_SCROLL_SPEED",
-        "MAP_DRAG_SPEED",
-        "EDGE_MAP_SCROLL",
-        "MAP_DRAG",
         "AUTO_END_TURN",
         "TUTORIAL",
     };
 
     unsigned int numLabels = mHeadersGame.size();
+
+    assert((sizeof(strIdsGame) / sizeof(char *) == numLabels));
 
     for(unsigned int i = 0; i < numLabels; ++i)
         mHeadersGame[i]->SetText(mSM->GetCString(strIdsGame[i]));
@@ -1047,12 +1060,14 @@ void DialogSettings::OnStringsChanged()
     const char * strIdsAudio[] =
     {
         "MUSIC",
-        "SFX",
         "VOL_MUSIC",
+        "SFX",
         "VOL_SFX",
     };
 
     numLabels = mHeadersAudio.size();
+
+    assert((sizeof(strIdsAudio) / sizeof(char *) == numLabels));
 
     for(unsigned int i = 0; i < numLabels; ++i)
         mHeadersAudio[i]->SetText(mSM->GetCString(strIdsAudio[i]));
@@ -1066,6 +1081,8 @@ void DialogSettings::OnStringsChanged()
     };
 
     numLabels = mHeadersVideo.size();
+
+    assert((sizeof(strIdsVideo) / sizeof(char *) == numLabels));
 
     for(unsigned int i = 0; i < numLabels; ++i)
         mHeadersVideo[i]->SetText(mSM->GetCString(strIdsVideo[i]));
@@ -1084,6 +1101,22 @@ void DialogSettings::OnStringsChanged()
     cbi->SetLabel(mSM->GetCString("WINDOW"));
 
     mComboVMode->Refresh();
+
+    // PANEL CONTROLS - headers
+    const char * strIdsControls[] =
+        {
+            "EDGE_MAP_SCROLL",
+            "MAP_SCROLL_SPEED",
+            "MAP_DRAG",
+            "MAP_DRAG_SPEED",
+        };
+
+    numLabels = mHeadersControls.size();
+
+    assert((sizeof(strIdsControls) / sizeof(char *) == numLabels));
+
+    for(unsigned int i = 0; i < numLabels; ++i)
+        mHeadersControls[i]->SetText(mSM->GetCString(strIdsControls[i]));
 }
 
 } // namespace game
