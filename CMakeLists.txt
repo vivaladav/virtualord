@@ -553,6 +553,8 @@ add_executable(
     src/Widgets/Tutorial/PanelClickFilter.cpp
     src/Widgets/Tutorial/PanelInfoTutorial.h
     src/Widgets/Tutorial/PanelInfoTutorial.cpp
+    # embed manifest file on Windows to disable scaling
+    $<$<PLATFORM_ID:Windows>:data/virtualord.exe.manifest>
 )
 
 target_include_directories(
