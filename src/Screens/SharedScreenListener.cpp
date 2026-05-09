@@ -33,11 +33,8 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
         game->Exit();
 #endif
 
-    // -- WINDOW --
-    if(key == KeyboardEvent::KEY_F && event.IsModAltDown())
-        Window::Instance()->SwitchFullscreen();
-
 #ifdef DEV_MODE
+    // -- WINDOW --
     if(key == KeyboardEvent::KEY_F1)
         Window::Instance()->SetSize(1280, 720);
     else if(key == KeyboardEvent::KEY_F2)
@@ -87,7 +84,7 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
 #endif // DEV_MODE
 
     // -- AUDIO --
-    else if(event.IsModAltDown())
+    if(event.IsModAltDown())
     {
         auto am = sgl::media::AudioManager::Instance();
         auto ap = am->GetPlayer();

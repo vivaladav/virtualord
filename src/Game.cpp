@@ -88,7 +88,6 @@ Game::Game(int argc, char * argv[])
     mWin = graphic::Window::Create(title.c_str(), 0, 0, this);
     mRenderer = graphic::Renderer::Create(mWin, true);
     mRenderer->SetLogicalSize(1920, 1080);
-    mWin->SetVideoMode(graphic::Window::VM_BORDERLESS);
 
     graphic::TextureManager::Instance()->SetNewTextureQuality(graphic::TextureQuality::BEST);
 
