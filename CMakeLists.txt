@@ -570,6 +570,8 @@ target_link_libraries(
     PRIVATE utilities
 )
 
+set_target_properties(game PROPERTIES OUTPUT_NAME "virtualord")
+
 # copy data to build directory when CMake is executed
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data/)
 file(COPY ${CMAKE_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/data/)
