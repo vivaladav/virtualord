@@ -750,7 +750,20 @@ void DialogSettings::CreatePanelVideo()
         oss << dm.width << "x" << dm.height << " @ " << dm.refresh << "Hz";
         mComboRes->AddItem(new ComboBoxItemResolution(0, 0, oss.str().c_str()));
 
+#ifdef DEBUG
+        std::cout << "[WAR] DialogSettings::CreatePanelVideo - NO VALID MODE FOUND - adding 0: "
+                  << dm.width << "x" << dm.height << " @ " << dm.refresh << " Hz." << std::endl;
+#endif
+
         currIndex = 0;
+    }
+
+    // weird case where there are valid modes, but initial mode doesn't match any
+    // it was happening on Windows 11 when scaling is enabled for example
+    if(-1 == currIndex)
+    {
+        currIndex = 0;
+        win->SetDisplayMode(0, 0);
     }
 
     mComboRes->SetActiveItem(currIndex);
@@ -989,7 +1002,7 @@ void DialogSettings::UpdateCurrentResolution()
     }
 
     // fallback to first resolution if no good one is found
-    if(0 == validModes)
+    if(0 == validModes || -1 == currIndex)
         currIndex = 0;
 
     mComboRes->SetActiveItem(currIndex);
