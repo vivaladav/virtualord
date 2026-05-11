@@ -29,7 +29,7 @@ Unit::Unit(const ObjectData & data, const ObjectInitData & initData)
     SetDefaultAction(MOVE);
 
     // speed
-    const float maxSpeed = 5.f;
+    const float maxSpeed = 6.f;
     SetMaxSpeed(maxSpeed);
 
     // health
@@ -157,13 +157,13 @@ bool Unit::CanConquer() const
 
 float Unit::GetTimeConquestCell() const
 {
-    const float maxTime = 2.f;
+    const float maxTime = 1.6f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONQUEST));
 }
 
 float Unit::GetTimeConquestStructure() const
 {
-    const float maxTime = 5.f;
+    const float maxTime = 4.f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONQUEST));
 }
 
