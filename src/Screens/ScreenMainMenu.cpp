@@ -345,7 +345,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.5 - \"Virtualord 101\"", font, content);
+    auto title = new sgui::Label("0.6.7 - \"???\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -356,34 +356,11 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "- New panel showing energy usage when moving unit.\n"
-                  "- New panel showing resources usage when conquering cells.\n"
-                  "- New tech upgrade: practice target.\n"
-                  "- New panel for warning messages of units.\n"
-                  "- New panel showing energy usage when building structure.\n"
-                  "- Completed full tutorial for mission 1.\n"
-                  "- Added 2 new types of tree.\n"
-                  "- Mouse cursor is automatically hidden when not moving it for 2 seconds.\n"
-                  "- Added option in video settings to control auto hide mouse.\n"
-                  "- Added new scene object: rocks.\n"
+                  "\n"
                   "\nCHANGES\n"
-                  "- Loot boxes now require unit interaction to get loot.\n"
-                  "- Extended and improved cell conquest mechanics.\n"
-                  "- New icon for mission goal completed.\n"
-                  "- Extended and improved wall building.\n"
-                  "- Moved map navigation options to panel CONTROLS in Settings.\n"
-                  "- Redesigned layout of settings dialog.\n"
+                  "\n"
                   "\nFIXES\n"
-                  "- Fixed crash when mini-units move only 1 cell.\n"
-                  "- Fixed camera never stopping scrolling when opening a dialog.\n"
-                  "- Fixed text messed up in dialog settings when changing language.\n"
-                  "- Fixed units building structures in unsuitable places.\n"
-                  "- Fixed miniMap not removed if radar is destroyed.\n"
-                  "- Fixed random blinking energy icon appearing outside the map."
-                  "- Fixed mission goals not updating progress of goals related to resources.\n"
-                  "- Fixed mission goal completed icon rendered on top of HUD panels.\n"
-                  "- Fixed units not having default action set to move after quitting the tutorial.\n"
-                  "- Fixed camera re-enabled in tutorial after opening exit dialog.\n"
+                  "- Fixed crash when opening trading dialog.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
