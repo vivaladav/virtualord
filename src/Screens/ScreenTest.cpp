@@ -330,10 +330,16 @@ void ScreenTest::TestSGui()
     for(unsigned int n = 0; n < bg->GetNumButtons(); ++n)
     {
         auto btn = static_cast<ButtonUnitsSelector *>(bg->GetButton(n));
+
         btn->AddOnToggleFunction([label, n](bool checked)
         {
             if(checked)
                 label->SetText(std::to_string(n + 1).c_str());
+        });
+
+        btn->AddOnToggleFunction([label, n](bool checked)
+        {
+            std::cout << "BUTTON " << n << (checked ? " CHECKED" : " UNCHECKED") << std::endl;
         });
     }
 

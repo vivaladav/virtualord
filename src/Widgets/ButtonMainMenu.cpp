@@ -29,7 +29,7 @@ ButtonMainMenu::ButtonMainMenu(const char * text, sgl::sgui::Widget * parent)
                 0x395260ff,
                 0x99e5ffff,
                 0x8cd8f3ff,
-                0xf0f0a8ff
+                0xf0f099Ff
             });
 
     auto fm = FontManager::Instance();
