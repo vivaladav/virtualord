@@ -16,7 +16,7 @@ namespace game
 {
 
 StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD, bool showIntro)
-    : TutorialInfoStep(670, showIntro ? 230 : 150)
+    : TutorialInfoStep(670, showIntro ? 230 : 175)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
 {

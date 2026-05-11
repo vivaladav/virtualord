@@ -13,7 +13,7 @@ namespace game
 {
 
 StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const char * text1)
-    : TutorialInfoStep(550, 150)
+    : TutorialInfoStep(550, 175)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
