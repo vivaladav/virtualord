@@ -5,6 +5,7 @@
 #include "GameMap.h"
 #include "IsoObject.h"
 #include "Player.h"
+#include "AI/PlayerAI.h"
 #include "GameObjects/Base.h"
 #include "GameObjects/ObjectData.h"
 #include "GameObjects/Unit.h"
@@ -609,6 +610,10 @@ TutorialGameIntro::~TutorialGameIntro()
                 unit->SetActiveActionToDefault();
         }
     }
+
+    // re-enalbe AI
+    Player * playerAI = game->GetPlayerByIndex(1);
+    playerAI->GetAI()->SetActive(true);
 }
 
 GameObject * TutorialGameIntro::GetObjectInCell(const Cell2D & cell) const

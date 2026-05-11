@@ -361,6 +361,7 @@ void ScreenMainMenu::CreateChangelog()
                   "\n"
                   "\nFIXES\n"
                   "- Fixed crash when opening trading dialog.\n"
+                  "- Fixed AI not active after first tutorial.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
