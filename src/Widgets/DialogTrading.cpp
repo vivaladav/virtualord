@@ -427,57 +427,62 @@ DialogTrading::DialogTrading(Game * g, Player * p)
     rowY = rowY0;
 
     // ENERGY
-    AddResBlock(rowX0, rowY, TR_ENERGY, fontData);
+    TradedResources tr = TR_ENERGY;
 
-    auto st = Player::Stat::ENERGY;
-    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
-    {
-        UpdateStockLabel(val->GetId());
-    });
+    AddResBlock(rowX0, rowY, tr, fontData);
+
+    mCallbackValIds[tr] = p->AddOnResourceChanged(stats[tr], [this](const StatValue * val, int, int)
+                                                {
+                                                    UpdateStockLabel(val->GetId());
+                                                });
 
     rowY += rowBlockH;
 
     // MATERIAL
-    AddResBlock(rowX0, rowY, TR_MATERIAL, fontData);
+    tr = TR_MATERIAL;
 
-    st = Player::Stat::MATERIAL;
-    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
-    {
-        UpdateStockLabel(val->GetId());
-    });
+    AddResBlock(rowX0, rowY, tr, fontData);
+
+    mCallbackValIds[tr] = p->AddOnResourceChanged(stats[tr], [this](const StatValue * val, int, int)
+                                                {
+                                                      UpdateStockLabel(val->GetId());
+                                                });
 
     rowY += rowBlockH;
 
     // DIAMONDS
-    AddResBlock(rowX0, rowY, TR_DIAMONDS, fontData);
+    tr = TR_DIAMONDS;
 
-    st = Player::Stat::DIAMONDS;
-    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
-    {
-        UpdateStockLabel(val->GetId());
-    });
+    AddResBlock(rowX0, rowY, tr, fontData);
+
+    mCallbackValIds[tr] = p->AddOnResourceChanged(stats[tr], [this](const StatValue * val, int, int)
+                                                {
+                                                    UpdateStockLabel(val->GetId());
+                                                });
 
     rowY += rowBlockH;
 
     // BLOBS
-    AddResBlock(rowX0, rowY, TR_BLOBS, fontData);
+    tr = TR_BLOBS;
 
-    st = Player::Stat::BLOBS;
-    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
-                                                  {
-                                                      UpdateStockLabel(val->GetId());
-                                                  });
+    AddResBlock(rowX0, rowY, tr, fontData);
+
+    mCallbackValIds[tr] = p->AddOnResourceChanged(stats[tr], [this](const StatValue * val, int, int)
+                                                {
+                                                    UpdateStockLabel(val->GetId());
+                                                });
 
     rowY += rowBlockH;
 
     // RESEARCH
-    AddResBlock(rowX0, rowY, TR_RESEARCH, fontData);
+    tr = TR_RESEARCH;
 
-    st = Player::Stat::RESEARCH;
-    mCallbackValIds[st] = p->AddOnResourceChanged(st, [this](const StatValue * val, int, int)
-    {
-        UpdateStockLabel(val->GetId());
-    });
+    AddResBlock(rowX0, rowY, tr, fontData);
+
+    mCallbackValIds[tr] = p->AddOnResourceChanged(stats[tr], [this](const StatValue * val, int, int)
+                                                {
+                                                    UpdateStockLabel(val->GetId());
+                                                });
 
     // -- LABELS STOCK --
     std::ostringstream ss;
