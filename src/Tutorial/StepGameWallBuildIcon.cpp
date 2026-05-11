@@ -29,7 +29,7 @@ StepGameWallBuildIcon::StepGameWallBuildIcon(PanelObjectActions * panel)
 
     info->SetPosition(1100, 650);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUIL_WALL_2"),
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_WALL_2"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, panel]
                        {
                            // FOCUS

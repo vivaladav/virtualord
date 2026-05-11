@@ -29,7 +29,7 @@ StepGameWallBuildStart::StepGameWallBuildStart(const IsoMap * isoMap, const Cell
 
     info->SetPosition(900, 250);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUIL_WALL_3"),
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_WALL_3"),
                        TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap]
                        {
                            const auto pos = isoMap->GetCellPosition(mTarget.row, mTarget.col);

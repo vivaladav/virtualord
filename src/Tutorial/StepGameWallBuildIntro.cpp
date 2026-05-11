@@ -18,7 +18,7 @@ StepGameWallBuildIntro::StepGameWallBuildIntro()
 
     info->SetPosition(1250, 150);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUIL_WALL_1"),
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_WALL_1"),
                        TutorialConstants::colorText, 7.f, true, false);
 
     info->SetFunctionOnFinished([this]

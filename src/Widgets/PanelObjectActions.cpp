@@ -50,7 +50,7 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
                                sm->GetCString("TT_CONQ_CELLS"), this);
     mButtons[BTN_BUILD_WALL] =
         new ObjectActionButton(ObjectActionButton::BUILD_WALL, "L", KeyboardEvent::KEY_L,
-                               sm->GetCString("TT_BUIL_WALL"), this);
+                               sm->GetCString("TT_BUILD_WALL"), this);
     mButtons[BTN_BUILD_STRUCT] =
         new ObjectActionButton(ObjectActionButton::BUILD_STRUCT, "B", KeyboardEvent::KEY_B,
                                sm->GetCString("TT_BUILD_STRUCT"), this);
@@ -248,7 +248,7 @@ void PanelObjectActions::OnStringsChanged()
     mButtons[BTN_HEAL_HOSPITAL]->SetTooltipText(sm->GetCString("TT_HEAL_TARGET"));
     mButtons[BTN_HEAL_UNIT]->SetTooltipText(sm->GetCString("TT_HEAL_TARGET"));
     mButtons[BTN_CONQUER_CELL]->SetTooltipText(sm->GetCString("TT_CONQ_CELLS"));
-    mButtons[BTN_BUILD_WALL]->SetTooltipText(sm->GetCString("TT_BUIL_WALL"));
+    mButtons[BTN_BUILD_WALL]->SetTooltipText(sm->GetCString("TT_BUILD_WALL"));
     mButtons[BTN_BUILD_STRUCT]->SetTooltipText(sm->GetCString("TT_BUILD_STRUCT"));
     mButtons[BTN_UPGRADE]->SetTooltipText(sm->GetCString("TT_UPGRADE"));
     mButtons[BTN_OPEN_GATE]->SetTooltipText(sm->GetCString("TT_OPEN_GATE"));
