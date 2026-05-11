@@ -158,10 +158,9 @@ void PanelInfoTutorial::StartInfo()
     ShowCurrentInfo();
 }
 
-void PanelInfoTutorial::Continue(bool force)
+void PanelInfoTutorial::Continue()
 {
-    if(mTimerShown > minTimeShown || force)
-        ContinueOnInput();
+    ContinueOnInput();
 }
 
 void PanelInfoTutorial::ShowNextInfo()

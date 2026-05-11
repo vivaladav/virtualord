@@ -33,7 +33,7 @@ public:
 
     void StartInfo();
 
-    void Continue(bool force = false);
+    void Continue();
 
 private:
     struct InfoEntry
