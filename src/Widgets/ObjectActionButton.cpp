@@ -100,11 +100,11 @@ void ObjectActionButton::HandleMouseOver()
 
 void ObjectActionButton::HandleButtonDown()
 {
+    sgl::sgui::AbstractButton::HandleButtonDown();
+
     // no sound when opening dialog
     if(UNITS == mIconId || BUILD_STRUCT == mIconId)
         return ;
-
-    sgl::sgui::AbstractButton::HandleButtonDown();
 
     auto player = sgl::media::AudioManager::Instance()->GetPlayer();
 

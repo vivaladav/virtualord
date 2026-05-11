@@ -94,10 +94,10 @@ private:
 
     void HandleButtonDown() override
     {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
         if(IsChecked())
             return ;
-
-        sgl::sgui::AbstractButton::HandleButtonDown();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_click-02.ogg");
