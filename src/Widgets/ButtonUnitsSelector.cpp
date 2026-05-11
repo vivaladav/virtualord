@@ -23,7 +23,7 @@ ButtonUnitsSelector::ButtonUnitsSelector(const char * text)
                      0xb2b2b2ff,
                      0xFFFFFFFF,
                      0xFFFFFFFF,
-                     0xFFFFFFFF
+                     0xFFFF33FF
                  },
                  nullptr)
 {
