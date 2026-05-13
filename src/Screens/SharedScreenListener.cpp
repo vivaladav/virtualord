@@ -4,12 +4,9 @@
 #include "Player.h"
 #include "Screens/Screen.h"
 
+#ifdef DEV_MODE
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Window.h>
-#include <sgl/media/AudioManager.h>
-#include <sgl/media/AudioPlayer.h>
-
-#ifdef DEV_MODE
 #include <sgl/sgui/Stage.h>
 
 #include <iostream>
@@ -20,39 +17,30 @@ namespace game
 
 void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
 {
-    using namespace sgl::core;
-    using namespace sgl::graphic;
+#ifdef DEV_MODE
+    using namespace sgl;
 
     const int key = event.GetKey();
 
-    Game * game = mScreen->GetGame();
+    auto win = graphic::Window::Instance();
 
-#ifdef DEV_MODE
-    // SHIFT-ESC -> EXIT
-    if(key == KeyboardEvent::KEY_ESCAPE && event.IsModShiftDown())
-        game->Exit();
-#endif
-
-#ifdef DEV_MODE
-    // -- WINDOW --
-    if(key == KeyboardEvent::KEY_F1)
-        Window::Instance()->SetSize(1280, 720);
-    else if(key == KeyboardEvent::KEY_F2)
-        Window::Instance()->SetSize(1600, 900);
-    else if(key == KeyboardEvent::KEY_F3)
-        Window::Instance()->SetSize(1920, 1080);
-    else if(key == KeyboardEvent::KEY_F4)
-        Window::Instance()->SetSize(2560, 1440);
-
-    // -- GAME --
-    // DEBUG: SHIFT/CTRL + R -> add/remove resources
-    else if(key == KeyboardEvent::KEY_C)
+    // F1-F4 set resolution
+    if(key == core::KeyboardEvent::KEY_F1)
+        win->SetSize(1280, 720);
+    else if(key == core::KeyboardEvent::KEY_F2)
+        win->SetSize(1600, 900);
+    else if(key == core::KeyboardEvent::KEY_F3)
+        win->SetSize(1920, 1080);
+    else if(key == core::KeyboardEvent::KEY_F4)
+        win->SetSize(2560, 1440);
+    else if(key == core::KeyboardEvent::KEY_C)
     {
         if(mGame->GetNumPlayers() == 0)
             return ;
 
         Player * p = mGame->GetLocalPlayer();
 
+        // SHIFT + C -> add resources
         if(event.IsModShiftDown())
         {
             p->SumResource(Player::MONEY, 1000);
@@ -62,6 +50,7 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
             p->SumResource(Player::DIAMONDS, 100);
             p->SumResource(Player::RESEARCH, 500);
         }
+        // CTRL + C -> remove resources
         else if(event.IsModCtrlDown())
         {
             p->SumResource(Player::MONEY, -100);
@@ -72,29 +61,16 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
             p->SumResource(Player::RESEARCH, -100);
         }
     }
-    // switch GOD MODE
-    else if(key == KeyboardEvent::KEY_G && event.IsModAltDown())
+    // ALT + G : switch GOD MODE
+    else if(key == core::KeyboardEvent::KEY_G && event.IsModAltDown())
     {
         Game::GOD_MODE = !Game::GOD_MODE;
         std::cout << "GOD MODE: " << (Game::GOD_MODE ? "ON" : "OFF") << std::endl;
     }
     // ALT + M -> toggle mouse cursor visibility
-    else if(key == KeyboardEvent::KEY_M && event.IsModAltDown())
-        sgl::sgui::Stage::Instance()->ToggleCursorVisibility();
+    else if(key == core::KeyboardEvent::KEY_M && event.IsModAltDown())
+        sgui::Stage::Instance()->ToggleCursorVisibility();
 #endif // DEV_MODE
-
-    // -- AUDIO --
-    if(event.IsModAltDown())
-    {
-        auto am = sgl::media::AudioManager::Instance();
-        auto ap = am->GetPlayer();
-
-        // TOGGLE MUSIC
-        if(key == KeyboardEvent::KEY_M)
-            ap->SetMusicEnabled(!ap->IsMusicEnabled());
-        else if(key == KeyboardEvent::KEY_X)
-            ap->SetSoundEnabled(!ap->IsSoundEnabled());
-    }
 }
 
 } // namespace game

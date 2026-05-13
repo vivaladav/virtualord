@@ -926,70 +926,29 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
     if(key == KeyboardEvent::KEY_ESCAPE)
         mHUD->ShowDialogExit();
 #ifdef DEV_MODE
-    // DEBUG: SHIFT+N -> add Experience to selected object
-    else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_N)
+    // SHIFT/ALT/CTRL + E : add enemy on current cell
+    else if(key == KeyboardEvent::KEY_E)
+    {
+        if(event.IsModShiftDown())
+            CreateEnemyInCurrentCell(ObjectData::TYPE_UNIT_SOLDIER1);
+        else if(event.IsModAltDown())
+            CreateEnemyInCurrentCell(ObjectData::TYPE_UNIT_SOLDIER2);
+        else if(event.IsModCtrlDown())
+            CreateEnemyInCurrentCell(ObjectData::TYPE_UNIT_SCOUT1);
+    }
+    // CTRL + L : show end mission dialog LOST
+    else if(key == KeyboardEvent::KEY_L && event.IsModCtrlDown())
+        mHUD->ShowDialogEndMission(false);
+    // SHIFT + N : add Experience to selected object
+    else if(key == KeyboardEvent::KEY_N && event.IsModShiftDown())
     {
         auto selObj = GetGame()->GetLocalPlayer()->GetSelectedObject();
 
         if(selObj != nullptr)
             selObj->SumExperience(1000);
     }
-    // DEBUG: ALT + U -> toggle UI
-    else if(event.IsModAltDown() && key == KeyboardEvent::KEY_U)
-        mHUD->SetVisible(!mHUD->IsVisible());
-    // DEBUG: CTRL + U -> Upgrade screen
-    else if(event.IsModCtrlDown() && key == KeyboardEvent::KEY_U)
-    {
-        auto selObj = GetGame()->GetLocalPlayer()->GetSelectedObject();
-
-        if(selObj != nullptr)
-            mHUD->ShowDialogUpgrade(selObj);
-    }
-    // DEBUG: SHIFT/CTRL + V -> add/remove visibility to whole map
-    else if(key == KeyboardEvent::KEY_V)
-    {
-        if(event.IsModShiftDown())
-        {
-            mLocalPlayer->AddVisibilityToAll();
-            mGameMap->ApplyVisibility(mLocalPlayer);
-        }
-        else if(event.IsModCtrlDown())
-        {
-            mLocalPlayer->RemVisibilityToAll();
-            mGameMap->ApplyVisibility(mLocalPlayer);
-        }
-    }
-    // DEBUG: end mission dialog win/lose
-    else if(event.IsModCtrlDown() && key == KeyboardEvent::KEY_W)
-        mHUD->ShowDialogEndMission(true);
-    else if(event.IsModCtrlDown() && key == KeyboardEvent::KEY_L)
-        mHUD->ShowDialogEndMission(false);
-    // DEBUG: explore temple dialog
-    else if(event.IsModCtrlDown() && key == KeyboardEvent::KEY_E)
-    {
-        auto objs = mGameMap->GetObjects();
-
-        for(GameObject * o : objs)
-        {
-            // assign first Temple found
-            if(o->GetObjectType() == ObjectData::TYPE_TEMPLE)
-            {
-                mHUD->ShowDialogExploreTemple(mLocalPlayer, static_cast<Temple *>(o));
-
-                break;
-            }
-        }
-    }
-    // DEBUG: show dialog trading
-    else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_T)
-        mHUD->ShowDialogTrading();
-    // DEBUG: add enemy on current cell
-    else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_E)
-        CreateEnemyInCurrentCell(ObjectData::TYPE_UNIT_SOLDIER1);
-    else if(event.IsModAltDown() && key == KeyboardEvent::KEY_E)
-        CreateEnemyInCurrentCell(ObjectData::TYPE_UNIT_SOLDIER2);
-    // DEBUG: SHIFT + P -> print current stats
-    else if(event.IsModShiftDown() && key == KeyboardEvent::KEY_P)
+    // SHIFT + P : print current stats
+    else if(key == KeyboardEvent::KEY_P && event.IsModShiftDown())
     {
         const PlayerFaction pf = mLocalPlayer->GetFaction();
         const unsigned int turns = mLocalPlayer->GetTurnsPlayed();
@@ -1010,6 +969,60 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
         mTrackerMG->PrintState();
         std::cout << "--------------------------------" << std::endl;
     }
+    else if(key == KeyboardEvent::KEY_T)
+    {
+        // CTRL + T : show explore temple dialog
+        if(event.IsModCtrlDown())
+        {
+            auto objs = mGameMap->GetObjects();
+
+            for(GameObject * o : objs)
+            {
+                // assign first Temple found
+                if(o->GetObjectType() == ObjectData::TYPE_TEMPLE)
+                {
+                    mHUD->ShowDialogExploreTemple(mLocalPlayer, static_cast<Temple *>(o));
+
+                    break;
+                }
+            }
+        }
+        // SHIFT + T : show dialog trading
+        else if(event.IsModShiftDown())
+            mHUD->ShowDialogTrading();
+    }
+    else if(key == KeyboardEvent::KEY_U)
+    {
+        // ALT + U : toggle UI
+        if(event.IsModAltDown())
+            mHUD->SetVisible(!mHUD->IsVisible());
+        // CTRL + U : show upgrade dialog
+        else if(event.IsModCtrlDown())
+        {
+            auto selObj = GetGame()->GetLocalPlayer()->GetSelectedObject();
+
+            if(selObj != nullptr)
+                mHUD->ShowDialogUpgrade(selObj);
+        }
+    }
+    else if(key == KeyboardEvent::KEY_V)
+    {
+        // SHIFT + V : add visibility to whole map
+        if(event.IsModShiftDown())
+        {
+            mLocalPlayer->AddVisibilityToAll();
+            mGameMap->ApplyVisibility(mLocalPlayer);
+        }
+        // CTRL + V : remove visibility to whole map
+        else if(event.IsModCtrlDown())
+        {
+            mLocalPlayer->RemVisibilityToAll();
+            mGameMap->ApplyVisibility(mLocalPlayer);
+        }
+    }
+    // CTRL + W : show end mission dialog WON
+    else if(key == KeyboardEvent::KEY_W && event.IsModCtrlDown())
+        mHUD->ShowDialogEndMission(true);
 #endif
 }
 
