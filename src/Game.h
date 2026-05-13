@@ -176,7 +176,7 @@ private:
     // SETTINGS
     LanguageId mLanguage;
     int mMapDraggingSpeed = 5;
-    int mMapScrollingSpeed = 6;
+    int mMapScrollingSpeed = 5;
     float mTimeAutoHideMouse = 2.f;
     bool mMapDragging = true;
     bool mMapScrollingOnEdges = true;

@@ -358,6 +358,7 @@ void ScreenMainMenu::CreateChangelog()
     text->SetText("NEW FEATURES\n"
                   "\n"
                   "\nCHANGES\n"
+                  "- Make default scrolling speed a 5.\n"
                   "\n"
                   "\nFIXES\n"
                   "- Fixed crash when opening trading dialog.\n"

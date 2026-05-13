@@ -109,12 +109,8 @@ inline void CameraMapController::SetDraggingSpeed(int val)
 inline void CameraMapController::SetScrollingSpeed(int val)
 {
     const float mult = 100.f;
-    mSpeedScrolling = mult * val;
-
-    const float minSpeed = 175.f;
-
-    if(mSpeedScrolling < minSpeed)
-        mSpeedScrolling = minSpeed;
+    // add 1 so min is guaranteed and 5 is the old 6
+    mSpeedScrolling = mult * (val + 1);
 }
 
 inline bool CameraMapController::IsDragging() const { return mDragging; }
