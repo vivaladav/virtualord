@@ -297,10 +297,20 @@ void CameraMapController::ClearMovement()
 
 void CameraMapController::InitScrollingVelocity()
 {
-    mVelocityScrolling = mMinSpeedScrolling;
+    // constant speed scrolling
+    if(mGame->IsMapScrollingConstant())
+    {
+        mVelocityScrolling = mSpeedScrolling;
+        mAccelScrolling = 0.f;
+    }
+    // initial acceleration scrolling
+    else
+    {
+        mVelocityScrolling = mMinSpeedScrolling;
 
-    const float timeAccelerating = 1.f;
-    mAccelScrolling = (mSpeedScrolling - mVelocityScrolling) / timeAccelerating;
+        const float timeAccelerating = 1.f;
+        mAccelScrolling = (mSpeedScrolling - mVelocityScrolling) / timeAccelerating;
+    }
 }
 
 void CameraMapController::Update(float delta)

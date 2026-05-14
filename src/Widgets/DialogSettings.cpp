@@ -883,6 +883,27 @@ void DialogSettings::CreatePanelControls()
                                 mGame->SetMapScrollingOnEdges(checked);
                             });
 
+    // CONSTANT SPEED MAP SCROLLING
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("CONST_MAP_SCROLL"), font, panel);
+    mHeadersControls.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    cb = new SettingsCheckbox(panel);
+    cb->SetChecked(mGame->IsMapScrollingConstant());
+
+    x = panelContentW - cb->GetWidth() - marginPanelH;
+    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
+    cb->SetPosition(x, y);
+
+    cb->AddOnToggleFunction([this](bool checked)
+                            {
+                                mGame->SetMapScrollingConstant(checked);
+                            });
+
     // MAP SCROLLING SPEED
     x = contX0;
     y += blockSettingH;
@@ -1119,6 +1140,7 @@ void DialogSettings::OnStringsChanged()
     const char * strIdsControls[] =
         {
             "EDGE_MAP_SCROLL",
+            "CONST_MAP_SCROLL",
             "MAP_SCROLL_SPEED",
             "MAP_DRAG",
             "MAP_DRAG_SPEED",

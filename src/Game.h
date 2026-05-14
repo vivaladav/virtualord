@@ -118,6 +118,8 @@ public:
     void SetMapScrollingSpeed(int val);
     bool IsMapScrollingOnEdges() const;
     void SetMapScrollingOnEdges(bool val);
+    bool IsMapScrollingConstant() const;
+    void SetMapScrollingConstant(bool val);
     bool IsAutoEndTurnEnabled() const;
     void SetAutoEndTurn(bool val);
     bool IsTutorialEnabled() const;
@@ -180,6 +182,7 @@ private:
     float mTimeAutoHideMouse = 2.f;
     bool mMapDragging = true;
     bool mMapScrollingOnEdges = true;
+    bool mMapScrollingConstSpeed = false;
     bool mAutoEndTurn = true;
     bool mTutorialEnabled = true;
 
@@ -260,6 +263,8 @@ inline void Game::SetMapScrollingOnEdges(bool val)
         NotifyOnSettingsChanged();
     }
 }
+inline bool Game::IsMapScrollingConstant() const { return mMapScrollingConstSpeed; }
+inline void Game::SetMapScrollingConstant(bool val) { mMapScrollingConstSpeed = val; }
 inline bool Game::IsAutoEndTurnEnabled() const { return mAutoEndTurn; }
 inline void Game::SetAutoEndTurn(bool val)
 {
