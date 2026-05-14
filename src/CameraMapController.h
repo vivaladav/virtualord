@@ -60,6 +60,8 @@ private:
 
     void ClearMovement();
 
+    void InitScrollingVelocity();
+
 private:
     sgl::graphic::Camera * mCamera = nullptr;
 
@@ -70,8 +72,11 @@ private:
     sgl::core::Pointd2D mMapB;
     sgl::core::Pointd2D mMapL;
 
-    float mSpeedScrolling;
-    float mSpeedDragging;
+    float mMinSpeedScrolling = 100.f;
+    float mSpeedScrolling = 0.f;
+    float mSpeedDragging = 0.f;
+    float mVelocityScrolling = 0.f;
+    float mAccelScrolling = 0.f;
 
     int mDirX = 0;
     int mDirY = 0;
@@ -86,6 +91,7 @@ private:
     bool mMouseScrollX = false;
     bool mMouseScrollY = false;
     bool mDragging = false;
+    bool mScrolling = false;
 };
 
 inline const sgl::graphic::Camera * CameraMapController::GetCamera() const
@@ -108,9 +114,8 @@ inline void CameraMapController::SetDraggingSpeed(int val)
 
 inline void CameraMapController::SetScrollingSpeed(int val)
 {
-    const float mult = 100.f;
     // add 1 so min is guaranteed and 5 is the old 6
-    mSpeedScrolling = mult * (val + 1);
+    mSpeedScrolling = mMinSpeedScrolling * (val + 1);
 }
 
 inline bool CameraMapController::IsDragging() const { return mDragging; }

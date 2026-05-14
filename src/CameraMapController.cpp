@@ -104,6 +104,7 @@ void CameraMapController::HandleKeyDown(sgl::core::KeyboardEvent & event)
     if(!mEnabled)
         return ;
 
+    const bool wasScrolling = mScrolling;
     const int key = event.GetKey();
 
     if(key == KeyboardEvent::KEY_A)
@@ -138,6 +139,11 @@ void CameraMapController::HandleKeyDown(sgl::core::KeyboardEvent & event)
             mKeyScrollY = true;
         }
     }
+
+    mScrolling = mKeyScrollX || mKeyScrollY || mMouseScrollX || mMouseScrollY;
+
+    if(mScrolling && !wasScrolling)
+        InitScrollingVelocity();
 }
 
 void CameraMapController::HandleKeyUp(sgl::core::KeyboardEvent & event)
@@ -177,6 +183,8 @@ void CameraMapController::HandleKeyUp(sgl::core::KeyboardEvent & event)
 
         mKeyScrollY = false;
     }
+
+    mScrolling = mKeyScrollX || mKeyScrollY || mMouseScrollX || mMouseScrollY;
 }
 
 void CameraMapController::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
@@ -215,6 +223,7 @@ void CameraMapController::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
     const int screenY = event.GetY();
 
     const int scrollingMargin = 10;
+    const bool wasScrolling = mScrolling;
 
     if(screenX < scrollingMargin)
     {
@@ -259,6 +268,11 @@ void CameraMapController::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
         mDirY = NO_SCROLL;
         mMouseScrollY = false;
     }
+
+    mScrolling = mKeyScrollX || mKeyScrollY || mMouseScrollX || mMouseScrollY;
+
+    if(mScrolling && !wasScrolling)
+        InitScrollingVelocity();
 }
 
 void CameraMapController::HandleMouseLeftWindow()
@@ -280,6 +294,15 @@ void CameraMapController::ClearMovement()
     mDragX = NO_SCROLL;
     mDragY = NO_SCROLL;
 }
+
+void CameraMapController::InitScrollingVelocity()
+{
+    mVelocityScrolling = mMinSpeedScrolling;
+
+    const float timeAccelerating = 1.f;
+    mAccelScrolling = (mSpeedScrolling - mVelocityScrolling) / timeAccelerating;
+}
+
 void CameraMapController::Update(float delta)
 {
     if(!mEnabled)
@@ -292,6 +315,7 @@ void CameraMapController::Update(float delta)
     sgl::core::Pointd2D cc(mCamera->GetX() + (mCamera->GetWidth() / 2),
                            mCamera->GetY() + (mCamera->GetHeight() / 2));
 
+    // ----- DRAGGING -----
     if(mDragging)
     {
         // HORIZONTAL
@@ -334,8 +358,21 @@ void CameraMapController::Update(float delta)
         return ;
     }
 
+    // ----- SCROLLING -----
+    if(mAccelScrolling > 0.f)
+    {
+        mVelocityScrolling += mAccelScrolling * delta;
+
+        // reached peak velocity
+        if(mVelocityScrolling > mSpeedScrolling)
+        {
+            mVelocityScrolling = mSpeedScrolling;
+            mAccelScrolling = 0.f;
+        }
+    }
+
     // HORIZONTAL
-    const float movX = mDirX * mSpeedScrolling * delta;
+    const float movX = mDirX * mVelocityScrolling * delta;
 
     if(mDirX < 0)
     {
@@ -353,7 +390,7 @@ void CameraMapController::Update(float delta)
     }
 
     // VERTICAL
-    const float movY = mDirY * mSpeedScrolling * delta;
+    const float movY = mDirY * mVelocityScrolling * delta;
 
     if(mDirY < 0)
     {
