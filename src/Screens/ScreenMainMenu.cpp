@@ -356,10 +356,10 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "\n"
+                  "- Added option in settings to enable/disable constant speed scrolling"
+                  " (disabled by default).\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
-                  "\n"
                   "\nFIXES\n"
                   "- Fixed crash when opening trading dialog.\n"
                   "- Fixed AI not active after first tutorial.\n"
