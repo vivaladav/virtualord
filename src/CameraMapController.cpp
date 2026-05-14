@@ -306,7 +306,11 @@ void CameraMapController::InitScrollingVelocity()
     // initial acceleration scrolling
     else
     {
-        mVelocityScrolling = mMinSpeedScrolling;
+        const float speedMult = 0.25f;
+        mVelocityScrolling = mSpeedScrolling * speedMult;
+
+        if(mVelocityScrolling < mMinSpeedScrolling)
+            mVelocityScrolling = mMinSpeedScrolling;
 
         const float timeAccelerating = 1.f;
         mAccelScrolling = (mSpeedScrolling - mVelocityScrolling) / timeAccelerating;
