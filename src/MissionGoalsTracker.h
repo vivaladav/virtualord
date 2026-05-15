@@ -31,7 +31,6 @@ public:
     void Update();
 
     // tracked data
-    void SetTutorialStarted();
     void SetPlayedTime(unsigned int sec);
     void AddPlayedTurns();
     void AddMiniUnitCreated();
@@ -80,7 +79,6 @@ private:
     unsigned int mSelfDestructed = 0;
 
     bool mMapCompleted = false;
-    bool mTutorialStarted = false;
 };
 
 inline void MissionGoalsTracker::SetGameHUD(GameHUD * gh) { mHUD = gh; }
@@ -90,8 +88,6 @@ inline const std::vector<MissionGoal> & MissionGoalsTracker::GetGoals() const
 {
     return mMissionGoals;
 }
-
-inline void MissionGoalsTracker::SetTutorialStarted() { mTutorialStarted = true; }
 
 inline void MissionGoalsTracker::SetPlayedTime(unsigned int sec) { mPlayedTime = sec; }
 inline void MissionGoalsTracker::AddPlayedTurns() { ++mPlayedTurns; }

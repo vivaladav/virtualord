@@ -547,8 +547,6 @@ void ScreenGame::InitTutorial()
     {
         tutMan->CreateTutorial(tutorialId, this);
         tutMan->StartTutorial();
-
-        mTrackerMG->SetTutorialStarted();
     }
 }
 

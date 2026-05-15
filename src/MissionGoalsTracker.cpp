@@ -228,22 +228,23 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_COMPLETE_TUTORIAL)
     {
-        if(mGame->IsTutorialEnabled() && mTutorialStarted)
-        {
-            auto tutMan = mGame->GetTutorialManager();
-
-            if(tutMan->GetTutorialState(TUTORIAL_MISSION_INTRO) != TS_DONE)
-            {
-                auto tut = tutMan->GetTutorial();
-
-                if(tut != nullptr)
-                    g.SetProgress(tut->GetNumStepsDone() * 100 / tut->GetNumStepsAtStart());
-
-                return false;
-            }
-        }
-        else
+        if(!mGame->IsTutorialEnabled())
             return false;
+
+        auto tutMan = mGame->GetTutorialManager();
+        const TutorialId tutID = tutMan->GetLastStartedTutorialId();
+
+        if(tutID == TUTORIAL_UNKNOWN)
+            return false;
+
+        if(tutMan->GetTutorialState(tutID) == TS_IN_PROGRESS)
+        {
+            auto tut = tutMan->GetActiveTutorial();
+
+            g.SetProgress(tut->GetNumStepsDone() * 100 / tut->GetNumStepsAtStart());
+
+            return false;
+        }
     }
     else if(gt == MissionGoal::TYPE_BUILD_BUNKER)
     {

@@ -8,6 +8,7 @@ namespace game
 {
 
 TutorialManager::TutorialManager()
+    : mLastStartedTutorialId(TUTORIAL_UNKNOWN)
 {
     mTutorialsState.resize(NUM_TUTORIALS, TS_TODO);
 }
@@ -62,7 +63,9 @@ void TutorialManager::StartTutorial()
     if(nullptr == mActiveTutorial)
         return ;
 
-    SetTutorialState(mActiveTutorial->GetId(), TS_IN_PROGRESS);
+    mLastStartedTutorialId = mActiveTutorial->GetId();
+
+    SetTutorialState(mLastStartedTutorialId, TS_IN_PROGRESS);
 
     mActiveTutorial->Start();
 }

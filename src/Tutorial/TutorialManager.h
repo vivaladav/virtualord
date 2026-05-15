@@ -25,7 +25,8 @@ public:
     void AbortTutorial();
     void SetTutorialPause(bool paused);
 
-    const Tutorial * GetTutorial() const;
+    const Tutorial * GetActiveTutorial() const;
+    TutorialId GetLastStartedTutorialId() const;
     bool HasActiveTutorial() const;
 
     void Update(float delta);
@@ -37,9 +38,12 @@ private:
     std::vector<TutorialState> mTutorialsState;
 
     Tutorial * mActiveTutorial = nullptr;
+
+    TutorialId mLastStartedTutorialId;
 };
 
-inline const Tutorial * TutorialManager::GetTutorial() const { return mActiveTutorial; }
+inline const Tutorial * TutorialManager::GetActiveTutorial() const { return mActiveTutorial; }
+inline TutorialId TutorialManager::GetLastStartedTutorialId() const { return mLastStartedTutorialId; }
 
 inline bool TutorialManager::HasActiveTutorial() const { return mActiveTutorial != nullptr; }
 
