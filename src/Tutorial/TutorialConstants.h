@@ -5,7 +5,8 @@ namespace game
 
 enum TutorialId : unsigned int
 {
-    TUTORIAL_MISSION_INTRO,
+    TUTORIAL_MISSION_1,
+    TUTORIAL_MISSION_2,
     TUTORIAL_PLANET_MAP,
 
     NUM_TUTORIALS,

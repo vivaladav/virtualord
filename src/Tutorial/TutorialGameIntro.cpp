@@ -100,7 +100,7 @@ namespace game
 {
 
 TutorialGameIntro::TutorialGameIntro(Screen * screen)
-    : Tutorial(TUTORIAL_MISSION_INTRO)
+    : Tutorial(TUTORIAL_MISSION_1)
     , mScreen(dynamic_cast<ScreenGame *>(screen))
 {
     assert(mScreen);

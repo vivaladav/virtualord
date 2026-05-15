@@ -1,6 +1,7 @@
 #include "TutorialManager.h"
 
 #include "Tutorial/TutorialConstants.h"
+#include "Tutorial/TutorialGame2.h"
 #include "Tutorial/TutorialGameIntro.h"
 #include "Tutorial/TutorialPlanetMap.h"
 
@@ -40,9 +41,16 @@ bool TutorialManager::CreateTutorial(TutorialId tutId, Screen * screen)
     // tutorial not created yet -> let's make it
     switch (tutId)
     {
-        case TUTORIAL_MISSION_INTRO:
+        case TUTORIAL_MISSION_1:
         {
             mActiveTutorial = new TutorialGameIntro(screen);
+            return true;
+        }
+        break;
+
+        case TUTORIAL_MISSION_2:
+        {
+            mActiveTutorial = new TutorialGame2(screen);
             return true;
         }
         break;

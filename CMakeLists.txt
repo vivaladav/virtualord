@@ -393,6 +393,8 @@ add_executable(
     src/Tutorial/Tutorial.cpp
     src/Tutorial/TutorialConstants.h
     src/Tutorial/TutorialConstants.cpp
+    src/Tutorial/TutorialGame2.h
+    src/Tutorial/TutorialGame2.cpp
     src/Tutorial/TutorialGameIntro.h
     src/Tutorial/TutorialGameIntro.cpp
     src/Tutorial/TutorialInfoStep.h

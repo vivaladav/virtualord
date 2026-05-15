@@ -539,7 +539,9 @@ void ScreenGame::InitTutorial()
     if(planetID == PLANET_1)
     {
         if(mapInd == 0)
-            tutorialId = TUTORIAL_MISSION_INTRO;
+            tutorialId = TUTORIAL_MISSION_1;
+        else if(mapInd == 1)
+            tutorialId = TUTORIAL_MISSION_2;
     }
 
     // start tutorial if still TODO
