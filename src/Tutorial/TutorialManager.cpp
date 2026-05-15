@@ -1,8 +1,8 @@
 #include "TutorialManager.h"
 
 #include "Tutorial/TutorialConstants.h"
+#include "Tutorial/TutorialGame1.h"
 #include "Tutorial/TutorialGame2.h"
-#include "Tutorial/TutorialGameIntro.h"
 #include "Tutorial/TutorialPlanetMap.h"
 
 namespace game
@@ -43,7 +43,7 @@ bool TutorialManager::CreateTutorial(TutorialId tutId, Screen * screen)
     {
         case TUTORIAL_MISSION_1:
         {
-            mActiveTutorial = new TutorialGameIntro(screen);
+            mActiveTutorial = new TutorialGame1(screen);
             return true;
         }
         break;

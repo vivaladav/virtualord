@@ -1,4 +1,4 @@
-#include "Tutorial/TutorialGameIntro.h"
+#include "Tutorial/TutorialGame1.h"
 
 #include "CameraMapController.h"
 #include "Game.h"
@@ -99,7 +99,7 @@ constexpr unsigned int indUnit2 = 1;
 namespace game
 {
 
-TutorialGameIntro::TutorialGameIntro(Screen * screen)
+TutorialGame1::TutorialGame1(Screen * screen)
     : Tutorial(TUTORIAL_MISSION_1)
     , mScreen(dynamic_cast<ScreenGame *>(screen))
 {
@@ -587,7 +587,7 @@ TutorialGameIntro::TutorialGameIntro(Screen * screen)
     AddStep([this] { return new StepGamePrimaryMissionGoal(mScreen->mHUD); });
 }
 
-TutorialGameIntro::~TutorialGameIntro()
+TutorialGame1::~TutorialGame1()
 {
     // re-enable camera in game in case tutorial is quit
     mScreen->mCamController->SetEnabled(true);
@@ -616,13 +616,13 @@ TutorialGameIntro::~TutorialGameIntro()
     playerAI->GetAI()->SetActive(true);
 }
 
-GameObject * TutorialGameIntro::GetObjectInCell(const Cell2D & cell) const
+GameObject * TutorialGame1::GetObjectInCell(const Cell2D & cell) const
 {
     const GameMapCell gmc = mScreen->mGameMap->GetCell(cell.row, cell.col);
     return gmc.objTop;
 }
 
-GameObject *TutorialGameIntro::GetObjectInCell(int r, int c) const
+GameObject *TutorialGame1::GetObjectInCell(int r, int c) const
 {
     const GameMapCell gmc = mScreen->mGameMap->GetCell(r, c);
     return gmc.objTop;

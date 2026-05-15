@@ -11,11 +11,11 @@ class ScreenGame;
 
 struct Cell2D;
 
-class TutorialGameIntro : public Tutorial
+class TutorialGame1 : public Tutorial
 {
 public:
-    TutorialGameIntro(Screen * screen);
-    ~TutorialGameIntro();
+    TutorialGame1(Screen * screen);
+    ~TutorialGame1();
 
 private:
     GameObject * GetObjectInCell(const Cell2D & cell) const;
