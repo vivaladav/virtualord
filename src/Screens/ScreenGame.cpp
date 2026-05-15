@@ -219,18 +219,7 @@ ScreenGame::ScreenGame(Game * game)
     InitMusic();
 
     // TUTORIAL
-    if(game->IsTutorialEnabled())
-    {
-        auto tutMan = game->GetTutorialManager();
-
-        if(tutMan->GetTutorialState(TUTORIAL_MISSION_INTRO) == TS_TODO)
-        {
-            tutMan->CreateTutorial(TUTORIAL_MISSION_INTRO, this);
-            tutMan->StartTutorial();
-
-            mTrackerMG->SetTutorialStarted();
-        }
-    }
+    InitTutorial();
 }
 
 ScreenGame::~ScreenGame()
@@ -529,6 +518,38 @@ void ScreenGame::InitParticlesSystem()
     // SINGLE LASER
     updater = new UpdaterSingleLaser;
     mPartMan->RegisterUpdater(PU_SINGLE_LASER, updater);
+}
+
+void ScreenGame::InitTutorial()
+{
+    auto game = GetGame();
+
+    // no tutorial -> nothing to do
+    if(!game->IsTutorialEnabled())
+        return;
+
+    // define what tutorial to play
+    const PlanetId planetID = game->GetCurrentPlanet()->GetPlanetId();
+    const unsigned int mapInd = game->GetCurrentTerritory();
+
+    auto tutMan = game->GetTutorialManager();
+
+    TutorialId tutorialId = TUTORIAL_UNKNOWN;
+
+    if(planetID == PLANET_1)
+    {
+        if(mapInd == 0)
+            tutorialId = TUTORIAL_MISSION_INTRO;
+    }
+
+    // start tutorial if still TODO
+    if(tutorialId != TUTORIAL_UNKNOWN && tutMan->GetTutorialState(tutorialId) == TS_TODO)
+    {
+        tutMan->CreateTutorial(tutorialId, this);
+        tutMan->StartTutorial();
+
+        mTrackerMG->SetTutorialStarted();
+    }
 }
 
 void ScreenGame::CreateIsoMap()

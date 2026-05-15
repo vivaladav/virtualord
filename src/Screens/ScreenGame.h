@@ -101,6 +101,7 @@ private:
 
     void InitMusic();
     void InitParticlesSystem();
+    void InitTutorial();
 
     void CreateIsoMap();
     void CreateLayers();
