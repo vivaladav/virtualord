@@ -191,7 +191,7 @@ private:
 
 private:
     friend class GameHUD;
-    friend class TutorialGame1;
+    friend class TutorialGame;
 
     std::vector<Player *> mAiPlayers;
 
