@@ -358,6 +358,8 @@ void ScreenMainMenu::CreateChangelog()
     text->SetText("NEW FEATURES\n"
                   "- Added option in settings to enable/disable constant speed scrolling"
                   " (disabled by default).\n"
+                  "- Controls settings allow to set what mouse button to use as SELECT and ACTION"
+                  " buttons.\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
                   "\nFIXES\n"
