@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameBase.h"
 
+#include "Game.h"
 #include "IsoObject.h"
 #include "GameObjects/Base.h"
 #include "Tutorial/TutorialConstants.h"
@@ -12,7 +13,7 @@
 namespace game
 {
 
-StepGameBase::StepGameBase(const Base * b)
+StepGameBase::StepGameBase(const Game * game, const Base * b)
     : TutorialInfoStep(600, 250)
     , mFocusArea(new FocusArea)
     , mBase(b)
@@ -39,8 +40,18 @@ StepGameBase::StepGameBase(const Base * b)
                        TutorialConstants::colorText, 4.f, true, false);
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_2"),
                        TutorialConstants::colorText, 7.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_3"),
-                       TutorialConstants::colorTextAction, 0.f, false, false);
+
+    const char * buttonsStr[] =
+    {
+        "",
+        "LMB_LO",
+        "MMB_LO",
+        "RMB_LO",
+    };
+
+    const std::string & strMouse = sm->GetString(buttonsStr[game->GetButtonSelect()]);
+    const std::string str = sm->GetParametricString("TUT_GAME_BASE_3", strMouse);
+    info->AddInfoEntry(str.c_str(), TutorialConstants::colorTextAction, 0.f, false, false);
 
     info->SetFunctionOnFinished([this, objX, objY, objW, objH]
     {

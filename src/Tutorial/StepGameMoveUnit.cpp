@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameMoveUnit.h"
 
+#include "Game.h"
 #include "IsoMap.h"
 #include "Player.h"
 #include "GameObjects/Unit.h"
@@ -19,7 +20,7 @@ const int destC = 11;
 namespace game
 {
 
-StepGameMoveUnit::StepGameMoveUnit(const Player * p, const IsoMap * isoMap)
+StepGameMoveUnit::StepGameMoveUnit(const Game * game, const Player * p, const IsoMap * isoMap)
     : TutorialInfoStep(600, 200)
     , mFocusArea(new FocusArea)
 {
@@ -35,8 +36,20 @@ StepGameMoveUnit::StepGameMoveUnit(const Player * p, const IsoMap * isoMap)
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MOVE_UNIT_1"),
                        TutorialConstants::colorText, 7.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MOVE_UNIT_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, p, isoMap]
+
+    const char * buttonsStr[] =
+    {
+        "",
+        "LMB_LO",
+        "MMB_LO",
+        "RMB_LO",
+    };
+
+    const std::string & strMouse = sm->GetString(buttonsStr[game->GetButtonAction()]);
+    const std::string str = sm->GetParametricString("TUT_GAME_MOVE_UNIT_2", strMouse);
+
+    info->AddInfoEntry(str.c_str(), TutorialConstants::colorTextAction, 0.f, false, false,
+                       [this, p, isoMap]
                        {
                            const sgl::core::Pointd2D pos = isoMap->GetCellPosition(destR, destC);
 

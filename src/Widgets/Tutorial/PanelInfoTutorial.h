@@ -26,8 +26,8 @@ public:
     PanelInfoTutorial(int w, int h);
     ~PanelInfoTutorial();
 
-    void AddInfoEntry(const char * text, unsigned int color, float nextTime,
-        bool showContinue, bool hideAfter, const std::function<void()> & onShow = [](){});
+    void AddInfoEntry(const char * text, unsigned int color, float nextTime, bool showContinue,
+                      bool hideAfter, const std::function<void()> & onShow = [](){});
 
     void SetFunctionOnFinished(const std::function<void()> & f);
 

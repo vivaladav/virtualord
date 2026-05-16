@@ -123,7 +123,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([] { return new StepGameIntro; });
     AddStep([] { return new StepDelay(0.3f); });
     // BASE INTRO
-    AddStep([localBase] { return new StepGameBase(localBase); });
+    AddStep([game, localBase] { return new StepGameBase(game, localBase); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelActions, panelObj] { return new StepGameBaseFeatures(panelObj, panelActions); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -142,7 +142,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
 
-    AddStep([isoMap, local] { return new StepGameMoveUnit(local, isoMap); });
+    AddStep([game, isoMap, local] { return new StepGameMoveUnit(game, local, isoMap); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
      AddStep([] { return new StepGameMoveCamera(450, -150, 300.f); });
     // CONQUER ENERGY GENERATOR
