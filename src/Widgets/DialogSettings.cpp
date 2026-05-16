@@ -9,6 +9,7 @@
 #include "Widgets/WidgetsConstants.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
+#include <sgl/core/event/MouseEvent.h>
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/GraphicConstants.h>
@@ -54,6 +55,13 @@ constexpr int marginPanelH = 30;
 constexpr int minResW = 1024;
 constexpr float minResRatio = 1.25f;
 constexpr int minRefresh = 60;
+
+const int mouseBtnId[] =
+{
+    sgl::core::MouseEvent::BUTTON_LEFT,
+    sgl::core::MouseEvent::BUTTON_MIDDLE,
+    sgl::core::MouseEvent::BUTTON_RIGHT,
+};
 
 // ====== COMBOBOX =====
 class SettingsComboBox : public sgl::sgui::ComboBox
@@ -454,6 +462,11 @@ void DialogSettings::AddOnCloseClickedFunction(const std::function<void()> & f)
 void DialogSettings::HandlePositionChanged()
 {
     SetPositions();
+}
+
+int DialogSettings::GetMouseButtonIndex(int buttonId) const
+{
+    return buttonId - 1;
 }
 
 void DialogSettings::SetPositions()
@@ -989,6 +1002,82 @@ void DialogSettings::CreatePanelControls()
 
                                   label->SetText(std::to_string(val).c_str());
                               });
+
+    // SELECT BUTTON
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("SELECT"), font, panel);
+    mHeadersControls.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    mComboBtnSelect = new SettingsComboBox(panel);
+    mComboBtnSelect->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_L")));
+    mComboBtnSelect->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_M")));
+    mComboBtnSelect->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_R")));
+
+    const int btnSelect = mGame->GetButtonSelect();
+    mComboBtnSelect->SetActiveItem(GetMouseButtonIndex(btnSelect));
+
+    mComboBtnSelect->SetOnActiveChanged([this](int ind)
+        {
+            const int btnSelect = mouseBtnId[ind];
+
+            mGame->SetButtonSelect(btnSelect);
+
+            // buttons are different -> nothing to do
+            if(btnSelect != mGame->GetButtonAction())
+                return ;
+
+            // buttons are same -> change buton action
+            if(btnSelect == core::MouseEvent::BUTTON_RIGHT)
+                mComboBtnAction->SetActiveItem(GetMouseButtonIndex(core::MouseEvent::BUTTON_LEFT));
+            else
+                mComboBtnAction->SetActiveItem(GetMouseButtonIndex(core::MouseEvent::BUTTON_RIGHT));
+        });
+
+    x = panelContentW - mComboVMode->GetWidth() - marginPanelH;
+    y += (label->GetHeight() - mComboVMode->GetHeight()) / 2;
+    mComboBtnSelect->SetPosition(x, y);
+
+    // ACTION BUTTON
+    x = contX0;
+    y += blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("ACTION"), font, panel);
+    mHeadersControls.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    mComboBtnAction = new SettingsComboBox(panel);
+    mComboBtnAction->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_L")));
+    mComboBtnAction->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_M")));
+    mComboBtnAction->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_R")));
+
+    const int btnAction = mGame->GetButtonAction();
+    mComboBtnAction->SetActiveItem(GetMouseButtonIndex(btnAction));
+
+    mComboBtnAction->SetOnActiveChanged([this](int ind)
+        {
+            const int btnAction = mouseBtnId[ind];
+
+            mGame->SetButtonAction(btnAction);
+
+            // buttons are different -> nothing to do
+            if(btnAction != mGame->GetButtonSelect())
+                return ;
+
+            // buttons are same -> change button select
+            if(btnAction == core::MouseEvent::BUTTON_LEFT)
+                mComboBtnSelect->SetActiveItem(GetMouseButtonIndex(core::MouseEvent::BUTTON_RIGHT));
+            else
+                mComboBtnSelect->SetActiveItem(GetMouseButtonIndex(core::MouseEvent::BUTTON_LEFT));
+        });
+
+    x = panelContentW - mComboVMode->GetWidth() - marginPanelH;
+    y += (label->GetHeight() - mComboVMode->GetHeight()) / 2;
+    mComboBtnAction->SetPosition(x, y);
 }
 
 void DialogSettings::UpdateCurrentResolution()
@@ -1144,6 +1233,8 @@ void DialogSettings::OnStringsChanged()
             "MAP_SCROLL_SPEED",
             "MAP_DRAG",
             "MAP_DRAG_SPEED",
+            "SELECT",
+            "ACTION",
         };
 
     numLabels = mHeadersControls.size();
@@ -1152,6 +1243,34 @@ void DialogSettings::OnStringsChanged()
 
     for(unsigned int i = 0; i < numLabels; ++i)
         mHeadersControls[i]->SetText(mSM->GetCString(strIdsControls[i]));
+
+    // PANEL CONTROLS - SELECT combo box
+    const char * ButtonsStr[] =
+    {
+        "CLICK_L",
+        "CLICK_M",
+        "CLICK_R",
+    };
+
+    const unsigned int numbuttons = mComboBtnSelect->GetNumItems();
+    assert((sizeof(ButtonsStr) / sizeof(char *)) == numbuttons);
+
+    for(unsigned int i = 0; i < numbuttons; ++i)
+    {
+        auto cbi = static_cast<SettingsComboBoxItem *>(mComboBtnSelect->GetItem(i));
+        cbi->SetLabel(mSM->GetCString(ButtonsStr[i]));
+    }
+
+    mComboBtnSelect->Refresh();
+
+    // PANEL CONTROLS - ACTION combo box
+    for(unsigned int i = 0; i < numbuttons; ++i)
+    {
+        auto cbi = static_cast<SettingsComboBoxItem *>(mComboBtnAction->GetItem(i));
+        cbi->SetLabel(mSM->GetCString(ButtonsStr[i]));
+    }
+
+    mComboBtnAction->Refresh();
 }
 
 } // namespace game

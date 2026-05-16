@@ -35,6 +35,8 @@ public:
 private:
     void HandlePositionChanged() override;
 
+    int GetMouseButtonIndex(int buttonId) const;
+
     void SetPositions();
 
     void CreatePanelGame();
@@ -81,6 +83,8 @@ private:
     sgl::sgui::ComboBox * mComboLang = nullptr;
     sgl::sgui::ComboBox * mComboRes = nullptr;
     sgl::sgui::ComboBox * mComboVMode = nullptr;
+    sgl::sgui::ComboBox * mComboBtnSelect = nullptr;
+    sgl::sgui::ComboBox * mComboBtnAction = nullptr;
 
     sgl::utilities::StringManager * mSM = nullptr;
 };
