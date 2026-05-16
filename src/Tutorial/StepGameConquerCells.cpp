@@ -1,6 +1,7 @@
 #include "Tutorial/StepGameConquerCells.h"
 
 #include "Cell2D.h"
+#include "Game.h"
 #include "IsoMap.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -19,7 +20,8 @@ const int destC = 10;
 namespace game
 {
 
-StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D & cellStart)
+StepGameConquerCells::StepGameConquerCells(const Game * game, const IsoMap * isoMap,
+                                           const Cell2D & cellStart)
     : TutorialInfoStep(600, 200)
     , mFocusArea(new FocusArea)
     , mCellActionStart(cellStart)
@@ -37,7 +39,7 @@ StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D &
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_1"),
                        TutorialConstants::colorText, 8.f, true, false);
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap]
+                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, game]
                        {
                            const sgl::core::Pointd2D pos = isoMap->GetCellPosition(destR, destC);
 
@@ -58,7 +60,7 @@ StepGameConquerCells::StepGameConquerCells(const IsoMap * isoMap, const Cell2D &
                            auto cf = GetClickFilter();
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                            cf->SetClickableCell(isoMap, destR, destC);
-                           cf->SetButtonToExclude(sgl::core::MouseEvent::BUTTON_LEFT);
+                           cf->SetButtonToExclude(game->GetButtonSelect());
                        });
 }
 

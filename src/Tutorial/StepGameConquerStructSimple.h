@@ -8,6 +8,7 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class GameObject;
 class IsoMap;
 class PanelClickFilter;
@@ -18,7 +19,7 @@ class Unit;
 class StepGameConquerStructSimple : public TutorialInfoStep
 {
 public:
-    StepGameConquerStructSimple(const Unit * unit, const GameObject * energyGen,
+    StepGameConquerStructSimple(const Game *game, const Unit * unit, const GameObject * energyGen,
                                 const IsoMap * isoMap, const sgl::core::Pointd2D & p0);
     ~StepGameConquerStructSimple();
 

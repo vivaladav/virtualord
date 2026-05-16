@@ -127,6 +127,11 @@ public:
 
     float GetTimeAutoHideMouse() const;
 
+    int GetButtonSelect() const;
+    void SetButtonSelect(int btn);
+    int GetButtonAction() const;
+    void SetButtonAction(int btn);
+
     unsigned int AddOnSettingsChangedFunction(const std::function<void()> & f);
     void RemoveOnSettingsChangedFunction(unsigned int fId);
 
@@ -179,6 +184,8 @@ private:
     LanguageId mLanguage;
     int mMapDraggingSpeed = 5;
     int mMapScrollingSpeed = 5;
+    int mButtonSelect;
+    int mButtonAction;
     float mTimeAutoHideMouse = 2.f;
     bool mMapDragging = true;
     bool mMapScrollingOnEdges = true;
@@ -279,6 +286,11 @@ inline bool Game::IsTutorialEnabled() const { return mTutorialEnabled; }
 inline void Game::SetTutorialEnabled(bool val) { mTutorialEnabled = val; }
 
 inline float Game::GetTimeAutoHideMouse() const { return mTimeAutoHideMouse; }
+
+inline int Game::GetButtonSelect() const { return mButtonSelect; }
+inline void Game::SetButtonSelect(int btn) { mButtonSelect = btn; }
+inline int Game::GetButtonAction() const { return mButtonAction; }
+inline void Game::SetButtonAction(int btn) { mButtonAction = btn; }
 
 inline void Game::SetRandSeed(unsigned int seed) { mRandSeed = seed; }
 inline unsigned int Game::GetRandSeed() const { return mRandSeed; }

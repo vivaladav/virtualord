@@ -33,6 +33,7 @@
 #include <sgl/utilities/StringManager.h>
 
 #ifdef DEBUG
+#include <sgl/core/event/MouseEvent.h>
 #include <sgl/core/ModuleCore.h>
 #include <sgl/graphic/ModuleGraphic.h>
 #include <sgl/media/ModuleMedia.h>
@@ -55,6 +56,8 @@ Game::Game(int argc, char * argv[])
     , mLocalFaction(NO_FACTION)
     , mCurrPlanet(PLANET_UNKNOWN)
     , mLanguage(LANG_NULL)
+    , mButtonSelect(sgl::core::MouseEvent::BUTTON_LEFT)
+    , mButtonAction(sgl::core::MouseEvent::BUTTON_RIGHT)
 #ifdef DEV_MODE
     // tutorial disabled in DEV MODE
     , mTutorialEnabled(false)

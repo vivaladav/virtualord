@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameConquerStruct.h"
 
+#include "Game.h"
 #include "GameConstants.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
@@ -16,8 +17,8 @@
 namespace game
 {
 
-StepGameConquerStruct::StepGameConquerStruct(const Player * p, const GameObject * energyGen,
-                                             const IsoMap * isoMap)
+StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p,
+                                             const GameObject * energyGen, const IsoMap * isoMap)
     : TutorialInfoStep(550, 260)
     , mFocusArea(new FocusArea)
     , mEnergyGen(energyGen)
@@ -25,13 +26,6 @@ StepGameConquerStruct::StepGameConquerStruct(const Player * p, const GameObject 
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    const auto isoObj = mEnergyGen->GetIsoObject();
-    const int objX = isoObj->GetX();
-    const int objY = isoObj->GetY();
-    const int objW = isoObj->GetWidth();
-    const int objH = isoObj->GetHeight();
-
-    mFocusArea->SetWorldArea(objX, objY, objW, objH);
     mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
     mFocusArea->SetVisible(false);
 
@@ -50,16 +44,23 @@ StepGameConquerStruct::StepGameConquerStruct(const Player * p, const GameObject 
                        });
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT_3"),
                        TutorialConstants::colorTextAction, 0.f, false, false,
-                       [this, objX, objY, objW, objH, energyGen, isoMap, p]
+                       [this, energyGen, isoMap, p, game]
                        {
                            // FOCUS
+                           const auto isoObj = mEnergyGen->GetIsoObject();
+                           const int objX = isoObj->GetX();
+                           const int objY = isoObj->GetY();
+                           const int objW = isoObj->GetWidth();
+                           const int objH = isoObj->GetHeight();
+
+                           mFocusArea->SetWorldArea(objX, objY, objW, objH);
                            mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
                            mFocusArea->SetBlinking(true);
 
                            // CLICK FILTER
                            auto cf = GetClickFilter();
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
-                           cf->SetButtonToExclude(sgl::core::MouseEvent::BUTTON_LEFT);
+                           cf->SetButtonToExclude(game->GetButtonSelect());
                            cf->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
                                                  energyGen->GetRow0(), energyGen->GetCol0());
 

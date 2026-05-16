@@ -9,13 +9,14 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class IsoMap;
 
 class StepGameConquerCellsSimple : public TutorialInfoStep
 {
 public:
-    StepGameConquerCellsSimple(const IsoMap * isoMap, const Cell2D & cellActionStart,
-                               const Cell2D & cellTarget, const sgl::core::Pointd2D & p0);
+    StepGameConquerCellsSimple(const Game * game, const IsoMap * isoMap, const Cell2D & start,
+                               const Cell2D & target, const sgl::core::Pointd2D & p0);
     ~StepGameConquerCellsSimple();
 
     void Update(float delta) override;

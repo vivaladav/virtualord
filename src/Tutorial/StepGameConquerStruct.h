@@ -6,6 +6,7 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class GameObject;
 class IsoMap;
 class PanelClickFilter;
@@ -16,7 +17,8 @@ class Unit;
 class StepGameConquerStruct : public TutorialInfoStep
 {
 public:
-    StepGameConquerStruct(const Player * p, const GameObject * energyGen, const IsoMap * isoMap);
+    StepGameConquerStruct(const Game * game, const Player * p, const GameObject * energyGen,
+                          const IsoMap * isoMap);
     ~StepGameConquerStruct();
 
     void Update(float delta) override;

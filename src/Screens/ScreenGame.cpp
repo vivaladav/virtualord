@@ -1066,9 +1066,11 @@ void ScreenGame::OnMouseButtonUp(sgl::core::MouseButtonEvent & event)
     if(!CanLocalPlayerInteract())
         return ;
 
-    if(event.GetButton() == sgl::core::MouseEvent::BUTTON_LEFT)
+    auto game = GetGame();
+
+    if(event.GetButton() == game->GetButtonSelect())
         HandleSelectionClick(event);
-    else if(event.GetButton() == sgl::core::MouseEvent::BUTTON_RIGHT)
+    else if(event.GetButton() == game->GetButtonAction())
         HandleActionClick(event);
 }
 

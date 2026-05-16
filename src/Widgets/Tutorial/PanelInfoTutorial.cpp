@@ -239,8 +239,8 @@ void PanelInfoTutorial::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
     if(nullptr == entry)
         return;
 
-    if(event.GetButton() == sgl::core::MouseButtonEvent::BUTTON_LEFT && mTimerShown > minTimeShown &&
-       entry->mShowContinue)
+    if(event.GetButton() == sgl::core::MouseButtonEvent::BUTTON_LEFT &&
+       mTimerShown > minTimeShown && entry->mShowContinue)
     {
         event.SetConsumed();
 

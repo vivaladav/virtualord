@@ -189,7 +189,7 @@ void CameraMapController::HandleKeyUp(sgl::core::KeyboardEvent & event)
 
 void CameraMapController::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
 {
-    mDragging &= event.GetButton() != sgl::core::MouseEvent::BUTTON_LEFT;
+    mDragging &= event.GetButton() != mGame->GetButtonSelect();
 }
 
 void CameraMapController::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
@@ -198,7 +198,7 @@ void CameraMapController::HandleMouseMotion(sgl::core::MouseMotionEvent & event)
         return;
 
     // -- DRAGGING --
-    if(mGame->IsMapDragging() && event.IsButtonPushed(sgl::core::MouseEvent::BUTTON_LEFT))
+    if(mGame->IsMapDragging() && event.IsButtonPushed(mGame->GetButtonSelect()))
     {
         const int minDrag = 5;
 

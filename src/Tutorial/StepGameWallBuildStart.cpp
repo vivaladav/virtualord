@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameWallBuildStart.h"
 
+#include "Game.h"
 #include "IsoMap.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -12,8 +13,8 @@
 namespace game
 {
 
-StepGameWallBuildStart::StepGameWallBuildStart(const IsoMap * isoMap, const Cell2D & cellStart,
-                                               const Cell2D & target)
+StepGameWallBuildStart::StepGameWallBuildStart(const Game * game, const IsoMap * isoMap,
+                                               const Cell2D & cellStart, const Cell2D & target)
     : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
     , mCellActionStart(cellStart)
@@ -30,7 +31,7 @@ StepGameWallBuildStart::StepGameWallBuildStart(const IsoMap * isoMap, const Cell
     info->SetPosition(900, 250);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_WALL_3"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap]
+                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, game]
                        {
                            const auto pos = isoMap->GetCellPosition(mTarget.row, mTarget.col);
 
@@ -51,7 +52,7 @@ StepGameWallBuildStart::StepGameWallBuildStart(const IsoMap * isoMap, const Cell
                            auto cf = GetClickFilter();
                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                            cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);
-                           cf->SetButtonToExclude(sgl::core::MouseEvent::BUTTON_LEFT);
+                           cf->SetButtonToExclude(game->GetButtonSelect());
                        });
 }
 

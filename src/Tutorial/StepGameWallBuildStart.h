@@ -7,13 +7,14 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class IsoMap;
 
 class StepGameWallBuildStart : public TutorialInfoStep
 {
 public:
-    StepGameWallBuildStart(const IsoMap * isoMap, const Cell2D & cellActionStart,
-                           const Cell2D & target);
+    StepGameWallBuildStart(const Game * game, const IsoMap * isoMap,
+                           const Cell2D & cellActionStart, const Cell2D & target);
     ~StepGameWallBuildStart();
 
     void Update(float delta) override;
