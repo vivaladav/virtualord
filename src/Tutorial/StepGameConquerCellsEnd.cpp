@@ -53,7 +53,7 @@ StepGameConquerCellsEnd::StepGameConquerCellsEnd(const Game * game, const IsoMap
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetClickableCell(isoMap, mCellEnd.row, mCellEnd.col);
-                            cf->SetButtonToExclude(game->GetButtonSelect());
+                            cf->SetButtonToAllow(game->GetButtonAction());
                         });
 }
 

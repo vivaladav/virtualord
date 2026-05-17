@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameUnit.h"
 
+#include "Game.h"
 #include "IsoObject.h"
 #include "GameObjects/Unit.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -11,7 +12,7 @@
 namespace game
 {
 
-StepGameUnit::StepGameUnit(const Unit * unit)
+StepGameUnit::StepGameUnit(const Game * game, const Unit * unit)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
     , mUnit(unit)
@@ -26,7 +27,7 @@ StepGameUnit::StepGameUnit(const Unit * unit)
 
     info->SetPosition(1300, 450);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_UNIT_1"), 0.f, false, false, [this]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_UNIT_1"), 0.f, false, false, [this, game]
                         {
                             // FOCUS
                             const auto isoObj = mUnit->GetIsoObject();
@@ -41,7 +42,9 @@ StepGameUnit::StepGameUnit(const Unit * unit)
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER
-                            GetClickFilter()->SetWorldClickableArea(objX, objY, objW, objH);
+                            auto cf = GetClickFilter();
+                            cf->SetWorldClickableArea(objX, objY, objW, objH);
+                            cf->SetButtonToAllow(game->GetButtonSelect());
                         });
 }
 

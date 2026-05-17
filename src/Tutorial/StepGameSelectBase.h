@@ -7,11 +7,12 @@ namespace game
 
 class Base;
 class FocusArea;
+class Game;
 
 class StepGameSelectBase : public TutorialInfoStep
 {
 public:
-    StepGameSelectBase(const Base * b);
+    StepGameSelectBase(const Game * game, const Base * b);
     ~StepGameSelectBase();
 
     void Update(float delta) override;

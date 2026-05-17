@@ -56,7 +56,7 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
                             // CLICK FILTER
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);
-                            cf->SetButtonToExclude(game->GetButtonSelect());
+                            cf->SetButtonToAllow(game->GetButtonAction());
                             cf->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
                                                   energyGen->GetRow0(), energyGen->GetCol0());
 

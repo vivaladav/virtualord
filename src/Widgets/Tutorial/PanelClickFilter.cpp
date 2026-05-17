@@ -31,8 +31,8 @@ void PanelClickFilter::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
 
 void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
 {
-    // check if button is filtered
-    if(mButton != sgl::core::MouseEvent::BUTTON_NULL && event.GetButton() == mButton)
+    // check if only 1 button is allowed
+    if(mButton != sgl::core::MouseEvent::BUTTON_NULL && event.GetButton() != mButton)
     {
         event.SetConsumed();
         return ;
@@ -84,7 +84,7 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
     }
 }
 
-void PanelClickFilter::ClearButtonToExclude()
+void PanelClickFilter::ClearButtonToAllow()
 {
     mButton = sgl::core::MouseEvent::BUTTON_NULL;
 }

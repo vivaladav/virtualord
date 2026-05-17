@@ -6,13 +6,14 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class Player;
 class Unit;
 
 class StepGameUnit : public TutorialInfoStep
 {
 public:
-    StepGameUnit(const Unit *unit);
+    StepGameUnit(const Game * game, const Unit * unit);
     ~StepGameUnit();
 
     void Update(float delta) override;

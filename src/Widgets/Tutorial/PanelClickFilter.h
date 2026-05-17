@@ -17,8 +17,8 @@ public:
     void SetClickableCell(const IsoMap * im, int r, int c);
     void SetClickableCells(const IsoMap * im, int tlR, int tlC, int brR, int brC);
 
-    void ClearButtonToExclude();
-    void SetButtonToExclude(int button);
+    void ClearButtonToAllow();
+    void SetButtonToAllow(int button);
 
     void ExpandClickableArea();
     void ClearClickableArea();
@@ -50,7 +50,7 @@ private:
     bool mAreaWorld = false;
 };
 
-inline void PanelClickFilter::SetButtonToExclude(int b) { mButton = b; }
+inline void PanelClickFilter::SetButtonToAllow(int b) { mButton = b; }
 
 inline void PanelClickFilter::SetClickableArea(int x0, int y0, int w, int h)
 {

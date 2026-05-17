@@ -52,7 +52,7 @@ StepGameConquerCellsSimple::StepGameConquerCellsSimple(const Game * game, const 
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetClickableCell(isoMap, mCellTarget.row, mCellTarget.col);
-                            cf->SetButtonToExclude(game->GetButtonSelect());
+                            cf->SetButtonToAllow(game->GetButtonAction());
                         });
 }
 

@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameSelectBase.h"
 
+#include "Game.h"
 #include "IsoObject.h"
 #include "GameObjects/Base.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -11,7 +12,7 @@
 namespace game
 {
 
-StepGameSelectBase::StepGameSelectBase(const Base * b)
+StepGameSelectBase::StepGameSelectBase(const Game * game, const Base * b)
     : TutorialInfoStep(500, 150)
     , mFocusArea(new FocusArea)
     , mBase(b)
@@ -27,7 +28,7 @@ StepGameSelectBase::StepGameSelectBase(const Base * b)
 
     info->SetPosition(500, 200);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_BASE_4"), 0.f, false, false, [this]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BASE_4"), 0.f, false, false, [this, game]
                         {
                             const auto isoObj = mBase->GetIsoObject();
                             const int objX = isoObj->GetX();
@@ -39,7 +40,9 @@ StepGameSelectBase::StepGameSelectBase(const Base * b)
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetVisible(true);
 
-                            GetClickFilter()->SetWorldClickableArea(objX, objY, objW, objH);
+                            auto cf = GetClickFilter();
+                            cf->SetWorldClickableArea(objX, objY, objW, objH);
+                            cf->SetButtonToAllow(game->GetButtonSelect());
                         });
 }
 

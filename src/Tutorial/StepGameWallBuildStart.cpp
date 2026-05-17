@@ -51,7 +51,7 @@ StepGameWallBuildStart::StepGameWallBuildStart(const Game * game, const IsoMap *
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);
-                            cf->SetButtonToExclude(game->GetButtonSelect());
+                            cf->SetButtonToAllow(game->GetButtonAction());
                         });
 }
 

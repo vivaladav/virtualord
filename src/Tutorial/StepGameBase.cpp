@@ -50,12 +50,14 @@ StepGameBase::StepGameBase(const Game * game, const Base * b)
     const std::string str = sm->GetParametricString("TUT_GAME_BASE_3", strMouse);
     info->AddActionEntry(str.c_str(), 0.f, false, false);
 
-    info->SetFunctionOnFinished([this, objX, objY, objW, objH]
+    info->SetFunctionOnFinished([this, objX, objY, objW, objH, game]
     {
         mFocusArea->SetCornersColorAction();
         mFocusArea->SetBlinking(true);
 
-        GetClickFilter()->SetWorldClickableArea(objX, objY, objW, objH);
+        auto cf = GetClickFilter();
+        cf->SetWorldClickableArea(objX, objY, objW, objH);
+        cf->SetButtonToAllow(game->GetButtonSelect());
 
         mCheckBaseSelected = true;
     });
