@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameEndTurnIntro.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
 #include <sgl/utilities/StringManager.h>
@@ -18,8 +17,7 @@ StepGameEndTurnIntro::StepGameEndTurnIntro()
 
     info->SetPosition(1250, 200);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_END_TURN"),
-                       TutorialConstants::colorText, 8.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_END_TURN"), 8.f, true, false);
 
     info->SetFunctionOnFinished([this]
                                 {

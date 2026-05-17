@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameBackToBase.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/PanelTurnControl.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -22,7 +21,7 @@ StepGameBackToBase::StepGameBackToBase(const PanelTurnControl * panel, const cha
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -30,27 +29,25 @@ StepGameBackToBase::StepGameBackToBase(const PanelTurnControl * panel, const cha
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddInfoEntry(sm->GetCString(text1),
-                       TutorialConstants::colorText, 10.f, true, false);
+    info->AddInfoEntry(sm->GetCString(text1), 10.f, true, false);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BACK_TO_BASE_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this]
-                       {
-                           // FOCUS
-                           const int padding = 10;
-                           const int fX = mButton->GetScreenX() - padding;
-                           const int fY = mButton->GetScreenY() - padding;
-                           const int fW = mButton->GetWidth() + (padding * 2);
-                           const int fH = mButton->GetHeight() + (padding * 2);
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BACK_TO_BASE_2"), 0.f, false, false, [this]
+                        {
+                            // FOCUS
+                            const int padding = 10;
+                            const int fX = mButton->GetScreenX() - padding;
+                            const int fY = mButton->GetScreenY() - padding;
+                            const int fW = mButton->GetWidth() + (padding * 2);
+                            const int fH = mButton->GetHeight() + (padding * 2);
 
-                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
-                           mFocusArea->SetBlinking(true);
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetVisible(true);
 
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
-                       });
+                            // CLICK FILTER
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                        });
 
     mFuncId = mButton->AddOnClickFunction([this]
     {

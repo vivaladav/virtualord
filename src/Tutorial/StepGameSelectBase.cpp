@@ -2,7 +2,6 @@
 
 #include "IsoObject.h"
 #include "GameObjects/Base.h"
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -28,9 +27,7 @@ StepGameSelectBase::StepGameSelectBase(const Base * b)
 
     info->SetPosition(500, 200);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_4"),
-                       TutorialConstants::colorTextAction, 0.f, false, false,
-                       [this]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BASE_4"), 0.f, false, false, [this]
                         {
                             const auto isoObj = mBase->GetIsoObject();
                             const int objX = isoObj->GetX();
@@ -39,7 +36,7 @@ StepGameSelectBase::StepGameSelectBase(const Base * b)
                             const int objH = isoObj->GetHeight();
 
                             mFocusArea->SetWorldArea(objX, objY, objW, objH);
-                            mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+                            mFocusArea->SetCornersColorAction();
                             mFocusArea->SetVisible(true);
 
                             GetClickFilter()->SetWorldClickableArea(objX, objY, objW, objH);

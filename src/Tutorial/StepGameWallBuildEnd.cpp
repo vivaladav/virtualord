@@ -4,7 +4,6 @@
 #include "IsoMap.h"
 #include "Player.h"
 #include "GameObjects/Unit.h"
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -32,30 +31,30 @@ StepGameWallBuildEnd::StepGameWallBuildEnd(const Game * game, const IsoMap * iso
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_WALL_4"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, isoMap, u, game]
-                       {
-                           const auto pos = isoMap->GetCellPosition(mCellEnd.row, mCellEnd.col);
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_WALL_4"), 0.f, false, false,
+                         [this, isoMap, u, game]
+                        {
+                            const auto pos = isoMap->GetCellPosition(mCellEnd.row, mCellEnd.col);
 
-                           // FOCUS
-                           const int marginW = 5;
-                           const int marginH = 10;
-                           const int objX = pos.x - marginW;
-                           const int objY = pos.y - marginH;
-                           const int objW = isoMap->GetTileWidth() + (2 * marginW);
-                           const int objH = isoMap->GetTileHeight() + (2 * marginH);
+                            // FOCUS
+                            const int marginW = 5;
+                            const int marginH = 10;
+                            const int objX = pos.x - marginW;
+                            const int objY = pos.y - marginH;
+                            const int objW = isoMap->GetTileWidth() + (2 * marginW);
+                            const int objH = isoMap->GetTileHeight() + (2 * marginH);
 
-                           mFocusArea->SetWorldArea(objX, objY, objW, objH);
-                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
-                           mFocusArea->SetBlinking(true);
-                           mFocusArea->SetVisible(true);
+                            mFocusArea->SetWorldArea(objX, objY, objW, objH);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
 
-                           // CLICK FILTER
-                           auto cf = GetClickFilter();
-                           cf->SetWorldClickableArea(objX, objY, objW, objH);
-                           cf->SetClickableCell(isoMap, mCellEnd.row, mCellEnd.col);
-                           cf->SetButtonToExclude(game->GetButtonSelect());
-                       });
+                            // CLICK FILTER
+                            auto cf = GetClickFilter();
+                            cf->SetWorldClickableArea(objX, objY, objW, objH);
+                            cf->SetClickableCell(isoMap, mCellEnd.row, mCellEnd.col);
+                            cf->SetButtonToExclude(game->GetButtonSelect());
+                        });
 }
 
 StepGameWallBuildEnd::~StepGameWallBuildEnd()

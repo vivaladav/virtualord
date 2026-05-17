@@ -4,7 +4,6 @@
 #include "IsoMap.h"
 #include "Player.h"
 #include "GameObjects/Unit.h"
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -34,8 +33,7 @@ StepGameMoveUnit::StepGameMoveUnit(const Game * game, const Player * p, const Is
 
     info->SetPosition(650, 175);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MOVE_UNIT_1"),
-                       TutorialConstants::colorText, 7.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_MOVE_UNIT_1"), 7.f, true, false);
 
     const char * buttonsStr[] =
     {
@@ -48,33 +46,32 @@ StepGameMoveUnit::StepGameMoveUnit(const Game * game, const Player * p, const Is
     const std::string & strMouse = sm->GetString(buttonsStr[game->GetButtonAction()]);
     const std::string str = sm->GetParametricString("TUT_GAME_MOVE_UNIT_2", strMouse);
 
-    info->AddInfoEntry(str.c_str(), TutorialConstants::colorTextAction, 0.f, false, false,
-                       [this, p, isoMap]
-                       {
-                           const sgl::core::Pointd2D pos = isoMap->GetCellPosition(destR, destC);
+    info->AddActionEntry(str.c_str(), 0.f, false, false, [this, p, isoMap]
+                        {
+                            const sgl::core::Pointd2D pos = isoMap->GetCellPosition(destR, destC);
 
-                           // FOCUS
-                           const int marginW = 5;
-                           const int marginH = 10;
-                           const int objX = pos.x - marginW;
-                           const int objY = pos.y - marginH;
-                           const int objW = isoMap->GetTileWidth() + (2 * marginW);
-                           const int objH = isoMap->GetTileHeight() + (2 * marginH);
+                            // FOCUS
+                            const int marginW = 5;
+                            const int marginH = 10;
+                            const int objX = pos.x - marginW;
+                            const int objY = pos.y - marginH;
+                            const int objW = isoMap->GetTileWidth() + (2 * marginW);
+                            const int objH = isoMap->GetTileHeight() + (2 * marginH);
 
-                           mFocusArea->SetWorldArea(objX, objY, objW, objH);
-                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
-                           mFocusArea->SetBlinking(true);
-                           mFocusArea->SetVisible(true);
+                            mFocusArea->SetWorldArea(objX, objY, objW, objH);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
 
-                           // CLICK FILTER
-                           auto cf = GetClickFilter();
-                           cf->SetWorldClickableArea(objX, objY, objW, objH);
-                           cf->SetClickableCell(isoMap, destR, destC);
+                            // CLICK FILTER
+                            auto cf = GetClickFilter();
+                            cf->SetWorldClickableArea(objX, objY, objW, objH);
+                            cf->SetClickableCell(isoMap, destR, destC);
 
-                           // re-allow unit to move
-                           mUnit = p->GetUnit(0);
-                           mUnit->SetActiveAction(GameObjectActionType::MOVE);
-                       });
+                            // re-allow unit to move
+                            mUnit = p->GetUnit(0);
+                            mUnit->SetActiveAction(GameObjectActionType::MOVE);
+                        });
 }
 
 StepGameMoveUnit::~StepGameMoveUnit()

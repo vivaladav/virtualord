@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameTurnEnergy.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/PanelSelectedObject.h"
 #include "Widgets/PanelTurnControl.h"
@@ -21,7 +20,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -29,12 +28,9 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
 
     info->SetPosition(1200, 450);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_TURN_ENERGY_1"),
-                       TutorialConstants::colorText, 9.f, true, true);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_TURN_ENERGY_2"),
-                       TutorialConstants::colorText, 10.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_TURN_ENERGY_3"),
-                       TutorialConstants::colorText, 8.f, true, false, [this, HUD]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_TURN_ENERGY_1"), 9.f, true, true);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_TURN_ENERGY_2"), 10.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_TURN_ENERGY_3"), 8.f, true, false, [this, HUD]
                        {
                            // FOCUS
                            const auto panel = HUD->GetPanelTurnControl();
@@ -48,8 +44,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
                            mFocusArea->SetVisible(true);
                            mFocusArea->SetBlinking(true);
                        });
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_TURN_ENERGY_4"),
-                       TutorialConstants::colorText, 10.f, true, false, [this, HUD]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_TURN_ENERGY_4"), 10.f, true, false, [this, HUD]
                        {
                            // FOCUS
                            const auto panel = HUD->GetPanelSelectedObject();

@@ -29,7 +29,7 @@ StepPlanetMapSelectTerritory::StepPlanetMapSelectTerritory(PlanetMap * planet, b
     const int fH = mTerritory->GetHeight() + (padding * 2);
 
     mFocusArea->SetScreenArea(fX, fY, fW, fH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -37,14 +37,12 @@ StepPlanetMapSelectTerritory::StepPlanetMapSelectTerritory(PlanetMap * planet, b
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_SELECT_TERRITORY_1"),
-                       TutorialConstants::colorText, 6.f, true, true);
-    info->AddInfoEntry(sm->GetCString("TUT_PM_SELECT_TERRITORY_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false);
+    info->AddInfoEntry(sm->GetCString("TUT_PM_SELECT_TERRITORY_1"), 6.f, true, true);
+    info->AddActionEntry(sm->GetCString("TUT_PM_SELECT_TERRITORY_2"), 0.f, false, false);
 
     info->SetFunctionOnFinished([this, fX, fY, fW, fH]
     {
-        mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+        mFocusArea->SetCornersColorAction();
         mFocusArea->SetBlinking(true);
 
         GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);

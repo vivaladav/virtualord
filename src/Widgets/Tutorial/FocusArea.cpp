@@ -1,5 +1,6 @@
 #include "Widgets/Tutorial/FocusArea.h"
 
+#include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameUIData.h"
 
 #include <sgl/graphic/Camera.h>
@@ -65,6 +66,16 @@ void FocusArea::SetCornersColor(unsigned int color)
     mCornerTR->SetColor(color);
     mCornerBL->SetColor(color);
     mCornerBR->SetColor(color);
+}
+
+void FocusArea::SetCornersColorElement()
+{
+    SetCornersColor(TutorialConstants::colorFocusElement);
+}
+
+void FocusArea::SetCornersColorAction()
+{
+    SetCornersColor(TutorialConstants::colorFocusAction);
 }
 
 void FocusArea::SetArea(int x0, int y0, int w, int h)

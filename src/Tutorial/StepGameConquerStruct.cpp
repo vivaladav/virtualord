@@ -6,7 +6,6 @@
 #include "IsoObject.h"
 #include "Player.h"
 #include "GameObjects/Unit.h"
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -26,7 +25,7 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -34,40 +33,37 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
 
     info->SetPosition(1250, 200);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT_1"),
-                       TutorialConstants::colorText, 7.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT_2"),
-                       TutorialConstants::colorText, 7.f, true, false,
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT_1"), 7.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT_2"), 7.f, true, false,
                        [this]
                        {
                            mFocusArea->SetVisible(true);
                        });
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT_3"),
-                       TutorialConstants::colorTextAction, 0.f, false, false,
-                       [this, energyGen, isoMap, p, game]
-                       {
-                           // FOCUS
-                           const auto isoObj = mEnergyGen->GetIsoObject();
-                           const int objX = isoObj->GetX();
-                           const int objY = isoObj->GetY();
-                           const int objW = isoObj->GetWidth();
-                           const int objH = isoObj->GetHeight();
+    info->AddActionEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT_3"), 0.f, false, false,
+                        [this, energyGen, isoMap, p, game]
+                        {
+                            // FOCUS
+                            const auto isoObj = mEnergyGen->GetIsoObject();
+                            const int objX = isoObj->GetX();
+                            const int objY = isoObj->GetY();
+                            const int objW = isoObj->GetWidth();
+                            const int objH = isoObj->GetHeight();
 
-                           mFocusArea->SetWorldArea(objX, objY, objW, objH);
-                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
-                           mFocusArea->SetBlinking(true);
+                            mFocusArea->SetWorldArea(objX, objY, objW, objH);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
 
-                           // CLICK FILTER
-                           auto cf = GetClickFilter();
-                           cf->SetWorldClickableArea(objX, objY, objW, objH);
-                           cf->SetButtonToExclude(game->GetButtonSelect());
-                           cf->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
-                                                 energyGen->GetRow0(), energyGen->GetCol0());
+                            // CLICK FILTER
+                            auto cf = GetClickFilter();
+                            cf->SetWorldClickableArea(objX, objY, objW, objH);
+                            cf->SetButtonToExclude(game->GetButtonSelect());
+                            cf->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
+                                                  energyGen->GetRow0(), energyGen->GetCol0());
 
-                           // re-allow unit to move and conquer
-                           mUnit = p->GetUnit(0);
-                           mUnit->SetActiveAction(MOVE);
-                       });
+                            // re-allow unit to move and conquer
+                            mUnit = p->GetUnit(0);
+                            mUnit->SetActiveAction(MOVE);
+                        });
 }
 
 StepGameConquerStruct::~StepGameConquerStruct()

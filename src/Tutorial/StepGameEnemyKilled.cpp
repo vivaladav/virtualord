@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameEnemyKilled.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
 #include <sgl/utilities/StringManager.h>
@@ -18,8 +17,7 @@ StepGameEnemyKilled::StepGameEnemyKilled()
 
     info->SetPosition(1100, 500);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_ENEMY1_KILLED"),
-                       TutorialConstants::colorText, 10.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_ENEMY1_KILLED"), 10.f, true, false);
 
     info->SetFunctionOnFinished([this]
     {

@@ -47,10 +47,8 @@ StepPlanetMapNoInfo::StepPlanetMapNoInfo(const PanelPlanetInfo * panelInfo,
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_NO_INFO_1"),
-                       TutorialConstants::colorText, 8.f, true, true);
-    info->AddInfoEntry(sm->GetCString("TUT_PM_NO_INFO_2"),
-                       TutorialConstants::colorText, 6.f, true, true, [this]
+    info->AddInfoEntry(sm->GetCString("TUT_PM_NO_INFO_1"), 8.f, true, true);
+    info->AddInfoEntry(sm->GetCString("TUT_PM_NO_INFO_2"), 6.f, true, true, [this]
                        {
                            mFocusInfo->SetVisible(false);
                            mFocusResources->SetVisible(false);

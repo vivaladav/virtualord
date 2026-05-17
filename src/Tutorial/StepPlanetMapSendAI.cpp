@@ -27,7 +27,7 @@ StepPlanetMapSendAI::StepPlanetMapSendAI(PanelPlanetActions * panel)
     const int fH = btn->GetHeight() + (padding * 2);
 
     mFocusArea->SetScreenArea(fX, fY, fW, fH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -35,10 +35,8 @@ StepPlanetMapSendAI::StepPlanetMapSendAI(PanelPlanetActions * panel)
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_SEND_AI_1"),
-                       TutorialConstants::colorText, 7.f, true, true);
-    info->AddInfoEntry(sm->GetCString("TUT_PM_SEND_AI_2"),
-                       TutorialConstants::colorText, 8.f, true, true, [this]
+    info->AddInfoEntry(sm->GetCString("TUT_PM_SEND_AI_1"), 7.f, true, true);
+    info->AddInfoEntry(sm->GetCString("TUT_PM_SEND_AI_2"), 8.f, true, true, [this]
                        {
                            mFocusArea->SetBlinking(true);
                            mFocusArea->SetVisible(true);

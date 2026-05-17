@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameUpgradeIntro.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -20,7 +19,7 @@ StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const cha
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
@@ -29,26 +28,25 @@ StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const cha
 
     info->SetPosition(900, 250);
 
-    info->AddInfoEntry(sm->GetCString(text1), TutorialConstants::colorText, 8.f, true, false);
+    info->AddInfoEntry(sm->GetCString(text1), 8.f, true, false);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, panel]
-                       {
-                           // FOCUS
-                           auto btn = panel->GetButton(PanelObjectActions::BTN_UPGRADE);
+    info->AddActionEntry(sm->GetCString("TUT_GAME_UPGRADE_2"), 0.f, false, false, [this, panel]
+                        {
+                            // FOCUS
+                            auto btn = panel->GetButton(PanelObjectActions::BTN_UPGRADE);
 
-                           const int padding = 10;
-                           const int fX = btn->GetScreenX() - padding;
-                           const int fY = btn->GetScreenY() - padding;
-                           const int fW = btn->GetWidth() + (padding * 2);
-                           const int fH = btn->GetHeight() + (padding * 2);
+                            const int padding = 10;
+                            const int fX = btn->GetScreenX() - padding;
+                            const int fY = btn->GetScreenY() - padding;
+                            const int fW = btn->GetWidth() + (padding * 2);
+                            const int fH = btn->GetHeight() + (padding * 2);
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetVisible(true);
 
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
-                       });
+                            // CLICK FILTER
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                        });
 
     mClickId = panel->AddButtonFunction(PanelObjectActions::BTN_UPGRADE, [this]
     {

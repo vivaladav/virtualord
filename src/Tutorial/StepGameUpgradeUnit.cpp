@@ -1,7 +1,6 @@
 #include "Tutorial/StepGameUpgradeUnit.h"
 
 #include "GameConstants.h"
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/DialogUpgrade.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -23,7 +22,7 @@ StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD, bool showIntro)
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
@@ -33,56 +32,53 @@ StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD, bool showIntro)
     info->SetPosition(450, 820);
 
     if(showIntro)
-        info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_3"),
-                           TutorialConstants::colorText, 10.f, true, false);
+        info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_3"), 10.f, true, false);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_4"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, HUD, info]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_UPGRADE_4"), 0.f, false, false, [this, HUD, info]
+                        {
+                            auto dialog = HUD->GetDialogUpgrade();
+                            auto btn = dialog->mButtonsInc[OBJ_ATT_ENERGY];
+
+                            mButtonIncId = btn->AddOnClickFunction([info]
+                                                                   {
+                                                                       info->Continue();
+                                                                   });
+
+                            // FOCUS
+                            const int padding = 10;
+                            const int fX = btn->GetScreenX() - padding;
+                            const int fY = btn->GetScreenY() - padding;
+                            const int fW = btn->GetWidth() + (padding * 2);
+                            const int fH = btn->GetHeight() + (padding * 2);
+
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetVisible(true);
+
+                            // CLICK FILTER
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                        });
+    info->AddActionEntry(sm->GetCString("TUT_GAME_UPGRADE_5"), 0.f, false, false, [this, HUD]
                        {
-                           auto dialog = HUD->GetDialogUpgrade();
-                           auto btn = dialog->mButtonsInc[OBJ_ATT_ENERGY];
+                            auto dialog = HUD->GetDialogUpgrade();
+                            auto btn = dialog->mBtnUpgrade;
 
-                           mButtonIncId = btn->AddOnClickFunction([info]
-                                                                  {
-                                                                      info->Continue();
-                                                                  });
+                            mButtonUpgId = btn->AddOnClickFunction([this]
+                                                                   {
+                                                                       SetDone();
+                                                                   });
 
-                           // FOCUS
-                           const int padding = 10;
-                           const int fX = btn->GetScreenX() - padding;
-                           const int fY = btn->GetScreenY() - padding;
-                           const int fW = btn->GetWidth() + (padding * 2);
-                           const int fH = btn->GetHeight() + (padding * 2);
+                            // FOCUS
+                            const int padding = 10;
+                            const int fX = btn->GetScreenX() - padding;
+                            const int fY = btn->GetScreenY() - padding;
+                            const int fW = btn->GetWidth() + (padding * 2);
+                            const int fH = btn->GetHeight() + (padding * 2);
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetVisible(true);
 
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
-                       });
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADE_5"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, HUD]
-                       {
-                           auto dialog = HUD->GetDialogUpgrade();
-                           auto btn = dialog->mBtnUpgrade;
-
-                           mButtonUpgId = btn->AddOnClickFunction([this]
-                                                                  {
-                                                                      SetDone();
-                                                                  });
-
-                           // FOCUS
-                           const int padding = 10;
-                           const int fX = btn->GetScreenX() - padding;
-                           const int fY = btn->GetScreenY() - padding;
-                           const int fW = btn->GetWidth() + (padding * 2);
-                           const int fH = btn->GetHeight() + (padding * 2);
-
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
-
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            // CLICK FILTER
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
                        });
 }
 

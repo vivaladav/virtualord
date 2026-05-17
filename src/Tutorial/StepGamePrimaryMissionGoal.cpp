@@ -1,6 +1,5 @@
 #include "Tutorial/StepGamePrimaryMissionGoal.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/DialogMissionGoals.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -27,7 +26,7 @@ StepGamePrimaryMissionGoal::StepGamePrimaryMissionGoal(GameHUD * HUD)
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -35,60 +34,58 @@ StepGamePrimaryMissionGoal::StepGamePrimaryMissionGoal(GameHUD * HUD)
 
     info->SetPosition(510, 80);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_PRI_MGOAL_1"),
-                       TutorialConstants::colorText, 10.f, true, true);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_PRI_MGOAL_1"), 10.f, true, true);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_3"),
-                       TutorialConstants::colorText, 0.f, false, true, [this, info]
-                       {
-                           auto dialog = mHUD->GetDialogMissionGoals();
-                           auto btn = dialog->mPrimaryCollectButtons[0];
+    info->AddActionEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_3"), 0.f, false, true,
+                         [this, info]
+                        {
+                            auto dialog = mHUD->GetDialogMissionGoals();
+                            auto btn = dialog->mPrimaryCollectButtons[0];
 
-                           // NOTE no need to remove the function later as the dialog is
-                           // destroyed at the end
-                           btn->AddOnClickFunction([info]
-                                                   {
-                                                       info->Continue();
-                                                   });
+                            // NOTE no need to remove the function later as the dialog is
+                            // destroyed at the end
+                            btn->AddOnClickFunction([info]
+                                                    {
+                                                        info->Continue();
+                                                    });
 
-                           const int x = btn->GetScreenX() - padding;
-                           const int y = btn->GetScreenY() - padding;
-                           const int w = btn->GetWidth() + (2 * padding);
-                           const int h = btn->GetHeight() + (2 * padding);
+                            const int x = btn->GetScreenX() - padding;
+                            const int y = btn->GetScreenY() - padding;
+                            const int w = btn->GetWidth() + (2 * padding);
+                            const int h = btn->GetHeight() + (2 * padding);
 
-                           GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+                            GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                           mFocusArea->SetScreenArea(x, y, w, h);
-                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
-                           mFocusArea->SetBlinking(true);
-                           mFocusArea->SetVisible(true);
-                       });
+                            mFocusArea->SetScreenArea(x, y, w, h);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
+                        });
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_PRI_MGOAL_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this]
-                       {
-                           auto dialog = mHUD->GetDialogMissionGoals();
-                           auto btn = dialog->GetButtonEnd();
+    info->AddActionEntry(sm->GetCString("TUT_GAME_PRI_MGOAL_2"), 0.f, false, false, [this]
+                        {
+                            auto dialog = mHUD->GetDialogMissionGoals();
+                            auto btn = dialog->GetButtonEnd();
 
-                           // NOTE no need to remove the function later as the dialog is
-                           // destroyed when the button is clicked
-                           dialog->AddFunctionOnEnd([this]
-                                {
-                                    SetDone();
-                                });
+                            // NOTE no need to remove the function later as the dialog is
+                            // destroyed when the button is clicked
+                            dialog->AddFunctionOnEnd([this]
+                                                     {
+                                                         SetDone();
+                                                     });
 
-                           const int x = btn->GetScreenX() - padding;
-                           const int y = btn->GetScreenY() - padding;
-                           const int w = btn->GetWidth() + (2 * padding);
-                           const int h = btn->GetHeight() + (2 * padding);
+                            const int x = btn->GetScreenX() - padding;
+                            const int y = btn->GetScreenY() - padding;
+                            const int w = btn->GetWidth() + (2 * padding);
+                            const int h = btn->GetHeight() + (2 * padding);
 
-                           GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+                            GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                           mFocusArea->SetScreenArea(x, y, w, h);
-                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
-                           mFocusArea->SetBlinking(true);
-                           mFocusArea->SetVisible(true);
-                       });
+                            mFocusArea->SetScreenArea(x, y, w, h);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
+                        });
 }
 
 StepGamePrimaryMissionGoal::~StepGamePrimaryMissionGoal()

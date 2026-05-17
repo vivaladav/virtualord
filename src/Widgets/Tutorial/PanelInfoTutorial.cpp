@@ -111,9 +111,9 @@ PanelInfoTutorial::~PanelInfoTutorial()
         delete entry;
 }
 
-void PanelInfoTutorial::AddInfoEntry(const char * text, unsigned int color, float timeNext,
-                                     bool showContinue, bool hideAfter,
-                                     const std::function<void ()> & onShow)
+void PanelInfoTutorial::AddEntry(const char * text, unsigned int color, float timeNext,
+                                 bool showContinue, bool hideAfter,
+                                 const std::function<void ()> & onShow)
 {
     using namespace sgl;
 
@@ -144,6 +144,18 @@ void PanelInfoTutorial::AddInfoEntry(const char * text, unsigned int color, floa
 
     // store
     mInfoEntries.push_back(entry);
+}
+
+void PanelInfoTutorial::AddInfoEntry(const char * text, float timeNext, bool showContinue,
+                                     bool hideAfter, const std::function<void()> & onShow)
+{
+    AddEntry(text, TutorialConstants::colorText, timeNext, showContinue, hideAfter, onShow);
+}
+
+void PanelInfoTutorial::AddActionEntry(const char * text, float timeNext, bool showContinue,
+                                       bool hideAfter, const std::function<void()> & onShow)
+{
+    AddEntry(text, TutorialConstants::colorTextAction, timeNext, showContinue, hideAfter, onShow);
 }
 
 void PanelInfoTutorial::StartInfo()

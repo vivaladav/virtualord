@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameBuildTower.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -30,7 +29,7 @@ StepGameBuildTower::StepGameBuildTower(GameHUD * HUD)
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
@@ -39,79 +38,79 @@ StepGameBuildTower::StepGameBuildTower(GameHUD * HUD)
 
     info->SetPosition(550, 870);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_3"),
-                       TutorialConstants::colorTextAction, 0.f, false, true, [this, HUD, info]
-                       {
-                           auto dialog = HUD->GetDialogNewElement();
-                           auto btn = dialog->mButtonsStructures->GetButton(indDefense);
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_3"), 0.f, false, true,
+                         [this, HUD, info]
+                        {
+                            auto dialog = HUD->GetDialogNewElement();
+                            auto btn = dialog->mButtonsStructures->GetButton(indDefense);
 
-                           mButtonCatId = btn->AddOnToggleFunction([info](bool checked)
-                                            {
-                                                if(checked)
-                                                    info->Continue();
-                                            });
+                            mButtonCatId = btn->AddOnToggleFunction([info](bool checked)
+                                                                    {
+                                                                        if(checked)
+                                                                            info->Continue();
+                                                                    });
 
-                           // FOCUS
-                           const int fX = btn->GetScreenX() - padding;
-                           const int fY = btn->GetScreenY() - padding;
-                           const int fW = btn->GetWidth() + (padding * 2);
-                           const int fH = btn->GetHeight() + (padding * 2);
+                            // FOCUS
+                            const int fX = btn->GetScreenX() - padding;
+                            const int fY = btn->GetScreenY() - padding;
+                            const int fW = btn->GetWidth() + (padding * 2);
+                            const int fH = btn->GetHeight() + (padding * 2);
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetVisible(true);
 
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            // CLICK FILTER
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                        });
+
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_4"), 0.f, false, true,
+                         [this, HUD, info]
+                        {
+                            auto dialog = HUD->GetDialogNewElement();
+                            auto btn = dialog->mSlots->GetButton(indTower);
+
+                            mButtonStructId = btn->AddOnToggleFunction([info](bool checked)
+                                                                       {
+                                                                           if(checked)
+                                                                               info->Continue();
+                                                                       });
+
+                            // FOCUS
+                            const int fX = btn->GetScreenX() - padding;
+                            const int fY = btn->GetScreenY() - padding;
+                            const int fW = btn->GetWidth() + (padding * 2);
+                            const int fH = btn->GetHeight() + (padding * 2);
+
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetVisible(true);
+
+                            // CLICK FILTER
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
                        });
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_4"),
-                       TutorialConstants::colorTextAction, 0.f, false, true, [this, HUD, info]
-                       {
-                           auto dialog = HUD->GetDialogNewElement();
-                           auto btn = dialog->mSlots->GetButton(indTower);
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_3"), 0.f, false, true,
+                         [this, HUD]
+                        {
+                            auto dialog = HUD->GetDialogNewElement();
+                            auto btn = dialog->mBtnBuild;
 
-                           mButtonStructId = btn->AddOnToggleFunction([info](bool checked)
-                                                {
-                                                    if(checked)
-                                                        info->Continue();
-                                                });
+                            mButtonBuildId = btn->AddOnClickFunction([this]
+                                                                     {
+                                                                         SetDone();
+                                                                     });
 
-                           // FOCUS
-                           const int fX = btn->GetScreenX() - padding;
-                           const int fY = btn->GetScreenY() - padding;
-                           const int fW = btn->GetWidth() + (padding * 2);
-                           const int fH = btn->GetHeight() + (padding * 2);
+                            // FOCUS
+                            const int fX = btn->GetScreenX() - padding;
+                            const int fY = btn->GetScreenY() - padding;
+                            const int fW = btn->GetWidth() + (padding * 2);
+                            const int fH = btn->GetHeight() + (padding * 2);
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetVisible(true);
 
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
-                       });
-
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_3"),
-                       TutorialConstants::colorTextAction, 0.f, false, true, [this, HUD]
-                       {
-                           auto dialog = HUD->GetDialogNewElement();
-                           auto btn = dialog->mBtnBuild;
-
-                           mButtonBuildId = btn->AddOnClickFunction([this]
-                                                {
-                                                    SetDone();
-                                                });
-
-                           // FOCUS
-                           const int fX = btn->GetScreenX() - padding;
-                           const int fY = btn->GetScreenY() - padding;
-                           const int fW = btn->GetWidth() + (padding * 2);
-                           const int fH = btn->GetHeight() + (padding * 2);
-
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
-
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
-                       });
+                            // CLICK FILTER
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                        });
 }
 
 StepGameBuildTower::~StepGameBuildTower()

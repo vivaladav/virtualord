@@ -1,11 +1,9 @@
 #include "Tutorial/StepGameConquerStructSimple.h"
 
 #include "Game.h"
-#include "GameConstants.h"
 #include "IsoMap.h"
 #include "IsoObject.h"
 #include "GameObjects/Unit.h"
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -28,7 +26,7 @@ StepGameConquerStructSimple::StepGameConquerStructSimple(const Game * game, cons
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -36,29 +34,28 @@ StepGameConquerStructSimple::StepGameConquerStructSimple(const Game * game, cons
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT"),
-                       TutorialConstants::colorTextAction, 0.f, false, false,
-                       [this, energyGen, isoMap, game]
-                       {
-                           // FOCUS
-                           const auto isoObj = mStruct->GetIsoObject();
-                           const int objX = isoObj->GetX();
-                           const int objY = isoObj->GetY();
-                           const int objW = isoObj->GetWidth();
-                           const int objH = isoObj->GetHeight();
+    info->AddActionEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT"), 0.f, false, false,
+                        [this, energyGen, isoMap, game]
+                        {
+                            // FOCUS
+                            const auto isoObj = mStruct->GetIsoObject();
+                            const int objX = isoObj->GetX();
+                            const int objY = isoObj->GetY();
+                            const int objW = isoObj->GetWidth();
+                            const int objH = isoObj->GetHeight();
 
-                           mFocusArea->SetWorldArea(objX, objY, objW, objH);
-                           mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
-                           mFocusArea->SetBlinking(true);
-                           mFocusArea->SetVisible(true);
+                            mFocusArea->SetWorldArea(objX, objY, objW, objH);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
 
-                           // CLICK FILTER
-                           auto cf = GetClickFilter();
-                           cf->SetWorldClickableArea(objX, objY, objW, objH);
-                           cf->SetButtonToExclude(game->GetButtonSelect());
-                           cf->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
-                                                 energyGen->GetRow0(), energyGen->GetCol0());
-                       });
+                            // CLICK FILTER
+                            auto cf = GetClickFilter();
+                            cf->SetWorldClickableArea(objX, objY, objW, objH);
+                            cf->SetButtonToExclude(game->GetButtonSelect());
+                            cf->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
+                                                  energyGen->GetRow0(), energyGen->GetCol0());
+                        });
 }
 
 StepGameConquerStructSimple::~StepGameConquerStructSimple()

@@ -2,7 +2,6 @@
 
 #include "IsoObject.h"
 #include "GameObjects/GameObject.h"
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
@@ -27,7 +26,7 @@ StepGameConquerEnergyGenIntro::StepGameConquerEnergyGenIntro(const GameObject * 
     const int objH = isoObj->GetHeight();
 
     mFocusArea->SetWorldArea(objX, objY, objW, objH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -35,8 +34,7 @@ StepGameConquerEnergyGenIntro::StepGameConquerEnergyGenIntro(const GameObject * 
 
     info->SetPosition(500, 250);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_ENE_GEN"),
-                       TutorialConstants::colorText, 10.f, true, false, [this]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_ENE_GEN"), 10.f, true, false, [this]
                        {
                            mFocusArea->SetVisible(true);
                        });

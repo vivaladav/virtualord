@@ -2,7 +2,6 @@
 
 #include "IsoObject.h"
 #include "GameObjects/GameObject.h"
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
@@ -27,7 +26,7 @@ StepGameConquerMaterialGenIntro::StepGameConquerMaterialGenIntro(const GameObjec
     const int objH = isoObj->GetHeight();
 
     mFocusArea->SetWorldArea(objX, objY, objW, objH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -35,8 +34,7 @@ StepGameConquerMaterialGenIntro::StepGameConquerMaterialGenIntro(const GameObjec
 
     info->SetPosition(1150, 450);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_MAT_GEN"),
-                       TutorialConstants::colorText, 10.f, true, false, [this]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_MAT_GEN"), 10.f, true, false, [this]
                        {
                            mFocusArea->SetVisible(true);
                        });

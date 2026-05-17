@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameMoveToTower.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
 #include <sgl/utilities/StringManager.h>
@@ -18,9 +17,7 @@ StepGameMoveToTower::StepGameMoveToTower()
 
     info->SetPosition(1000, 250);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MAP_NAVIGATION_5"),
-                       TutorialConstants::colorText, 10.f, true, false);
-
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_MAP_NAVIGATION_5"), 10.f, true, false);
 
     info->SetFunctionOnFinished([this]
     {

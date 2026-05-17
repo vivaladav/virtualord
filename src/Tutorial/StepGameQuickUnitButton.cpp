@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameQuickUnitButton.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -20,7 +19,7 @@ StepGameQuickUnitButton::StepGameQuickUnitButton(GameHUD * hud, int indButton)
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
@@ -29,28 +28,26 @@ StepGameQuickUnitButton::StepGameQuickUnitButton(GameHUD * hud, int indButton)
 
     info->SetPosition(450, 620);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_QUICK_SEL_1"),
-                       TutorialConstants::colorText, 7.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_QUICK_SEL_1"), 7.f, true, false);
 
     const auto group = hud->GetQuickUnitButtonsGroup();
     mButton = group->GetButton(indButton);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_QUICK_SEL_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this]
-                       {
-                           // FOCUS
-                           const int padding = 10;
-                           const int fX = mButton->GetScreenX() - padding;
-                           const int fY = mButton->GetScreenY() - padding;
-                           const int fW = mButton->GetWidth() + (padding * 2);
-                           const int fH = mButton->GetHeight() + (padding * 2);
+    info->AddActionEntry(sm->GetCString("TUT_GAME_QUICK_SEL_2"), 0.f, false, false, [this]
+                        {
+                            // FOCUS
+                            const int padding = 10;
+                            const int fX = mButton->GetScreenX() - padding;
+                            const int fY = mButton->GetScreenY() - padding;
+                            const int fW = mButton->GetWidth() + (padding * 2);
+                            const int fH = mButton->GetHeight() + (padding * 2);
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetVisible(true);
 
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
-                       });
+                            // CLICK FILTER
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                        });
 
     mClickId = mButton->AddOnToggleFunction([this](bool checked)
                                             {
