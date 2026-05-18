@@ -113,6 +113,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     auto panelTurn = hud->GetPanelTurnControl();
     auto localBase = local->GetBase();
 
+    // ===== SETUP =====
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     // make AI idle for now
     AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), false); });
