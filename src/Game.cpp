@@ -179,7 +179,11 @@ void Game::InitGameData()
     // -- MAPS --
     // PLANET 1
     planet = new Planet(PLANET_1, PLANET_SIZE_S);
+#ifdef DEV_MODE
+    planet->AddMap("data/maps/01-02.map", NO_FACTION, TER_ST_UNEXPLORED);
+#else
     planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+#endif
     planet->AddMap("data/maps/60x60-01.map", NO_FACTION, TER_ST_UNEXPLORED);
     planet->AddMap("data/maps/01-02.map", NO_FACTION, TER_ST_UNREACHABLE);
     planet->AddMap("data/maps/20x20-empty.map", NO_FACTION, TER_ST_UNREACHABLE);
