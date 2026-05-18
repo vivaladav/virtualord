@@ -585,35 +585,4 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([hud] { return new StepGamePrimaryMissionGoal(hud); });
 }
 
-TutorialGame1::~TutorialGame1()
-{
-    auto gs = GetScreen();
-    auto game = gs->GetGame();
-
-    // re-enable camera in game in case tutorial is quit
-    GetCameraMapController()->SetEnabled(true);
-
-    // reset default action for units that have it set to IDLE
-    const auto local = game->GetPlayerByIndex(0);
-    const unsigned int numUnits = local->GetNumUnits();
-
-    for(unsigned int i = 0; i < numUnits; ++i)
-    {
-        auto unit = local->GetUnit(i);
-
-        if(unit->GetDefaultAction() == IDLE)
-        {
-            unit->SetDefaultAction(MOVE);
-
-            // also reset the active action if IDLE
-            if(unit->GetActiveAction() == IDLE)
-                unit->SetActiveActionToDefault();
-        }
-    }
-
-    // re-enalbe AI
-    Player * playerAI = game->GetPlayerByIndex(1);
-    playerAI->GetAI()->SetActive(true);
-}
-
 } // namespace game
