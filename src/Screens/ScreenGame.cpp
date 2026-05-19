@@ -990,6 +990,7 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
                   << "TERRITORY CONTROLLED: " << territory  << "%\n"
                   << "ENEMIS KILLED: " << killed  << "%\n"
                   << "CASUALTIES: " << casualties  << "%\n"
+                  << "CURRENT CELL: " << mCurrCell.row << "," << mCurrCell.col  << "\n"
                   << std::endl;
 
         mTrackerMG->PrintState();
