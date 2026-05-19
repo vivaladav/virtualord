@@ -360,6 +360,7 @@ void ScreenMainMenu::CreateChangelog()
                   " (disabled by default).\n"
                   "- Controls settings allow to set what mouse button to use as SELECT and ACTION"
                   " buttons.\n"
+                  "- Added SFX played after conquering a structure.\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
                   "\nFIXES\n"
