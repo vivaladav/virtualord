@@ -287,6 +287,8 @@ add_executable(
     src/Tutorial/StepGameConquerMaterialGenIntro.cpp
     src/Tutorial/StepGameConquerStruct.h
     src/Tutorial/StepGameConquerStruct.cpp
+    src/Tutorial/StepGameConquerStructChoice.h
+    src/Tutorial/StepGameConquerStructChoice.cpp
     src/Tutorial/StepGameConquerStructSimple.h
     src/Tutorial/StepGameConquerStructSimple.cpp
     src/Tutorial/StepGameDisableCamera.h

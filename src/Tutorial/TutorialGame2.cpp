@@ -11,6 +11,7 @@
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameBaseBuildUnitStart.h"
 #include "Tutorial/StepGameBaseBuildUnitEnd.h"
+#include "Tutorial/StepGameConquerStructChoice.h"
 #include "Tutorial/StepGameSelectBase.h"
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/TutorialConstants.h"
@@ -21,6 +22,9 @@ namespace
 using namespace game;
 
 constexpr unsigned int indUnit1 = 0;
+
+const Cell2D cellEneGen1(6, 15);
+const Cell2D cellMatGen1(15, 7);
 
 }
 
@@ -33,6 +37,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     auto gs = GetScreen();
     auto game = gs->GetGame();
     auto hud = gs->GetHUD();
+    auto isoMap = GetIsoMap();
 
     const Player * local = game->GetPlayerByIndex(0);
     Player * playerAI = game->GetPlayerByIndex(1);
@@ -57,10 +62,19 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
     AddStep([local, game]
-            {
-                const auto unit = local->GetUnit(indUnit1);
-                return new StepGameUnit(game, unit);
-            });
+        {
+            const auto unit = local->GetUnit(indUnit1);
+            return new StepGameUnit(game, unit);
+        });
+    // CONQUEST FIRST GENERATOR
+    AddStep([this, local, game, isoMap]
+        {
+            const GameObject * unit = local->GetSelectedObject();
+            const GameObject * gen1 = GetObjectInCell(cellEneGen1);
+            const GameObject * gen2 = GetObjectInCell(cellMatGen1);
+
+            return new StepGameConquerStructChoice(game, unit, gen1, gen2, isoMap);
+        });
 }
 
 } // namespace game
