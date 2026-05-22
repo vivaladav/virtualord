@@ -20,7 +20,7 @@ StepGameConquerStructChoice::StepGameConquerStructChoice(const Game * game, cons
                                                          const GameObject * struct1,
                                                          const GameObject * struct2,
                                                          const IsoMap * isoMap)
-    : TutorialInfoStep(550, 260)
+    : TutorialInfoStep(550, 200)
     , mFocusArea1(new FocusArea)
     , mFocusArea2(new FocusArea)
     , mStruct1(struct1)
@@ -87,7 +87,7 @@ void StepGameConquerStructChoice::Update(float)
 {
     if(mStruct1->GetFaction() != NO_FACTION || mStruct2->GetFaction() != NO_FACTION)
         SetDone();
-    else if(mUnit != nullptr && mUnit->GetCurrentAction() == CONQUER_STRUCTURE)
+    else if(mUnit != nullptr && mUnit->GetCurrentAction() == MOVE)
     {
         mFocusArea1->SetVisible(false);
         mFocusArea2->SetVisible(false);
