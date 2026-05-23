@@ -1556,6 +1556,11 @@ void ScreenInitGame::SetupTextures()
             { 61, 26, 60, 60 },
             { 0, 87, 60, 60 },
             { 61, 87, 60, 60 },
+            // INFO PANEL ISOMETRIC CORNERS
+            { 0, 148, 96, 48 },
+            { 0, 197, 96, 48 },
+            { 0, 246, 96, 48 },
+            { 0, 295, 96, 48 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorial, rects);
