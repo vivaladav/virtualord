@@ -557,6 +557,8 @@ add_executable(
     src/Widgets/Test/TestSliderH.cpp
     src/Widgets/Tutorial/FocusArea.h
     src/Widgets/Tutorial/FocusArea.cpp
+    src/Widgets/Tutorial/IsoFocusArea.h
+    src/Widgets/Tutorial/IsoFocusArea.cpp
     src/Widgets/Tutorial/PanelClickFilter.h
     src/Widgets/Tutorial/PanelClickFilter.cpp
     src/Widgets/Tutorial/PanelInfoTutorial.h
