@@ -4,6 +4,7 @@
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameUIData.h"
 
+#include <sgl/graphic/Camera.h>
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/TextureManager.h>
 
@@ -17,6 +18,8 @@ IsoFocusArea::IsoFocusArea(const IsoMap * im)
     : mIM(im)
 {
     using namespace sgl;
+
+    SetCamera(sgl::graphic::Camera::GetDefaultCamera());
 
     auto tm = graphic::TextureManager::Instance();
 
@@ -59,10 +62,14 @@ void IsoFocusArea::SetCellArea(int r0, int c0, int r1, int c1)
     const unsigned int rows = r0 - r1 + 1;
     const unsigned int cols = c0 - c1 + 1;
 
+    // position corners
+    const sgl::core::Pointd2D pTR = mIM->GetCellPosition(r1, c0);
+    const sgl::core::Pointd2D pBL = mIM->GetCellPosition(r0, c1);
+
     mCornerTL->SetPosition(p1.x, p1.y);
-    mCornerTR->SetPosition(p0.x, p1.y);
+    mCornerTR->SetPosition(pTR.x, pTR.y);
     mCornerBR->SetPosition(p0.x, p0.y);
-    mCornerBL->SetPosition(p1.x, p0.y);
+    mCornerBL->SetPosition(pBL.x, pBL.y);
 }
 
 void IsoFocusArea::SetCornersColor(unsigned int color)
