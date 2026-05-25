@@ -61,10 +61,10 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud] { return new StepGameBaseBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
-    AddStep([local, game]
+    AddStep([local, game, isoMap]
         {
             const auto unit = local->GetUnit(indUnit1);
-            return new StepGameUnit(game, unit);
+            return new StepGameUnit(game, isoMap, unit);
         });
     // CONQUEST FIRST GENERATOR
     AddStep([this, local, game, isoMap]
