@@ -317,7 +317,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([] { return new StepDelay(1.0f); });
     // ===== PART 2 =====
     // BUILD SECOND UNIT
-    AddStep([localBase, game] { return new StepGameSelectBase(game, localBase); });
+    AddStep([localBase, game, isoMap] { return new StepGameSelectBase(game, isoMap, localBase); });
     AddStep([panelActions] { return new StepGameBaseBuildUnitStart(panelActions); });
     AddStep([hud] { return new StepGameBaseBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
@@ -543,7 +543,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([] { return new StepDelay(1.0f); });
     // ===== PART 5 =====
     // INTRODUCE MISSION GOALS
-    AddStep([localBase, game] { return new StepGameSelectBase(game, localBase); });
+    AddStep([localBase, game, isoMap] { return new StepGameSelectBase(game, isoMap, localBase); });
     AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions, true); });
     AddStep([hud] { return new StepGameMissionGoalsDialog(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
@@ -581,7 +581,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             });
     AddStep([] { return new StepDelay(1.0f); });
     // COLLECT PRIMARY MISSION GOAL
-    AddStep([localBase, game] { return new StepGameSelectBase(game, localBase); });
+    AddStep([localBase, game, isoMap] { return new StepGameSelectBase(game, isoMap, localBase); });
     AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions, false); });
     AddStep([hud] { return new StepGamePrimaryMissionGoal(hud); });
 }

@@ -56,7 +56,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([] { return new StepGameIntro2; });
     AddStep([] { return new StepDelay(0.3f); });
     // BUILD FIRST UNIT
-    AddStep([localBase, game] { return new StepGameSelectBase(game, localBase); });
+    AddStep([localBase, game, isoMap] { return new StepGameSelectBase(game, isoMap, localBase); });
     AddStep([panelActions] { return new StepGameBaseBuildUnitStart(panelActions); });
     AddStep([hud] { return new StepGameBaseBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });

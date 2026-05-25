@@ -6,19 +6,20 @@ namespace game
 {
 
 class Base;
-class FocusArea;
 class Game;
+class IsoFocusArea;
+class IsoMap;
 
 class StepGameSelectBase : public TutorialInfoStep
 {
 public:
-    StepGameSelectBase(const Game * game, const Base * b);
+    StepGameSelectBase(const Game * game, const IsoMap * im, const Base * b);
     ~StepGameSelectBase();
 
     void Update(float delta) override;
 
 private:
-    FocusArea * mFocusArea = nullptr;
+    IsoFocusArea * mFocusArea = nullptr;
 
     const Base * mBase = nullptr;
 };
