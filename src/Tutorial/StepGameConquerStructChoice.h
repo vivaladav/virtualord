@@ -5,9 +5,9 @@
 namespace game
 {
 
-class FocusArea;
 class Game;
 class GameObject;
+class IsoFocusArea;
 class IsoMap;
 class PanelClickFilter;
 class PanelInfoTutorial;
@@ -25,8 +25,8 @@ public:
     void Update(float delta) override;
 
 private:
-    FocusArea * mFocusArea1 = nullptr;
-    FocusArea * mFocusArea2 = nullptr;
+    IsoFocusArea * mFocusArea1 = nullptr;
+    IsoFocusArea * mFocusArea2 = nullptr;
 
     const GameObject * mStruct1 = nullptr;
     const GameObject * mStruct2 = nullptr;

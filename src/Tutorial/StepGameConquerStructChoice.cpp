@@ -6,7 +6,7 @@
 #include "IsoObject.h"
 #include "Player.h"
 #include "GameObjects/Unit.h"
-#include "Widgets/Tutorial/FocusArea.h"
+#include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
@@ -21,8 +21,8 @@ StepGameConquerStructChoice::StepGameConquerStructChoice(const Game * game, cons
                                                          const GameObject * struct2,
                                                          const IsoMap * isoMap)
     : TutorialInfoStep(550, 200)
-    , mFocusArea1(new FocusArea)
-    , mFocusArea2(new FocusArea)
+    , mFocusArea1(new IsoFocusArea(isoMap))
+    , mFocusArea2(new IsoFocusArea(isoMap))
     , mStruct1(struct1)
     , mStruct2(struct2)
     , mUnit(unit)
@@ -45,28 +45,30 @@ StepGameConquerStructChoice::StepGameConquerStructChoice(const Game * game, cons
                         [this, struct1, struct2, isoMap, game]
                         {
                             // STRUCTURE 1 - FOCUS
+                            mFocusArea1->SetCellArea(struct1->GetRow0(), struct1->GetCol0(),
+                                                     struct1->GetRow1(), struct1->GetCol1());
+                            mFocusArea1->SetBlinking(true);
+                            mFocusArea1->SetVisible(true);
+
+                            // STRUCTURE 2 - FOCUS
+                            mFocusArea2->SetCellArea(struct2->GetRow0(), struct2->GetCol0(),
+                                                     struct2->GetRow1(), struct2->GetCol1());
+                            mFocusArea2->SetBlinking(true);
+                            mFocusArea2->SetVisible(true);
+
+                            // CLICK FILTER
                             const auto isoObj1 = mStruct1->GetIsoObject();
                             const int objX1 = isoObj1->GetX();
                             const int objY1 = isoObj1->GetY();
                             const int objW1 = isoObj1->GetWidth();
                             const int objH1 = isoObj1->GetHeight();
 
-                            mFocusArea1->SetWorldArea(objX1, objY1, objW1, objH1);
-                            mFocusArea1->SetBlinking(true);
-                            mFocusArea1->SetVisible(true);
-
-                            // STRUCTURE 2 - FOCUS
                             const auto isoObj2 = mStruct2->GetIsoObject();
                             const int objX2 = isoObj2->GetX();
                             const int objY2 = isoObj2->GetY();
                             const int objW2 = isoObj2->GetWidth();
                             const int objH2 = isoObj2->GetHeight();
 
-                            mFocusArea2->SetWorldArea(objX2, objY2, objW2, objH2);
-                            mFocusArea2->SetBlinking(true);
-                            mFocusArea2->SetVisible(true);
-
-                            // CLICK FILTER
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX1, objY1, objW1, objH1);
                             cf->SetButtonToAllow(game->GetButtonAction());
