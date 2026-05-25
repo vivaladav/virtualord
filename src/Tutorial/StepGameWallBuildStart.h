@@ -6,10 +6,10 @@
 namespace game
 {
 
-class FocusArea;
 class Game;
-class IsoMap;
 
+class IsoMap;
+class IsoFocusArea;
 class StepGameWallBuildStart : public TutorialInfoStep
 {
 public:
@@ -20,7 +20,7 @@ public:
     void Update(float delta) override;
 
 private:
-    FocusArea * mFocusArea = nullptr;
+    IsoFocusArea * mFocusArea = nullptr;
 
     const Cell2D & mCellActionStart;
     const Cell2D mTarget;

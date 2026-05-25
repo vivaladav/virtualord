@@ -7,9 +7,9 @@
 namespace game
 {
 
-class FocusArea;
 class Game;
 class GameObject;
+class IsoFocusArea;
 class IsoMap;
 class PanelClickFilter;
 class PanelInfoTutorial;
@@ -19,14 +19,14 @@ class Unit;
 class StepGameConquerStructSimple : public TutorialInfoStep
 {
 public:
-    StepGameConquerStructSimple(const Game *game, const Unit * unit, const GameObject * energyGen,
+    StepGameConquerStructSimple(const Game * game, const Unit * unit, const GameObject * obj,
                                 const IsoMap * isoMap, const sgl::core::Pointd2D & p0);
     ~StepGameConquerStructSimple();
 
     void Update(float delta) override;
 
 private:
-    FocusArea * mFocusArea = nullptr;
+    IsoFocusArea * mFocusArea = nullptr;
 
     const GameObject * mStruct = nullptr;
     const Unit * mUnit = nullptr;

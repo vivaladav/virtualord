@@ -5,8 +5,8 @@
 namespace game
 {
 
-class FocusArea;
 class Game;
+class IsoFocusArea;
 class IsoMap;
 
 struct Cell2D;
@@ -20,7 +20,7 @@ public:
     void Update(float delta) override;
 
 private:
-    FocusArea * mFocusArea = nullptr;
+    IsoFocusArea * mFocusArea = nullptr;
 
     const Cell2D & mCellActionStart;
 };

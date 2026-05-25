@@ -8,7 +8,7 @@
 namespace game
 {
 
-class FocusArea;
+class IsoFocusArea;
 class IsoMap;
 class Unit;
 
@@ -22,7 +22,7 @@ public:
     void Update(float delta) override;
 
 private:
-    FocusArea * mFocusArea = nullptr;
+    IsoFocusArea * mFocusArea = nullptr;
 
     const Unit * mUnit = nullptr;
 

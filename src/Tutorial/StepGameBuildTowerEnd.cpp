@@ -3,7 +3,7 @@
 #include "IsoMap.h"
 #include "Player.h"
 #include "GameObjects/Unit.h"
-#include "Widgets/Tutorial/FocusArea.h"
+#include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
@@ -15,7 +15,7 @@ namespace game
 StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit * unit,
                                              const Cell2D & cell)
     : TutorialInfoStep(600, 150)
-    , mFocusArea(new FocusArea)
+    , mFocusArea(new IsoFocusArea(isoMap))
     , mUnit(unit)
     , mTarget(cell)
 {
@@ -32,22 +32,21 @@ StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit *
     info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_5"), 0.f, false, false,
                          [this, isoMap, unit]
                         {
-                            const auto pos = isoMap->GetCellPosition(mTarget.row, mTarget.col);
-
                             // FOCUS
-                            const int marginW = 5;
-                            const int marginH = 10;
-                            const int objX = pos.x - marginW;
-                            const int objY = pos.y - marginH;
-                            const int objW = isoMap->GetTileWidth() + (2 * marginW);
-                            const int objH = isoMap->GetTileHeight() + (2 * marginH);
-
-                            mFocusArea->SetWorldArea(objX, objY, objW, objH);
+                            mFocusArea->SetCell(mTarget.row, mTarget.col);
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER
+                            const int marginW = 5;
+                            const int marginH = 10;
+                            const auto pos = isoMap->GetCellPosition(mTarget.row, mTarget.col);
+                            const int objX = pos.x - marginW;
+                            const int objY = pos.y - marginH;
+                            const int objW = isoMap->GetTileWidth() + (2 * marginW);
+                            const int objH = isoMap->GetTileHeight() + (2 * marginH);
+
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);

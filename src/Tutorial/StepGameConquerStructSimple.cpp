@@ -4,7 +4,7 @@
 #include "IsoMap.h"
 #include "IsoObject.h"
 #include "GameObjects/Unit.h"
-#include "Widgets/Tutorial/FocusArea.h"
+#include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
@@ -15,12 +15,12 @@ namespace game
 {
 
 StepGameConquerStructSimple::StepGameConquerStructSimple(const Game * game, const Unit * unit,
-                                                         const GameObject * energyGen,
+                                                         const GameObject * obj,
                                                          const IsoMap * isoMap,
                                                          const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(550, 150)
-    , mFocusArea(new FocusArea)
-    , mStruct(energyGen)
+    , mFocusArea(new IsoFocusArea(isoMap))
+    , mStruct(obj)
     , mUnit(unit)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -35,26 +35,27 @@ StepGameConquerStructSimple::StepGameConquerStructSimple(const Game * game, cons
     info->SetPosition(p0.x, p0.y);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_CONQUER_STRUCT"), 0.f, false, false,
-                        [this, energyGen, isoMap, game]
+                        [this, isoMap, game]
                         {
                             // FOCUS
+                            mFocusArea->SetCellArea(mStruct->GetRow0(), mStruct->GetCol0(),
+                                                    mStruct->GetRow1(), mStruct->GetCol1());
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
+
+                            // CLICK FILTER
                             const auto isoObj = mStruct->GetIsoObject();
                             const int objX = isoObj->GetX();
                             const int objY = isoObj->GetY();
                             const int objW = isoObj->GetWidth();
                             const int objH = isoObj->GetHeight();
 
-                            mFocusArea->SetWorldArea(objX, objY, objW, objH);
-                            mFocusArea->SetCornersColorAction();
-                            mFocusArea->SetBlinking(true);
-                            mFocusArea->SetVisible(true);
-
-                            // CLICK FILTER
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetButtonToAllow(game->GetButtonAction());
-                            cf->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
-                                                  energyGen->GetRow0(), energyGen->GetCol0());
+                            cf->SetClickableCells(isoMap, mStruct->GetRow1(), mStruct->GetCol1(),
+                                                  mStruct->GetRow0(), mStruct->GetCol0());
                         });
 }
 
@@ -73,8 +74,7 @@ void StepGameConquerStructSimple::Update(float)
         mFocusArea->SetVisible(false);
 
         // hide info panel while conquest is in progress
-        auto info = GetPanelInfo();
-        info->SetVisible(false);
+        GetPanelInfo()->SetVisible(false);
     }
 }
 
