@@ -6,7 +6,7 @@
 #include "IsoObject.h"
 #include "Player.h"
 #include "GameObjects/Unit.h"
-#include "Widgets/Tutorial/FocusArea.h"
+#include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
@@ -19,7 +19,7 @@ namespace game
 StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p,
                                              const GameObject * energyGen, const IsoMap * isoMap)
     : TutorialInfoStep(550, 260)
-    , mFocusArea(new FocusArea)
+    , mFocusArea(new IsoFocusArea(isoMap))
     , mEnergyGen(energyGen)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -27,6 +27,8 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
     // FOCUS
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
+    mFocusArea->SetCellArea(mEnergyGen->GetRow0(), mEnergyGen->GetCol0(),
+                            mEnergyGen->GetRow1(), mEnergyGen->GetCol1());
 
     // INFO
     auto info = GetPanelInfo();
@@ -43,17 +45,16 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
                         [this, energyGen, isoMap, p, game]
                         {
                             // FOCUS
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+
+                            // CLICK FILTER
                             const auto isoObj = mEnergyGen->GetIsoObject();
                             const int objX = isoObj->GetX();
                             const int objY = isoObj->GetY();
                             const int objW = isoObj->GetWidth();
                             const int objH = isoObj->GetHeight();
 
-                            mFocusArea->SetWorldArea(objX, objY, objW, objH);
-                            mFocusArea->SetCornersColorAction();
-                            mFocusArea->SetBlinking(true);
-
-                            // CLICK FILTER
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetButtonToAllow(game->GetButtonAction());
