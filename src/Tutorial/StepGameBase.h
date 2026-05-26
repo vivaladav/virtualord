@@ -6,6 +6,7 @@ namespace game
 {
 
 class Base;
+class FocusArea;
 class Game;
 class IsoFocusArea;
 class IsoMap;
@@ -21,7 +22,8 @@ public:
     void Update(float delta) override;
 
 private:
-    IsoFocusArea * mFocusArea = nullptr;
+    FocusArea * mFocusArea = nullptr;
+    IsoFocusArea * mIsoFocusArea = nullptr;
 
     const Base * mBase = nullptr;
 

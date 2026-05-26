@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "IsoObject.h"
 #include "GameObjects/Base.h"
+#include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -14,15 +15,24 @@ namespace game
 
 StepGameBase::StepGameBase(const Game * game, const IsoMap * im, const Base * b)
     : TutorialInfoStep(600, 250)
-    , mFocusArea(new IsoFocusArea(im))
+    , mFocusArea(new FocusArea)
+    , mIsoFocusArea(new IsoFocusArea(im))
     , mBase(b)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
-    // FOCUS
-    mFocusArea->SetCellArea(mBase->GetRow0(), mBase->GetCol0(), mBase->GetRow1(), mBase->GetCol1());
+    // FOCUS AREAS
+    const auto isoObj = mBase->GetIsoObject();
+    const int objX = isoObj->GetX();
+    const int objY = isoObj->GetY();
+    const int objW = isoObj->GetWidth();
+    const int objH = isoObj->GetHeight();
+    mFocusArea->SetWorldArea(objX, objY, objW, objH);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
+
+    mIsoFocusArea->SetCellArea(mBase->GetRow0(), mBase->GetCol0(), mBase->GetRow1(), mBase->GetCol1());
+    mIsoFocusArea->SetVisible(false);
 
     // INFO
     auto info = GetPanelInfo();
@@ -46,8 +56,12 @@ StepGameBase::StepGameBase(const Game * game, const IsoMap * im, const Base * b)
 
     info->SetFunctionOnFinished([this, game]
     {
-        mFocusArea->SetCornersColorAction();
-        mFocusArea->SetBlinking(true);
+        // FOCUS AREAS
+        mFocusArea->SetVisible(false);
+
+        mIsoFocusArea->SetCornersColorAction();
+        mIsoFocusArea->SetBlinking(true);
+        mIsoFocusArea->SetVisible(true);
 
         // CLICK FILTER
         const auto isoObj = mBase->GetIsoObject();
@@ -67,13 +81,14 @@ StepGameBase::StepGameBase(const Game * game, const IsoMap * im, const Base * b)
 StepGameBase::~StepGameBase()
 {
     delete mFocusArea;
+    delete mIsoFocusArea;
 }
 
 void StepGameBase::OnStart()
 {
     TutorialInfoStep::OnStart();
 
-    // FOCUS
+    // FOCUS AREA
     mFocusArea->SetVisible(true);
 }
 
