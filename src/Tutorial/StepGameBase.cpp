@@ -27,6 +27,7 @@ StepGameBase::StepGameBase(const Game * game, const IsoMap * im, const Base * b)
     const int objY = isoObj->GetY();
     const int objW = isoObj->GetWidth();
     const int objH = isoObj->GetHeight();
+
     mFocusArea->SetWorldArea(objX, objY, objW, objH);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);

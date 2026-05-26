@@ -21,7 +21,6 @@
 #include "Tutorial/StepGameBaseBuildUnitEnd.h"
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
 #include "Tutorial/StepGameBaseBuildUnitStart.h"
-#include "Tutorial/StepGameBaseFeatures.h"
 #include "Tutorial/StepGameBuildTower.h"
 #include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameBuildTowerIntro.h"
@@ -125,8 +124,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([] { return new StepDelay(0.3f); });
     // BASE INTRO
     AddStep([game, isoMap, localBase] { return new StepGameBase(game, isoMap, localBase); });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([panelActions, panelObj] { return new StepGameBaseFeatures(panelObj, panelActions); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD NEW UNIT
     AddStep([panelActions] { return new StepGameBaseBuildUnitIcon(panelActions); });
