@@ -54,7 +54,7 @@ StepGameConquerStructSimple::StepGameConquerStructSimple(const Game * game, cons
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetButtonToAllow(game->GetButtonAction());
-                            cf->SetClickableCells(isoMap, mStruct->GetRow1(), mStruct->GetCol1(),
+                            cf->AddClickableCells(isoMap, mStruct->GetRow1(), mStruct->GetCol1(),
                                                   mStruct->GetRow0(), mStruct->GetCol0());
                         });
 }

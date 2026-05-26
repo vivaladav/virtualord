@@ -58,7 +58,7 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetButtonToAllow(game->GetButtonAction());
-                            cf->SetClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
+                            cf->AddClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
                                                   energyGen->GetRow0(), energyGen->GetCol0());
 
                             // re-allow unit to move and conquer

@@ -57,25 +57,31 @@ StepGameConquerStructChoice::StepGameConquerStructChoice(const Game * game, cons
                             mFocusArea2->SetVisible(true);
 
                             // CLICK FILTER
-                            const auto isoObj1 = mStruct1->GetIsoObject();
-                            const int objX1 = isoObj1->GetX();
-                            const int objY1 = isoObj1->GetY();
-                            const int objW1 = isoObj1->GetWidth();
-                            const int objH1 = isoObj1->GetHeight();
-
-                            const auto isoObj2 = mStruct2->GetIsoObject();
-                            const int objX2 = isoObj2->GetX();
-                            const int objY2 = isoObj2->GetY();
-                            const int objW2 = isoObj2->GetWidth();
-                            const int objH2 = isoObj2->GetHeight();
+                            const IsoObject * obj1 = mStruct1->GetIsoObject();
+                            const IsoObject * obj2 = mStruct2->GetIsoObject();
+                            const int tlX1 = obj1->GetX();
+                            const int tlX2 = obj2->GetX();
+                            const int tlY1 = obj1->GetY();
+                            const int tlY2 = obj2->GetY();
+                            const int brX1 = tlX1 + obj1->GetWidth();
+                            const int brX2 = tlX2 + obj2->GetWidth();
+                            const int brY1 = tlY1 + obj1->GetHeight();
+                            const int brY2 = tlY2 + obj2->GetHeight();
+                            const int minX = tlX1 < tlX2 ? tlX1 : tlX2;
+                            const int minY = tlY1 < tlY2 ? tlY1 : tlY2;
+                            const int maxX = brX1 > brX2 ? brX1 : brX2;
+                            const int maxY = brY1 > brY2 ? brY1 : brY2;
+                            const int w = std::abs(maxX - minX);
+                            const int h = std::abs(maxY - minX);
 
                             auto cf = GetClickFilter();
-                            cf->SetWorldClickableArea(objX1, objY1, objW1, objH1);
+                            cf->SetWorldClickableArea(minX, minY, w, h);
                             cf->SetButtonToAllow(game->GetButtonAction());
-                            cf->SetClickableCells(isoMap, struct1->GetRow1(), struct1->GetCol1(),
-                                                  struct1->GetRow0(), struct1->GetCol0());
 
-                            // TODO handle secondary area/cells in ClickFilter
+                            cf->AddClickableCells(isoMap, struct1->GetRow1(), struct1->GetCol1(),
+                                                  struct1->GetRow0(), struct1->GetCol0());
+                            cf->AddClickableCells(isoMap, struct2->GetRow1(), struct2->GetCol1(),
+                                                  struct2->GetRow0(), struct2->GetCol0());
                         });
 }
 
