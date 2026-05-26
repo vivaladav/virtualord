@@ -363,6 +363,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- Added SFX played after conquering a structure.\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
+                  "- Reduced time / actions to complete first map tutorial.\n"
+                  "- Reduced times of unit and structure actions.\n"
                   "\nFIXES\n"
                   "- Fixed crash when opening trading dialog.\n"
                   "- Fixed AI not active after first tutorial.\n"
