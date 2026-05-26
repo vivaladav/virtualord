@@ -45,7 +45,27 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
     const int wX = cam->GetScreenToWorldX(x);
     const int wY = cam->GetScreenToWorldY(y);
 
-    // filter by map cell first if required
+    // first filter by mouse position
+    // position in world
+    if(mAreaWorld)
+    {
+        if(wX < mXtl || wX > mXbr || wY < mYtl || wY > mYbr)
+        {
+            event.SetConsumed();
+            return;
+        }
+    }
+    // position in screen
+    else
+    {
+        if(x < mXtl || x > mXbr || y < mYtl || y > mYbr)
+        {
+            event.SetConsumed();
+            return;
+        }
+    }
+
+    // then filter by map cell if required
     if(mIsoMap)
     {
         const Cell2D cell = mIsoMap->CellFromWorldPoint(wX, wY);
@@ -59,28 +79,27 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
                 return;
             }
         }
-        // cells area check
+        // cells areas check
         else
         {
-            if(cell.row < mTLR || cell.col < mTLC || cell.row > mBRR || cell.col > mBRC)
+            bool inside = false;
+
+            for(const CellsArea & area : mCellAreas)
+            {
+                if(cell.row >= area.rowTL && cell.row <= area.rowBR &&
+                   cell.col >= area.colTL && cell.col <= area.colBR)
+                {
+                    inside = true;
+                    break;
+                }
+            }
+
+            if(!inside)
             {
                 event.SetConsumed();
                 return;
             }
         }
-    }
-
-    // first by position in world
-    if(mAreaWorld)
-    {
-        if(wX < mXtl || wX > mXbr || wY < mYtl || wY > mYbr)
-            event.SetConsumed();
-    }
-    // first by position in screen
-    else
-    {
-        if(x < mXtl || x > mXbr || y < mYtl || y > mYbr)
-            event.SetConsumed();
     }
 }
 

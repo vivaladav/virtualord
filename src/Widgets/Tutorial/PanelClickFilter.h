@@ -2,6 +2,8 @@
 
 #include <sgl/sgui/Widget.h>
 
+#include <vector>
+
 namespace game
 {
 
@@ -15,7 +17,7 @@ public:
     void SetScreenClickableArea(int x0, int y0, int w, int h);
     void SetWorldClickableArea(int x0, int y0, int w, int h);
     void SetClickableCell(const IsoMap * im, int r, int c);
-    void SetClickableCells(const IsoMap * im, int tlR, int tlC, int brR, int brC);
+    void AddClickableCells(const IsoMap * im, int tlR, int tlC, int brR, int brC);
 
     void ClearButtonToAllow();
     void SetButtonToAllow(int button);
@@ -32,6 +34,22 @@ private:
     void FilterMouseEvent(sgl::core::MouseButtonEvent & event);
 
 private:
+    struct CellsArea
+    {
+        CellsArea(int tlR, int tlC, int brR, int brC)
+            : rowTL(tlR)
+            , colTL(tlC)
+            , rowBR(brR)
+            , colBR(brC)
+        {
+        }
+
+        int rowTL;
+        int colTL;
+        int rowBR;
+        int colBR;
+    };
+
     int mXtl = 0;
     int mYtl = 0;
     int mXbr = 0;
@@ -42,10 +60,8 @@ private:
     const IsoMap * mIsoMap = nullptr;
     int mRow = -1;
     int mCol = -1;
-    int mTLR = -1;
-    int mTLC = -1;
-    int mBRR = -1;
-    int mBRC = -1;
+
+    std::vector<CellsArea> mCellAreas;
 
     bool mAreaWorld = false;
 };
@@ -81,13 +97,11 @@ inline void PanelClickFilter::SetClickableCell(const IsoMap * im, int r, int c)
     mCol = c;
 }
 
-inline void PanelClickFilter::SetClickableCells(const IsoMap * im, int tlR, int tlC, int brR, int brC)
+inline void PanelClickFilter::AddClickableCells(const IsoMap * im, int tlR, int tlC, int brR, int brC)
 {
     mIsoMap = im;
-    mTLR = tlR;
-    mTLC = tlC;
-    mBRR = brR;
-    mBRC = brC;
+
+    mCellAreas.emplace_back(tlR, tlC, brR, brC);
 }
 
 inline void PanelClickFilter::ClearClickableArea()
