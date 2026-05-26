@@ -42,7 +42,7 @@ void Structure::OnNewTurn(PlayerFaction faction)
 
 float Structure::GetTimeBuildUnit() const
 {
-    const float maxTime = 5.f;
+    const float maxTime = 2.f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONSTRUCTION));
 }
 
