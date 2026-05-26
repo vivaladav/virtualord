@@ -6,6 +6,7 @@
 #include "IsoObject.h"
 #include "Player.h"
 #include "GameObjects/Unit.h"
+#include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -19,16 +20,27 @@ namespace game
 StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p,
                                              const GameObject * energyGen, const IsoMap * isoMap)
     : TutorialInfoStep(550, 260)
-    , mFocusArea(new IsoFocusArea(isoMap))
+    , mFocusArea(new FocusArea)
+    , mIsoFocusArea(new IsoFocusArea(isoMap))
     , mEnergyGen(energyGen)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
-    // FOCUS
+    // FOCUS AREAS
+    const auto isoObj = mEnergyGen->GetIsoObject();
+    const int objX = isoObj->GetX();
+    const int objY = isoObj->GetY();
+    const int objW = isoObj->GetWidth();
+    const int objH = isoObj->GetHeight();
+
+    mFocusArea->SetWorldArea(objX, objY, objW, objH);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
-    mFocusArea->SetCellArea(mEnergyGen->GetRow0(), mEnergyGen->GetCol0(),
-                            mEnergyGen->GetRow1(), mEnergyGen->GetCol1());
+
+    mIsoFocusArea->SetCornersColorAction();
+    mIsoFocusArea->SetVisible(false);
+    mIsoFocusArea->SetCellArea(mEnergyGen->GetRow0(), mEnergyGen->GetCol0(),
+                               mEnergyGen->GetRow1(), mEnergyGen->GetCol1());
 
     // INFO
     auto info = GetPanelInfo();
@@ -45,8 +57,10 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
                         [this, energyGen, isoMap, p, game]
                         {
                             // FOCUS
-                            mFocusArea->SetCornersColorAction();
-                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(false);
+
+                            mIsoFocusArea->SetBlinking(true);
+                            mIsoFocusArea->SetVisible(true);
 
                             // CLICK FILTER
                             const auto isoObj = mEnergyGen->GetIsoObject();
@@ -70,6 +84,7 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
 StepGameConquerStruct::~StepGameConquerStruct()
 {
     delete mFocusArea;
+    delete mIsoFocusArea;
 }
 
 void StepGameConquerStruct::Update(float)
@@ -78,7 +93,7 @@ void StepGameConquerStruct::Update(float)
         SetDone();
     else if(mUnit != nullptr && mUnit->GetCurrentAction() == CONQUER_STRUCTURE)
     {
-        mFocusArea->SetVisible(false);
+        mIsoFocusArea->SetVisible(false);
 
         // hide info panel while conquest is in progress
         auto info = GetPanelInfo();
