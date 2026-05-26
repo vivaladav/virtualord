@@ -49,12 +49,12 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     // make AI idle for now
     AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), false); });
-    AddStep([] { return new StepDelay(1.f); });
+    AddStep([] { return new StepDelay(0.5f); });
 
     // ===== PART 1 =====
     // INTRO
     AddStep([] { return new StepGameIntro2; });
-    AddStep([] { return new StepDelay(0.3f); });
+    AddStep([] { return new StepDelay(0.5f); });
     // BUILD FIRST UNIT
     AddStep([localBase, game, isoMap] { return new StepGameSelectBase(game, isoMap, localBase); });
     AddStep([panelActions] { return new StepGameBaseBuildUnitStart(panelActions); });

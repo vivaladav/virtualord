@@ -57,6 +57,7 @@ private:
 
 private:
     friend class StepGameUpgradeUnit;
+    friend class StepGameUpgradeUnitFree;
 
     std::vector<int> mChangesToApply;
 

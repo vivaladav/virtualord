@@ -361,6 +361,8 @@ add_executable(
     src/Tutorial/StepGameUpgradeIntro.cpp
     src/Tutorial/StepGameUpgradeUnit.h
     src/Tutorial/StepGameUpgradeUnit.cpp
+    src/Tutorial/StepGameUpgradeUnitFree.h
+    src/Tutorial/StepGameUpgradeUnitFree.cpp
     src/Tutorial/StepGameWaitEnemyKilled.h
     src/Tutorial/StepGameWaitEnemyKilled.cpp
     src/Tutorial/StepGameWaitTurn.h
