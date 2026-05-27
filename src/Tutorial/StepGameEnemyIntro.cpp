@@ -1,4 +1,4 @@
-#include "Tutorial/StepGameConnectStructIntro.h"
+#include "Tutorial/StepGameEnemyIntro.h"
 
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
@@ -7,7 +7,7 @@
 namespace game
 {
 
-StepGameConnectStructIntro::StepGameConnectStructIntro(const sgl::core::Pointd2D & p0)
+StepGameEnemyIntro::StepGameEnemyIntro(const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(550, 150)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -17,7 +17,7 @@ StepGameConnectStructIntro::StepGameConnectStructIntro(const sgl::core::Pointd2D
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONNECT_STRUCT"), 8.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_ENEMY_INTRO"), 8.f, true, false);
 
     info->SetFunctionOnFinished([this]
                                 {
