@@ -8,12 +8,16 @@
 #include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameIntro2.h"
-#include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameBaseBuildUnitStart.h"
 #include "Tutorial/StepGameBaseBuildUnitEnd.h"
 #include "Tutorial/StepGameConquerStructChoice.h"
+#include "Tutorial/StepGameDisableCamera.h"
+#include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameSelectBase.h"
+#include "Tutorial/StepGameSetSelectionDefaultAction.h"
+#include "Tutorial/StepGameSetSelectionActiveAction.h"
 #include "Tutorial/StepGameUnit.h"
+#include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
 
@@ -44,6 +48,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
     auto localBase = local->GetBase();
     auto panelActions = hud->GetPanelObjectActions();
+    auto panelTurn = hud->GetPanelTurnControl();
 
     // ===== SETUP =====
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
@@ -66,6 +71,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             const auto unit = local->GetUnit(indUnit1);
             return new StepGameUnit(game, isoMap, unit);
         });
+    AddStep([] { return new StepDelay(0.5f); });
     // CONQUEST FIRST GENERATOR
     AddStep([this, local, game, isoMap]
         {
@@ -75,6 +81,16 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
             return new StepGameConquerStructChoice(game, unit, gen1, gen2, isoMap);
         });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONNECT FIRST GENERATOR
+
+    // CONNECT AND CONQUER SECOND GENERATOR
+
 }
 
 } // namespace game
