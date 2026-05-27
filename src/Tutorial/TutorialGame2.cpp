@@ -35,16 +35,6 @@ constexpr unsigned int indUnit1 = 0;
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellMatGen1(15, 7);
 
-// data when conquering energy generator first
-const Cell2D cellConquerEneGen1Start1(6, 13);
-const Cell2D cellConquerEneGen1End1(6, 7);
-const Cell2D cellConquerMatGen1Start1(7, 7);
-const Cell2D cellConquerMatGen1End1(13, 7);
-// data when conquering material generator first
-const Cell2D cellConquerMatGen1Start2(13, 7);
-const Cell2D cellConquerMatGen1End2(6, 7);
-const Cell2D cellConquerEneGen1Start2(6, 8);
-const Cell2D cellConquerEneGen1End2(6, 13);
 }
 
 namespace game
@@ -107,7 +97,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // CONNECT FIRST GENERATOR
     AddStep([]
             {
-                const core::Pointd2D p0(1000, 550);
+                const core::Pointd2D p0(700, 400);
                 return new StepGameConnectStructIntro(p0);
             });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
@@ -120,17 +110,60 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 core::Pointd2D p0(0, 400);
                 Cell2D target;
 
+                // conquered energy generator first
                 if(gen1->GetFaction() != NO_FACTION)
                 {
                     mFirstGenConqueredIsEnergy = true;
-                    target = cellConquerEneGen1Start1;
                     p0.x = 1100;
+                    target = Cell2D(6, 13);
                 }
+                // conquered material generator first
                 else
                 {
                     mFirstGenConqueredIsEnergy = false;
                     p0.x = 400;
-                    target = cellConquerMatGen1Start2;
+                    target = Cell2D(13, 7);
+                }
+
+                return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indUnit1);
+                const core::Pointd2D p0(650, 250);
+
+                const Cell2D target = mFirstGenConqueredIsEnergy ?
+                                      Cell2D(6, 7) : Cell2D(6, 7);
+
+                return new StepGameConquerCellsEnd(game, isoMap, unit, target, p0);
+            });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONNECT AND CONQUER SECOND GENERATOR
+    AddStep([]
+            {
+                const core::Pointd2D p0(700, 400);
+                return new StepGameConnectStructIntro(p0, "TUT_GAME_CONNECT_STRUCT_1");
+            });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this, isoMap, game]
+            {
+                const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+
+                core::Pointd2D p0(0, 400);
+                Cell2D target;
+
+                if(mFirstGenConqueredIsEnergy)
+                {
+                    p0.x = 400;
+                    target = Cell2D(7, 7);
+                }
+                else
+                {
+                    p0.x = 1100;
+                    target = Cell2D(6, 8);
                 }
 
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
@@ -143,18 +176,14 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 Cell2D target;
 
                 if(mFirstGenConqueredIsEnergy)
-                    target = cellConquerEneGen1End1;
+                    target = Cell2D(13, 7);
                 else
-                    target = cellConquerMatGen1End2;
+                    target = Cell2D(6, 13);
 
                 return new StepGameConquerCellsEnd(game, isoMap, unit, target, p0);
             });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
-    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
-    // CONNECT AND CONQUER SECOND GENERATOR
-
 }
 
 } // namespace game
