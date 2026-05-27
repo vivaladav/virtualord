@@ -348,7 +348,7 @@ void ObjectsDataRegistry::InitObjectData()
     mDataObjects.emplace(ObjectData::TYPE_UNIT_WORKER1,
         ObjectData({ {OBJ_ATT_ENERGY, 4}, {OBJ_ATT_VIEW_RANGE, 6}, {OBJ_ATT_REGENERATION, 4},
                      {OBJ_ATT_RESISTANCE, 3}, {OBJ_ATT_SHIELD, 2}, {OBJ_ATT_SPEED, 4},
-                     {OBJ_ATT_CONSTRUCTION, 5}, {OBJ_ATT_CONQUEST, 3}, {OBJ_ATT_HEALTH, 5} } ,
+                     {OBJ_ATT_CONSTRUCTION, 5}, {OBJ_ATT_CONQUEST, 4}, {OBJ_ATT_HEALTH, 5} } ,
                    { 150, 150, 0, 0 },
                    { SPR_UNIT_01_F1, SPR_UNIT_01_F2, SPR_UNIT_01_F3 }, SpriteFileUnits,
                    ObjectData::TYPE_UNIT_WORKER1, ObjectData::CAT_UNIT,
