@@ -104,6 +104,17 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     button->SetTooltipShowingTime(7000);
     button->SetTooltipDelay(250);
 
+    // -- BUTTON LOAD GAME --
+    button = new ButtonMainMenu(sm->GetCString("LOAD_GAME"), panelButtons);
+    button->SetY(buttonY);
+
+    button->AddOnClickFunction([game]
+                               {
+                                    // TODO
+                               });
+
+    buttonY += button->GetHeight() + VMARGIN;
+
     // -- BUTTON SETTINGS --
     button = new ButtonMainMenu(sm->GetCString("SETTINGS"), panelButtons);
     button->SetY(buttonY);
