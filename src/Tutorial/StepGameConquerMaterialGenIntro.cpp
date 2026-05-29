@@ -34,7 +34,7 @@ StepGameConquerMaterialGenIntro::StepGameConquerMaterialGenIntro(const GameObjec
 
     info->SetPosition(1150, 450);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_MAT_GEN"), 10.f, true, false, [this]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_MAT_GEN"), 8.f, true, false, [this]
                        {
                            mFocusArea->SetVisible(true);
                        });

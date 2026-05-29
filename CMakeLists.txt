@@ -283,6 +283,8 @@ add_executable(
     src/Tutorial/StepGameConquerCellsSimple.cpp
     src/Tutorial/StepGameConquerEnergyGenIntro.h
     src/Tutorial/StepGameConquerEnergyGenIntro.cpp
+    src/Tutorial/StepGameConquerGeneratorIntro.h
+    src/Tutorial/StepGameConquerGeneratorIntro.cpp
     src/Tutorial/StepGameConquerMaterialGenIntro.h
     src/Tutorial/StepGameConquerMaterialGenIntro.cpp
     src/Tutorial/StepGameConquerStruct.h

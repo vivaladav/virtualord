@@ -14,7 +14,9 @@
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
+#include "Tutorial/StepGameConquerGeneratorIntro.h"
 #include "Tutorial/StepGameConquerStructChoice.h"
+#include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameSelectBase.h"
@@ -79,7 +81,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             return new StepGameUnit(game, isoMap, unit);
         });
     AddStep([] { return new StepDelay(0.5f); });
-    // CONQUEST FIRST GENERATOR
+    // CONQUER FIRST GENERATOR
     AddStep([this, local, game, isoMap]
         {
             const GameObject * unit = local->GetSelectedObject();
@@ -141,7 +143,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
-    // CONNECT AND CONQUER SECOND GENERATOR
+    // CONNECT SECOND GENERATOR
     AddStep([]
             {
                 const core::Pointd2D p0(700, 400);
@@ -182,7 +184,42 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
                 return new StepGameConquerCellsEnd(game, isoMap, unit, target, p0);
             });
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
+    // CONQUER SECOND GENERATOR
+    AddStep([this]
+            {
+                const GameObject * gen;
+                const char * text;
+                core::Pointd2D p0(0, 400);
+
+                if(mFirstGenConqueredIsEnergy)
+                {
+                    gen = GetObjectInCell(cellMatGen1);
+                    text = "TUT_GAME_CONQUER_MAT_GEN";
+                    p0.x = 400;
+                }
+                else
+                {
+                    gen = GetObjectInCell(cellEneGen1);
+                    text = "TUT_GAME_CONQUER_ENE_GEN";
+                    p0.x = 1100;
+                }
+
+                return new StepGameConquerGeneratorIntro(gen, text, p0);
+            });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indUnit1);
+                const GameObject * gen = mFirstGenConqueredIsEnergy ?
+                                         GetObjectInCell(cellMatGen1) : GetObjectInCell(cellEneGen1);
+                const sgl::core::Pointd2D p0(550, 200);
+
+                return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
+            });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
