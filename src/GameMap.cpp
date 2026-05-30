@@ -4409,6 +4409,11 @@ void GameMap::UpdateStructuresAttacking(float delta)
     if(obj->GetWeapon()->HasTarget())
     {
         obj->SetCurrentAction(GameObjectActionType::ATTACK);
+
+        // move over first unit when starting to attack
+        if(obj->GetFaction() == mGame->GetLocalPlayerFaction())
+            mScreenGame->CenterCameraOverObject(obj, true);
+
         return ;
     }
 
