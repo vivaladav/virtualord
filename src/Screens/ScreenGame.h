@@ -76,7 +76,7 @@ public:
     void ClearSelection(Player * player);
     void SelectObject(GameObject * obj, Player * player);
 
-    void CenterCameraOverObject(const GameObject * obj);
+    void CenterCameraOverObject(const GameObject * obj, bool animated);
 
     Player * GetActivePlayer() const;
 

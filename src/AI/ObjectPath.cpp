@@ -1,5 +1,6 @@
 #include "AI/ObjectPath.h"
 
+#include "CameraMapController.h"
 #include "Game.h"
 #include "GameMap.h"
 #include "IsoLayer.h"
@@ -13,6 +14,7 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
+#include <cassert>
 #include <cmath>
 
 namespace game
@@ -24,6 +26,10 @@ ObjectPath::ObjectPath(GameObject * obj, IsoMap * im, GameMap * gm, ScreenGame *
     , mGameMap(gm)
     , mScreen(sg)
 {
+    assert(obj);
+    assert(sg);
+
+    mLocal = sg->GetGame()->GetLocalPlayerFaction() == mObj->GetFaction();
 }
 
 bool ObjectPath::InitNextMove()
@@ -213,7 +219,13 @@ bool ObjectPath::Fail()
 
         // clear action data once the action is completed - only for units
         if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
+        {
             mScreen->SetObjectActionFailed(mObj);
+
+            // center camera over object when done
+            if(mLocal)
+                mScreen->CenterCameraOverObject(mObj, true);
+        }
     }
     else
         mState = FAILED;
@@ -229,7 +241,13 @@ bool ObjectPath::Finish()
 
         // clear action data once the action is completed - only for units
         if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
+        {
             mScreen->SetObjectActionCompleted(mObj);
+
+            // center camera over object when done
+            if(mLocal)
+                mScreen->CenterCameraOverObject(mObj, true);
+        }
     }
     else
         mState = COMPLETED;

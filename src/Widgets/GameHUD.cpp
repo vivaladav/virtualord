@@ -137,7 +137,7 @@ GameHUD::GameHUD(ScreenGame * screen)
     mPanelTurnCtrl = new PanelTurnControl(local, this);
     mPanelTurnCtrl->AddFunctionGoToBase([this, local]
     {
-        mScreen->CenterCameraOverObject(local->GetBase());
+        mScreen->CenterCameraOverObject(local->GetBase(), false);
     });
     mPanelTurnCtrl->AddFunctionEndTurn([this]
     {
@@ -571,7 +571,7 @@ void GameHUD::ShowDialogExploreTemple(Player * player, Temple * temple)
         // start exploration
         temple->StartExploring(player->GetFaction(), [this, player, temple]
         {
-            mScreen->CenterCameraOverObject(temple);
+            mScreen->CenterCameraOverObject(temple, false);
 
             ShowDialogExploreTempleOutcome(player, temple);
         });

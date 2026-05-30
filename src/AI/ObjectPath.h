@@ -82,6 +82,8 @@ private:
     float mTargetY = 0.f;
 
     int mCost = 0;
+
+    bool mLocal = false;
 };
 
 inline GameObject * ObjectPath::GetObject() const { return mObj; }

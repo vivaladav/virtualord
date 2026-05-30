@@ -36,6 +36,7 @@ public:
     void SetScrollingSpeed(int val);
 
     void CenterCameraToPoint(int x, int y);
+    void MoveCenterCameraToPoint(int x, int y);
     void ResetPosition();
 
     bool IsDragging() const;
@@ -54,6 +55,8 @@ private:
     bool IsPointInsideBL(const sgl::core::Pointd2D & p) const;
     bool IsPointInsideBR(const sgl::core::Pointd2D & p) const;
 
+    sgl::core::Pointd2D ClampPointInside(int x, int y) const;
+
     sgl::core::Pointd2D GetVectorProjection(const sgl::core::Pointd2D & a0,
                                             const sgl::core::Pointd2D & b0,
                                             const sgl::core::Pointd2D & p) const;
@@ -61,6 +64,8 @@ private:
     void ClearMovement();
 
     void InitScrollingVelocity();
+
+    void UpdateMove(float delta);
 
 private:
     sgl::graphic::Camera * mCamera = nullptr;
@@ -72,11 +77,16 @@ private:
     sgl::core::Pointd2D mMapB;
     sgl::core::Pointd2D mMapL;
 
+    sgl::core::Pointd2D mTargetMove;
+
     float mMinSpeedScrolling = 100.f;
     float mSpeedScrolling = 0.f;
     float mSpeedDragging = 0.f;
+    float mSpeedMove = 0.f;
     float mVelocityScrolling = 0.f;
     float mAccelScrolling = 0.f;
+    float mVelocityMoveX = 0.f;
+    float mVelocityMoveY = 0.f;
 
     int mDirX = 0;
     int mDirY = 0;
@@ -92,6 +102,9 @@ private:
     bool mMouseScrollY = false;
     bool mDragging = false;
     bool mScrolling = false;
+    bool mMoving = false;
+    bool mMovingX = false;
+    bool mMovingY = false;
 };
 
 inline const sgl::graphic::Camera * CameraMapController::GetCamera() const

@@ -211,7 +211,7 @@ ScreenGame::ScreenGame(Game * game)
                                    localFaction, mIsoMap->GetNumCols());
 
     // set initial camera position
-    CenterCameraOverObject(mLocalPlayer->GetBase());
+    CenterCameraOverObject(mLocalPlayer->GetBase(), false);
 
     // apply initial visibility to the game map
     mGameMap->InitVisibility(mLocalPlayer);
@@ -408,7 +408,7 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     sgl::sgui::Stage::Instance()->SetFocus();
 }
 
-void ScreenGame::CenterCameraOverObject(const GameObject * obj)
+void ScreenGame::CenterCameraOverObject(const GameObject * obj, bool animated)
 {
     if(nullptr == obj)
         return ;
@@ -417,7 +417,10 @@ void ScreenGame::CenterCameraOverObject(const GameObject * obj)
     const int cX = isoObj->GetX() + isoObj->GetWidth() / 2;
     const int cY = isoObj->GetY() + isoObj->GetHeight() / 2;
 
-    mCamController->CenterCameraToPoint(cX, cY);
+    if(animated)
+        mCamController->MoveCenterCameraToPoint(cX, cY);
+    else
+        mCamController->CenterCameraToPoint(cX, cY);
 
     // update current cell like if mouse was moved
     UpdateCurrentCell();
@@ -1589,7 +1592,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
         if(finished)
         {
             if(action->ObjSrc != nullptr && action->ObjSrc->IsVisible())
-                CenterCameraOverObject(action->ObjSrc);
+                CenterCameraOverObject(action->ObjSrc, true);
 
             ai->RegisterActionInProgress(action);
         }
