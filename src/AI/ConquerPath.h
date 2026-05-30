@@ -91,6 +91,8 @@ private:
     float mVelY = 0.f;
     float mTargetX = 0.f;
     float mTargetY = 0.f;
+
+    bool mLocal = false;
 };
 
 inline Unit * ConquerPath::GetUnit() const { return mUnit; }

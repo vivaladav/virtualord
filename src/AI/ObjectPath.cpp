@@ -29,7 +29,7 @@ ObjectPath::ObjectPath(GameObject * obj, IsoMap * im, GameMap * gm, ScreenGame *
     assert(obj);
     assert(sg);
 
-    mLocal = sg->GetGame()->GetLocalPlayerFaction() == mObj->GetFaction();
+    mLocal = sg->GetGame()->GetLocalPlayerFaction() == obj->GetFaction();
 }
 
 bool ObjectPath::InitNextMove()
@@ -53,9 +53,7 @@ bool ObjectPath::InitNextMove()
     const sgl::core::Pointd2D target = layerObj->GetObjectPosition(isoObj, nextRow, nextCol);
 
     // check if AI action not visible
-    Player * player = mScreen->GetGame()->GetPlayerByFaction(mObj->GetFaction());
-
-    if(!player->IsLocal() && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
+    if(!mLocal && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
     {
         mObjX = target.x;
         mObjY = target.y;
@@ -103,6 +101,13 @@ bool ObjectPath::Start()
 
 void ObjectPath::InstantAbort()
 {
+    if(HasStarted())
+    {
+        // center camera over object when done
+        if(mLocal)
+            mScreen->CenterCameraOverObject(mObj, true);
+    }
+
     mState = ABORTED;
 }
 

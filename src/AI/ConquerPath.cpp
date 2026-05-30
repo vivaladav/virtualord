@@ -15,6 +15,7 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
+#include <cassert>
 #include <cmath>
 
 namespace
@@ -32,8 +33,14 @@ ConquerPath::ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, OverlayCell
     , mGameMap(gm)
     , mScreen(sg)
 {
+    assert(unit);
+    assert(gm);
+
     if(sg != nullptr)
+    {
         mPlayer = sg->GetGame()->GetPlayerByFaction(unit->GetFaction());
+        mLocal = mPlayer->IsLocal();
+    }
 }
 
 ConquerPath::~ConquerPath()
@@ -65,7 +72,13 @@ void ConquerPath::Abort()
     else if(MOVING == mState)
         mState = ABORTING;
     else
+    {
+        // center camera over object when done
+        if(HasStarted() && mLocal)
+            mScreen->CenterCameraOverObject(mUnit, true);
+
         mState = ABORTED;
+    }
 }
 
 void ConquerPath::InstantAbort()
@@ -82,6 +95,10 @@ void ConquerPath::InstantAbort()
 
     if(mOverlay)
         mOverlay->ClearPath();
+
+    // center camera over object when done
+    if(HasStarted() && mLocal)
+        mScreen->CenterCameraOverObject(mUnit, true);
 
     // set new state
     mState = ABORTED;
@@ -198,9 +215,7 @@ bool ConquerPath::InitNextMove()
 
     const sgl::core::Pointd2D target = layerObj->GetObjectPosition(isoObj, nextRow, nextCol);
 
-    Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
-
-    if(!player->IsLocal() && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
+    if(!mLocal && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
     {
         mObjX = target.x;
         mObjY = target.y;
@@ -359,8 +374,14 @@ bool ConquerPath::Fail()
         mOverlay->ClearPath();
 
     if(HasStarted())
+    {
         // clear action data once the action is completed
         mScreen->SetObjectActionFailed(mUnit);
+
+        // center camera over object when done
+        if(mLocal)
+            mScreen->CenterCameraOverObject(mUnit, true);
+    }
 
     mState = FAILED;
 
@@ -371,13 +392,15 @@ bool ConquerPath::Finish()
 {
     if(HasStarted())
     {
-        mState = COMPLETED;
-
         // clear action data once the action is completed
         mScreen->SetObjectActionCompleted(mUnit);
+
+        // center camera over object when done
+        if(mLocal)
+            mScreen->CenterCameraOverObject(mUnit, true);
     }
-    else
-        mState = COMPLETED;
+
+    mState = COMPLETED;
 
     return true;
 }

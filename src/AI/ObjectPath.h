@@ -120,6 +120,4 @@ inline void ObjectPath::Abort()
     mState = ABORTING;
 }
 
-
-
 } // namespace game

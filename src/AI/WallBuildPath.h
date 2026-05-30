@@ -108,17 +108,9 @@ private:
     int mCostResMaterial = 0.f;
 
     unsigned int mLevel = 0;
-};
 
-inline WallBuildPath::WallBuildPath(Unit *unit, IsoMap * im, GameMap * gm, ScreenGame * sg,
-                                    OverlayWall * ov)
-    : mOverlay(ov)
-    , mUnit(unit)
-    , mIsoMap(im)
-    , mGameMap(gm)
-    , mScreen(sg)
-{
-}
+    bool mLocal = false;
+};
 
 inline Unit * WallBuildPath::GetUnit() const { return mUnit; }
 

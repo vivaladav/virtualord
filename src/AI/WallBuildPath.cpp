@@ -20,10 +20,27 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
+#include <cassert>
 #include <cmath>
 
 namespace game
 {
+
+
+WallBuildPath::WallBuildPath(Unit * unit, IsoMap * im, GameMap * gm, ScreenGame * sg,
+                             OverlayWall * ov)
+    : mOverlay(ov)
+    , mUnit(unit)
+    , mIsoMap(im)
+    , mGameMap(gm)
+    , mScreen(sg)
+{
+    assert(unit);
+    assert(gm);
+
+    if(sg != nullptr)
+        mLocal = sg->GetGame()->GetLocalPlayerFaction() == unit->GetFaction();
+}
 
 WallBuildPath::~WallBuildPath()
 {
@@ -358,7 +375,13 @@ void WallBuildPath::Abort()
     else if(MOVING == mState)
         mState = ABORTING;
     else
+    {
+        // center camera over object when done
+        if(HasStarted() && mLocal)
+            mScreen->CenterCameraOverObject(mUnit, true);
+
         mState = ABORTED;
+    }
 }
 
 void WallBuildPath::InstantAbort()
@@ -379,6 +402,10 @@ void WallBuildPath::InstantAbort()
     if(mOverlay)
         mOverlay->ClearPath();
 
+    // center camera over object when done
+    if(HasStarted() && mLocal)
+        mScreen->CenterCameraOverObject(mUnit, true);
+
     // set new state
     mState = ABORTED;
 }
@@ -395,8 +422,14 @@ bool WallBuildPath::Fail()
         mOverlay->ClearPath();
 
     if(HasStarted())
+    {
         // clear action data
         mScreen->SetObjectActionFailed(mUnit);
+
+        // center camera over object when done
+        if(mLocal)
+            mScreen->CenterCameraOverObject(mUnit, true);
+    }
 
     mState = FAILED;
 
@@ -411,6 +444,10 @@ bool WallBuildPath::Finish()
 
         // clear action data once the action is completed
         mScreen->SetObjectActionCompleted(mUnit);
+
+        // center camera over object when done
+        if(mLocal)
+            mScreen->CenterCameraOverObject(mUnit, true);
     }
     else
         mState = COMPLETED;
