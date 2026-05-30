@@ -13,7 +13,7 @@ namespace game
 
 constexpr float DEF_SPEED_SCROLLING = 500.f;
 constexpr float DEF_SPEED_DRAGGING = 90.f;
-constexpr float DEF_SPEED_MOVING = 600.f;
+constexpr float DEF_SPEED_MOVING = 1000.f;
 constexpr int MOVE_L = -1;
 constexpr int MOVE_R = 1;
 constexpr int MOVE_U = -1;
@@ -95,6 +95,24 @@ void CameraMapController::MoveCenterCameraToPoint(int x, int y)
             multX = std::fabs(static_cast<float>(deltaX) / static_cast<float>(deltaY));
         else
             multY = std::fabs(static_cast<float>(deltaY) / static_cast<float>(deltaX));
+    }
+
+    // normalize multiplier values to avoid spikes of speed
+    if(multX > multY)
+    {
+        if(multX > 1.f)
+        {
+            multY /= multX;
+            multX = 1.f;
+        }
+    }
+    else if(multY > multX)
+    {
+        if(multY > 1.f)
+        {
+            multX /= multY;
+            multY = 1.f;
+        }
     }
 
     // define move direction
