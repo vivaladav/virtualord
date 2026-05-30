@@ -4086,7 +4086,13 @@ bool GameMap::StartMiniUnitGroupMove()
         return false;
     }
     else
+    {
+        // move over first unit when starting moving of the group
+        if(obj->GetFaction() == mGame->GetLocalPlayerFaction())
+            mScreenGame->CenterCameraOverObject(obj, true);
+
         return true;
+    }
 }
 
 void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
@@ -4177,6 +4183,15 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
     // moved all mini units of group for this turn
     if(moved == group->GetNumObjects())
     {
+        // center camera on last moved object
+        if(group->GetFaction() == mGame->GetLocalPlayerFaction())
+        {
+            group->DoForObject(group->GetNumObjects() - 1, [this](GameObject * obj)
+                {
+                    mScreenGame->CenterCameraOverObject(obj, true);
+                });
+        }
+
         ClearMiniUnitsGroupMoveCompleted(done == moved);
         SetNextMiniUnitsGroupToMove();
 
