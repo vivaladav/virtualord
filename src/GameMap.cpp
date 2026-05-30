@@ -4153,14 +4153,17 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
 
     std::vector<unsigned int> path;
     GameObject * obj = nullptr;
+    GameObject * lastObjMoved = nullptr;
     int done = 0;
     int moved = 0;
 
-    group->DoForAll([this, target, &obj, &path, &done, &moved](GameObject * o)
+    group->DoForAll([this, target, &obj, &path, &done, &moved, &lastObjMoved](GameObject * o)
     {
         // already moved this turn
         if(o->GetActiveAction() == GameObjectActionType::IDLE)
         {
+            lastObjMoved = o;
+
             ++moved;
 
             // target reached
@@ -4180,22 +4183,22 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
         }
     });
 
-    // moved all mini units of group for this turn
-    if(moved == group->GetNumObjects())
-    {
-        // center camera on last moved object
-        if(group->GetFaction() == mGame->GetLocalPlayerFaction())
-        {
-            group->DoForObject(group->GetNumObjects() - 1, [this](GameObject * obj)
-                {
-                    mScreenGame->CenterCameraOverObject(obj, true);
-                });
-        }
+    const unsigned int numObjects = group->GetNumObjects();
 
+    // moved all mini units of group for this turn
+    if(moved == numObjects)
+    {
         ClearMiniUnitsGroupMoveCompleted(done == moved);
         SetNextMiniUnitsGroupToMove();
 
         return ;
+    }
+    // about to move last object when there's more than 1
+    else if(numObjects > 1 && moved == (numObjects - 1) && lastObjMoved != nullptr)
+    {
+        // start to center camera on first moved object
+        if(lastObjMoved->GetFaction() == mGame->GetLocalPlayerFaction())
+            mScreenGame->CenterCameraOverObject(lastObjMoved, true);
     }
 
     // can't find a valid path to target -> failed
