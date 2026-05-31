@@ -372,6 +372,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Controls settings allow to set what mouse button to use as SELECT and ACTION"
                   " buttons.\n"
                   "- Added SFX played after conquering a structure.\n"
+                  "- Camera automatically follows what's happening during a mission.\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
                   "- Reduced time / actions to complete first map tutorial.\n"
