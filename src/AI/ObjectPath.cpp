@@ -94,6 +94,16 @@ bool ObjectPath::Start()
     if(mState != READY)
         return false;
 
+    if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
+    {
+        // center camera over target destination in the meanwhile
+        if(mLocal)
+        {
+            const float speedCam = mObj->GetSpeed() * 75.f;
+            mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
+        }
+    }
+
     mNextCell = 1;
 
     return InitNextMove();
@@ -101,12 +111,8 @@ bool ObjectPath::Start()
 
 void ObjectPath::InstantAbort()
 {
-    if(HasStarted())
-    {
-        // center camera over object when done
-        if(mLocal)
-            mScreen->CenterCameraOverObject(mObj, true);
-    }
+    if(mLocal)
+        mScreen->StopCameraMove();
 
     mState = ABORTED;
 }
@@ -224,13 +230,7 @@ bool ObjectPath::Fail()
 
         // clear action data once the action is completed - only for units
         if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
-        {
             mScreen->SetObjectActionFailed(mObj);
-
-            // center camera over object when done
-            if(mLocal)
-                mScreen->CenterCameraOverObject(mObj, true);
-        }
     }
     else
         mState = FAILED;
@@ -246,13 +246,7 @@ bool ObjectPath::Finish()
 
         // clear action data once the action is completed - only for units
         if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
-        {
             mScreen->SetObjectActionCompleted(mObj);
-
-            // center camera over object when done
-            if(mLocal)
-                mScreen->CenterCameraOverObject(mObj, true);
-        }
     }
     else
         mState = COMPLETED;

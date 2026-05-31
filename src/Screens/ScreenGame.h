@@ -76,7 +76,12 @@ public:
     void ClearSelection(Player * player);
     void SelectObject(GameObject * obj, Player * player);
 
+    // speed < 0 -> instant move | speed == 0 -> default speed | speed > -> 0 use value
+    void CenterCameraOverCell(int r, int c, float speed);
+    void CenterCameraOverCell(const Cell2D & cell, float speed);
+    void CenterCameraOverCell(unsigned int cellIndex, float speed);
     void CenterCameraOverObject(const GameObject * obj, bool animated);
+    void StopCameraMove();
 
     Player * GetActivePlayer() const;
 

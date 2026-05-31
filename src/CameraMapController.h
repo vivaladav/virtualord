@@ -36,7 +36,8 @@ public:
     void SetScrollingSpeed(int val);
 
     void CenterCameraToPoint(int x, int y);
-    void MoveCenterCameraToPoint(int x, int y);
+    void MoveCenterCameraToPoint(int x, int y, float speed = 0.f);
+    void StopMovement();
     void ResetPosition();
 
     bool IsDragging() const;

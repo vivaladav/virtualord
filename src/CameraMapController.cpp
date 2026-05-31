@@ -13,7 +13,7 @@ namespace game
 
 constexpr float DEF_SPEED_SCROLLING = 500.f;
 constexpr float DEF_SPEED_DRAGGING = 90.f;
-constexpr float DEF_SPEED_MOVING = 1000.f;
+constexpr float DEF_SPEED_MOVING = 200.f;
 constexpr int MOVE_L = -1;
 constexpr int MOVE_R = 1;
 constexpr int MOVE_U = -1;
@@ -61,7 +61,7 @@ void CameraMapController::CenterCameraToPoint(int x, int y)
     mCamera->CenterToPoint(p.x, p.y);
 }
 
-void CameraMapController::MoveCenterCameraToPoint(int x, int y)
+void CameraMapController::MoveCenterCameraToPoint(int x, int y, float speed)
 {
     const auto center = ClampPointInside(x, y);
 
@@ -77,9 +77,7 @@ void CameraMapController::MoveCenterCameraToPoint(int x, int y)
     // make sure both delta are not 0 or there's nothing to do
     if(deltaX == 0 && deltaY == 0)
     {
-        mMoving = false;
-        mMovingX = false;
-        mMovingY = false;
+        StopMovement();
 
         return;
     }
@@ -116,13 +114,15 @@ void CameraMapController::MoveCenterCameraToPoint(int x, int y)
     }
 
     // define move direction
+    const float maxSpeed = speed > 0.f ? speed : mSpeedMove;
+
     // X
     mMovingX = true;
 
     if(deltaX > 0)
-        mVelocityMoveX = mSpeedMove * multX;
+        mVelocityMoveX = maxSpeed * multX;
     else if(deltaX < 0)
-        mVelocityMoveX = -mSpeedMove * multX;
+        mVelocityMoveX = -maxSpeed * multX;
     else
     {
         mVelocityMoveX = 0.f;
@@ -133,9 +133,9 @@ void CameraMapController::MoveCenterCameraToPoint(int x, int y)
     mMovingY = true;
 
     if(deltaY > 0)
-        mVelocityMoveY = mSpeedMove * multY;
+        mVelocityMoveY = maxSpeed * multY;
     else if(deltaY < 0)
-        mVelocityMoveY = -mSpeedMove * multY;
+        mVelocityMoveY = -maxSpeed * multY;
     else
     {
         mVelocityMoveY = 0.f;
@@ -144,6 +144,13 @@ void CameraMapController::MoveCenterCameraToPoint(int x, int y)
 
     // start moving
     mMoving = true;
+}
+
+void CameraMapController::StopMovement()
+{
+    mMoving = false;
+    mMovingX = false;
+    mMovingY = false;
 }
 
 void CameraMapController::ResetPosition()
@@ -347,6 +354,8 @@ void CameraMapController::ClearMovement()
     mDirY = NO_MOVE;
     mDragX = NO_MOVE;
     mDragY = NO_MOVE;
+
+    StopMovement();
 }
 
 void CameraMapController::InitScrollingVelocity()
@@ -590,11 +599,7 @@ void CameraMapController::UpdateMove(float delta)
 
     // DONE
     if(0 == todo)
-    {
-        mMoving = false;
-        mMovingX = false;
-        mMovingY = false;
-    }
+        StopMovement();
 }
 
 } // namespace game

@@ -408,6 +408,34 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     sgl::sgui::Stage::Instance()->SetFocus();
 }
 
+void ScreenGame::CenterCameraOverCell(int r, int c, float speed)
+{
+    const unsigned int ind = r * mIsoMap->GetNumCols() + c;
+    CenterCameraOverCell(ind, speed);
+}
+
+inline void ScreenGame::CenterCameraOverCell(const Cell2D & cell, float speed)
+{
+    const unsigned int ind = cell.row * mIsoMap->GetNumCols() + cell.col;
+    CenterCameraOverCell(ind, speed);
+}
+
+void ScreenGame::CenterCameraOverCell(unsigned int cellIndex, float speed)
+{
+    const auto p = mIsoMap->GetCellPosition(cellIndex);
+
+    const int cX = p.x + (mIsoMap->GetTileWidth() / 2);
+    const int cY = p.y + (mIsoMap->GetTileHeight() / 2);
+
+    if(speed < 0.f)
+        mCamController->CenterCameraToPoint(cX, cY);
+    else
+        mCamController->MoveCenterCameraToPoint(cX, cY, speed);
+
+    // update current cell like if mouse was moved
+    UpdateCurrentCell();
+}
+
 void ScreenGame::CenterCameraOverObject(const GameObject * obj, bool animated)
 {
     if(nullptr == obj)
@@ -424,6 +452,11 @@ void ScreenGame::CenterCameraOverObject(const GameObject * obj, bool animated)
 
     // update current cell like if mouse was moved
     UpdateCurrentCell();
+}
+
+void ScreenGame::StopCameraMove()
+{
+    mCamController->StopMovement();
 }
 
 Player * ScreenGame::GetActivePlayer() const
