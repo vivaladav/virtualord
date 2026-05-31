@@ -60,7 +60,7 @@ Game::Game(int argc, char * argv[])
     , mButtonAction(sgl::core::MouseEvent::BUTTON_RIGHT)
 #ifdef DEV_MODE
     // tutorial disabled in DEV MODE
-    , mTutorialEnabled(false)
+    //, mTutorialEnabled(false)
 #endif
 {
     using namespace sgl;
