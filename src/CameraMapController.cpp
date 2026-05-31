@@ -13,7 +13,7 @@ namespace game
 
 constexpr float DEF_SPEED_SCROLLING = 500.f;
 constexpr float DEF_SPEED_DRAGGING = 90.f;
-constexpr float DEF_SPEED_MOVING = 200.f;
+constexpr float DEF_SPEED_MOVING = 500.f;
 constexpr int MOVE_L = -1;
 constexpr int MOVE_R = 1;
 constexpr int MOVE_U = -1;

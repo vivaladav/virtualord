@@ -211,7 +211,7 @@ ScreenGame::ScreenGame(Game * game)
                                    localFaction, mIsoMap->GetNumCols());
 
     // set initial camera position
-    CenterCameraOverObject(mLocalPlayer->GetBase(), false);
+    CenterCameraOverObject(mLocalPlayer->GetBase());
 
     // apply initial visibility to the game map
     mGameMap->InitVisibility(mLocalPlayer);
@@ -436,7 +436,7 @@ void ScreenGame::CenterCameraOverCell(unsigned int cellIndex, float speed)
     UpdateCurrentCell();
 }
 
-void ScreenGame::CenterCameraOverObject(const GameObject * obj, bool animated)
+void ScreenGame::CenterCameraOverObject(const GameObject * obj, float speed)
 {
     if(nullptr == obj)
         return ;
@@ -445,10 +445,10 @@ void ScreenGame::CenterCameraOverObject(const GameObject * obj, bool animated)
     const int cX = isoObj->GetX() + isoObj->GetWidth() / 2;
     const int cY = isoObj->GetY() + isoObj->GetHeight() / 2;
 
-    if(animated)
-        mCamController->MoveCenterCameraToPoint(cX, cY);
-    else
+    if(speed < 0.f)
         mCamController->CenterCameraToPoint(cX, cY);
+    else
+        mCamController->MoveCenterCameraToPoint(cX, cY, speed);
 
     // update current cell like if mouse was moved
     UpdateCurrentCell();
@@ -1625,7 +1625,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
         if(finished)
         {
             if(action->ObjSrc != nullptr && action->ObjSrc->IsVisible())
-                CenterCameraOverObject(action->ObjSrc, true);
+                CenterCameraOverObject(action->ObjSrc, 0.f);
 
             ai->RegisterActionInProgress(action);
         }

@@ -61,6 +61,14 @@ bool ConquerPath::Start()
 
     mNextCell = 0;
 
+    // center camera over target destination in the meanwhile
+    if(mLocal)
+    {
+        const float multSpeed = 25.f;
+        const float speedCam = mUnit->GetSpeed() * multSpeed;
+        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
+    }
+
     // stat conquering first cell
     return InitNextConquest();
 }
@@ -73,9 +81,8 @@ void ConquerPath::Abort()
         mState = ABORTING;
     else
     {
-        // center camera over object when done
-        if(HasStarted() && mLocal)
-            mScreen->CenterCameraOverObject(mUnit, true);
+        if(mLocal)
+            mScreen->StopCameraMove();
 
         mState = ABORTED;
     }
@@ -96,9 +103,8 @@ void ConquerPath::InstantAbort()
     if(mOverlay)
         mOverlay->ClearPath();
 
-    // center camera over object when done
-    if(HasStarted() && mLocal)
-        mScreen->CenterCameraOverObject(mUnit, true);
+    if(mLocal)
+        mScreen->StopCameraMove();
 
     // set new state
     mState = ABORTED;
@@ -373,15 +379,12 @@ bool ConquerPath::Fail()
     if(mOverlay)
         mOverlay->ClearPath();
 
+    // clear action data once the action is completed
     if(HasStarted())
-    {
-        // clear action data once the action is completed
         mScreen->SetObjectActionFailed(mUnit);
 
-        // center camera over object when done
-        if(mLocal)
-            mScreen->CenterCameraOverObject(mUnit, true);
-    }
+    if(mLocal)
+        mScreen->StopCameraMove();
 
     mState = FAILED;
 
@@ -390,15 +393,9 @@ bool ConquerPath::Fail()
 
 bool ConquerPath::Finish()
 {
+    // clear action data once the action is completed
     if(HasStarted())
-    {
-        // clear action data once the action is completed
         mScreen->SetObjectActionCompleted(mUnit);
-
-        // center camera over object when done
-        if(mLocal)
-            mScreen->CenterCameraOverObject(mUnit, true);
-    }
 
     mState = COMPLETED;
 

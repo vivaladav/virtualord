@@ -273,7 +273,7 @@ void ButtonQuickUnitSelection::HandleButtonUp()
 {
     sgl::sgui::ImageButton::HandleButtonUp();
 
-    mScreenGame->CenterCameraOverObject(mUnit, false);
+    mScreenGame->CenterCameraOverObject(mUnit);
 }
 
 void ButtonQuickUnitSelection::UpdateValues()

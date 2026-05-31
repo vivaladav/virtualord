@@ -99,7 +99,8 @@ bool ObjectPath::Start()
         // center camera over target destination in the meanwhile
         if(mLocal)
         {
-            const float speedCam = mObj->GetSpeed() * 75.f;
+            const float multSpeed = 70.f;
+            const float speedCam = mObj->GetSpeed() * multSpeed;
             mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
         }
     }
@@ -234,6 +235,9 @@ bool ObjectPath::Fail()
     }
     else
         mState = FAILED;
+
+    if(mLocal)
+        mScreen->StopCameraMove();
 
     return false;
 }

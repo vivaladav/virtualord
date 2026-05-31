@@ -365,6 +365,14 @@ bool WallBuildPath::Start()
 
     mNextCell = 0;
 
+    // center camera over target destination in the meanwhile
+    if(mLocal)
+    {
+        const float multSpeed = 20.f;
+        const float speedCam = mUnit->GetSpeed() * multSpeed;
+        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
+    }
+
     return InitNextMove();
 }
 
@@ -376,9 +384,8 @@ void WallBuildPath::Abort()
         mState = ABORTING;
     else
     {
-        // center camera over object when done
-        if(HasStarted() && mLocal)
-            mScreen->CenterCameraOverObject(mUnit, true);
+        if(mLocal)
+            mScreen->StopCameraMove();
 
         mState = ABORTED;
     }
@@ -402,9 +409,8 @@ void WallBuildPath::InstantAbort()
     if(mOverlay)
         mOverlay->ClearPath();
 
-    // center camera over object when done
-    if(HasStarted() && mLocal)
-        mScreen->CenterCameraOverObject(mUnit, true);
+    if(mLocal)
+        mScreen->StopCameraMove();
 
     // set new state
     mState = ABORTED;
@@ -421,15 +427,9 @@ bool WallBuildPath::Fail()
     if(mOverlay)
         mOverlay->ClearPath();
 
+    // clear action data
     if(HasStarted())
-    {
-        // clear action data
         mScreen->SetObjectActionFailed(mUnit);
-
-        // center camera over object when done
-        if(mLocal)
-            mScreen->CenterCameraOverObject(mUnit, true);
-    }
 
     mState = FAILED;
 
@@ -444,10 +444,6 @@ bool WallBuildPath::Finish()
 
         // clear action data once the action is completed
         mScreen->SetObjectActionCompleted(mUnit);
-
-        // center camera over object when done
-        if(mLocal)
-            mScreen->CenterCameraOverObject(mUnit, true);
     }
     else
         mState = COMPLETED;
