@@ -22,7 +22,7 @@ StepPlanetMapSelectTerritory::StepPlanetMapSelectTerritory(PlanetMap * planet, b
     const unsigned int buttonId = won ? 2 : 1;
     mTerritory = planet->GetButton(buttonId);
 
-    const int padding = 10;
+    const int padding = 5;
     const int fX = planet->GetX() + mTerritory->GetX() - padding;
     const int fY = planet->GetY() + mTerritory->GetY() - padding;
     const int fW = mTerritory->GetWidth() + (padding * 2);

@@ -37,7 +37,7 @@ StepPlanetMapConquerTerritoryStart::StepPlanetMapConquerTerritoryStart(PanelPlan
     info->SetFunctionOnFinished([this, panel]
     {
         // FOCUS
-        const int padding = 10;
+        const int padding = 5;
         const int fX = panel->GetX() + mButton->GetX() - padding;
         const int fY = panel->GetY() + mButton->GetY() - padding;
         const int fW = mButton->GetWidth() + (padding * 2);

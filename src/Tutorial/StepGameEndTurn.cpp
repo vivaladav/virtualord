@@ -33,7 +33,8 @@ StepGameEndTurn::StepGameEndTurn(const PanelTurnControl * panel)
                         {
                             // FOCUS
                             auto btn = panel->GetButtonEndTurn();
-                            const int padding = 10;
+
+                            const int padding = 5;
                             const int fX = btn->GetScreenX() - padding;
                             const int fY = btn->GetScreenY() - padding;
                             const int fW = btn->GetWidth() + (padding * 2);

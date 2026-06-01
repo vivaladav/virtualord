@@ -31,20 +31,25 @@ StepGameBaseBuildUnitStart::StepGameBaseBuildUnitStart(PanelObjectActions * pane
     info->AddActionEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_ICON_3"),
                          0.f, false, false, [this, panel]
                         {
-                            // FOCUS
                             auto btn = panel->GetButton(PanelObjectActions::BTN_BUILD_UNIT_BASE);
 
-                            const int padding = 10;
-                            const int fX = btn->GetScreenX() - padding;
-                            const int fY = btn->GetScreenY() - padding;
-                            const int fW = btn->GetWidth() + (padding * 2);
-                            const int fH = btn->GetHeight() + (padding * 2);
-
-                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                            mFocusArea->SetVisible(true);
-
                             // CLICK FILTER
+                            const int fX = btn->GetScreenX();
+                            const int fY = btn->GetScreenY();
+                            const int fW = btn->GetWidth();
+                            const int fH = btn->GetHeight();
+
                             GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+
+                            // FOCUS
+                            const int padding = 5;
+                            const int f2X = fX - padding;
+                            const int f2Y = fY - padding;
+                            const int f2W = fW + (padding * 2);
+                            const int f2H = fH + (padding * 2);
+
+                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
+                            mFocusArea->SetVisible(true);
                         });
 
     mClickId = panel->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, [this]

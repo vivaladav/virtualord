@@ -35,18 +35,23 @@ StepGameQuickUnitButton::StepGameQuickUnitButton(GameHUD * hud, int indButton)
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_QUICK_SEL_2"), 0.f, false, false, [this]
                         {
-                            // FOCUS
-                            const int padding = 10;
-                            const int fX = mButton->GetScreenX() - padding;
-                            const int fY = mButton->GetScreenY() - padding;
-                            const int fW = mButton->GetWidth() + (padding * 2);
-                            const int fH = mButton->GetHeight() + (padding * 2);
-
-                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                            mFocusArea->SetVisible(true);
-
                             // CLICK FILTER
+                            const int fX = mButton->GetScreenX();
+                            const int fY = mButton->GetScreenY();
+                            const int fW = mButton->GetWidth();
+                            const int fH = mButton->GetHeight();
+
                             GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+
+                            // FOCUS
+                            const int padding = 5;
+                            const int f2X = fX - padding;
+                            const int f2Y = fY - padding;
+                            const int f2W = fW + (padding * 2);
+                            const int f2H = fH + (padding * 2);
+
+                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
+                            mFocusArea->SetVisible(true);
                         });
 
     mClickId = mButton->AddOnToggleFunction([this](bool checked)

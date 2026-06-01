@@ -34,7 +34,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
                        {
                            // FOCUS
                            const auto panel = HUD->GetPanelTurnControl();
-                           const int padding = 10;
+                           const int padding = 5;
                            const int fX = panel->GetX() - padding;
                            const int fY = panel->GetY() - padding;
                            const int fW = panel->GetWidth() + (padding * 2);
@@ -48,7 +48,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
                        {
                            // FOCUS
                            const auto panel = HUD->GetPanelSelectedObject();
-                           const int padding = 10;
+                           const int padding = 5;
                            const int fX = panel->GetX();
                            const int fY = panel->GetY();
                            const int fW = panel->GetWidth() + padding;
