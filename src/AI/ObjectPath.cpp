@@ -94,15 +94,13 @@ bool ObjectPath::Start()
     if(mState != READY)
         return false;
 
-    if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
+    // center camera over target destination in the meanwhile
+    if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
+       mScreen->GetGame()->IsAutoUnitCameraEnabled())
     {
-        // center camera over target destination in the meanwhile
-        if(mLocal)
-        {
-            const float multSpeed = 70.f;
-            const float speedCam = mObj->GetSpeed() * multSpeed;
-            mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
-        }
+        const float multSpeed = 70.f;
+        const float speedCam = mObj->GetSpeed() * multSpeed;
+        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
     }
 
     mNextCell = 1;
@@ -112,7 +110,8 @@ bool ObjectPath::Start()
 
 void ObjectPath::InstantAbort()
 {
-    if(mLocal)
+    if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
+       mScreen->GetGame()->IsAutoUnitCameraEnabled())
         mScreen->StopCameraMove();
 
     mState = ABORTED;
@@ -236,7 +235,8 @@ bool ObjectPath::Fail()
     else
         mState = FAILED;
 
-    if(mLocal)
+    if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
+       mScreen->GetGame()->IsAutoUnitCameraEnabled())
         mScreen->StopCameraMove();
 
     return false;

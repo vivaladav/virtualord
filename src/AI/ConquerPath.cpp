@@ -62,7 +62,7 @@ bool ConquerPath::Start()
     mNextCell = 0;
 
     // center camera over target destination in the meanwhile
-    if(mLocal)
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
     {
         const float multSpeed = 25.f;
         const float speedCam = mUnit->GetSpeed() * multSpeed;
@@ -81,7 +81,7 @@ void ConquerPath::Abort()
         mState = ABORTING;
     else
     {
-        if(mLocal)
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
             mScreen->StopCameraMove();
 
         mState = ABORTED;
@@ -103,7 +103,7 @@ void ConquerPath::InstantAbort()
     if(mOverlay)
         mOverlay->ClearPath();
 
-    if(mLocal)
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
         mScreen->StopCameraMove();
 
     // set new state
@@ -383,7 +383,7 @@ bool ConquerPath::Fail()
     if(HasStarted())
         mScreen->SetObjectActionFailed(mUnit);
 
-    if(mLocal)
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
         mScreen->StopCameraMove();
 
     mState = FAILED;

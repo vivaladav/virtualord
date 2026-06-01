@@ -366,7 +366,7 @@ bool WallBuildPath::Start()
     mNextCell = 0;
 
     // center camera over target destination in the meanwhile
-    if(mLocal)
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
     {
         const float multSpeed = 20.f;
         const float speedCam = mUnit->GetSpeed() * multSpeed;
@@ -384,7 +384,7 @@ void WallBuildPath::Abort()
         mState = ABORTING;
     else
     {
-        if(mLocal)
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
             mScreen->StopCameraMove();
 
         mState = ABORTED;
@@ -409,7 +409,7 @@ void WallBuildPath::InstantAbort()
     if(mOverlay)
         mOverlay->ClearPath();
 
-    if(mLocal)
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
         mScreen->StopCameraMove();
 
     // set new state

@@ -122,6 +122,8 @@ public:
     void SetMapScrollingConstant(bool val);
     bool IsAutoEndTurnEnabled() const;
     void SetAutoEndTurn(bool val);
+    bool IsAutoUnitCameraEnabled() const;
+    void SetAutoUnitCamera(bool val);
     bool IsTutorialEnabled() const;
     void SetTutorialEnabled(bool val);
 
@@ -191,6 +193,7 @@ private:
     bool mMapScrollingOnEdges = true;
     bool mMapScrollingConstSpeed = false;
     bool mAutoEndTurn = true;
+    bool mAutoUnitCamera = true;
     bool mTutorialEnabled = true;
 
     unsigned char mClearR = 0;
@@ -281,6 +284,9 @@ inline void Game::SetAutoEndTurn(bool val)
         NotifyOnSettingsChanged();
     }
 }
+
+inline bool Game::IsAutoUnitCameraEnabled() const { return mAutoUnitCamera; }
+inline void Game::SetAutoUnitCamera(bool val) { mAutoUnitCamera = val; }
 
 inline bool Game::IsTutorialEnabled() const { return mTutorialEnabled; }
 inline void Game::SetTutorialEnabled(bool val) { mTutorialEnabled = val; }
