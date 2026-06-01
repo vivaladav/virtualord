@@ -111,6 +111,24 @@ void StepGameMoveCamera::Move(int deltaX, int deltaY)
             multY = std::fabs(static_cast<float>(deltaY) / static_cast<float>(deltaX));
     }
 
+    // normalize multiplier values to avoid spikes of speed
+    if(multX > multY)
+    {
+        if(multX > 1.f)
+        {
+            multY /= multX;
+            multX = 1.f;
+        }
+    }
+    else if(multY > multX)
+    {
+        if(multY > 1.f)
+        {
+            multX /= multY;
+            multY = 1.f;
+        }
+    }
+
     // X
     mMovingX = true;
 

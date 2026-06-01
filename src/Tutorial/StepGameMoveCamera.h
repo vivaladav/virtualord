@@ -15,7 +15,7 @@ class PanelClickFilter;
 class StepGameMoveCamera : public TutorialStep
 {
 public:
-    StepGameMoveCamera(int deltaX, int deltaY, float speed = 400.f);
+    StepGameMoveCamera(int deltaX, int deltaY, float speed = 500.f);
     ~StepGameMoveCamera();
 
     void OnStart() override;
