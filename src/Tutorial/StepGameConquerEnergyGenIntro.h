@@ -2,6 +2,8 @@
 
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <sgl/core/Point.h>
+
 namespace game
 {
 
@@ -11,7 +13,7 @@ class GameObject;
 class StepGameConquerEnergyGenIntro : public TutorialInfoStep
 {
 public:
-    StepGameConquerEnergyGenIntro(const GameObject * gen);
+    StepGameConquerEnergyGenIntro(const GameObject * gen, const sgl::core::Pointd2D & p0);
     ~StepGameConquerEnergyGenIntro();
 
 private:

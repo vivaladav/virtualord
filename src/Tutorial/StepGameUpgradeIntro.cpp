@@ -11,7 +11,8 @@
 namespace game
 {
 
-StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const char * text1)
+StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const char * text1,
+                                           const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(550, 175)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
@@ -26,7 +27,7 @@ StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const cha
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(900, 250);
+    info->SetPosition(p0.x, p0.y);
 
     info->AddInfoEntry(sm->GetCString(text1), 8.f, true, false);
 

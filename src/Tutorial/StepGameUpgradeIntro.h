@@ -2,6 +2,8 @@
 
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <sgl/core/Point.h>
+
 namespace game
 {
 
@@ -11,7 +13,8 @@ class PanelObjectActions;
 class StepGameUpgradeIntro : public TutorialInfoStep
 {
 public:
-    StepGameUpgradeIntro(PanelObjectActions * panel, const char * text1);
+    StepGameUpgradeIntro(PanelObjectActions * panel, const char * text1,
+                         const sgl::core::Pointd2D & p0);
     ~StepGameUpgradeIntro();
 
 private:

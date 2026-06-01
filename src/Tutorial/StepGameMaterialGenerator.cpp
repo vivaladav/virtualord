@@ -12,7 +12,8 @@
 namespace game
 {
 
-StepGameMaterialGenerator::StepGameMaterialGenerator(const GameObject * materialGen)
+StepGameMaterialGenerator::StepGameMaterialGenerator(const GameObject * materialGen,
+                                                     const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(700, 300)
     , mFocusArea(new FocusArea)
 {
@@ -32,7 +33,7 @@ StepGameMaterialGenerator::StepGameMaterialGenerator(const GameObject * material
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1150, 350);
+    info->SetPosition(p0.x, p0.y);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_MAT_GEN_1"), 9.f, true, false);
     info->AddInfoEntry(sm->GetCString("TUT_GAME_CONQUER_MAT_GEN_2"), 10.f, true, false, [this]
