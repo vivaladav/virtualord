@@ -97,9 +97,16 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT FIRST GENERATOR
-    AddStep([]
+    AddStep([game]
             {
-                const core::Pointd2D p0(700, 400);
+                core::Pointd2D p0(700, 400);
+
+                if(game->IsAutoUnitCameraEnabled())
+                {
+                    p0.x = 900;
+                    p0.y = 250;
+                }
+
                 return new StepGameConnectStructIntro(p0);
             });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
@@ -127,26 +134,35 @@ TutorialGame2::TutorialGame2(Screen * screen)
                     target = Cell2D(13, 7);
                 }
 
+                if(game->IsAutoUnitCameraEnabled())
+                    p0.y = 250;
+
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
             });
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indUnit1);
-                const core::Pointd2D p0(650, 250);
+                core::Pointd2D p0(500, 250);
+
+                if(mFirstGenConqueredIsEnergy && game->IsAutoUnitCameraEnabled())
+                    p0.x = 1000;
 
                 const Cell2D target = mFirstGenConqueredIsEnergy ?
                                       Cell2D(6, 7) : Cell2D(6, 7);
 
                 return new StepGameConquerCellsEnd(game, isoMap, unit, target, p0);
             });
-    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND GENERATOR
-    AddStep([]
+    AddStep([game]
             {
-                const core::Pointd2D p0(700, 400);
+                core::Pointd2D p0(700, 400);
+
+                if(game->IsAutoUnitCameraEnabled())
+                    p0.y = 200;
+
                 return new StepGameConnectStructIntro(p0, "TUT_GAME_CONNECT_STRUCT_1");
             });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
@@ -168,6 +184,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
                     target = Cell2D(6, 8);
                 }
 
+                if(game->IsAutoUnitCameraEnabled())
+                    p0.y = 200;
+
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
             });
     AddStep([this, local, isoMap, game]
@@ -187,7 +206,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
     // CONQUER SECOND GENERATOR
-    AddStep([this]
+    AddStep([this, game]
             {
                 const GameObject * gen;
                 const char * text;
@@ -206,6 +225,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
                     p0.x = 1100;
                 }
 
+                if(game->IsAutoUnitCameraEnabled())
+                    p0.y = 200;
+
                 return new StepGameConquerGeneratorIntro(gen, text, p0);
             });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
@@ -214,7 +236,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const auto unit = local->GetUnit(indUnit1);
                 const GameObject * gen = mFirstGenConqueredIsEnergy ?
                                          GetObjectInCell(cellMatGen1) : GetObjectInCell(cellEneGen1);
-                const sgl::core::Pointd2D p0(550, 200);
+                const sgl::core::Pointd2D p0(550, 250);
 
                 return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
             });
