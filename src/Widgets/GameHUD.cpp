@@ -483,14 +483,13 @@ void GameHUD::ShowDialogExit()
 
     auto tutMan = mScreen->GetGame()->GetTutorialManager();
 
-    auto buttons = DialogExit::BUTTONS_EXIT;
+    auto buttons = DialogExit::BUTTONS_EXIT_GAME;
 
     if(tutMan->HasActiveTutorial())
     {
         tutMan->SetTutorialPause(true);
 
-        buttons = static_cast<DialogExit::DialogButtons>(DialogExit::BTN_MAIN_MENU |
-                                                         DialogExit::BUTTONS_TUTORIAL);
+        buttons = static_cast<DialogExit::DialogButtons>(DialogExit::BUTTONS_TUTORIAL);
     }
 
     mDialogExit = new DialogExit(buttons, mScreen->GetGame(), mScreen);

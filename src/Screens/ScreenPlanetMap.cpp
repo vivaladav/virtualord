@@ -563,15 +563,13 @@ void ScreenPlanetMap::ShowDialogExit()
     auto game = GetGame();
     auto tutMan = game->GetTutorialManager();
 
-    auto buttons = static_cast<DialogExit::DialogButtons>(DialogExit::BTN_MAIN_MENU |
-                                                          DialogExit::BTN_SETTINGS);
+    auto buttons = static_cast<DialogExit::DialogButtons>(DialogExit::BUTTONS_EXIT_PLANET);
 
     if(tutMan->HasActiveTutorial())
     {
         tutMan->SetTutorialPause(true);
 
-        buttons = static_cast<DialogExit::DialogButtons>(DialogExit::BTN_MAIN_MENU |
-                                                         DialogExit::BUTTONS_TUTORIAL);
+        buttons = static_cast<DialogExit::DialogButtons>(DialogExit::BUTTONS_TUTORIAL);
     }
 
     mDialogExit = new DialogExit(buttons, game, this);
