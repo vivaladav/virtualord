@@ -1055,11 +1055,11 @@ void ScreenInitGame::SetupTextures()
             { 0, 0, 604, 70 },
             { 0, 71, 604, 90 },
             // BUTTON WISHLIST
-            { 0, 161, 300, 44 },
-            { 0, 206, 300, 44 },
-            { 301, 206, 300, 44 },
+            { 0, 162, 350, 44 },
+            { 0, 207, 350, 44 },
+            { 0, 252, 300, 44 },
             // ICONS
-            { 301, 161, 32, 24 },
+            { 351, 162, 32, 24 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExit, rects);
