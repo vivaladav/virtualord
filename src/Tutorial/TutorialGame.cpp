@@ -23,6 +23,12 @@ TutorialGame::TutorialGame(Screen * screen, TutorialId tutId)
     , mScreen(dynamic_cast<ScreenGame *>(screen))
 {
     assert(mScreen);
+
+    // store value of current settings and force value of auto unit camera
+    auto game = mScreen->GetGame();
+    mSettingsAutoUnitCam = game->IsAutoUnitCameraEnabled();
+
+    game->SetAutoUnitCamera(true);
 }
 
 TutorialGame::~TutorialGame()
@@ -36,6 +42,9 @@ TutorialGame::~TutorialGame()
     assert(cmc != nullptr);
 
     cmc->SetEnabled(true);
+
+    // restore auto unit camera value
+    game->SetAutoUnitCamera(mSettingsAutoUnitCam);
 
     // reset default action for units that have it set to IDLE
     const auto local = game->GetPlayerByIndex(0);

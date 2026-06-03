@@ -81,10 +81,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
             return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
         });
     AddStep([panelActions]
-            {
-                return new StepGameBuildUnitStart(panelActions,
-                                                  PanelObjectActions::BTN_BUILD_UNIT_BASE);
-            });
+        {
+            return new StepGameBuildUnitStart(panelActions, PanelObjectActions::BTN_BUILD_UNIT_BASE);
+        });
     AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
@@ -109,16 +108,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT FIRST GENERATOR
-    AddStep([game]
+    AddStep([]
             {
-                core::Pointd2D p0(700, 400);
-
-                if(game->IsAutoUnitCameraEnabled())
-                {
-                    p0.x = 900;
-                    p0.y = 250;
-                }
-
+                const core::Pointd2D p0(900, 250);
                 return new StepGameConnectStructIntro(p0);
             });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
@@ -128,7 +120,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const GameObject * gen1 = GetObjectInCell(cellEneGen1);
                 const GameObject * gen2 = GetObjectInCell(cellMatGen1);
 
-                core::Pointd2D p0(0, 400);
+                core::Pointd2D p0(0, 250);
                 Cell2D target;
 
                 // conquered energy generator first
@@ -146,61 +138,50 @@ TutorialGame2::TutorialGame2(Screen * screen)
                     target = Cell2D(13, 7);
                 }
 
-                if(game->IsAutoUnitCameraEnabled())
-                    p0.y = 250;
-
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
             });
     AddStep([this, local, isoMap, game]
-            {
-                const auto unit = local->GetUnit(indWorker1);
-                core::Pointd2D p0(500, 250);
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            core::Pointd2D p0(500, 250);
 
-                if(mFirstGenConqueredIsEnergy && game->IsAutoUnitCameraEnabled())
-                    p0.x = 1000;
+            if(mFirstGenConqueredIsEnergy)
+                p0.x = 1000;
 
-                const Cell2D target = mFirstGenConqueredIsEnergy ?
-                                      Cell2D(6, 7) : Cell2D(6, 7);
+            const Cell2D target = mFirstGenConqueredIsEnergy ? Cell2D(6, 7) : Cell2D(6, 7);
 
-                return new StepGameConquerCellsEnd(game, isoMap, unit, target, p0);
-            });
+            return new StepGameConquerCellsEnd(game, isoMap, unit, target, p0);
+        });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND GENERATOR
     AddStep([game]
-            {
-                core::Pointd2D p0(700, 400);
-
-                if(game->IsAutoUnitCameraEnabled())
-                    p0.y = 200;
-
-                return new StepGameConnectStructIntro(p0, "TUT_GAME_CONNECT_STRUCT_1");
-            });
+        {
+            core::Pointd2D p0(700, 200);
+            return new StepGameConnectStructIntro(p0, "TUT_GAME_CONNECT_STRUCT_1");
+        });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     AddStep([this, isoMap, game]
+        {
+            const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+
+            core::Pointd2D p0(0, 200);
+            Cell2D target;
+
+            if(mFirstGenConqueredIsEnergy)
             {
-                const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+                p0.x = 400;
+                target = Cell2D(7, 7);
+            }
+            else
+            {
+                p0.x = 1100;
+                target = Cell2D(6, 8);
+            }
 
-                core::Pointd2D p0(0, 400);
-                Cell2D target;
-
-                if(mFirstGenConqueredIsEnergy)
-                {
-                    p0.x = 400;
-                    target = Cell2D(7, 7);
-                }
-                else
-                {
-                    p0.x = 1100;
-                    target = Cell2D(6, 8);
-                }
-
-                if(game->IsAutoUnitCameraEnabled())
-                    p0.y = 200;
-
-                return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
-            });
+            return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+        });
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indWorker1);
@@ -219,29 +200,26 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
     // CONQUER SECOND GENERATOR
     AddStep([this, game]
+        {
+            const GameObject * gen;
+            const char * text;
+            core::Pointd2D p0(0, 200);
+
+            if(mFirstGenConqueredIsEnergy)
             {
-                const GameObject * gen;
-                const char * text;
-                core::Pointd2D p0(0, 400);
+                gen = GetObjectInCell(cellMatGen1);
+                text = "TUT_GAME_CONQUER_MAT_GEN";
+                p0.x = 400;
+            }
+            else
+            {
+                gen = GetObjectInCell(cellEneGen1);
+                text = "TUT_GAME_CONQUER_ENE_GEN";
+                p0.x = 1100;
+            }
 
-                if(mFirstGenConqueredIsEnergy)
-                {
-                    gen = GetObjectInCell(cellMatGen1);
-                    text = "TUT_GAME_CONQUER_MAT_GEN";
-                    p0.x = 400;
-                }
-                else
-                {
-                    gen = GetObjectInCell(cellEneGen1);
-                    text = "TUT_GAME_CONQUER_ENE_GEN";
-                    p0.x = 1100;
-                }
-
-                if(game->IsAutoUnitCameraEnabled())
-                    p0.y = 200;
-
-                return new StepGameConquerGeneratorIntro(gen, text, p0);
-            });
+            return new StepGameConquerGeneratorIntro(gen, text, p0);
+        });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
     AddStep([this, local, isoMap, game]
             {
@@ -263,24 +241,19 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
-            {
-                const auto unit = local->GetUnit(indWorker1);
-                core::Pointd2D p0(900, 200);
-
-                if(game->IsAutoUnitCameraEnabled())
-                    p0.y = 650;
-
-                return new StepGameBuildTowerEnd(isoMap, unit, cellBarracks, p0);
-            });
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(900, 650);
+            return new StepGameBuildTowerEnd(isoMap, unit, cellBarracks, p0);
+        });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD SOLDIER
     AddStep([this, game, isoMap]
-            {
-                const core::Pointd2D p0(500, 200);
-                const GameObject * barracks = GetObjectInCell(cellBarracks);
-
-                return new StepGameSelectObject(game, isoMap, barracks, "TUT_GAME_BARRACKS_1", p0);
-            });
+        {
+            const core::Pointd2D p0(500, 200);
+            const GameObject * barracks = GetObjectInCell(cellBarracks);
+            return new StepGameSelectObject(game, isoMap, barracks, "TUT_GAME_BARRACKS_1", p0);
+        });
     AddStep([panelActions]
         {
             return new StepGameBuildUnitStart(panelActions,

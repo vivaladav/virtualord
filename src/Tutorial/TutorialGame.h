@@ -35,6 +35,8 @@ protected:
 
 private:
     ScreenGame * mScreen = nullptr;
+
+    bool mSettingsAutoUnitCam;
 };
 
 inline ScreenGame * TutorialGame::GetScreen() const { return mScreen; }
