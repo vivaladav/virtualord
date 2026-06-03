@@ -13,7 +13,7 @@ namespace game
 {
 
 StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit * unit,
-                                             const Cell2D & cell)
+                                             const Cell2D & cell, const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(600, 150)
     , mFocusArea(new IsoFocusArea(isoMap))
     , mUnit(unit)
@@ -27,7 +27,7 @@ StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit *
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(900, 250);
+    info->SetPosition(p0.x, p0.y);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_5"), 0.f, false, false,
                          [this, isoMap, unit]
@@ -67,7 +67,10 @@ void StepGameBuildTowerEnd::Update(float)
     }
     else
     {
-        if(mUnit->GetCurrentAction() == GameObjectActionType::BUILD_STRUCTURE)
+        const GameObjectActionType currAct = mUnit->GetCurrentAction();
+
+        if(currAct == BUILD_STRUCTURE || currAct == MOVE
+            )
         {
             mFocusArea->SetBlinking(false);
             mFocusArea->SetVisible(false);

@@ -11,6 +11,8 @@
 #include "Tutorial/StepGameIntro2.h"
 #include "Tutorial/StepGameBaseBuildUnitStart.h"
 #include "Tutorial/StepGameBaseBuildUnitEnd.h"
+#include "Tutorial/StepGameBuildStructIntro.h"
+#include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
@@ -87,7 +89,6 @@ TutorialGame2::TutorialGame2(Screen * screen)
             const GameObject * unit = local->GetSelectedObject();
             const GameObject * gen1 = GetObjectInCell(cellEneGen1);
             const GameObject * gen2 = GetObjectInCell(cellMatGen1);
-
             return new StepGameConquerStructChoice(game, unit, gen1, gen2, isoMap);
         });
     AddStep([] { return new StepDelay(0.5f); });
@@ -237,12 +238,37 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const GameObject * gen = mFirstGenConqueredIsEnergy ?
                                          GetObjectInCell(cellMatGen1) : GetObjectInCell(cellEneGen1);
                 const sgl::core::Pointd2D p0(550, 250);
-
                 return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
             });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // BUILD BARRACKS
+    AddStep([panelActions]
+            {
+                const core::Pointd2D p0(1000, 625);
+                return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_BARRACKS_1", p0);
+            });
+    AddStep([hud] { return new StepGameBaseBuildUnitEnd(hud); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indUnit1);
+                core::Pointd2D p0(900, 200);
+                const Cell2D target(8, 9);
+
+                if(game->IsAutoUnitCameraEnabled())
+                    p0.y = 650;
+
+                return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD SOLDIER
+
+    // MOVE SOLDIER NEAR TREES
+
+    // ATTACK TREES WITH SOLDIER
+
 }
 
 } // namespace game

@@ -4,6 +4,8 @@
 #include "Player.h"
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <sgl/core/Point.h>
+
 namespace game
 {
 
@@ -15,7 +17,8 @@ class Unit;
 class StepGameBuildTowerEnd : public TutorialInfoStep
 {
 public:
-    StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit * unit, const Cell2D & cell);
+    StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit * unit, const Cell2D & cell,
+                          const sgl::core::Pointd2D & p0);
     ~StepGameBuildTowerEnd();
 
     void Update(float delta) override;

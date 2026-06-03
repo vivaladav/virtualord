@@ -317,7 +317,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([this, local, isoMap]
         {
             const auto unit = local->GetUnit(indUnit1);
-            return new StepGameBuildTowerEnd(isoMap, unit, cellDT1);
+            const core::Pointd2D p0(900, 250);
+            return new StepGameBuildTowerEnd(isoMap, unit, cellDT1, p0);
         });
     AddStep([this]
             {
@@ -512,7 +513,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([this, local, isoMap]
         {
             const auto unit = local->GetUnit(indUnit2);
-            return new StepGameBuildTowerEnd(isoMap, unit, cellDT2);
+            const core::Pointd2D p0(900, 250);
+            return new StepGameBuildTowerEnd(isoMap, unit, cellDT2, p0);
         });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
