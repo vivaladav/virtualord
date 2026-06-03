@@ -335,8 +335,8 @@ add_executable(
     src/Tutorial/StepGamePrimaryMissionGoal.cpp
     src/Tutorial/StepGameQuickUnitButton.h
     src/Tutorial/StepGameQuickUnitButton.cpp
-    src/Tutorial/StepGameSelectBase.h
-    src/Tutorial/StepGameSelectBase.cpp
+    src/Tutorial/StepGameSelectObject.h
+    src/Tutorial/StepGameSelectObject.cpp
     src/Tutorial/StepGameSetObjectAttackMode.h
     src/Tutorial/StepGameSetObjectAttackMode.cpp
     src/Tutorial/StepGameSetObjectMaxHealth.h

@@ -21,7 +21,7 @@
 #include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
-#include "Tutorial/StepGameSelectBase.h"
+#include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
 #include "Tutorial/StepGameUnit.h"
@@ -72,7 +72,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([] { return new StepGameIntro2; });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD FIRST UNIT
-    AddStep([localBase, game, isoMap] { return new StepGameSelectBase(game, isoMap, localBase); });
+    AddStep([localBase, game, isoMap]
+        {
+            const core::Pointd2D p0(500, 200);
+            return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
+        });
     AddStep([panelActions] { return new StepGameBaseBuildUnitStart(panelActions); });
     AddStep([hud] { return new StepGameBaseBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
