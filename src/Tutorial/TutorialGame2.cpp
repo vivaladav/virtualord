@@ -21,6 +21,7 @@
 #include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
+#include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
@@ -273,7 +274,13 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE SOLDIER NEAR TREES
-
+    AddStep([this, local, isoMap]
+        {
+            const auto unit = local->GetUnit(indSoldier1);
+            const Cell2D target(15, 11);
+            const core::Pointd2D p0(1100, 650);
+            return new StepGameMoveUnitSimple(unit, isoMap, target, p0);
+        });
     // ATTACK TREES WITH SOLDIER
 
 }

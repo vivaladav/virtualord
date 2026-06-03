@@ -56,7 +56,7 @@ StepGameMoveUnit::StepGameMoveUnit(const Game * game, const Player * p, const Is
 
                             // CLICK FILTER
                             const int marginW = 5;
-                            const int marginH = 10;
+                            const int marginH = 5;
                             const sgl::core::Pointd2D pos = isoMap->GetCellPosition(destR, destC);
                             const int objX = pos.x - marginW;
                             const int objY = pos.y - marginH;
