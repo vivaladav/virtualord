@@ -7,6 +7,12 @@
 
 #include <cstdlib>
 
+namespace
+{
+constexpr float minProb = 1.f;
+constexpr float maxProb = 100.f;
+}
+
 namespace game
 {
 
@@ -82,30 +88,28 @@ bool Weapon::IsTargetInRange(const GameObject * obj) const
 
 float Weapon::GetProbabilityHit(const GameObject * target) const
 {
-    const int maxDist = mRange * 2;
     const int dist = mGameMap->Distance(mOwner, target);
-    const int targetSize = target->GetRows() * target->GetCols();
+    const float targetSize = target->GetRows() * target->GetCols();
 
-    const float maxProb = 100.f;
     // base probability is higher when closer to target up to 100% if next to it
-    const float baseProb = (maxDist - dist + 1) * maxProb / static_cast<float>(maxDist);
-    // fixed probability is part of base that's at least 50% and higher as target gets bigger
-    const float fixedW = 0.5f + (0.5f - (0.5f / static_cast<float>(targetSize)));
+    const float baseProb = (mRange - dist + 1) * maxProb / static_cast<float>(mRange);
+    // fixed probability is part of base that's at least (baseW0*10)% and higher as target gets bigger
+    const float baseW0 = 0.6f;
+    const float fixedW0 = 1.f - baseW0;
+    const float fixedW = baseW0 + (fixedW0 - (fixedW0 / targetSize));
     const float fixedProb = baseProb * fixedW;
-
-    const float variableProb = (baseProb - fixedProb) * mAttributes.at(OBJ_ATT_ATTACK_ACCURACY) / MAX_STAT_FVAL;
-    const float finalProb = fixedProb + variableProb;
+    // variable probability is based on ACCURACY attribute
+    const float varProb = (baseProb - fixedProb) * mAttributes.at(OBJ_ATT_ATTACK_ACCURACY) / MAX_STAT_FVAL;
+    // final probability is just a sum of fixed  and variable
+    const float finalProb = fixedProb + varProb;
 
     // bonus/malus based on attack mode
     float bonusProb = GetBonusHitOnAttackMode(finalProb);
     const float retProb = finalProb + bonusProb;
 
     // clamp
-    if(retProb < 0.f)
-    {
-        const float minProb = 1.f;
+    if(retProb < minProb)
         return minProb;
-    }
     else if(retProb > maxProb)
         return maxProb;
     else
@@ -140,13 +144,10 @@ float Weapon::GetProbabilityFatalHit(const GameObject * target) const
     const float retProb = finalProb + bonusProb;
 
     // clamp
-    const float maxProb = 100.f;
+    const float minProbFatal = 0.1f;
 
-    if(retProb < 0.f)
-    {
-        const float minProb = 0.1f;
-        return minProb;
-    }
+    if(retProb < minProbFatal)
+        return minProbFatal;
     else if(retProb > maxProb)
         return maxProb;
     else
@@ -205,7 +206,7 @@ float Weapon::GetBonusHitOnAttackMode(float prob) const
 {
     if(mAttackMode == ATT_QUICK_SHOT)
     {
-        const float bonus = -0.05;
+        const float bonus = 0.f;
         return prob * bonus;
     }
     else if(mAttackMode == ATT_BURST_SHOT)
@@ -218,8 +219,9 @@ float Weapon::GetBonusHitOnAttackMode(float prob) const
         const float bonus = 0.2;
         return prob * bonus;
     }
+    // set hit probability to MAX on perfect shots
     else if(mAttackMode == ATT_PERFECT_SHOT)
-        return 100.f;
+        return maxProb;
     else
         return 0.f;
 }
@@ -241,6 +243,9 @@ float Weapon::GetBonusFatalHitOnAttackMode(float prob) const
         const float bonus = 0.25;
         return prob * bonus;
     }
+    // set fatal hit probability to MIN on perfect shots
+    else if(mAttackMode == ATT_PERFECT_SHOT)
+        return -prob;
     else
         return 0.f;
 }
