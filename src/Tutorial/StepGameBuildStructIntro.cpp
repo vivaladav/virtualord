@@ -1,4 +1,4 @@
-#include "Tutorial/StepGameBuildTowerIntro.h"
+#include "Tutorial/StepGameBuildStructIntro.h"
 
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -11,8 +11,8 @@
 namespace game
 {
 
-StepGameBuildTowerIntro::StepGameBuildTowerIntro(PanelObjectActions * panel, const char * textIntro,
-                                                 const sgl::core::Pointd2D & p0)
+StepGameBuildStructIntro::StepGameBuildStructIntro(PanelObjectActions * panel, const char * textIntro,
+                                                   const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(570, 180)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
@@ -61,7 +61,7 @@ StepGameBuildTowerIntro::StepGameBuildTowerIntro(PanelObjectActions * panel, con
     });
 }
 
-StepGameBuildTowerIntro::~StepGameBuildTowerIntro()
+StepGameBuildStructIntro::~StepGameBuildStructIntro()
 {
     mPanelActions->RemoveButtonFunction(PanelObjectActions::BTN_BUILD_STRUCT, mClickId);
 

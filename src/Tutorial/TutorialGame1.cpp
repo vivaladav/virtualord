@@ -23,7 +23,7 @@
 #include "Tutorial/StepGameBaseBuildUnitStart.h"
 #include "Tutorial/StepGameBuildTower.h"
 #include "Tutorial/StepGameBuildTowerEnd.h"
-#include "Tutorial/StepGameBuildTowerIntro.h"
+#include "Tutorial/StepGameBuildStructIntro.h"
 #include "Tutorial/StepGameClearSelection.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCells.h"
@@ -310,7 +310,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
         {
             const core::Pointd2D p0(900, 250);
 
-            return new StepGameBuildTowerIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+            return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
         });
     AddStep([hud] { return new StepGameBuildTower(hud); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -505,7 +505,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             {
                 const core::Pointd2D p0(900, 250);
 
-                return new StepGameBuildTowerIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+                return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
             });
     AddStep([hud] { return new StepGameBuildTower(hud); });
     AddStep([] { return new StepDelay(0.5f); });
