@@ -11,7 +11,8 @@
 namespace game
 {
 
-StepGameBuildTowerIntro::StepGameBuildTowerIntro(PanelObjectActions * panel)
+StepGameBuildTowerIntro::StepGameBuildTowerIntro(PanelObjectActions * panel, const char * textIntro,
+                                                 const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(570, 180)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
@@ -26,9 +27,9 @@ StepGameBuildTowerIntro::StepGameBuildTowerIntro(PanelObjectActions * panel)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(900, 250);
+    info->SetPosition(p0.x, p0.y);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_1"), 7.f, true, false);
+    info->AddInfoEntry(sm->GetCString(textIntro), 7.f, true, false);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_2"), 0.f, false, false, [this, panel]
                         {

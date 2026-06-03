@@ -306,7 +306,12 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER 1
-    AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
+    AddStep([panelActions]
+        {
+            const core::Pointd2D p0(900, 250);
+
+            return new StepGameBuildTowerIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+        });
     AddStep([hud] { return new StepGameBuildTower(hud); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -496,7 +501,12 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER
-    AddStep([panelActions] { return new StepGameBuildTowerIntro(panelActions); });
+    AddStep([panelActions]
+            {
+                const core::Pointd2D p0(900, 250);
+
+                return new StepGameBuildTowerIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+            });
     AddStep([hud] { return new StepGameBuildTower(hud); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
