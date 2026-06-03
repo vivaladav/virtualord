@@ -1,4 +1,4 @@
-#include "Tutorial/StepGameBaseBuildUnitEnd.h"
+#include "Tutorial/StepGameBuildUnitEnd.h"
 
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/GameHUD.h"
@@ -13,7 +13,7 @@
 namespace game
 {
 
-StepGameBaseBuildUnitEnd::StepGameBaseBuildUnitEnd(GameHUD * HUD)
+StepGameBuildUnitEnd::StepGameBuildUnitEnd(GameHUD * HUD)
     : TutorialInfoStep(500, 150)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
@@ -55,12 +55,12 @@ StepGameBaseBuildUnitEnd::StepGameBaseBuildUnitEnd(GameHUD * HUD)
                         });
 }
 
-StepGameBaseBuildUnitEnd::~StepGameBaseBuildUnitEnd()
+StepGameBuildUnitEnd::~StepGameBuildUnitEnd()
 {
     delete mFocusArea;
 }
 
-void StepGameBaseBuildUnitEnd::OnStart()
+void StepGameBuildUnitEnd::OnStart()
 {
     TutorialInfoStep::OnStart();
 
@@ -71,7 +71,7 @@ void StepGameBaseBuildUnitEnd::OnStart()
     stage->MoveChildToFront(GetPanelInfo());
 }
 
-void StepGameBaseBuildUnitEnd::OnEnd()
+void StepGameBuildUnitEnd::OnEnd()
 {
     auto dialog = mHUD->GetDialogNewElement();
 

@@ -18,12 +18,12 @@
 #include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBase.h"
 #include "Tutorial/StepGameBaseBuildUnit.h"
-#include "Tutorial/StepGameBaseBuildUnitEnd.h"
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
-#include "Tutorial/StepGameBaseBuildUnitStart.h"
+#include "Tutorial/StepGameBuildStructIntro.h"
 #include "Tutorial/StepGameBuildTower.h"
 #include "Tutorial/StepGameBuildTowerEnd.h"
-#include "Tutorial/StepGameBuildStructIntro.h"
+#include "Tutorial/StepGameBuildUnitEnd.h"
+#include "Tutorial/StepGameBuildUnitStart.h"
 #include "Tutorial/StepGameClearSelection.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCells.h"
@@ -76,6 +76,7 @@
 #include "Tutorial/StepGameWallBuildStart.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
+#include "Widgets/PanelObjectActions.h"
 
 namespace
 {
@@ -403,8 +404,12 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(500, 200);
                 return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
             });
-    AddStep([panelActions] { return new StepGameBaseBuildUnitStart(panelActions); });
-    AddStep([hud] { return new StepGameBaseBuildUnitEnd(hud); });
+    AddStep([panelActions]
+            {
+                return new StepGameBuildUnitStart(panelActions,
+                                                  PanelObjectActions::BTN_BUILD_UNIT_BASE);
+            });
+    AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
     AddStep([local, game, isoMap]

@@ -1,4 +1,4 @@
-#include "Tutorial/StepGameBaseBuildUnitStart.h"
+#include "Tutorial/StepGameBuildUnitStart.h"
 
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -11,10 +11,12 @@
 namespace game
 {
 
-StepGameBaseBuildUnitStart::StepGameBaseBuildUnitStart(PanelObjectActions * panel)
+StepGameBuildUnitStart::StepGameBuildUnitStart(PanelObjectActions * panel,
+                                                       unsigned int buttonId)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
+    , mBtnId(buttonId)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
@@ -28,10 +30,12 @@ StepGameBaseBuildUnitStart::StepGameBaseBuildUnitStart(PanelObjectActions * pane
 
     info->SetPosition(400, 650);
 
+    const auto btnID = static_cast<PanelObjectActions::Button>(mBtnId);
+
     info->AddActionEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_ICON_3"),
-                         0.f, false, false, [this, panel]
+                         0.f, false, false, [this, panel, btnID]
                         {
-                            auto btn = panel->GetButton(PanelObjectActions::BTN_BUILD_UNIT_BASE);
+                            auto btn = panel->GetButton(btnID);
 
                             // CLICK FILTER
                             const int fX = btn->GetScreenX();
@@ -52,15 +56,15 @@ StepGameBaseBuildUnitStart::StepGameBaseBuildUnitStart(PanelObjectActions * pane
                             mFocusArea->SetVisible(true);
                         });
 
-    mClickId = panel->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, [this]
+    mClickId = panel->AddButtonFunction(btnID, [this]
     {
         SetDone();
     });
 }
 
-StepGameBaseBuildUnitStart::~StepGameBaseBuildUnitStart()
+StepGameBuildUnitStart::~StepGameBuildUnitStart()
 {
-    mPanelActions->RemoveButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, mClickId);
+    mPanelActions->RemoveButtonFunction(static_cast<PanelObjectActions::Button>(mBtnId), mClickId);
 
     delete mFocusArea;
 }

@@ -8,16 +8,17 @@ namespace game
 class FocusArea;
 class PanelObjectActions;
 
-class StepGameBaseBuildUnitStart : public TutorialInfoStep
+class StepGameBuildUnitStart : public TutorialInfoStep
 {
 public:
-    StepGameBaseBuildUnitStart(PanelObjectActions * panel);
-    ~StepGameBaseBuildUnitStart();
+    StepGameBuildUnitStart(PanelObjectActions * panel, unsigned int buttonId);
+    ~StepGameBuildUnitStart();
 
 private:
     FocusArea * mFocusArea = nullptr;
     PanelObjectActions * mPanelActions = nullptr;
 
+    unsigned int mBtnId;
     unsigned int mClickId = 0;
 };
 

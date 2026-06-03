@@ -8,11 +8,11 @@ namespace game
 class GameHUD;
 class FocusArea;
 
-class StepGameBaseBuildUnitEnd : public TutorialInfoStep
+class StepGameBuildUnitEnd : public TutorialInfoStep
 {
 public:
-    StepGameBaseBuildUnitEnd(GameHUD * HUD);
-    ~StepGameBaseBuildUnitEnd();
+    StepGameBuildUnitEnd(GameHUD * HUD);
+    ~StepGameBuildUnitEnd();
 
     void OnStart() override;
     void OnEnd() override;
