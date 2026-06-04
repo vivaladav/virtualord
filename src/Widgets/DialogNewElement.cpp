@@ -405,7 +405,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
         btn = new ButtonPanelTab(sm->GetCString("TECHNOLOGY"), this);
         mButtonsStructures->AddButton(btn);
 
-        mButtonsStructures->SetFunctionOnToggle([this](unsigned int ind, bool checked)
+        mButtonsStructures->AddFunctionOnToggle([this](unsigned int ind, bool checked)
                                                 {
                                                     if(!checked)
                                                         return ;

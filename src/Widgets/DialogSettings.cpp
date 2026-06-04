@@ -419,7 +419,7 @@ DialogSettings::DialogSettings(Game * game)
     mButtonsTabs.emplace_back(btn);
     mGroupButtons->AddButton(btn);
 
-    mGroupButtons->SetFunctionOnToggle([this](unsigned int index, bool checked)
+    mGroupButtons->AddFunctionOnToggle([this](unsigned int index, bool checked)
     {
         for(unsigned int i = 0; i < Panel::NUM_PANELS; ++i)
             mPanels[i]->SetVisible(i == index);

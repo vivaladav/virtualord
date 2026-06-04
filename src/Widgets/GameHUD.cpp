@@ -288,7 +288,7 @@ void GameHUD::ShowPanelShotType()
     sgl::sgui::Stage::Instance()->SetFocus();
 
     // change Attack Mode
-    mPanelShotType->SetFunctionOnToggle([this, selObj](unsigned int ind, bool checked)
+    mPanelShotType->AddFunctionOnToggle([this, selObj](unsigned int ind, bool checked)
     {
         if(!checked)
             return ;

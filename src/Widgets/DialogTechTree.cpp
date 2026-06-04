@@ -204,7 +204,7 @@ DialogTechTree::DialogTechTree(Player * player)
     // start from first section
     mButtonsSection->SetButtonChecked(0, true);
 
-    mButtonsSection->SetFunctionOnToggle([this](int idx, bool checked)
+    mButtonsSection->AddFunctionOnToggle([this](int idx, bool checked)
     {
         if(checked)
             UpdateUpgrades(static_cast<UpgradeSections>(idx));

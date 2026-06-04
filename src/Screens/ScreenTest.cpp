@@ -279,7 +279,7 @@ void ScreenTest::TestSGui()
     bgAlignH->SetButtonChecked(0, true);
     bgAlignH->SetPosition(ta->GetX(), ta->GetY() + ta->GetHeight());
 
-    bgAlignH->SetFunctionOnToggle([ta](unsigned int ind, bool checked)
+    bgAlignH->AddFunctionOnToggle([ta](unsigned int ind, bool checked)
     {
        if(checked)
            ta->setTextAlignmentHorizontal(static_cast<TextArea::Alignment>(ind));
@@ -293,7 +293,7 @@ void ScreenTest::TestSGui()
     bgAlignV->SetPosition(ta->GetX() + ta->GetWidth() - bgAlignV->GetWidth(),
                           ta->GetY() + ta->GetHeight());
 
-    bgAlignV->SetFunctionOnToggle([ta](unsigned int ind, bool checked)
+    bgAlignV->AddFunctionOnToggle([ta](unsigned int ind, bool checked)
     {
        if(checked)
            ta->setTextAlignmentVertical(static_cast<TextArea::Alignment>(ind + TextArea::ALIGN_V_TOP));

@@ -283,7 +283,7 @@ PlanetMap::~PlanetMap()
 
 void PlanetMap::SetFunctionOnToggle(const std::function<void(unsigned int, bool)> & f)
 {
-    mButtonsMission->SetFunctionOnToggle(f);
+    mButtonsMission->AddFunctionOnToggle(f);
 }
 
 void PlanetMap::SetButtonEnabled(unsigned int index, bool enabled)
