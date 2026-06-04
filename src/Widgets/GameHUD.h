@@ -69,6 +69,7 @@ public:
     void ShowPanelObjectActions(GameObject * obj);
     void HidePanelSelfDestruction();
     void ShowPanelSelfDestruction();
+    PanelShotType * GetPanelShotType() const;
     void HidePanelShotType();
     void ShowPanelShotType();
 
@@ -203,6 +204,7 @@ inline DialogMissionGoals * GameHUD::GetDialogMissionGoals() const { return mDia
 inline DialogNewElement * GameHUD::GetDialogNewElement() { return mDialogNewElement; }
 
 inline PanelObjectActions * GameHUD::GetPanelObjectActions() const { return mPanelObjActions; }
+inline PanelShotType * GameHUD::GetPanelShotType() const { return mPanelShotType; }
 
 inline const PanelSelectedObject * GameHUD::GetPanelSelectedObject() const { return mPanelSelObj; }
 

@@ -25,7 +25,10 @@
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
+#include "Tutorial/StepGameSingleInfo.h"
 #include "Tutorial/StepGameUnit.h"
+#include "Tutorial/StepGameUnitAttackBurst.h"
+#include "Tutorial/StepGameUnitAttackIcon.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/TutorialConstants.h"
@@ -282,7 +285,24 @@ TutorialGame2::TutorialGame2(Screen * screen)
             return new StepGameMoveUnitSimple(unit, isoMap, target, p0);
         });
     // ATTACK TREES WITH SOLDIER
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+    AddStep([]
+        {
+            const core::Pointd2D p0(400, 600);
+            return new StepGameSingleInfo(p0, "TUT_GAME_ATTACK_1");
+        });
+    AddStep([panelActions]
+        {
+            const core::Pointd2D p0(450, 650);
+            return new StepGameUnitAttackIcon(panelActions, p0);
+        });
+    AddStep([hud]
+        {
+            const core::Pointd2D p0(150, 600);
 
+            auto panelShot = hud->GetPanelShotType();
+            return new StepGameUnitAttackBurst(panelShot, p0);
+        });
 }
 
 } // namespace game

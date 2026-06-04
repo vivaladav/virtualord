@@ -347,6 +347,8 @@ add_executable(
     src/Tutorial/StepGameSetSelectionActiveAction.cpp
     src/Tutorial/StepGameSetSelectionDefaultAction.h
     src/Tutorial/StepGameSetSelectionDefaultAction.cpp
+    src/Tutorial/StepGameSingleInfo.h
+    src/Tutorial/StepGameSingleInfo.cpp
     src/Tutorial/StepGameStructConnected.h
     src/Tutorial/StepGameStructConnected.cpp
     src/Tutorial/StepGameStructDisconnected.h
@@ -359,6 +361,10 @@ add_executable(
     src/Tutorial/StepGameTurnEnergy.cpp
     src/Tutorial/StepGameUnit.h
     src/Tutorial/StepGameUnit.cpp
+    src/Tutorial/StepGameUnitAttackBurst.h
+    src/Tutorial/StepGameUnitAttackBurst.cpp
+    src/Tutorial/StepGameUnitAttackIcon.h
+    src/Tutorial/StepGameUnitAttackIcon.cpp
     src/Tutorial/StepGameUnitConquerCellsIcon.h
     src/Tutorial/StepGameUnitConquerCellsIcon.cpp
     src/Tutorial/StepGameUpgradeIntro.h
