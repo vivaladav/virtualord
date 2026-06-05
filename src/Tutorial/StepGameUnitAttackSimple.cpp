@@ -1,4 +1,4 @@
-#include "Tutorial/StepGameMoveUnitSimple.h"
+#include "Tutorial/StepGameUnitAttackSimple.h"
 
 #include "Game.h"
 #include "IsoMap.h"
@@ -12,10 +12,10 @@
 namespace game
 {
 
-StepGameMoveUnitSimple::StepGameMoveUnitSimple(const Game * game, const Unit * unit,
-                                               const IsoMap * isoMap, const Cell2D & target,
-                                               const sgl::core::Pointd2D & p0)
-    : TutorialInfoStep(600, 150)
+StepGameUnitAttackSimple::StepGameUnitAttackSimple(const Game * game, const Unit * unit,
+                                                   const IsoMap * isoMap, const Cell2D & target,
+                                                   const sgl::core::Pointd2D & p0)
+    : TutorialInfoStep(500, 150)
     , mFocusArea(new IsoFocusArea(isoMap))
     , mUnit(unit)
     , mTarget(target)
@@ -30,7 +30,7 @@ StepGameMoveUnitSimple::StepGameMoveUnitSimple(const Game * game, const Unit * u
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_MOVE_UNIT"), 0.f, false, false, [this, isoMap, game]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_ATTACK_6"), 0.f, false, false, [this, isoMap, game]
                         {
                             // FOCUS
                             mFocusArea->SetCell(mTarget.row, mTarget.col);
@@ -45,30 +45,20 @@ StepGameMoveUnitSimple::StepGameMoveUnitSimple(const Game * game, const Unit * u
 
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(pos.x, pos.y, objW, objH);
-                            cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);
                             cf->SetButtonToAllow(game->GetButtonAction());
+                            cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);
                         });
 }
 
-StepGameMoveUnitSimple::~StepGameMoveUnitSimple()
+StepGameUnitAttackSimple::~StepGameUnitAttackSimple()
 {
     delete mFocusArea;
 }
 
-void StepGameMoveUnitSimple::Update(float)
+void StepGameUnitAttackSimple::Update(float)
 {
-    if(mUnit->GetRow0() == mTarget.row && mUnit->GetCol0() == mTarget.col)
+    if(mUnit != nullptr && mUnit->GetCurrentAction() == GameObjectActionType::ATTACK)
         SetDone();
-    // hide focus area when move starts
-    else if(mUnit->GetCurrentAction() == GameObjectActionType::MOVE)
-    {
-        mFocusArea->SetBlinking(false);
-        mFocusArea->SetVisible(false);
-
-        // hide info panel while move is in progress
-        auto info = GetPanelInfo();
-        info->SetVisible(false);
-    }
 }
 
 } // namespace game

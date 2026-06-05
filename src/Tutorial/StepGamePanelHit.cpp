@@ -27,7 +27,7 @@ StepGamePanelHit::StepGamePanelHit(const IsoMap * isoMap, const Cell2D & targetB
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_ATTACK_5"), 12.f, true, false, [this, isoMap]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_ATTACK_5"), 12.f, true, false, [this, isoMap]
                         {
                             // FOCUS
                             mFocusArea->SetCellArea(mTargetBR.row, mTargetBR.col,

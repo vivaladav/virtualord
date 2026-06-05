@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "Player.h"
 #include "GameObjects/Base.h"
+#include "GameObjects/Unit.h"
 #include "Indicators/OverlayCellConquest.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepAISetActive.h"
@@ -24,13 +25,17 @@
 #include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGamePanelHit.h"
 #include "Tutorial/StepGameSelectObject.h"
+#include "Tutorial/StepGameSetObjectHealth.h"
+#include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
 #include "Tutorial/StepGameSingleInfo.h"
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUnitAttackBurst.h"
 #include "Tutorial/StepGameUnitAttackIcon.h"
+#include "Tutorial/StepGameUnitAttackSimple.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
+#include "Tutorial/StepGameWaitEnemyKilled.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
@@ -279,15 +284,22 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE SOLDIER NEAR TREES
-    AddStep([this, local, isoMap]
+    AddStep([this, local, isoMap, game]
         {
             const auto unit = local->GetUnit(indSoldier1);
             const Cell2D target(15, 11);
             const core::Pointd2D p0(1100, 650);
-            return new StepGameMoveUnitSimple(unit, isoMap, target, p0);
+            return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
         });
+    AddStep([] { return new StepDelay(0.5f); });
     // ATTACK TREES WITH SOLDIER
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+    AddStep([this]
+            {
+                const float health = 15.f;
+                GameObject * enemy = GetObjectInCell(cellTarget1);
+                return new StepGameSetObjectHealth(enemy, health);
+            });
     AddStep([]
         {
             const core::Pointd2D p0(400, 600);
@@ -313,6 +325,43 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
                 return new StepGamePanelHit(isoMap, targetBR, targetTL, p0);
             });
+    AddStep([local]
+            {
+                auto unit = local->GetUnit(indSoldier1);
+                return new StepGameSetObjectPerfectShot(unit, true);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const core::Pointd2D p0(250, 500);
+                return new StepGameUnitAttackSimple(game, unit, isoMap, cellTarget1, p0);
+            });
+    AddStep([this]
+            {
+                GameObject * enemy = GetObjectInCell(cellTarget1);
+                return new StepGameWaitEnemyKilled(enemy, GetGameMap());
+            });
+    AddStep([local]
+            {
+                auto unit = local->GetUnit(indSoldier1);
+                return new StepGameSetObjectPerfectShot(unit, false);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+}
+
+TutorialGame2::~TutorialGame2()
+{
+    auto game = GetScreen()->GetGame();
+
+    // clear perfect shot flag for unit soldier 1
+    const Player * local = game->GetPlayerByIndex(0);
+    auto unit1 = local->GetUnit(indSoldier1);
+
+    if(unit1 != nullptr)
+        unit1->SetPerfectShot(false);
 }
 
 } // namespace game

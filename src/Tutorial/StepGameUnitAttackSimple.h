@@ -13,12 +13,12 @@ class IsoFocusArea;
 class IsoMap;
 class Unit;
 
-class StepGameMoveUnitSimple : public TutorialInfoStep
+class StepGameUnitAttackSimple : public TutorialInfoStep
 {
 public:
-    StepGameMoveUnitSimple(const Game * game, const Unit * unit, const IsoMap * isoMap,
-                           const Cell2D & target, const sgl::core::Pointd2D & p0);
-    ~StepGameMoveUnitSimple();
+    StepGameUnitAttackSimple(const Game * game, const Unit * unit, const IsoMap * isoMap,
+                             const Cell2D & target, const sgl::core::Pointd2D & p0);
+    ~StepGameUnitAttackSimple();
 
     void Update(float delta) override;
 

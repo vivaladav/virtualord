@@ -343,6 +343,8 @@ add_executable(
     src/Tutorial/StepGameSelectObject.cpp
     src/Tutorial/StepGameSetObjectAttackMode.h
     src/Tutorial/StepGameSetObjectAttackMode.cpp
+    src/Tutorial/StepGameSetObjectHealth.h
+    src/Tutorial/StepGameSetObjectHealth.cpp
     src/Tutorial/StepGameSetObjectMaxHealth.h
     src/Tutorial/StepGameSetObjectMaxHealth.cpp
     src/Tutorial/StepGameSetObjectPerfectShot.h
@@ -367,6 +369,8 @@ add_executable(
     src/Tutorial/StepGameUnit.cpp
     src/Tutorial/StepGameUnitAttackBurst.h
     src/Tutorial/StepGameUnitAttackBurst.cpp
+    src/Tutorial/StepGameUnitAttackSimple.h
+    src/Tutorial/StepGameUnitAttackSimple.cpp
     src/Tutorial/StepGameUnitAttackIcon.h
     src/Tutorial/StepGameUnitAttackIcon.cpp
     src/Tutorial/StepGameUnitConquerCellsIcon.h
