@@ -22,6 +22,7 @@
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
+#include "Tutorial/StepGamePanelHit.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
@@ -45,6 +46,7 @@ constexpr unsigned int indSoldier1 = 1;
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellMatGen1(15, 7);
 const Cell2D cellBarracks(8, 9);
+const Cell2D cellTarget1(15, 13);
 
 }
 
@@ -303,6 +305,14 @@ TutorialGame2::TutorialGame2(Screen * screen)
             auto panelShot = hud->GetPanelShotType();
             return new StepGameUnitAttackBurst(panelShot, p0);
         });
+    AddStep([isoMap]
+            {
+                const core::Pointd2D p0(200, 600);
+                const Cell2D targetTL(13, 13);
+                const Cell2D targetBR(16, 17);
+
+                return new StepGamePanelHit(isoMap, targetBR, targetTL, p0);
+            });
 }
 
 } // namespace game
