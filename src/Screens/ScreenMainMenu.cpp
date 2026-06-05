@@ -377,9 +377,12 @@ void ScreenMainMenu::CreateChangelog()
                   "- Make default scrolling speed a 5.\n"
                   "- Reduced time / actions to complete first map tutorial.\n"
                   "- Reduced times of unit and structure actions.\n"
+                  "- New graphics for barracks.\n"
+                  ""
                   "\nFIXES\n"
                   "- Fixed crash when opening trading dialog.\n"
                   "- Fixed AI not active after first tutorial.\n"
+                  "- Fixed new structure indicator not updating the position in same cases.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
