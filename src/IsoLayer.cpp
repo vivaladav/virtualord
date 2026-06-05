@@ -175,8 +175,9 @@ bool IsoLayer::MoveObject(unsigned int r0, unsigned int c0,
 
     const unsigned int index1 = r1 * cols + c1;
 
-    // cell is full
-    if(mObjectsMap[index1])
+    // cell is full with another object
+    const IsoObject * objInTargetCell = mObjectsMap[index1];
+    if(objInTargetCell != nullptr && objInTargetCell != obj)
         return false;
 
     // re-position object
