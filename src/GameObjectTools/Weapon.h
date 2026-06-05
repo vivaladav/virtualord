@@ -28,6 +28,10 @@ public:
     AttackMode GetAttackMode() const;
     void SetAttackMode(AttackMode am);
 
+    // special mode used by tutorial
+    bool IsPerfectShotEnabled() const;
+    void SetPerfectShot(bool enabled);
+
     // cost for whole attack (i.e.: all burst shots)
     int GetCostEnergy() const;
     // cost for a single shot of an attack
@@ -97,10 +101,14 @@ private:
     float mMaxProbabilityFatal = 3.f;
 
     bool mReadyToShoot = false;
+    bool mPerfectShot = false;
 };
 
 inline AttackMode Weapon::GetAttackMode() const { return mAttackMode; }
 inline void Weapon::SetAttackMode(AttackMode am) { mAttackMode = am; }
+
+inline bool Weapon::IsPerfectShotEnabled() const { return mPerfectShot; }
+inline void Weapon::SetPerfectShot(bool enabled) { mPerfectShot = enabled; }
 
 inline void Weapon::ClearTarget() { mTarget = nullptr; }
 inline bool Weapon::HasTarget() const { return mTarget != nullptr; }

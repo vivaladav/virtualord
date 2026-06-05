@@ -54,8 +54,8 @@
 #include "Tutorial/StepGamePrimaryMissionGoal.h"
 #include "Tutorial/StepGameQuickUnitButton.h"
 #include "Tutorial/StepGameSelectObject.h"
-#include "Tutorial/StepGameSetObjectAttackMode.h"
 #include "Tutorial/StepGameSetObjectMaxHealth.h"
+#include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameStructConnected.h"
@@ -275,7 +275,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([this]
             {
                 GameObject * tower = GetObjectInCell(cellDT1);
-                return new StepGameSetObjectAttackMode(tower, ATT_PERFECT_SHOT);
+                return new StepGameSetObjectPerfectShot(tower, true);
             });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT DEFENSIVE TOWER
@@ -460,7 +460,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             });
     AddStep([this]
             {
-                const float maxHealth = 50.f;
+                const float maxHealth = 80.f;
                 GameObject * enemy = GetObjectInCell(cellEnemy);
 
                 return new StepGameSetObjectMaxHealth(enemy, maxHealth);
@@ -621,6 +621,15 @@ TutorialGame1::TutorialGame1(Screen * screen)
             });
     AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions, false); });
     AddStep([hud] { return new StepGamePrimaryMissionGoal(hud); });
+}
+
+TutorialGame1::~TutorialGame1()
+{
+    // clear perfect shot flag from defensive tower
+    GameObject * tower = GetObjectInCell(cellDT1);
+
+    if(tower != nullptr && tower->GetObjectType() == ObjectData::TYPE_DEFENSIVE_TOWER)
+        tower->SetPerfectShot(false);
 }
 
 } // namespace game

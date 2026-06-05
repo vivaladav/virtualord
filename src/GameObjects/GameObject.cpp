@@ -477,6 +477,12 @@ void GameObject::SetAttackMode(AttackMode am)
         mWeapon->SetAttackMode(am);
 }
 
+void GameObject::SetPerfectShot(bool enabled)
+{
+    if(mWeapon != nullptr)
+        mWeapon->SetPerfectShot(enabled);
+}
+
 void GameObject::FindAndSetEnemyTarget()
 {
     if(mWeapon == nullptr)

@@ -174,6 +174,7 @@ public:
     void SetWeapon(Weapon * w);
 
     void SetAttackMode(AttackMode am);
+    void SetPerfectShot(bool enabled);
 
     void FindAndSetEnemyTarget();
     bool HasEnemyInRange();

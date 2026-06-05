@@ -90,14 +90,20 @@ void Laser::OnShoot(float x0, float y0)
     float damage = 0.f;
     bool fatal = false;
 
-    // hit
+    // check if it's a hit and if fatal
+#ifdef DEV_MODE
+    const float maxDamage = Game::GOD_MODE ? 60.f : 30.f;
+#else
+    const float maxDamage = 20.f;
+#endif
+
+    if(IsPerfectShotEnabled())
+    {
+        damage = maxDamage * owner->GetAttribute(OBJ_ATT_ATTACK_POWER) / MAX_STAT_FVAL;
+        fatal = false;
+    }
     if(valHit < probHit)
     {
-#ifdef DEV_MODE
-        const float maxDamage = Game::GOD_MODE ? 60.f : 20.f;
-#else
-        const float maxDamage = 20.f;
-#endif
         damage = maxDamage * owner->GetAttribute(OBJ_ATT_ATTACK_POWER) / MAX_STAT_FVAL;
 
         // check for fatal hit

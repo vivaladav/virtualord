@@ -219,9 +219,6 @@ float Weapon::GetBonusHitOnAttackMode(float prob) const
         const float bonus = 0.2;
         return prob * bonus;
     }
-    // set hit probability to MAX on perfect shots
-    else if(mAttackMode == ATT_PERFECT_SHOT)
-        return maxProb;
     else
         return 0.f;
 }
@@ -243,9 +240,6 @@ float Weapon::GetBonusFatalHitOnAttackMode(float prob) const
         const float bonus = 0.25;
         return prob * bonus;
     }
-    // set fatal hit probability to MIN on perfect shots
-    else if(mAttackMode == ATT_PERFECT_SHOT)
-        return -prob;
     else
         return 0.f;
 }

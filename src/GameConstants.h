@@ -31,9 +31,6 @@ enum AttackMode : unsigned int
     ATT_BURST_SHOT,
 
     NUM_ATTACK_MODES,
-
-    // SPECIAL VALUE FOR TUTORIAL USE ONLY
-    ATT_PERFECT_SHOT,
 };
 
 enum GameCursorId : unsigned int
