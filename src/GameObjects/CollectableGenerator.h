@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GameObjects/GameObjectTypes.h"
+
 namespace game
 {
 
@@ -9,12 +11,15 @@ class GameMap;
 class CollectableGenerator
 {
 public:
-    CollectableGenerator(const Game * g, GameMap * gm, int turnsMin, int turnsMax);
+    CollectableGenerator(const Game * g, GameMap * gm, int turnsMin, int turnsMax,
+                         GameObjectTypeId productType);
     virtual ~CollectableGenerator();
 
     void SetCell(int row, int col);
     int GetRow() const;
     int GetCol() const;
+
+    GameObjectTypeId GetProductType() const;
 
     void OnNewTurn();
 
@@ -29,8 +34,12 @@ private:
     virtual void OnGeneration() = 0;
 
 private:
+    friend class StepGameSetCollectableGeneratorTurns;
+
     const Game * mGame = nullptr;
     GameMap * mGameMap = nullptr;
+
+    GameObjectTypeId mProductType;
 
     int mRegenTurns = 0;
     int mCounterRegen = 0;
@@ -49,6 +58,10 @@ inline int CollectableGenerator::GetRow() const { return mRow; }
 
 inline int CollectableGenerator::GetCol() const { return mCol; }
 
+inline GameObjectTypeId CollectableGenerator::GetProductType() const
+{
+    return mProductType;
+}
 
 inline GameMap * CollectableGenerator::GetGameMap() const
 {

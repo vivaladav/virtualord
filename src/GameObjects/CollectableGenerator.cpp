@@ -8,9 +8,11 @@
 namespace game
 {
 
-CollectableGenerator::CollectableGenerator(const Game * g, GameMap * gm, int turnsMin, int turnsMax)
+CollectableGenerator::CollectableGenerator(const Game * g, GameMap * gm, int turnsMin, int turnsMax,
+                                           GameObjectTypeId productType)
     : mGame(g)
     , mGameMap(gm)
+    , mProductType(productType)
 {
     ResetCounter(turnsMin, turnsMax);
 }
