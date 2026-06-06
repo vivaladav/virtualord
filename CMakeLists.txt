@@ -341,6 +341,8 @@ add_executable(
     src/Tutorial/StepGameQuickUnitButton.cpp
     src/Tutorial/StepGameSelectObject.h
     src/Tutorial/StepGameSelectObject.cpp
+    src/Tutorial/StepGameSetCollectableGeneratorTurns.h
+    src/Tutorial/StepGameSetCollectableGeneratorTurns.cpp
     src/Tutorial/StepGameSetObjectAttackMode.h
     src/Tutorial/StepGameSetObjectAttackMode.cpp
     src/Tutorial/StepGameSetObjectHealth.h

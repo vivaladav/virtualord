@@ -2,6 +2,7 @@
 
 #include "CameraMapController.h"
 #include "Game.h"
+#include "GameMap.h"
 #include "Player.h"
 #include "GameObjects/Base.h"
 #include "GameObjects/Unit.h"
@@ -25,6 +26,7 @@
 #include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGamePanelHit.h"
 #include "Tutorial/StepGameSelectObject.h"
+#include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
 #include "Tutorial/StepGameSetObjectHealth.h"
 #include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
@@ -48,6 +50,9 @@ using namespace game;
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indSoldier1 = 1;
 
+constexpr int turnsCollGenMin = 1;
+constexpr int turnsCollGenMax = 6;
+
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellMatGen1(15, 7);
 const Cell2D cellBarracks(8, 9);
@@ -66,6 +71,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     auto gs = GetScreen();
     auto game = gs->GetGame();
     auto hud = gs->GetHUD();
+    auto gameMap = GetGameMap();
     auto isoMap = GetIsoMap();
 
     const Player * local = game->GetPlayerByIndex(0);
@@ -79,6 +85,18 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     // make AI idle for now
     AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), false); });
+    // set all generators of diamonds and blobs to create them within 5 turns
+    AddStep([gameMap]
+        {
+            return new StepGameSetCollectableGeneratorTurns(gameMap, ObjectData::TYPE_DIAMONDS,
+                                                            turnsCollGenMin, turnsCollGenMax);
+        });
+    AddStep([gameMap]
+        {
+            return new StepGameSetCollectableGeneratorTurns(gameMap, ObjectData::TYPE_BLOBS,
+                                                            turnsCollGenMin, turnsCollGenMax);
+        });
+    // pause before start
     AddStep([] { return new StepDelay(0.5f); });
 
     // ===== PART 1 =====
