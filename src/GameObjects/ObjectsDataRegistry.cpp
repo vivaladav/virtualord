@@ -311,7 +311,7 @@ void ObjectsDataRegistry::InitObjectData()
                    OCU_SOLDIER, OCAT_UNIT, WeaponData::TYPE_LASER1, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_UNIT_SOLDIER1,
-        ObjectData({ {OBJ_ATT_ENERGY, 3}, {OBJ_ATT_VIEW_RANGE, 5}, {OBJ_ATT_REGENERATION, 3},
+        ObjectData({ {OBJ_ATT_ENERGY, 4}, {OBJ_ATT_VIEW_RANGE, 5}, {OBJ_ATT_REGENERATION, 3},
                      {OBJ_ATT_RESISTANCE, 3}, {OBJ_ATT_SHIELD, 2}, {OBJ_ATT_SPEED, 4},
                      {OBJ_ATT_CONQUEST, 3}, {OBJ_ATT_HEALTH, 4} },
                    { 200, 200, 0, 0 },
@@ -320,7 +320,7 @@ void ObjectsDataRegistry::InitObjectData()
                    OCU_SOLDIER, OCAT_UNIT, WeaponData::TYPE_LASER2, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_UNIT_SOLDIER2,
-        ObjectData({ {OBJ_ATT_ENERGY, 4}, {OBJ_ATT_VIEW_RANGE, 5}, {OBJ_ATT_REGENERATION, 4},
+        ObjectData({ {OBJ_ATT_ENERGY, 5}, {OBJ_ATT_VIEW_RANGE, 5}, {OBJ_ATT_REGENERATION, 4},
                      {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 6}, {OBJ_ATT_SPEED, 3},
                      {OBJ_ATT_CONQUEST, 2}, {OBJ_ATT_HEALTH, 5} },
                    { 400, 400, 0, 0 }, { SPR_UNIT_03_F1, SPR_UNIT_03_F2, SPR_UNIT_03_F3 }, SpriteFileUnits,
