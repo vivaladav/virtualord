@@ -113,7 +113,7 @@ GameMap::~GameMap()
     for(auto g : mCities)
         delete g;
 
-    for(auto cg : mCollGen)
+    for(auto cg : mCollGens)
         delete cg;
 
     for(auto op : mPaths)
@@ -263,7 +263,7 @@ void GameMap::CreateCollectableGenerator(unsigned int r, unsigned int c, Resourc
 
     gen->SetCell(r, c);
 
-    mCollGen.emplace_back(gen);
+    mCollGens.emplace_back(gen);
 }
 
 void GameMap::ApplyLocalVisibility()
@@ -2878,7 +2878,7 @@ void GameMap::OnNewTurn(PlayerFaction faction)
         obj->OnNewTurn(faction);
 
     // notify all generators
-    for(CollectableGenerator * cg : mCollGen)
+    for(CollectableGenerator * cg : mCollGens)
         cg->OnNewTurn();
 
     // select groups of mini units to move
@@ -2959,16 +2959,16 @@ void GameMap::Update(float delta)
 void GameMap::ClearCell(GameMapCell & gcell)
 {
     // destroy any generator
-    auto it = std::find_if(mCollGen.begin(), mCollGen.end(), [gcell](CollectableGenerator * gen)
+    auto it = std::find_if(mCollGens.begin(), mCollGens.end(), [gcell](CollectableGenerator * gen)
     {
         return gen->GetRow() == gcell.row && gen->GetCol() == gcell.col;
     });
 
 
-    if(it != mCollGen.end())
+    if(it != mCollGens.end())
     {
         delete *it;
-        mCollGen.erase(it);
+        mCollGens.erase(it);
     }
 
     gcell.currType = CT_EMPTY;

@@ -59,6 +59,7 @@ public:
 
     const std::vector<GameMapCell> & GetCells() const;
     const std::vector<GameObject *> & GetObjects() const;
+    const std::vector<CollectableGenerator *> & GetCollectableGenerators() const;
 
     bool IsCellVisibleToLocalPlayer(unsigned int ind) const;
     bool IsCellVisibleToLocalPlayer(unsigned int r, unsigned int c) const;
@@ -285,7 +286,7 @@ private:
     std::vector<GameObject *> mObjects;
     std::vector<ObjectToAdd> mObjectsToAdd;
     std::unordered_set<const GameObject *> mObjectsSet;
-    std::vector<CollectableGenerator *> mCollGen;
+    std::vector<CollectableGenerator *> mCollGens;
     std::vector<ObjectPath *> mPaths;
     std::vector<ObjectPath *> mPathsToAdd;
     std::vector<ConquerPath *> mConquerPaths;
@@ -349,6 +350,11 @@ inline const std::vector<GameMapCell> & GameMap::GetCells() const
 inline const std::vector<GameObject *> & GameMap::GetObjects() const
 {
     return mObjects;
+}
+
+inline const std::vector<CollectableGenerator *> & GameMap::GetCollectableGenerators() const
+{
+    return mCollGens;
 }
 
 inline bool GameMap::IsCellWalkable(unsigned int cellInd) const
