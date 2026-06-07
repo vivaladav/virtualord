@@ -331,6 +331,8 @@ add_executable(
     src/Tutorial/StepGameMoveUnit.cpp
     src/Tutorial/StepGameMoveUnitSimple.h
     src/Tutorial/StepGameMoveUnitSimple.cpp
+    src/Tutorial/StepGameMoveUnitToArea.h
+    src/Tutorial/StepGameMoveUnitToArea.cpp
     src/Tutorial/StepGameMoveUnitToCorner.h
     src/Tutorial/StepGameMoveUnitToCorner.cpp
     src/Tutorial/StepGamePanelHit.h

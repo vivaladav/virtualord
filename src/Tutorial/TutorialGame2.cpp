@@ -24,6 +24,7 @@
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
+#include "Tutorial/StepGameMoveUnitToArea.h"
 #include "Tutorial/StepGamePanelHit.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
@@ -57,6 +58,9 @@ const Cell2D cellEneGen1(6, 15);
 const Cell2D cellMatGen1(15, 7);
 const Cell2D cellBarracks(8, 9);
 const Cell2D cellTarget1(15, 13);
+
+const Cell2D areaDiamondsTL(23, 6);
+const Cell2D areaDiamondsBR(24, 9);
 
 }
 
@@ -368,6 +372,15 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // MOVE SOLDIER TO DIAMONDS AND COLLECT THEM
+    AddStep([this, local, isoMap]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const Cell2D target(23, 9);
+                const core::Pointd2D p0(450, 200);
+                return new StepGameMoveUnitToArea(unit, isoMap, areaDiamondsTL, areaDiamondsBR,
+                                                  target, "TUT_GAME_MOVE_UNIT_4", p0);
+            });
 }
 
 TutorialGame2::~TutorialGame2()
