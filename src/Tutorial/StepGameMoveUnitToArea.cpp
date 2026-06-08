@@ -24,6 +24,7 @@ StepGameMoveUnitToArea::StepGameMoveUnitToArea(const Unit * unit, const IsoMap *
 
     // FOCUS
     mFocusArea->SetCellArea(areaBR.row, areaBR.col, areaTL.row, areaTL.col);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -42,18 +43,8 @@ StepGameMoveUnitToArea::StepGameMoveUnitToArea(const Unit * unit, const IsoMap *
                             mFocusArea->SetCell(mTarget.row, mTarget.col);
                             mFocusArea->SetCornersColorAction();
 
-
                             // CLICK FILTER
-                            const int marginW = 5;
-                            const int marginH = 10;
-                            const auto pos = isoMap->GetCellPosition(mTarget.row, mTarget.col);
-                            const int objX = pos.x - marginW;
-                            const int objY = pos.y - marginH;
-                            const int objW = isoMap->GetTileWidth() + (2 * marginW);
-                            const int objH = isoMap->GetTileHeight() + (2 * marginH);
-
                             auto cf = GetClickFilter();
-                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);
                         });
 }

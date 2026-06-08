@@ -40,16 +40,7 @@ StepGameConquerCellsSimple::StepGameConquerCellsSimple(const Game * game, const 
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER
-                            const int marginW = 5;
-                            const int marginH = 10;
-                            const auto pos = isoMap->GetCellPosition(mCellTarget.row, mCellTarget.col);
-                            const int objX = pos.x - marginW;
-                            const int objY = pos.y - marginH;
-                            const int objW = isoMap->GetTileWidth() + (2 * marginW);
-                            const int objH = isoMap->GetTileHeight() + (2 * marginH);
-
                             auto cf = GetClickFilter();
-                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetClickableCell(isoMap, mCellTarget.row, mCellTarget.col);
                             cf->SetButtonToAllow(game->GetButtonAction());
                         });

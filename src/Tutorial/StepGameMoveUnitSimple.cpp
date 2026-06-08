@@ -39,12 +39,7 @@ StepGameMoveUnitSimple::StepGameMoveUnitSimple(const Game * game, const Unit * u
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER
-                            const auto pos = isoMap->GetCellPosition(mTarget.row, mTarget.col);
-                            const int objW = isoMap->GetTileWidth();
-                            const int objH = isoMap->GetTileHeight();
-
                             auto cf = GetClickFilter();
-                            cf->SetWorldClickableArea(pos.x, pos.y, objW, objH);
                             cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);
                             cf->SetButtonToAllow(game->GetButtonAction());
                         });

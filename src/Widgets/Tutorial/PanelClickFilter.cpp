@@ -45,24 +45,18 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
     const int wX = cam->GetScreenToWorldX(x);
     const int wY = cam->GetScreenToWorldY(y);
 
-    // first filter by mouse position
+    // first filter by mouse position if required
     // position in world
     if(mAreaWorld)
     {
-        if(wX < mXtl || wX > mXbr || wY < mYtl || wY > mYbr)
-        {
-            event.SetConsumed();
+        if(wX >= mXtl && wX <= mXbr && wY >= mYtl && wY <= mYbr)
             return;
-        }
     }
     // position in screen
-    else
+    else if(mAreaScreen)
     {
-        if(x < mXtl || x > mXbr || y < mYtl || y > mYbr)
-        {
-            event.SetConsumed();
+        if(x >= mXtl && x <= mXbr && y >= mYtl && y <= mYbr)
             return;
-        }
     }
 
     // then filter by map cell if required
@@ -73,34 +67,23 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
         // single cell check
         if(mRow != -1)
         {
-            if(cell.row != mRow || cell.col != mCol)
-            {
-                event.SetConsumed();
+            if(cell.row == mRow && cell.col == mCol)
                 return;
-            }
         }
         // cells areas check
         else
         {
-            bool inside = false;
-
             for(const CellsArea & area : mCellAreas)
             {
                 if(cell.row >= area.rowTL && cell.row <= area.rowBR &&
                    cell.col >= area.colTL && cell.col <= area.colBR)
-                {
-                    inside = true;
-                    break;
-                }
-            }
-
-            if(!inside)
-            {
-                event.SetConsumed();
-                return;
+                    return ;
             }
         }
     }
+
+    // block everything else
+    event.SetConsumed();
 }
 
 void PanelClickFilter::ClearButtonToAllow()

@@ -45,14 +45,7 @@ StepGameConquerStructSimple::StepGameConquerStructSimple(const Game * game, cons
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER
-                            const auto isoObj = mStruct->GetIsoObject();
-                            const int objX = isoObj->GetX();
-                            const int objY = isoObj->GetY();
-                            const int objW = isoObj->GetWidth();
-                            const int objH = isoObj->GetHeight();
-
                             auto cf = GetClickFilter();
-                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetButtonToAllow(game->GetButtonAction());
                             cf->AddClickableCells(isoMap, mStruct->GetRow1(), mStruct->GetCol1(),
                                                   mStruct->GetRow0(), mStruct->GetCol0());

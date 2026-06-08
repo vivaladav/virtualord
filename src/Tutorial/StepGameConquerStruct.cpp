@@ -63,14 +63,7 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
                             mIsoFocusArea->SetVisible(true);
 
                             // CLICK FILTER
-                            const auto isoObj = mEnergyGen->GetIsoObject();
-                            const int objX = isoObj->GetX();
-                            const int objY = isoObj->GetY();
-                            const int objW = isoObj->GetWidth();
-                            const int objH = isoObj->GetHeight();
-
                             auto cf = GetClickFilter();
-                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetButtonToAllow(game->GetButtonAction());
                             cf->AddClickableCells(isoMap, energyGen->GetRow1(), energyGen->GetCol1(),
                                                   energyGen->GetRow0(), energyGen->GetCol0());

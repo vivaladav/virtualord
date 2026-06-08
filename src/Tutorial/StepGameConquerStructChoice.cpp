@@ -3,9 +3,8 @@
 #include "Game.h"
 #include "GameConstants.h"
 #include "IsoMap.h"
-#include "IsoObject.h"
 #include "Player.h"
-#include "GameObjects/Unit.h"
+#include "GameObjects/GameObject.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -57,25 +56,7 @@ StepGameConquerStructChoice::StepGameConquerStructChoice(const Game * game, cons
                             mFocusArea2->SetVisible(true);
 
                             // CLICK FILTER
-                            const IsoObject * obj1 = mStruct1->GetIsoObject();
-                            const IsoObject * obj2 = mStruct2->GetIsoObject();
-                            const int tlX1 = obj1->GetX();
-                            const int tlX2 = obj2->GetX();
-                            const int tlY1 = obj1->GetY();
-                            const int tlY2 = obj2->GetY();
-                            const int brX1 = tlX1 + obj1->GetWidth();
-                            const int brX2 = tlX2 + obj2->GetWidth();
-                            const int brY1 = tlY1 + obj1->GetHeight();
-                            const int brY2 = tlY2 + obj2->GetHeight();
-                            const int minX = tlX1 < tlX2 ? tlX1 : tlX2;
-                            const int minY = tlY1 < tlY2 ? tlY1 : tlY2;
-                            const int maxX = brX1 > brX2 ? brX1 : brX2;
-                            const int maxY = brY1 > brY2 ? brY1 : brY2;
-                            const int w = std::abs(maxX - minX);
-                            const int h = std::abs(maxY - minX);
-
                             auto cf = GetClickFilter();
-                            cf->SetWorldClickableArea(minX, minY, w, h);
                             cf->SetButtonToAllow(game->GetButtonAction());
 
                             cf->AddClickableCells(isoMap, struct1->GetRow1(), struct1->GetCol1(),

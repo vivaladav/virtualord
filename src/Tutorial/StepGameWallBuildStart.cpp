@@ -39,16 +39,7 @@ StepGameWallBuildStart::StepGameWallBuildStart(const Game * game, const IsoMap *
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER
-                            const int marginW = 5;
-                            const int marginH = 10;
-                            const auto pos = isoMap->GetCellPosition(mTarget.row, mTarget.col);
-                            const int objX = pos.x - marginW;
-                            const int objY = pos.y - marginH;
-                            const int objW = isoMap->GetTileWidth() + (2 * marginW);
-                            const int objH = isoMap->GetTileHeight() + (2 * marginH);
-
                             auto cf = GetClickFilter();
-                            cf->SetWorldClickableArea(objX, objY, objW, objH);
                             cf->SetClickableCell(isoMap, mTarget.row, mTarget.col);
                             cf->SetButtonToAllow(game->GetButtonAction());
                         });
