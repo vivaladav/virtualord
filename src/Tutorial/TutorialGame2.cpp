@@ -40,6 +40,8 @@
 #include "Tutorial/StepGameUnitAttackIcon.h"
 #include "Tutorial/StepGameUnitAttackSimple.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
+#include "Tutorial/StepGameUpgradeIntro.h"
+#include "Tutorial/StepGameUpgradeUnit.h"
 #include "Tutorial/StepGameWaitEnemyKilled.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/TutorialConstants.h"
@@ -425,14 +427,22 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const auto unit = local->GetUnit(indWorker1);
                 const Cell2D areaTL(areaBlobsTL.row, areaBlobsTL.col + 1);
-                const core::Pointd2D p0(500, 200);
+                const core::Pointd2D p0(500, 150);
 
                 return new StepGameCollectObjects(unit, ObjectData::TYPE_BLOBS, game, gameMap, isoMap,
                                                   areaTL, areaBlobsBR, "TUT_GAME_COLLECT_BLOBS", p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
+    // UPGRADE UNIT
+    AddStep([panelActions]
+            {
+                core::Pointd2D p0(900, 150);
+                return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b", p0);
+            });
+    AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 

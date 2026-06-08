@@ -17,7 +17,7 @@ StepGameCollectObjects::StepGameCollectObjects(const Unit * unit, GameObjectType
                                                const Game * game, const GameMap * gm, const IsoMap * im,
                                                const Cell2D & areaTL, const Cell2D & areaBR,
                                                const char * intro, const sgl::core::Pointd2D & p0)
-    : TutorialInfoStep(600, 250)
+    : TutorialInfoStep(600, 150)
     , mFocusArea(new IsoFocusArea(im))
     , mAreaTL(areaTL)
     , mAreaBR(areaBR)

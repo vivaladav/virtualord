@@ -529,14 +529,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // UPGRADE UNIT
     AddStep([panelActions, game]
         {
-            core::Pointd2D p0(900, 250);
-
-            if(game->IsAutoUnitCameraEnabled())
-            {
-                p0.x = 1000;
-                p0.y = 550;
-            }
-
+            core::Pointd2D p0(1000, 550);
             return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b", p0);
         });
     AddStep([hud] { return new StepGameUpgradeUnitFree(hud); });
