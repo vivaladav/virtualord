@@ -191,7 +191,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([this, local, game]
         {
             const GameObject * gen = GetObjectInCell(cellMatGen1);
-            const core::Pointd2D p0(250, 1150);
+            const core::Pointd2D p0(250, 150);
             return new StepGameMaterialGenerator(gen, p0);
         });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
