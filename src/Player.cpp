@@ -348,12 +348,12 @@ void Player::HandleCollectable(GameObject * collected, GameObject * collector)
     if(type == ObjectData::TYPE_DIAMONDS)
     {
         auto d = static_cast<Diamonds *>(collected);
-        mStats[Stat::DIAMONDS].SumValue(d->GetNum());
+        mStats[Stat::DIAMONDS].SumValue(d->GetNumUnits());
     }
     else if(type == ObjectData::TYPE_BLOBS)
     {
         auto d = static_cast<Blobs *>(collected);
-        mStats[Stat::BLOBS].SumValue(d->GetNum());
+        mStats[Stat::BLOBS].SumValue(d->GetNumUnits());
     }
     else
     {
