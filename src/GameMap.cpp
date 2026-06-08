@@ -123,6 +123,12 @@ GameMap::~GameMap()
         delete cp;
 }
 
+bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int ind) const
+{
+    return ind < mCells.size() && mCells[ind].objTop != nullptr &&
+           mCells[ind].objTop->GetObjectType() == type;
+}
+
 bool GameMap::IsObjectVisibleToLocalPlayer(const GameObject * obj) const
 {
     Player * p = mGame->GetLocalPlayer();
