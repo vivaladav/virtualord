@@ -22,11 +22,6 @@ ScreenNewGame::ScreenNewGame(Game * game)
     , mDiff(Difficulty::EASY)
 {
     const int MAX_UNITS0 = 6;
-    const int startEnergy = 1000;
-    const int startMaterial = 1000;
-    const int startMoney = 1000;
-    const int startDiamonds = 10;
-    const int startBlobs = 10;
 
     // create human player
     const PlayerFaction pf = game->GetLocalPlayerFaction();
@@ -50,7 +45,6 @@ ScreenNewGame::ScreenNewGame(Game * game)
     p->AddAvailableUnit(ObjectData::TYPE_UNIT_WORKER1);
     p->AddAvailableUnit(ObjectData::TYPE_UNIT_SOLDIER1);
     p->AddAvailableUnit(ObjectData::TYPE_UNIT_SPAWNER1);
-    p->AddAvailableUnit(ObjectData::TYPE_UNIT_SPAWNER2);
     p->AddAvailableUnit(ObjectData::TYPE_UNIT_SCOUT1);
     p->AddAvailableUnit(ObjectData::TYPE_UNIT_SOLDIER2);
     p->AddAvailableUnit(ObjectData::TYPE_UNIT_MEDIC1);
@@ -58,13 +52,6 @@ ScreenNewGame::ScreenNewGame(Game * game)
     // assign initial available mini units
     p->AddAvailableMiniUnit(ObjectData::TYPE_MINI_UNIT1);
     p->AddAvailableMiniUnit(ObjectData::TYPE_MINI_UNIT2);
-
-    // assign initial resources
-    p->SetResource(Player::Stat::BLOBS, startBlobs);
-    p->SetResource(Player::Stat::DIAMONDS, startDiamonds);
-    p->SetResource(Player::Stat::ENERGY, startEnergy);
-    p->SetResource(Player::Stat::MATERIAL, startMaterial);
-    p->SetResource(Player::Stat::MONEY, startMoney);
 
     // create AI players
     const char * strPlayers[] =
@@ -117,13 +104,6 @@ ScreenNewGame::ScreenNewGame(Game * game)
         p->AddAvailableUnit(ObjectData::TYPE_UNIT_SCOUT1);
         p->AddAvailableUnit(ObjectData::TYPE_UNIT_SOLDIER2);
         p->AddAvailableUnit(ObjectData::TYPE_UNIT_MEDIC1);
-
-        // assign initial resources
-        p->SetResource(Player::Stat::BLOBS, startBlobs);
-        p->SetResource(Player::Stat::DIAMONDS, startDiamonds);
-        p->SetResource(Player::Stat::ENERGY, startEnergy);
-        p->SetResource(Player::Stat::MATERIAL, startMaterial);
-        p->SetResource(Player::Stat::MONEY, startMoney);
 
         ++indFaction;
 

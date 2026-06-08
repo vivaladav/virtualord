@@ -104,6 +104,8 @@ public:
 private:
     void OnApplicationQuit(sgl::core::ApplicationEvent & event) override;
 
+    void AssignStartResources(Player * p);
+
     void InitMusic();
     void InitParticlesSystem();
     void InitTutorial();

@@ -171,6 +171,8 @@ ScreenGame::ScreenGame(Game * game)
 
         p->ResetTurnEnergy();
 
+        AssignStartResources(p);
+
         // AI players
         if(p->IsAI())
         {
@@ -519,6 +521,25 @@ void ScreenGame::OnApplicationQuit(sgl::core::ApplicationEvent & event)
     mHUD->ShowDialogExit();
 
     event.SetConsumed();
+}
+
+// assign initial resources
+void ScreenGame::AssignStartResources(Player * p)
+{
+    if(p->GetStat(Player::Stat::BLOBS).GetValue() < START_BLOBS)
+        p->SetResource(Player::Stat::BLOBS, START_BLOBS);
+
+    if(p->GetStat(Player::Stat::DIAMONDS).GetValue() < START_DIAMONDS)
+        p->SetResource(Player::Stat::DIAMONDS, START_DIAMONDS);
+
+    if(p->GetStat(Player::Stat::ENERGY).GetValue() < START_ENERGY)
+        p->SetResource(Player::Stat::ENERGY, START_ENERGY);
+
+    if(p->GetStat(Player::Stat::MATERIAL).GetValue() < START_MATERIAL)
+        p->SetResource(Player::Stat::MATERIAL, START_MATERIAL);
+
+    if(p->GetStat(Player::Stat::MONEY).GetValue() < START_MONEY)
+        p->SetResource(Player::Stat::MONEY, START_MONEY);
 }
 
 void ScreenGame::InitMusic()
