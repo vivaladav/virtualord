@@ -31,6 +31,7 @@
 #include "Tutorial/StepGamePanelHit.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
+#include "Tutorial/StepGameSetCollectableUnits.h"
 #include "Tutorial/StepGameSetObjectHealth.h"
 #include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
@@ -58,6 +59,10 @@ constexpr unsigned int indSoldier1 = 1;
 
 constexpr int turnsCollGenMin = 1;
 constexpr int turnsCollGenMax = 1;
+constexpr int turnsCollGenMin2 = 5;
+constexpr int turnsCollGenMax2 = 15;
+constexpr int collectablesMin = 2;
+constexpr int collectablesMax = 4;
 
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellMatGen1(15, 7);
@@ -96,7 +101,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     // make AI idle for now
     AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), false); });
-    // set all generators of diamonds and blobs to create them within 5 turns
+    // set all generators of diamonds and blobs to create them within 1 turn
     AddStep([gameMap]
         {
             return new StepGameSetCollectableGeneratorTurns(areaDiamondsTL, areaDiamondsBR, gameMap,
@@ -149,6 +154,32 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // SET MIN BLOBS AND DIAMONDS TO COLLECT
+    AddStep([gameMap]
+            {
+                return new StepGameSetCollectableUnits(areaDiamondsTL, areaDiamondsBR, gameMap,
+                                                       ObjectData::TYPE_DIAMONDS,
+                                                       collectablesMin, collectablesMax);
+            });
+    AddStep([gameMap]
+            {
+                return new StepGameSetCollectableUnits(areaBlobsTL, areaBlobsBR, gameMap,
+                                                       ObjectData::TYPE_BLOBS,
+                                                       collectablesMin, collectablesMax);
+            });
+    // set all generators of diamonds and blobs to create new object in more than 5 turns
+    AddStep([gameMap]
+            {
+                return new StepGameSetCollectableGeneratorTurns(areaDiamondsTL, areaDiamondsBR,
+                                                                gameMap, ObjectData::TYPE_DIAMONDS,
+                                                                turnsCollGenMin2, turnsCollGenMax2);
+            });
+    AddStep([gameMap]
+            {
+                return new StepGameSetCollectableGeneratorTurns(areaBlobsTL, areaBlobsBR, gameMap,
+                                                                ObjectData::TYPE_BLOBS,
+                                                                turnsCollGenMin2, turnsCollGenMax2);
+            });
     // CONNECT FIRST GENERATOR
     AddStep([]
             {
