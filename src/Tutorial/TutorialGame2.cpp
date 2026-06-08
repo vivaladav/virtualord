@@ -61,6 +61,8 @@ const Cell2D cellMatGen1(15, 7);
 const Cell2D cellBarracks(8, 9);
 const Cell2D cellTarget1(15, 13);
 
+const Cell2D areaBlobsTL(22, 12);
+const Cell2D areaBlobsBR(25, 13);
 const Cell2D areaDiamondsTL(23, 6);
 const Cell2D areaDiamondsBR(24, 9);
 
@@ -401,6 +403,37 @@ TutorialGame2::TutorialGame2(Screen * screen)
             const GameObject * blobs = GetObjectInCell(cellBlobs);
             return new StepGameMoveCameraOverObject(blobs, speed);
         });
+    // SELECT WORKER AND COLLECT BLOBS
+    AddStep([local, game, isoMap]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                return new StepGameUnit(game, isoMap, unit);
+            });
+    AddStep([this, local, isoMap]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const Cell2D target(25, 12);
+                const core::Pointd2D p0(500, 150);
+                return new StepGameMoveUnitToArea(unit, isoMap, areaBlobsTL, areaBlobsBR,
+                                                  target, "TUT_GAME_MOVE_UNIT_5", p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([isoMap, gameMap, local, game]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const Cell2D areaTL(areaBlobsTL.row, areaBlobsTL.col + 1);
+                const core::Pointd2D p0(500, 200);
+
+                return new StepGameCollectObjects(unit, ObjectData::TYPE_BLOBS, game, gameMap, isoMap,
+                                                  areaTL, areaBlobsBR, "TUT_GAME_COLLECT_BLOBS", p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame2::~TutorialGame2()
