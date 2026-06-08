@@ -24,6 +24,7 @@
 #include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
+#include "Tutorial/StepGameMoveCameraOverCell.h"
 #include "Tutorial/StepGameMoveCameraOverObject.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGameMoveUnitToArea.h"
@@ -55,7 +56,7 @@ using namespace game;
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indSoldier1 = 1;
 
-constexpr int turnsCollGenMin = 2;
+constexpr int turnsCollGenMin = 3;
 constexpr int turnsCollGenMax = 6;
 
 const Cell2D cellEneGen1(6, 15);
@@ -398,12 +399,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE CAMERA OVER BLOBS
-    AddStep([this]
+    AddStep([isoMap]
         {
             const float speed = 600.f;
-            const Cell2D cellBlobs(22, 12);
-            const GameObject * blobs = GetObjectInCell(cellBlobs);
-            return new StepGameMoveCameraOverObject(blobs, speed);
+            const Cell2D cell(14, 14);
+            return new StepGameMoveCameraOverCell(cell, isoMap, speed);
         });
     // SELECT WORKER AND COLLECT BLOBS
     AddStep([local, game, isoMap]
@@ -415,7 +415,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const auto unit = local->GetUnit(indWorker1);
                 const Cell2D target(25, 12);
-                const core::Pointd2D p0(500, 150);
+                const core::Pointd2D p0(900, 550);
                 return new StepGameMoveUnitToArea(unit, isoMap, areaBlobsTL, areaBlobsBR,
                                                   target, "TUT_GAME_MOVE_UNIT_5", p0);
             });

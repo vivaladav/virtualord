@@ -325,6 +325,8 @@ add_executable(
     src/Tutorial/StepGameMissionGoalsDialog.cpp
     src/Tutorial/StepGameMoveCamera.h
     src/Tutorial/StepGameMoveCamera.cpp
+    src/Tutorial/StepGameMoveCameraOverCell.h
+    src/Tutorial/StepGameMoveCameraOverCell.cpp
     src/Tutorial/StepGameMoveCameraOverObject.h
     src/Tutorial/StepGameMoveCameraOverObject.cpp
     src/Tutorial/StepGameMoveToTower.h
