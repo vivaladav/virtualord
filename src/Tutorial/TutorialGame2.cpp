@@ -15,6 +15,7 @@
 #include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameBuildUnitEnd.h"
 #include "Tutorial/StepGameBuildUnitStart.h"
+#include "Tutorial/StepGameCollectObjects.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
@@ -51,7 +52,7 @@ using namespace game;
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indSoldier1 = 1;
 
-constexpr int turnsCollGenMin = 1;
+constexpr int turnsCollGenMin = 2;
 constexpr int turnsCollGenMax = 6;
 
 const Cell2D cellEneGen1(6, 15);
@@ -381,6 +382,15 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameMoveUnitToArea(unit, isoMap, areaDiamondsTL, areaDiamondsBR,
                                                   target, "TUT_GAME_MOVE_UNIT_4", p0);
             });
+    AddStep([isoMap, gameMap, local, game]
+        {
+            const auto unit = local->GetUnit(indSoldier1);
+            const Cell2D areaTL(areaDiamondsTL.row + 1, areaDiamondsTL.col);
+            const core::Pointd2D p0(400, 100);
+
+            return new StepGameCollectObjects(unit, ObjectData::TYPE_DIAMONDS, game, gameMap, isoMap,
+                                              areaTL, areaDiamondsBR, "TUT_GAME_COLLECT_DIAMONDS", p0);
+        });
 }
 
 TutorialGame2::~TutorialGame2()

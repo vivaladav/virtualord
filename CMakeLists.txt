@@ -273,6 +273,8 @@ add_executable(
     src/Tutorial/StepGameBuildTowerEnd.cpp
     src/Tutorial/StepGameClearSelection.h
     src/Tutorial/StepGameClearSelection.cpp
+    src/Tutorial/StepGameCollectObjects.h
+    src/Tutorial/StepGameCollectObjects.cpp
     src/Tutorial/StepGameConnectStructIntro.h
     src/Tutorial/StepGameConnectStructIntro.cpp
     src/Tutorial/StepGameConquerCells.h
