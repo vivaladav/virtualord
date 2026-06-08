@@ -24,6 +24,7 @@
 #include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
+#include "Tutorial/StepGameMoveCameraOverObject.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGameMoveUnitToArea.h"
 #include "Tutorial/StepGamePanelHit.h"
@@ -390,6 +391,15 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
             return new StepGameCollectObjects(unit, ObjectData::TYPE_DIAMONDS, game, gameMap, isoMap,
                                               areaTL, areaDiamondsBR, "TUT_GAME_COLLECT_DIAMONDS", p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE CAMERA OVER BLOBS
+    AddStep([this]
+        {
+            const float speed = 600.f;
+            const Cell2D cellBlobs(22, 12);
+            const GameObject * blobs = GetObjectInCell(cellBlobs);
+            return new StepGameMoveCameraOverObject(blobs, speed);
         });
 }
 

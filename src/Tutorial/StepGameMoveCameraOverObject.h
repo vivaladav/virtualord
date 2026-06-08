@@ -10,7 +10,7 @@ class GameObject;
 class StepGameMoveCameraOverObject : public StepGameMoveCamera
 {
 public:
-    StepGameMoveCameraOverObject(const GameObject * obj, float speed = 400.f);
+    StepGameMoveCameraOverObject(const GameObject * obj, float speed = 500.f);
 };
 
 } // namespace game
