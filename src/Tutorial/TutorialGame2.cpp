@@ -56,8 +56,8 @@ using namespace game;
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indSoldier1 = 1;
 
-constexpr int turnsCollGenMin = 3;
-constexpr int turnsCollGenMax = 6;
+constexpr int turnsCollGenMin = 1;
+constexpr int turnsCollGenMax = 1;
 
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellMatGen1(15, 7);
@@ -99,12 +99,14 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // set all generators of diamonds and blobs to create them within 5 turns
     AddStep([gameMap]
         {
-            return new StepGameSetCollectableGeneratorTurns(gameMap, ObjectData::TYPE_DIAMONDS,
+            return new StepGameSetCollectableGeneratorTurns(areaDiamondsTL, areaDiamondsBR, gameMap,
+                                                            ObjectData::TYPE_DIAMONDS,
                                                             turnsCollGenMin, turnsCollGenMax);
         });
     AddStep([gameMap]
         {
-            return new StepGameSetCollectableGeneratorTurns(gameMap, ObjectData::TYPE_BLOBS,
+            return new StepGameSetCollectableGeneratorTurns(areaBlobsTL, areaBlobsBR, gameMap,
+                                                            ObjectData::TYPE_BLOBS,
                                                             turnsCollGenMin, turnsCollGenMax);
         });
     // pause before start

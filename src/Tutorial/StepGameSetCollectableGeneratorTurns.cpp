@@ -6,10 +6,14 @@
 namespace game
 {
 
-StepGameSetCollectableGeneratorTurns::StepGameSetCollectableGeneratorTurns(GameMap * gm,
+StepGameSetCollectableGeneratorTurns::StepGameSetCollectableGeneratorTurns(const Cell2D & tl,
+                                                                           const Cell2D & br,
+                                                                           const GameMap * gm,
                                                                            GameObjectTypeId type,
                                                                            int min, int max)
-    : mGameMap(gm)
+    : mTL(tl)
+    , mBR(br)
+    , mGameMap(gm)
     , mGenType(type)
     , mMin(min)
     , mMax(max)
@@ -22,7 +26,11 @@ void StepGameSetCollectableGeneratorTurns::OnStart()
 
     for(CollectableGenerator * gen : gens)
     {
-        if(gen->GetProductType() == mGenType)
+        const int genR = gen->GetRow();
+        const int genC = gen->GetCol();
+
+        if(gen->GetProductType() == mGenType &&
+           genR >= mTL.row && genR <= mBR.row && genC >= mTL.col && genC <= mBR.col)
             gen->ResetCounter(mMin, mMax);
     }
 
