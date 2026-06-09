@@ -137,6 +137,8 @@ public:
     void ClearUpgrades();
     bool IsUpgradeUnlocked(TechUpgradeId upgrade) const;
     void UnlockUpgrade(TechUpgradeId upgrade);
+    unsigned int AddOnUpgradeUnlocked(const std::function<void(TechUpgradeId)> & f);
+    void RemoveOnUpgradeUnlocked(unsigned int funId);
 
     float GetBaseProductionMult() const;
     float GetStorageEnergyMult() const;
@@ -167,6 +169,7 @@ public:
 private:
     int GetCellsEnergyUsed() const;
     void NotifyResourcesChanged();
+    void NotifyUpgradeUnlock(TechUpgradeId upgrade);
 
     void UpgradeResourceStorage(ResourceType res, float mult);
 
@@ -191,6 +194,7 @@ private:
     std::string mName;
 
     std::unordered_map<unsigned int, std::function<void()>> mOnResourcesChanged;
+    std::unordered_map<unsigned int, std::function<void(TechUpgradeId)>> mOnUpgradeUnlocked;
     std::function<void(int)> mOnNumCellsChanged;
     std::function<void()> mOnNumUnitsChanged;
     std::function<void()> mOnTurnEnergyChanged;

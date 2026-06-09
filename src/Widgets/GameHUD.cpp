@@ -97,7 +97,7 @@ GameHUD::GameHUD(ScreenGame * screen)
     });
 
     // QUICK UNIT SELECTION BUTTONS
-    mGroupUnitSel = new sgl::sgui::ButtonsGroup(sgl::sgui::ButtonsGroup::HORIZONTAL, this);
+    mGroupUnitSel = new sgl::sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
 
     const int numButtons = local->GetMaxUnits();
 
@@ -107,9 +107,7 @@ GameHUD::GameHUD(ScreenGame * screen)
         mGroupUnitSel->AddButton(b);
     }
 
-    const int groupX = (rendW - mGroupUnitSel->GetWidth()) * 0.5f;
-    const int groupY = rendH - mGroupUnitSel->GetHeight();
-    mGroupUnitSel->SetPosition(groupX, groupY);
+    PositionQuickUnitButtons();
 
     local->SetOnNumUnitsChanged([this, local]
     {
@@ -145,7 +143,7 @@ GameHUD::GameHUD(ScreenGame * screen)
     });
 
     const int posPanelTurnX = (rendW - mPanelTurnCtrl->GetWidth()) / 2;
-    const int posPanelTurnY = groupY - mPanelTurnCtrl->GetHeight();
+    const int posPanelTurnY = mGroupUnitSel->GetY() - mPanelTurnCtrl->GetHeight();
     mPanelTurnCtrl->SetPosition(posPanelTurnX, posPanelTurnY);
 
     // PANEL SELECTED OBJECT
@@ -365,6 +363,16 @@ void GameHUD::ClearQuickUnitButtonChecked()
 
     if(checked != -1)
         mGroupUnitSel->GetButton(checked)->SetChecked(false);
+}
+
+void GameHUD::AddQuickUnitButton()
+{
+    const unsigned int buttons = mGroupUnitSel->GetNumButtons();
+
+    auto b = new ButtonQuickUnitSelection(buttons, mScreen);
+    mGroupUnitSel->AddButton(b);
+
+    PositionQuickUnitButtons();
 }
 
 void GameHUD::ShowDialogMissionGoals()
@@ -1244,6 +1252,16 @@ void GameHUD::PositionMissionCountdown()
     const int y0 = isoObj->GetY() - mCountdownLabel->GetHeight();
 
     mCountdownLabel->SetPosition(x0, y0);
+}
+
+void GameHUD::PositionQuickUnitButtons()
+{
+    const int rendW = sgl::graphic::Renderer::Instance()->GetWidth();
+    const int rendH = sgl::graphic::Renderer::Instance()->GetHeight();
+    const int groupX = (rendW - mGroupUnitSel->GetWidth()) / 2;
+    const int groupY = rendH - mGroupUnitSel->GetHeight();
+
+    mGroupUnitSel->SetPosition(groupX, groupY);
 }
 
 void GameHUD::ResumeGameFromExit()

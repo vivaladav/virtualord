@@ -186,6 +186,12 @@ ScreenGame::ScreenGame(Game * game)
         {
             // first turn is always played by local player
             p->ResetTurnsPlayed(1);
+
+            // react to upgrades unlocked
+            mIdOnUnlockUpgraded = p->AddOnUpgradeUnlocked([this](TechUpgradeId upgrade)
+                                    {
+                                        OnUpgradeUnlocked(upgrade);
+                                    });
         }
     }
 
@@ -235,6 +241,8 @@ ScreenGame::~ScreenGame()
         p->ClearMissionObjects();
         p->ClearSelectedObject();
     }
+
+    mLocalPlayer->RemoveOnUpgradeUnlocked(mIdOnUnlockUpgraded);
 
     game->RemoveOnSettingsChangedFunction(mIdOnSettingsChanged);
 
@@ -3780,6 +3788,23 @@ void ScreenGame::AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, 
 
     MiniMap * mm = mHUD->GetMinimap();
     mm->AddElement(cell.row, cell.col, data.GetRows(), data.GetCols(), mtype, f);
+}
+
+void ScreenGame::OnUpgradeUnlocked(TechUpgradeId upgrade)
+{
+    switch(upgrade)
+    {
+        case TECH_UP_UNIT_SLOTS_1:
+        case TECH_UP_UNIT_SLOTS_2:
+        case TECH_UP_UNIT_SLOTS_3:
+        case TECH_UP_UNIT_SLOTS_4:
+        case TECH_UP_UNIT_SLOTS_5:
+            mHUD->AddQuickUnitButton();
+        break;
+
+    default:
+        break;
+    }
 }
 
 void ScreenGame::EndTurn()

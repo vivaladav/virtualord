@@ -42,6 +42,7 @@ class PlayerAI;
 class Unit;
 
 enum PlayerFaction : unsigned int;
+enum TechUpgradeId : unsigned int;
 enum TurnStage : unsigned int;
 
 class ScreenGame : public Screen
@@ -185,6 +186,8 @@ private:
 
     void AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, PlayerFaction f);
 
+    void OnUpgradeUnlocked(TechUpgradeId upgrade);
+
     // TURN
     void EndTurn();
     void InitLocalTurn();
@@ -210,6 +213,7 @@ private:
     CameraMapController * mCamController = nullptr;
 
     unsigned int mIdOnSettingsChanged = 0;
+    unsigned int mIdOnUnlockUpgraded = 0;
 
     sgl::graphic::ParticlesManager * mPartMan = nullptr;
 

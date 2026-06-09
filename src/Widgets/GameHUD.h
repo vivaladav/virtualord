@@ -79,6 +79,7 @@ public:
     const sgl::sgui::ButtonsGroup * GetQuickUnitButtonsGroup() const;
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
+    void AddQuickUnitButton();
 
     DialogMissionGoals * GetDialogMissionGoals() const;
     void ShowDialogMissionGoals();
@@ -144,6 +145,7 @@ private:
 
     void PositionOptionsPanelOverObjectActions(sgl::sgui::Widget * panel, unsigned int button);
     void PositionMissionCountdown();
+    void PositionQuickUnitButtons();
 
     void ResumeGameFromExit();
 

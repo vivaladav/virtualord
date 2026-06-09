@@ -467,6 +467,25 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
         default:
         break;
     }
+
+    NotifyUpgradeUnlock(upgrade);
+}
+
+unsigned int Player::AddOnUpgradeUnlocked(const std::function<void(TechUpgradeId)> & f)
+{
+    static unsigned int num = 0;
+
+    mOnUpgradeUnlocked.emplace(++num, f);
+
+    return num;
+}
+
+void Player::RemoveOnUpgradeUnlocked(unsigned int funId)
+{
+    auto it = mOnUpgradeUnlocked.find(funId);
+
+    if(it != mOnUpgradeUnlocked.end())
+        mOnUpgradeUnlocked.erase(it);
 }
 
 void Player::OnNewTurn()
@@ -698,6 +717,12 @@ void Player::NotifyResourcesChanged()
 {
     for(auto & it : mOnResourcesChanged)
         it.second();
+}
+
+void Player::NotifyUpgradeUnlock(TechUpgradeId upgrade)
+{
+    for(auto & it : mOnUpgradeUnlocked)
+        it.second(upgrade);
 }
 
 void Player::UpgradeResourceStorage(ResourceType res, float mult)
