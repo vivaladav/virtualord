@@ -456,6 +456,14 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
             AddAvailableStructure(ObjectData::TYPE_PRACTICE_TARGET);
         break;
 
+        case TECH_UP_UNIT_SLOTS_1:
+        case TECH_UP_UNIT_SLOTS_2:
+        case TECH_UP_UNIT_SLOTS_3:
+        case TECH_UP_UNIT_SLOTS_4:
+        case TECH_UP_UNIT_SLOTS_5:
+            SetMaxUnits(GetMaxUnits() + 1);
+        break;
+
         default:
         break;
     }

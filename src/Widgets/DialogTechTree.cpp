@@ -111,6 +111,11 @@ DialogTechTree::DialogTechTree(Player * player)
     mDescriptions.emplace(TECH_UP_STORAGE_BLOBS_1, "UPG_STOR_BLO1");
     mDescriptions.emplace(TECH_UP_STORAGE_BLOBS_2, "UPG_STOR_BLO2");
     mDescriptions.emplace(TECH_UP_PRACTICE_TARGET, "UPG_PTARGET");
+    mDescriptions.emplace(TECH_UP_UNIT_SLOTS_1, "UPG_EXTRA_UNIT_SLOT");
+    mDescriptions.emplace(TECH_UP_UNIT_SLOTS_2, "UPG_EXTRA_UNIT_SLOT");
+    mDescriptions.emplace(TECH_UP_UNIT_SLOTS_3, "UPG_EXTRA_UNIT_SLOT");
+    mDescriptions.emplace(TECH_UP_UNIT_SLOTS_4, "UPG_EXTRA_UNIT_SLOT");
+    mDescriptions.emplace(TECH_UP_UNIT_SLOTS_5, "UPG_EXTRA_UNIT_SLOT");
 
     // INIT COSTS
     mCosts.emplace(TECH_UP_NULL, 0);
@@ -131,6 +136,11 @@ DialogTechTree::DialogTechTree(Player * player)
     mCosts.emplace(TECH_UP_STORAGE_BLOBS_1, 600);
     mCosts.emplace(TECH_UP_STORAGE_BLOBS_2, 1500);
     mCosts.emplace(TECH_UP_PRACTICE_TARGET, 900);
+    mCosts.emplace(TECH_UP_UNIT_SLOTS_1, 500);
+    mCosts.emplace(TECH_UP_UNIT_SLOTS_2, 2500);
+    mCosts.emplace(TECH_UP_UNIT_SLOTS_3, 5000);
+    mCosts.emplace(TECH_UP_UNIT_SLOTS_4, 8000);
+    mCosts.emplace(TECH_UP_UNIT_SLOTS_5, 11500);
 
     // -- BACKGROUND --
     const int w = 1904;
@@ -472,6 +482,50 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
                                                 { btnUpgrade42 }, false);
 
         btnUpgrade43->SetPosition(btnX, btnY);
+    }
+    if(section == SEC_UNITS)
+    {
+        // -- COL 0 --
+        // [0, 0]
+        auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_1, 1, {}, true);
+        btnUpgrade00->SetPosition(btnX, btnY);
+
+        AddLinkToUpgrade(btnUpgrade00, LINK_VERT, LS_NORTH);
+        //AddLinkToUpgrade(btnUpgrade00, LINK_HORIZ, LS_WEST);
+
+        btnY -= btnUpgrade00->GetHeight() + buttonsMarginV;
+
+        // [1, 0]
+        auto btnUpgrade10 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_2, 2,
+                                                { btnUpgrade00 }, false);
+        btnUpgrade10->SetPosition(btnX, btnY);
+
+        AddLinkToUpgrade(btnUpgrade10, LINK_VERT, LS_NORTH);
+
+        btnY -= btnUpgrade10->GetHeight() + buttonsMarginV;
+
+        // [2, 0]
+        auto btnUpgrade20 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_3, 3,
+                                                { btnUpgrade10 }, false);
+        btnUpgrade20->SetPosition(btnX, btnY);
+
+        AddLinkToUpgrade(btnUpgrade20, LINK_VERT, LS_NORTH);
+
+        btnY -= btnUpgrade20->GetHeight() + buttonsMarginV;
+
+        // [3, 0]
+        auto btnUpgrade30 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_4, 4,
+                                                { btnUpgrade20 }, false);
+        btnUpgrade30->SetPosition(btnX, btnY);
+
+        AddLinkToUpgrade(btnUpgrade30, LINK_VERT, LS_NORTH);
+
+        btnY -= btnUpgrade30->GetHeight() + buttonsMarginV;
+
+        // [4, 0]
+        auto btnUpgrade40 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_5, 5,
+                                                { btnUpgrade30 }, false);
+        btnUpgrade40->SetPosition(btnX, btnY);
     }
     else
     {

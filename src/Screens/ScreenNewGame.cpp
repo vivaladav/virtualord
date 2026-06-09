@@ -21,7 +21,7 @@ ScreenNewGame::ScreenNewGame(Game * game)
     , mGame(game)
     , mDiff(Difficulty::EASY)
 {
-    const int MAX_UNITS0 = 6;
+    const int MAX_UNITS0 = 5;
 
     // create human player
     const PlayerFaction pf = game->GetLocalPlayerFaction();
