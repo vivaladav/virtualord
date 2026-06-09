@@ -66,6 +66,7 @@ constexpr int collectablesMin = 2;
 constexpr int collectablesMax = 4;
 
 const Cell2D cellEneGen1(6, 15);
+const Cell2D cellEneGen2(23, 17);
 const Cell2D cellMatGen1(15, 7);
 const Cell2D cellMatGen2(24,3);
 const Cell2D cellBarracks(8, 9);
@@ -478,7 +479,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
-    // CONQUER SECOND MATERIAL GENERATOR
+    // CONQUER SECOND MATERIAL GENERATOR WITH SOLDIER
     AddStep([game]
             {
                 const int movX = -100;
@@ -504,9 +505,38 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1000, 150);
                 return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
             });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONQUER SECOND ENERGY GENERATOR WITH WORKER
+    AddStep([game]
+            {
+                const int movX = 100;
+                const int movY = 0;
+                return new StepGameMoveCamera(movX, movY);
+            });
+    AddStep([local, game, isoMap]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                return new StepGameUnit(game, isoMap, unit);
+            });
+    AddStep([this, local]
+            {
+                const GameObject * gen = GetObjectInCell(cellEneGen2);
+
+                return new StepGameConquerMaterialGenIntro(gen);
+            });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const GameObject * gen = GetObjectInCell(cellEneGen2);
+                const core::Pointd2D p0(1000, 150);
+                return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
+            });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // CONNECT SECOND MATERIAL GENERATOR
+    // 23, 4 -> 15, 5
 }
 
 TutorialGame2::~TutorialGame2()
