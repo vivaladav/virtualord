@@ -20,6 +20,7 @@
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
 #include "Tutorial/StepGameConquerGeneratorIntro.h"
+#include "Tutorial/StepGameConquerMaterialGenIntro.h"
 #include "Tutorial/StepGameConquerStructChoice.h"
 #include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
@@ -66,6 +67,7 @@ constexpr int collectablesMax = 4;
 
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellMatGen1(15, 7);
+const Cell2D cellMatGen2(24,3);
 const Cell2D cellBarracks(8, 9);
 const Cell2D cellTarget1(15, 13);
 
@@ -430,11 +432,12 @@ TutorialGame2::TutorialGame2(Screen * screen)
             return new StepGameCollectObjects(unit, ObjectData::TYPE_DIAMONDS, game, gameMap, isoMap,
                                               areaTL, areaDiamondsBR, "TUT_GAME_COLLECT_DIAMONDS", p0);
         });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE CAMERA OVER BLOBS
     AddStep([isoMap]
         {
-            const float speed = 600.f;
+            const float speed = 800.f;
             const Cell2D cell(14, 14);
             return new StepGameMoveCameraOverCell(cell, isoMap, speed);
         });
@@ -475,7 +478,34 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
+    // CONQUER SECOND MATERIAL GENERATOR
+    AddStep([game]
+            {
+                const int movX = -100;
+                const int movY = -100;
+                return new StepGameMoveCamera(movX, movY);
+            });
+    AddStep([local, game, isoMap]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                return new StepGameUnit(game, isoMap, unit);
+            });
+    AddStep([this, local]
+            {
+                const GameObject * gen = GetObjectInCell(cellMatGen2);
+
+                return new StepGameConquerMaterialGenIntro(gen);
+            });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const GameObject * gen = GetObjectInCell(cellMatGen2);
+                const core::Pointd2D p0(1000, 150);
+                return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
+            });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
