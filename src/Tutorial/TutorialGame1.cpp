@@ -163,6 +163,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameEnergyRegeneration; });
+    AddStep([] { return new StepDelay(0.5f); });
     // EXPLAIN STRUCTURE CONNECTIONS AND CONNECT GENERATOR TO BASE
     AddStep([] { return new StepGameStructDisconnected; });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });

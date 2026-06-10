@@ -107,6 +107,7 @@ private:
 
     void AssignStartResources(Player * p);
 
+    void InitPlayers();
     void InitMusic();
     void InitParticlesSystem();
     void InitTutorial();

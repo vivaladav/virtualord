@@ -102,16 +102,18 @@ ScreenGame::ScreenGame(Game * game)
 
     InitParticlesSystem();
 
-    // MISSION GOALS
-    mTrackerMG = new MissionGoalsTracker(game, mLocalPlayer);
-
-    // -- ISOMETRIC MAP --
+    // ISOMETRIC MAP
     CreateIsoMap();
     CreateLayers();
 
     // create game map
     mGameMap = new GameMap(game, this, mIsoMap);
 
+    // PLAYERS
+    InitPlayers();
+
+    // MISSION GOALS
+    mTrackerMG = new MissionGoalsTracker(game, mLocalPlayer);
     mTrackerMG->SetControlMap(mGameMap->GetControlMap());
 
     LoadMapFile();
@@ -162,43 +164,8 @@ ScreenGame::ScreenGame(Game * game)
     // init pathfinder
     mPathfinder->SetMap(mGameMap);
 
-    // -- PLAYERS --
-    const unsigned int numPlayers = game->GetNumPlayers();
-
-    for(int i = 0; i < numPlayers; ++i)
-    {
-        Player * p = game->GetPlayerByIndex(i);
-
-        p->ResetTurnEnergy();
-
-        AssignStartResources(p);
-
-        // AI players
-        if(p->IsAI())
-        {
-            p->GetAI()->SetGameMap(mGameMap);
-            mAiPlayers.push_back(p);
-
-            p->ResetTurnsPlayed();
-        }
-        // local player
-        else
-        {
-            // first turn is always played by local player
-            p->ResetTurnsPlayed(1);
-
-            // react to upgrades unlocked
-            mIdOnUnlockUpgraded = p->AddOnUpgradeUnlocked([this](TechUpgradeId upgrade)
-                                    {
-                                        OnUpgradeUnlocked(upgrade);
-                                    });
-        }
-    }
-
     // UI
     CreateUI();
-
-    mTrackerMG->SetGameHUD(mHUD);
 
     // OVERLAYS
     const PlayerFaction localFaction = mLocalPlayer->GetFaction();
@@ -550,6 +517,43 @@ void ScreenGame::AssignStartResources(Player * p)
         p->SetResource(Player::Stat::MONEY, START_MONEY);
 }
 
+void ScreenGame::InitPlayers()
+{
+    auto game = GetGame();
+
+    const unsigned int numPlayers = game->GetNumPlayers();
+
+    for(int i = 0; i < numPlayers; ++i)
+    {
+        Player * p = game->GetPlayerByIndex(i);
+
+        p->ResetTurnEnergy();
+
+        AssignStartResources(p);
+
+        // AI players
+        if(p->IsAI())
+        {
+            p->GetAI()->SetGameMap(mGameMap);
+            mAiPlayers.push_back(p);
+
+            p->ResetTurnsPlayed();
+        }
+        // local player
+        else
+        {
+            // first turn is always played by local player
+            p->ResetTurnsPlayed(1);
+
+            // react to upgrades unlocked
+            mIdOnUnlockUpgraded = p->AddOnUpgradeUnlocked([this](TechUpgradeId upgrade)
+                                                          {
+                                                              OnUpgradeUnlocked(upgrade);
+                                                          });
+        }
+    }
+}
+
 void ScreenGame::InitMusic()
 {
     auto am = sgl::media::AudioManager::Instance();
@@ -648,8 +652,9 @@ void ScreenGame::CreateUI()
 
     // init HUD layer
     mHUD = new GameHUD(this);
-
     mHUD->SetMiniMapEnabled(false);
+
+    mTrackerMG->SetGameHUD(mHUD);
 
     PanelObjectActions * panelObjActions = mHUD->GetPanelObjectActions();
 
