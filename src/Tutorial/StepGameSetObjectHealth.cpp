@@ -13,8 +13,8 @@ StepGameSetObjectHealth::StepGameSetObjectHealth(GameObject * obj, float val)
 
 void StepGameSetObjectHealth::OnStart()
 {
-    const float health0 = mObj->GetHealth();
-    const float delta = mVal - health0;
+    const float val0 = mObj->GetHealth();
+    const float delta = mVal - val0;
 
     mObj->SumHealth(delta);
 

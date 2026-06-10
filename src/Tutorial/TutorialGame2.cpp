@@ -35,6 +35,7 @@
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
 #include "Tutorial/StepGameSetCollectableUnits.h"
+#include "Tutorial/StepGameSetObjectEnergy.h"
 #include "Tutorial/StepGameSetObjectHealth.h"
 #include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
@@ -510,6 +511,13 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // MAKE SURE SOLDIER'S ENERGY IS FULL (it will be needed for connection)
+    AddStep([local]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const float val = unit->GetMaxEnergy();
+                return new StepGameSetObjectEnergy(unit, val);
+            });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER SECOND ENERGY GENERATOR WITH WORKER
     AddStep([game]
