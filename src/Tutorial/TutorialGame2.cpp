@@ -311,6 +311,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD BARRACKS
     AddStep([panelActions]
@@ -390,7 +391,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const core::Pointd2D p0(200, 600);
                 const Cell2D targetTL(13, 13);
-                const Cell2D targetBR(16, 17);
+                const Cell2D targetBR(16, 16);
 
                 return new StepGamePanelHit(isoMap, targetBR, targetTL, p0);
             });
@@ -473,6 +474,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameCollectObjects(unit, ObjectData::TYPE_BLOBS, game, gameMap, isoMap,
                                                   areaTL, areaBlobsBR, "TUT_GAME_COLLECT_BLOBS", p0);
             });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // UPGRADE UNIT
     AddStep([panelActions]
@@ -511,6 +513,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // MAKE SURE SOLDIER'S ENERGY IS FULL (it will be needed for connection)
     AddStep([local]
             {
@@ -546,6 +549,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1000, 150);
                 return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
             });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND MATERIAL GENERATOR
     AddStep([game]
@@ -581,6 +585,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND ENERGY GENERATOR
     AddStep([game]
@@ -615,9 +620,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([gs] { return new StepGameWaitTurn(gs); });
-    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([local, game, isoMap]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                return new StepGameUnit(game, isoMap, unit);
+            });
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     AddStep([this, isoMap, game]
             {
@@ -628,13 +635,21 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([this, local, isoMap, game]
             {
-                const auto unit = local->GetUnit(indWorker1);
+                const auto unit = local->GetUnit(indSoldier1);
                 const core::Pointd2D p0(1200, 150);
                 const Cell2D cellEnd(15, 8);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
     // BUILD RESEARCH CENTER
+    AddStep([local, game, isoMap]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                return new StepGameUnit(game, isoMap, unit);
+            });
     AddStep([panelActions]
             {
                 const core::Pointd2D p0(1100, 450);
