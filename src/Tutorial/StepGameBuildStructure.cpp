@@ -21,7 +21,7 @@ namespace game
 
 StepGameBuildStructure::StepGameBuildStructure(GameHUD * HUD, const char * textCat,
                                                const char * textStruct, int indCat, int indStruct)
-    : TutorialInfoStep(550, 140)
+    : TutorialInfoStep(550, 130)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
     , mIndCat(indCat)

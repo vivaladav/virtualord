@@ -20,7 +20,7 @@
 #include "Tutorial/StepGameBaseBuildUnit.h"
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
 #include "Tutorial/StepGameBuildStructIntro.h"
-#include "Tutorial/StepGameBuildTower.h"
+#include "Tutorial/StepGameBuildStructure.h"
 #include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameBuildUnitEnd.h"
 #include "Tutorial/StepGameBuildUnitStart.h"
@@ -264,7 +264,13 @@ TutorialGame1::TutorialGame1(Screen * screen)
 
             return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
         });
-    AddStep([hud] { return new StepGameBuildTower(hud); });
+    AddStep([hud]
+            {
+                const int indCat = 1;
+                const int indStruct = 1;
+                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
+                                                  "TUT_GAME_BUILD_DTOWER_4", indCat, indStruct);
+            });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
         {
@@ -411,7 +417,13 @@ TutorialGame1::TutorialGame1(Screen * screen)
 
                 return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
             });
-    AddStep([hud] { return new StepGameBuildTower(hud); });
+    AddStep([hud]
+            {
+                const int indCat = 1;
+                const int indStruct = 1;
+                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
+                                                  "TUT_GAME_BUILD_DTOWER_4", indCat, indStruct);
+            });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
         {

@@ -73,7 +73,6 @@ private:
     static const int NUM_COSTS = 4;
 
 private:
-    friend class StepGameBuildTower;
     friend class StepGameBuildStructure;
 
     std::array<ObjectVisualAttribute *, NUM_VIS_ATT> mVisAtt;
