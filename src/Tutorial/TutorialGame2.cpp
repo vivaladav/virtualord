@@ -12,6 +12,7 @@
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameIntro2.h"
 #include "Tutorial/StepGameBuildStructIntro.h"
+#include "Tutorial/StepGameBuildStructure.h"
 #include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameBuildUnitEnd.h"
 #include "Tutorial/StepGameBuildUnitStart.h"
@@ -72,6 +73,7 @@ const Cell2D cellMatGen1(15, 7);
 const Cell2D cellMatGen2(24,3);
 const Cell2D cellBarracks(8, 9);
 const Cell2D cellTarget1(15, 13);
+const Cell2D cellResCenter(11, 6);
 
 const Cell2D areaBlobsTL(22, 12);
 const Cell2D areaBlobsBR(25, 13);
@@ -536,8 +538,6 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1000, 150);
                 return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
             });
-    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND MATERIAL GENERATOR
     AddStep([game]
@@ -571,6 +571,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const Cell2D cellEnd(15, 5);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND ENERGY GENERATOR
     AddStep([game]
@@ -622,6 +624,27 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1200, 150);
                 const Cell2D cellEnd(15, 8);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD RESEARCH CENTER
+    AddStep([panelActions]
+            {
+                const core::Pointd2D p0(1100, 450);
+                return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_RES_CEN_1", p0);
+            });
+    AddStep([hud]
+            {
+                const int indCat = 3;
+                const int indStruct = 0;
+                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_RES_CEN_2", nullptr,
+                                                  indCat, indStruct);
+            });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const core::Pointd2D p0(1100, 500);
+                return new StepGameBuildTowerEnd(isoMap, unit, cellResCenter, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
 }

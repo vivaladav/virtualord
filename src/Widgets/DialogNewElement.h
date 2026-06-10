@@ -74,6 +74,7 @@ private:
 
 private:
     friend class StepGameBuildTower;
+    friend class StepGameBuildStructure;
 
     std::array<ObjectVisualAttribute *, NUM_VIS_ATT> mVisAtt;
     std::array<sgl::sgui::Label *, NUM_COSTS> mLabelsCost;
