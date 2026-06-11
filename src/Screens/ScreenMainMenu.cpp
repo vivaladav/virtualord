@@ -383,6 +383,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed crash when opening trading dialog.\n"
                   "- Fixed AI not active after first tutorial.\n"
                   "- Fixed new structure indicator not updating the position in same cases.\n"
+                  "- Fixed ComboBox not deleting entries when destroyed.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
