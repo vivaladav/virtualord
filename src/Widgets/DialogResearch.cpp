@@ -156,7 +156,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    slider->SetOnValueChanged([this, label](int val)
+    slider->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -204,7 +204,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    slider->SetOnValueChanged([this, label](int val)
+    slider->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -252,7 +252,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    slider->SetOnValueChanged([this, label](int val)
+    slider->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -298,7 +298,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    slider->SetOnValueChanged([this, label](int val)
+    slider->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -344,7 +344,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    slider->SetOnValueChanged([this, label](int val)
+    slider->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 

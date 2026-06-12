@@ -657,7 +657,7 @@ void DialogSettings::CreatePanelAudio()
 
     label->SetText(std::to_string(slider->GetValue()).c_str());
 
-    slider->SetOnValueChanged([label, am](int val)
+    slider->AddOnValueChanged([label, am](int val)
                               {
                                   am->SetVolumeMusic(val);
 
@@ -710,7 +710,7 @@ void DialogSettings::CreatePanelAudio()
 
     label->SetText(std::to_string(slider->GetValue()).c_str());
 
-    slider->SetOnValueChanged([label, am](int val)
+    slider->AddOnValueChanged([label, am](int val)
     {
         am->SetVolumeSound(val);
 
@@ -965,7 +965,7 @@ void DialogSettings::CreatePanelControls()
 
     label->SetText(std::to_string(slider->GetValue()).c_str());
 
-    slider->SetOnValueChanged([this, label](int val)
+    slider->AddOnValueChanged([this, label](int val)
                               {
                                   mGame->SetMapScrollingSpeed(val);
 
@@ -1017,7 +1017,7 @@ void DialogSettings::CreatePanelControls()
 
     label->SetText(std::to_string(slider->GetValue()).c_str());
 
-    slider->SetOnValueChanged([this, label](int val)
+    slider->AddOnValueChanged([this, label](int val)
                               {
                                   mGame->SetMapDraggingSpeed(val);
 

@@ -180,7 +180,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     label->SetPosition(mSliderMoney->GetX() + mSliderMoney->GetWidth() + marginSliderR,
                        mSliderMoney->GetY());
 
-    mSliderMoney->SetOnValueChanged([this, label](int val)
+    mSliderMoney->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -210,7 +210,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     label->SetPosition(mSliderMaterial->GetX() + mSliderMaterial->GetWidth() + marginSliderR,
                        mSliderMaterial->GetY());
 
-    mSliderMaterial->SetOnValueChanged([this, label](int val)
+    mSliderMaterial->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -241,7 +241,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     label->SetPosition(mSliderDiamonds->GetX() + mSliderDiamonds->GetWidth() + marginSliderR,
                        mSliderDiamonds->GetY());
 
-    mSliderDiamonds->SetOnValueChanged([this, label](int val)
+    mSliderDiamonds->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -272,7 +272,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     label->SetPosition(mSliderBlobs->GetX() + mSliderBlobs->GetWidth() + marginSliderR,
                        mSliderBlobs->GetY());
 
-    mSliderBlobs->SetOnValueChanged([this, label](int val)
+    mSliderBlobs->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 

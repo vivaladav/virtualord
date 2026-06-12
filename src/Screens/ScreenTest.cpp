@@ -442,7 +442,7 @@ void ScreenTest::TestSGui()
     label = new Label(std::to_string(slider->GetValue()).c_str(), font, container4);
     label->SetPosition(slider->GetX() + slider->GetWidth() + 50, slider->GetY());
 
-    slider->SetOnValueChanged([label](int val)
+    slider->AddOnValueChanged([label](int val)
     {
         label->SetText(std::to_string(val).c_str());
     });
@@ -459,7 +459,7 @@ void ScreenTest::TestSGui()
     label = new Label(std::to_string(slider->GetValue()).c_str(), font, container4);
     label->SetPosition(slider->GetX() + slider->GetWidth() + 50, slider->GetY());
 
-    slider->SetOnValueChanged([label](int val)
+    slider->AddOnValueChanged([label](int val)
     {
         label->SetText(std::to_string(val).c_str());
     });
@@ -475,7 +475,7 @@ void ScreenTest::TestSGui()
     label = new Label(std::to_string(slider->GetValue()).c_str(), font, container4);
     label->SetPosition(slider->GetX() + slider->GetWidth() + 50, slider->GetY());
 
-    slider->SetOnValueChanged([label](int val)
+    slider->AddOnValueChanged([label](int val)
                               {
                                   label->SetText(std::to_string(val).c_str());
                               });
