@@ -12,6 +12,7 @@ namespace sgl
     {
         class AbstractButton;
         class Label;
+        class Slider;
     }
 }
 
@@ -38,9 +39,17 @@ private:
     void UpdateOutput();
 
 private:
+    friend class StepGameSetupResearch;
+
     sgl::graphic::Image * mBgL = nullptr;
     sgl::graphic::Image * mBgC = nullptr;
     sgl::graphic::Image * mBgR = nullptr;
+
+    sgl::sgui::Slider * mSliderMoney = nullptr;
+    sgl::sgui::Slider * mSliderEnergy = nullptr;
+    sgl::sgui::Slider * mSliderMaterial = nullptr;
+    sgl::sgui::Slider * mSliderDiamonds = nullptr;
+    sgl::sgui::Slider * mSliderBlobs = nullptr;
 
     sgl::sgui::AbstractButton * mBtnClose = nullptr;
 

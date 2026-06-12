@@ -445,6 +445,15 @@ void ScreenTest::TestSGui()
     slider->AddOnValueChanged([label](int val)
     {
         label->SetText(std::to_string(val).c_str());
+        label->SetColor(0xFFFFFFFF);
+    });
+
+    slider->AddOnValueFinalized([label](int val)
+    {
+        if(val == 50)
+            label->SetColor(0xFF6666FF);
+        else
+            label->SetColor(0xFFFFFFFF);
     });
 
     wY += slider->GetHeight() * 2;

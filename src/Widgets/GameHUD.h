@@ -114,6 +114,7 @@ public:
 
     void ShowDialogResearch(ResearchCenter * rc);
     void HideDialogResearch();
+    const DialogResearch * GetDialogResearch() const;
 
     void ShowDialogTechTree();
     void HideDialogTechTree();
@@ -211,6 +212,8 @@ inline PanelShotType * GameHUD::GetPanelShotType() const { return mPanelShotType
 inline const PanelSelectedObject * GameHUD::GetPanelSelectedObject() const { return mPanelSelObj; }
 
 inline const PanelTurnControl * GameHUD::GetPanelTurnControl() const { return mPanelTurnCtrl; }
+
+inline const DialogResearch * GameHUD::GetDialogResearch() const { return mDialogResearch; }
 
 inline DialogUpgrade * GameHUD::GetDialogUpgrade() const { return mDialogUpgrade; }
 } // namespace game

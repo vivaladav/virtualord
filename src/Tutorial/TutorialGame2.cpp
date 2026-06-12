@@ -40,6 +40,7 @@
 #include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
+#include "Tutorial/StepGameSetupResearch.h"
 #include "Tutorial/StepGameSetupResearchIcon.h"
 #include "Tutorial/StepGameSingleInfo.h"
 #include "Tutorial/StepGameUnit.h"
@@ -683,6 +684,10 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const core::Pointd2D p0(1000, 650);
                 return new StepGameSetupResearchIcon(panelActions, p0);
+            });
+    AddStep([hud]
+            {
+                return new StepGameSetupResearch(hud);
             });
 }
 

@@ -198,8 +198,8 @@ void ResearchCenter::UpdateProduction()
         mResUsage[ER_DIAMONDS] = diamonds;
 
     // -- define research points production --
-    const int maxProdElem = 30;
-    const int maxProdElem2 = 40;
+    const int maxProdElem = 40;
+    const int maxProdElem2 = 50;
     const int maxUsage = 100;
     const int baseProd = (maxProdElem * mResUsage[ER_ENERGY] / maxUsage) +
                          (maxProdElem * mResUsage[ER_MATERIAL] / maxUsage) +
