@@ -269,8 +269,6 @@ add_executable(
     src/Tutorial/StepGameBaseFeatures.cpp
     src/Tutorial/StepGameBuildStructIntro.h
     src/Tutorial/StepGameBuildStructIntro.cpp
-
-
     src/Tutorial/StepGameBuildTowerEnd.h
     src/Tutorial/StepGameBuildTowerEnd.cpp
     src/Tutorial/StepGameClearSelection.h
@@ -367,6 +365,8 @@ add_executable(
     src/Tutorial/StepGameSetSelectionActiveAction.cpp
     src/Tutorial/StepGameSetSelectionDefaultAction.h
     src/Tutorial/StepGameSetSelectionDefaultAction.cpp
+    src/Tutorial/StepGameSetupResearchIcon.h
+    src/Tutorial/StepGameSetupResearchIcon.cpp
     src/Tutorial/StepGameSingleInfo.h
     src/Tutorial/StepGameSingleInfo.cpp
     src/Tutorial/StepGameStructConnected.h
