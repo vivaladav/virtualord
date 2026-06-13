@@ -3224,6 +3224,10 @@ void ScreenGame::ShowActiveUnitIndicators(Unit * unit, const Cell2D & cell)
 {
     const GameObjectActionType action = unit->GetActiveAction();
 
+    // do not show any indicator when already doing something
+    if(unit->GetCurrentAction() != IDLE)
+        return ;
+
     if(action == GameObjectActionType::MOVE)
         ShowMoveIndicator(unit, cell);
     else if(action == GameObjectActionType::CONQUER_CELL)
