@@ -11,11 +11,6 @@
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StringManager.h>
 
-namespace
-{
-constexpr int padding = 10;
-}
-
 namespace game
 {
 
@@ -75,6 +70,7 @@ StepGameSetupResearch::StepGameSetupResearch(GameHUD * HUD)
                                                         SetDone();
                                                     });
 
+                             const int padding = 10;
                              const int x = btn->GetScreenX() - padding;
                              const int y = btn->GetScreenY() - padding;
                              const int w = btn->GetWidth() + (2 * padding);
@@ -114,16 +110,25 @@ void StepGameSetupResearch::HandleSlider(sgl::sgui::Slider * slider, int target)
                                 });
 
     // FOCUS
-    const int fX = slider->GetScreenX() - padding;
-    const int fY = slider->GetScreenY() - padding;
-    const int fW = slider->GetWidth() + (padding * 2);
-    const int fH = slider->GetHeight() + (padding * 2);
+    const int paddingX = 20;
+    const int paddingY = 20;
+    const int fX = slider->GetScreenX() - paddingX;
+    const int fY = slider->GetScreenY() - paddingY;
+    const int fW = slider->GetWidth() + (paddingX * 2);
+    const int fH = slider->GetHeight() + (paddingY * 2);
 
     mFocusArea->SetScreenArea(fX, fY, fW, fH);
     mFocusArea->SetVisible(true);
 
     // CLICK FILTER
-    GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+    // NOTE allow big clickable area or slider won't work when setting max value outside of its body
+    const int paddingX2 = 80;
+    const int paddingY2 = 40;
+    const int fX2 = slider->GetScreenX() - paddingX2;
+    const int fY2 = slider->GetScreenY() - paddingY2;
+    const int fW2 = slider->GetWidth() + (paddingX2 * 2);
+    const int fH2 = slider->GetHeight() + (paddingY2 * 2);
+    GetClickFilter()->SetScreenClickableArea(fX2, fY2, fW2, fH2);
 }
 
 } // namespace game
