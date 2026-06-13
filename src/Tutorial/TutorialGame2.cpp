@@ -16,6 +16,7 @@
 #include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameBuildUnitEnd.h"
 #include "Tutorial/StepGameBuildUnitStart.h"
+#include "Tutorial/StepGameClearSelection.h"
 #include "Tutorial/StepGameCollectObjects.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
@@ -585,9 +586,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const Cell2D cellEnd(15, 5);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND ENERGY GENERATOR
     AddStep([game]
@@ -679,7 +680,6 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const GameObject * obj = GetObjectInCell(cellResCenter);
                 return new StepGameSelectObject(game, isoMap, obj, "TUT_GAME_RES_CEN_1", p0);
             });
-    // SETUP RESEARCH
     AddStep([panelActions]
             {
                 const core::Pointd2D p0(1000, 650);
@@ -689,6 +689,15 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 return new StepGameSetupResearch(hud);
             });
+    // CLEAR SELECTION AND END TURN
+    AddStep([gs]
+            {
+                return new StepGameClearSelection(gs);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame2::~TutorialGame2()
