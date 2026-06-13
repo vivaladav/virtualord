@@ -138,7 +138,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([local, game, isoMap]
             {
                 const auto unit = local->GetUnit(indUnit1);
-                return new StepGameUnit(game, isoMap, unit);
+                const core::Pointd2D p0(1300, 450);
+                return new StepGameUnit(game, isoMap, unit, p0);
             });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -352,7 +353,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([local, game, isoMap]
             {
                 const auto unit = local->GetUnit(indUnit2);
-                return new StepGameUnit(game, isoMap, unit);
+                const core::Pointd2D p0(1300, 450);
+                return new StepGameUnit(game, isoMap, unit, p0);
             });
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });

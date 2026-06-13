@@ -12,7 +12,8 @@
 namespace game
 {
 
-StepGameUnit::StepGameUnit(const Game * game, const IsoMap * im, const Unit * unit)
+StepGameUnit::StepGameUnit(const Game * game, const IsoMap * im, const Unit * unit,
+                           const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new IsoFocusArea(im))
     , mUnit(unit)
@@ -25,7 +26,7 @@ StepGameUnit::StepGameUnit(const Game * game, const IsoMap * im, const Unit * un
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1300, 450);
+    info->SetPosition(p0.x, p0.y);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_UNIT_1"), 0.f, false, false, [this, game]
                         {
