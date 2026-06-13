@@ -369,6 +369,8 @@ add_executable(
     src/Tutorial/StepGameSetupResearch.cpp
     src/Tutorial/StepGameSetupResearchIcon.h
     src/Tutorial/StepGameSetupResearchIcon.cpp
+    src/Tutorial/StepGameResourcesBar.h
+    src/Tutorial/StepGameResourcesBar.cpp
     src/Tutorial/StepGameSingleInfo.h
     src/Tutorial/StepGameSingleInfo.cpp
     src/Tutorial/StepGameStructConnected.h

@@ -33,6 +33,7 @@
 #include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGameMoveUnitToArea.h"
 #include "Tutorial/StepGamePanelHit.h"
+#include "Tutorial/StepGameResourcesBar.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
 #include "Tutorial/StepGameSetCollectableUnits.h"
@@ -698,6 +699,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // EXPLAIN RESOURCES BAR
+    AddStep([hud]
+            {
+                return new StepGameResourcesBar(hud);
+            });
 }
 
 TutorialGame2::~TutorialGame2()

@@ -63,6 +63,8 @@ public:
     void SetMiniMapEnabled(bool val);
     MiniMap * GetMinimap() const;
 
+    const PanelResources * GetPanelResources() const;
+
     // OBJECT ACTIONS
     PanelObjectActions * GetPanelObjectActions() const;
     void HidePanelObjectActions();
@@ -196,6 +198,8 @@ private:
 inline bool GameHUD::IsShowingDialog() const { return mVisibleDialogs > 0; }
 
 inline MiniMap * GameHUD::GetMinimap() const { return mMiniMap; }
+
+inline const PanelResources * GameHUD::GetPanelResources() const { return mPanelRes; }
 
 inline const sgl::sgui::ButtonsGroup * GameHUD::GetQuickUnitButtonsGroup() const
 {
