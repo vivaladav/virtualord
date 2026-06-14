@@ -46,4 +46,10 @@ BlinkingIconEnergy::BlinkingIconEnergy()
 {
 }
 
+// ===== RESEARCH =====
+BlinkingIconResearch::BlinkingIconResearch()
+    : BlinkingIcon(SpriteFileUIShared, ID_UIS_ICON_C_RES_RESEARCH_24)
+{
+}
+
 } // namespace game

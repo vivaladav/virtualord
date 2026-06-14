@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Particles/DataParticleOutput.h"
 #include "Particles/UpdaterOutput.h"
+#include "Widgets/BlinkingIcon.h"
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
@@ -15,6 +16,7 @@ namespace game
 
 ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & initData)
     : Structure(data, initData)
+    , mIconResearch(new BlinkingIconResearch)
 {
     SetImage();
 
@@ -156,6 +158,7 @@ void ResearchCenter::UpdateProduction()
     if(p == nullptr)
     {
         mResearchPerTurn = 0;
+        UpdateIconResearch();
         return ;
     }
 
@@ -182,6 +185,7 @@ void ResearchCenter::UpdateProduction()
     if(mResUsage[ER_ENERGY] == 0 || mResUsage[ER_MATERIAL] == 0 || mResUsage[ER_MONEY] == 0)
     {
         mResearchPerTurn = 0;
+        UpdateIconResearch();
         return ;
     }
 
@@ -208,6 +212,47 @@ void ResearchCenter::UpdateProduction()
 
     mResearchPerTurn = baseProd + (baseProd * multProd2 * mResUsage[ER_BLOBS] / maxUsage) +
                        (baseProd * multProd2 * mResUsage[ER_DIAMONDS] / maxUsage);
+
+    UpdateIconResearch();
+}
+
+void ResearchCenter::HideIconResearch()
+{
+    mIconResearch->SetVisible(false);
+    mIconResearch->SetEnabled(false);
+}
+
+void ResearchCenter::ShowIconResearch()
+{
+    if(!IsFactionLocal())
+        return ;
+
+    mIconResearch->SetVisible(true);
+    mIconResearch->SetEnabled(true);
+
+    PositionIconResearch();
+}
+
+void ResearchCenter::PositionIconResearch()
+{
+    const auto isoObj = GetIsoObject();
+    const int isoX = isoObj->GetX();
+    const int isoY = isoObj->GetY();
+    const int isoW = isoObj->GetWidth();
+
+    const int iconMarginV = 5;
+    const int iconX = isoX + (isoW - mIconResearch->GetWidth()) / 2;
+    const int iconY = isoY - mIconResearch->GetHeight() - iconMarginV;
+
+    mIconResearch->SetPosition(iconX, iconY);
+}
+
+void ResearchCenter::UpdateIconResearch()
+{
+    if(mResearchPerTurn == 0 && IsLinked() && IsFactionLocal())
+        ShowIconResearch();
+    else
+        HideIconResearch();
 }
 
 } // namespace game

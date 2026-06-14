@@ -7,6 +7,8 @@
 namespace game
 {
 
+class BlinkingIconResearch;
+
 class ResearchCenter : public Structure
 {
 public:
@@ -27,8 +29,15 @@ private:
 
     void UpdateProduction();
 
+    void HideIconResearch();
+    void ShowIconResearch();
+    void PositionIconResearch();
+    void UpdateIconResearch();
+
 private:
     std::vector<int> mResUsage;
+
+    BlinkingIconResearch * mIconResearch = nullptr;
 
     int mResearchPerTurn = 0;
 

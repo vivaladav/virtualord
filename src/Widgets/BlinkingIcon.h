@@ -25,4 +25,12 @@ public:
     BlinkingIconEnergy();
 };
 
+// ===== RESEARCH =====
+class BlinkingIconResearch : public BlinkingIcon
+{
+public:
+    BlinkingIconResearch();
+};
+
+
 } // namespace game
