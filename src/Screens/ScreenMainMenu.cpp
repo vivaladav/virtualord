@@ -373,17 +373,19 @@ void ScreenMainMenu::CreateChangelog()
                   " buttons.\n"
                   "- Added SFX played after conquering a structure.\n"
                   "- Camera automatically follows what's happening during a mission.\n"
+                  "- Research center shows a blinking icon on top when not producing"
+                  " research points.\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
                   "- Reduced time / actions to complete first map tutorial.\n"
                   "- Reduced times of unit and structure actions.\n"
                   "- New graphics for barracks.\n"
-                  ""
                   "\nFIXES\n"
                   "- Fixed crash when opening trading dialog.\n"
                   "- Fixed AI not active after first tutorial.\n"
                   "- Fixed new structure indicator not updating the position in same cases.\n"
                   "- Fixed ComboBox not deleting entries when destroyed.\n"
+                  "- Fixed blinking energy icon appearing on some structures when it shouldn't.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
