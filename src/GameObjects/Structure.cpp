@@ -15,10 +15,7 @@ Structure::Structure(const ObjectData & data, const ObjectInitData & initData)
     SetStructure(true);
     SetStatic(true);
 
-    if(IsFactionLocal() && !IsLinked())
-        ShowIconEnergy();
-    else
-        HideIconEnergy();
+    UpdateIconEnergy();
 }
 
 Structure::~Structure()
@@ -65,18 +62,14 @@ void Structure::OnFactionChanged()
 {
     GameObject::OnFactionChanged();
 
-    if(GetFaction() != NO_FACTION && !IsLinked())
-        ShowIconEnergy();
+    UpdateIconEnergy();
 }
 
 void Structure::OnLinkedChanged()
 {
     GameObject::OnLinkedChanged();
 
-    if(IsLinked())
-        HideIconEnergy();
-    else if(GetFaction() != NO_FACTION)
-        ShowIconEnergy();
+    UpdateIconEnergy();
 }
 
 void Structure::HideIconEnergy()
@@ -108,6 +101,14 @@ void Structure::PositionIconEnergy()
     const int iconY = isoY - mIconEnergy->GetHeight() - iconMarginV;
 
     mIconEnergy->SetPosition(iconX, iconY);
+}
+
+void Structure::UpdateIconEnergy()
+{
+    if(IsFactionLocal() && !IsLinked())
+        ShowIconEnergy();
+    else
+        HideIconEnergy();
 }
 
 void Structure::ProduceResources()

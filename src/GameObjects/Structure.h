@@ -32,6 +32,7 @@ private:
     void HideIconEnergy();
     void ShowIconEnergy();
     void PositionIconEnergy();
+    void UpdateIconEnergy();
 
     void ProduceResources();
     void ConsumeResources();
