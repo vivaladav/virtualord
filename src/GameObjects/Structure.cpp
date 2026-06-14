@@ -3,7 +3,7 @@
 #include "GameConstants.h"
 #include "IsoObject.h"
 #include "Player.h"
-#include "Widgets/BlinkingIconEnergy.h"
+#include "Widgets/BlinkingIcon.h"
 
 namespace game
 {

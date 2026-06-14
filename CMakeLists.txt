@@ -449,8 +449,10 @@ add_executable(
     src/Tutorial/TutorialPlanetMap.cpp
     src/Tutorial/TutorialStep.h
     src/Tutorial/TutorialStep.cpp
-    src/Widgets/BlinkingIconEnergy.h
-    src/Widgets/BlinkingIconEnergy.cpp
+    src/Widgets/BlinkingIcon.h
+    src/Widgets/BlinkingIcon.cpp
+
+
     src/Widgets/ButtonDialogArrows.h
     src/Widgets/ButtonDialogArrows.cpp
     src/Widgets/ButtonDialogBack.h
