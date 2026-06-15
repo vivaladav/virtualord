@@ -417,6 +417,9 @@ enum SpriteIdObjActionButton : unsigned int
     ID_BTN_ACT_OPT_MOUSE_OVER,
     ID_BTN_ACT_OPT_PUSHED,
     ID_BTN_ACT_OPT_CHECKED,
+
+    // BUTTON NOTIFICATION BG
+    ID_BUTTON_NOTIFICATION_BG,
 };
 
 

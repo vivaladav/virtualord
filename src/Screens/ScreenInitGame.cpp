@@ -1702,6 +1702,8 @@ void ScreenInitGame::SetupTextures()
             { 371, 82, 258, 40 },
             { 371, 123, 258, 40 },
             { 371, 164, 258, 40 },
+            // BUTTON NOTIFICATION BG
+            { 371, 205, 22, 22 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileObjActionButton, rects);

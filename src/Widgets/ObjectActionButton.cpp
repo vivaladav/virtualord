@@ -90,6 +90,48 @@ void ObjectActionButton::SetTooltipText(const char * text)
     mTooltip->SetText(text);
 }
 
+
+void ObjectActionButton::ShowNotification(int val)
+{
+    using namespace sgl;
+
+    if(val == mNotificationVal)
+        return;
+
+    mNotificationVal = val;
+
+    // BACKGROUND
+    if(mNotificationBg == nullptr)
+    {
+        auto tm = graphic::TextureManager::Instance();
+        auto tex = tm->GetSprite(SpriteFileObjActionButton, ID_BUTTON_NOTIFICATION_BG);
+
+        mNotificationBg = new graphic::Image(tex);
+        mNotificationBg->SetColor(0x7a0606cc);
+    }
+
+    // register in case of new or hidden, nop if already added
+    RegisterRenderable(mNotificationBg);
+
+    // TEXT
+    auto fm = graphic::FontManager::Instance();
+    auto font = fm->GetFont(WidgetsConstants::FontFileButton, 14, graphic::Font::NORMAL);
+    mNotificationLabel = new graphic::Text(std::to_string(val).c_str(), font);
+    mNotificationLabel->SetColor(0xf9ebebff);
+    RegisterRenderable(mNotificationLabel);
+
+    PositionNotification();
+}
+
+void ObjectActionButton::HideNotification()
+{
+    if(mNotificationBg != nullptr)
+        UnregisterRenderable(mNotificationBg);
+
+    if(mNotificationLabel != nullptr)
+        UnregisterRenderable(mNotificationLabel);
+}
+
 void ObjectActionButton::HandleMouseOver()
 {
     sgl::sgui::AbstractButton::HandleMouseOver();
@@ -143,6 +185,13 @@ void ObjectActionButton::OnStateChanged(VisualState state)
 
 void ObjectActionButton::HandlePositionChanged()
 {
+    sgl::sgui::AbstractButton::HandlePositionChanged();
+
+    SetPositions();
+}
+
+void ObjectActionButton::SetPositions()
+{
    const int x = GetScreenX();
    const int y = GetScreenY();
 
@@ -169,6 +218,28 @@ void ObjectActionButton::HandlePositionChanged()
    const int shortcutY = y + shortcutY0 + (shortcutBoxH - mShortcut->GetHeight()) * 0.5f;
 
    mShortcut->SetPosition(shortcutX, shortcutY);
+
+   // NOTIFICATION
+   if(mNotificationBg != nullptr && mNotificationLabel != nullptr)
+       PositionNotification();
+}
+
+void ObjectActionButton::PositionNotification()
+{
+    const int x0 = GetScreenX();
+    const int y0 = GetScreenY();
+
+    // BACKGROUND
+    int x = x0 + GetWidth() - mNotificationBg->GetWidth();
+    int y = y0 - mNotificationBg->GetHeight() / 2;
+
+    mNotificationBg->SetPosition(x, y);
+
+    // TEXT
+    x += (mNotificationBg->GetWidth() - mNotificationLabel->GetWidth()) / 2;
+    y += (mNotificationBg->GetHeight() - mNotificationLabel->GetHeight()) / 2;
+
+    mNotificationLabel->SetPosition(x, y);
 }
 
 } // namespace game
