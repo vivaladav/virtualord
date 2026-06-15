@@ -375,6 +375,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Camera automatically follows what's happening during a mission.\n"
                   "- Research center shows a blinking icon on top when not producing"
                   " research points.\n"
+                  "- Research Center flashes when a tech upgrade is unlockable.\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
                   "- Reduced time / actions to complete first map tutorial.\n"
