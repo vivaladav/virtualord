@@ -441,19 +441,28 @@ void ScreenTest::TestSGui()
     font = fm->GetFont("Lato-Regular.ttf", 22, Font::NORMAL);
     label = new Label(std::to_string(slider->GetValue()).c_str(), font, container4);
     label->SetPosition(slider->GetX() + slider->GetWidth() + 50, slider->GetY());
+    label->SetAlpha(0);
 
     slider->AddOnValueChanged([label](int val)
     {
         label->SetText(std::to_string(val).c_str());
         label->SetColor(0xFFFFFFFF);
+
+        label->SetAlpha((val * 255 / 100));
     });
 
     slider->AddOnValueFinalized([label](int val)
     {
         if(val == 50)
+        {
             label->SetColor(0xFF6666FF);
+            label->SetAlpha(255);
+        }
         else
+        {
             label->SetColor(0xFFFFFFFF);
+            label->SetAlpha((val * 255 / 100));
+        }
     });
 
     wY += slider->GetHeight() * 2;
