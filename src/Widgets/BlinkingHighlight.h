@@ -16,6 +16,8 @@ public:
 private:
     void OnUpdate(float delta) override;
 
+    void HandleStateEnabled() override;
+
 private:
     float mAlphaAnim = 0.f;
     int mAlphaAnimD = 0;

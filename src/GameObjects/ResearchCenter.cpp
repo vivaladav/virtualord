@@ -1,5 +1,6 @@
 #include "GameObjects/ResearchCenter.h"
 
+#include "Game.h"
 #include "GameConstants.h"
 #include "GameData.h"
 #include "IsoObject.h"
@@ -25,6 +26,8 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
 
     SetImage();
 
+    UpdateHighlight();
+
     // init resource usage
     mResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
 
@@ -46,6 +49,12 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
                                                  {
                                                      UpdateProduction();
                                                  });
+
+        mResearchTrackerId = p->AddOnResourceChanged(Player::RESEARCH,
+                                                     [this](const StatValue *, int, int)
+                                                    {
+                                                        UpdateHighlight();
+                                                    });
     }
 }
 
@@ -54,7 +63,10 @@ ResearchCenter::~ResearchCenter()
     auto p = GetOwner();
 
     if(p != nullptr)
+    {
         p->RemoveOnResourcesChanged(mResTrackerId);
+        p->RemoveOnResourceChanged(Player::RESEARCH, mResearchTrackerId);
+    }
 }
 
 void ResearchCenter::OnNewTurn(PlayerFaction faction)
@@ -281,6 +293,44 @@ void ResearchCenter::ShowHighlight()
 {
     mHighlight->SetEnabled(true);
     mHighlight->SetVisible(true);
+}
+
+void ResearchCenter::UpdateHighlight()
+{
+    if(!IsFactionLocal() || !IsLinked())
+    {
+        HideHighlight();
+        return ;
+    }
+
+    const int resPoints = GetOwner()->GetStat(Player::RESEARCH).GetValue();
+
+    auto game = GetGame();
+
+    for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
+    {
+        if(game->GetTechUpgradecost(static_cast<TechUpgradeId>(i)) < resPoints)
+        {
+            ShowHighlight();
+            return ;
+        }
+    }
+
+    HideHighlight();
+}
+
+void ResearchCenter::OnFactionChanged()
+{
+    Structure::OnFactionChanged();
+
+    UpdateHighlight();
+}
+
+void ResearchCenter::OnLinkedChanged()
+{
+    Structure::OnLinkedChanged();
+
+    UpdateHighlight();
 }
 
 } // namespace game

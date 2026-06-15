@@ -25,6 +25,8 @@ BlinkingHighlight::BlinkingHighlight(const char * file, unsigned int spriteId, f
 
 void BlinkingHighlight::OnUpdate(float delta)
 {
+    sgl::sgui::Image::OnUpdate(delta);
+
     mAlphaAnim += delta * mSpeedAlpha;
 
     // invert animation direction when reached limit
@@ -53,6 +55,17 @@ void BlinkingHighlight::OnUpdate(float delta)
         mAlphaAnimD = a;
         SetAlpha(mAlphaAnimD);
     }
+}
+
+void BlinkingHighlight::HandleStateEnabled()
+{
+    sgl::sgui::Image::HandleStateEnabled();
+
+    mAlphaAnim = 0.f;
+    mAlphaAnimD = 0;
+
+    if(mSpeedAlpha < 0.f)
+        mSpeedAlpha = -mSpeedAlpha;
 }
 
 } // namespace game

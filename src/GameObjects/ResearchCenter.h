@@ -39,6 +39,10 @@ private:
 
     void HideHighlight();
     void ShowHighlight();
+    void UpdateHighlight();
+
+    void OnFactionChanged() override;
+    void OnLinkedChanged() override;
 
 private:
     std::vector<int> mResUsage;
@@ -49,6 +53,7 @@ private:
     int mResearchPerTurn = 0;
 
     unsigned int mResTrackerId = 0;
+    unsigned int mResearchTrackerId = 0;
 
     float mAlphaAnim = 0.f;
 };
