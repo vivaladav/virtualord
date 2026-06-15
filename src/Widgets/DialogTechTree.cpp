@@ -1,5 +1,6 @@
 #include "Widgets/DialogTechTree.h"
 
+#include "Game.h"
 #include "GameConstants.h"
 #include "Player.h"
 #include "Widgets/ButtonDialogClose.h"
@@ -79,8 +80,9 @@ public:
 namespace game
 {
 // ====== DIALOG TECH TREE =====
-DialogTechTree::DialogTechTree(Player * player)
+DialogTechTree::DialogTechTree(Player * player, Game * game)
     : mPlayer(player)
+    , mGame(game)
 {
     using namespace sgl;
 
@@ -116,31 +118,6 @@ DialogTechTree::DialogTechTree(Player * player)
     mDescriptions.emplace(TECH_UP_UNIT_SLOTS_3, "UPG_EXTRA_UNIT_SLOT");
     mDescriptions.emplace(TECH_UP_UNIT_SLOTS_4, "UPG_EXTRA_UNIT_SLOT");
     mDescriptions.emplace(TECH_UP_UNIT_SLOTS_5, "UPG_EXTRA_UNIT_SLOT");
-
-    // INIT COSTS
-    mCosts.emplace(TECH_UP_NULL, 0);
-    mCosts.emplace(TECH_UP_BASE_IMPROVE_1, 250);
-    mCosts.emplace(TECH_UP_BASE_IMPROVE_2, 500);
-    mCosts.emplace(TECH_UP_BASE_IMPROVE_3, 1250);
-    mCosts.emplace(TECH_UP_BASE_IMPROVE_4, 3000);
-    mCosts.emplace(TECH_UP_BASE_IMPROVE_5, 4000);
-    mCosts.emplace(TECH_UP_RADAR_STATION, 500);
-    mCosts.emplace(TECH_UP_RADAR_TOWER, 400);
-    mCosts.emplace(TECH_UP_STORAGE_STRUCTS, 1200);
-    mCosts.emplace(TECH_UP_STORAGE_ENERGY_1, 600);
-    mCosts.emplace(TECH_UP_STORAGE_ENERGY_2, 1500);
-    mCosts.emplace(TECH_UP_STORAGE_MATERIAL_1, 600);
-    mCosts.emplace(TECH_UP_STORAGE_MATERIAL_2, 1500);
-    mCosts.emplace(TECH_UP_STORAGE_DIAMONDS_1, 600);
-    mCosts.emplace(TECH_UP_STORAGE_DIAMONDS_2, 1500);
-    mCosts.emplace(TECH_UP_STORAGE_BLOBS_1, 600);
-    mCosts.emplace(TECH_UP_STORAGE_BLOBS_2, 1500);
-    mCosts.emplace(TECH_UP_PRACTICE_TARGET, 900);
-    mCosts.emplace(TECH_UP_UNIT_SLOTS_1, 500);
-    mCosts.emplace(TECH_UP_UNIT_SLOTS_2, 2500);
-    mCosts.emplace(TECH_UP_UNIT_SLOTS_3, 5000);
-    mCosts.emplace(TECH_UP_UNIT_SLOTS_4, 8000);
-    mCosts.emplace(TECH_UP_UNIT_SLOTS_5, 11500);
 
     // -- BACKGROUND --
     const int w = 1904;
@@ -233,15 +210,14 @@ DialogTechTree::DialogTechTree(Player * player)
         auto btn = mBtnUnlock->GetUpgradeToUnlock();
 
         const TechUpgradeId upgrade = btn->GetUpgrade();
-        auto it = mCosts.find(upgrade);
+        const int cost = mGame->GetTechUpgradecost(upgrade);
 
-        if(it != mCosts.end())
+        if(cost > 0)
         {
             // unlock upgrade
             mPlayer->UnlockUpgrade(upgrade);
 
             // pay cost
-            const int cost = it->second;
             mPlayer->SumResource(Player::RESEARCH, -cost);
 
             // update dialog
@@ -617,12 +593,10 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
             }
 
             // update button unlock
-            auto it = mCosts.find(upgrade);
+            const int cost = mGame->GetTechUpgradecost(upgrade);
 
-            if(it != mCosts.end())
+            if(cost > 0)
             {
-                const int cost = it->second;
-
                 mBtnUnlock->SetVisible(true);
                 mBtnUnlock->SetCost(cost);
                 mBtnUnlock->SetUpgradeToUnlock(btn);

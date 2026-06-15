@@ -925,7 +925,7 @@ void GameHUD::ShowDialogTechTree()
     mScreen->SetPause(true);
 
     Game * game = mScreen->GetGame();
-    mDialogTechTree = new DialogTechTree(game->GetLocalPlayer());
+    mDialogTechTree = new DialogTechTree(game->GetLocalPlayer(), mScreen->GetGame());
     mDialogTechTree->SetFocus();
 
     mDialogTechTree->SetFunctionOnClose([this]

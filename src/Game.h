@@ -43,6 +43,7 @@ enum LanguageId : unsigned int;
 enum PlanetId : unsigned int;
 enum PlayerFaction : unsigned int;
 enum StateId : int;
+enum TechUpgradeId : unsigned int;
 
 enum Difficulty : unsigned int
 {
@@ -52,6 +53,7 @@ enum Difficulty : unsigned int
 
     NUM_DIFFICULTIES
 };
+
 
 class Game : public sgl::core::Application
 {
@@ -105,6 +107,9 @@ public:
     void SetLocalPlayerFaction(PlayerFaction faction);
     PlayerFaction GetLocalPlayerFaction() const;
 
+    // -- tech upgrades --
+    int GetTechUpgradecost(TechUpgradeId upgrade) const;
+
     // -- settings --
     LanguageId GetLanguage() const;
     void SetLanguage(LanguageId lang);
@@ -154,6 +159,8 @@ private:
     std::vector<Player *> mPlayers;
 
     std::unordered_map<PlanetId, Planet *> mPlanets;
+
+    std::unordered_map<TechUpgradeId, int> mCostUpgrades;
 
     std::map<unsigned int, std::function<void()>> mOnSettingsChanged;
 
@@ -248,6 +255,16 @@ inline void Game::SetLocalPlayerFaction(PlayerFaction faction)
 inline PlayerFaction Game::GetLocalPlayerFaction() const
 {
     return mLocalFaction;
+}
+
+inline int Game::GetTechUpgradecost(TechUpgradeId upgrade) const
+{
+    auto it = mCostUpgrades.find(upgrade);
+
+    if(it != mCostUpgrades.end())
+        return it->second;
+    else
+        return 0;
 }
 
 inline LanguageId Game::GetLanguage() const { return mLanguage; }
