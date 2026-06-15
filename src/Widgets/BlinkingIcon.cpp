@@ -9,7 +9,6 @@ namespace
 {
 constexpr float TIME_BLINK_ON = 0.5f;
 constexpr float TIME_BLINK_OFF = 0.4f;
-
 }
 
 namespace game

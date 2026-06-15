@@ -6,18 +6,23 @@
 #include "Player.h"
 #include "Particles/DataParticleOutput.h"
 #include "Particles/UpdaterOutput.h"
+#include "Widgets/BlinkingHighlight.h"
 #include "Widgets/BlinkingIcon.h"
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/sgui/Image.h>
 
 namespace game
 {
 
 ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & initData)
     : Structure(data, initData)
+    , mHighlight(new BlinkingHighlight(SpriteFileStructures, ID_STRUCT_RESEARCH_CENTER_W, 77.f))
     , mIconResearch(new BlinkingIconResearch)
 {
+    using namespace sgl;
+
     SetImage();
 
     // init resource usage
@@ -118,6 +123,17 @@ void ResearchCenter::SetResourceUsage(ExtendedResource res, int val)
     mResUsage[res] = val;
 
     UpdateProduction();
+}
+
+void ResearchCenter::OnPositionChanged()
+{
+    Structure::OnPositionChanged();
+
+    const auto isoObj = GetIsoObject();
+    const int isoX = isoObj->GetX();
+    const int isoY = isoObj->GetY();
+
+    mHighlight->SetPosition(isoX, isoY);
 }
 
 void ResearchCenter::UpdateGraphics()
@@ -253,6 +269,18 @@ void ResearchCenter::UpdateIconResearch()
         ShowIconResearch();
     else
         HideIconResearch();
+}
+
+void ResearchCenter::HideHighlight()
+{
+    mHighlight->SetEnabled(false);
+    mHighlight->SetVisible(false);
+}
+
+void ResearchCenter::ShowHighlight()
+{
+    mHighlight->SetEnabled(true);
+    mHighlight->SetVisible(true);
 }
 
 } // namespace game
