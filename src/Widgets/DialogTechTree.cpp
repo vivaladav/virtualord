@@ -229,6 +229,8 @@ DialogTechTree::DialogTechTree(Player * player, Game * game)
 
             mLabelDescription->SetVisible(false);
 
+            UpdateUnlockableStates();
+
             // play SFX
             auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
             ap->PlaySound("game/upgrade_unlocked-01.ogg");
@@ -304,6 +306,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // -- COL 0 --
         // [0, 0]
         auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_1, 1, {}, true);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade00);
+
         btnUpgrade00->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade00, LINK_VERT, LS_NORTH);
@@ -314,6 +318,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 0]
         auto btnUpgrade10 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_2, 2,
                                                 { btnUpgrade00 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade10);
+
         btnUpgrade10->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade10, LINK_VERT, LS_NORTH);
@@ -323,6 +329,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [2, 0]
         auto btnUpgrade20 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_3, 3,
                                                 { btnUpgrade10 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade20);
+
         btnUpgrade20->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade20, LINK_VERT, LS_NORTH);
@@ -332,6 +340,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [3, 0]
         auto btnUpgrade30 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_4, 4,
                                                 { btnUpgrade20 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade30);
+
         btnUpgrade30->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade30, LINK_VERT, LS_NORTH);
@@ -341,6 +351,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [4, 0]
         auto btnUpgrade40 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_5, 5,
                                                 { btnUpgrade30 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade40);
+
         btnUpgrade40->SetPosition(btnX, btnY);
 
         // -- COL 1 --
@@ -350,6 +362,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         auto btnUpgrade01 = GetNewButtonUpgrade(TECH_UP_RADAR_STATION, 0,
                                                 { btnUpgrade00 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade01);
+
         btnUpgrade01->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade01, LINK_VERT, LS_NORTH);
@@ -360,6 +374,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 1]
         auto btnUpgrade11 = GetNewButtonUpgrade(TECH_UP_RADAR_TOWER, 0,
                                                 { btnUpgrade01 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade11);
 
         btnUpgrade11->SetPosition(btnX, btnY);
 
@@ -369,6 +384,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         auto btnUpgrade02 = GetNewButtonUpgrade(TECH_UP_STORAGE_STRUCTS, 0,
                                                 { btnUpgrade01 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade02);
+
         btnUpgrade02->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade02, LINK_VERT, LS_NORTH);
@@ -379,6 +396,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 2]
         auto btnUpgrade12 = GetNewButtonUpgrade(TECH_UP_STORAGE_ENERGY_1, 1,
                                                 { btnUpgrade02 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade12);
 
         btnUpgrade12->SetPosition(btnX, btnY);
 
@@ -390,6 +408,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [2, 2]
         auto btnUpgrade22 = GetNewButtonUpgrade(TECH_UP_STORAGE_MATERIAL_1, 1,
                                                 { btnUpgrade12 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade22);
 
         btnUpgrade22->SetPosition(btnX, btnY);
 
@@ -401,6 +420,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [3, 2]
         auto btnUpgrade32 = GetNewButtonUpgrade(TECH_UP_STORAGE_DIAMONDS_1, 1,
                                                 { btnUpgrade22 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade32);
 
         btnUpgrade32->SetPosition(btnX, btnY);
 
@@ -412,6 +432,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [4, 2]
         auto btnUpgrade42 = GetNewButtonUpgrade(TECH_UP_STORAGE_BLOBS_1, 1,
                                                 { btnUpgrade32 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade42);
 
         btnUpgrade42->SetPosition(btnX, btnY);
 
@@ -423,6 +444,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         auto btnUpgrade03 = GetNewButtonUpgrade(TECH_UP_PRACTICE_TARGET, 0,
                                                 { btnUpgrade02 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade03);
+
         btnUpgrade03->SetPosition(btnX, btnY);
 
         //AddLinkToUpgrade(btnUpgrade03, LINK_HORIZ, LS_WEST);
@@ -432,6 +455,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 3]
         auto btnUpgrade13 = GetNewButtonUpgrade(TECH_UP_STORAGE_ENERGY_2, 2,
                                                 { btnUpgrade12 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade13);
 
         btnUpgrade13->SetPosition(btnX, btnY);
 
@@ -440,6 +464,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [2, 3]
         auto btnUpgrade23 = GetNewButtonUpgrade(TECH_UP_STORAGE_MATERIAL_2, 2,
                                                 { btnUpgrade22 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade23);
 
         btnUpgrade23->SetPosition(btnX, btnY);
 
@@ -448,6 +473,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [3, 3]
         auto btnUpgrade33 = GetNewButtonUpgrade(TECH_UP_STORAGE_DIAMONDS_2, 2,
                                                 { btnUpgrade32 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade33);
 
         btnUpgrade33->SetPosition(btnX, btnY);
 
@@ -456,6 +482,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [4, 3]
         auto btnUpgrade43 = GetNewButtonUpgrade(TECH_UP_STORAGE_BLOBS_2, 2,
                                                 { btnUpgrade42 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade43);
 
         btnUpgrade43->SetPosition(btnX, btnY);
     }
@@ -464,6 +491,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // -- COL 0 --
         // [0, 0]
         auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_1, 1, {}, true);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade00);
+
         btnUpgrade00->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade00, LINK_VERT, LS_NORTH);
@@ -474,6 +503,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 0]
         auto btnUpgrade10 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_2, 2,
                                                 { btnUpgrade00 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade10);
+
         btnUpgrade10->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade10, LINK_VERT, LS_NORTH);
@@ -483,6 +514,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [2, 0]
         auto btnUpgrade20 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_3, 3,
                                                 { btnUpgrade10 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade20);
+
         btnUpgrade20->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade20, LINK_VERT, LS_NORTH);
@@ -492,6 +525,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [3, 0]
         auto btnUpgrade30 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_4, 4,
                                                 { btnUpgrade20 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade30);
+
         btnUpgrade30->SetPosition(btnX, btnY);
 
         AddLinkToUpgrade(btnUpgrade30, LINK_VERT, LS_NORTH);
@@ -501,6 +536,8 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [4, 0]
         auto btnUpgrade40 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_5, 5,
                                                 { btnUpgrade30 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade40);
+
         btnUpgrade40->SetPosition(btnX, btnY);
     }
     else
@@ -508,7 +545,23 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // -- COL 0 --
         // [0, 0]
         auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_NULL, 0, {}, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade00);
+
         btnUpgrade00->SetPosition(btnX, btnY);
+    }
+}
+
+void DialogTechTree::UpdateUnlockableStates()
+{
+    const int resPoints = mPlayer->GetStat(Player::RESEARCH).GetValue();
+
+    for(auto btn : mVisibleButtonsUpgrade)
+    {
+        const TechUpgradeId upgrade = btn->GetUpgrade();
+        const int cost = mGame->GetTechUpgradecost(upgrade);
+        const bool unlockable = cost <= resPoints && btn->IsEnabled() && !btn->IsUnlocked();
+
+        btn->SetUnlockable(unlockable);
     }
 }
 
@@ -523,6 +576,8 @@ void DialogTechTree::ClearButtonsUpgrade()
     }
 
     mButtonsUpgradeUsed = 0;
+
+    mVisibleButtonsUpgrade.clear();
 }
 
 ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, int level,
@@ -619,9 +674,14 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
         }
     }
 
+    const int cost = mGame->GetTechUpgradecost(upgrade);
+    const int resPoints = mPlayer->GetStat(Player::RESEARCH).GetValue();
+    const bool unlockable = cost <= resPoints && enabled && !unlocked;
+
     btn->SetLevel(level);
     btn->SetEnabled(enabled || unlocked);
     btn->SetUnlocked(unlocked);
+    btn->SetUnlockable(unlockable);
 
     ++mButtonsUpgradeUsed;
 

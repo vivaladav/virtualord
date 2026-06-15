@@ -53,6 +53,18 @@ ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * 
     for(unsigned int i = 0; i < sgui::AbstractButton::NUM_VISUAL_STATES; ++i)
         mTexs[i] = tm->GetSprite(SpriteFileDialogTechTree, texIds[i]);
 
+    const unsigned int texIdsNU[sgui::AbstractButton::NUM_VISUAL_STATES] =
+        {
+            ID_DLG_TECHT_BTN_UPG_NU_NORMAL,
+            ID_DLG_TECHT_BTN_UPG_DISABLED,
+            ID_DLG_TECHT_BTN_UPG_NU_OVER,
+            ID_DLG_TECHT_BTN_UPG_NU_PUSHED,
+            ID_DLG_TECHT_BTN_UPG_NU_CHECKED,
+        };
+
+    for(unsigned int i = 0; i < sgui::AbstractButton::NUM_VISUAL_STATES; ++i)
+        mTexsNU[i] = tm->GetSprite(SpriteFileDialogTechTree, texIdsNU[i]);
+
     // ICONS
     mIconsIds.emplace(TECH_UP_NULL, ID_TECH_UP_ICON_TODO);
 
@@ -190,6 +202,16 @@ void ButtonTechUpgrade::SetUnlocked(bool unlocked)
     UpdateGraphics(GetState());
 }
 
+void ButtonTechUpgrade::SetUnlockable(bool val)
+{
+    if(val == mUnlockable)
+        return;
+
+    mUnlockable = val;
+
+    UpdateGraphics(GetState());
+}
+
 void ButtonTechUpgrade::ClearLinks()
 {
     mLinks.clear();
@@ -268,7 +290,10 @@ void ButtonTechUpgrade::UpdateGraphics(sgl::sgui::AbstractButton::VisualState st
     }
 
     // NOT UNLOCKED YET
-    mBg->SetTexture(mTexs[state]);
+    if(mUnlockable)
+        mBg->SetTexture(mTexs[state]);
+    else
+        mBg->SetTexture(mTexsNU[state]);
 
     SetSize(mBg->GetWidth(), mBg->GetHeight());
 

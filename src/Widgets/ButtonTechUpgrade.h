@@ -38,6 +38,9 @@ public:
     bool IsUnlocked() const;
     void SetUnlocked(bool unlocked);
 
+    bool IsUnlockable() const;
+    void SetUnlockable(bool val);
+
     void ClearLinks();
     void AddLink(sgl::sgui::Image * link);
 
@@ -65,6 +68,7 @@ private:
 
 private:
     std::array<sgl::graphic::Texture *, sgl::sgui::AbstractButton::NUM_VISUAL_STATES> mTexs;
+    std::array<sgl::graphic::Texture *, sgl::sgui::AbstractButton::NUM_VISUAL_STATES> mTexsNU;
     std::unordered_map<TechUpgradeId, unsigned int> mIconsIds;
     std::vector<sgl::sgui::Image *> mLinks;
     std::vector<ButtonTechUpgrade *> mButtonsToEnable;
@@ -83,6 +87,7 @@ private:
     unsigned int mLevel = 0;
     bool mLevelVisible = false;
     bool mIconVisible = false;
+    bool mUnlockable = false;
     bool mUnlocked = false;
 };
 
@@ -91,6 +96,7 @@ inline TechUpgradeId ButtonTechUpgrade::GetUpgrade() const { return mUpgrade; }
 inline unsigned int ButtonTechUpgrade::GetLevel() const { return mLevel; }
 
 inline bool ButtonTechUpgrade::IsUnlocked() const { return mUnlocked; }
+inline bool ButtonTechUpgrade::IsUnlockable() const { return mUnlockable; }
 
 inline void ButtonTechUpgrade::ClearButtonsToEnable() { mButtonsToEnable.clear(); }
 inline void ButtonTechUpgrade::AddButtonToEnable(ButtonTechUpgrade * b)

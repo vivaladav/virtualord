@@ -145,12 +145,12 @@ Game::Game(int argc, char * argv[])
     // INIT TECH UPGRADES COST
     mCostUpgrades.emplace(TECH_UP_NULL, 0);
     mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_1, 250);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_2, 500);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_3, 1250);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, 3000);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, 4000);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_2, 750);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_3, 2000);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, 4500);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, 10000);
     mCostUpgrades.emplace(TECH_UP_RADAR_STATION, 500);
-    mCostUpgrades.emplace(TECH_UP_RADAR_TOWER, 400);
+    mCostUpgrades.emplace(TECH_UP_RADAR_TOWER, 1000);
     mCostUpgrades.emplace(TECH_UP_STORAGE_STRUCTS, 1200);
     mCostUpgrades.emplace(TECH_UP_STORAGE_ENERGY_1, 600);
     mCostUpgrades.emplace(TECH_UP_STORAGE_ENERGY_2, 1500);

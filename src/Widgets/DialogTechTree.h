@@ -74,6 +74,8 @@ private:
 
     void UpdateUpgrades(UpgradeSections section);
 
+    void UpdateUnlockableStates();
+
     void ClearButtonsUpgrade();
     ButtonTechUpgrade * GetNewButtonUpgrade(TechUpgradeId upgrade, int level,
                                             const std::vector<ButtonTechUpgrade *> & enablers,
@@ -87,6 +89,7 @@ private:
 
 private:
     std::vector<ButtonTechUpgrade *> mButtonsUpgrade;
+    std::vector<ButtonTechUpgrade *> mVisibleButtonsUpgrade;
     std::vector<sgl::sgui::Image *> mLinks;
     std::unordered_map<TechUpgradeId, std::string> mDescriptions;
 

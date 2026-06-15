@@ -297,6 +297,7 @@ void ResearchCenter::ShowHighlight()
 
 void ResearchCenter::UpdateHighlight()
 {
+    // structure not local or not working -> HIDE
     if(!IsFactionLocal() || !IsLinked())
     {
         HideHighlight();
@@ -306,16 +307,21 @@ void ResearchCenter::UpdateHighlight()
     const int resPoints = GetOwner()->GetStat(Player::RESEARCH).GetValue();
 
     auto game = GetGame();
+    auto player = GetOwner();
 
     for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
     {
-        if(game->GetTechUpgradecost(static_cast<TechUpgradeId>(i)) < resPoints)
+        const auto tu = static_cast<TechUpgradeId>(i);
+
+        // there's at least 1 unlocked upgrade that can be unlocked -> SHOW
+        if(!player->IsUpgradeUnlocked(tu) && game->GetTechUpgradecost(tu) <= resPoints)
         {
             ShowHighlight();
             return ;
         }
     }
 
+    // none found -> HIDE
     HideHighlight();
 }
 
