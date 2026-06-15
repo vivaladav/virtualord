@@ -313,8 +313,9 @@ void ResearchCenter::UpdateHighlight()
     {
         const auto tu = static_cast<TechUpgradeId>(i);
 
-        // there's at least 1 unlocked upgrade that can be unlocked -> SHOW
-        if(!player->IsUpgradeUnlocked(tu) && game->GetTechUpgradecost(tu) <= resPoints)
+        // there's at least 1 available upgrade that can be unlocked -> SHOW
+        if(!player->IsUpgradeUnlocked(tu) && player->IsUpgradeAvailable(tu) &&
+           game->GetTechUpgradecost(tu) <= resPoints)
         {
             ShowHighlight();
             return ;

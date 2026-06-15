@@ -29,6 +29,8 @@ public:
     ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * parent);
     ~ButtonTechUpgrade();
 
+    const std::vector<ButtonTechUpgrade *> & GetButtonsToEnable() const;
+
     TechUpgradeId GetUpgrade() const;
     void SetUpgrade(TechUpgradeId upgrade);
 
@@ -90,6 +92,11 @@ private:
     bool mUnlockable = false;
     bool mUnlocked = false;
 };
+
+inline const std::vector<ButtonTechUpgrade *> & ButtonTechUpgrade::GetButtonsToEnable() const
+{
+    return mButtonsToEnable;
+}
 
 inline TechUpgradeId ButtonTechUpgrade::GetUpgrade() const { return mUpgrade; }
 

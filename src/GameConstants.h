@@ -171,6 +171,7 @@ enum ExtendedResource : unsigned int
 
 enum TechUpgradeId : unsigned int
 {
+    // STRUCTURES
     TECH_UP_BASE_IMPROVE_1,
     TECH_UP_BASE_IMPROVE_2,
     TECH_UP_BASE_IMPROVE_3,
@@ -188,6 +189,7 @@ enum TechUpgradeId : unsigned int
     TECH_UP_STORAGE_BLOBS_1,
     TECH_UP_STORAGE_BLOBS_2,
     TECH_UP_PRACTICE_TARGET,
+    // UNITS
     TECH_UP_UNIT_SLOTS_1,
     TECH_UP_UNIT_SLOTS_2,
     TECH_UP_UNIT_SLOTS_3,

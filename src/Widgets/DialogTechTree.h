@@ -75,6 +75,7 @@ private:
     void UpdateUpgrades(UpgradeSections section);
 
     void UpdateUnlockableStates();
+    void MarkLinkedAvailable(ButtonTechUpgrade * btn);
 
     void ClearButtonsUpgrade();
     ButtonTechUpgrade * GetNewButtonUpgrade(TechUpgradeId upgrade, int level,

@@ -135,10 +135,13 @@ public:
 
     // -- upgrades --
     void ClearUpgrades();
+    bool IsUpgradeAvailable(TechUpgradeId upgrade) const;
+    void SetUpgradeAvailable(TechUpgradeId upgrade);
     bool IsUpgradeUnlocked(TechUpgradeId upgrade) const;
     void UnlockUpgrade(TechUpgradeId upgrade);
     unsigned int AddOnUpgradeUnlocked(const std::function<void(TechUpgradeId)> & f);
     void RemoveOnUpgradeUnlocked(unsigned int funId);
+
 
     float GetBaseProductionMult() const;
     float GetStorageEnergyMult() const;
@@ -167,6 +170,8 @@ public:
     bool IsLocal() const;
 
 private:
+    void InitUpgrades();
+
     int GetCellsEnergyUsed() const;
     void NotifyResourcesChanged();
     void NotifyUpgradeUnlock(TechUpgradeId upgrade);
@@ -175,6 +180,7 @@ private:
 
 private:
     std::unordered_map<TechUpgradeId, bool> mUpgrades;
+    std::unordered_map<TechUpgradeId, bool> mUpgradesAvailable;
 
     std::vector<Unit *> mUnits;
     std::vector<Structure *> mStructures;
@@ -325,6 +331,16 @@ inline bool Player::IsUpgradeUnlocked(TechUpgradeId upgrade) const
     auto it = mUpgrades.find(upgrade);
 
     if(it != mUpgrades.end())
+        return it->second;
+    else
+        return false;
+}
+
+inline bool Player::IsUpgradeAvailable(TechUpgradeId upgrade) const
+{
+    auto it = mUpgradesAvailable.find(upgrade);
+
+    if(it != mUpgradesAvailable.end())
         return it->second;
     else
         return false;

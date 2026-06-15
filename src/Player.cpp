@@ -49,9 +49,16 @@ Player::Player(const char * name, int pid)
 
     // -- UPGRADES --
     for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
-        mUpgrades.emplace(static_cast<TechUpgradeId>(i), false);
+    {
+        const auto tu = static_cast<TechUpgradeId>(i);
+
+        mUpgrades.emplace(tu, false);
+        mUpgradesAvailable.emplace(tu, false);
+    }
 
     mUpgrades.emplace(TECH_UP_NULL, false);
+
+    InitUpgrades();
 
     // UPDATE VALUES
     AdjustTurnMaxEnergy();
@@ -372,6 +379,20 @@ void Player::ClearUpgrades()
 {
     for(auto it : mUpgrades)
         it.second = false;
+
+    for(auto it : mUpgradesAvailable)
+        it.second = false;
+
+    InitUpgrades();
+}
+
+
+void Player::SetUpgradeAvailable(TechUpgradeId upgrade)
+{
+    auto it = mUpgradesAvailable.find(upgrade);
+
+    if(it != mUpgradesAvailable.end())
+        it->second = true;
 }
 
 void Player::UnlockUpgrade(TechUpgradeId upgrade)
@@ -705,6 +726,12 @@ int Player::GetResourceConsumption(ExtendedResource type) const
         tot += GetCellsEnergyUsed();
 
     return tot;
+}
+
+void Player::InitUpgrades()
+{
+    mUpgradesAvailable[TECH_UP_BASE_IMPROVE_1] = true;
+    mUpgradesAvailable[TECH_UP_UNIT_SLOTS_1] = true;
 }
 
 int Player::GetCellsEnergyUsed() const

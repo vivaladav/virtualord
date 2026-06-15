@@ -220,9 +220,10 @@ DialogTechTree::DialogTechTree(Player * player, Game * game)
             // pay cost
             mPlayer->SumResource(Player::RESEARCH, -cost);
 
+            MarkLinkedAvailable(btn);
+
             // update dialog
             btn->SetUnlocked(true);
-            btn->ClearButtonsToEnable();
 
             mBtnUnlock->SetVisible(false);
             mBtnUnlock->ClearUpgradeToUnlock();
@@ -563,6 +564,14 @@ void DialogTechTree::UpdateUnlockableStates()
 
         btn->SetUnlockable(unlockable);
     }
+}
+
+void DialogTechTree::MarkLinkedAvailable(ButtonTechUpgrade * btn)
+{
+    const std::vector<ButtonTechUpgrade *> & linked = btn->GetButtonsToEnable();
+
+    for(auto b : linked)
+        mPlayer->SetUpgradeAvailable(b->GetUpgrade());
 }
 
 void DialogTechTree::ClearButtonsUpgrade()
