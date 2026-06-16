@@ -221,6 +221,18 @@ void PanelObjectActions::RemoveButtonFunction(Button btnId, unsigned int funId)
        mButtons[btnId]->RemoveClickFunction(funId);
 }
 
+void PanelObjectActions::ShowNotification(Button btnId, int val)
+{
+    if(btnId < NUM_BUTTONS)
+        mButtons[btnId]->ShowNotification(val);
+}
+
+void PanelObjectActions::HideNotification(Button btnId)
+{
+    if(btnId < NUM_BUTTONS)
+        mButtons[btnId]->HideNotification();
+}
+
 void PanelObjectActions::SetActionsEnabled(bool val)
 {
     for(unsigned int i = 0; i < static_cast<unsigned int>(BTN_CANCEL); ++i)

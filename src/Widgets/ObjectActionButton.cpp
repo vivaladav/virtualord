@@ -95,11 +95,6 @@ void ObjectActionButton::ShowNotification(int val)
 {
     using namespace sgl;
 
-    if(val == mNotificationVal)
-        return;
-
-    mNotificationVal = val;
-
     // BACKGROUND
     if(mNotificationBg == nullptr)
     {
@@ -114,11 +109,19 @@ void ObjectActionButton::ShowNotification(int val)
     RegisterRenderable(mNotificationBg);
 
     // TEXT
-    auto fm = graphic::FontManager::Instance();
-    auto font = fm->GetFont(WidgetsConstants::FontFileButton, 14, graphic::Font::NORMAL);
-    mNotificationLabel = new graphic::Text(std::to_string(val).c_str(), font);
-    mNotificationLabel->SetColor(0xf9ebebff);
+    if(val != mNotificationVal)
+    {
+        delete mNotificationLabel;
+
+        auto fm = graphic::FontManager::Instance();
+        auto font = fm->GetFont(WidgetsConstants::FontFileButton, 14, graphic::Font::NORMAL);
+        mNotificationLabel = new graphic::Text(std::to_string(val).c_str(), font);
+        mNotificationLabel->SetColor(0xf9ebebff);
+    }
+
     RegisterRenderable(mNotificationLabel);
+
+    mNotificationVal = val;
 
     PositionNotification();
 }

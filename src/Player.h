@@ -142,7 +142,6 @@ public:
     unsigned int AddOnUpgradeUnlocked(const std::function<void(TechUpgradeId)> & f);
     void RemoveOnUpgradeUnlocked(unsigned int funId);
 
-
     float GetBaseProductionMult() const;
     float GetStorageEnergyMult() const;
     float GetStorageMaterialMult() const;

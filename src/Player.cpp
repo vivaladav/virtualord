@@ -386,7 +386,6 @@ void Player::ClearUpgrades()
     InitUpgrades();
 }
 
-
 void Player::SetUpgradeAvailable(TechUpgradeId upgrade)
 {
     auto it = mUpgradesAvailable.find(upgrade);

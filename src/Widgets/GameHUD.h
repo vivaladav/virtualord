@@ -69,6 +69,7 @@ public:
     PanelObjectActions * GetPanelObjectActions() const;
     void HidePanelObjectActions();
     void ShowPanelObjectActions(GameObject * obj);
+    void UpdateUpgradesNotification();
     void HidePanelSelfDestruction();
     void ShowPanelSelfDestruction();
     PanelShotType * GetPanelShotType() const;
@@ -193,6 +194,8 @@ private:
     ScreenGame * mScreen = nullptr;
 
     int mVisibleDialogs = 0;
+
+    unsigned int mResearchTrackerId = 0;
 };
 
 inline bool GameHUD::IsShowingDialog() const { return mVisibleDialogs > 0; }

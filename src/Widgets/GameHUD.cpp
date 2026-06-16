@@ -74,6 +74,12 @@ GameHUD::GameHUD(ScreenGame * screen)
     // LOCAL PLAYER
     Player * local = game->GetLocalPlayer();
 
+    mResearchTrackerId = local->AddOnResourceChanged(Player::RESEARCH,
+                                                 [this](const StatValue *, int, int)
+                                                 {
+                                                     UpdateUpgradesNotification();
+                                                 });
+
     // TOP RESOURCE BAR
     mPanelRes = new PanelResources(local, mScreen->mGameMap, this);
     mPanelRes->SetX((rendW - mPanelRes->GetWidth()) / 2);
@@ -186,6 +192,8 @@ GameHUD::~GameHUD()
 {
     Player * player = mScreen->GetGame()->GetLocalPlayer();
 
+    player->RemoveOnResourceChanged(Player::RESEARCH, mResearchTrackerId);
+
     player->SetOnNumUnitsChanged([]{});
 }
 
@@ -212,6 +220,34 @@ void GameHUD::ShowPanelObjectActions(GameObject * obj)
     mPanelObjActions->SetObject(obj);
     mPanelObjActions->SetVisible(true);
     mPanelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
+
+    // show notification of unlockable upgrades when it's research center
+    if(obj->GetObjectType() == ObjectData::TYPE_RESEARCH_CENTER)
+        UpdateUpgradesNotification();
+}
+
+void GameHUD::UpdateUpgradesNotification()
+{
+    auto game = mScreen->GetGame();
+    auto player = game->GetLocalPlayer();
+
+    const int resPoints = player->GetStat(Player::RESEARCH).GetValue();
+    int count = 0;
+
+    for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
+    {
+        const auto tu = static_cast<TechUpgradeId>(i);
+
+        count += player->IsUpgradeAvailable(tu) && !player->IsUpgradeUnlocked(tu) &&
+                 game->GetTechUpgradecost(tu) <= resPoints;
+    }
+
+    const PanelObjectActions::Button btnID = PanelObjectActions::BTN_TECH_TREE;
+
+    if(count > 0)
+        mPanelObjActions->ShowNotification(btnID, count);
+    else
+        mPanelObjActions->HideNotification(btnID);
 }
 
 void GameHUD::HidePanelSelfDestruction()
