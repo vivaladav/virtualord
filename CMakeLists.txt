@@ -377,6 +377,8 @@ add_executable(
     src/Tutorial/StepGameStructConnected.cpp
     src/Tutorial/StepGameStructDisconnected.h
     src/Tutorial/StepGameStructDisconnected.cpp
+    src/Tutorial/StepGameTechTreeIcon.h
+    src/Tutorial/StepGameTechTreeIcon.cpp
     src/Tutorial/StepGameTestCameraFocus.h
     src/Tutorial/StepGameTestCameraFocus.cpp
     src/Tutorial/StepGameTowerIntro.h
