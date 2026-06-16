@@ -376,6 +376,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- Research center shows a blinking icon on top when not producing"
                   " research points.\n"
                   "- Research Center flashes when a tech upgrade is unlockable.\n"
+                  "- Action button that opens the tech tree dialog now shows a notification"
+                  " with the number of upgrades that can be unlocked.\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
                   "- Reduced time / actions to complete first map tutorial.\n"
