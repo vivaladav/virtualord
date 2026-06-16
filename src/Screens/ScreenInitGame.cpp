@@ -1218,7 +1218,7 @@ void ScreenInitGame::SetupTextures()
             { 396, 376, 96, 84 },
             { 202, 461, 96, 84 },
             { 299, 461, 96, 84 },
-            { 309, 631, 20, 20 },
+            { 299, 631, 20, 20 },
             // UPGRADE UNLOCKED
             { 396, 461, 96, 84 },
             // BUTTON UPGRADE NOT UNLOCKABLE

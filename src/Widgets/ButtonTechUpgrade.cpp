@@ -16,7 +16,7 @@
 namespace
 {
     constexpr unsigned int colorLink = 0xc2d6d6cc;
-    constexpr unsigned int colorLinkUnlocked = 0xa3f5b1cc;
+    constexpr unsigned int colorLinkUnlocked = 0x99ffbbcc;
 }
 
 namespace game
@@ -355,16 +355,32 @@ void ButtonTechUpgrade::UpdateColorsIcon()
     {
         const sgl::sgui::AbstractButton::VisualState state = GetState();
 
-        const unsigned int colorsIcon[] =
+        if(mUnlockable)
         {
-            0xbfe3f3ff,
-            0xffffffff,
-            0xd4ecf7ff,
-            0xb3d5e5ff,
-            0xe9f6fbff
-        };
+            const unsigned int colorsIcon[] =
+            {
+                0xbff3efff,
+                0xffffffff,
+                0xd4f7f4ff,
+                0xb3e5e1ff,
+                0xe9fbfaff,
+            };
 
-        mIcon->SetColor(colorsIcon[state]);
+            mIcon->SetColor(colorsIcon[state]);
+        }
+        else
+        {
+            const unsigned int colorsIcon[] =
+            {
+                0xbfe3f3ff,
+                0xffffffff,
+                0xd4ecf7ff,
+                0xb3d5e5ff,
+                0xe9f6fbff,
+            };
+
+            mIcon->SetColor(colorsIcon[state]);
+        }
     }
 }
 
@@ -375,26 +391,45 @@ void ButtonTechUpgrade::UpdateColorsLevel()
         const unsigned int colorBg = 0xe5ffe9ff;
         mBgLevel->SetColor(colorBg);
 
-        const unsigned int colorLvl = 0x004d0dff;
+        const unsigned int colorLvl = 0x003309ff;
         mLabelLevel->SetColor(colorLvl);
     }
     else
     {
         const sgl::sgui::AbstractButton::VisualState state = GetState();
 
-        const unsigned int colorsLevelBg[] =
+        if(mUnlockable)
         {
-            0xbfe3f3ff,
-            0xffffffff,
-            0xd4ecf7ff,
-            0xb3d5e5ff,
-            0xe9f6fbff
-        };
+            const unsigned int colorsLevelBg[] =
+            {
+                0xbff3efff,
+                0xffffffff,
+                0xd4f7f4ff,
+                0xb3e5e1ff,
+                0xe9fbfaff,
+            };
 
-        mBgLevel->SetColor(colorsLevelBg[state]);
+            mBgLevel->SetColor(colorsLevelBg[state]);
 
-        const unsigned int colorLevel = 0x00334dff;
-        mLabelLevel->SetColor(colorLevel);
+            const unsigned int colorLevel = 0x00332fff;
+            mLabelLevel->SetColor(colorLevel);
+        }
+        else
+        {
+            const unsigned int colorsLevelBg[] =
+            {
+                0xbfe3f3ff,
+                0xffffffff,
+                0xd4ecf7ff,
+                0xb3d5e5ff,
+                0xe9f6fbff,
+            };
+
+            mBgLevel->SetColor(colorsLevelBg[state]);
+
+            const unsigned int colorLevel = 0x00334dff;
+            mLabelLevel->SetColor(colorLevel);
+        }
     }
 }
 
