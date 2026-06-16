@@ -121,6 +121,7 @@ public:
 
     void ShowDialogTechTree();
     void HideDialogTechTree();
+    const DialogTechTree * GetDialogTechTree() const;
 
     void ShowDialogTrading();
     void HideDialogTrading();
@@ -221,6 +222,8 @@ inline const PanelSelectedObject * GameHUD::GetPanelSelectedObject() const { ret
 inline const PanelTurnControl * GameHUD::GetPanelTurnControl() const { return mPanelTurnCtrl; }
 
 inline const DialogResearch * GameHUD::GetDialogResearch() const { return mDialogResearch; }
+
+inline const DialogTechTree * GameHUD::GetDialogTechTree() const { return mDialogTechTree; }
 
 inline DialogUpgrade * GameHUD::GetDialogUpgrade() const { return mDialogUpgrade; }
 } // namespace game

@@ -89,6 +89,8 @@ private:
     void SetDescription(TechUpgradeId upgrade);
 
 private:
+    friend class StepGameTechTreeDialog;
+
     std::vector<ButtonTechUpgrade *> mButtonsUpgrade;
     std::vector<ButtonTechUpgrade *> mVisibleButtonsUpgrade;
     std::vector<sgl::sgui::Image *> mLinks;

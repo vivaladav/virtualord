@@ -45,6 +45,7 @@
 #include "Tutorial/StepGameSetupResearch.h"
 #include "Tutorial/StepGameSetupResearchIcon.h"
 #include "Tutorial/StepGameSingleInfo.h"
+#include "Tutorial/StepGameTechTreeDialog.h"
 #include "Tutorial/StepGameTechTreeIcon.h"
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUnitAttackBurst.h"
@@ -847,6 +848,10 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1000, 650);
                 return new StepGameTechTreeIcon(panelActions, p0);
             });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([hud] { return new StepGameTechTreeDialog(hud); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame2::~TutorialGame2()
