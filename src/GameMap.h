@@ -191,6 +191,7 @@ public:
     int ApproxDistance(const Cell2D & c1, const Cell2D & c2) const;
     int ApproxDistance(const GameObject * obj1, const GameObject * obj2) const;
     int Distance(const GameObject * obj1, const GameObject * obj2) const;
+    float ExactDistance(const GameObject * obj1, const GameObject * obj2) const;
     bool FindClosestCellConnectedToObject(const GameObject * obj, const Cell2D start, Cell2D & end);
     bool FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, Cell2D & linked);
     bool FindFreeArea(const Cell2D & start, int rows, int cols, int maxRadius, Cell2D & target);

@@ -390,6 +390,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed ComboBox not deleting entries when destroyed.\n"
                   "- Fixed blinking energy icon appearing on some structures when it shouldn't.\n"
                   "- Fixed crash when moving mouse outside of map while unit is attacking.\n"
+                  "- Fixed computation of probability of weapon hit.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

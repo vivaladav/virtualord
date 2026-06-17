@@ -2523,6 +2523,20 @@ int GameMap::Distance(const GameObject * obj1, const GameObject * obj2) const
     return distR + distC;
 }
 
+float GameMap::ExactDistance(const GameObject * obj1, const GameObject * obj2) const
+{
+    const float cX1 = (obj1->GetCol0() + obj1->GetCol1()) * 0.5f;
+    const float cY1 = (obj1->GetRow0() + obj1->GetRow1()) * 0.5f;
+
+    const float cX2 = (obj2->GetCol0() + obj2->GetCol1()) * 0.5f;
+    const float cY2 = (obj2->GetRow0() + obj2->GetRow1()) * 0.5f;
+
+    const float distX = (cX2 - cX1);
+    const float distY = (cY2 - cY1);
+
+    return std::sqrt(distX * distX + distY * distY);
+}
+
 bool GameMap::FindClosestCellConnectedToObject(const GameObject * obj, const Cell2D start, Cell2D & end)
 {
     end.row = -1;

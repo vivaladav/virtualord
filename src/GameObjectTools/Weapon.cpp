@@ -88,7 +88,7 @@ bool Weapon::IsTargetInRange(const GameObject * obj) const
 
 float Weapon::GetProbabilityHit(const GameObject * target) const
 {
-    const int dist = mGameMap->Distance(mOwner, target);
+    const float dist = mGameMap->ExactDistance(mOwner, target);
     const float targetSize = target->GetRows() * target->GetCols();
 
     // base probability is higher when closer to target up to 100% if next to it
@@ -123,7 +123,7 @@ float Weapon::GetProbabilityFatalHit(const GameObject * target) const
     // distance (higher -> lower chance)
     const float weightDistance = 0.33f;
     const int maxDist = mRange * 2;
-    const int dist = mGameMap->Distance(mOwner, target);
+    const int dist = mGameMap->ExactDistance(mOwner, target);
     const float multDist = maxMult - (dist / static_cast<float>(maxDist));
 
     // target's health (higher -> lower chance)
