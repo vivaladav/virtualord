@@ -389,6 +389,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed new structure indicator not updating the position in same cases.\n"
                   "- Fixed ComboBox not deleting entries when destroyed.\n"
                   "- Fixed blinking energy icon appearing on some structures when it shouldn't.\n"
+                  "- Fixed crash when moving mouse outside of map while unit is attacking.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

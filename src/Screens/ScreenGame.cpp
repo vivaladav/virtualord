@@ -3751,6 +3751,13 @@ void ScreenGame::UpdatePanelHit(const GameObject * attacker)
         return;
     }
 
+    // hide when outside of map
+    if(!mIsoMap->IsCellInside(mCurrCell))
+    {
+        mHUD->HidePanelHit();
+        return;
+    }
+
     const GameMapCell & gmCell = mGameMap->GetCell(mCurrCell.row, mCurrCell.col);
     const GameObject * objTarget = gmCell.objTop != nullptr ? gmCell.objTop :
                                    gmCell.objBottom;
