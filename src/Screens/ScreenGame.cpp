@@ -1847,8 +1847,24 @@ void ScreenGame::FinalizeObjectAction(const GameObjectAction & action, bool succ
     if(obj->GetFaction() == mLocalPlayer->GetFaction())
         mHUD->SetLocalActionsEnabled(true);
 
-    // reset object's active action to default
-    obj->SetActiveActionToDefault();
+    // reset object's active action to default (unless local unit attacking)
+    const bool unitAttacking = obj->GetCurrentAction() == ATTACK &&
+                               obj->GetObjectCategory() == ObjectData::CAT_UNIT &&
+                               obj->IsFactionLocal();
+
+    if(unitAttacking)
+    {
+        obj->SetActiveAction(ATTACK);
+
+        mHUD->ShowPanelShotType();
+        UpdatePanelHit(obj);
+
+        // show attack range overlay
+        mOverlayAttack->Show(obj);
+    }
+    else
+        obj->SetActiveActionToDefault();
+
     // reset current action to idle
     obj->SetCurrentAction(IDLE);
 
