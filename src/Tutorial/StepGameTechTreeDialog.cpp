@@ -33,7 +33,7 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(800, 860);
+    info->SetPosition(800, 900);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADES_1"), 9.f, true, true);
 
@@ -74,6 +74,7 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD)
                              // destroyed at the end
                              btn->AddOnClickFunction([info]
                                 {
+                                    info->SetPosition(800, 20);
                                     info->Continue();
                                 });
 
