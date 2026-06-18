@@ -517,7 +517,11 @@ TutorialGame1::TutorialGame1(Screen * screen)
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this] { return new StepGameEnemyKilled(); });
-    AddStep([hud] { return new StepGameQuickUnitButton(hud, indUnit2); });
+    AddStep([hud]
+        {
+            const sgl::core::Pointd2D p0(450, 620);
+            return new StepGameQuickUnitButton(hud, indUnit2, "TUT_GAME_QUICK_SEL_1", p0);
+        });
     // ===== PART 4 =====
     // TODO remove next 2 steps when trying full tutorial
     // AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
@@ -590,7 +594,11 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
     // BACK TO UNIT 2
-    AddStep([hud] { return new StepGameQuickUnitButton(hud, indUnit2); });
+    AddStep([hud]
+            {
+                const sgl::core::Pointd2D p0(450, 620);
+                return new StepGameQuickUnitButton(hud, indUnit2, "TUT_GAME_QUICK_SEL_1", p0);
+            });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND ENERGY GENERATOR
     AddStep([]

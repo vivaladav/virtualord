@@ -12,7 +12,8 @@
 namespace game
 {
 
-StepGameQuickUnitButton::StepGameQuickUnitButton(GameHUD * hud, int indButton)
+StepGameQuickUnitButton::StepGameQuickUnitButton(GameHUD * hud, int indButton, const char * intro,
+                                                 const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(550, 200)
     , mFocusArea(new FocusArea)
 {
@@ -26,9 +27,10 @@ StepGameQuickUnitButton::StepGameQuickUnitButton(GameHUD * hud, int indButton)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(450, 620);
+    info->SetPosition(p0.x, p0.y);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_QUICK_SEL_1"), 7.f, true, false);
+    if(intro != nullptr)
+        info->AddInfoEntry(sm->GetCString(intro), 7.f, true, false);
 
     const auto group = hud->GetQuickUnitButtonsGroup();
     mButton = group->GetButton(indButton);
