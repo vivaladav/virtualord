@@ -11,6 +11,7 @@
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepDelay.h"
+#include "Tutorial/StepGameAddEnemy.h"
 #include "Tutorial/StepGameIntro2.h"
 #include "Tutorial/StepGameBuildStructIntro.h"
 #include "Tutorial/StepGameBuildStructure.h"
@@ -29,11 +30,13 @@
 #include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
+#include "Tutorial/StepGameEnemyIntro.h"
 #include "Tutorial/StepGameMoveCameraOverCell.h"
 #include "Tutorial/StepGameMoveCameraOverObject.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGameMoveUnitToArea.h"
 #include "Tutorial/StepGamePanelHit.h"
+#include "Tutorial/StepGameQuickUnitButton.h"
 #include "Tutorial/StepGameResourcesBar.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
@@ -89,6 +92,7 @@ const Cell2D cellMatGen3(15, 26);
 const Cell2D cellBarracks(8, 9);
 const Cell2D cellTarget1(15, 13);
 const Cell2D cellResCenter(11, 6);
+const Cell2D cellEnemy1(4, 34);
 
 const Cell2D areaBlobsTL(22, 12);
 const Cell2D areaBlobsBR(25, 13);
@@ -1029,6 +1033,38 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // MOVE WORKER AWAY FROM WALL
+    AddStep([game]
+        {
+            const int movX = -300;
+            const int movY = 0;
+            return new StepGameMoveCamera(movX, movY);
+        });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const Cell2D target(21, 27);
+                const core::Pointd2D p0(800, 250);
+                return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // ADD ENEMY NEAR GATE 1
+    AddStep([]
+            {
+                const core::Pointd2D p0(1100, 400);
+                return new StepGameEnemyIntro(p0);
+            });
+    AddStep([this, playerAI]
+            {
+                return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SCOUT1,
+                                            cellEnemy1, true);
+            });
+    // CENTER VIEW ON SOLDIER
+    AddStep([hud]
+            {
+                const sgl::core::Pointd2D p0(500, 700);
+                return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
+            });
 }
 
 TutorialGame2::~TutorialGame2()
