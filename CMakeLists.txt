@@ -355,6 +355,8 @@ add_executable(
     src/Tutorial/StepGameSetObjectAttackMode.cpp
     src/Tutorial/StepGameSetObjectEnergy.h
     src/Tutorial/StepGameSetObjectEnergy.cpp
+    src/Tutorial/StepGameSetObjectFatalHit.h
+    src/Tutorial/StepGameSetObjectFatalHit.cpp
     src/Tutorial/StepGameSetObjectHealth.h
     src/Tutorial/StepGameSetObjectHealth.cpp
     src/Tutorial/StepGameSetObjectMaxHealth.h

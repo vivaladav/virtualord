@@ -483,6 +483,12 @@ void GameObject::SetPerfectShot(bool enabled)
         mWeapon->SetPerfectShot(enabled);
 }
 
+void GameObject::SetFatalHit(bool enabled)
+{
+    if(mWeapon != nullptr)
+        mWeapon->SetFatalHit(enabled);
+}
+
 void GameObject::FindAndSetEnemyTarget()
 {
     if(mWeapon == nullptr)

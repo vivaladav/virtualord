@@ -13,6 +13,8 @@ StepGameSetObjectPerfectShot::StepGameSetObjectPerfectShot(GameObject * obj, boo
 
 void StepGameSetObjectPerfectShot::OnStart()
 {
+    TutorialStep::OnStart();
+
     mObj->SetPerfectShot(mEnabled);
 
     SetDone();

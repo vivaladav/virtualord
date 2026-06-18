@@ -42,6 +42,7 @@
 #include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
 #include "Tutorial/StepGameSetCollectableUnits.h"
 #include "Tutorial/StepGameSetObjectEnergy.h"
+#include "Tutorial/StepGameSetObjectFatalHit.h"
 #include "Tutorial/StepGameSetObjectHealth.h"
 #include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
@@ -1041,30 +1042,42 @@ TutorialGame2::TutorialGame2(Screen * screen)
             return new StepGameMoveCamera(movX, movY);
         });
     AddStep([this, local, isoMap, game]
-            {
-                const auto unit = local->GetUnit(indWorker1);
-                const Cell2D target(21, 27);
-                const core::Pointd2D p0(800, 250);
-                return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
-            });
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const Cell2D target(21, 27);
+            const core::Pointd2D p0(500, 350);
+            return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
+        });
     AddStep([] { return new StepDelay(0.5f); });
     // ADD ENEMY NEAR GATE 1
     AddStep([]
-            {
-                const core::Pointd2D p0(1100, 400);
-                return new StepGameEnemyIntro(p0);
-            });
+        {
+            const core::Pointd2D p0(1100, 400);
+            return new StepGameEnemyIntro(p0);
+        });
     AddStep([this, playerAI]
-            {
-                return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SCOUT1,
-                                            cellEnemy1, true);
-            });
+        {
+            return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SCOUT1,
+                                        cellEnemy1, true);
+        });
     // CENTER VIEW ON SOLDIER
     AddStep([hud]
-            {
-                const sgl::core::Pointd2D p0(500, 700);
-                return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
-            });
+        {
+            const sgl::core::Pointd2D p0(500, 700);
+            return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
+        });
+    // DISABLE PERFECT SHOT AND FATAL HIT
+    AddStep([local]
+        {
+            auto unit = local->GetUnit(indSoldier1);
+            return new StepGameSetObjectPerfectShot(unit, false);
+        });
+    AddStep([local]
+        {
+            auto unit = local->GetUnit(indSoldier1);
+            return new StepGameSetObjectFatalHit(unit, false);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame2::~TutorialGame2()

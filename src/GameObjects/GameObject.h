@@ -175,6 +175,7 @@ public:
 
     void SetAttackMode(AttackMode am);
     void SetPerfectShot(bool enabled);
+    void SetFatalHit(bool enabled);
 
     void FindAndSetEnemyTarget();
     bool HasEnemyInRange();
