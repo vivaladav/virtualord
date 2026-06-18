@@ -97,20 +97,22 @@ void Laser::OnShoot(float x0, float y0)
     const float maxDamage = 20.f;
 #endif
 
+    // perfect shot always inflicts damage
     if(IsPerfectShotEnabled())
-    {
         damage = maxDamage * owner->GetAttribute(OBJ_ATT_ATTACK_POWER) / MAX_STAT_FVAL;
-        fatal = false;
-    }
-    if(valHit < probHit)
+    // regular shot
+    else if(valHit < probHit)
     {
         damage = maxDamage * owner->GetAttribute(OBJ_ATT_ATTACK_POWER) / MAX_STAT_FVAL;
 
-        // check for fatal hit
-        const float probFatal = GetProbabilityFatalHit(mTarget);
-        const float valFatal = dist.GetNextValue();
+        // check if fatal hit is allowed
+        if(IsFatalHitEnabled())
+        {
+            const float probFatal = GetProbabilityFatalHit(mTarget);
+            const float valFatal = dist.GetNextValue();
 
-        fatal = valFatal < probFatal;
+            fatal = valFatal < probFatal;
+        }
     }
 
     const DataParticleSingleLaser pd =
