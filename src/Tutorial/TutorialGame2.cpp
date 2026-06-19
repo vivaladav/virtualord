@@ -55,6 +55,7 @@
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUnitAttackBurst.h"
 #include "Tutorial/StepGameUnitAttackIcon.h"
+#include "Tutorial/StepGameUnitAttackContinue.h"
 #include "Tutorial/StepGameUnitAttackSimple.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameUpgradeIntro.h"
@@ -94,6 +95,7 @@ const Cell2D cellBarracks(8, 9);
 const Cell2D cellTarget1(15, 13);
 const Cell2D cellResCenter(11, 6);
 const Cell2D cellEnemy1(4, 34);
+const Cell2D cellTower1(6, 33);
 
 const Cell2D areaBlobsTL(22, 12);
 const Cell2D areaBlobsBR(25, 13);
@@ -406,7 +408,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             const core::Pointd2D p0(150, 600);
 
             auto panelShot = hud->GetPanelShotType();
-            return new StepGameUnitAttackBurst(panelShot, p0);
+            return new StepGameUnitAttackBurst(panelShot, "TUT_GAME_ATTACK_3", p0);
         });
     AddStep([isoMap]
             {
@@ -1025,8 +1027,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const auto unit = local->GetUnit(indWorker1);
                 const core::Pointd2D p0(1000, 350);
-                const Cell2D cellEnd(6, 33);
-                return new StepGameBuildTowerEnd(isoMap, unit, cellEnd, p0);
+                return new StepGameBuildTowerEnd(isoMap, unit, cellTower1, p0);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -1045,7 +1046,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         {
             const auto unit = local->GetUnit(indWorker1);
             const Cell2D target(21, 27);
-            const core::Pointd2D p0(500, 350);
+            const core::Pointd2D p0(400, 500);
             return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
@@ -1078,18 +1079,61 @@ TutorialGame2::TutorialGame2(Screen * screen)
             return new StepGameSetObjectFatalHit(unit, false);
         });
     AddStep([] { return new StepDelay(0.5f); });
+    // ATTACK ENEMY WITH SOLDIER
+    AddStep([]
+            {
+                const core::Pointd2D p0(700, 200);
+                return new StepGameSingleInfo(p0, "TUT_GAME_ATTACK_1b");
+            });
+    AddStep([panelActions]
+            {
+                const core::Pointd2D p0(700, 250);
+                return new StepGameUnitAttackIcon(panelActions, p0);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const core::Pointd2D p0(700, 250);
+                return new StepGameUnitAttackContinue(game, unit, isoMap, cellEnemy1, p0);
+            });
+    // LOWER ENEMY HEALTH AND ENABLE TOWER'S PERFECT SHOT
+    AddStep([this]
+            {
+                const float health = 20.f;
+                GameObject * enemy = GetObjectInCell(cellEnemy1);
+                return new StepGameSetObjectHealth(enemy, health);
+            });
+    AddStep([this]
+            {
+                auto tower = GetObjectInCell(cellTower1);
+                return new StepGameSetObjectPerfectShot(tower, true);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame2::~TutorialGame2()
 {
     auto game = GetScreen()->GetGame();
 
-    // clear perfect shot flag for unit soldier 1
+    // reset flags for unit soldier 1
     const Player * local = game->GetPlayerByIndex(0);
     auto unit1 = local->GetUnit(indSoldier1);
 
     if(unit1 != nullptr)
+    {
         unit1->SetPerfectShot(false);
+        unit1->SetFatalHit(true);
+    }
+
+    // reset flags for tower 1
+    auto tower1 = GetObjectInCell(cellTower1);
+
+    if(tower1 != nullptr)
+        tower1->SetPerfectShot(false);
 }
 
 } // namespace game
