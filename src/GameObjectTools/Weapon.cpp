@@ -88,11 +88,15 @@ bool Weapon::IsTargetInRange(const GameObject * obj) const
 
 float Weapon::GetProbabilityHit(const GameObject * target) const
 {
-    const float dist = mGameMap->ExactDistance(mOwner, target);
+    // reduce distance by half cell to make it more likely to hit when next to target
+    const float dist = mGameMap->ExactDistance(mOwner, target) - 0.5f;
     const float targetSize = target->GetRows() * target->GetCols();
 
+    // make base probability lower according to distance up to 50%
+    const float maxDecayProb = maxProb * 0.5f;
+    const float decayProb = maxDecayProb / mRange;
     // base probability is higher when closer to target up to 100% if next to it
-    const float baseProb = (mRange - dist + 1) * maxProb / static_cast<float>(mRange);
+    const float baseProb = maxProb - (decayProb * dist);
     // fixed probability is part of base that's at least (baseW0*10)% and higher as target gets bigger
     const float baseW0 = 0.6f;
     const float fixedW0 = 1.f - baseW0;
