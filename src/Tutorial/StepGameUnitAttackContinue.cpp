@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "IsoMap.h"
 #include "GameObjects/Unit.h"
+#include "GameObjectTools/Weapon.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -52,9 +53,13 @@ StepGameUnitAttackContinue::~StepGameUnitAttackContinue()
 
 void StepGameUnitAttackContinue::Update(float)
 {
-    const float minEnergy = 10.f;
+    if(mUnit == nullptr)
+        return ;
 
-    if(mUnit != nullptr && mUnit->GetEnergy() < minEnergy)
+    // no more energy for shooting -> done
+    const float minEnergy = mUnit->GetWeapon()->GetCostEnergy();
+
+    if(mUnit->GetEnergy() < minEnergy)
         SetDone();
 }
 
