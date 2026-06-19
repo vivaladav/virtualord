@@ -23,20 +23,6 @@ Structure::~Structure()
     delete mIconEnergy;
 }
 
-void Structure::OnNewTurn(PlayerFaction faction)
-{
-    GameObject::OnNewTurn(faction);
-
-    if(faction != GetFaction())
-        return ;
-
-    if(!IsLinked())
-        return ;
-
-    ConsumeResources();
-    ProduceResources();
-}
-
 float Structure::GetTimeBuildUnit() const
 {
     const float maxTime = 2.f;

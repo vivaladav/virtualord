@@ -130,6 +130,8 @@ public:
 
     int GetResourceProduction(ExtendedResource type) const;
     int GetResourceConsumption(ExtendedResource type) const;
+    // return production - consuption
+    int GetResourceDelta(ExtendedResource type) const;
 
     void HandleCollectable(GameObject * collected, GameObject * collector);
 

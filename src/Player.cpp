@@ -513,15 +513,26 @@ void Player::OnNewTurn()
     // update turns counter
     ++mTurnsPlayed;
 
-    // consume energy of own cells
-    const int energy = GetCellsEnergyUsed();
-
-    if(energy > 0)
+    // UPDATE RESOURCES
+    const Player::Stat statIds[] =
     {
-        mStats[ENERGY].SumValue(-energy);
+        ENERGY,
+        MATERIAL,
+        DIAMONDS,
+        BLOBS,
+        MONEY,
+        RESEARCH
+    };
 
-        NotifyResourcesChanged();
+    for(unsigned int r = 0; r < NUM_EXTENDED_RESOURCES; ++r)
+    {
+        const auto er = static_cast<ExtendedResource>(r);
+        const int delta = GetResourceDelta(er);
+
+        mStats[statIds[r]].SumValue(delta);
     }
+
+    NotifyResourcesChanged();
 }
 
 void Player::AdjustTurnMaxEnergy()
@@ -725,6 +736,24 @@ int Player::GetResourceConsumption(ExtendedResource type) const
         tot += GetCellsEnergyUsed();
 
     return tot;
+}
+
+int Player::GetResourceDelta(ExtendedResource type) const
+{
+    int delta = 0;
+
+    // consider usage and production  from structures
+    for(const auto s : mStructures)
+    {
+        if(s->IsLinked())
+            delta += s->GetResourceProduction(type) - s->GetResourceUsage(type);
+    }
+
+    // energy used by cells too
+    if(ER_ENERGY == type)
+        delta -= GetCellsEnergyUsed();
+
+    return delta;
 }
 
 void Player::InitUpgrades()
