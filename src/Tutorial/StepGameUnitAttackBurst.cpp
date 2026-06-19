@@ -16,7 +16,7 @@ constexpr unsigned int buttonBurst = 2;
 namespace game
 {
 
-StepGameUnitAttackBurst::StepGameUnitAttackBurst(PanelShotType * panel,
+StepGameUnitAttackBurst::StepGameUnitAttackBurst(PanelShotType * panel, const char * intro,
                                                  const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(550, 200)
     , mFocusArea(new FocusArea)
@@ -33,18 +33,21 @@ StepGameUnitAttackBurst::StepGameUnitAttackBurst(PanelShotType * panel,
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_ATTACK_3"), 8.f, true, false,
-                       [this]
-                       {
-                           const int padding = 5;
-                           const int fX = mPanel->GetScreenX() - padding;
-                           const int fY = mPanel->GetScreenY() - padding;
-                           const int fW = mPanel->GetWidth() + (padding * 2);
-                           const int fH = mPanel->GetHeight() + (padding * 2);
+    if(intro != nullptr)
+    {
+        info->AddInfoEntry(sm->GetCString(intro), 8.f, true, false,
+                           [this]
+                           {
+                               const int padding = 5;
+                               const int fX = mPanel->GetScreenX() - padding;
+                               const int fY = mPanel->GetScreenY() - padding;
+                               const int fW = mPanel->GetWidth() + (padding * 2);
+                               const int fH = mPanel->GetHeight() + (padding * 2);
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
-                       });
+                               mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                               mFocusArea->SetVisible(true);
+                           });
+    }
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_ATTACK_4"), 0.f, false, false,
                          [this]

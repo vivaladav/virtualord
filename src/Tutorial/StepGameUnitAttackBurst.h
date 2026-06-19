@@ -13,7 +13,8 @@ class PanelShotType;
 class StepGameUnitAttackBurst : public TutorialInfoStep
 {
 public:
-    StepGameUnitAttackBurst(PanelShotType * panel, const sgl::core::Pointd2D & p0);
+    StepGameUnitAttackBurst(PanelShotType * panel, const char * intro,
+                            const sgl::core::Pointd2D & p0);
     ~StepGameUnitAttackBurst();
 
 private:
