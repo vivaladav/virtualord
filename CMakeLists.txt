@@ -393,6 +393,8 @@ add_executable(
     src/Tutorial/StepGameUnit.cpp
     src/Tutorial/StepGameUnitAttackBurst.h
     src/Tutorial/StepGameUnitAttackBurst.cpp
+    src/Tutorial/StepGameUnitAttackContinue.h
+    src/Tutorial/StepGameUnitAttackContinue.cpp
     src/Tutorial/StepGameUnitAttackSimple.h
     src/Tutorial/StepGameUnitAttackSimple.cpp
     src/Tutorial/StepGameUnitAttackIcon.h
