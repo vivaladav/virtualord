@@ -122,8 +122,8 @@ void StepGameSetupResearch::HandleSlider(sgl::sgui::Slider * slider, int target)
 
     // CLICK FILTER
     // NOTE allow big clickable area or slider won't work when setting max value outside of its body
-    const int paddingX2 = 80;
-    const int paddingY2 = 40;
+    const int paddingX2 = 100;
+    const int paddingY2 = 50;
     const int fX2 = slider->GetScreenX() - paddingX2;
     const int fY2 = slider->GetScreenY() - paddingY2;
     const int fW2 = slider->GetWidth() + (paddingX2 * 2);
