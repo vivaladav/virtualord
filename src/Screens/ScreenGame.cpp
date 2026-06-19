@@ -911,8 +911,7 @@ void ScreenGame::CreateUI()
             ClearCellOverlays();
 
             // reset object action
-            selObj->SetCurrentAction(GameObjectActionType::IDLE);
-            selObj->SetActiveActionToDefault();
+            ResetObjectAction(selObj);
 
             // show current indicator
             ShowActiveUnitIndicators(static_cast<Unit *>(selObj), mCurrCell);
@@ -920,7 +919,7 @@ void ScreenGame::CreateUI()
             return ;
         }
         else if(action == SELF_DESTRUCTION)
-            selObj->SetActiveActionToDefault();
+            ResetObjectAction(selObj);
 
         CancelObjectAction(selObj);
     });
@@ -1766,8 +1765,7 @@ void ScreenGame::CancelObjectAction(GameObject * obj)
 
             mObjActions.erase(it);
 
-            obj->SetCurrentAction(GameObjectActionType::IDLE);
-            obj->SetActiveActionToDefault();
+            ResetObjectAction(obj);
 
             // re-enable actions for local player
             if(obj->GetFaction() == mLocalPlayer->GetFaction())
@@ -1955,6 +1953,12 @@ bool ScreenGame::CheckGameOverForLocalPlayer()
 int ScreenGame::CellToIndex(const Cell2D & cell) const
 {
     return cell.row * mIsoMap->GetNumCols() + cell.col;
+}
+
+void ScreenGame::ResetObjectAction(GameObject * obj)
+{
+    obj->SetActiveActionToDefault();
+    obj->SetCurrentAction(IDLE);
 }
 
 bool ScreenGame::SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, GameObjectsGroup * group,
@@ -2160,6 +2164,11 @@ bool ScreenGame::SetupObjectInteraction(Unit * unit, GameObject * objTarget, Pla
 
 bool ScreenGame::SetupCellConquest(Unit * unit)
 {
+    // update action
+    unit->SetActiveAction(GameObjectActionType::IDLE);
+    unit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
+
+    // start path
     auto cp = new ConquerPath(unit, mGameMap, this, mOverlayCellConquest);
     cp->SetPathCells(mOverlayCellConquest->GetConquestPath());
 
@@ -2172,13 +2181,12 @@ bool ScreenGame::SetupCellConquest(Unit * unit)
         // disable action buttons
         mHUD->SetLocalActionsEnabled(false);
 
-        unit->SetActiveAction(GameObjectActionType::IDLE);
-        unit->SetCurrentAction(GameObjectActionType::CONQUER_CELL);
-
         return true;
     }
     else
     {
+        ResetObjectAction(unit);
+
         unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUEST"), 2.f);
         return false;
     }
@@ -3209,6 +3217,10 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
 
 bool ScreenGame::StartUnitBuildWall(Unit * unit)
 {
+    //update action
+    unit->SetActiveAction(GameObjectActionType::IDLE);
+    unit->SetCurrentAction(GameObjectActionType::BUILD_WALL);
+
     // setup build
     auto wbp = new WallBuildPath(unit, mIsoMap, mGameMap, this, mOverlayWall);
     wbp->SetPath(mOverlayWall->GetWallPath());
@@ -3224,13 +3236,11 @@ bool ScreenGame::StartUnitBuildWall(Unit * unit)
         // store active action
         mObjActionsToDo.emplace_back(unit, GameObjectActionType::BUILD_WALL, [](bool){});
 
-        unit->SetActiveAction(GameObjectActionType::IDLE);
-        unit->SetCurrentAction(GameObjectActionType::BUILD_WALL);
-
         return true;
     }
     else
     {
+        ResetObjectAction(unit);
         ClearCellOverlays();
         return false;
     }
@@ -3240,8 +3250,8 @@ void ScreenGame::ShowActiveUnitIndicators(Unit * unit, const Cell2D & cell)
 {
     const GameObjectActionType action = unit->GetActiveAction();
 
-    // do not show any indicator when already doing something
-    if(unit->GetCurrentAction() != IDLE)
+    // do not show any indicator when already doing something or no action set
+    if(action == IDLE || unit->GetCurrentAction() != IDLE)
         return ;
 
     if(action == GameObjectActionType::MOVE)
