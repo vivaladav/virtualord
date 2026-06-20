@@ -47,11 +47,14 @@
 #include "GameObjects/Wall.h"
 #include "GameObjects/WallGate.h"
 #include "Screens/ScreenGame.h"
+#include "Widgets/GameHUD.h"
 #include "Widgets/MiniMap.h"
+#include "Widgets/PanelObjectActions.h"
 
 #include <sgl/ai/Pathfinder.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StringManager.h>
 
 #include <algorithm>
@@ -2889,6 +2892,53 @@ bool GameMap::IsAreaFree(int brR, int brC, int rows, int cols)
     }
 
     return true;
+}
+
+void GameMap::OpenGate(WallGate * gate)
+{
+    const bool res = gate->Toggle();
+
+    if(!res)
+        return ;
+
+    // move object down in game map
+    MoveObjectDown(gate);
+
+    // move to iso layer 1
+    mIsoMap->ChangeObjectLayer(gate->GetIsoObject(), MapLayers::REGULAR_OBJECTS,
+                               MapLayers::GROUND_OBJECTS);
+
+    // update panel actions
+    auto panelObjActions = mScreenGame->GetHUD()->GetPanelObjectActions();
+    panelObjActions->SetObject(gate);
+
+    // reset focus as buttons will change
+    sgl::sgui::Stage::Instance()->SetFocus();
+}
+
+void GameMap::CloseGate(WallGate * gate)
+{
+    const bool res = gate->Toggle();
+
+    if(!res)
+        return;
+
+    // do not close if there's an object on top
+    if(gate->GetCell()->objTop != nullptr)
+        return;
+
+    // move object up in game map
+    MoveObjectUp(gate);
+
+    // move to iso layer 2
+    mIsoMap->ChangeObjectLayer(gate->GetIsoObject(), MapLayers::GROUND_OBJECTS, MapLayers::REGULAR_OBJECTS);
+
+    // update panel actions
+    auto panelObjActions = mScreenGame->GetHUD()->GetPanelObjectActions();
+    panelObjActions->SetObject(gate);
+
+    // reset focus as buttons will change
+    sgl::sgui::Stage::Instance()->SetFocus();
 }
 
 void GameMap::OnNewTurn(PlayerFaction faction)

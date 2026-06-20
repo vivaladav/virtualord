@@ -39,6 +39,18 @@ bool WallGate::Toggle()
     return true;
 }
 
+void WallGate::OnNewTurn(PlayerFaction faction)
+{
+    Structure::OnNewTurn(faction);
+
+    if(faction != GetFaction())
+        return ;
+
+    // close gate if open
+    if(IsOpen())
+        GetGameMap()->CloseGate(this);
+}
+
 unsigned int WallGate::GetCostEnergy(unsigned int level)
 {
     const unsigned int cost0 = 5;

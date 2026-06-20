@@ -36,6 +36,7 @@ class ScreenGame;
 class Temple;
 class Unit;
 class WallBuildPath;
+class WallGate;
 class WeaponData;
 
 struct Cell2D;
@@ -196,6 +197,10 @@ public:
     bool FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, Cell2D & linked);
     bool FindFreeArea(const Cell2D & start, int rows, int cols, int maxRadius, Cell2D & target);
     bool IsAreaFree(int brR, int brC, int rows, int cols);
+
+    // GATE
+    void OpenGate(WallGate * gate);
+    void CloseGate(WallGate * gate);
 
     // turn system
     void OnNewTurn(PlayerFaction faction);

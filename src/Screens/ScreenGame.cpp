@@ -817,25 +817,9 @@ void ScreenGame::CreateUI()
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_OPEN_GATE,
                                        [this, panelObjActions]
     {
-        // open gate
         auto gate = static_cast<WallGate *>(mLocalPlayer->GetSelectedObject());
-        const bool res = gate->Toggle();
 
-        if(!res)
-            return ;
-
-        // move object down in game map
-        mGameMap->MoveObjectDown(gate);
-
-        // move to iso layer 1
-        mIsoMap->ChangeObjectLayer(gate->GetIsoObject(), MapLayers::REGULAR_OBJECTS,
-                                   MapLayers::GROUND_OBJECTS);
-
-        // update panel actions
-        panelObjActions->SetObject(gate);
-
-        // reset focus as buttons will change
-        sgl::sgui::Stage::Instance()->SetFocus();
+        mGameMap->OpenGate(gate);
     });
 
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_CLOSE_GATE,
@@ -843,22 +827,8 @@ void ScreenGame::CreateUI()
     {
         // close gate
         auto gate = static_cast<WallGate *>(mLocalPlayer->GetSelectedObject());
-        const bool res = gate->Toggle();
 
-        if(!res)
-            return ;
-
-        // move object up in game map
-        mGameMap->MoveObjectUp(gate);
-
-        // move to iso layer 2
-        mIsoMap->ChangeObjectLayer(gate->GetIsoObject(), MapLayers::GROUND_OBJECTS, MapLayers::REGULAR_OBJECTS);
-
-        // update panel actions
-        panelObjActions->SetObject(gate);
-
-        // reset focus as buttons will change
-        sgl::sgui::Stage::Instance()->SetFocus();
+        mGameMap->CloseGate(gate);
     });
 
     // TRADING POST
