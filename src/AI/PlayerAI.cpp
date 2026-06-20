@@ -15,13 +15,10 @@
 #include <algorithm>
 #include <iostream>
 
-namespace
-{
-constexpr int MAX_PRIORITY = 100;
-}
-
 namespace game
 {
+
+unsigned int PlayerAI::mNumActions = 0;
 
 PlayerAI::PlayerAI(Player * player, const ObjectsDataRegistry * dataReg)
     : mPlayer(player)
@@ -44,6 +41,9 @@ void PlayerAI::DecideNextAction()
     ClearActionsTodo();
     ClearActionsDone();
 
+    // always append requested actions after clear and before others
+    AddRequestedActions();
+
     if(mActive)
     {
         PrepareData();
@@ -63,6 +63,17 @@ void PlayerAI::DecideNextAction()
             AddActionIdleTurn(idleTime);
         }
     }
+}
+
+void PlayerAI::RequestNewAction(ActionAI * action)
+{
+    action->actId = ++mNumActions;
+
+    // clamp priority
+    if(action->priority > MAX_PRIORITY)
+        action->priority = MAX_PRIORITY;
+
+    mActionsRequested.emplace_back(action);
 }
 
 void PlayerAI::PrepareData()
@@ -162,6 +173,18 @@ void PlayerAI::AddActions()
 
     // KEEP THIS LAST
     AddActionEndTurn();
+}
+
+void PlayerAI::AddRequestedActions()
+{
+    if(mActionsRequested.empty())
+        return ;
+
+    mActionsTodo.insert(mActionsTodo.begin(), mActionsRequested.begin(), mActionsRequested.end());
+
+    std::make_heap(mActionsTodo.begin(), mActionsTodo.end());
+
+    mActionsRequested.clear();
 }
 
 const ActionAI * PlayerAI::GetNextActionTodo()
@@ -543,10 +566,7 @@ const ActionAI * PlayerAI::PopAction()
 
 void PlayerAI::AddNewAction(ActionAI * action)
 {
-    // assign unique ID to action
-    static unsigned int num = 0;
-
-    action->actId = ++num;
+    action->actId = ++mNumActions;
 
     // clamp priority
     if(action->priority > MAX_PRIORITY)
@@ -662,7 +682,7 @@ void PlayerAI::AddActionIdleTurn(float sec)
     // create action
     auto action = new ActionAIIdleTurn;
     action->type = AIA_IDLE_TURN;
-    action->priority = MAX_PRIORITY;
+    action->priority = MIN_PRIORITY;
     action->time = sec;
 
     PushAction(action);

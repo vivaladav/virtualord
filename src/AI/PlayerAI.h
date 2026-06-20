@@ -21,12 +21,18 @@ enum ResourceType : unsigned int;
 class PlayerAI
 {
 public:
+    static constexpr int MAX_PRIORITY = 99;
+    static constexpr int MIN_PRIORITY = 1;
+
+public:
     PlayerAI(Player * player, const ObjectsDataRegistry * dataReg);
     ~PlayerAI();
 
     void SetGameMap(GameMap * gm);
 
     void DecideNextAction();
+    // this can be used to request the AI to do something, for example during the tutorial
+    void RequestNewAction(ActionAI * action);
 
     const ActionAI * GetNextActionTodo();
 
@@ -64,6 +70,7 @@ private:
     void UpdatePriorityRange();
 
     void AddActions();
+    void AddRequestedActions();
 
     void PushAction(ActionAI * action);
     const ActionAI * PopAction();
@@ -121,7 +128,11 @@ private:
     void PrintdActionDebug(const char * title, const ActionAI * a);
 
 private:
+    static unsigned int mNumActions;
+
+private:
     std::vector<ActionAI *> mActionsTodo;
+    std::vector<ActionAI *> mActionsRequested;
     std::vector<const ActionAI *> mActionsDoing;
     std::vector<const ActionAI *> mActionsDone;
 
