@@ -2959,9 +2959,9 @@ void GameMap::OnNewTurn(PlayerFaction faction)
 int GameMap::GetFactionMoneyPerTurn(PlayerFaction faction)
 {
     const int perc = mControlMap->GetPercentageControlledByFaction(faction);
-    const int maxMoney = 1000 / 100;
+    const int maxMoney = 500;
 
-    return maxMoney * perc;
+    return maxMoney * perc / 100;
 }
 
 void GameMap::Update(float delta)

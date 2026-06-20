@@ -18,8 +18,8 @@ namespace game
 
 Base::Base(const ObjectData & data, const ObjectInitData & initData)
     : Structure(data, initData)
-    , mOutputEnergy(20)
-    , mOutputMaterial(10)
+    , mOutputEnergy(40)
+    , mOutputMaterial(20)
 {
     SetImage();
 }

@@ -157,13 +157,13 @@ void ResourceGenerator::UpdateOutput()
     const GameObjectTypeId type = GetObjectType();
 
     if(type == ObjectData::TYPE_RES_GEN_ENERGY)
-        mOutput = 80;
+        mOutput = 100;
     else if(type == ObjectData::TYPE_RES_GEN_MATERIAL)
-        mOutput = 50;
+        mOutput = 70;
     else if(type == ObjectData::TYPE_RES_GEN_ENERGY_SOLAR)
-        mOutput = 40;
+        mOutput = 50;
     else if(type == ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT)
-        mOutput = 25;
+        mOutput = 35;
     // default
     else
         mOutput = 1;
