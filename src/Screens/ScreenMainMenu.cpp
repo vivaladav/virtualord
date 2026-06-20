@@ -378,6 +378,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Research Center flashes when a tech upgrade is unlockable.\n"
                   "- Action button that opens the tech tree dialog now shows a notification"
                   " with the number of upgrades that can be unlocked.\n"
+                  "- Gates close automatically on new turn.\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
                   "- Reduced time / actions to complete first map tutorial.\n"
@@ -392,6 +393,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed blinking energy icon appearing on some structures when it shouldn't.\n"
                   "- Fixed crash when moving mouse outside of map while unit is attacking.\n"
                   "- Fixed computation of probability of weapon hit.\n"
+                  "- Fixed resources update in some corner cases giving wrong numbers.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
