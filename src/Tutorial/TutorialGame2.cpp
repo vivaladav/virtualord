@@ -31,6 +31,7 @@
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameEnemyIntro.h"
+#include "Tutorial/StepGameMakeEnemyAttack.h"
 #include "Tutorial/StepGameMoveCameraOverCell.h"
 #include "Tutorial/StepGameMoveCameraOverObject.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
@@ -41,6 +42,7 @@
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
 #include "Tutorial/StepGameSetCollectableUnits.h"
+#include "Tutorial/StepGameSetObjectAttackMode.h"
 #include "Tutorial/StepGameSetObjectEnergy.h"
 #include "Tutorial/StepGameSetObjectFatalHit.h"
 #include "Tutorial/StepGameSetObjectHealth.h"
@@ -1045,7 +1047,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, local, isoMap, game]
         {
             const auto unit = local->GetUnit(indWorker1);
-            const Cell2D target(21, 27);
+            const Cell2D target(20, 28);
             const core::Pointd2D p0(400, 500);
             return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
         });
@@ -1096,7 +1098,14 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(700, 250);
                 return new StepGameUnitAttackContinue(game, unit, isoMap, cellEnemy1, p0);
             });
-    // LOWER ENEMY HEALTH AND ENABLE TOWER'S PERFECT SHOT
+    AddStep([] { return new StepDelay(0.5f); });
+    // ENABLE TOWER'S PERFECT SHOT
+    AddStep([this]
+            {
+                auto tower = GetObjectInCell(cellTower1);
+                return new StepGameSetObjectPerfectShot(tower, true);
+            });
+    // LOWER ENEMY HEALTH, SET ATTACK TO BURST AND DISABLE FATAL HIT
     AddStep([this]
             {
                 const float health = 20.f;
@@ -1105,12 +1114,19 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([this]
             {
-                auto tower = GetObjectInCell(cellTower1);
-                return new StepGameSetObjectPerfectShot(tower, true);
+                auto attacker = GetObjectInCell(cellEnemy1);
+                return new StepGameSetObjectAttackMode(attacker, ATT_BURST_SHOT);
             });
-    AddStep([] { return new StepDelay(0.5f); });
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    // MAKE ENEMY SHOOT
+    AddStep([this, playerAI, local]
+            {
+                auto attacker = static_cast<Unit *>(GetObjectInCell(cellEnemy1));
+                auto target = local->GetUnit(indSoldier1);
+                return new StepGameMakeEnemyAttack(attacker, target, playerAI);
+            });
+    // WAIT TURN END
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
