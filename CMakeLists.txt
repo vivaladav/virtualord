@@ -315,6 +315,8 @@ add_executable(
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/StepGameIntro2.h
     src/Tutorial/StepGameIntro2.cpp
+    src/Tutorial/StepGameMakeEnemyAttack.h
+    src/Tutorial/StepGameMakeEnemyAttack.cpp
     src/Tutorial/StepGameMapNavigation.h
     src/Tutorial/StepGameMapNavigation.cpp
     src/Tutorial/StepGameMaterialGenerator.h
