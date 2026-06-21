@@ -55,6 +55,9 @@ private:
     unsigned int GetNumStructuresConquered(GameObjectTypeId type) const;
     unsigned int GetNumObjectsDestroyedByCategory(GameObjectCategoryId cat) const;
 
+    void NotifyGoalCompleted();
+    void NotifyGoalsCollected();
+
 private:
     std::vector<MissionGoal> mMissionGoals;
     std::vector<int> mResourcesGained;

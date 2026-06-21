@@ -47,8 +47,6 @@
 #include <sgl/graphic/Renderer.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
-#include <sgl/media/AudioManager.h>
-#include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/ButtonsGroup.h>
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/Stage.h>
@@ -750,54 +748,6 @@ void GameHUD::AddPlayedTurn()
     mCountdownLabel->AddPlayedTurn();
 
     PositionMissionCountdown();
-}
-
-void GameHUD::ShowGoalCompletedIcon()
-{
-    using namespace sgl;
-
-    // icon already visible
-    if(mGoalCompletedIcon != nullptr)
-        return ;
-
-    const Player * p = mScreen->GetGame()->GetLocalPlayer();
-    const PlayerFaction pf = p->GetFaction();
-    const auto bases = p->GetStructuresByType(ObjectData::TYPE_BASE);
-
-    // this shouldn't happen
-    if(bases.empty())
-        return ;
-
-    // create icon
-    auto tm = graphic::TextureManager::Instance();
-    auto tex = tm->GetSprite(SpriteFileGameUI, ID_GAMEUI_GOAL_F1 + pf);
-
-    mGoalCompletedIcon = new sgui::Image(tex);
-    // set camera to default to follow screen
-    mGoalCompletedIcon->SetCamera(graphic::Camera::GetDefaultCamera());
-
-    // position icon over base
-    const Structure * base = bases[0];
-    const IsoObject * isoObj = base->GetIsoObject();
-
-    const int marginIconB = 10;
-    const int x = isoObj->GetX() + (isoObj->GetWidth() - mGoalCompletedIcon->GetWidth()) / 2;
-    const int y = isoObj->GetY() - mGoalCompletedIcon->GetHeight() - marginIconB;
-
-    mGoalCompletedIcon->SetPosition(x, y);
-
-    // make sure icon stays below other UI stuff
-    sgui::Stage::Instance()->MoveChildToBack(mGoalCompletedIcon);
-
-    // play sound
-    auto player = media::AudioManager::Instance()->GetPlayer();
-    player->PlaySound("UI/goal_completed.ogg");
-}
-
-void GameHUD::HideGoalCompletedIcon()
-{
-    delete mGoalCompletedIcon;
-    mGoalCompletedIcon = nullptr;
 }
 
 void GameHUD::HidePanelSelectedObject()

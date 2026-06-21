@@ -7,9 +7,12 @@
 #include "Player.h"
 #include "Particles/DataParticleOutput.h"
 #include "Particles/UpdaterOutput.h"
+#include "Widgets/BlinkingHighlight.h"
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
 
 #include <cmath>
 
@@ -18,10 +21,18 @@ namespace game
 
 Base::Base(const ObjectData & data, const ObjectInitData & initData)
     : Structure(data, initData)
+    , mHighlight(new BlinkingHighlight(SpriteFileStructures, ID_STRUCT_BASE_W))
     , mOutputEnergy(40)
     , mOutputMaterial(20)
 {
     SetImage();
+
+    HideHighlight();
+}
+
+Base::~Base()
+{
+    delete mHighlight;
 }
 
 void Base::OnNewTurn(PlayerFaction faction)
@@ -85,6 +96,16 @@ int Base::GetResourceProduction(ExtendedResource res) const
         return 0;
 }
 
+
+void Base::OnGoalCompleted()
+{
+    ShowHighlight();
+
+    // play sound
+    auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+    player->PlaySound("UI/goal_completed.ogg");
+}
+
 void Base::UpdateGraphics()
 {
     SetImage();
@@ -113,6 +134,29 @@ void Base::SetImage()
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
 
     isoObj->SetTexture(tex);
+}
+
+void Base::HideHighlight()
+{
+    mHighlight->SetEnabled(false);
+    mHighlight->SetVisible(false);
+}
+
+void Base::ShowHighlight()
+{
+    mHighlight->SetEnabled(true);
+    mHighlight->SetVisible(true);
+}
+
+void Base::OnPositionChanged()
+{
+    Structure::OnPositionChanged();
+
+    const auto isoObj = GetIsoObject();
+    const int isoX = isoObj->GetX();
+    const int isoY = isoObj->GetY();
+
+    mHighlight->SetPosition(isoX, isoY);
 }
 
 } // namespace game

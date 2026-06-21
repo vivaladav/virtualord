@@ -3,6 +3,7 @@
 #include "ControlMap.h"
 #include "Game.h"
 #include "Player.h"
+#include "GameObjects/Base.h"
 #include "GameObjects/ObjectData.h"
 #include "Tutorial/Tutorial.h"
 #include "Tutorial/TutorialConstants.h"
@@ -107,7 +108,7 @@ void MissionGoalsTracker::CollectMissionGoalReward(unsigned int index)
             return;
     }
 
-    mHUD->HideGoalCompletedIcon();
+    NotifyGoalsCollected();
 }
 
 void MissionGoalsTracker::Update()
@@ -121,15 +122,16 @@ void MissionGoalsTracker::Update()
         if(g.IsPrimary())
             ++primaryGoals;
 
-        const bool completed = CheckIfGoalCompleted(g);
+        const bool alreadyCompleted = g.IsCompleted();
+        const bool completed = alreadyCompleted || CheckIfGoalCompleted(g);
 
         if(completed)
         {
             if(g.IsPrimary())
                 ++completedPrimaryGoals;
 
-            if(!g.IsRewardCollected())
-                mHUD->ShowGoalCompletedIcon();
+            if(!alreadyCompleted && !g.IsRewardCollected())
+                NotifyGoalCompleted();
         }
     }
 
@@ -532,6 +534,18 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     g.SetCompleted();
 
     return true;
+}
+
+void MissionGoalsTracker::NotifyGoalCompleted()
+{
+    auto base = mPlayer->GetBase();
+    base->OnGoalCompleted();
+}
+
+void MissionGoalsTracker::NotifyGoalsCollected()
+{
+    auto base = mPlayer->GetBase();
+    base->OnGoalsCollected();
 }
 
 } // namespace game

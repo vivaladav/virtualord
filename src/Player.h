@@ -84,8 +84,8 @@ public:
 
     int GetPlayerId() const;
 
-    const Base * GetBase() const;
-    void SetBase(const Base * b);
+    Base * GetBase() const;
+    void SetBase(Base * b);
 
     // stats
     const StatValue & GetStat(Stat sid);
@@ -211,7 +211,7 @@ private:
 
     GameObject * mSelObj = nullptr;
 
-    const Base * mBase = nullptr;
+    Base * mBase = nullptr;
 
     int mPlayerId;
 
@@ -279,8 +279,8 @@ inline const std::string & Player::GetName() const { return mName; }
 
 inline int Player::GetPlayerId() const { return mPlayerId; }
 
-inline const Base * Player::GetBase() const { return mBase; }
-inline void Player::SetBase(const Base * b) { mBase = b; }
+inline Base * Player::GetBase() const { return mBase; }
+inline void Player::SetBase(Base * b) { mBase = b; }
 
 inline const StatValue & Player::GetStat(Stat sid)
 {
