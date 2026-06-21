@@ -1022,15 +1022,24 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
         const unsigned int killed = mGameMap->GetEnemiesKilled(pf);
         const unsigned int casualties = mGameMap->GetCasualties(pf);
         const unsigned int played = GetPlayTimeInSec();
+        const auto pcc = mIsoMap->GetCellPosition(mCurrCell.row, mCurrCell.col);
 
         std::cout << "====== CURRENT GAME STATE ======\n"
                   << "PLAYER FACTION: " << pf << "\n"
-                  << "TURNS PLAYED: " << turns  << "\n"
-                  << "TIME PLAYED: " << played  << "\n"
-                  << "TERRITORY CONTROLLED: " << territory  << "%\n"
-                  << "ENEMIS KILLED: " << killed  << "%\n"
-                  << "CASUALTIES: " << casualties  << "%\n"
-                  << "CURRENT CELL: " << mCurrCell.row << "," << mCurrCell.col  << "\n"
+                  << "TURNS PLAYED: " << turns << "\n"
+                  << "TIME PLAYED: " << played << "\n"
+                  << "TERRITORY CONTROLLED: " << territory << "%\n"
+                  << "ENEMIS KILLED: " << killed << "\n"
+                  << "CASUALTIES: " << casualties  << "\n"
+                  << "CURRENT CELL: " << mCurrCell.row << "," << mCurrCell.col
+                  << "(" << pcc.x << "," << pcc.y << ")" << "\n"
+                  << "RESOURCES"
+                     " - MONEY: " << mLocalPlayer->GetStat(Player::MONEY).GetValue()
+                  << " - ENERGY: " << mLocalPlayer->GetStat(Player::ENERGY).GetValue()
+                  << " - MATERIAL: " << mLocalPlayer->GetStat(Player::MATERIAL).GetValue()
+                  << " - DIAMONDS: " << mLocalPlayer->GetStat(Player::DIAMONDS).GetValue()
+                  << " - BLOBS: " << mLocalPlayer->GetStat(Player::BLOBS).GetValue()
+                  << " - RESEARCH: " << mLocalPlayer->GetStat(Player::RESEARCH).GetValue() << "\n"
                   << std::endl;
 
         mTrackerMG->PrintState();

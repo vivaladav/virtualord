@@ -178,7 +178,8 @@ void MissionGoalsTracker::AddObjectDestroyedByCategory(GameObjectCategoryId cat)
 void MissionGoalsTracker::PrintState()
 {
     std::cout << "MissionGoalsTracker::PrintState\n"
-              << "ENERGY: " << mResourcesGained[Player::ENERGY]
+              << "RESOURCES GAINED"
+              << " - ENERGY: " << mResourcesGained[Player::ENERGY]
               << " - MATERIAL: " << mResourcesGained[Player::MATERIAL]
               << " - BLOBS: " << mResourcesGained[Player::BLOBS]
               << " - DIAMONDS: " << mResourcesGained[Player::DIAMONDS]
