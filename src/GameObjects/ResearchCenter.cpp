@@ -19,7 +19,7 @@ namespace game
 
 ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & initData)
     : Structure(data, initData)
-    , mHighlight(new BlinkingHighlight(SpriteFileStructures, ID_STRUCT_RESEARCH_CENTER_W, 77.f))
+    , mHighlight(new BlinkingHighlight(SpriteFileStructures, ID_STRUCT_RESEARCH_CENTER_W))
     , mIconResearch(new BlinkingIconResearch)
 {
     using namespace sgl;
@@ -60,6 +60,8 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
 
 ResearchCenter::~ResearchCenter()
 {
+    delete mHighlight;
+
     auto p = GetOwner();
 
     if(p != nullptr)

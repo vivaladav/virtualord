@@ -8,7 +8,7 @@ namespace game
 class BlinkingHighlight : public sgl::sgui::Image
 {
 public:
-    BlinkingHighlight(const char * file, unsigned int spriteId, float maxAlpha);
+    BlinkingHighlight(const char * file, unsigned int spriteId, float maxAlpha = 77.f);
 
     void SetMaxAlpha(float val);
     void SetSpeed(float val);
