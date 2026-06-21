@@ -116,8 +116,6 @@ ScreenGame::ScreenGame(Game * game)
     mTrackerMG = new MissionGoalsTracker(game, mLocalPlayer);
     mTrackerMG->SetControlMap(mGameMap->GetControlMap());
 
-    LoadMapFile();
-
     // center map on screen
     const int mapH = mIsoMap->GetHeight();
 
@@ -160,6 +158,9 @@ ScreenGame::ScreenGame(Game * game)
     const sgl::core::Pointd2D pB(pT.x, pT.y + mIsoMap->GetHeight() - marginCameraY);
     const sgl::core::Pointd2D pL(pT.x - isoMapHalfW + marginCameraX, pT.y + isoMapHalfH);
     mCamController->SetMapArea(pT, pR, pB, pL);
+
+    // LOAD MAP
+    LoadMapFile();
 
     // init pathfinder
     mPathfinder->SetMap(mGameMap);
