@@ -122,26 +122,30 @@ ScreenGame::ScreenGame(Game * game)
     mIsoMap->SetOrigin(rendW * 0.5, (rendH - mapH) * 0.5);
     mIsoMap->SetVisibleArea(cam->GetX(), cam->GetY(), cam->GetWidth(), cam->GetHeight());
 
+    // LOAD MAP
+    LoadMapFile();
+
+    // CONFIGURE CAMERA LIMITS
     cam->SetFunctionOnMove([this]
-    {
-        const sgl::graphic::Camera * cam = mCamController->GetCamera();
-        const int camW = cam->GetWidth();
-        const int camH = cam->GetHeight();
-        const int camX0 = cam->GetX();
-        const int camY0 = cam->GetY();
-        const int camX1 = camX0 + camW;
-        const int camY1 = camY0 + camH;
+                           {
+                               const sgl::graphic::Camera * cam = mCamController->GetCamera();
+                               const int camW = cam->GetWidth();
+                               const int camH = cam->GetHeight();
+                               const int camX0 = cam->GetX();
+                               const int camY0 = cam->GetY();
+                               const int camX1 = camX0 + camW;
+                               const int camY1 = camY0 + camH;
 
-        // update map
-        mIsoMap->SetVisibleArea(camX0, camY0, camW, camH);
+                               // update map
+                               mIsoMap->SetVisibleArea(camX0, camY0, camW, camH);
 
-        // update MiniMap
-        MiniMap * mm = mHUD->GetMinimap();
-        mm->SetCameraCells(mIsoMap->CellFromWorldPoint(camX0, camY0),
-                           mIsoMap->CellFromWorldPoint(camX1, camY0),
-                           mIsoMap->CellFromWorldPoint(camX0, camY1),
-                           mIsoMap->CellFromWorldPoint(camX1, camY1));
-    });
+                               // update MiniMap
+                               MiniMap * mm = mHUD->GetMinimap();
+                               mm->SetCameraCells(mIsoMap->CellFromWorldPoint(camX0, camY0),
+                                                  mIsoMap->CellFromWorldPoint(camX1, camY0),
+                                                  mIsoMap->CellFromWorldPoint(camX0, camY1),
+                                                  mIsoMap->CellFromWorldPoint(camX1, camY1));
+                           });
 
     // set reduced map area to cam controller so camera will stop closer to inside cells
     const sgl::core::Pointd2D isoMapO = mIsoMap->GetOrigin();
@@ -158,9 +162,6 @@ ScreenGame::ScreenGame(Game * game)
     const sgl::core::Pointd2D pB(pT.x, pT.y + mIsoMap->GetHeight() - marginCameraY);
     const sgl::core::Pointd2D pL(pT.x - isoMapHalfW + marginCameraX, pT.y + isoMapHalfH);
     mCamController->SetMapArea(pT, pR, pB, pL);
-
-    // LOAD MAP
-    LoadMapFile();
 
     // init pathfinder
     mPathfinder->SetMap(mGameMap);
