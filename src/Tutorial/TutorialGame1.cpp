@@ -471,7 +471,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([this, playerAI]
             {
                 return new StepGameAddEnemy(GetGameMap(), playerAI,
-                                            ObjectData::TYPE_UNIT_SOLDIER1, cellEnemy, true);
+                                            ObjectData::TYPE_UNIT_WORKER1, cellEnemy, true);
             });
     AddStep([this]
             {
@@ -523,9 +523,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
             return new StepGameQuickUnitButton(hud, indUnit2, "TUT_GAME_QUICK_SEL_1", p0);
         });
     // ===== PART 4 =====
-    // TODO remove next 2 steps when trying full tutorial
-    // AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
-    // AddStep([this] { return new StepGameWaitTurn(gs); });
     // BUILD WALL FROM TOWER
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameWallBuildIntro(); });
