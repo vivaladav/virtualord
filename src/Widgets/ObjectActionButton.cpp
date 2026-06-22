@@ -111,17 +111,21 @@ void ObjectActionButton::ShowNotification(int val)
     // TEXT
     if(val != mNotificationVal)
     {
-        delete mNotificationLabel;
+        if(mNotificationLabel != nullptr)
+        {
+            UnregisterRenderable(mNotificationLabel);
+            delete mNotificationLabel;
+        }
 
         auto fm = graphic::FontManager::Instance();
         auto font = fm->GetFont(WidgetsConstants::FontFileButton, 14, graphic::Font::NORMAL);
         mNotificationLabel = new graphic::Text(std::to_string(val).c_str(), font);
         mNotificationLabel->SetColor(0xf9ebebff);
+
+        mNotificationVal = val;
     }
 
     RegisterRenderable(mNotificationLabel);
-
-    mNotificationVal = val;
 
     PositionNotification();
 }
