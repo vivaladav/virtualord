@@ -67,7 +67,6 @@ private:
 
     void NotifyGoalCompleted();
     void NotifyGoalCollected();
-    void NotifyAllGoalsCollected();
 
 private:
     std::vector<MissionGoal> mMissionGoals;

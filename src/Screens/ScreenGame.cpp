@@ -125,6 +125,22 @@ ScreenGame::ScreenGame(Game * game)
     // LOAD MAP
     LoadMapFile();
 
+    // TRACK MISSION GOALS
+    // NOTE no need to remove them later as tracker is deleted with screen
+    mTrackerMG->AddOnGoalCompletedFunction([this]
+        {
+            auto base = mLocalPlayer->GetBase();
+            base->OnGoalCompleted();
+        });
+    mTrackerMG->AddOnGoalCollectedFunction([this]
+        {
+            auto base = mLocalPlayer->GetBase();
+            const int count = mTrackerMG->GetNumGoalsToCollect();
+
+            if(count == 0)
+                base->OnGoalsCollected();
+        });
+
     // CONFIGURE CAMERA LIMITS
     cam->SetFunctionOnMove([this]
                            {

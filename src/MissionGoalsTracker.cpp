@@ -3,7 +3,6 @@
 #include "ControlMap.h"
 #include "Game.h"
 #include "Player.h"
-#include "GameObjects/Base.h"
 #include "GameObjects/ObjectData.h"
 #include "Tutorial/Tutorial.h"
 #include "Tutorial/TutorialConstants.h"
@@ -144,16 +143,6 @@ void MissionGoalsTracker::CollectMissionGoalReward(unsigned int index)
     // update counter and notify observers
     --mGoalsToCollect;
     NotifyGoalCollected();
-
-    // check if there's more rewards to collect
-    for(MissionGoal & g : mMissionGoals)
-    {
-        if(g.IsCompleted() && !g.IsRewardCollected())
-            return;
-    }
-
-    // all collected
-    NotifyAllGoalsCollected();
 }
 
 void MissionGoalsTracker::Update()
@@ -590,21 +579,12 @@ void MissionGoalsTracker::NotifyGoalCompleted()
 {
     for(auto & it: mOnCompleted)
         it.second();
-
-    auto base = mPlayer->GetBase();
-    base->OnGoalCompleted();
 }
 
 void MissionGoalsTracker::NotifyGoalCollected()
 {
     for(auto & it: mOnCollected)
         it.second();
-}
-
-void MissionGoalsTracker::NotifyAllGoalsCollected()
-{
-    auto base = mPlayer->GetBase();
-    base->OnGoalsCollected();
 }
 
 } // namespace game
