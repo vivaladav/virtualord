@@ -1020,6 +1020,7 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
         const PlayerFaction pf = mLocalPlayer->GetFaction();
         const unsigned int turns = mLocalPlayer->GetTurnsPlayed();
         const unsigned int territory = mGameMap->GetControlMap()->GetPercentageControlledByFaction(pf);
+        const unsigned int cells = mLocalPlayer->GetNumCells();
         const unsigned int killed = mGameMap->GetEnemiesKilled(pf);
         const unsigned int casualties = mGameMap->GetCasualties(pf);
         const unsigned int played = GetPlayTimeInSec();
@@ -1030,6 +1031,7 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
                   << "TURNS PLAYED: " << turns << "\n"
                   << "TIME PLAYED: " << played << "\n"
                   << "TERRITORY CONTROLLED: " << territory << "%\n"
+                  << "CELLS CONTROLLED: " << cells << "\n"
                   << "ENEMIS KILLED: " << killed << "\n"
                   << "CASUALTIES: " << casualties  << "\n"
                   << "CURRENT CELL: " << mCurrCell.row << "," << mCurrCell.col
