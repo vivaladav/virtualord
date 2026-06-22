@@ -82,7 +82,7 @@ void ObjectsDataRegistry::InitObjectData()
     mDataObjects.emplace(ObjectData::TYPE_DEFENSIVE_TOWER,
         ObjectData({ {OBJ_ATT_ENERGY, 5}, {OBJ_ATT_VIEW_RANGE, 4}, {OBJ_ATT_REGENERATION, 5},
                      {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 7} },
-                   { 250, 300, 0, 0 }, { ID_STRUCT_DTOWER_L1_F1, ID_STRUCT_DTOWER_L1_F2,
+                   { 200, 250, 0, 0 }, { ID_STRUCT_DTOWER_L1_F1, ID_STRUCT_DTOWER_L1_F2,
                    ID_STRUCT_DTOWER_L1_F3, ID_STRUCT_DTOWER_L1 }, SpriteFileStructures,
                    ObjectData::TYPE_DEFENSIVE_TOWER, ObjectData::CAT_STRUCTURE,
                    OCS_TOWER, OCAT_DEFENSE, WeaponData::TYPE_LASER5, 1, 1));

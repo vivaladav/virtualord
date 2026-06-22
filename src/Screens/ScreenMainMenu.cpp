@@ -385,6 +385,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Reduced times of unit and structure actions.\n"
                   "- New graphics for barracks.\n"
                   "- After units shoot action doesn't go back to default (move) to continue shooting.\n"
+                  "- Generators and Base produce more resources.\n"
                   "\nFIXES\n"
                   "- Fixed crash when opening trading dialog.\n"
                   "- Fixed AI not active after first tutorial.\n"

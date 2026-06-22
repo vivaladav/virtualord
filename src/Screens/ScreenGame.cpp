@@ -1051,7 +1051,7 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
                   << "ENEMIS KILLED: " << killed << "\n"
                   << "CASUALTIES: " << casualties  << "\n"
                   << "CURRENT CELL: " << mCurrCell.row << "," << mCurrCell.col
-                  << "(" << pcc.x << "," << pcc.y << ")" << "\n"
+                  << " (" << pcc.x << "," << pcc.y << ")" << "\n"
                   << "RESOURCES"
                      " - MONEY: " << mLocalPlayer->GetStat(Player::MONEY).GetValue()
                   << " - ENERGY: " << mLocalPlayer->GetStat(Player::ENERGY).GetValue()
