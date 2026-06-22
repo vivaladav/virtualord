@@ -7,6 +7,8 @@
 #include "Player.h"
 
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
 
 namespace game
 {
@@ -37,6 +39,17 @@ bool WallGate::Toggle()
 
     // toggle open value
     mOpen = !mOpen;
+
+    // play SFX
+    if(IsVisible())
+    {
+        auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
+
+        if(mOpen)
+            ap->PlaySound("game/gate_open.ogg");
+        else
+            ap->PlaySound("game/gate_close.ogg");
+    }
 
     // set cell walkable if open and not walkable otherwise
     const GameMapCell * cell = GetCell();
