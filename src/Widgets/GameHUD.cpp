@@ -78,6 +78,16 @@ GameHUD::GameHUD(ScreenGame * screen)
                                                      UpdateUpgradesNotification();
                                                  });
 
+    // NOTE no need to remove callback in destructor as tracker is deleted before HUD
+    mScreen->mTrackerMG->AddOnGoalCompletedFunction([this]
+        {
+            UpdateGoalsNotification();
+        });
+    mScreen->mTrackerMG->AddOnGoalCollectedFunction([this]
+        {
+            UpdateGoalsNotification();
+        });
+
     // TOP RESOURCE BAR
     mPanelRes = new PanelResources(local, mScreen->mGameMap, this);
     mPanelRes->SetX((rendW - mPanelRes->GetWidth()) / 2);
@@ -191,7 +201,6 @@ GameHUD::~GameHUD()
     Player * player = mScreen->GetGame()->GetLocalPlayer();
 
     player->RemoveOnResourceChanged(Player::RESEARCH, mResearchTrackerId);
-
     player->SetOnNumUnitsChanged([]{});
 }
 
@@ -219,9 +228,13 @@ void GameHUD::ShowPanelObjectActions(GameObject * obj)
     mPanelObjActions->SetVisible(true);
     mPanelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
 
+    const GameObjectTypeId type = obj->GetObjectType();
+
     // show notification of unlockable upgrades when it's research center
-    if(obj->GetObjectType() == ObjectData::TYPE_RESEARCH_CENTER)
+    if(type == ObjectData::TYPE_RESEARCH_CENTER)
         UpdateUpgradesNotification();
+    else if(type == ObjectData::TYPE_BASE)
+        UpdateGoalsNotification();
 }
 
 void GameHUD::UpdateUpgradesNotification()
@@ -241,6 +254,17 @@ void GameHUD::UpdateUpgradesNotification()
     }
 
     const PanelObjectActions::Button btnID = PanelObjectActions::BTN_TECH_TREE;
+
+    if(count > 0)
+        mPanelObjActions->ShowNotification(btnID, count);
+    else
+        mPanelObjActions->HideNotification(btnID);
+}
+
+void GameHUD::UpdateGoalsNotification()
+{
+    const unsigned int count = mScreen->mTrackerMG->GetNumGoalsToCollect();
+    const PanelObjectActions::Button btnID = PanelObjectActions::BTN_MISSION_GOALS;
 
     if(count > 0)
         mPanelObjActions->ShowNotification(btnID, count);

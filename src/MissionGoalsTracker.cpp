@@ -96,19 +96,64 @@ void MissionGoalsTracker::SetGoals(const std::vector<MissionGoal> & goals)
     }
 }
 
+unsigned int MissionGoalsTracker::AddOnGoalCollectedFunction(const std::function<void()> & f)
+{
+    static unsigned int num = 0;
+
+    int fId = ++num;
+    mOnCollected.emplace(fId, f);
+
+    return fId;
+}
+
+void MissionGoalsTracker::RemoveOnGoalCollectedFunction(unsigned int fId)
+{
+    auto it = mOnCollected.find(fId);
+
+    if(it != mOnCollected.end())
+        mOnCollected.erase(it);
+}
+
+unsigned int MissionGoalsTracker::AddOnGoalCompletedFunction(const std::function<void()> & f)
+{
+    static unsigned int num = 0;
+
+    int fId = ++num;
+    mOnCompleted.emplace(fId, f);
+
+    return fId;
+}
+
+void MissionGoalsTracker::RemoveOnGoalCompletedFunction(unsigned int fId)
+{
+    auto it = mOnCompleted.find(fId);
+
+    if(it != mOnCompleted.end())
+        mOnCompleted.erase(it);
+}
+
 void MissionGoalsTracker::CollectMissionGoalReward(unsigned int index)
 {
+    // reward already collected
+    if(mMissionGoals[index].IsRewardCollected())
+        return ;
+
+    // give rewards
     mMissionGoals[index].AssignReward(mPlayer);
 
-    // update completed icon
+    // update counter and notify observers
+    --mGoalsToCollect;
+    NotifyGoalCollected();
+
+    // check if there's more rewards to collect
     for(MissionGoal & g : mMissionGoals)
     {
-        // there's still some reward to collect -> do not hide
         if(g.IsCompleted() && !g.IsRewardCollected())
             return;
     }
 
-    NotifyGoalsCollected();
+    // all collected
+    NotifyAllGoalsCollected();
 }
 
 void MissionGoalsTracker::Update()
@@ -131,7 +176,12 @@ void MissionGoalsTracker::Update()
                 ++completedPrimaryGoals;
 
             if(!alreadyCompleted && !g.IsRewardCollected())
+            {
+                ++mCompletedGoals;
+                ++mGoalsToCollect;
+
                 NotifyGoalCompleted();
+            }
         }
     }
 
@@ -538,11 +588,20 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 
 void MissionGoalsTracker::NotifyGoalCompleted()
 {
+    for(auto & it: mOnCompleted)
+        it.second();
+
     auto base = mPlayer->GetBase();
     base->OnGoalCompleted();
 }
 
-void MissionGoalsTracker::NotifyGoalsCollected()
+void MissionGoalsTracker::NotifyGoalCollected()
+{
+    for(auto & it: mOnCollected)
+        it.second();
+}
+
+void MissionGoalsTracker::NotifyAllGoalsCollected()
 {
     auto base = mPlayer->GetBase();
     base->OnGoalsCollected();

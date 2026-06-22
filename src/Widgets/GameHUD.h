@@ -69,6 +69,7 @@ public:
     void HidePanelObjectActions();
     void ShowPanelObjectActions(GameObject * obj);
     void UpdateUpgradesNotification();
+    void UpdateGoalsNotification();
     void HidePanelSelfDestruction();
     void ShowPanelSelfDestruction();
     PanelShotType * GetPanelShotType() const;

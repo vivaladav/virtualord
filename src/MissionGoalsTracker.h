@@ -3,6 +3,8 @@
 #include "GameObjects/GameObjectTypes.h"
 #include "MissionGoal.h"
 
+#include <functional>
+#include <map>
 #include <vector>
 #include <unordered_map>
 
@@ -25,6 +27,14 @@ public:
 
     const std::vector<MissionGoal> & GetGoals() const;
     void SetGoals(const std::vector<MissionGoal> & goals);
+
+    unsigned int GetNumCompletedGoals() const;
+    unsigned int GetNumGoalsToCollect() const;
+
+    unsigned int AddOnGoalCollectedFunction(const std::function<void()> & f);
+    void RemoveOnGoalCollectedFunction(unsigned int fId);
+    unsigned int AddOnGoalCompletedFunction(const std::function<void()> & f);
+    void RemoveOnGoalCompletedFunction(unsigned int fId);
 
     void CollectMissionGoalReward(unsigned int index);
 
@@ -56,7 +66,8 @@ private:
     unsigned int GetNumObjectsDestroyedByCategory(GameObjectCategoryId cat) const;
 
     void NotifyGoalCompleted();
-    void NotifyGoalsCollected();
+    void NotifyGoalCollected();
+    void NotifyAllGoalsCollected();
 
 private:
     std::vector<MissionGoal> mMissionGoals;
@@ -66,11 +77,16 @@ private:
     std::unordered_map<GameObjectTypeId, unsigned int> mStructuresBuilt;
     std::unordered_map<GameObjectTypeId, unsigned int> mStructuresConquered;
     std::unordered_map<GameObjectCategoryId, unsigned int> mCategoriesDestroyed;
+    std::map<unsigned int, std::function<void()>> mOnCollected;
+    std::map<unsigned int, std::function<void()>> mOnCompleted;
 
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
     GameHUD * mHUD = nullptr;
     const ControlMap * mControlMap = nullptr;
+
+    unsigned int mCompletedGoals = 0;
+    unsigned int mGoalsToCollect = 0;
 
     unsigned int mMiniUnitsCreated = 0;
     unsigned int mUnitsCreated = 0;
@@ -91,6 +107,9 @@ inline const std::vector<MissionGoal> & MissionGoalsTracker::GetGoals() const
 {
     return mMissionGoals;
 }
+
+inline unsigned int MissionGoalsTracker::GetNumCompletedGoals() const { return mCompletedGoals; }
+inline unsigned int MissionGoalsTracker::GetNumGoalsToCollect() const { return mGoalsToCollect; }
 
 inline void MissionGoalsTracker::SetPlayedTime(unsigned int sec) { mPlayedTime = sec; }
 inline void MissionGoalsTracker::AddPlayedTurns() { ++mPlayedTurns; }
