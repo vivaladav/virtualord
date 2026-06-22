@@ -242,13 +242,13 @@ private:
     OverlayWall * mOverlayWall = nullptr;
 
     // TURN MANAGEMENT
+    int mActivePlayerIdx = 0;
     Player * mLocalPlayer = nullptr;
+    Player * mActiveplayer = nullptr;
 
     GameObject * mLastSelected = nullptr;
 
     TurnStage mTurnStage;
-
-    int mActivePlayerIdx = 0;
 
     float mTimerAutoEndTurn = 0.f;
 
@@ -272,6 +272,8 @@ inline const sgl::graphic::ParticlesManager * ScreenGame::GetParticlesManager() 
 {
     return mPartMan;
 }
+
+inline Player * ScreenGame::GetActivePlayer() const { return mActiveplayer; }
 
 inline GameHUD * ScreenGame::GetHUD() const { return mHUD; }
 

@@ -173,11 +173,11 @@ bool GameMap::IsAnyCellVisibleToLocalPlayer(unsigned int rTL, unsigned int cTL,
     return false;
 }
 
-bool GameMap::IsCellWalkable(unsigned int r, unsigned int c) const
+bool GameMap::IsCellWalkable(unsigned int cellInd) const
 {
-    const unsigned int ind = r * mCols + c;
+    auto p = mScreenGame->GetActivePlayer();
 
-    return mCells[ind].walkable;
+    return mCells[cellInd].walkable || p->IsCellWalkable(cellInd);
 }
 
 bool GameMap::IsAnyNeighborCellWalkable(unsigned int r, unsigned int c) const
@@ -250,7 +250,7 @@ void GameMap::SetSize(unsigned int rows, unsigned int cols)
 
     // init players visibility map
     for(int i = 0; i < mGame->GetNumPlayers(); ++i)
-        mGame->GetPlayerByIndex(i)->InitVisibility(mRows, mCols);
+        mGame->GetPlayerByIndex(i)->InitMaps(mRows, mCols);
 
     // init control map
     mControlMap->SetSize(rows, cols);

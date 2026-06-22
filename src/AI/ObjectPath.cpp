@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/ObjectData.h"
+#include "GameObjects/WallGate.h"
 #include "Screens/ScreenGame.h"
 
 #include <sgl/media/AudioManager.h>
@@ -45,7 +46,17 @@ bool ObjectPath::InitNextMove()
     const GameMapCell & nextCell = mGameMap->GetCell(nextRow, nextCol);
 
     if(!nextCell.walkable)
-        return Fail();
+    {
+        if(nextCell.objTop != nullptr &&
+           nextCell.objTop->GetObjectType() == ObjectData::TYPE_WALL_GATE &&
+           nextCell.objTop->GetFaction() == mObj->GetFaction())
+        {
+            auto gate = static_cast<WallGate *>(nextCell.objTop);
+            mGameMap->OpenGate(gate);
+        }
+        else
+            return Fail();
+    }
 
     // set target for movement
     const IsoObject * isoObj = mObj->GetIsoObject();

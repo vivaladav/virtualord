@@ -379,6 +379,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Action button that opens the tech tree dialog now shows a notification"
                   " with the number of upgrades that can be unlocked.\n"
                   "- Gates close automatically on new turn.\n"
+                  "- Gates open automatically when your units want to cross them.\n"
                   "\nCHANGES\n"
                   "- Make default scrolling speed a 5.\n"
                   "- Reduced time / actions to complete first map tutorial.\n"

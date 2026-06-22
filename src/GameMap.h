@@ -68,6 +68,7 @@ public:
     bool IsCellVisibleToLocalPlayer(unsigned int r, unsigned int c) const;
     bool IsAnyCellVisibleToLocalPlayer(unsigned int rTL, unsigned int cTL,
                                        unsigned int rBR, unsigned int cBR) const;
+
     bool IsCellWalkable(unsigned int cellInd) const;
     bool IsCellWalkable(unsigned int r, unsigned int c) const override;
     bool IsAnyNeighborCellWalkable(unsigned int r, unsigned int c) const;
@@ -370,9 +371,10 @@ inline const std::vector<CollectableGenerator *> & GameMap::GetCollectableGenera
     return mCollGens;
 }
 
-inline bool GameMap::IsCellWalkable(unsigned int cellInd) const
+inline bool GameMap::IsCellWalkable(unsigned int r, unsigned int c) const
 {
-    return mCells[cellInd].walkable;
+    const unsigned int ind = r * mCols + c;
+    return IsCellWalkable(ind);
 }
 
 inline void GameMap::SetCellWalkable(unsigned int cellInd, bool val)

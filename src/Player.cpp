@@ -190,15 +190,20 @@ std::vector<Structure *> Player::GetStructuresByType(GameObjectTypeId type) cons
     return structures;
 }
 
-void Player::InitVisibility(int rows, int cols)
+void Player::InitMaps(int rows, int cols)
 {
     const unsigned int size = rows * cols;
 
+    // visibility map
     mVisMap.resize(size);
     mVisMap.assign(size, 0);
 
-    mVisMapRows = rows;
-    mVisMapCols = cols;
+    // walkable map
+    mWalkableOverrideMap.resize(size, false);
+
+    // size of map
+    mMapRows = rows;
+    mMapCols = cols;
 }
 
 bool Player::IsObjectVisible(const GameObject * obj) const
@@ -210,7 +215,7 @@ bool Player::IsObjectVisible(const GameObject * obj) const
 
     for(unsigned int r = tlR; r <= brR; ++r)
     {
-        const unsigned int ind0 = r * mVisMapCols;
+        const unsigned int ind0 = r * mMapCols;
 
         for(unsigned int c = tlC; c <= brC; ++c)
         {

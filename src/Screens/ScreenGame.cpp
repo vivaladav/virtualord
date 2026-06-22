@@ -80,6 +80,7 @@ ScreenGame::ScreenGame(Game * game)
     , mCurrCell(-1, -1)
     , mTimerAutoEndTurn(TIME_AUTO_END_TURN)
     , mLocalPlayer(game->GetLocalPlayer())
+    , mActiveplayer(game->GetPlayerByIndex(mActivePlayerIdx))
     , mTurnStage(TURN_STAGE_PLAY)
 {
     game->SetClearColor(0x1A, 0x1A, 0x1A, 0xFF);
@@ -452,11 +453,6 @@ void ScreenGame::CenterCameraOverObject(const GameObject * obj, float speed)
 void ScreenGame::StopCameraMove()
 {
     mCamController->StopMovement();
-}
-
-Player * ScreenGame::GetActivePlayer() const
-{
-    return GetGame()->GetPlayerByIndex(mActivePlayerIdx);
 }
 
 MiniMap * ScreenGame::GetMiniMap() const
@@ -3871,6 +3867,8 @@ void ScreenGame::EndTurn()
 
     mActivePlayerIdx = (mActivePlayerIdx + 1) % players;
 
+    mActiveplayer = game->GetPlayerByIndex(mActivePlayerIdx);
+
 #ifdef DEBUG
     std::cout << "ScreenGame::EndTurn - START PLAYER " << mActivePlayerIdx << std::endl;
 #endif
@@ -3880,11 +3878,10 @@ void ScreenGame::EndTurn()
         mLocalTurnInitDone = false;
 
     // update active player data
-    Player * p = game->GetPlayerByIndex(mActivePlayerIdx);
-    const PlayerFaction activeFaction = p->GetFaction();
+    const PlayerFaction activeFaction = mActiveplayer->GetFaction();
 
-    p->ResetTurnEnergy();
-    p->OnNewTurn();
+    mActiveplayer->ResetTurnEnergy();
+    mActiveplayer->OnNewTurn();
 
     mGameMap->OnNewTurn(activeFaction);
 

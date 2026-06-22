@@ -4,6 +4,7 @@
 #include "GameData.h"
 #include "GameMap.h"
 #include "IsoObject.h"
+#include "Player.h"
 
 #include <sgl/graphic/TextureManager.h>
 
@@ -17,6 +18,16 @@ WallGate::WallGate(const ObjectData & data, const ObjectInitData & initData,
     mVariant = orientation;
 
     SetImage();
+}
+
+WallGate::~WallGate()
+{
+    auto p = GetOwner();
+
+    if(p == nullptr)
+        return ;
+
+    p->SetCellWalkable(GetRow0(), GetCol0(), false);
 }
 
 bool WallGate::Toggle()
@@ -61,6 +72,18 @@ unsigned int WallGate::GetCostMaterial(unsigned int level)
 {
     const unsigned int cost0 = 10;
     return (level + 1) * cost0;
+}
+
+void WallGate::OnLinkedChanged()
+{
+    Structure::OnLinkedChanged();
+
+    auto p = GetOwner();
+
+    if(p == nullptr)
+        return ;
+
+    p->SetCellWalkable(GetRow0(), GetCol0(), IsLinked());
 }
 
 void WallGate::UpdateGraphics()

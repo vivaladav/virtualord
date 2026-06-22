@@ -71,14 +71,20 @@ public:
     unsigned int GetNumObjects() const;
     bool HasObjects() const;
 
+    void InitMaps(int rows, int cols);
+
     // visibility map
-    void InitVisibility(int rows, int cols);
     bool IsCellVisible(unsigned int ind) const;
     bool IsObjectVisible(const GameObject *obj) const;
     void AddVisibility(unsigned int ind);
     void RemVisibility(unsigned int ind);
     void AddVisibilityToAll();
     void RemVisibilityToAll();
+
+    // walkable override
+    bool IsCellWalkable(unsigned int ind) const;
+    void SetCellWalkable(unsigned int ind, bool walkable);
+    void SetCellWalkable(unsigned int row, unsigned int col, bool walkable);
 
     const std::string & GetName() const;
 
@@ -188,8 +194,6 @@ private:
     std::vector<ResourceGenerator *> mResGenerators;
 
     std::vector<int> mVisMap;
-    unsigned int mVisMapRows = 0;
-    unsigned int mVisMapCols = 0;
 
     std::vector<StatValue> mStats;
     StatValue mDummyStat;
@@ -197,6 +201,11 @@ private:
     std::vector<GameObjectTypeId> mAvailableMiniUnits;
     std::vector<GameObjectTypeId> mAvailableStructures;
     std::vector<GameObjectTypeId> mAvailableUnits;
+
+    std::vector<bool> mWalkableOverrideMap;
+
+    unsigned int mMapRows = 0;
+    unsigned int mMapCols = 0;
 
     std::string mName;
 
@@ -259,20 +268,25 @@ inline unsigned int Player::GetNumObjects() const
 
 inline bool Player::HasObjects() const { return GetNumObjects() > 0; }
 
-inline bool Player::IsCellVisible(unsigned int ind) const
-{
-    return mVisMap[ind] > 0;
-}
+inline bool Player::IsCellVisible(unsigned int ind) const { return mVisMap[ind] > 0; }
 
-inline void Player::AddVisibility(unsigned int ind)
-{
-    ++mVisMap[ind];
-}
+inline void Player::AddVisibility(unsigned int ind) { ++mVisMap[ind]; }
 
 inline void Player::RemVisibility(unsigned int ind)
 {
     if(mVisMap[ind] > 0)
         --mVisMap[ind];
+}
+
+inline bool Player::IsCellWalkable(unsigned int ind) const { return mWalkableOverrideMap[ind]; }
+inline void Player::SetCellWalkable(unsigned int ind, bool walkable)
+{
+    mWalkableOverrideMap[ind] = walkable;
+}
+inline void Player::SetCellWalkable(unsigned int row, unsigned int col, bool walkable)
+{
+    const unsigned int ind = row * mMapCols + col;
+    mWalkableOverrideMap[ind] = walkable;
 }
 
 inline const std::string & Player::GetName() const { return mName; }
