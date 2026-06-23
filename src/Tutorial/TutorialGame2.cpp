@@ -91,6 +91,7 @@ constexpr int collectablesMax = 4;
 
 constexpr int catDefenses = 1;
 constexpr int catTech = 3;
+constexpr int indGate = 2;
 
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellEneGen2(23, 17);
@@ -103,7 +104,7 @@ const Cell2D cellTarget1(15, 13);
 const Cell2D cellResCenter(11, 6);
 const Cell2D cellEnemy1(4, 34);
 const Cell2D cellTower1(6, 33);
-const Cell2D cellTower2(18, 31);
+const Cell2D cellTower2(17, 31);
 
 const Cell2D areaBlobsTL(22, 12);
 const Cell2D areaBlobsBR(25, 13);
@@ -1162,7 +1163,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, isoMap, game]
             {
                 const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
-                const Cell2D target(17, 31);
+                const Cell2D target(16, 31);
                 return new StepGameWallBuildStart(game, isoMap, cellStart, target);
             });
     AddStep([isoMap, local, game]
@@ -1229,7 +1230,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([isoMap, local, game]
             {
-                const auto unit = local->GetUnit(indWorker1);
+                const auto unit = local->GetUnit(indWorker2);
                 const Cell2D cellEnd(28, 15);
                 const core::Pointd2D p0(1200, 500);
                 return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
@@ -1276,6 +1277,67 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
                 return new StepGameCollectObjects(unit, ObjectData::TYPE_BLOBS, game, gameMap, isoMap,
                                                   areaTL, areaBR, "TUT_GAME_COLLECT_BLOBS", p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // COLLECT DIAMONDS WITH SOLDIER 1
+    AddStep([isoMap, gameMap, local, game]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const Cell2D areaTL(7, 41);
+                const Cell2D areaBR(9, 42);
+                const core::Pointd2D p0(500, 150);
+
+                return new StepGameCollectObjects(unit, ObjectData::TYPE_DIAMONDS, game, gameMap, isoMap,
+                                                  areaTL, areaBR, "TUT_GAME_COLLECT_DIAMONDS", p0);
+            });
+    // SELECT WORKER 1 AND CONNECT WALL TO BASE
+    AddStep([hud]
+            {
+                const sgl::core::Pointd2D p0(100, 600);
+                return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
+            });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this, isoMap, game]
+            {
+                const core::Pointd2D p0(1200, 450);
+                const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+                const Cell2D target(15, 30);
+                return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const core::Pointd2D p0(1200, 250);
+                const Cell2D cellEnd(15, 27);
+                return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+            });
+    // BUILD GATE
+    AddStep([hud]
+            {
+                const sgl::core::Pointd2D p0(100, 600);
+                return new StepGameQuickUnitButton(hud, indWorker2, nullptr, p0);
+            });
+    AddStep([panelActions]
+            {
+                const core::Pointd2D p0(1100, 400);
+                return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_GATE_1", p0);
+            });
+    AddStep([hud]
+            {
+                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
+                                                  "TUT_GAME_BUILD_GATE_2", catDefenses, indGate);
+            });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker2);
+                const core::Pointd2D p0(1100, 450);
+                const Cell2D target(28, 16);
+                return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
     // END TURN
