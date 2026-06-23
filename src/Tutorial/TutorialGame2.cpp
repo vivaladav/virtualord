@@ -13,6 +13,7 @@
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameAddEnemy.h"
 #include "Tutorial/StepGameIntro2.h"
+#include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBuildStructIntro.h"
 #include "Tutorial/StepGameBuildStructure.h"
 #include "Tutorial/StepGameBuildTowerEnd.h"
@@ -79,6 +80,7 @@ using namespace game;
 
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indSoldier1 = 1;
+constexpr unsigned int indWorker2 = 2;
 
 constexpr int turnsCollGenMin = 1;
 constexpr int turnsCollGenMax = 1;
@@ -1066,7 +1068,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // CENTER VIEW ON SOLDIER
     AddStep([hud]
         {
-            const sgl::core::Pointd2D p0(500, 700);
+            const sgl::core::Pointd2D p0(200, 700);
             return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
         });
     // DISABLE PERFECT SHOT AND FATAL HIT
@@ -1127,6 +1129,93 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameMakeEnemyAttack(attacker, target, playerAI);
             });
     // WAIT TURN END
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE SOLDIER TO EXPLORE DIAMONDS AND BLOBS
+    AddStep([]
+            {
+                const core::Pointd2D p0(1000, 250);
+                return new StepGameSingleInfo(p0, "TUT_GAME_QUICK_SEL_1");
+            });
+    AddStep([local, game, isoMap]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const core::Pointd2D p0(1300, 350);
+                return new StepGameUnit(game, isoMap, unit, p0);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const Cell2D target(5, 42);
+                const core::Pointd2D p0(1150, 500);
+                return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 1 AND BUILD WALL
+    AddStep([hud]
+            {
+                const sgl::core::Pointd2D p0(100, 600);
+                return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
+            });
+    AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
+    AddStep([this, isoMap, game]
+            {
+                const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
+                const Cell2D target(17, 31);
+                return new StepGameWallBuildStart(game, isoMap, cellStart, target);
+            });
+    AddStep([isoMap, local, game]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const Cell2D cellEnd(12, 31);
+                const core::Pointd2D p0(1100, 150);
+                return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE VIEW BACK TO BASE
+    AddStep([panelTurn, game]
+            {
+                const core::Pointd2D p0(50, 700);
+                return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1", p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD SECOND WORKER UNIT
+    AddStep([localBase, game, isoMap]
+            {
+                const core::Pointd2D p0(500, 200);
+                return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
+            });
+    AddStep([panelActions]
+            {
+                return new StepGameBuildUnitStart(panelActions,
+                                                  PanelObjectActions::BTN_BUILD_UNIT_BASE);
+            });
+    AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
+    // SELECT WORKER UNIT 2 AND MOVE DOWN
+    AddStep([local, game, isoMap]
+            {
+                const auto unit = local->GetUnit(indWorker2);
+                const core::Pointd2D p0(1200, 450);
+                return new StepGameUnit(game, isoMap, unit, p0);
+            });
+    AddStep([game]
+            {
+                const int movX = 0;
+                const int movY = 500;
+                return new StepGameMoveCamera(movX, movY);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker2);
+                const Cell2D target(26, 12);
+                const core::Pointd2D p0(100, 650);
+                return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
