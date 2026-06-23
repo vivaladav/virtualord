@@ -556,11 +556,33 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameSetObjectEnergy(unit, val);
             });
     AddStep([] { return new StepDelay(0.5f); });
+    // CONNECT SECOND MATERIAL GENERATOR
+    AddStep([]
+            {
+                const core::Pointd2D p0(1150, 150);
+                return new StepGameConnectStructIntro(p0);
+            });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this, isoMap, game]
+            {
+                const core::Pointd2D p0(900, 250);
+                const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+                const Cell2D target(23, 4);
+                return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const core::Pointd2D p0(700, 250);
+                const Cell2D cellEnd(15, 5);
+                return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+            });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // CONQUER SECOND ENERGY GENERATOR WITH WORKER
     AddStep([game]
             {
-                const int movX = 200;
-                const int movY = 0;
+                const int movX = 0;
+                const int movY = 250;
                 return new StepGameMoveCamera(movX, movY);
             });
     AddStep([local, game, isoMap]
@@ -586,56 +608,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
-    // CONNECT SECOND MATERIAL GENERATOR
-    AddStep([game]
-            {
-                const int movX = -100;
-                const int movY = -100;
-                return new StepGameMoveCamera(movX, movY);
-            });
-    AddStep([local, game, isoMap]
-            {
-                const auto unit = local->GetUnit(indSoldier1);
-                const core::Pointd2D p0(1300, 450);
-                return new StepGameUnit(game, isoMap, unit, p0);
-            });
-    AddStep([]
-            {
-                const core::Pointd2D p0(1150, 150);
-                return new StepGameConnectStructIntro(p0);
-            });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
-    AddStep([this, isoMap, game]
-            {
-                const core::Pointd2D p0(1000, 250);
-                const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
-                const Cell2D target(23, 4);
-                return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
-            });
-    AddStep([this, local, isoMap, game]
-            {
-                const auto unit = local->GetUnit(indSoldier1);
-                const core::Pointd2D p0(1200, 250);
-                const Cell2D cellEnd(15, 5);
-                return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
-            });
-    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
+    // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
-    // CONNECT SECOND ENERGY GENERATOR
-    AddStep([game]
-            {
-                const int movX = 0;
-                const int movY = 250;
-                return new StepGameMoveCamera(movX, movY);
-            });
-    AddStep([local, game, isoMap]
-            {
-                const auto unit = local->GetUnit(indWorker1);
-                const core::Pointd2D p0(1300, 450);
-                return new StepGameUnit(game, isoMap, unit, p0);
-            });
+    // CONNECT SECOND ENERGY GENERATOR WITH WORKER 1
     AddStep([]
             {
                 const core::Pointd2D p0(1150, 150);
@@ -657,6 +634,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
+    // CONTINUE TO CONNECT SECOND ENERGY GENERATOR WITH SOLDIER 1
     AddStep([local, game, isoMap]
             {
                 const auto unit = local->GetUnit(indSoldier1);
