@@ -347,6 +347,8 @@ add_executable(
     src/Tutorial/StepGamePrimaryMissionGoal.cpp
     src/Tutorial/StepGameQuickUnitButton.h
     src/Tutorial/StepGameQuickUnitButton.cpp
+    src/Tutorial/StepGameSecondaryMissionGoal.h
+    src/Tutorial/StepGameSecondaryMissionGoal.cpp
     src/Tutorial/StepGameSelectObject.h
     src/Tutorial/StepGameSelectObject.cpp
     src/Tutorial/StepGameSetCollectableGeneratorTurns.h

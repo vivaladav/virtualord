@@ -33,6 +33,7 @@
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameEnemyIntro.h"
 #include "Tutorial/StepGameMakeEnemyAttack.h"
+#include "Tutorial/StepGameMissionGoalsIcon.h"
 #include "Tutorial/StepGameMoveCameraOverCell.h"
 #include "Tutorial/StepGameMoveCameraOverObject.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
@@ -40,6 +41,7 @@
 #include "Tutorial/StepGamePanelHit.h"
 #include "Tutorial/StepGameQuickUnitButton.h"
 #include "Tutorial/StepGameResourcesBar.h"
+#include "Tutorial/StepGameSecondaryMissionGoal.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
 #include "Tutorial/StepGameSetCollectableUnits.h"
@@ -1690,6 +1692,27 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE VIEW BACK TO BASE
+    AddStep([panelTurn]
+            {
+                const core::Pointd2D p0(800, 500);
+                return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1b", p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // COLLECT SECONDARY MISSION GOAL
+    AddStep([localBase, game, isoMap]
+            {
+                const core::Pointd2D p0(500, 200);
+                return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
+            });
+    AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions, false); });
+    AddStep([hud]
+        {
+            const int goal = 0;
+            return new StepGameSecondaryMissionGoal(hud, goal);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 

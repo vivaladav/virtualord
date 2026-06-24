@@ -47,6 +47,7 @@ private:
 private:
     friend class StepGameMissionGoalsDialog;
     friend class StepGamePrimaryMissionGoal;
+    friend class StepGameSecondaryMissionGoal;
 
     sgl::graphic::Image * mBgTop = nullptr;
     sgl::graphic::Image * mBgMid = nullptr;
