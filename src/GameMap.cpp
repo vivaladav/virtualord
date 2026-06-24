@@ -2909,8 +2909,11 @@ void GameMap::OpenGate(WallGate * gate)
                                MapLayers::GROUND_OBJECTS);
 
     // update panel actions
-    auto panelObjActions = mScreenGame->GetHUD()->GetPanelObjectActions();
-    panelObjActions->SetObject(gate);
+    if(gate->IsSelected())
+    {
+        auto panelObjActions = mScreenGame->GetHUD()->GetPanelObjectActions();
+        panelObjActions->SetObject(gate);
+    }
 
     // reset focus as buttons will change
     sgl::sgui::Stage::Instance()->SetFocus();
@@ -2934,8 +2937,11 @@ void GameMap::CloseGate(WallGate * gate)
     mIsoMap->ChangeObjectLayer(gate->GetIsoObject(), MapLayers::GROUND_OBJECTS, MapLayers::REGULAR_OBJECTS);
 
     // update panel actions
-    auto panelObjActions = mScreenGame->GetHUD()->GetPanelObjectActions();
-    panelObjActions->SetObject(gate);
+    if(gate->IsSelected())
+    {
+        auto panelObjActions = mScreenGame->GetHUD()->GetPanelObjectActions();
+        panelObjActions->SetObject(gate);
+    }
 
     // reset focus as buttons will change
     sgl::sgui::Stage::Instance()->SetFocus();
