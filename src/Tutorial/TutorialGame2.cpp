@@ -101,6 +101,7 @@ const Cell2D cellEneGen4(14, 43);
 const Cell2D cellMatGen1(15, 7);
 const Cell2D cellMatGen2(24, 3);
 const Cell2D cellMatGen3(15, 26);
+const Cell2D cellMatGen4(40, 12);
 const Cell2D cellBarracks(8, 9);
 const Cell2D cellTarget1(15, 13);
 const Cell2D cellResCenter(11, 6);
@@ -1609,6 +1610,83 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE SOLDIER 1
+    AddStep([game]
+            {
+                const int movX = -700;
+                const int movY = 0;
+                return new StepGameMoveCamera(movX, movY);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const Cell2D target(34, 12);
+                const core::Pointd2D p0(500, 150);
+                return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONQUER MATERIAL GENERATOR WITH SOLDIER
+    AddStep([this, local]
+            {
+                const GameObject * gen = GetObjectInCell(cellMatGen4);
+
+                return new StepGameConquerMaterialGenIntro(gen);
+            });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indSoldier1);
+                const GameObject * gen = GetObjectInCell(cellMatGen4);
+                const core::Pointd2D p0(1100, 350);
+                return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
+            });
+    // SELECT WORKER 1 AND BUILD WALL
+    AddStep([hud]
+            {
+                const sgl::core::Pointd2D p0(100, 600);
+                return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
+            });
+    AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
+    AddStep([this, isoMap, game]
+            {
+                const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
+                const Cell2D target(11, 33);
+                return new StepGameWallBuildStart(game, isoMap, cellStart, target);
+            });
+    AddStep([isoMap, local, game]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const Cell2D cellEnd(7, 33);
+                const core::Pointd2D p0(1200, 500);
+                return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 2
+    AddStep([hud]
+            {
+                const sgl::core::Pointd2D p0(100, 600);
+                return new StepGameQuickUnitButton(hud, indWorker2, nullptr, p0);
+            });
+    // CONQUER CELLS WITH WORKER 2
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this, isoMap, game]
+            {
+                const core::Pointd2D p0(1200, 450);
+                const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+                const Cell2D target(23, 19);
+                return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker2);
+                const core::Pointd2D p0(1200, 250);
+                const Cell2D cellEnd(23, 23);
+                return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+            });
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
