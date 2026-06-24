@@ -51,8 +51,8 @@ bool ObjectPath::InitNextMove()
            nextCell.objTop->GetObjectType() == ObjectData::TYPE_WALL_GATE &&
            nextCell.objTop->GetFaction() == mObj->GetFaction())
         {
-            auto gate = static_cast<WallGate *>(nextCell.objTop);
-            mGameMap->OpenGate(gate);
+            mOpenGate = static_cast<WallGate *>(nextCell.objTop);
+            mGameMap->OpenGate(mOpenGate);
         }
         else
             return Fail();
@@ -104,6 +104,14 @@ bool ObjectPath::Start()
     // do nothing if already started
     if(mState != READY)
         return false;
+
+    const GameMapCell & currCell = mGameMap->GetCell(mObj->GetRow0(), mObj->GetCol0());
+
+    // check if object is sitting on open gate
+    if(currCell.objBottom != nullptr &&
+       currCell.objBottom->GetObjectType() == ObjectData::TYPE_WALL_GATE &&
+       currCell.objBottom->GetFaction() == mObj->GetFaction())
+        mOpenGate = static_cast<WallGate *>(currCell.objBottom);
 
     // center camera over target destination in the meanwhile
     if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
@@ -211,6 +219,14 @@ void ObjectPath::Update(float delta)
 
         // set action step completed for energy and experience update
         mObj->ActionStepCompleted(MOVE);
+
+        // close open gate
+        if(mOpenGate != nullptr &&
+           (mOpenGate->GetRow0() != targetRow || mOpenGate->GetCol0() != targetCol))
+        {
+            mGameMap->CloseGate(mOpenGate);
+            mOpenGate = nullptr;
+        }
 
         // update cell counter
         ++mNextCell;

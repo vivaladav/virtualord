@@ -9,6 +9,7 @@ class GameMap;
 class GameObject;
 class IsoMap;
 class ScreenGame;
+class WallGate;
 
 class ObjectPath
 {
@@ -62,6 +63,8 @@ private:
     std::vector<unsigned int> mCells;
 
     GameObject * mObj = nullptr;
+
+    WallGate * mOpenGate = nullptr;
 
     IsoMap * mIsoMap = nullptr;
     GameMap * mGameMap = nullptr;
