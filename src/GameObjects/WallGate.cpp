@@ -70,8 +70,8 @@ void WallGate::OnNewTurn(PlayerFaction faction)
     if(faction != GetFaction())
         return ;
 
-    // close gate if open
-    if(IsOpen())
+    // close gate if open and nothing on top
+    if(IsOpen() && GetCell()->objTop == nullptr)
         GetGameMap()->CloseGate(this);
 }
 
