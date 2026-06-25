@@ -1733,7 +1733,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const auto unit = local->GetUnit(indWorker1);
                 const Cell2D target(9, 18);
-                const core::Pointd2D p0(500, 150);
+                const core::Pointd2D p0(500, 350);
                 return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
@@ -1746,7 +1746,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     AddStep([this, isoMap, game]
             {
-                const core::Pointd2D p0(1200, 450);
+                const core::Pointd2D p0(600, 450);
                 const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
                 const Cell2D target(38, 12);
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
@@ -1754,7 +1754,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indSoldier1);
-                const core::Pointd2D p0(1200, 250);
+                const core::Pointd2D p0(600, 250);
                 const Cell2D cellEnd(29, 12);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
@@ -1781,6 +1781,15 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(100, 700);
                 return new StepGameBuildTowerEnd(isoMap, unit, cellTower7, p0);
             });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // UPGRADE WORKER 2
+    AddStep([panelActions]
+            {
+                core::Pointd2D p0(900, 150);
+                return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b", p0);
+            });
+    AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
     // END TURN
