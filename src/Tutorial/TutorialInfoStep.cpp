@@ -37,6 +37,8 @@ void TutorialInfoStep::SetPause(bool paused)
 
 void TutorialInfoStep::OnStart()
 {
+    TutorialStep::OnStart();
+
     // CLICK FILTER
     mClickFilter->SetEnabled(true);
 
