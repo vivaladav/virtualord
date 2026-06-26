@@ -99,7 +99,7 @@ constexpr int structDefTower = 1;
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellEneGen2(23, 17);
 const Cell2D cellEneGen3(5, 26);
-const Cell2D cellEneGen4(14, 43);
+const Cell2D cellEneGen4(13, 43);
 const Cell2D cellMatGen1(15, 7);
 const Cell2D cellMatGen2(24, 3);
 const Cell2D cellMatGen3(15, 26);
@@ -1435,14 +1435,14 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const core::Pointd2D p0(1200, 450);
                 const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
-                const Cell2D target(13, 41);
+                const Cell2D target(12, 41);
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
             });
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indSoldier1);
                 const core::Pointd2D p0(1200, 250);
-                const Cell2D cellEnd(13, 35);
+                const Cell2D cellEnd(12, 36);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     // UPGRADE SOLDIER 1
@@ -1464,14 +1464,14 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const core::Pointd2D p0(1200, 450);
                 const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
-                const Cell2D target(13, 34);
+                const Cell2D target(12, 35);
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
             });
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indSoldier1);
                 const core::Pointd2D p0(1200, 250);
-                const Cell2D cellEnd(13, 32);
+                const Cell2D cellEnd(12, 32);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     // SELECT WORKER 1 AND BUILD DEFENSIVE TOWER
