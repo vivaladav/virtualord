@@ -233,7 +233,7 @@ void ResearchCenter::UpdateProduction()
 
     // -- define research points production --
     const int maxProdElem = 40;
-    const int maxProdElem2 = 50;
+    const int maxProdElem2 = 60;
     const int maxUsage = 100;
     const int baseProd = (maxProdElem * mResUsage[ER_ENERGY] / maxUsage) +
                          (maxProdElem * mResUsage[ER_MATERIAL] / maxUsage) +
