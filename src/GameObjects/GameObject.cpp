@@ -367,9 +367,7 @@ int GameObject::GetExperienceToLevel(int level) const
     // increments
     const int points[MAX_LEVEL] =
     {
-      //0, 90, 150, 300, 550, 950, 1600, 2650, 4350, 7100
-        0, 90, 200, 400, 750, 1300, 2200, 3650, 6000, 9800
-      //0, 90, 250, 500, 950, 1650, 2800, 4650, 7650, 12500
+        0, 90, 200, 500, 1100, 2400, 5000, 11000, 19000, 30000
     };
 
     if(level < MAX_LEVEL)
