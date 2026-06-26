@@ -144,7 +144,7 @@ float Unit::GetTimeBuildStructure() const
 
 float Unit::GetTimeBuildWall() const
 {
-    const float maxTime = 2.f;
+    const float maxTime = 1.f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONSTRUCTION));
 }
 
