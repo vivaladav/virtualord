@@ -38,7 +38,6 @@ ScreenNewGame::ScreenNewGame(Game * game)
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR);
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT);
     p->AddAvailableStructure(ObjectData::TYPE_SPAWN_TOWER);
-    p->AddAvailableStructure(ObjectData::TYPE_TRADING_POST);
     p->AddAvailableStructure(ObjectData::TYPE_WALL_GATE);
 
     // assign initial available units

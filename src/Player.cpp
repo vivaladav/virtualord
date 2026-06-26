@@ -481,6 +481,11 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
             AddAvailableStructure(ObjectData::TYPE_PRACTICE_TARGET);
         break;
 
+        case TECH_UP_TRADING_POST:
+            AddAvailableStructure(ObjectData::TYPE_TRADING_POST);
+        break;
+
+
         case TECH_UP_UNIT_SLOTS_1:
         case TECH_UP_UNIT_SLOTS_2:
         case TECH_UP_UNIT_SLOTS_3:

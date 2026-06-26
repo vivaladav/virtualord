@@ -161,6 +161,7 @@ Game::Game(int argc, char * argv[])
     mCostUpgrades.emplace(TECH_UP_STORAGE_BLOBS_1, 600);
     mCostUpgrades.emplace(TECH_UP_STORAGE_BLOBS_2, 1500);
     mCostUpgrades.emplace(TECH_UP_PRACTICE_TARGET, 900);
+    mCostUpgrades.emplace(TECH_UP_TRADING_POST, 1000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_1, 500);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_2, 2500);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_3, 5000);

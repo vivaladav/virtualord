@@ -113,6 +113,7 @@ DialogTechTree::DialogTechTree(Player * player, Game * game)
     mDescriptions.emplace(TECH_UP_STORAGE_BLOBS_1, "UPG_STOR_BLO1");
     mDescriptions.emplace(TECH_UP_STORAGE_BLOBS_2, "UPG_STOR_BLO2");
     mDescriptions.emplace(TECH_UP_PRACTICE_TARGET, "UPG_PTARGET");
+    mDescriptions.emplace(TECH_UP_TRADING_POST, "UPG_TRADING_POST");
     mDescriptions.emplace(TECH_UP_UNIT_SLOTS_1, "UPG_EXTRA_UNIT_SLOT");
     mDescriptions.emplace(TECH_UP_UNIT_SLOTS_2, "UPG_EXTRA_UNIT_SLOT");
     mDescriptions.emplace(TECH_UP_UNIT_SLOTS_3, "UPG_EXTRA_UNIT_SLOT");
@@ -361,23 +362,16 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         btnX += btnUpgrade00->GetWidth() + buttonsMarginH;
         btnY = upgradesY0;
 
-        auto btnUpgrade01 = GetNewButtonUpgrade(TECH_UP_RADAR_STATION, 0,
+        auto btnUpgrade01 = GetNewButtonUpgrade(TECH_UP_TRADING_POST, 0,
                                                 { btnUpgrade00 }, false);
         mVisibleButtonsUpgrade.emplace_back(btnUpgrade01);
 
         btnUpgrade01->SetPosition(btnX, btnY);
 
-        AddLinkToUpgrade(btnUpgrade01, LINK_VERT, LS_NORTH);
+        //AddLinkToUpgrade(btnUpgrade01, LINK_VERT, LS_NORTH);
         AddLinkToUpgrade(btnUpgrade01, LINK_HORIZ, LS_WEST);
 
         btnY -= btnUpgrade01->GetHeight() + buttonsMarginV;
-
-        // [1, 1]
-        auto btnUpgrade11 = GetNewButtonUpgrade(TECH_UP_RADAR_TOWER, 0,
-                                                { btnUpgrade01 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade11);
-
-        btnUpgrade11->SetPosition(btnX, btnY);
 
         // -- COL 2 --
         btnX += btnUpgrade01->GetWidth() + buttonsMarginH;
@@ -449,7 +443,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         btnUpgrade03->SetPosition(btnX, btnY);
 
-        //AddLinkToUpgrade(btnUpgrade03, LINK_HORIZ, LS_WEST);
+        AddLinkToUpgrade(btnUpgrade03, LINK_HORIZ, LS_WEST);
 
         btnY -= btnUpgrade03->GetHeight() + buttonsMarginV;
 
@@ -486,6 +480,29 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         mVisibleButtonsUpgrade.emplace_back(btnUpgrade43);
 
         btnUpgrade43->SetPosition(btnX, btnY);
+
+        // -- COL 4 --
+        // [0, 4]
+        btnX += btnUpgrade03->GetWidth() + buttonsMarginH;
+        btnY = upgradesY0;
+
+        auto btnUpgrade04 = GetNewButtonUpgrade(TECH_UP_RADAR_STATION, 0,
+                                                { btnUpgrade03 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade04);
+
+        btnUpgrade04->SetPosition(btnX, btnY);
+
+        AddLinkToUpgrade(btnUpgrade04, LINK_VERT, LS_NORTH);
+        //AddLinkToUpgrade(btnUpgrade04, LINK_HORIZ, LS_WEST);
+
+        btnY -= btnUpgrade04->GetHeight() + buttonsMarginV;
+
+        // [1, 4]
+        auto btnUpgrade14 = GetNewButtonUpgrade(TECH_UP_RADAR_TOWER, 0,
+                                                { btnUpgrade04 }, false);
+        mVisibleButtonsUpgrade.emplace_back(btnUpgrade14);
+
+        btnUpgrade14->SetPosition(btnX, btnY);
     }
     if(section == SEC_UNITS)
     {

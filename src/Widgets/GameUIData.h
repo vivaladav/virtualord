@@ -260,6 +260,7 @@ enum SpriteIdDialogTechTree : unsigned int
     ID_TECH_UP_ICON_STORAGE_BLOBS,
     ID_TECH_UP_ICON_TARGET,
     ID_TECH_UP_ICON_UNIT_SLOTS,
+    ID_TECH_UP_ICON_TRADING_POST,
 };
 
 extern const char SpriteFileDialogTechTreeExp[];

@@ -85,6 +85,7 @@ ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * 
     mIconsIds.emplace(TECH_UP_STORAGE_BLOBS_1, ID_TECH_UP_ICON_STORAGE_BLOBS);
     mIconsIds.emplace(TECH_UP_STORAGE_BLOBS_2, ID_TECH_UP_ICON_STORAGE_BLOBS);
     mIconsIds.emplace(TECH_UP_PRACTICE_TARGET, ID_TECH_UP_ICON_TARGET);
+    mIconsIds.emplace(TECH_UP_TRADING_POST, ID_TECH_UP_ICON_TRADING_POST);
     mIconsIds.emplace(TECH_UP_UNIT_SLOTS_1, ID_TECH_UP_ICON_UNIT_SLOTS);
     mIconsIds.emplace(TECH_UP_UNIT_SLOTS_2, ID_TECH_UP_ICON_UNIT_SLOTS);
     mIconsIds.emplace(TECH_UP_UNIT_SLOTS_3, ID_TECH_UP_ICON_UNIT_SLOTS);
