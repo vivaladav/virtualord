@@ -33,13 +33,15 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD)
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(800, 900);
+    info->SetPosition(700, 900);
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADES_1"), 9.f, true, true);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_UPGRADES_2"), 0.f, false, true,
                          [this, info]
                         {
+                            info->SetPosition(300, 900);
+
                             auto dialog = mHUD->GetDialogTechTree();
                             auto btn = dialog->mVisibleButtonsUpgrade[0];
 
@@ -67,6 +69,8 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD)
     info->AddActionEntry(sm->GetCString("TUT_GAME_UPGRADES_3"), 0.f, false, true,
                          [this, info]
                          {
+                            info->SetPosition(800, 900);
+
                             auto dialog = mHUD->GetDialogTechTree();
                             auto btn = dialog->mBtnUnlock;
 
@@ -74,7 +78,6 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD)
                              // destroyed at the end
                              btn->AddOnClickFunction([info]
                                 {
-                                    info->SetPosition(800, 20);
                                     info->Continue();
                                 });
 
@@ -91,8 +94,11 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD)
                              mFocusArea->SetVisible(true);
                          });
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_5"), 0.f, false, false, [this]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_5"), 0.f, false, false,
+                         [this, info]
                         {
+                            info->SetPosition(900, 20);
+
                             auto dialog = mHUD->GetDialogTechTree();
                             auto btn = dialog->mBtnClose;
 

@@ -837,34 +837,6 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
-    // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
-    AddStep([this]
-    {
-        const GameObject * obj = GetObjectInCell(cellResCenter);
-        const float speed = 600.f;
-        return new StepGameMoveCameraOverObject(obj, speed);
-    });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([]
-        {
-            const core::Pointd2D p0(685, 200);
-            return new StepGameSingleInfo(p0, "TUT_GAME_RES_CEN_2");
-        });
-    AddStep([this, game, isoMap]
-        {
-            const core::Pointd2D p0(710, 250);
-            const GameObject * obj = GetObjectInCell(cellResCenter);
-            return new StepGameSelectObject(game, isoMap, obj, "TUT_GAME_RES_CEN_1", p0);
-        });
-    AddStep([panelActions]
-            {
-                const core::Pointd2D p0(1000, 650);
-                return new StepGameTechTreeIcon(panelActions, p0);
-            });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([hud] { return new StepGameTechTreeDialog(hud); });
-    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
-    AddStep([] { return new StepDelay(0.5f); });
     // SELECT SOLDIER AND CONQUER ENERGY GENERATOR 3
     AddStep([local]
             {
@@ -990,12 +962,39 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
-    // SELECT WORKER AND BUILD MORE WALL
-    AddStep([local, game, isoMap]
+    // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
+    AddStep([this]
             {
-                const auto unit = local->GetUnit(indWorker1);
-                const core::Pointd2D p0(1000, 200);
-                return new StepGameUnit(game, isoMap, unit, p0);
+                const GameObject * obj = GetObjectInCell(cellResCenter);
+                const float speed = 600.f;
+                return new StepGameMoveCameraOverObject(obj, speed);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([]
+            {
+                const core::Pointd2D p0(685, 200);
+                return new StepGameSingleInfo(p0, "TUT_GAME_RES_CEN_2");
+            });
+    AddStep([this, game, isoMap]
+            {
+                const core::Pointd2D p0(710, 250);
+                const GameObject * obj = GetObjectInCell(cellResCenter);
+                return new StepGameSelectObject(game, isoMap, obj, "TUT_GAME_RES_CEN_1", p0);
+            });
+    AddStep([panelActions]
+            {
+                const core::Pointd2D p0(1000, 650);
+                return new StepGameTechTreeIcon(panelActions, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([hud] { return new StepGameTechTreeDialog(hud); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER AND BUILD MORE WALL
+    AddStep([hud]
+            {
+                const sgl::core::Pointd2D p0(100, 600);
+                return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
