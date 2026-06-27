@@ -144,29 +144,29 @@ Game::Game(int argc, char * argv[])
 
     // INIT TECH UPGRADES COST
     mCostUpgrades.emplace(TECH_UP_NULL, 0);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_1, 250);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_2, 750);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_3, 2000);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, 4500);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, 10000);
-    mCostUpgrades.emplace(TECH_UP_RADAR_STATION, 500);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_1, 500);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_2, 2000);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_3, 4000);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, 6500);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, 9500);
+    mCostUpgrades.emplace(TECH_UP_RADAR_STATION, 1000);
     mCostUpgrades.emplace(TECH_UP_RADAR_TOWER, 1000);
-    mCostUpgrades.emplace(TECH_UP_STORAGE_STRUCTS, 1200);
-    mCostUpgrades.emplace(TECH_UP_STORAGE_ENERGY_1, 600);
-    mCostUpgrades.emplace(TECH_UP_STORAGE_ENERGY_2, 1500);
-    mCostUpgrades.emplace(TECH_UP_STORAGE_MATERIAL_1, 600);
-    mCostUpgrades.emplace(TECH_UP_STORAGE_MATERIAL_2, 1500);
-    mCostUpgrades.emplace(TECH_UP_STORAGE_DIAMONDS_1, 600);
-    mCostUpgrades.emplace(TECH_UP_STORAGE_DIAMONDS_2, 1500);
-    mCostUpgrades.emplace(TECH_UP_STORAGE_BLOBS_1, 600);
-    mCostUpgrades.emplace(TECH_UP_STORAGE_BLOBS_2, 1500);
-    mCostUpgrades.emplace(TECH_UP_PRACTICE_TARGET, 900);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_STRUCTS, 2000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_ENERGY_1, 3000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_ENERGY_2, 6000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_MATERIAL_1, 3000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_MATERIAL_2, 6000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_DIAMONDS_1, 3000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_DIAMONDS_2, 6000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_BLOBS_1, 3000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_BLOBS_2, 6000);
+    mCostUpgrades.emplace(TECH_UP_PRACTICE_TARGET, 1000);
     mCostUpgrades.emplace(TECH_UP_TRADING_POST, 1000);
-    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_1, 500);
-    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_2, 2500);
+    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_1, 1500);
+    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_2, 3000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_3, 5000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_4, 8000);
-    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_5, 11500);
+    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_5, 12000);
 }
 
 Game::~Game()
