@@ -1494,7 +1494,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, local, isoMap]
             {
                 const auto unit = local->GetUnit(indWorker1);
-                const core::Pointd2D p0(100, 700);
+                const core::Pointd2D p0(100, 450);
                 return new StepGameBuildTowerEnd(isoMap, unit, cellTower4, p0);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
