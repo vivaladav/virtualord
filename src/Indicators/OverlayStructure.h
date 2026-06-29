@@ -18,7 +18,7 @@ enum PlayerFaction : unsigned int;
 class OverlayStructure
 {
 public:
-    OverlayStructure(IsoMap * im, const ObjectsDataRegistry * reg, PlayerFaction faction);
+    OverlayStructure(IsoLayer * layer, const ObjectsDataRegistry * reg, PlayerFaction faction);
     ~OverlayStructure();
 
     void ClearIndicator();
@@ -37,7 +37,6 @@ private:
 
     PanelUnitEnergyUsage * mPanelUnitCost = nullptr;
 
-    IsoMap * mIsoMap = nullptr;
     IsoLayer * mLayer = nullptr;
 
     PlayerFaction mFaction;

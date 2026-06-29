@@ -399,6 +399,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed crash when moving mouse outside of map while unit is attacking.\n"
                   "- Fixed computation of probability of weapon hit.\n"
                   "- Fixed resources update in some corner cases giving wrong numbers.\n"
+                  "- Fixed structure indicator rendered below other structures.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

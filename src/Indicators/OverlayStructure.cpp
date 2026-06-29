@@ -9,12 +9,11 @@
 namespace game
 {
 
-OverlayStructure::OverlayStructure(IsoMap * im, const ObjectsDataRegistry * reg,
+OverlayStructure::OverlayStructure(IsoLayer * layer, const ObjectsDataRegistry * reg,
                                    PlayerFaction faction)
     : mObjDataReg(reg)
     , mPanelUnitCost(new PanelUnitEnergyUsage)
-    , mIsoMap(im)
-    , mLayer(im->GetLayer(MapLayers::CELL_OVERLAYS2))
+    , mLayer(layer)
     , mFaction(faction)
 {
     mPanelUnitCost->SetVisible(false);

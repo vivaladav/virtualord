@@ -199,7 +199,8 @@ ScreenGame::ScreenGame(Game * game)
     mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
                                    localFaction, mIsoMap->GetNumCols());
 
-    mOverlayStruct = new OverlayStructure(mIsoMap, game->GetObjectsRegistry(), localFaction);
+    mOverlayStruct = new OverlayStructure(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
+                                          game->GetObjectsRegistry(), localFaction);
 
     mOverlayWall = new OverlayWall(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
                                    localFaction, mIsoMap->GetNumCols());
