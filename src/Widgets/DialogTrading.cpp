@@ -988,7 +988,7 @@ void DialogTrading::DecSellQuantity(TradedResources res, sgl::sgui::Label * labe
             mSell[res] = 0;
     }
     else
-        mBuy[res] -= mod;
+        mSell[res] -= mod;
 
     std::ostringstream ss;
     ss.width(digitsQuantity);

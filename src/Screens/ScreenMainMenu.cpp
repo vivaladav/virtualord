@@ -400,6 +400,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed computation of probability of weapon hit.\n"
                   "- Fixed resources update in some corner cases giving wrong numbers.\n"
                   "- Fixed structure indicator rendered below other structures.\n"
+                  "- Fixed Trading Post not reducing quantities to sell.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
