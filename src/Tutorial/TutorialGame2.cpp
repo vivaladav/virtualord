@@ -487,8 +487,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
                                               areaTL, areaDiamondsBR, "TUT_GAME_COLLECT_DIAMONDS", p0);
         });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
-    AddStep([] { return new StepDelay(0.5f); });
     // MOVE CAMERA OVER BLOBS
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([isoMap]
         {
             const float speed = 800.f;
@@ -533,8 +533,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
-    AddStep([] { return new StepDelay(0.5f); });
     // CONQUER SECOND MATERIAL GENERATOR WITH SOLDIER
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
             {
                 const int movX = -100;
@@ -595,6 +595,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // CONQUER SECOND ENERGY GENERATOR WITH WORKER
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
             {
                 const int movX = 0;
@@ -747,8 +748,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1150, 500);
                 return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
-    AddStep([] { return new StepDelay(0.5f); });
     // SELECT WORKER AND CONQUER THIRD MATERIAL GENERATOR
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameMoveCamera(-200.f, -100.f); });
     AddStep([local, game, isoMap]
             {
@@ -839,8 +840,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // SELECT SOLDIER AND CONQUER ENERGY GENERATOR 3
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([local]
             {
                 const auto unit = local->GetUnit(indSoldier1);
@@ -964,8 +965,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([this]
             {
                 const GameObject * obj = GetObjectInCell(cellResCenter);
@@ -1032,8 +1033,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // MOVE WORKER AWAY FROM WALL
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
         {
             const int movX = -300;
@@ -1194,6 +1195,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1200, 450);
                 return new StepGameUnit(game, isoMap, unit, p0);
             });
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
             {
                 const int movX = 0;
@@ -1594,6 +1596,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const sgl::core::Pointd2D p0(100, 600);
                 return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
             });
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
             {
                 const int movX = -700;
@@ -1611,8 +1614,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // MOVE SOLDIER 1
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
             {
                 const int movX = -700;
@@ -1726,6 +1729,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
         });
     // MOVE CAMERA
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
         {
             const int movX = -700;
@@ -1856,6 +1860,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
             });
     // MOVE CAMERA
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
             {
                 const int movX = -200;
@@ -1929,6 +1934,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameQuickUnitButton(hud, indWorker2, nullptr, p0);
             });
     // MOVE CAMERA
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
             {
                 const int movX = -700;
@@ -2010,8 +2016,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([this]
             {
                 const GameObject * obj = GetObjectInCell(cellResCenter);
@@ -2045,8 +2051,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const sgl::core::Pointd2D p0(100, 600);
                 return new StepGameQuickUnitButton(hud, indWorker2, nullptr, p0);
             });
-    AddStep([] { return new StepDelay(0.5f); });
     // MOVE CAMERA
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
             {
                 const int movX = 200;
