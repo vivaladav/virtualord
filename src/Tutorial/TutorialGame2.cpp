@@ -29,6 +29,7 @@
 #include "Tutorial/StepGameConquerMaterialGenIntro.h"
 #include "Tutorial/StepGameConquerStructChoice.h"
 #include "Tutorial/StepGameConquerStructSimple.h"
+#include "Tutorial/StepGameDialogTrading.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameEnemyIntro.h"
@@ -57,6 +58,7 @@
 #include "Tutorial/StepGameSingleInfo.h"
 #include "Tutorial/StepGameTechTreeDialog.h"
 #include "Tutorial/StepGameTechTreeIcon.h"
+#include "Tutorial/StepGameTradeIcon.h"
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUnitAttackBurst.h"
 #include "Tutorial/StepGameUnitAttackIcon.h"
@@ -2082,6 +2084,26 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1100, 250);
                 return new StepGameBuildTowerEnd(isoMap, unit, cellTradingPost, p0);
             });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT TRADING POST
+    AddStep([this, game, isoMap]
+            {
+                const core::Pointd2D p0(710, 250);
+                const GameObject * obj = GetObjectInCell(cellResCenter);
+                return new StepGameSelectObject(game, isoMap, obj, "TUT_GAME_BUILD_TRAD_POST_2", p0);
+            });
+    // OPEN AND USE DIALOG TRADING
+    AddStep([panelActions]
+            {
+                const core::Pointd2D p0(100, 650);
+                return new StepGameTradeIcon(panelActions, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([hud]
+            {
+                return new StepGameDialogTrading(hud);
+            });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 

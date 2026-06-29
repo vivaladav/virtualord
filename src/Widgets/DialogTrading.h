@@ -76,6 +76,8 @@ private:
     void Sell();
 
 private:
+    friend class StepGameDialogTrading;
+
     std::array<int, NUM_TRADED_RES> mBuy;
     std::array<int, NUM_TRADED_RES> mSell;
 

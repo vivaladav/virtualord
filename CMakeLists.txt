@@ -295,6 +295,8 @@ add_executable(
     src/Tutorial/StepGameConquerStructChoice.cpp
     src/Tutorial/StepGameConquerStructSimple.h
     src/Tutorial/StepGameConquerStructSimple.cpp
+    src/Tutorial/StepGameDialogTrading.h
+    src/Tutorial/StepGameDialogTrading.cpp
     src/Tutorial/StepGameDisableCamera.h
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h
@@ -391,6 +393,8 @@ add_executable(
     src/Tutorial/StepGameTestCameraFocus.cpp
     src/Tutorial/StepGameTowerIntro.h
     src/Tutorial/StepGameTowerIntro.cpp
+    src/Tutorial/StepGameTradeIcon.h
+    src/Tutorial/StepGameTradeIcon.cpp
     src/Tutorial/StepGameTurnEnergy.h
     src/Tutorial/StepGameTurnEnergy.cpp
     src/Tutorial/StepGameUnit.h

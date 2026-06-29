@@ -122,6 +122,7 @@ public:
 
     void ShowDialogTrading();
     void HideDialogTrading();
+    const DialogTrading * GetDialogTrading() const;
 
     void ShowDialogUpgrade(GameObject * obj);
     void HideDialogUpgrade();
@@ -219,6 +220,8 @@ inline const PanelTurnControl * GameHUD::GetPanelTurnControl() const { return mP
 inline const DialogResearch * GameHUD::GetDialogResearch() const { return mDialogResearch; }
 
 inline const DialogTechTree * GameHUD::GetDialogTechTree() const { return mDialogTechTree; }
+
+inline const DialogTrading * GameHUD::GetDialogTrading() const { return mDialogTrading; }
 
 inline DialogUpgrade * GameHUD::GetDialogUpgrade() const { return mDialogUpgrade; }
 } // namespace game
