@@ -9,10 +9,12 @@ namespace game
 class FocusArea;
 class GameHUD;
 
+enum TechUpgradeId : unsigned int;
+
 class StepGameTechTreeDialog : public TutorialInfoStep
 {
 public:
-    StepGameTechTreeDialog(GameHUD * HUD);
+    StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgradeID, bool showIntro);
     ~StepGameTechTreeDialog();
 
     void OnStart() override;

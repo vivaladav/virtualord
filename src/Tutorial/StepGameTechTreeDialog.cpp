@@ -19,7 +19,7 @@ constexpr int padding = 10;
 namespace game
 {
 
-StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD)
+StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgradeID, bool showIntro)
     : TutorialInfoStep(700, 140)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
@@ -35,15 +35,14 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD)
 
     info->SetPosition(700, 900);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADES_1"), 9.f, true, true);
+    if(showIntro)
+        info->AddInfoEntry(sm->GetCString("TUT_GAME_UPGRADES_1"), 9.f, true, true);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_UPGRADES_2"), 0.f, false, true,
-                         [this, info]
+                         [this, info, upgradeID]
                         {
-                            info->SetPosition(300, 900);
-
                             auto dialog = mHUD->GetDialogTechTree();
-                            auto btn = dialog->mVisibleButtonsUpgrade[0];
+                            auto btn = dialog->mVisibleButtonsUpgrade.at(upgradeID);
 
                             // NOTE no need to remove the function later as the dialog is
                             // destroyed at the end

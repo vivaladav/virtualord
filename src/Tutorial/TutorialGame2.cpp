@@ -91,10 +91,12 @@ constexpr int turnsCollGenMax2 = 15;
 constexpr int collectablesMin = 2;
 constexpr int collectablesMax = 4;
 
+constexpr int catGeneric = 0;
 constexpr int catDefenses = 1;
 constexpr int catTech = 3;
 constexpr int structGate = 2;
 constexpr int structDefTower = 1;
+constexpr int structTradingPost = 3;
 
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellEneGen2(23, 17);
@@ -107,6 +109,7 @@ const Cell2D cellMatGen4(40, 12);
 const Cell2D cellBarracks(8, 9);
 const Cell2D cellTarget1(15, 13);
 const Cell2D cellResCenter(11, 6);
+const Cell2D cellTradingPost(17, 11);
 const Cell2D cellEnemy1(4, 34);
 const Cell2D cellTower1(6, 33);
 const Cell2D cellTower2(17, 31);
@@ -987,7 +990,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameTechTreeIcon(panelActions, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([hud] { return new StepGameTechTreeDialog(hud); });
+    AddStep([hud] { return new StepGameTechTreeDialog(hud, TECH_UP_BASE_IMPROVE_1, true); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT WORKER AND BUILD MORE WALL
@@ -2007,6 +2010,67 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
+    AddStep([this]
+            {
+                const GameObject * obj = GetObjectInCell(cellResCenter);
+                const float speed = 600.f;
+                return new StepGameMoveCameraOverObject(obj, speed);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([]
+            {
+                const core::Pointd2D p0(685, 200);
+                return new StepGameSingleInfo(p0, "TUT_GAME_RES_CEN_2");
+            });
+    AddStep([this, game, isoMap]
+            {
+                const core::Pointd2D p0(710, 250);
+                const GameObject * obj = GetObjectInCell(cellResCenter);
+                return new StepGameSelectObject(game, isoMap, obj, "TUT_GAME_RES_CEN_1", p0);
+            });
+    AddStep([panelActions]
+            {
+                const core::Pointd2D p0(1000, 650);
+                return new StepGameTechTreeIcon(panelActions, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([hud] { return new StepGameTechTreeDialog(hud, TECH_UP_TRADING_POST, false); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 2
+    AddStep([hud]
+            {
+                const sgl::core::Pointd2D p0(100, 600);
+                return new StepGameQuickUnitButton(hud, indWorker2, nullptr, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE CAMERA
+    AddStep([game]
+            {
+                const int movX = 200;
+                const int movY = -100;
+                return new StepGameMoveCamera(movX, movY);
+            });
+    // BUILD TRADING POST
+    AddStep([panelActions]
+            {
+                const core::Pointd2D p0(1100, 450);
+                return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_TRAD_POST_1", p0);
+            });
+    AddStep([hud]
+            {
+                return new StepGameBuildStructure(hud, nullptr, "TUT_GAME_BUILD_TRAD_POST_2",
+                                                  catGeneric, structTradingPost);
+            });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker2);
+                const core::Pointd2D p0(1100, 250);
+                return new StepGameBuildTowerEnd(isoMap, unit, cellTradingPost, p0);
+            });
     AddStep([] { return new StepDelay(0.5f); });
 }
 

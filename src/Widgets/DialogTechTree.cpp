@@ -308,7 +308,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // -- COL 0 --
         // [0, 0]
         auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_1, 1, {}, true);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade00);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_BASE_IMPROVE_1, btnUpgrade00);
 
         btnUpgrade00->SetPosition(btnX, btnY);
 
@@ -320,7 +320,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 0]
         auto btnUpgrade10 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_2, 2,
                                                 { btnUpgrade00 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade10);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_BASE_IMPROVE_2, btnUpgrade10);
 
         btnUpgrade10->SetPosition(btnX, btnY);
 
@@ -331,7 +331,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [2, 0]
         auto btnUpgrade20 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_3, 3,
                                                 { btnUpgrade10 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade20);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_BASE_IMPROVE_3, btnUpgrade20);
 
         btnUpgrade20->SetPosition(btnX, btnY);
 
@@ -342,7 +342,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [3, 0]
         auto btnUpgrade30 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_4, 4,
                                                 { btnUpgrade20 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade30);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_BASE_IMPROVE_4, btnUpgrade30);
 
         btnUpgrade30->SetPosition(btnX, btnY);
 
@@ -353,7 +353,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [4, 0]
         auto btnUpgrade40 = GetNewButtonUpgrade(TECH_UP_BASE_IMPROVE_5, 5,
                                                 { btnUpgrade30 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade40);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_BASE_IMPROVE_5, btnUpgrade40);
 
         btnUpgrade40->SetPosition(btnX, btnY);
 
@@ -364,7 +364,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         auto btnUpgrade01 = GetNewButtonUpgrade(TECH_UP_TRADING_POST, 0,
                                                 { btnUpgrade00 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade01);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_TRADING_POST, btnUpgrade01);
 
         btnUpgrade01->SetPosition(btnX, btnY);
 
@@ -379,7 +379,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         auto btnUpgrade02 = GetNewButtonUpgrade(TECH_UP_STORAGE_STRUCTS, 0,
                                                 { btnUpgrade01 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade02);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_STRUCTS, btnUpgrade02);
 
         btnUpgrade02->SetPosition(btnX, btnY);
 
@@ -391,7 +391,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 2]
         auto btnUpgrade12 = GetNewButtonUpgrade(TECH_UP_STORAGE_ENERGY_1, 1,
                                                 { btnUpgrade02 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade12);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_ENERGY_1, btnUpgrade12);
 
         btnUpgrade12->SetPosition(btnX, btnY);
 
@@ -403,7 +403,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [2, 2]
         auto btnUpgrade22 = GetNewButtonUpgrade(TECH_UP_STORAGE_MATERIAL_1, 1,
                                                 { btnUpgrade12 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade22);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_MATERIAL_1, btnUpgrade22);
 
         btnUpgrade22->SetPosition(btnX, btnY);
 
@@ -415,7 +415,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [3, 2]
         auto btnUpgrade32 = GetNewButtonUpgrade(TECH_UP_STORAGE_DIAMONDS_1, 1,
                                                 { btnUpgrade22 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade32);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_DIAMONDS_1, btnUpgrade32);
 
         btnUpgrade32->SetPosition(btnX, btnY);
 
@@ -427,7 +427,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [4, 2]
         auto btnUpgrade42 = GetNewButtonUpgrade(TECH_UP_STORAGE_BLOBS_1, 1,
                                                 { btnUpgrade32 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade42);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_BLOBS_1, btnUpgrade42);
 
         btnUpgrade42->SetPosition(btnX, btnY);
 
@@ -439,7 +439,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         auto btnUpgrade03 = GetNewButtonUpgrade(TECH_UP_PRACTICE_TARGET, 0,
                                                 { btnUpgrade02 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade03);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_PRACTICE_TARGET, btnUpgrade03);
 
         btnUpgrade03->SetPosition(btnX, btnY);
 
@@ -450,7 +450,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 3]
         auto btnUpgrade13 = GetNewButtonUpgrade(TECH_UP_STORAGE_ENERGY_2, 2,
                                                 { btnUpgrade12 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade13);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_ENERGY_2, btnUpgrade13);
 
         btnUpgrade13->SetPosition(btnX, btnY);
 
@@ -459,7 +459,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [2, 3]
         auto btnUpgrade23 = GetNewButtonUpgrade(TECH_UP_STORAGE_MATERIAL_2, 2,
                                                 { btnUpgrade22 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade23);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_MATERIAL_2, btnUpgrade23);
 
         btnUpgrade23->SetPosition(btnX, btnY);
 
@@ -468,7 +468,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [3, 3]
         auto btnUpgrade33 = GetNewButtonUpgrade(TECH_UP_STORAGE_DIAMONDS_2, 2,
                                                 { btnUpgrade32 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade33);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_DIAMONDS_2, btnUpgrade33);
 
         btnUpgrade33->SetPosition(btnX, btnY);
 
@@ -477,7 +477,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [4, 3]
         auto btnUpgrade43 = GetNewButtonUpgrade(TECH_UP_STORAGE_BLOBS_2, 2,
                                                 { btnUpgrade42 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade43);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_BLOBS_2, btnUpgrade43);
 
         btnUpgrade43->SetPosition(btnX, btnY);
 
@@ -488,7 +488,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         auto btnUpgrade04 = GetNewButtonUpgrade(TECH_UP_RADAR_STATION, 0,
                                                 { btnUpgrade03 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade04);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_RADAR_STATION, btnUpgrade04);
 
         btnUpgrade04->SetPosition(btnX, btnY);
 
@@ -500,7 +500,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 4]
         auto btnUpgrade14 = GetNewButtonUpgrade(TECH_UP_RADAR_TOWER, 0,
                                                 { btnUpgrade04 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade14);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_RADAR_TOWER, btnUpgrade14);
 
         btnUpgrade14->SetPosition(btnX, btnY);
     }
@@ -509,7 +509,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // -- COL 0 --
         // [0, 0]
         auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_1, 1, {}, true);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade00);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_UNIT_SLOTS_1, btnUpgrade00);
 
         btnUpgrade00->SetPosition(btnX, btnY);
 
@@ -521,7 +521,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [1, 0]
         auto btnUpgrade10 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_2, 2,
                                                 { btnUpgrade00 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade10);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_UNIT_SLOTS_2, btnUpgrade10);
 
         btnUpgrade10->SetPosition(btnX, btnY);
 
@@ -532,7 +532,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [2, 0]
         auto btnUpgrade20 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_3, 3,
                                                 { btnUpgrade10 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade20);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_UNIT_SLOTS_3, btnUpgrade20);
 
         btnUpgrade20->SetPosition(btnX, btnY);
 
@@ -543,7 +543,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [3, 0]
         auto btnUpgrade30 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_4, 4,
                                                 { btnUpgrade20 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade30);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_UNIT_SLOTS_4, btnUpgrade30);
 
         btnUpgrade30->SetPosition(btnX, btnY);
 
@@ -554,7 +554,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // [4, 0]
         auto btnUpgrade40 = GetNewButtonUpgrade(TECH_UP_UNIT_SLOTS_5, 5,
                                                 { btnUpgrade30 }, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade40);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_UNIT_SLOTS_5, btnUpgrade40);
 
         btnUpgrade40->SetPosition(btnX, btnY);
     }
@@ -563,7 +563,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         // -- COL 0 --
         // [0, 0]
         auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_NULL, 0, {}, false);
-        mVisibleButtonsUpgrade.emplace_back(btnUpgrade00);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_NULL, btnUpgrade00);
 
         btnUpgrade00->SetPosition(btnX, btnY);
     }
@@ -573,8 +573,10 @@ void DialogTechTree::UpdateUnlockableStates()
 {
     const int resPoints = mPlayer->GetStat(Player::RESEARCH).GetValue();
 
-    for(auto btn : mVisibleButtonsUpgrade)
+    for(auto it : mVisibleButtonsUpgrade)
     {
+        auto btn = it.second;
+
         const TechUpgradeId upgrade = btn->GetUpgrade();
         const int cost = mGame->GetTechUpgradecost(upgrade);
         const bool unlockable = cost <= resPoints && btn->IsEnabled() && !btn->IsUnlocked();

@@ -92,7 +92,7 @@ private:
     friend class StepGameTechTreeDialog;
 
     std::vector<ButtonTechUpgrade *> mButtonsUpgrade;
-    std::vector<ButtonTechUpgrade *> mVisibleButtonsUpgrade;
+    std::unordered_map<TechUpgradeId, ButtonTechUpgrade *> mVisibleButtonsUpgrade;
     std::vector<sgl::sgui::Image *> mLinks;
     std::unordered_map<TechUpgradeId, std::string> mDescriptions;
 
