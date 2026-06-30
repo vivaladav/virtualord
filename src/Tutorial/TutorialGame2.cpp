@@ -85,6 +85,7 @@ using namespace game;
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indSoldier1 = 1;
 constexpr unsigned int indWorker2 = 2;
+constexpr unsigned int indSoldier2 = 3;
 
 constexpr int turnsCollGenMin = 1;
 constexpr int turnsCollGenMax = 1;
@@ -2104,6 +2105,37 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameDialogTrading(hud);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD SOLDIER 2
+    AddStep([]
+            {
+                const core::Pointd2D p0(600, 150);
+                return new StepGameSingleInfo(p0, "TUT_GAME_BUILD_SOLDIER_1");
+            });
+    AddStep([this, game, isoMap]
+            {
+                const core::Pointd2D p0(500, 200);
+                const GameObject * barracks = GetObjectInCell(cellBarracks);
+                return new StepGameSelectObject(game, isoMap, barracks, "TUT_GAME_BARRACKS_1", p0);
+            });
+    AddStep([panelActions]
+            {
+                return new StepGameBuildUnitStart(panelActions,
+                                                  PanelObjectActions::BTN_BUILD_UNIT_BARRACKS);
+            });
+    AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this]
+            {
+                const auto barracks = static_cast<Structure *>(GetObjectInCell(cellBarracks));
+                return new StepDelay(barracks->GetTimeBuildUnit());
+            });
+    AddStep([local, game, isoMap]
+            {
+                const auto unit = local->GetUnit(indSoldier2);
+                const core::Pointd2D p0(1300, 450);
+                return new StepGameUnit(game, isoMap, unit, p0);
+            });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
