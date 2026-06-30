@@ -2089,7 +2089,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, game, isoMap]
             {
                 const core::Pointd2D p0(710, 250);
-                const GameObject * obj = GetObjectInCell(cellResCenter);
+                const GameObject * obj = GetObjectInCell(cellTradingPost);
                 return new StepGameSelectObject(game, isoMap, obj, "TUT_GAME_BUILD_TRAD_POST_2", p0);
             });
     // OPEN AND USE DIALOG TRADING
