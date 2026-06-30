@@ -626,7 +626,7 @@ DialogTrading::~DialogTrading()
     for(unsigned int i = 0; i < NUM_TRADED_RES; ++i)
     {
         const auto st = stats[i];
-        mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[st]);
+        mPlayer->RemoveOnResourceChanged(st, mCallbackValIds[i]);
     }
 }
 

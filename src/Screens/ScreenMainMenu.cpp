@@ -392,6 +392,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Generators and Base produce more resources.\n"
                   "\nFIXES\n"
                   "- Fixed crash when opening trading dialog.\n"
+                  "- Fixed crash after closing trading dialog and resources change.\n"
                   "- Fixed AI not active after first tutorial.\n"
                   "- Fixed new structure indicator not updating the position in same cases.\n"
                   "- Fixed ComboBox not deleting entries when destroyed.\n"
