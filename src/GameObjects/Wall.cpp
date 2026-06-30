@@ -19,13 +19,13 @@ Wall::Wall(const ObjectData & data, const ObjectInitData & initData, GameObjectV
 
 unsigned int Wall::GetCostEnergy(unsigned int level)
 {
-    const unsigned int cost0 = 5;
+    const unsigned int cost0 = 10;
     return (level + 1) * cost0;
 }
 
 unsigned int Wall::GetCostMaterial(unsigned int level)
 {
-    const unsigned int cost0 = 10;
+    const unsigned int cost0 = 20;
     return (level + 1) * cost0;
 }
 
