@@ -54,10 +54,12 @@ StepGameConquerCellsEnd::~StepGameConquerCellsEnd()
 
 void StepGameConquerCellsEnd::Update(float)
 {
+    const auto action = mUnit->GetCurrentAction();
+
     if(mUnit->GetRow0() == mCellEnd.row && mUnit->GetCol0() == mCellEnd.col &&
         mUnit->GetCurrentAction() == IDLE)
         SetDone();
-    else if(mUnit->GetCurrentAction() == GameObjectActionType::CONQUER_CELL)
+    else if(action == CONQUER_CELL || action == MOVE)
     {
         mFocusArea->SetBlinking(false);
         mFocusArea->SetVisible(false);
