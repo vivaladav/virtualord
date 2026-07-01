@@ -20,10 +20,12 @@ void StepGameWaitEnemiesKilled::Update(float)
     {
         const GameObject * obj = *it;
 
+        // found one -> not done yet
         if(mGameMap->HasObject(obj))
             return ;
-
-        ++it;
+        // if not found remove it from the list
+        else
+            it = mObjs.erase(it);
     }
 
     // no object found -> end
