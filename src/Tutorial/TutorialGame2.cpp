@@ -781,7 +781,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const auto unit = local->GetUnit(indWorker1);
                 const GameObject * gen = GetObjectInCell(cellMatGen3);
-                const core::Pointd2D p0(1100, 450);
+                const core::Pointd2D p0(1200, 450);
                 return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
@@ -856,13 +856,6 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     // SELECT SOLDIER AND CONQUER ENERGY GENERATOR 3
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([local]
-            {
-                const auto unit = local->GetUnit(indSoldier1);
-                const float speed = 600.f;
-                return new StepGameMoveCameraOverObject(unit, speed);
-            });
-    AddStep([] { return new StepDelay(0.5f); });
     AddStep([local, game, isoMap]
             {
                 const auto unit = local->GetUnit(indSoldier1);
@@ -935,6 +928,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // CLEAR SELECTION
+    AddStep([gs]
+            {
+                return new StepGameClearSelection(gs);
+            });
     // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this]
@@ -1762,7 +1760,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const auto unit = local->GetUnit(indWorker1);
                 const Cell2D target(17, 10);
-                const core::Pointd2D p0(500, 350);
+                const core::Pointd2D p0(400, 350);
                 return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
@@ -2080,11 +2078,10 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     // MOVE CAMERA
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([game]
+    AddStep([isoMap]
             {
-                const int movX = 200;
-                const int movY = -100;
-                return new StepGameMoveCamera(movX, movY);
+                const float speed = 800.f;
+                return new StepGameMoveCameraOverCell(cellTradingPost, isoMap, speed);
             });
     // BUILD TRADING POST
     AddStep([panelActions]
