@@ -762,6 +762,15 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1150, 500);
                 return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
+    // UPGRADE SOLDIER
+    AddStep([panelActions]
+            {
+                core::Pointd2D p0(1100, 200);
+                return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b", p0);
+            });
+    AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
     // SELECT WORKER AND CONQUER THIRD MATERIAL GENERATOR
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameMoveCamera(-200.f, -100.f); });
@@ -841,15 +850,6 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const Cell2D cellEnd(6, 16);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
-    AddStep([] { return new StepDelay(0.5f); });
-    // UPGRADE SOLDIER
-    AddStep([panelActions]
-            {
-                core::Pointd2D p0(1100, 200);
-                return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b", p0);
-            });
-    AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
-    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
@@ -1064,7 +1064,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         {
             const auto unit = local->GetUnit(indWorker1);
             const Cell2D target(20, 28);
-            const core::Pointd2D p0(400, 500);
+            const core::Pointd2D p0(300, 400);
             return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
