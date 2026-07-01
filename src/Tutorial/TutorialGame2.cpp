@@ -2151,22 +2151,22 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, playerAI]
             {
                 return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SOLDIER1,
-                                            cellEnemy2, true);
+                                            cellEnemy2, false);
             });
     AddStep([this, playerAI]
             {
                 return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SCOUT1,
-                                            cellEnemy3, true);
+                                            cellEnemy3, false);
             });
     AddStep([this, playerAI]
             {
                 return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SCOUT1,
-                                            cellEnemy4, true);
+                                            cellEnemy4, false);
             });
     AddStep([this, playerAI]
             {
                 return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SOLDIER1,
-                                            cellEnemy5, true);
+                                            cellEnemy5, false);
             });
     // SET HEALTH OF ENEMIES
     AddStep([this]
@@ -2189,6 +2189,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 GameObject * enemy = GetObjectInCell(cellEnemy5);
                 return new StepGameSetObjectHealth(enemy, healthEnemyDef);
             });
+    // RE-ENABLE AI
+    AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), true); });
     // SELECT SOLDIER 2
     AddStep([local, game, isoMap]
             {
