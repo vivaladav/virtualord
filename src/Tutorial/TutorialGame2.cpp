@@ -2130,11 +2130,29 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const auto barracks = static_cast<Structure *>(GetObjectInCell(cellBarracks));
                 return new StepDelay(barracks->GetTimeBuildUnit());
             });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT SOLDIER 2
     AddStep([local, game, isoMap]
             {
                 const auto unit = local->GetUnit(indSoldier2);
                 const core::Pointd2D p0(1300, 450);
                 return new StepGameUnit(game, isoMap, unit, p0);
+            });
+    // MOVE CAMERA
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([game]
+            {
+                const int movX = 0;
+                const int movY = 450;
+                return new StepGameMoveCamera(movX, movY);
+            });
+    // MOVE SOLDIER 2 NEAR WALL
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indSoldier2);
+                const Cell2D target(22, 23);
+                const core::Pointd2D p0(1100, 600);
+                return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
 }
