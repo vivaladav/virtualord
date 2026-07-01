@@ -12,6 +12,8 @@ StepGameEnableCamera::StepGameEnableCamera(CameraMapController * c)
 
 void StepGameEnableCamera::OnStart()
 {
+    TutorialStep::OnStart();
+
     mController->SetEnabled(true);
 
     SetDone();
