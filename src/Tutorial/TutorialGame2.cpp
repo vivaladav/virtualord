@@ -928,11 +928,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // CLEAR SELECTION
-    AddStep([gs]
-            {
-                return new StepGameClearSelection(gs);
-            });
+    // RESET ACTIVE ACTION FOR WORKER
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this]
