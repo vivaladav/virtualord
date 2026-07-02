@@ -47,7 +47,6 @@
 #include "Tutorial/StepGameSecondaryMissionGoal.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetCollectableGeneratorTurns.h"
-#include "Tutorial/StepGameSetCollectableUnits.h"
 #include "Tutorial/StepGameSetObjectAttackMode.h"
 #include "Tutorial/StepGameSetObjectEnergy.h"
 #include "Tutorial/StepGameSetObjectFatalHit.h"
@@ -222,19 +221,6 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
-    // SET MIN BLOBS AND DIAMONDS TO COLLECT
-    AddStep([gameMap]
-            {
-                return new StepGameSetCollectableUnits(areaDiamondsTL, areaDiamondsBR, gameMap,
-                                                       ObjectData::TYPE_DIAMONDS,
-                                                       collectablesMin, collectablesMax);
-            });
-    AddStep([gameMap]
-            {
-                return new StepGameSetCollectableUnits(areaBlobsTL, areaBlobsBR, gameMap,
-                                                       ObjectData::TYPE_BLOBS,
-                                                       collectablesMin, collectablesMax);
-            });
     // set all generators of diamonds and blobs to create new object in more than 5 turns
     AddStep([gameMap]
             {
@@ -1127,8 +1113,13 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([this]
             {
-                auto attacker = GetObjectInCell(cellEnemy1);
-                return new StepGameSetObjectAttackMode(attacker, ATT_BURST_SHOT);
+                auto enemy = GetObjectInCell(cellEnemy1);
+                return new StepGameSetObjectAttackMode(enemy, ATT_BURST_SHOT);
+            });
+    AddStep([this]
+            {
+                auto enemy = GetObjectInCell(cellEnemy1);
+                return new StepGameSetObjectFatalHit(enemy, false);
             });
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
@@ -1712,6 +1703,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
@@ -1882,10 +1874,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT SOLDIER 1
-    AddStep([hud]
+    AddStep([local, game, isoMap]
             {
-                const sgl::core::Pointd2D p0(100, 600);
-                return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
+                const auto unit = local->GetUnit(indSoldier1);
+                const core::Pointd2D p0(100, 600);
+                return new StepGameUnit(game, isoMap, unit, p0);
             });
     // CONQUER CELLS WITH SOLDIER
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
@@ -1904,10 +1897,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     // SELECT WORKER 1
-    AddStep([hud]
+    AddStep([local, game, isoMap]
             {
-                const sgl::core::Pointd2D p0(100, 600);
-                return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
+                const auto unit = local->GetUnit(indWorker1);
+                const core::Pointd2D p0(100, 600);
+                return new StepGameUnit(game, isoMap, unit, p0);
             });
     // MOVE CAMERA
     AddStep([] { return new StepDelay(0.5f); });
@@ -2185,6 +2179,27 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 GameObject * enemy = GetObjectInCell(cellEnemy5);
                 return new StepGameSetObjectHealth(enemy, healthEnemyDef);
+            });
+    // DISABLE FATAL HIT FOR ENEMIES
+    AddStep([this]
+            {
+                auto enemy = GetObjectInCell(cellEnemy2);
+                return new StepGameSetObjectFatalHit(enemy, false);
+            });
+    AddStep([this]
+            {
+                auto enemy = GetObjectInCell(cellEnemy3);
+                return new StepGameSetObjectFatalHit(enemy, false);
+            });
+    AddStep([this]
+            {
+                auto enemy = GetObjectInCell(cellEnemy4);
+                return new StepGameSetObjectFatalHit(enemy, false);
+            });
+    AddStep([this]
+            {
+                auto enemy = GetObjectInCell(cellEnemy5);
+                return new StepGameSetObjectFatalHit(enemy, false);
             });
     // RE-ENABLE AI
     AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), true); });
