@@ -543,6 +543,7 @@ void ScreenGame::InitPlayers()
         Player * p = game->GetPlayerByIndex(i);
 
         p->ResetTurnEnergy();
+        p->ResetNumCells();
 
         AssignStartResources(p);
 
@@ -1031,22 +1032,18 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
     else if(key == KeyboardEvent::KEY_P && event.IsModShiftDown())
     {
         const PlayerFaction pf = mLocalPlayer->GetFaction();
-        const unsigned int turns = mLocalPlayer->GetTurnsPlayed();
         const unsigned int territory = mGameMap->GetControlMap()->GetPercentageControlledByFaction(pf);
-        const unsigned int cells = mLocalPlayer->GetNumCells();
-        const unsigned int killed = mGameMap->GetEnemiesKilled(pf);
-        const unsigned int casualties = mGameMap->GetCasualties(pf);
-        const unsigned int played = GetPlayTimeInSec();
         const auto pcc = mIsoMap->GetCellPosition(mCurrCell.row, mCurrCell.col);
 
         std::cout << "====== CURRENT GAME STATE ======\n"
                   << "PLAYER FACTION: " << pf << "\n"
-                  << "TURNS PLAYED: " << turns << "\n"
-                  << "TIME PLAYED: " << played << "\n"
+                  << "TURNS PLAYED: " << mLocalPlayer->GetTurnsPlayed() << "\n"
+                  << "TIME PLAYED: " << GetPlayTimeInSec() << "\n"
                   << "TERRITORY CONTROLLED: " << territory << "%\n"
-                  << "CELLS CONTROLLED: " << cells << "\n"
-                  << "ENEMIS KILLED: " << killed << "\n"
-                  << "CASUALTIES: " << casualties  << "\n"
+                  << "CELLS CONTROLLED: " << mLocalPlayer->GetNumCells() << "\n"
+                  << "CELLS LINKED: " << mLocalPlayer->GetNumLinkedCells() << "\n"
+                  << "ENEMIS KILLED: " << mGameMap->GetEnemiesKilled(pf) << "\n"
+                  << "CASUALTIES: " << mGameMap->GetCasualties(pf)  << "\n"
                   << "CURRENT CELL: " << mCurrCell.row << "," << mCurrCell.col
                   << " (" << pcc.x << "," << pcc.y << ")" << "\n"
                   << "RESOURCES"

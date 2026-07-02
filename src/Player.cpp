@@ -23,7 +23,6 @@ namespace game
 Player::Player(const char * name, int pid)
     : mDummyStat(INVALID_STAT, 0)
     , mName(name)
-    , mOnNumCellsChanged([](int){})
     , mOnNumUnitsChanged([](){})
     , mOnTurnEnergyChanged([](){})
     , mOnTurnMaxEnergyChanged([](){})
@@ -343,13 +342,6 @@ void Player::RemoveOnResourceRangeChanged(Stat sid, unsigned int funId)
 {
     if(sid < NUM_PSTATS)
         mStats[sid].RemoveOnRangeChanged(funId);
-}
-
-void Player::SumCells(int val)
-{
-    mNumCells += val;
-
-    mOnNumCellsChanged(mNumCells);
 }
 
 void Player::HandleCollectable(GameObject * collected, GameObject * collector)
@@ -775,7 +767,7 @@ void Player::InitUpgrades()
 int Player::GetCellsEnergyUsed() const
 {
     const int energyPerCell = 1;
-    return mNumCells * energyPerCell;
+    return mNumLinkedCells * energyPerCell;
 }
 
 void Player::NotifyResourcesChanged()

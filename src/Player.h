@@ -110,7 +110,10 @@ public:
 
     int GetNumCells() const;
     void SumCells(int val);
-    void SetOnNumCellsChanged(const std::function<void(int)> & f);
+    void ResetNumCells();
+
+    unsigned int GetNumLinkedCells() const;
+    void SetNumLinkedCells(unsigned int val);
 
     void SetOnNumUnitsChanged(const std::function<void()> & f);
 
@@ -211,7 +214,6 @@ private:
 
     std::unordered_map<unsigned int, std::function<void()>> mOnResourcesChanged;
     std::unordered_map<unsigned int, std::function<void(TechUpgradeId)>> mOnUpgradeUnlocked;
-    std::function<void(int)> mOnNumCellsChanged;
     std::function<void()> mOnNumUnitsChanged;
     std::function<void()> mOnTurnEnergyChanged;
     std::function<void()> mOnTurnMaxEnergyChanged;
@@ -232,6 +234,7 @@ private:
     unsigned int mTurnsPlayed = 0;
 
     int mNumCells = 0;
+    unsigned int mNumLinkedCells = 0;
     unsigned int mMaxUnits = 0;
 
     // -- upgrades --
@@ -313,10 +316,11 @@ inline bool Player::HasEnough(Stat sid, int val)
 }
 
 inline int Player::GetNumCells() const { return mNumCells; }
-inline void Player::SetOnNumCellsChanged(const std::function<void(int)> & f)
-{
-    mOnNumCellsChanged = f;
-}
+inline void Player::SumCells(int val) { mNumCells += val; }
+inline void Player::ResetNumCells() { mNumCells = 0; }
+
+inline unsigned int Player::GetNumLinkedCells() const { return mNumLinkedCells; }
+inline void Player::SetNumLinkedCells(unsigned int val) { mNumLinkedCells = val; }
 
 inline void Player::SetOnNumUnitsChanged(const std::function<void()> & f)
 {

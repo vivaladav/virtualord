@@ -579,8 +579,11 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
             }
         }
 
+        const unsigned int baseSize = rows * cols;
+
         o2a.owner->SetBase(b);
-        o2a.owner->SumCells(rows * cols);
+        o2a.owner->SumCells(baseSize);
+        o2a.owner->SetNumLinkedCells(baseSize);
     }
     // this should never happen
     else
@@ -3284,6 +3287,9 @@ void GameMap::UpdateLinkedCells(Player * player)
     for(GameObject * obj : structures)
         AddPlayerObjVisibility(obj, player);
 
+    // update Player value
+    player->SetNumLinkedCells(done.size());
+
    ApplyLocalVisibility();
 }
 
@@ -3536,7 +3542,7 @@ void GameMap::DestroyObject(GameObject * obj)
     layer->RemoveObject(isoObj);
 
     // update linked cells when destroying a radar station to update the minimap visibility
-    if(obj->GetObjectType() == ObjectData::TYPE_RADAR_STATION && owner->IsLocal())
+    if(obj->GetObjectType() == ObjectData::TYPE_RADAR_STATION && owner != nullptr && owner->IsLocal())
         UpdateLinkedCells(owner);
 
     // finally delete the object
