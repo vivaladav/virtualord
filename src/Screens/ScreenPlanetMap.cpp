@@ -37,9 +37,9 @@
 
 namespace
 {
-    constexpr int costExploreMoney = 500;
+    constexpr int costExploreMoney = 1000;
     constexpr int costExploreEnergy = 300;
-    constexpr int costExploreMaterial = 50;
+    constexpr int costExploreMaterial = 100;
 
     constexpr int costConquestMoney = 1000;
     constexpr int costConquestEnergy = 800;
