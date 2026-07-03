@@ -105,7 +105,8 @@ constexpr int structGate = 2;
 constexpr int structDefTower = 1;
 constexpr int structTradingPost = 3;
 
-constexpr float healthEnemyDef = 60.f;
+constexpr float healthEnemyDef = 50.f;
+constexpr float energyEnemyDef = 60.f;
 
 const Cell2D cellEneGen1(6, 15);
 const Cell2D cellEneGen2(23, 17);
@@ -2161,44 +2162,35 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // SET HEALTH OF ENEMIES
     AddStep([this]
             {
-                GameObject * enemy = GetObjectInCell(cellEnemy2);
-                return new StepGameSetObjectHealth(enemy, healthEnemyDef);
+                std::vector<GameObject *> enemies;
+                enemies.emplace_back(GetObjectInCell(cellEnemy2));
+                enemies.emplace_back(GetObjectInCell(cellEnemy3));
+                enemies.emplace_back(GetObjectInCell(cellEnemy4));
+                enemies.emplace_back(GetObjectInCell(cellEnemy5));
+
+                return new StepGameSetObjectHealth(std::move(enemies), healthEnemyDef);
             });
+    // SET ENERGY OF ENEMIES
     AddStep([this]
             {
-                GameObject * enemy = GetObjectInCell(cellEnemy3);
-                return new StepGameSetObjectHealth(enemy, healthEnemyDef);
-            });
-    AddStep([this]
-            {
-                GameObject * enemy = GetObjectInCell(cellEnemy4);
-                return new StepGameSetObjectHealth(enemy, healthEnemyDef);
-            });
-    AddStep([this]
-            {
-                GameObject * enemy = GetObjectInCell(cellEnemy5);
-                return new StepGameSetObjectHealth(enemy, healthEnemyDef);
+                std::vector<GameObject *> enemies;
+                enemies.emplace_back(GetObjectInCell(cellEnemy2));
+                enemies.emplace_back(GetObjectInCell(cellEnemy3));
+                enemies.emplace_back(GetObjectInCell(cellEnemy4));
+                enemies.emplace_back(GetObjectInCell(cellEnemy5));
+
+                return new StepGameSetObjectEnergy(std::move(enemies), energyEnemyDef);
             });
     // DISABLE FATAL HIT FOR ENEMIES
     AddStep([this]
             {
-                auto enemy = GetObjectInCell(cellEnemy2);
-                return new StepGameSetObjectFatalHit(enemy, false);
-            });
-    AddStep([this]
-            {
-                auto enemy = GetObjectInCell(cellEnemy3);
-                return new StepGameSetObjectFatalHit(enemy, false);
-            });
-    AddStep([this]
-            {
-                auto enemy = GetObjectInCell(cellEnemy4);
-                return new StepGameSetObjectFatalHit(enemy, false);
-            });
-    AddStep([this]
-            {
-                auto enemy = GetObjectInCell(cellEnemy5);
-                return new StepGameSetObjectFatalHit(enemy, false);
+                std::vector<GameObject *> enemies;
+                enemies.emplace_back(GetObjectInCell(cellEnemy2));
+                enemies.emplace_back(GetObjectInCell(cellEnemy3));
+                enemies.emplace_back(GetObjectInCell(cellEnemy4));
+                enemies.emplace_back(GetObjectInCell(cellEnemy5));
+
+                return new StepGameSetObjectFatalHit(std::move(enemies), false);
             });
     // RE-ENABLE AI
     AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), true); });
