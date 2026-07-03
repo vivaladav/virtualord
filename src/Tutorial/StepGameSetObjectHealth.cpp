@@ -6,17 +6,28 @@ namespace game
 {
 
 StepGameSetObjectHealth::StepGameSetObjectHealth(GameObject * obj, float val)
-    : mObj(obj)
+    : mVal(val)
+{
+    mObjs.emplace_back(obj);
+}
+
+StepGameSetObjectHealth::StepGameSetObjectHealth(const std::vector<GameObject *> && objs, float val)
+    : mObjs(objs)
     , mVal(val)
 {
 }
 
 void StepGameSetObjectHealth::OnStart()
 {
-    const float val0 = mObj->GetHealth();
-    const float delta = mVal - val0;
+    TutorialStep::OnStart();
 
-    mObj->SumHealth(delta);
+    for(GameObject * obj : mObjs)
+    {
+        const float val0 = obj->GetHealth();
+        const float delta = mVal - val0;
+
+        obj->SumHealth(delta);
+    }
 
     SetDone();
 }
