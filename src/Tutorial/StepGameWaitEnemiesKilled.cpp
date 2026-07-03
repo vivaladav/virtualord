@@ -22,14 +22,15 @@ void StepGameWaitEnemiesKilled::Update(float)
 
         // found one -> not done yet
         if(mGameMap->HasObject(obj))
-            return ;
+            ++it;
         // if not found remove it from the list
         else
             it = mObjs.erase(it);
     }
 
     // no object found -> end
-    SetDone();
+    if(mObjs.empty())
+        SetDone();
 }
 
 } // namespace game
