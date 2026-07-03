@@ -13,7 +13,7 @@ class GameObject;
 class StepGameWaitEnemiesKilled : public TutorialStep
 {
 public:
-    StepGameWaitEnemiesKilled(const std::vector<const GameObject *> & objs, const GameMap * gm);
+    StepGameWaitEnemiesKilled(const std::vector<const GameObject *> && objs, const GameMap * gm);
 
     void Update(float delta) override;
 

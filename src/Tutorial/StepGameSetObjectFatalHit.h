@@ -2,6 +2,8 @@
 
 #include "Tutorial/TutorialStep.h"
 
+#include <vector>
+
 namespace game
 {
 
@@ -11,12 +13,12 @@ class StepGameSetObjectFatalHit : public TutorialStep
 {
 public:
     StepGameSetObjectFatalHit(GameObject * obj, bool enabled);
+    StepGameSetObjectFatalHit(const std::vector<GameObject *> && objs, bool enabled);
 
     void OnStart() override;
 
 private:
-    GameObject * mObj = nullptr;
-
+    std::vector<GameObject *> mObjs;
     bool mEnabled;
 };
 

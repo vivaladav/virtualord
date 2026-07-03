@@ -2,6 +2,8 @@
 
 #include "Tutorial/TutorialStep.h"
 
+#include <vector>
+
 namespace game
 {
 
@@ -13,11 +15,12 @@ class StepGameSetObjectAttackMode : public TutorialStep
 {
 public:
     StepGameSetObjectAttackMode(GameObject * obj, AttackMode mode);
+    StepGameSetObjectAttackMode(const std::vector<GameObject *> && objs, AttackMode mode);
 
     void OnStart() override;
 
 private:
-    GameObject * mObj = nullptr;
+    std::vector<GameObject *> mObjs;
     AttackMode mMode;
 };
 

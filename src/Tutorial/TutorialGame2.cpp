@@ -2244,7 +2244,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 enemies.emplace_back(GetObjectInCell(cellEnemy4));
                 enemies.emplace_back(GetObjectInCell(cellEnemy5));
 
-                return new StepGameWaitEnemiesKilled(enemies, GetGameMap());
+                return new StepGameWaitEnemiesKilled(std::move(enemies), GetGameMap());
             });
     // DISABLE CAMERA AGAIN
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });

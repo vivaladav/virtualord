@@ -6,14 +6,24 @@ namespace game
 {
 
 StepGameSetObjectMaxHealth::StepGameSetObjectMaxHealth(GameObject * obj, float val)
-    : mObj(obj)
+    : mVal(val)
+{
+    mObjs.emplace_back(obj);
+}
+
+StepGameSetObjectMaxHealth::StepGameSetObjectMaxHealth(const std::vector<GameObject *> && objs,
+                                                       float val)
+    : mObjs(objs)
     , mVal(val)
 {
 }
 
 void StepGameSetObjectMaxHealth::OnStart()
 {
-    mObj->SetMaxHealth(mVal);
+    TutorialStep::OnStart();
+
+    for(GameObject * obj : mObjs)
+        obj->SetMaxHealth(mVal);
 
     SetDone();
 }

@@ -6,7 +6,14 @@ namespace game
 {
 
 StepGameSetObjectFatalHit::StepGameSetObjectFatalHit(GameObject * obj, bool enabled)
-    : mObj(obj)
+    : mEnabled(enabled)
+{
+    mObjs.emplace_back(obj);
+}
+
+StepGameSetObjectFatalHit::StepGameSetObjectFatalHit(const std::vector<GameObject *> && objs,
+                                                     bool enabled)
+    : mObjs(objs)
     , mEnabled(enabled)
 {
 }
@@ -15,7 +22,8 @@ void StepGameSetObjectFatalHit::OnStart()
 {
     TutorialStep::OnStart();
 
-    mObj->SetFatalHit(mEnabled);
+    for(GameObject * obj : mObjs)
+        obj->SetFatalHit(mEnabled);
 
     SetDone();
 }

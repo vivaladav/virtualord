@@ -6,17 +6,28 @@ namespace game
 {
 
 StepGameSetObjectEnergy::StepGameSetObjectEnergy(GameObject * obj, float val)
-    : mObj(obj)
+    : mVal(val)
+{
+    mObjs.emplace_back(obj);
+}
+
+StepGameSetObjectEnergy::StepGameSetObjectEnergy(const std::vector<GameObject *> && obj, float val)
+    : mObjs(obj)
     , mVal(val)
 {
 }
 
 void StepGameSetObjectEnergy::OnStart()
 {
-    const float val0 = mObj->GetEnergy();
-    const float delta = mVal - val0;
+    TutorialStep::OnStart();
 
-    mObj->SumEnergy(delta);
+    for(GameObject * obj : mObjs)
+    {
+        const float val0 = obj->GetEnergy();
+        const float delta = mVal - val0;
+
+        obj->SumEnergy(delta);
+    }
 
     SetDone();
 }

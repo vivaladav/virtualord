@@ -6,16 +6,24 @@ namespace game
 {
 
 StepGameSetObjectPerfectShot::StepGameSetObjectPerfectShot(GameObject * obj, bool enabled)
-    : mObj(obj)
+    : mEnabled(enabled)
+{
+}
+
+StepGameSetObjectPerfectShot::StepGameSetObjectPerfectShot(const std::vector<GameObject *> && objs,
+                                                           bool enabled)
+    : mObjs(objs)
     , mEnabled(enabled)
 {
+
 }
 
 void StepGameSetObjectPerfectShot::OnStart()
 {
     TutorialStep::OnStart();
 
-    mObj->SetPerfectShot(mEnabled);
+    for(GameObject * obj : mObjs)
+        obj->SetPerfectShot(mEnabled);
 
     SetDone();
 }

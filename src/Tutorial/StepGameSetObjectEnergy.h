@@ -2,6 +2,8 @@
 
 #include "Tutorial/TutorialStep.h"
 
+#include <vector>
+
 namespace game
 {
 
@@ -11,11 +13,12 @@ class StepGameSetObjectEnergy : public TutorialStep
 {
 public:
     StepGameSetObjectEnergy(GameObject * obj, float val);
+    StepGameSetObjectEnergy(const std::vector<GameObject *> && obj, float val);
 
     void OnStart() override;
 
 private:
-    GameObject * mObj = nullptr;
+    std::vector<GameObject *> mObjs;
     float mVal = 0.f;
 };
 

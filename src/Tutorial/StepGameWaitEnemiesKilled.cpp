@@ -5,7 +5,7 @@
 namespace game
 {
 
-StepGameWaitEnemiesKilled::StepGameWaitEnemiesKilled(const std::vector<const GameObject *> & objs,
+StepGameWaitEnemiesKilled::StepGameWaitEnemiesKilled(const std::vector<const GameObject *> && objs,
                                                      const GameMap * gm)
     : mObjs(objs)
     , mGameMap(gm)
