@@ -1874,11 +1874,10 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT SOLDIER 1
-    AddStep([local, game, isoMap]
+    AddStep([hud]
             {
-                const auto unit = local->GetUnit(indSoldier1);
-                const core::Pointd2D p0(100, 600);
-                return new StepGameUnit(game, isoMap, unit, p0);
+                const sgl::core::Pointd2D p0(100, 600);
+                return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
             });
     // CONQUER CELLS WITH SOLDIER
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
