@@ -1611,7 +1611,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
                     const Cell2D start(unit->GetRow0(), unit->GetCol0());
                     Cell2D dest;
 
-                    if(mGameMap->FindAttackPosition(unit, action->ObjDst, dest))
+                    if(mGameMap->FindAttackPosition(unit, target, dest))
                     {
                         finished = SetupUnitMove(unit, start, dest, true,
                             [this, unit, target, player, basicOnDone](bool successful)
