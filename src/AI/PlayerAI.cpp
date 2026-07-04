@@ -847,10 +847,6 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     {
         auto unit = static_cast<Unit *>(mVisibleEnemyUnits[i]);
 
-        // skip targets out of range
-        if(!u->IsTargetAttackInRange(unit))
-            continue;
-
         // basic logic, attack closest one
         const int dist = mGm->ApproxDistance(u, unit);
 
@@ -864,6 +860,9 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     // didn't find any
     if(bestUnitInd == numUnits)
         return ;
+
+    const float bonusDist = -75.f;
+    priority += bonusDist * (static_cast<float>(minDist) / static_cast<float>(maxDist));
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -5.f;
