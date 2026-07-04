@@ -1322,15 +1322,6 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             }
             break;
 
-            case AIA_UNIT_ATTACK_ENEMY_UNIT:
-            {
-                auto unit = static_cast<Unit *>(action->ObjSrc);
-                finished = SetupUnitAttack(unit, action->ObjDst, player, basicOnDone);
-
-                PrintAction(turnAI, action, finished, player);
-            }
-            break;
-
             case AIA_UNIT_CONQUER_STRUCT:
             {
                 auto unit = static_cast<Unit *>(action->ObjSrc);
@@ -1606,6 +1597,8 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
             }
             break;
 
+            case AIA_UNIT_ATTACK_ENEMY_UNIT:
+            case AIA_UNIT_ATTACK_ENEMY_TOWER:
             case AIA_UNIT_ATTACK_TREES:
             {
                 const auto unit = static_cast<Unit *>(action->ObjSrc);

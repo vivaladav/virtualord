@@ -90,6 +90,7 @@ private:
     // UNIT ACTIONS
     void AddActionsUnit(Unit * u);
     void AddActionUnitAttackEnemyUnit(Unit * u);
+    void AddActionUnitAttackEnemyTower(Unit * u);
     void AddActionUnitAttackTrees(Unit * u);
     void AddActionUnitBuildStructure(Unit * u);
     void AddActionUnitBuildTower(Unit * u);

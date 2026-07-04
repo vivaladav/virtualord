@@ -13,6 +13,7 @@ const char * ActionAI::GetTypeStr() const
         "IDLE TURN",
         "NEW UNIT",
         "UNIT ATTACK ENEMY UNIT",
+        "UNIT ATTACK ENEMY TOWER",
         "UNIT ATTACK TREES",
         "UNIT BUILD STRUCTURE",
         "UNIT BUILD TOWER",

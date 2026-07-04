@@ -791,6 +791,7 @@ void PlayerAI::AddActionsUnit(Unit * u)
     if(u->CanAttack())
     {
         AddActionUnitAttackEnemyUnit(u);
+        AddActionUnitAttackEnemyTower(u);
         AddActionUnitAttackTrees(u);
         AddActionUnitPatrol(u);
     }
@@ -861,7 +862,7 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     if(bestUnitInd == numUnits)
         return ;
 
-    const float bonusDist = -75.f;
+    const float bonusDist = -60.f;
     priority += bonusDist * (static_cast<float>(minDist) / static_cast<float>(maxDist));
 
     // decrease priority based on unit's energy
@@ -880,6 +881,75 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     action->type = AIA_UNIT_ATTACK_ENEMY_UNIT;
     action->ObjSrc = u;
     action->ObjDst = mVisibleEnemyUnits[bestUnitInd];
+    action->priority = priority;
+
+    // push action to the queue
+    AddNewAction(action);
+}
+
+void PlayerAI::AddActionUnitAttackEnemyTower(Unit * u)
+{
+    // not enough energy to consider this action now
+    if(!u->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+        return ;
+
+    // nothing to do if there's no visible enemy units
+    if(mVisibleEnemyStructures.empty())
+        return ;
+
+    const unsigned int numStructs = mVisibleEnemyStructures.size();
+
+    // check if there's any unit to shoot at
+    const int maxDist = GetMaxDistanceForObject(u);
+
+    unsigned int bestTargetInd = numStructs;
+    int minDist = maxDist;
+    int priority = MAX_PRIORITY;
+
+    for(unsigned int i = 0; i < numStructs; ++i)
+    {
+        auto es = static_cast<Structure *>(mVisibleEnemyStructures[i]);
+
+        const GameObjectTypeId type = es->GetObjectType();
+
+        // skip structures which are not towers
+        if(type != ObjectData::TYPE_DEFENSIVE_TOWER && type != ObjectData::TYPE_BUNKER &&
+           type != ObjectData::TYPE_SPAWN_TOWER)
+            continue;
+
+        // basic logic, attack closest one
+        const int dist = mGm->ApproxDistance(u, es);
+
+        if(dist < minDist)
+        {
+            minDist = dist;
+            bestTargetInd = i;
+        }
+    }
+
+    // didn't find any
+    if(bestTargetInd == numStructs)
+        return ;
+
+    const float bonusDist = -75.f;
+    priority += bonusDist * (static_cast<float>(minDist) / static_cast<float>(maxDist));
+
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -5.f;
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
+
+    // decrease priority based on unit's health
+    const float bonusHealth = -15.f;
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
+
+    // can't find something that's worth an action
+    if(priority < mMinPriority)
+        return ;
+
+    auto action = new ActionAI;
+    action->type = AIA_UNIT_ATTACK_ENEMY_TOWER;
+    action->ObjSrc = u;
+    action->ObjDst = mVisibleEnemyStructures[bestTargetInd];
     action->priority = priority;
 
     // push action to the queue
