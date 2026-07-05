@@ -1763,7 +1763,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     AddStep([this, isoMap, game]
             {
-                const core::Pointd2D p0(600, 250);
+                const core::Pointd2D p0(600, 200);
                 const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
                 const Cell2D target(38, 12);
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
@@ -1771,7 +1771,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indSoldier1);
-                const core::Pointd2D p0(600, 200);
+                const core::Pointd2D p0(600, 150);
                 const Cell2D cellEnd(33, 12);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
@@ -1884,7 +1884,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
     AddStep([this, isoMap, game]
             {
-                const core::Pointd2D p0(600, 250);
+                const core::Pointd2D p0(600, 200);
                 const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
                 const Cell2D target(32, 12);
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
@@ -1892,7 +1892,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indSoldier1);
-                const core::Pointd2D p0(600, 200);
+                const core::Pointd2D p0(600, 150);
                 const Cell2D cellEnd(29, 12);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
@@ -2052,7 +2052,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([isoMap]
             {
                 const float speed = 800.f;
-                return new StepGameMoveCameraOverCell(cellTradingPost, isoMap, speed);
+                const Cell2D target(cellTradingPost.row - 1, cellTradingPost.col - 1);
+                return new StepGameMoveCameraOverCell(target, isoMap, speed);
             });
     // BUILD TRADING POST
     AddStep([panelActions]
