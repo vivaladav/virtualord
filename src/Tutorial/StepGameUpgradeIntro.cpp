@@ -45,11 +45,11 @@ StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const cha
                             GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
-                            const int padding = 5;
-                            const int f2X = btn->GetScreenX() - padding;
-                            const int f2Y = btn->GetScreenY() - padding;
-                            const int f2W = btn->GetWidth() + (padding * 2);
-                            const int f2H = btn->GetHeight() + (padding * 2);
+                            const int padding = 10;
+                            const int f2X = fX - padding;
+                            const int f2Y = fY - padding;
+                            const int f2W = fW + (padding * 2);
+                            const int f2H = fH + (padding * 2);
 
                             mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
                             mFocusArea->SetVisible(true);

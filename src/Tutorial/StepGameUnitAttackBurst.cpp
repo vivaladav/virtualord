@@ -38,7 +38,7 @@ StepGameUnitAttackBurst::StepGameUnitAttackBurst(PanelShotType * panel, const ch
         info->AddInfoEntry(sm->GetCString(intro), 8.f, true, false,
                            [this]
                            {
-                               const int padding = 5;
+                               const int padding = 10;
                                const int fX = mPanel->GetScreenX() - padding;
                                const int fY = mPanel->GetScreenY() - padding;
                                const int fW = mPanel->GetWidth() + (padding * 2);

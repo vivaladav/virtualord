@@ -27,7 +27,7 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
     // FOCUS
     mButton = panelExplore->GetButtonCancel();
 
-    const int padding = 5;
+    const int padding = 10;
     const int fX = panelExplore->GetX() + mButton->GetX() - padding;
     const int fY = panelExplore->GetY() + mButton->GetY() - padding;
     const int fW = mButton->GetWidth() + (padding * 2);

@@ -22,7 +22,7 @@ StepPlanetMapExploreTerritory::StepPlanetMapExploreTerritory(PanelPlanetActions 
     // FOCUS
     mButton = panelActions->GetButton(PanelPlanetActions::EXPLORE);
 
-    const int padding = 5;
+    const int padding = 10;
     const int fX = panelActions->GetX() + mButton->GetX() - padding;
     const int fY = panelActions->GetY() + mButton->GetY() - padding;
     const int fW = mButton->GetWidth() + (padding * 2);

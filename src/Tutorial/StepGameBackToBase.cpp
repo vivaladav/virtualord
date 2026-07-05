@@ -34,7 +34,7 @@ StepGameBackToBase::StepGameBackToBase(const PanelTurnControl * panel, const cha
     info->AddActionEntry(sm->GetCString("TUT_GAME_BACK_TO_BASE_2"), 0.f, false, false, [this]
                         {
                             // FOCUS
-                            const int padding = 5;
+                            const int padding = 10;
                             const int fX = mButton->GetScreenX() - padding;
                             const int fY = mButton->GetScreenY() - padding;
                             const int fW = mButton->GetWidth() + (padding * 2);

@@ -20,7 +20,7 @@ StepPlanetMapNoInfo::StepPlanetMapNoInfo(const PanelPlanetInfo * panelInfo,
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    const int padding = 5;
+    const int padding = 10;
     const int fX1 = panelInfo->GetX() + padding;
     const int fY1 = panelInfo->GetY() + padding;
     const int fW1 = panelInfo->GetWidth() - (padding * 2);

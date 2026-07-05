@@ -50,7 +50,7 @@ StepGameTradeIcon::StepGameTradeIcon(PanelObjectActions * panel,
                             GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
-                            const int padding = 5;
+                            const int padding = 10;
                             const int f2X = fX - padding;
                             const int f2Y = fY - padding;
                             const int f2W = fW + (padding * 2);

@@ -53,17 +53,22 @@ StepGameBuildStructure::StepGameBuildStructure(GameHUD * HUD, const char * textC
                                                                                 info->Continue();
                                                                         });
 
-                                // FOCUS
-                                const int fX = btn->GetScreenX() - padding;
-                                const int fY = btn->GetScreenY() - padding;
-                                const int fW = btn->GetWidth() + (padding * 2);
-                                const int fH = btn->GetHeight() + (padding * 2);
-
-                                mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                                mFocusArea->SetVisible(true);
-
                                 // CLICK FILTER
+                                const int fX = btn->GetScreenX();
+                                const int fY = btn->GetScreenY();
+                                const int fW = btn->GetWidth();
+                                const int fH = btn->GetHeight();
+
                                 GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+
+                                // FOCUS
+                                const int fX2 = fX - padding;
+                                const int fY2 = fY - padding;
+                                const int fW2 = fW + (padding * 2);
+                                const int fH2 = fH + (padding * 2);
+
+                                mFocusArea->SetScreenArea(fX2, fY2, fW2, fH2);
+                                mFocusArea->SetVisible(true);
                             });
     }
 
@@ -81,17 +86,22 @@ StepGameBuildStructure::StepGameBuildStructure(GameHUD * HUD, const char * textC
                                                                                    info->Continue();
                                                                            });
 
-                                // FOCUS
-                                const int fX = btn->GetScreenX() - padding;
-                                const int fY = btn->GetScreenY() - padding;
-                                const int fW = btn->GetWidth() + (padding * 2);
-                                const int fH = btn->GetHeight() + (padding * 2);
-
-                                mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                                mFocusArea->SetVisible(true);
-
                                 // CLICK FILTER
+                                const int fX = btn->GetScreenX();
+                                const int fY = btn->GetScreenY();
+                                const int fW = btn->GetWidth();
+                                const int fH = btn->GetHeight();
+
                                 GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+
+                                // FOCUS
+                                const int fX2 = fX - padding;
+                                const int fY2 = fY - padding;
+                                const int fW2 = fW + (padding * 2);
+                                const int fH2 = fH + (padding * 2);
+
+                                mFocusArea->SetScreenArea(fX2, fY2, fW2, fH2);
+                                mFocusArea->SetVisible(true);
                            });
     }
 

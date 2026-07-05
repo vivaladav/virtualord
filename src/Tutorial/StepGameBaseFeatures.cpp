@@ -18,7 +18,7 @@ StepGameBaseFeatures::StepGameBaseFeatures(const PanelSelectedObject * panelObj,
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    const int padding = 5;
+    const int padding = 10;
     const int fX = panelObj->GetX();
     const int fY = panelObj->GetY();
     const int fW = panelObj->GetWidth() + padding;
