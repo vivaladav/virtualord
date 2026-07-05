@@ -1,20 +1,14 @@
 #pragma once
 
-#include "Tutorial/Tutorial.h"
+#include "Tutorial/TutorialPlanetMap.h"
 
 namespace game
 {
 
-class Screen;
-class ScreenPlanetMap;
-
-class TutorialPlanetMap2 : public Tutorial
+class TutorialPlanetMap2 : public TutorialPlanetMap
 {
 public:
     TutorialPlanetMap2(Screen * screen);
-
-private:
-    ScreenPlanetMap * mScreen = nullptr;
 };
 
 } // namespace game

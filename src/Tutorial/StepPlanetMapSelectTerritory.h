@@ -16,7 +16,7 @@ class PlanetMap;
 class StepPlanetMapSelectTerritory : public TutorialInfoStep
 {
 public:
-    StepPlanetMapSelectTerritory(PlanetMap * planet, bool won);
+    StepPlanetMapSelectTerritory(PlanetMap * planet, unsigned int missionInd, bool intro);
     ~StepPlanetMapSelectTerritory();
 
     void OnStart() override;

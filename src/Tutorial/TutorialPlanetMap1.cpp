@@ -1,9 +1,6 @@
 #include "Tutorial/TutorialPlanetMap1.h"
 
-#include "Game.h"
-#include "Planet.h"
-#include "Player.h"
-#include "Screens/ScreenPlanetMap.h"
+#include "Screens/Screen.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepPlanetMapConquerTerritory.h"
 #include "Tutorial/StepPlanetMapConquerTerritoryStart.h"
@@ -17,56 +14,39 @@
 #include "Tutorial/StepPlanetMapSendAI.h"
 #include "Tutorial/TutorialConstants.h"
 
-#include <cassert>
-
-namespace
-{
-const unsigned int mission0 = 0;
-}
-
 namespace game
 {
 
 TutorialPlanetMap1::TutorialPlanetMap1(Screen * screen)
-    : Tutorial(TUTORIAL_PLANET_MAP_1)
-    , mScreen(dynamic_cast<ScreenPlanetMap *>(screen))
+    : TutorialPlanetMap(screen, TUTORIAL_PLANET_MAP_1)
 {
-    assert(mScreen != nullptr);
-
-    const auto game = mScreen->GetGame();
-    const auto planet = game->GetCurrentPlanet();
-    const auto localPlayer = game->GetLocalPlayer();
-    const PlayerFaction localFaction = localPlayer->GetFaction();
-
-    AddStep([] { return new StepDelay(1.f); });
-    AddStep([planet, localFaction]
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([]
         {
-            const bool won = planet->GetMapOccupier(mission0) == localFaction;
-            return new StepPlanetMapIntro(won);
+            return new StepPlanetMapIntro("TUT_PM_INTRO_3");
         });
-    AddStep([this, planet, localFaction]
+    AddStep([this]
         {
-            const bool won = planet->GetMapOccupier(mission0) == localFaction;
-            return new StepPlanetMapSelectTerritory(mScreen->mPlanet, won);
+            const int missionId = 2;
+            return new StepPlanetMapSelectTerritory(GetPlanetMap(), missionId, true);
         });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([this] { return new StepPlanetMapNoInfo(mScreen->mPanelInfo, mScreen->mPanelResources); });
-    AddStep([this] { return new StepPlanetMapExploreTerritory(mScreen->mPanelActions); });
+    AddStep([this] { return new StepPlanetMapNoInfo(GetPanelInfo(), GetPanelResources()); });
+    AddStep([this] { return new StepPlanetMapExploreTerritory(GetPanelActions()); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepPlanetMapExploreTerritoryInfo; });
-    AddStep([this] { return new StepPlanetMapExploreTerritoryStart(mScreen->mPanelExplore); });
+    AddStep([this] { return new StepPlanetMapExploreTerritoryStart(GetPanelExplore()); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this]
-            {
-                return new StepPlanetMapExploreTerritorySuccess(mScreen->mPanelExplore,
-                                                                mScreen->mPanelInfo,
-                                                                mScreen->mPanelResources);
-            });
+        {
+            return new StepPlanetMapExploreTerritorySuccess(GetPanelExplore(), GetPanelInfo(),
+                                                            GetPanelResources());
+        });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([this] { return new StepPlanetMapSendAI(mScreen->mPanelActions); });
-    AddStep([this] { return new StepPlanetMapConquerTerritory(mScreen->mPanelActions); });
+    AddStep([this] { return new StepPlanetMapSendAI(GetPanelActions()); });
+    AddStep([this] { return new StepPlanetMapConquerTerritory(GetPanelActions()); });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([this] { return new StepPlanetMapConquerTerritoryStart(mScreen->mPanelConquer); });
+    AddStep([this] { return new StepPlanetMapConquerTerritoryStart(GetPanelConquer()); });
 }
 
 } // namespace game

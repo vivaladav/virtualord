@@ -47,7 +47,7 @@ private:
     void ShowDialogExit();
 
 private:
-    friend class TutorialPlanetMap1;
+    friend class TutorialPlanetMap;
 
     sgl::graphic::Image * mBg = nullptr;
 

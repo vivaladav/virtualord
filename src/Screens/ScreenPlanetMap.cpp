@@ -426,15 +426,16 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     {
         auto tutMan = game->GetTutorialManager();
 
+        PlayerFaction localFaction = game->GetLocalPlayerFaction();
         const PlayerFaction occupier0 = planet->GetMapOccupier(0);
         const PlayerFaction occupier2 = planet->GetMapOccupier(2);
 
-        if(tutMan->GetTutorialState(TUTORIAL_PLANET_MAP_1) == TS_TODO && occupier0 != NO_FACTION)
+        if(tutMan->GetTutorialState(TUTORIAL_PLANET_MAP_1) == TS_TODO && occupier0 == localFaction)
         {
             tutMan->CreateTutorial(TUTORIAL_PLANET_MAP_1, this);
             tutMan->StartTutorial();
         }
-        else if(tutMan->GetTutorialState(TUTORIAL_PLANET_MAP_2) == TS_TODO && occupier2 != NO_FACTION)
+        else if(tutMan->GetTutorialState(TUTORIAL_PLANET_MAP_2) == TS_TODO && occupier2 == localFaction)
         {
             tutMan->CreateTutorial(TUTORIAL_PLANET_MAP_2, this);
             tutMan->StartTutorial();

@@ -1,14 +1,10 @@
 #include "Tutorial/TutorialPlanetMap2.h"
 
-#include "Game.h"
-#include "Planet.h"
-#include "Player.h"
-#include "Screens/ScreenPlanetMap.h"
+#include "Screens/Screen.h"
 #include "Tutorial/StepDelay.h"
-#include "Tutorial/StepGameSingleInfo.h"
+#include "Tutorial/StepPlanetMapIntro.h"
+#include "Tutorial/StepPlanetMapSelectTerritory.h"
 #include "Tutorial/TutorialConstants.h"
-
-#include <cassert>
 
 namespace
 {
@@ -19,23 +15,21 @@ namespace game
 {
 
 TutorialPlanetMap2::TutorialPlanetMap2(Screen * screen)
-    : Tutorial(TUTORIAL_PLANET_MAP_2)
-    , mScreen(dynamic_cast<ScreenPlanetMap *>(screen))
+    : TutorialPlanetMap(screen, TUTORIAL_PLANET_MAP_2)
 {
     using namespace sgl;
 
-    assert(mScreen != nullptr);
-
-    const auto game = mScreen->GetGame();
-    const auto planet = game->GetCurrentPlanet();
-    const auto localPlayer = game->GetLocalPlayer();
-    const PlayerFaction localFaction = localPlayer->GetFaction();
-
-    AddStep([] { return new StepDelay(1.f); });
+    // INTRO
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([]
             {
-                const core::Pointd2D p0(1100, 600);
-                return new StepGameSingleInfo(p0, "TODO");
+                return new StepPlanetMapIntro("TUT_PM_INTRO_4");
+            });
+    // SELECT MAIN MISSION
+    AddStep([this]
+            {
+                const int missionId = 4;
+                return new StepPlanetMapSelectTerritory(GetPlanetMap(), missionId, false);
             });
 }
 
