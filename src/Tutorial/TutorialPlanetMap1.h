@@ -8,10 +8,10 @@ namespace game
 class Screen;
 class ScreenPlanetMap;
 
-class TutorialPlanetMap : public Tutorial
+class TutorialPlanetMap1 : public Tutorial
 {
 public:
-    TutorialPlanetMap(Screen * screen);
+    TutorialPlanetMap1(Screen * screen);
 
 private:
     ScreenPlanetMap * mScreen = nullptr;

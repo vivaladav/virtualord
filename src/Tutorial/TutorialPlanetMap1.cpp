@@ -1,4 +1,4 @@
-#include "Tutorial/TutorialPlanetMap.h"
+#include "Tutorial/TutorialPlanetMap1.h"
 
 #include "Game.h"
 #include "Planet.h"
@@ -27,8 +27,8 @@ const unsigned int mission0 = 0;
 namespace game
 {
 
-TutorialPlanetMap::TutorialPlanetMap(Screen * screen)
-    : Tutorial(TUTORIAL_PLANET_MAP)
+TutorialPlanetMap1::TutorialPlanetMap1(Screen * screen)
+    : Tutorial(TUTORIAL_PLANET_MAP_1)
     , mScreen(dynamic_cast<ScreenPlanetMap *>(screen))
 {
     assert(mScreen != nullptr);
