@@ -356,7 +356,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.7 - \"???\"", font, content);
+    auto title = new sgui::Label("0.6.7 - \"Defend to win\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -367,6 +367,8 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
+                  "- Completed tutorial for mission 2.\n"
+                  "- Added second part of tutorial for planet screen.\n"
                   "- Added option in settings to enable/disable constant speed scrolling"
                   " (disabled by default).\n"
                   "- Controls settings allow to set what mouse button to use as SELECT and ACTION"
@@ -390,6 +392,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New graphics for barracks.\n"
                   "- After units shoot action doesn't go back to default (move) to continue shooting.\n"
                   "- Generators and Base produce more resources.\n"
+                  "- Increased initial storage space of energy and material.\n"
                   "\nFIXES\n"
                   "- Fixed crash when opening trading dialog.\n"
                   "- Fixed crash after closing trading dialog and resources change.\n"
