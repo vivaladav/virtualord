@@ -13,7 +13,7 @@
 
 namespace
 {
-constexpr int padding = 5;
+constexpr int padding = 10;
 }
 
 namespace game

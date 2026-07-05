@@ -105,7 +105,7 @@ constexpr int structGate = 2;
 constexpr int structDefTower = 1;
 constexpr int structTradingPost = 3;
 
-constexpr float healthEnemyDef = 50.f;
+constexpr float healthEnemyDef = 65.f;
 constexpr float energyEnemyDef = 60.f;
 
 const Cell2D cellEneGen1(6, 15);
@@ -134,7 +134,6 @@ const Cell2D cellTower6(11, 32);
 const Cell2D cellTower7(24, 23);
 const Cell2D cellTower8(23, 27);
 const Cell2D cellTower9(28, 9);
-const Cell2D cellTower10(28, 0);
 
 const Cell2D areaBlobsTL(22, 12);
 const Cell2D areaBlobsBR(25, 13);
@@ -922,7 +921,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this]
             {
                 const GameObject * obj = GetObjectInCell(cellResCenter);
-                const float speed = 600.f;
+                const float speed = 800.f;
                 return new StepGameMoveCameraOverObject(obj, speed);
             });
     AddStep([] { return new StepDelay(0.5f); });
@@ -1599,10 +1598,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT SOLDIER AND MOVE
-    AddStep([hud]
+    AddStep([local, game, isoMap]
             {
-                const sgl::core::Pointd2D p0(100, 600);
-                return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
+                const auto unit = local->GetUnit(indSoldier1);
+                const core::Pointd2D p0(100, 600);
+                return new StepGameUnit(game, isoMap, unit, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
@@ -2032,30 +2032,10 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([isoMap, local, game]
             {
                 const auto unit = local->GetUnit(indWorker1);
-                const Cell2D cellEnd(28, 1);
+                const Cell2D cellEnd(28, 0);
                 const core::Pointd2D p0(1100, 250);
                 return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
             });
-    AddStep([] { return new StepDelay(0.5f); });
-    // BUILD TOWER WITH WORKER 1
-    AddStep([panelActions]
-            {
-                const core::Pointd2D p0(1000, 250);
-                return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
-            });
-    AddStep([hud]
-            {
-                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
-            });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([this, local, isoMap]
-            {
-                const auto unit = local->GetUnit(indWorker1);
-                const core::Pointd2D p0(700, 700);
-                return new StepGameBuildTowerEnd(isoMap, unit, cellTower10, p0);
-            });
-    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
@@ -2206,7 +2186,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game]
             {
                 const int movX = 0;
-                const int movY = 450;
+                const int movY = 300;
                 return new StepGameMoveCamera(movX, movY);
             });
     // MOVE SOLDIER 2 NEAR WALL
