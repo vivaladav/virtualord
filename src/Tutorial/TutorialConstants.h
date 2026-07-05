@@ -7,6 +7,7 @@ enum TutorialId : unsigned int
 {
     TUTORIAL_MISSION_1,
     TUTORIAL_MISSION_2,
+    TUTORIAL_MISSION_3,
     TUTORIAL_PLANET_MAP,
 
     NUM_TUTORIALS,

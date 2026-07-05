@@ -627,11 +627,13 @@ void ScreenGame::InitTutorial()
             tutorialId = TUTORIAL_MISSION_1;
         else if(mapInd == 2)
             tutorialId = TUTORIAL_MISSION_2;
+        else if(mapInd == 4)
+            tutorialId = TUTORIAL_MISSION_3;
     }
 
 #ifdef DEV_MODE
     // force tutorial 2 in dev mode as now working on it
-    tutorialId = TUTORIAL_MISSION_2;
+    //tutorialId = TUTORIAL_MISSION_2;
 #endif
 
     // start tutorial if still TODO

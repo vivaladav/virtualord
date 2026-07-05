@@ -459,6 +459,8 @@ add_executable(
     src/Tutorial/TutorialGame1.cpp
     src/Tutorial/TutorialGame2.h
     src/Tutorial/TutorialGame2.cpp
+    src/Tutorial/TutorialGame3.h
+    src/Tutorial/TutorialGame3.cpp
     src/Tutorial/TutorialInfoStep.h
     src/Tutorial/TutorialInfoStep.cpp
     src/Tutorial/TutorialManager.h
