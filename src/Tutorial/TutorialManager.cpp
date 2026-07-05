@@ -5,6 +5,7 @@
 #include "Tutorial/TutorialGame2.h"
 #include "Tutorial/TutorialGame3.h"
 #include "Tutorial/TutorialPlanetMap1.h"
+#include "Tutorial/TutorialPlanetMap2.h"
 
 namespace game
 {
@@ -66,6 +67,13 @@ bool TutorialManager::CreateTutorial(TutorialId tutId, Screen * screen)
         case TUTORIAL_PLANET_MAP_1:
         {
             mActiveTutorial = new TutorialPlanetMap1(screen);
+            return true;
+        }
+        break;
+
+        case TUTORIAL_PLANET_MAP_2:
+        {
+            mActiveTutorial = new TutorialPlanetMap2(screen);
             return true;
         }
         break;

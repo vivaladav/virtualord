@@ -467,6 +467,8 @@ add_executable(
     src/Tutorial/TutorialManager.cpp
     src/Tutorial/TutorialPlanetMap1.h
     src/Tutorial/TutorialPlanetMap1.cpp
+    src/Tutorial/TutorialPlanetMap2.h
+    src/Tutorial/TutorialPlanetMap2.cpp
     src/Tutorial/TutorialStep.h
     src/Tutorial/TutorialStep.cpp
     src/Widgets/BlinkingHighlight.h
