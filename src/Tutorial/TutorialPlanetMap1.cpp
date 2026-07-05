@@ -44,7 +44,11 @@ TutorialPlanetMap1::TutorialPlanetMap1(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this] { return new StepPlanetMapSendAI(GetPanelActions()); });
-    AddStep([this] { return new StepPlanetMapConquerTerritory(GetPanelActions()); });
+    AddStep([this]
+        {
+            return new StepPlanetMapConquerTerritory(GetPanelActions(),
+                                                     "TUT_PM_CONQUER_TERRITORY_2", true);
+        });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this] { return new StepPlanetMapConquerTerritoryStart(GetPanelConquer()); });
 }

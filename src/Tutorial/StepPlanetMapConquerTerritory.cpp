@@ -12,7 +12,8 @@
 namespace game
 {
 
-StepPlanetMapConquerTerritory::StepPlanetMapConquerTerritory(PanelPlanetActions * panelActions)
+StepPlanetMapConquerTerritory::StepPlanetMapConquerTerritory(PanelPlanetActions * panelActions,
+                                                             const char * text, bool intro)
     : TutorialInfoStep(TutorialConstants::infoPlanetMapW, TutorialConstants::infoPlanetMapH)
     , mFocusArea(new FocusArea)
 {
@@ -30,8 +31,10 @@ StepPlanetMapConquerTerritory::StepPlanetMapConquerTerritory(PanelPlanetActions 
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_1"), 6.f, true, true);
-    info->AddActionEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_2"), 0.f, false, false,
+    if(intro)
+        info->AddInfoEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_1"), 6.f, true, true);
+
+    info->AddActionEntry(sm->GetCString(text), 0.f, false, false,
                          [this, panelActions]
                         {
                             // FOCUS
