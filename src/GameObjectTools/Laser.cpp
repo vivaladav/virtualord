@@ -94,7 +94,7 @@ void Laser::OnShoot(float x0, float y0)
 #ifdef DEV_MODE
     const float maxDamage = Game::GOD_MODE ? 60.f : 30.f;
 #else
-    const float maxDamage = 20.f;
+    const float maxDamage = 30.f;
 #endif
 
     // perfect shot always inflicts damage
