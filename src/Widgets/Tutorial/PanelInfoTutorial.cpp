@@ -26,8 +26,8 @@ const int marginSide = 25;
 const float timeAutoContinue = 0.5f;
 const float minTimeShown = 0.1f;
 #else
-const float timeAutoContinue = 1.5f;
-const float minTimeShown = 1.f;
+const float timeAutoContinue = 1.0f;
+const float minTimeShown = 0.75f;
 #endif
 
 PanelInfoTutorial::PanelInfoTutorial(int w, int h)
