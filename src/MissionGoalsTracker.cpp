@@ -9,6 +9,26 @@
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/GameHUD.h"
 
+#ifdef DEV_MODE
+#include <iostream>
+#endif
+
+namespace
+{
+using namespace game;
+
+const Player::Stat resourceIds[] =
+{
+    Player::ENERGY,
+    Player::MATERIAL,
+    Player::DIAMONDS,
+    Player::BLOBS,
+    Player::MONEY,
+    Player::RESEARCH,
+};
+
+}
+
 namespace game
 {
 
@@ -21,16 +41,6 @@ MissionGoalsTracker::MissionGoalsTracker(Game * g, Player * p)
     mResourceTrackerIds.assign(NUM_EXTENDED_RESOURCES, 0);
 
     // setup resource trackers
-    const Player::Stat resourceIds[] =
-    {
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::DIAMONDS,
-        Player::BLOBS,
-        Player::MONEY,
-        Player::RESEARCH,
-    };
-
     for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
     {
         const Player::Stat resId = resourceIds[i];
@@ -57,16 +67,6 @@ MissionGoalsTracker::MissionGoalsTracker(Game * g, Player * p)
 
 MissionGoalsTracker::~MissionGoalsTracker()
 {
-    const Player::Stat resourceIds[] =
-    {
-        Player::ENERGY,
-        Player::MATERIAL,
-        Player::DIAMONDS,
-        Player::BLOBS,
-        Player::MONEY,
-        Player::RESEARCH,
-    };
-
     for(unsigned int i = 0; i < NUM_EXTENDED_RESOURCES; ++i)
     {
         const Player::Stat resId = resourceIds[i];
@@ -95,19 +95,54 @@ void MissionGoalsTracker::SetGoals(const std::vector<MissionGoal> & goals)
     }
 }
 
+unsigned int MissionGoalsTracker::AddOnGoalCollectedFunction(const std::function<void()> & f)
+{
+    static unsigned int num = 0;
+
+    int fId = ++num;
+    mOnCollected.emplace(fId, f);
+
+    return fId;
+}
+
+void MissionGoalsTracker::RemoveOnGoalCollectedFunction(unsigned int fId)
+{
+    auto it = mOnCollected.find(fId);
+
+    if(it != mOnCollected.end())
+        mOnCollected.erase(it);
+}
+
+unsigned int MissionGoalsTracker::AddOnGoalCompletedFunction(const std::function<void()> & f)
+{
+    static unsigned int num = 0;
+
+    int fId = ++num;
+    mOnCompleted.emplace(fId, f);
+
+    return fId;
+}
+
+void MissionGoalsTracker::RemoveOnGoalCompletedFunction(unsigned int fId)
+{
+    auto it = mOnCompleted.find(fId);
+
+    if(it != mOnCompleted.end())
+        mOnCompleted.erase(it);
+}
+
 void MissionGoalsTracker::CollectMissionGoalReward(unsigned int index)
 {
+    // reward already collected
+    if(mMissionGoals[index].IsRewardCollected())
+        return ;
+
+    // give rewards
     mMissionGoals[index].AssignReward(mPlayer);
 
-    // update completed icon
-    for(MissionGoal & g : mMissionGoals)
-    {
-        // there's still some reward to collect -> do not hide
-        if(g.IsCompleted() && !g.IsRewardCollected())
-            return;
-    }
-
-    mHUD->HideGoalCompletedIcon();
+    // update counter and notify observers
+    --mGoalsToCollect;
+    NotifyGoalCollected();
 }
 
 void MissionGoalsTracker::Update()
@@ -121,15 +156,21 @@ void MissionGoalsTracker::Update()
         if(g.IsPrimary())
             ++primaryGoals;
 
-        const bool completed = CheckIfGoalCompleted(g);
+        const bool alreadyCompleted = g.IsCompleted();
+        const bool completed = alreadyCompleted || CheckIfGoalCompleted(g);
 
         if(completed)
         {
             if(g.IsPrimary())
                 ++completedPrimaryGoals;
 
-            if(!g.IsRewardCollected())
-                mHUD->ShowGoalCompletedIcon();
+            if(!alreadyCompleted && !g.IsRewardCollected())
+            {
+                ++mCompletedGoals;
+                ++mGoalsToCollect;
+
+                NotifyGoalCompleted();
+            }
         }
     }
 
@@ -174,6 +215,28 @@ void MissionGoalsTracker::AddObjectDestroyedByCategory(GameObjectCategoryId cat)
         mCategoriesDestroyed.emplace(cat, 1);
 }
 
+#ifdef DEV_MODE
+void MissionGoalsTracker::PrintState()
+{
+    std::cout << "MissionGoalsTracker::PrintState\n"
+              << "RESOURCES GAINED"
+              << " - ENERGY: " << mResourcesGained[Player::ENERGY]
+              << " - MATERIAL: " << mResourcesGained[Player::MATERIAL]
+              << " - BLOBS: " << mResourcesGained[Player::BLOBS]
+              << " - DIAMONDS: " << mResourcesGained[Player::DIAMONDS]
+              << " - MONEY: " << mResourcesGained[Player::MONEY]
+              << " - RESEARCH: " << mResourcesGained[Player::RESEARCH] << "\n"
+              << "MINI UNITS CREATED: " << mMiniUnitsCreated
+              << " - UNITS CREATED: " << mUnitsCreated << "\n"
+              << "STRUCTURES BUILT: " << mTotStructuresBuilt
+              << " - STRUCTURES CONQUERED: " << mTotStructuresConquered
+              << " - WALL BUILT: " << mWallBuilt << "\n"
+              << "PLAYED TIME: " << mPlayedTime
+              << " - PLAYED TURNS: " << mPlayedTurns << "\n"
+              << "SELF DESTRUCTED: " << mSelfDestructed << std::endl;
+}
+#endif
+
 bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 {
     if(g.IsCompleted())
@@ -185,40 +248,45 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
 
     if(gt == MissionGoal::TYPE_COLLECT_BLOBS)
     {
-        if(mResourcesGained[ER_BLOBS] < g.GetQuantity())
+        const auto resId = resourceIds[ER_BLOBS];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_BLOBS] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_COLLECT_DIAMONDS)
     {
-        if(mResourcesGained[ER_DIAMONDS] < g.GetQuantity())
+        const auto resId = resourceIds[ER_DIAMONDS];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_DIAMONDS] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_COMPLETE_TUTORIAL)
     {
-        if(mGame->IsTutorialEnabled() && mTutorialStarted)
-        {
-            auto tutMan = mGame->GetTutorialManager();
-
-            if(tutMan->GetTutorialState(TUTORIAL_MISSION_INTRO) != TS_DONE)
-            {
-                auto tut = tutMan->GetTutorial();
-
-                if(tut != nullptr)
-                    g.SetProgress(tut->GetNumStepsDone() * 100 / tut->GetNumStepsAtStart());
-
-                return false;
-            }
-        }
-        else
+        if(!mGame->IsTutorialEnabled())
             return false;
+
+        auto tutMan = mGame->GetTutorialManager();
+        const TutorialId tutID = tutMan->GetLastStartedTutorialId();
+
+        if(tutID == TUTORIAL_UNKNOWN)
+            return false;
+
+        if(tutMan->GetTutorialState(tutID) == TS_IN_PROGRESS)
+        {
+            auto tut = tutMan->GetActiveTutorial();
+
+            g.SetProgress(tut->GetNumStepsDone() * 100 / tut->GetNumStepsAtStart());
+
+            return false;
+        }
     }
     else if(gt == MissionGoal::TYPE_BUILD_BUNKER)
     {
@@ -384,36 +452,44 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_GAIN_MONEY)
     {
-        if(mResourcesGained[ER_MONEY] < g.GetQuantity())
+        const auto resId = resourceIds[ER_MONEY];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_MONEY] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_GEN_RESEARCH)
     {
-        if(mResourcesGained[Player::RESEARCH] < g.GetQuantity())
+        const auto resId = resourceIds[ER_RESEARCH];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[Player::RESEARCH] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_MINE_ENERGY)
     {
-        if(mResourcesGained[ER_ENERGY] < g.GetQuantity())
+        const auto resId = resourceIds[ER_ENERGY];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_ENERGY] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
     }
     else if(gt == MissionGoal::TYPE_MINE_MATERIAL)
     {
-        if(mResourcesGained[ER_MATERIAL] < g.GetQuantity())
+        const auto resId = resourceIds[ER_MATERIAL];
+
+        if(mResourcesGained[resId] < g.GetQuantity())
         {
-            g.SetProgress(mResourcesGained[ER_MATERIAL] * 100 / g.GetQuantity());
+            g.SetProgress(mResourcesGained[resId] * 100 / g.GetQuantity());
 
             return false;
         }
@@ -497,6 +573,18 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     g.SetCompleted();
 
     return true;
+}
+
+void MissionGoalsTracker::NotifyGoalCompleted()
+{
+    for(auto & it: mOnCompleted)
+        it.second();
+}
+
+void MissionGoalsTracker::NotifyGoalCollected()
+{
+    for(auto & it: mOnCollected)
+        it.second();
 }
 
 } // namespace game

@@ -134,7 +134,7 @@ public:
         : sgl::sgui::ScrollArea(485, 360, parent)
         , mScrollbar(new ChangelogScrollbar(this))
     {
-        mScrollbar->SetOnValueChanged([this](int val)
+        mScrollbar->AddOnValueChanged([this](int val)
                                       {
                                           sgl::sgui::Widget * cont = GetContent();
                                           cont->SetY(CONT_Y0 - val);

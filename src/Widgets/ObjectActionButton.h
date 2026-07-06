@@ -49,6 +49,9 @@ public:
 
     void SetTooltipText(const char * text);
 
+    void ShowNotification(int val);
+    void HideNotification();
+
 private:
     void HandleMouseOver() override;
     void HandleButtonDown() override;
@@ -56,6 +59,8 @@ private:
     void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override;
 
     void HandlePositionChanged() override;
+    void SetPositions();
+    void PositionNotification();
 
 private:
     sgl::graphic::Image * mBody = nullptr;
@@ -63,6 +68,10 @@ private:
     sgl::graphic::Text * mShortcut = nullptr;
 
     GameSimpleTooltip * mTooltip = nullptr;
+
+    sgl::graphic::Image * mNotificationBg = nullptr;
+    sgl::graphic::Text * mNotificationLabel = nullptr;
+    int mNotificationVal = 0;
 
     ActionIcon mIconId;
 };

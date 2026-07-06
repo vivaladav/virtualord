@@ -31,7 +31,6 @@ PanelResources::PanelResources(Player * player, GameMap * gm, sgl::sgui::Widget 
     using namespace sgl;
 
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     // -- BACKGROUND --
     const int marginL = -30;

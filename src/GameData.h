@@ -8,29 +8,31 @@ extern const char SpriteFileCells[];
 
 enum SpriteIdCells : unsigned int
 {
-    IND_EMPTY,                          // 0
-    IND_SCENE_ROCKS,
-    IND_SCENE_ROCKS_SURR,
-    IND_NO_FACTION_OBJ,
-    IND_BLOBS_SOURCE,
-    IND_DIAMONDS_SOURCE,
-    IND_BLOBS_SURR,
-    IND_DIAMONDS_SURR,
-    IND_TREES1,
-    IND_TREES1_SURR,
-    IND_F1,                             // 10
-    IND_F1_CONNECTED,
-    IND_F1_INFLUENCED,
-    IND_F2,
-    IND_F2_CONNECTED,
-    IND_F2_INFLUENCED,
-    IND_F3,
-    IND_F3_CONNECTED,
-    IND_F3_INFLUENCED,
-    IND_FOG_OF_WAR,
-    IND_NO_FACTION_OBJ_SURR,            // 20
+    ID_TILE_EMPTY,                          // 0
+    ID_TILE_MOUNTAINS,
+    ID_TILE_MOUNTAINS_SURR,
+    ID_TILE_NO_FACTION_OBJ,
+    ID_TILE_BLOBS_SOURCE,
+    ID_TILE_DIAMONDS_SOURCE,
+    ID_TILE_BLOBS_SURR,
+    ID_TILE_DIAMONDS_SURR,
+    ID_TILE_TREES1,
+    ID_TILE_TREES1_SURR,
+    ID_TILE_F1,                             // 10
+    ID_TILE_F1_CONNECTED,
+    ID_TILE_F1_INFLUENCED,
+    ID_TILE_F2,
+    ID_TILE_F2_CONNECTED,
+    ID_TILE_F2_INFLUENCED,
+    ID_TILE_F3,
+    ID_TILE_F3_CONNECTED,
+    ID_TILE_F3_INFLUENCED,
+    ID_TILE_FOG_OF_WAR,
+    ID_TILE_NO_FACTION_OBJ_SURR,            // 20
+    ID_TILE_ROCKS,
+    ID_TILE_ROCKS_SURR,
 
-    NUM_IND_CELLS
+    NUM_TILE_CELL_IDS
 };
 
 // CITY
@@ -392,32 +394,6 @@ enum SpriteIdMiniUnits : unsigned int
     NUM_MUNIT_SPRITES_PER_FACTION = SID_MUNIT_01_1X_F2 - SID_MUNIT_01_1X_F1,
 };
 
-// ROCKS
-extern const char SpriteRocksFile[];
-
-enum SpriteRocksId : unsigned int
-{
-    ROCKS_ROW_END_L_1,
-    ROCKS_ROW_END_R_1,
-    ROCKS_COL_END_L_1,
-    ROCKS_COL_END_R_1,
-    ROCKS_ROW_1,
-    ROCKS_ROW_2,
-    ROCKS_ROW_3,
-    ROCKS_COL_1,
-    ROCKS_COL_2,
-    ROCKS_COL_3,
-    ROCKS_CORN_BL_1,
-    ROCKS_CORN_BR_1,
-    ROCKS_CORN_TL_1,
-    ROCKS_CORN_TR_1,
-    ROCKS_INTN,
-    ROCKS_INTS,
-    ROCKS_INTW,
-    ROCKS_INTE,
-    ROCKS_CROSS
-};
-
 // PARTICLES
 extern const char SpriteFileParticles[];
 
@@ -438,38 +414,44 @@ enum SpriteIdParticles : unsigned int
 };
 
 // SCENE ELEMENTS
-extern const char SpriteFileSceneElements[];
+extern const char SpriteFileSceneObjects[];
 
 enum SpriteIdSceneElements : unsigned int
 {
     // MOUNTAINS
-    ID_SCENE_MOUNTAIN_L,
-    ID_SCENE_MOUNTAIN_T,
-    ID_SCENE_MOUNTAIN_B,
-    ID_SCENE_MOUNTAIN_R,
-    ID_SCENE_MOUNTAIN_1,
-    ID_SCENE_MOUNTAIN_2,
-    ID_SCENE_MOUNTAIN_3,
-    ID_SCENE_MOUNTAIN_4,
-    ID_SCENE_MOUNTAIN_5,
-    ID_SCENE_MOUNTAIN_6,
-    ID_SCENE_MOUNTAIN_7,
-    ID_SCENE_MOUNTAIN_8,
-    // MOUNTAINS SELECTED
-    ID_SCENE_MOUNTAIN_L_SEL,
-    ID_SCENE_MOUNTAIN_T_SEL,
-    ID_SCENE_MOUNTAIN_B_SEL,
-    ID_SCENE_MOUNTAIN_R_SEL,
-    ID_SCENE_MOUNTAIN_1_SEL,
-    ID_SCENE_MOUNTAIN_2_SEL,
-    ID_SCENE_MOUNTAIN_3_SEL,
-    ID_SCENE_MOUNTAIN_4_SEL,
-    ID_SCENE_MOUNTAIN_5_SEL,
-    ID_SCENE_MOUNTAIN_6_SEL,
-    ID_SCENE_MOUNTAIN_7_SEL,
-    ID_SCENE_MOUNTAIN_8_SEL,
+    ID_MOUNTAIN1_L,
+    ID_MOUNTAIN1_T,
+    ID_MOUNTAIN1_B,
+    ID_MOUNTAIN1_R,
+    ID_MOUNTAIN1_1,
+    ID_MOUNTAIN1_2,
+    ID_MOUNTAIN1_3,
+    ID_MOUNTAIN1_4,
+    ID_MOUNTAIN1_5,
+    ID_MOUNTAIN1_6,
+    ID_MOUNTAIN1_7,
+    ID_MOUNTAIN1_8,
 
-    NUM_MOUNTAINS_SPRITES = 12,
+    // ROCKS TYPE 1
+    ID_ROCKS1_01,
+    ID_ROCKS1_02,
+    ID_ROCKS1_03,
+    ID_ROCKS1_04,
+    ID_ROCKS1_05,
+    ID_ROCKS1_06,
+    ID_ROCKS1_07,
+    ID_ROCKS1_08,
+    ID_ROCKS1_L,
+    ID_ROCKS1_R,
+    ID_ROCKS1_B,
+    ID_ROCKS1_T,
+    ID_ROCKS1_TL,
+    ID_ROCKS1_BR,
+    ID_ROCKS1_BL,
+    ID_ROCKS1_TR,
+
+    NUM_SPRITES_MOUNTAINS = ID_MOUNTAIN1_8 - ID_MOUNTAIN1_L + 1,
+    NUM_SPRITES_ROCKS1 = ID_ROCKS1_TR - ID_ROCKS1_01 + 1
 };
 
 // STRUCTURES
@@ -486,6 +468,7 @@ enum SpriteIdStructures : unsigned int
     ID_STRUCT_BASE_L1_F3_SEL,
     ID_STRUCT_BASE_L1,
     ID_STRUCT_BASE_L1_SEL,
+    ID_STRUCT_BASE_W,
     // DEFENSIVE TOWER LVL 1
     ID_STRUCT_DTOWER_L1_F1,
     ID_STRUCT_DTOWER_L1_F1_SEL,
@@ -640,6 +623,7 @@ enum SpriteIdStructures : unsigned int
     ID_STRUCT_RESEARCH_CENTER_F2_SEL,
     ID_STRUCT_RESEARCH_CENTER_F3,
     ID_STRUCT_RESEARCH_CENTER_F3_SEL,
+    ID_STRUCT_RESEARCH_CENTER_W,
     // BUNKER
     ID_STRUCT_BUNKER,
     ID_STRUCT_BUNKER_SEL,
@@ -730,46 +714,73 @@ enum SpriteIdTrees : unsigned int
     TREE1_4T_6,
     TREE1_4T_7,
     TREE1_4T_8,
-    // TREE TYPE 1 SELECTED
+
+    // TREE TYPE 2
     // 1 tree
-    TREE1_1T_1_SEL,
-    TREE1_1T_2_SEL,
-    TREE1_1T_3_SEL,
-    TREE1_1T_4_SEL,
-    TREE1_1T_5_SEL,
-    TREE1_1T_6_SEL,
-    TREE1_1T_7_SEL,
-    TREE1_1T_8_SEL,
+    TREE2_1T_1,
+    TREE2_1T_2,
+    TREE2_1T_3,
+    TREE2_1T_4,
+    TREE2_1T_5,
+    TREE2_1T_6,
+    TREE2_1T_7,
     // 2 trees
-    TREE1_2T_1_SEL,
-    TREE1_2T_2_SEL,
-    TREE1_2T_3_SEL,
-    TREE1_2T_4_SEL,
-    TREE1_2T_5_SEL,
-    TREE1_2T_6_SEL,
-    TREE1_2T_7_SEL,
-    TREE1_2T_8_SEL,
+    TREE2_2T_1,
+    TREE2_2T_2,
+    TREE2_2T_3,
+    TREE2_2T_4,
+    TREE2_2T_5,
+    TREE2_2T_6,
+    TREE2_2T_7,
     // 3 trees
-    TREE1_3T_1_SEL,
-    TREE1_3T_2_SEL,
-    TREE1_3T_3_SEL,
-    TREE1_3T_4_SEL,
-    TREE1_3T_5_SEL,
-    TREE1_3T_6_SEL,
-    TREE1_3T_7_SEL,
-    TREE1_3T_8_SEL,
+    TREE2_3T_1,
+    TREE2_3T_2,
+    TREE2_3T_3,
+    TREE2_3T_4,
+    TREE2_3T_5,
+    TREE2_3T_6,
+    TREE2_3T_7,
     // 4 trees
-    TREE1_4T_1_SEL,
-    TREE1_4T_2_SEL,
-    TREE1_4T_3_SEL,
-    TREE1_4T_4_SEL,
-    TREE1_4T_5_SEL,
-    TREE1_4T_6_SEL,
-    TREE1_4T_7_SEL,
-    TREE1_4T_8_SEL,
+    TREE2_4T_1,
+    TREE2_4T_2,
+    TREE2_4T_3,
+    TREE2_4T_4,
+    TREE2_4T_5,
+    TREE2_4T_6,
+    TREE2_4T_7,
+
+    // TREE TYPE 3
+    // 1 tree
+    TREE3_1T_1,
+    TREE3_1T_2,
+    TREE3_1T_3,
+    TREE3_1T_4,
+    TREE3_1T_5,
+    TREE3_1T_6,
+    TREE3_1T_7,
+    // 2 trees
+    TREE3_2T_1,
+    TREE3_2T_2,
+    TREE3_2T_3,
+    TREE3_2T_4,
+    TREE3_2T_5,
+    TREE3_2T_6,
+    TREE3_2T_7,
+    // 3 trees
+    TREE3_3T_1,
+    TREE3_3T_2,
+    TREE3_3T_3,
+    TREE3_3T_4,
+    TREE3_3T_5,
+    TREE3_3T_6,
+    TREE3_3T_7,
 
     NUM_TREE1_VARIANTS = 8,
-    MAX_TREE1_TREES = 4
+    MAX_TREE1_TREES = 4,
+    NUM_TREE2_VARIANTS = 7,
+    MAX_TREE2_TREES = 4,
+    NUM_TREE3_VARIANTS = 7,
+    MAX_TREE3_TREES = 3,
 };
 
 // UNITS

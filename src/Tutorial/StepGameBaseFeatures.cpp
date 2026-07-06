@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameBaseFeatures.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/PanelSelectedObject.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -26,7 +25,7 @@ StepGameBaseFeatures::StepGameBaseFeatures(const PanelSelectedObject * panelObj,
     const int fH = panelObj->GetHeight() + padding;
 
     mFocusArea->SetScreenArea(fX, fY, fW, fH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -34,14 +33,13 @@ StepGameBaseFeatures::StepGameBaseFeatures(const PanelSelectedObject * panelObj,
 
     info->SetPosition(150, 400);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_FEATURES_1"),
-                       TutorialConstants::colorText, 13.f, true, false, [this]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_FEATURES_1"), 13.f, true, false, [this]
                        {
                            mFocusArea->SetBlinking(true);
                            mFocusArea->SetVisible(true);
                        });
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_FEATURES_2"),
-                       TutorialConstants::colorText, 9.f, true, false, [this, panelActions, padding]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_FEATURES_2"), 9.f, true, false,
+                       [this, panelActions, padding]
                        {
                            const int fX = panelActions->GetX() - padding;
                            const int fY = panelActions->GetY() - padding;

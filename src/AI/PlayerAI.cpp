@@ -15,13 +15,10 @@
 #include <algorithm>
 #include <iostream>
 
-namespace
-{
-constexpr int MAX_PRIORITY = 100;
-}
-
 namespace game
 {
+
+unsigned int PlayerAI::mNumActions = 0;
 
 PlayerAI::PlayerAI(Player * player, const ObjectsDataRegistry * dataReg)
     : mPlayer(player)
@@ -37,22 +34,53 @@ PlayerAI::~PlayerAI()
 
 void PlayerAI::DecideNextAction()
 {
+    const bool idleTurnFinished = !mActionsDone.empty() && mActionsDone[0]->type == AIA_IDLE_TURN;
+
     // TODO track time and keep it into consideration when defining priorities
     // TODO use memory pools for actions
     ClearActionsTodo();
     ClearActionsDone();
 
-    PrepareData();
+    // always append requested actions after clear and before others
+    AddRequestedActions();
 
-    UpdatePriorityRange();
+    if(mActive)
+    {
+        PrepareData();
 
-    AddActions();
+        UpdatePriorityRange();
+
+        AddActions();
+    }
+    else
+    {
+        // idle turn just finished -> end turn
+        if(idleTurnFinished)
+            AddActionEndTurn();
+        else
+        {
+            const float idleTime = 1.f;
+            AddActionIdleTurn(idleTime);
+        }
+    }
+}
+
+void PlayerAI::RequestNewAction(ActionAI * action)
+{
+    action->actId = ++mNumActions;
+
+    // clamp priority
+    if(action->priority > MAX_PRIORITY)
+        action->priority = MAX_PRIORITY;
+
+    mActionsRequested.emplace_back(action);
 }
 
 void PlayerAI::PrepareData()
 {
     // clear data
     mCollectables.clear();
+    mInteractiveObjects.clear();
     mOwnStructures.clear();
     mOwnUnits.clear();
     mResGenerators.clear();
@@ -69,11 +97,15 @@ void PlayerAI::PrepareData()
     for(GameObject * obj : objects)
     {
         const GameObjectCategoryId objCat = obj->GetObjectCategory();
+        const GameObjectTypeId objType = obj->GetObjectType();
         const PlayerFaction objFaction = obj->GetFaction();
 
         // store ALL resource generators
         if(objCat == ObjectData::CAT_RES_GENERATOR)
             mResGenerators.push_back(obj);
+        // store ALL interactive objects
+        else if(objCat == ObjectData::CAT_INTERACTIVE)
+            mInteractiveObjects.push_back(obj);
 
         // own stuff
         if(objFaction == factionAI)
@@ -82,7 +114,7 @@ void PlayerAI::PrepareData()
             if(obj->IsStructure())
                 mOwnStructures.push_back(obj);
             // own units
-            else if(obj->GetObjectCategory() == ObjectData::CAT_UNIT)
+            else if(objCat == ObjectData::CAT_UNIT)
                 mOwnUnits.push_back(obj);
         }
         // enemies
@@ -98,7 +130,7 @@ void PlayerAI::PrepareData()
                 if(obj->IsStructure())
                     mVisibleEnemyStructures.push_back(obj);
                 // enemy units
-                else if(obj->GetObjectCategory() == ObjectData::CAT_UNIT)
+                else if(objCat == ObjectData::CAT_UNIT)
                     mVisibleEnemyUnits.push_back(obj);
             }
         }
@@ -109,7 +141,8 @@ void PlayerAI::PrepareData()
             if(obj->CanBeCollected())
                 mCollectables.push_back(obj);
             // store all trees
-            else if(obj->GetObjectType() == ObjectData::TYPE_TREES)
+            else if(objType == ObjectData::TYPE_TREES1 || objType == ObjectData::TYPE_TREES2 ||
+                    objType == ObjectData::TYPE_TREES3)
                 mTrees.push_back(obj);
         }
     }
@@ -140,6 +173,18 @@ void PlayerAI::AddActions()
 
     // KEEP THIS LAST
     AddActionEndTurn();
+}
+
+void PlayerAI::AddRequestedActions()
+{
+    if(mActionsRequested.empty())
+        return ;
+
+    mActionsTodo.insert(mActionsTodo.begin(), mActionsRequested.begin(), mActionsRequested.end());
+
+    std::make_heap(mActionsTodo.begin(), mActionsTodo.end());
+
+    mActionsRequested.clear();
 }
 
 const ActionAI * PlayerAI::GetNextActionTodo()
@@ -434,6 +479,21 @@ bool PlayerAI::FindWhereToBuildTower(Unit * unit, Cell2D & target) const
         return mGm->FindFreeArea(start, rows, cols, radius, target);
 }
 
+void PlayerAI::Update(float delta)
+{
+    if(mIdle)
+    {
+        mTimerIdle -= delta;
+
+        if(mTimerIdle < 0.f)
+        {
+            mIdle = false;
+
+            SetIdleTurnDone();
+        }
+    }
+}
+
 void PlayerAI::ClearActionsDone()
 {
     for(const ActionAI * a : mActionsDone)
@@ -506,10 +566,7 @@ const ActionAI * PlayerAI::PopAction()
 
 void PlayerAI::AddNewAction(ActionAI * action)
 {
-    // assign unique ID to action
-    static unsigned int num = 0;
-
-    action->actId = ++num;
+    action->actId = ++mNumActions;
 
     // clamp priority
     if(action->priority > MAX_PRIORITY)
@@ -520,6 +577,31 @@ void PlayerAI::AddNewAction(ActionAI * action)
     // NOTE not checking existing actions for now as all actions should be unique
     // as they are created by different objects (at least the ObjSrc is different)
     PushAction(action);
+}
+
+void PlayerAI::SetIdleTurnDone()
+{
+    auto it = mActionsDoing.begin();
+
+    while(it != mActionsDoing.end())
+    {
+        const ActionAI * action = *it;
+
+        if(AIA_IDLE_TURN == action->type)
+        {
+            mActionsDoing.erase(it);
+
+            mActionsDone.push_back(action);
+
+            PrintdActionDebug("PlayerAI::SetIdleTurnDone | IDLE TURN DONE", action);
+
+            return ;
+        }
+        else
+            ++it;
+    }
+
+    std::cout << "PlayerAI::SetIdleTurnDone - can't find action" << std::endl;
 }
 
 void PlayerAI::AddActionEndTurn()
@@ -593,6 +675,17 @@ void PlayerAI::AddActionEndTurn()
     // action not added
     else
         delete action;
+}
+
+void PlayerAI::AddActionIdleTurn(float sec)
+{
+    // create action
+    auto action = new ActionAIIdleTurn;
+    action->type = AIA_IDLE_TURN;
+    action->priority = MIN_PRIORITY;
+    action->time = sec;
+
+    PushAction(action);
 }
 
 void PlayerAI::AddActionsStructure(Structure * s)
@@ -698,6 +791,7 @@ void PlayerAI::AddActionsUnit(Unit * u)
     if(u->CanAttack())
     {
         AddActionUnitAttackEnemyUnit(u);
+        AddActionUnitAttackEnemyTower(u);
         AddActionUnitAttackTrees(u);
         AddActionUnitPatrol(u);
     }
@@ -723,7 +817,12 @@ void PlayerAI::AddActionsUnit(Unit * u)
     // COLLECTABLES
     AddActionUnitCollectBlobs(u);
     AddActionUnitCollectDiamonds(u);
-    AddActionUnitCollectLootbox(u);
+
+    // INTERACTION
+    if(!mInteractiveObjects.empty())
+    {
+        AddActionUnitOpenLootbox(u);
+    }
 }
 
 void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
@@ -749,10 +848,6 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     {
         auto unit = static_cast<Unit *>(mVisibleEnemyUnits[i]);
 
-        // skip targets out of range
-        if(!u->IsTargetAttackInRange(unit))
-            continue;
-
         // basic logic, attack closest one
         const int dist = mGm->ApproxDistance(u, unit);
 
@@ -766,6 +861,9 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     // didn't find any
     if(bestUnitInd == numUnits)
         return ;
+
+    const float bonusDist = -60.f;
+    priority += bonusDist * (static_cast<float>(minDist) / static_cast<float>(maxDist));
 
     // decrease priority based on unit's energy
     const float bonusEnergy = -5.f;
@@ -783,6 +881,75 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
     action->type = AIA_UNIT_ATTACK_ENEMY_UNIT;
     action->ObjSrc = u;
     action->ObjDst = mVisibleEnemyUnits[bestUnitInd];
+    action->priority = priority;
+
+    // push action to the queue
+    AddNewAction(action);
+}
+
+void PlayerAI::AddActionUnitAttackEnemyTower(Unit * u)
+{
+    // not enough energy to consider this action now
+    if(!u->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+        return ;
+
+    // nothing to do if there's no visible enemy units
+    if(mVisibleEnemyStructures.empty())
+        return ;
+
+    const unsigned int numStructs = mVisibleEnemyStructures.size();
+
+    // check if there's any unit to shoot at
+    const int maxDist = GetMaxDistanceForObject(u);
+
+    unsigned int bestTargetInd = numStructs;
+    int minDist = maxDist;
+    int priority = MAX_PRIORITY;
+
+    for(unsigned int i = 0; i < numStructs; ++i)
+    {
+        auto es = static_cast<Structure *>(mVisibleEnemyStructures[i]);
+
+        const GameObjectTypeId type = es->GetObjectType();
+
+        // skip structures which are not towers
+        if(type != ObjectData::TYPE_DEFENSIVE_TOWER && type != ObjectData::TYPE_BUNKER &&
+           type != ObjectData::TYPE_SPAWN_TOWER)
+            continue;
+
+        // basic logic, attack closest one
+        const int dist = mGm->ApproxDistance(u, es);
+
+        if(dist < minDist)
+        {
+            minDist = dist;
+            bestTargetInd = i;
+        }
+    }
+
+    // didn't find any
+    if(bestTargetInd == numStructs)
+        return ;
+
+    const float bonusDist = -75.f;
+    priority += bonusDist * (static_cast<float>(minDist) / static_cast<float>(maxDist));
+
+    // decrease priority based on unit's energy
+    const float bonusEnergy = -5.f;
+    priority += GetUnitPriorityBonusEnergy(u, bonusEnergy);
+
+    // decrease priority based on unit's health
+    const float bonusHealth = -15.f;
+    priority += GetUnitPriorityBonusHealth(u, bonusHealth);
+
+    // can't find something that's worth an action
+    if(priority < mMinPriority)
+        return ;
+
+    auto action = new ActionAI;
+    action->type = AIA_UNIT_ATTACK_ENEMY_TOWER;
+    action->ObjSrc = u;
+    action->ObjDst = mVisibleEnemyStructures[bestTargetInd];
     action->priority = priority;
 
     // push action to the queue
@@ -1428,7 +1595,7 @@ void PlayerAI::AddActionUnitCollectDiamonds(Unit * u)
     AddNewAction(action);
 }
 
-void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
+void PlayerAI::AddActionUnitOpenLootbox(Unit * u)
 {
     // DEFINE INITIAL PRIORITY
     int priority = MAX_PRIORITY;
@@ -1446,14 +1613,14 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
         return ;
 
     // FIND BEST CANDIDATE
-    const unsigned int numCollectables = mCollectables.size();
+    const unsigned int numObjs = mInteractiveObjects.size();
 
-    unsigned int bestInd = numCollectables;
+    unsigned int bestInd = numObjs;
     int minDist = GetMaxDistanceForObject(u);
 
-    for(unsigned int i = 0; i < numCollectables; i++)
+    for(unsigned int i = 0; i < numObjs; i++)
     {
-        const GameObject * c = mCollectables[i];
+        const GameObject * c = mInteractiveObjects[i];
         const GameObjectTypeId type = c->GetObjectType();
 
         // no lootbox or special lootbox
@@ -1471,11 +1638,11 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
     }
 
     // none found
-    if(bestInd == numCollectables)
+    if(bestInd == numObjs)
         return ;
 
     // double negative bonus for health in case unit is collecting a special LootBox
-    if(mCollectables[bestInd]->GetObjectType() == ObjectData::TYPE_LOOTBOX2)
+    if(mInteractiveObjects[bestInd]->GetObjectType() == ObjectData::TYPE_LOOTBOX2)
         priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // bonus distance
@@ -1488,9 +1655,9 @@ void PlayerAI::AddActionUnitCollectLootbox(Unit * u)
 
     // CREATE ACTION
     auto action = new ActionAI;
-    action->type = AIA_UNIT_COLLECT_LOOTBOX;
+    action->type = AIA_UNIT_OPEN_LOOTBOX;
     action->ObjSrc = u;
-    action->ObjDst = mCollectables[bestInd];
+    action->ObjDst = mInteractiveObjects[bestInd];
     action->priority = priority;
 
     // push action to the queue
@@ -2323,6 +2490,11 @@ void PlayerAI::PrintdActionDebug(const char * title, const ActionAI * a)
     {
         auto an = static_cast<const ActionAINewUnit *>(a);
         std::cout << " | UNIT: " << ObjectData::TITLES.at(an->unitType);
+    }
+    else if(AIA_IDLE_TURN == a->type)
+    {
+        auto ait = static_cast<const ActionAIIdleTurn *>(a);
+        std::cout << " | TIME: " << ait->time;
     }
 
     if(a->ObjSrc != nullptr)

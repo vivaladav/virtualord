@@ -41,6 +41,7 @@ enum ObjClass : unsigned int
 
     // OTHERS
     OCO_COLLECTABLE,
+    OCO_INTERACTIVE,
     OCO_SCENE,
 
     NUM_OBJ_CLASSES,
@@ -113,7 +114,9 @@ public:
     static const GameObjectTypeId TYPE_SPAWN_TOWER;
     static const GameObjectTypeId TYPE_TEMPLE;
     static const GameObjectTypeId TYPE_TRADING_POST;
-    static const GameObjectTypeId TYPE_TREES;
+    static const GameObjectTypeId TYPE_TREES1;
+    static const GameObjectTypeId TYPE_TREES2;
+    static const GameObjectTypeId TYPE_TREES3;
     static const GameObjectTypeId TYPE_UNIT_MEDIC1;
     static const GameObjectTypeId TYPE_UNIT_SCOUT1;
     static const GameObjectTypeId TYPE_UNIT_SOLDIER1;
@@ -131,6 +134,7 @@ public:
     static const GameObjectCategoryId CAT_NULL;
 
     static const GameObjectCategoryId CAT_COLLECTABLE;
+    static const GameObjectCategoryId CAT_INTERACTIVE;
     static const GameObjectCategoryId CAT_MINI_UNIT;
     static const GameObjectCategoryId CAT_RES_GENERATOR;
     static const GameObjectCategoryId CAT_RES_STORAGE;

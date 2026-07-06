@@ -8,7 +8,6 @@ namespace sgl
     namespace sgui
     {
         class ButtonsGroup;
-        class Image;
     }
 }
 
@@ -63,12 +62,17 @@ public:
     void SetMiniMapEnabled(bool val);
     MiniMap * GetMinimap() const;
 
+    const PanelResources * GetPanelResources() const;
+
     // OBJECT ACTIONS
     PanelObjectActions * GetPanelObjectActions() const;
     void HidePanelObjectActions();
     void ShowPanelObjectActions(GameObject * obj);
+    void UpdateUpgradesNotification();
+    void UpdateGoalsNotification();
     void HidePanelSelfDestruction();
     void ShowPanelSelfDestruction();
+    PanelShotType * GetPanelShotType() const;
     void HidePanelShotType();
     void ShowPanelShotType();
 
@@ -78,6 +82,7 @@ public:
     const sgl::sgui::ButtonsGroup * GetQuickUnitButtonsGroup() const;
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
+    void AddQuickUnitButton();
 
     DialogMissionGoals * GetDialogMissionGoals() const;
     void ShowDialogMissionGoals();
@@ -95,9 +100,6 @@ public:
     void HideMissionCountdown();
     void AddPlayedTurn();
 
-    void ShowGoalCompletedIcon();
-    void HideGoalCompletedIcon();
-
     void HidePanelSelectedObject();
     void ShowPanelSelectedObject(GameObject * obj);
     const PanelSelectedObject * GetPanelSelectedObject() const;
@@ -112,15 +114,19 @@ public:
 
     void ShowDialogResearch(ResearchCenter * rc);
     void HideDialogResearch();
+    const DialogResearch * GetDialogResearch() const;
 
     void ShowDialogTechTree();
     void HideDialogTechTree();
+    const DialogTechTree * GetDialogTechTree() const;
 
     void ShowDialogTrading();
     void HideDialogTrading();
+    const DialogTrading * GetDialogTrading() const;
 
     void ShowDialogUpgrade(GameObject * obj);
     void HideDialogUpgrade();
+    DialogUpgrade * GetDialogUpgrade() const;
 
     void SetLocalActionsEnabled(bool enabled);
 
@@ -142,6 +148,7 @@ private:
 
     void PositionOptionsPanelOverObjectActions(sgl::sgui::Widget * panel, unsigned int button);
     void PositionMissionCountdown();
+    void PositionQuickUnitButtons();
 
     void ResumeGameFromExit();
 
@@ -181,16 +188,18 @@ private:
     PanelSelectedObject * mPanelSelObj = nullptr;
     ButtonPanelSelectedObject * mButtonPanelSelObj = nullptr;
 
-    sgl::sgui::Image * mGoalCompletedIcon = nullptr;
-
     ScreenGame * mScreen = nullptr;
 
     int mVisibleDialogs = 0;
+
+    unsigned int mResearchTrackerId = 0;
 };
 
 inline bool GameHUD::IsShowingDialog() const { return mVisibleDialogs > 0; }
 
 inline MiniMap * GameHUD::GetMinimap() const { return mMiniMap; }
+
+inline const PanelResources * GameHUD::GetPanelResources() const { return mPanelRes; }
 
 inline const sgl::sgui::ButtonsGroup * GameHUD::GetQuickUnitButtonsGroup() const
 {
@@ -202,8 +211,17 @@ inline DialogMissionGoals * GameHUD::GetDialogMissionGoals() const { return mDia
 inline DialogNewElement * GameHUD::GetDialogNewElement() { return mDialogNewElement; }
 
 inline PanelObjectActions * GameHUD::GetPanelObjectActions() const { return mPanelObjActions; }
+inline PanelShotType * GameHUD::GetPanelShotType() const { return mPanelShotType; }
 
 inline const PanelSelectedObject * GameHUD::GetPanelSelectedObject() const { return mPanelSelObj; }
 
 inline const PanelTurnControl * GameHUD::GetPanelTurnControl() const { return mPanelTurnCtrl; }
+
+inline const DialogResearch * GameHUD::GetDialogResearch() const { return mDialogResearch; }
+
+inline const DialogTechTree * GameHUD::GetDialogTechTree() const { return mDialogTechTree; }
+
+inline const DialogTrading * GameHUD::GetDialogTrading() const { return mDialogTrading; }
+
+inline DialogUpgrade * GameHUD::GetDialogUpgrade() const { return mDialogUpgrade; }
 } // namespace game

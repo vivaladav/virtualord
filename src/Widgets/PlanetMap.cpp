@@ -1,7 +1,7 @@
 #include "Widgets/PlanetMap.h"
 
 #include "GameConstants.h"
-#include "MapsRegistry.h"
+#include "Planet.h"
 #include "Widgets/GameUIData.h"
 
 #include <sgl/core/Point.h>
@@ -94,10 +94,10 @@ private:
 
     void HandleButtonDown() override
     {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
         if(IsChecked())
             return ;
-
-        sgl::sgui::AbstractButton::HandleButtonDown();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/button_click-02.ogg");
@@ -283,7 +283,7 @@ PlanetMap::~PlanetMap()
 
 void PlanetMap::SetFunctionOnToggle(const std::function<void(unsigned int, bool)> & f)
 {
-    mButtonsMission->SetFunctionOnToggle(f);
+    mButtonsMission->AddFunctionOnToggle(f);
 }
 
 void PlanetMap::SetButtonEnabled(unsigned int index, bool enabled)

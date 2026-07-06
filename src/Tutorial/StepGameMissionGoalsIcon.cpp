@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameMissionGoalsIcon.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -12,43 +11,49 @@
 namespace game
 {
 
-StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel)
-    : TutorialInfoStep(600, 200)
+StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel, bool showIntro)
+    : TutorialInfoStep(600, showIntro ? 200 : 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(290, 550);
+    info->SetPosition(200, 600);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_1"),
-                       TutorialConstants::colorText, 5.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, panel]
-                       {
-                           // FOCUS
-                           auto btn = panel->GetButton(PanelObjectActions::BTN_MISSION_GOALS);
+    if(showIntro)
+        info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_1"), 10.f, true, false);
 
-                           const int padding = 10;
-                           const int fX = panel->GetX() + btn->GetX() - padding;
-                           const int fY = panel->GetY() + btn->GetY() - padding;
-                           const int fW = btn->GetWidth() + (padding * 2);
-                           const int fH = btn->GetHeight() + (padding * 2);
+    info->AddActionEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_2"), 0.f, false, false,
+                         [this, panel]
+                        {
+                            auto btn = panel->GetButton(PanelObjectActions::BTN_MISSION_GOALS);
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
+                            // CLICK FILTER
+                            const int fX = btn->GetScreenX();
+                            const int fY = btn->GetScreenY();
+                            const int fW = btn->GetWidth();
+                            const int fH = btn->GetHeight();
 
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
-                       });
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+
+                            // FOCUS
+                            const int padding = 10;
+                            const int f2X = fX - padding;
+                            const int f2Y = fY - padding;
+                            const int f2W = fW + (padding * 2);
+                            const int f2H = fH + (padding * 2);
+
+                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
+                            mFocusArea->SetVisible(true);
+                        });
 
     mClickId = panel->AddButtonFunction(PanelObjectActions::BTN_MISSION_GOALS, [this]
     {

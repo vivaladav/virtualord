@@ -35,6 +35,7 @@ enum GameObjectActionType : unsigned int
     BUILD_WALL,
     HEAL,
     SPAWN,
+    OPEN_LOOTBOX,
 
     // WALL GATE
     TOGGLE_GATE,
@@ -173,6 +174,8 @@ public:
     void SetWeapon(Weapon * w);
 
     void SetAttackMode(AttackMode am);
+    void SetPerfectShot(bool enabled);
+    void SetFatalHit(bool enabled);
 
     void FindAndSetEnemyTarget();
     bool HasEnemyInRange();
@@ -255,6 +258,8 @@ private:
     static unsigned int counter;
 
 private:
+    friend class StepGameSetObjectMaxHealth;
+
     std::map<unsigned int, std::function<void()>> mOnValueChanged;
 
     std::unordered_map<ObjAttId, int> mAttributes;

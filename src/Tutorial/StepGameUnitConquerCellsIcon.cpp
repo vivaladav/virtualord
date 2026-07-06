@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -20,33 +19,39 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1100, 600);
+    info->SetPosition(1100, 650);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_UNIT_CONQUE_CELLS_ICON_1"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, panel]
-                       {
-                           // FOCUS
-                           auto btn = panel->GetButton(PanelObjectActions::BTN_CONQUER_CELL);
+    info->AddActionEntry(sm->GetCString("TUT_GAME_UNIT_CONQUE_CELLS_ICON_1"), 0.f, false, false,
+                         [this, panel]
+                        {
 
-                           const int padding = 10;
-                           const int fX = panel->GetX() + btn->GetX() - padding;
-                           const int fY = panel->GetY() + btn->GetY() - padding;
-                           const int fW = btn->GetWidth() + (padding * 2);
-                           const int fH = btn->GetHeight() + (padding * 2);
+                            auto btn = panel->GetButton(PanelObjectActions::BTN_CONQUER_CELL);
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
-                           mFocusArea->SetVisible(true);
+                            // CLICK FILTER
+                            const int fX = btn->GetScreenX();
+                            const int fY = btn->GetScreenY();
+                            const int fW = btn->GetWidth();
+                            const int fH = btn->GetHeight();
 
-                           // CLICK FILTER
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
-                       });
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+
+                            // FOCUS
+                            const int padding = 10;
+                            const int f2X = fX - padding;
+                            const int f2Y = fY - padding;
+                            const int f2W = fW + (padding * 2);
+                            const int f2H = fH + (padding * 2);
+
+                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
+                            mFocusArea->SetVisible(true);
+                        });
 
     mClickId = panel->AddButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, [this]
     {

@@ -3,6 +3,8 @@
 #include "GameObjects/GameObjectTypes.h"
 #include "MissionGoal.h"
 
+#include <functional>
+#include <map>
 #include <vector>
 #include <unordered_map>
 
@@ -26,12 +28,19 @@ public:
     const std::vector<MissionGoal> & GetGoals() const;
     void SetGoals(const std::vector<MissionGoal> & goals);
 
+    unsigned int GetNumCompletedGoals() const;
+    unsigned int GetNumGoalsToCollect() const;
+
+    unsigned int AddOnGoalCollectedFunction(const std::function<void()> & f);
+    void RemoveOnGoalCollectedFunction(unsigned int fId);
+    unsigned int AddOnGoalCompletedFunction(const std::function<void()> & f);
+    void RemoveOnGoalCompletedFunction(unsigned int fId);
+
     void CollectMissionGoalReward(unsigned int index);
 
     void Update();
 
     // tracked data
-    void SetTutorialStarted();
     void SetPlayedTime(unsigned int sec);
     void AddPlayedTurns();
     void AddMiniUnitCreated();
@@ -45,12 +54,19 @@ public:
     unsigned int GetPlayedTime() const;
     unsigned int GetPlayedTurns() const;
 
+#ifdef DEV_MODE
+    void PrintState();
+#endif
+
 private:
     bool CheckIfGoalCompleted(MissionGoal & g);
 
     unsigned int GetNumStructuresBuilt(GameObjectTypeId type) const;
     unsigned int GetNumStructuresConquered(GameObjectTypeId type) const;
     unsigned int GetNumObjectsDestroyedByCategory(GameObjectCategoryId cat) const;
+
+    void NotifyGoalCompleted();
+    void NotifyGoalCollected();
 
 private:
     std::vector<MissionGoal> mMissionGoals;
@@ -60,11 +76,16 @@ private:
     std::unordered_map<GameObjectTypeId, unsigned int> mStructuresBuilt;
     std::unordered_map<GameObjectTypeId, unsigned int> mStructuresConquered;
     std::unordered_map<GameObjectCategoryId, unsigned int> mCategoriesDestroyed;
+    std::map<unsigned int, std::function<void()>> mOnCollected;
+    std::map<unsigned int, std::function<void()>> mOnCompleted;
 
     Game * mGame = nullptr;
     Player * mPlayer = nullptr;
     GameHUD * mHUD = nullptr;
     const ControlMap * mControlMap = nullptr;
+
+    unsigned int mCompletedGoals = 0;
+    unsigned int mGoalsToCollect = 0;
 
     unsigned int mMiniUnitsCreated = 0;
     unsigned int mUnitsCreated = 0;
@@ -72,11 +93,10 @@ private:
     unsigned int mTotStructuresConquered = 0;
     unsigned int mWallBuilt = 0;
     unsigned int mPlayedTime = 0;
-    unsigned int mPlayedTurns = 0;
+    unsigned int mPlayedTurns = 1;
     unsigned int mSelfDestructed = 0;
 
     bool mMapCompleted = false;
-    bool mTutorialStarted = false;
 };
 
 inline void MissionGoalsTracker::SetGameHUD(GameHUD * gh) { mHUD = gh; }
@@ -87,7 +107,8 @@ inline const std::vector<MissionGoal> & MissionGoalsTracker::GetGoals() const
     return mMissionGoals;
 }
 
-inline void MissionGoalsTracker::SetTutorialStarted() { mTutorialStarted = true; }
+inline unsigned int MissionGoalsTracker::GetNumCompletedGoals() const { return mCompletedGoals; }
+inline unsigned int MissionGoalsTracker::GetNumGoalsToCollect() const { return mGoalsToCollect; }
 
 inline void MissionGoalsTracker::SetPlayedTime(unsigned int sec) { mPlayedTime = sec; }
 inline void MissionGoalsTracker::AddPlayedTurns() { ++mPlayedTurns; }

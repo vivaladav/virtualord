@@ -25,6 +25,7 @@ class DialogFactionSelection : public sgl::sgui::Widget
 {
 public:
     DialogFactionSelection(Game * game);
+    ~DialogFactionSelection();
 
 private:
     sgl::sgui::Widget * CreateFactionRow(PlayerFaction faction, const std::vector<int> & attributes);

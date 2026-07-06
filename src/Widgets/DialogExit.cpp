@@ -48,7 +48,7 @@ public:
     {
         using namespace sgl;
 
-        const int size = 24;
+        const int size = 22;
 
         auto fm = graphic::FontManager::Instance();
         auto fnt = fm->GetFont(WidgetsConstants::FontFileButton, size, graphic::Font::NORMAL);
@@ -240,13 +240,33 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
     // -- CONTENT --
     int contentH = WidgetsConstants::MarginDialogContentT;
 
-    // BUTTON SETTINGS
     const int marginBtnV = 30;
     int btnX = 0;
     int btnY = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
     GameButton * btn = nullptr;
 
+    // BUTTON SAVE
+/*
+    if(buttons & BTN_SAVE)
+    {
+        btn = new ButtonDialogExit(this);
+        btn->SetLabel(sm->GetCString("SAVE_GAME"));
+
+        btnX = (w - btn->GetWidth()) / 2;
+        btn->SetPosition(btnX, btnY);
+
+        btn->AddOnClickFunction([this, screen]
+                                {
+
+                                });
+
+        btnY += btn->GetHeight() + marginBtnV;
+        contentH += btn->GetHeight() + marginBtnV;
+    }
+*/
+
+    // BUTTON SETTINGS
     if(buttons & BTN_SETTINGS)
     {
         btn = new ButtonDialogExit(this);

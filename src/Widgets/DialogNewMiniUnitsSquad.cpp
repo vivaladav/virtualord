@@ -436,7 +436,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    mSliderElements->SetOnValueChanged([this, label](int val)
+    mSliderElements->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 
@@ -475,7 +475,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     label->SetColor(WidgetsConstants::colorDialogText);
     label->SetPosition(x, y);
 
-    mSliderSquads->SetOnValueChanged([this, label](int val)
+    mSliderSquads->AddOnValueChanged([this, label](int val)
     {
         label->SetText(std::to_string(val).c_str());
 

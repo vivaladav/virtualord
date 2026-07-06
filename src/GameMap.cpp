@@ -47,11 +47,14 @@
 #include "GameObjects/Wall.h"
 #include "GameObjects/WallGate.h"
 #include "Screens/ScreenGame.h"
+#include "Widgets/GameHUD.h"
 #include "Widgets/MiniMap.h"
+#include "Widgets/PanelObjectActions.h"
 
 #include <sgl/ai/Pathfinder.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StringManager.h>
 
 #include <algorithm>
@@ -60,14 +63,17 @@
 
 namespace
 {
-const float timeAutoAttackDelay = 0.50f;
+constexpr float timeAutoAttackDelay = 0.50f;
+
+constexpr float speedCameraMiniUnit = 1000.f;
+constexpr float speedCameraTower = 1500.f;
+
 }
 
 namespace game
 {
 
 // NOTE these will be replaced by dynamic values soon
-constexpr int COST_CONQUEST_CELL = 1;
 constexpr int COST_CONQUEST_RES_GEN = 4;
 
 // ==================== PUBLIC METHODS ====================
@@ -110,7 +116,7 @@ GameMap::~GameMap()
     for(auto g : mCities)
         delete g;
 
-    for(auto cg : mCollGen)
+    for(auto cg : mCollGens)
         delete cg;
 
     for(auto op : mPaths)
@@ -118,6 +124,12 @@ GameMap::~GameMap()
 
     for(auto cp : mConquerPaths)
         delete cp;
+}
+
+bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int ind) const
+{
+    return ind < mCells.size() && mCells[ind].objTop != nullptr &&
+           mCells[ind].objTop->GetObjectType() == type;
 }
 
 bool GameMap::IsObjectVisibleToLocalPlayer(const GameObject * obj) const
@@ -161,11 +173,11 @@ bool GameMap::IsAnyCellVisibleToLocalPlayer(unsigned int rTL, unsigned int cTL,
     return false;
 }
 
-bool GameMap::IsCellWalkable(unsigned int r, unsigned int c) const
+bool GameMap::IsCellWalkable(unsigned int cellInd) const
 {
-    const unsigned int ind = r * mCols + c;
+    auto p = mScreenGame->GetActivePlayer();
 
-    return mCells[ind].walkable;
+    return mCells[cellInd].walkable || p->IsCellWalkable(cellInd);
 }
 
 bool GameMap::IsAnyNeighborCellWalkable(unsigned int r, unsigned int c) const
@@ -238,7 +250,7 @@ void GameMap::SetSize(unsigned int rows, unsigned int cols)
 
     // init players visibility map
     for(int i = 0; i < mGame->GetNumPlayers(); ++i)
-        mGame->GetPlayerByIndex(i)->InitVisibility(mRows, mCols);
+        mGame->GetPlayerByIndex(i)->InitMaps(mRows, mCols);
 
     // init control map
     mControlMap->SetSize(rows, cols);
@@ -260,7 +272,7 @@ void GameMap::CreateCollectableGenerator(unsigned int r, unsigned int c, Resourc
 
     gen->SetCell(r, c);
 
-    mCollGen.emplace_back(gen);
+    mCollGens.emplace_back(gen);
 }
 
 void GameMap::ApplyLocalVisibility()
@@ -513,7 +525,8 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
         o2a.obj = new Diamonds(data, initData);
     else if(ObjectData::TYPE_BLOBS == type)
         o2a.obj  = new Blobs(data, initData);
-    else if(ObjectData::TYPE_TREES == type)
+    else if(ObjectData::TYPE_TREES1 == type || ObjectData::TYPE_TREES2 == type ||
+            ObjectData::TYPE_TREES3 == type)
         o2a.obj  = new Trees(data, initData, variant);
     else if(ObjectData::TYPE_RADAR_STATION == type)
         o2a.obj = new RadarStation(data, initData);
@@ -566,8 +579,11 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
             }
         }
 
+        const unsigned int baseSize = rows * cols;
+
         o2a.owner->SetBase(b);
-        o2a.owner->SumCells(rows * cols);
+        o2a.owner->SumCells(baseSize);
+        o2a.owner->SetNumLinkedCells(baseSize);
     }
     // this should never happen
     else
@@ -785,7 +801,7 @@ void GameMap::InitCities()
 void GameMap::RegisterEnemyKill(GameObject * killer, GameObject * victim)
 {
     // TODO assign experience points based on kill maybe
-    const int experienceKill = 100;
+    const int experienceKill = 25;
     killer->SumExperience(experienceKill);
 
     ++mEnemiesKilled[killer->GetFaction()];
@@ -817,7 +833,7 @@ bool GameMap::AreCellsAdjacent(const Cell2D & cell1, const Cell2D & cell2) const
 
     const int maxDist = 1;
 
-    return distR <= maxDist && distC <= maxDist;
+    return ((distR + distC) > 0) && distR <= maxDist && distC <= maxDist;
 }
 
 bool GameMap::AreObjectsOrthoAdjacent(const GameObject * obj1, const GameObject * obj2) const
@@ -874,16 +890,18 @@ bool GameMap::AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) 
     return (distR == 0 && distC == maxDist) || (distR == maxDist && distC == 0);
 }
 
-bool GameMap::HasResourcesToConquerCell(Unit * unit)
+bool GameMap::IsCellAdjacentToArea(const Cell2D & cell, const Cell2D & areaTL, const Cell2D & areaBR) const
 {
-    // check if unit has enough energy
-    if(!unit->HasEnergyForActionStep(CONQUER_CELL))
+    // cell inside area
+    if(cell.row >= areaTL.row && cell.row <= areaBR.row &&
+       cell.col >= areaTL.col && cell.col <= areaBR.col)
         return false;
 
-    // check if player has enough resources
-    Player * player = mGame->GetPlayerByFaction(unit->GetFaction());
+    // check if adjacent
+    const bool insideRows = cell.row >= (areaTL.row - 1) && cell.row <= (areaBR.row + 1);
+    const bool insideCols = cell.col >= (areaTL.col - 1) && cell.col <= (areaBR.row + 1);
 
-    return player->HasEnough(Player::Stat::MATERIAL, COST_CONQUEST_CELL);
+    return insideRows && insideCols;
 }
 
 bool GameMap::CanConquerCell(Unit * unit, const Cell2D & cell, Player * player)
@@ -915,15 +933,6 @@ bool GameMap::CanConquerCell(Unit * unit, const Cell2D & cell, Player * player)
         return false;
 
     return true;
-}
-
-void GameMap::StartConquerCell(const Cell2D & cell, Player * player)
-{
-    const int ind = cell.row * mCols + cell.col;
-    GameMapCell & gcell = mCells[ind];
-
-    // take player's energy
-    player->SumResource(Player::Stat::MATERIAL, -COST_CONQUEST_CELL);
 }
 
 void GameMap::ConquerCell(const Cell2D & cell, Player * player)
@@ -2520,6 +2529,20 @@ int GameMap::Distance(const GameObject * obj1, const GameObject * obj2) const
     return distR + distC;
 }
 
+float GameMap::ExactDistance(const GameObject * obj1, const GameObject * obj2) const
+{
+    const float cX1 = (obj1->GetCol0() + obj1->GetCol1()) * 0.5f;
+    const float cY1 = (obj1->GetRow0() + obj1->GetRow1()) * 0.5f;
+
+    const float cX2 = (obj2->GetCol0() + obj2->GetCol1()) * 0.5f;
+    const float cY2 = (obj2->GetRow0() + obj2->GetRow1()) * 0.5f;
+
+    const float distX = (cX2 - cX1);
+    const float distY = (cY2 - cY1);
+
+    return std::sqrt(distX * distX + distY * distY);
+}
+
 bool GameMap::FindClosestCellConnectedToObject(const GameObject * obj, const Cell2D start, Cell2D & end)
 {
     end.row = -1;
@@ -2874,6 +2897,59 @@ bool GameMap::IsAreaFree(int brR, int brC, int rows, int cols)
     return true;
 }
 
+void GameMap::OpenGate(WallGate * gate)
+{
+    const bool res = gate->Toggle();
+
+    if(!res)
+        return ;
+
+    // move object down in game map
+    MoveObjectDown(gate);
+
+    // move to iso layer 1
+    mIsoMap->ChangeObjectLayer(gate->GetIsoObject(), MapLayers::REGULAR_OBJECTS,
+                               MapLayers::GROUND_OBJECTS);
+
+    // update panel actions
+    if(gate->IsSelected())
+    {
+        auto panelObjActions = mScreenGame->GetHUD()->GetPanelObjectActions();
+        panelObjActions->SetObject(gate);
+    }
+
+    // reset focus as buttons will change
+    sgl::sgui::Stage::Instance()->SetFocus();
+}
+
+void GameMap::CloseGate(WallGate * gate)
+{
+    const bool res = gate->Toggle();
+
+    if(!res)
+        return;
+
+    // do not close if there's an object on top
+    if(gate->GetCell()->objTop != nullptr)
+        return;
+
+    // move object up in game map
+    MoveObjectUp(gate);
+
+    // move to iso layer 2
+    mIsoMap->ChangeObjectLayer(gate->GetIsoObject(), MapLayers::GROUND_OBJECTS, MapLayers::REGULAR_OBJECTS);
+
+    // update panel actions
+    if(gate->IsSelected())
+    {
+        auto panelObjActions = mScreenGame->GetHUD()->GetPanelObjectActions();
+        panelObjActions->SetObject(gate);
+    }
+
+    // reset focus as buttons will change
+    sgl::sgui::Stage::Instance()->SetFocus();
+}
+
 void GameMap::OnNewTurn(PlayerFaction faction)
 {
     // notify all objects
@@ -2881,7 +2957,7 @@ void GameMap::OnNewTurn(PlayerFaction faction)
         obj->OnNewTurn(faction);
 
     // notify all generators
-    for(CollectableGenerator * cg : mCollGen)
+    for(CollectableGenerator * cg : mCollGens)
         cg->OnNewTurn();
 
     // select groups of mini units to move
@@ -2892,9 +2968,9 @@ void GameMap::OnNewTurn(PlayerFaction faction)
 int GameMap::GetFactionMoneyPerTurn(PlayerFaction faction)
 {
     const int perc = mControlMap->GetPercentageControlledByFaction(faction);
-    const int maxMoney = 1000 / 100;
+    const int maxMoney = 500;
 
-    return maxMoney * perc;
+    return maxMoney * perc / 100;
 }
 
 void GameMap::Update(float delta)
@@ -2962,68 +3038,71 @@ void GameMap::Update(float delta)
 void GameMap::ClearCell(GameMapCell & gcell)
 {
     // destroy any generator
-    auto it = std::find_if(mCollGen.begin(), mCollGen.end(), [gcell](CollectableGenerator * gen)
+    auto it = std::find_if(mCollGens.begin(), mCollGens.end(), [gcell](CollectableGenerator * gen)
     {
         return gen->GetRow() == gcell.row && gen->GetCol() == gcell.col;
     });
 
 
-    if(it != mCollGen.end())
+    if(it != mCollGens.end())
     {
         delete *it;
-        mCollGen.erase(it);
+        mCollGens.erase(it);
     }
 
-    gcell.currType = EMPTY;
+    gcell.currType = CT_EMPTY;
 }
 
 int GameMap::DefineCellType(unsigned int ind, const GameMapCell & cell)
 {
     // if cell is not visible it's always Fog Of War
     if(!mGame->GetLocalPlayer()->IsCellVisible(ind))
-        return FOG_OF_WAR;
+        return CT_FOG_OF_WAR;
 
     // scene cell
-    if(SCENE_ROCKS == cell.currType || DIAMONDS_SOURCE == cell.currType ||
-       BLOBS_SOURCE == cell.currType || TREES1 == cell.currType)
+    const bool sceneCell = CT_MOUNTAINS == cell.currType || CT_DIAMONDS_SOURCE == cell.currType ||
+                           CT_BLOBS_SOURCE == cell.currType || CT_TREES1 == cell.currType ||
+                           CT_ROCKS == cell.currType;
+
+    if(sceneCell)
         return cell.currType;
 
     const PlayerFaction ownerFaction = cell.owner ? cell.owner->GetFaction() : NO_FACTION;
 
-    int type = EMPTY;
+    int type = CT_EMPTY;
 
     switch(ownerFaction)
     {
         case FACTION_1:
             if(cell.linked)
-                type = F1_CONNECTED;
+                type = CT_F1_CONNECTED;
             else
-                type = F1;
+                type = CT_F1;
         break;
 
         case FACTION_2:
             if(cell.linked)
-                type = F2_CONNECTED;
+                type = CT_F2_CONNECTED;
             else
-                type = F2;
+                type = CT_F2;
         break;
 
         case FACTION_3:
             if(cell.linked)
-                type = F3_CONNECTED;
+                type = CT_F3_CONNECTED;
             else
-                type = F3;
+                type = CT_F3;
         break;
 
         // no owner
         default:
         {
             if(0 == cell.influencer)
-                type = F1_INFLUENCED;
+                type = CT_F1_INFLUENCED;
             else if(1 == cell.influencer)
-                type = F2_INFLUENCED;
+                type = CT_F2_INFLUENCED;
             else if(2 == cell.influencer)
-                type = F3_INFLUENCED;
+                type = CT_F3_INFLUENCED;
             // no influence
             else
                 type = cell.basicType;
@@ -3207,6 +3286,9 @@ void GameMap::UpdateLinkedCells(Player * player)
     // UPDATE OBJECTS VISIBILITY
     for(GameObject * obj : structures)
         AddPlayerObjVisibility(obj, player);
+
+    // update Player value
+    player->SetNumLinkedCells(done.size());
 
    ApplyLocalVisibility();
 }
@@ -3415,14 +3497,12 @@ void GameMap::DestroyObject(GameObject * obj)
 
     if(owner != nullptr)
     {
-        Player * localPlayer = mGame->GetLocalPlayer();
-
         // owner is local Player
-        if(owner == localPlayer)
+        if(owner->IsLocal())
         {
             // update visibility map
             // NOTE only local player for now
-            DelPlayerObjVisibility(obj, localPlayer);
+            DelPlayerObjVisibility(obj, owner);
         }
 
         // remove unit from player
@@ -3459,7 +3539,11 @@ void GameMap::DestroyObject(GameObject * obj)
     // remove iso object from layer
     IsoObject * isoObj = obj->GetIsoObject();
     IsoLayer * layer = isoObj->GetLayer();
-    layer->ClearObject(isoObj);
+    layer->RemoveObject(isoObj);
+
+    // update linked cells when destroying a radar station to update the minimap visibility
+    if(obj->GetObjectType() == ObjectData::TYPE_RADAR_STATION && owner != nullptr && owner->IsLocal())
+        UpdateLinkedCells(owner);
 
     // finally delete the object
     delete obj;
@@ -4088,7 +4172,13 @@ bool GameMap::StartMiniUnitGroupMove()
         return false;
     }
     else
+    {
+        // move over first unit when starting moving of the group
+        if(obj->GetFaction() == mGame->GetLocalPlayerFaction())
+            mScreenGame->CenterCameraOverObject(obj, speedCameraMiniUnit);
+
         return true;
+    }
 }
 
 void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
@@ -4103,6 +4193,10 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
 
         return ;
     }
+
+    // list empty -> nothing to do
+    if(mMiniUnitsGroupsToMove.empty())
+        return ;
 
     auto prevMU = static_cast<MiniUnit *>(prevOP->GetObject());
     auto group = mMiniUnitsGroupsToMove.back();
@@ -4145,14 +4239,17 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
 
     std::vector<unsigned int> path;
     GameObject * obj = nullptr;
+    GameObject * lastObjMoved = nullptr;
     int done = 0;
     int moved = 0;
 
-    group->DoForAll([this, target, &obj, &path, &done, &moved](GameObject * o)
+    group->DoForAll([this, target, &obj, &path, &done, &moved, &lastObjMoved](GameObject * o)
     {
         // already moved this turn
         if(o->GetActiveAction() == GameObjectActionType::IDLE)
         {
+            lastObjMoved = o;
+
             ++moved;
 
             // target reached
@@ -4172,13 +4269,22 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
         }
     });
 
+    const unsigned int numObjects = group->GetNumObjects();
+
     // moved all mini units of group for this turn
-    if(moved == group->GetNumObjects())
+    if(moved == numObjects)
     {
         ClearMiniUnitsGroupMoveCompleted(done == moved);
         SetNextMiniUnitsGroupToMove();
 
         return ;
+    }
+    // about to move last object when there's more than 1
+    else if(numObjects > 1 && moved == (numObjects - 1) && lastObjMoved != nullptr)
+    {
+        // start to center camera on first moved object
+        if(lastObjMoved->GetFaction() == mGame->GetLocalPlayerFaction())
+            mScreenGame->CenterCameraOverObject(lastObjMoved, speedCameraMiniUnit);
     }
 
     // can't find a valid path to target -> failed
@@ -4206,6 +4312,10 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
 
 void GameMap::ClearMiniUnitsGroupMoveCompleted(bool finished)
 {
+    // list empty -> nothing to do
+    if(mMiniUnitsGroupsToMove.empty())
+        return ;
+
     auto group = mMiniUnitsGroupsToMove.back();
 
     // finished completely -> clear group path
@@ -4220,7 +4330,7 @@ void GameMap::ClearMiniUnitsGroupMoveCompleted(bool finished)
         group->DoForAll([this, target, &path](GameObject * o)
         {
             const auto p = mPathfinder->MakePath(o->GetRow0(), o->GetCol0(), target.row, target.col,
-                                                 sgl::ai::Pathfinder::NO_OPTION);
+                                                 sgl::ai::Pathfinder::INCLUDE_START);
 
             if(path.empty() || (!p.empty() && p.size() < path.size()))
                 path = std::move(p);
@@ -4257,6 +4367,10 @@ void GameMap::ClearMiniUnitsGroupMoveFailed()
 
 void GameMap::ClearMovingMiniUnitsGroup()
 {
+    // list empty -> nothing to do
+    if(mMiniUnitsGroupsToMove.empty())
+        return ;
+
     const PlayerFaction faction = mMiniUnitsGroupsToMove.back()->GetFaction();
 
     // clear element from list
@@ -4384,6 +4498,11 @@ void GameMap::UpdateStructuresAttacking(float delta)
     if(obj->GetWeapon()->HasTarget())
     {
         obj->SetCurrentAction(GameObjectActionType::ATTACK);
+
+        // move over first unit when starting to attack
+        if(obj->GetFaction() == mGame->GetLocalPlayerFaction())
+            mScreenGame->CenterCameraOverObject(obj, speedCameraTower);
+
         return ;
     }
 

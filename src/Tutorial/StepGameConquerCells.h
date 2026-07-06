@@ -5,23 +5,24 @@
 namespace game
 {
 
-class FocusArea;
+class Game;
+class IsoFocusArea;
 class IsoMap;
-class Player;
-class Unit;
+
+struct Cell2D;
 
 class StepGameConquerCells : public TutorialInfoStep
 {
 public:
-    StepGameConquerCells(const Player * p, const IsoMap * isoMap);
+    StepGameConquerCells(const Game * game, const IsoMap * isoMap, const Cell2D & cellActionStart);
     ~StepGameConquerCells();
 
     void Update(float delta) override;
 
 private:
-    FocusArea * mFocusArea = nullptr;
+    IsoFocusArea * mFocusArea = nullptr;
 
-    Unit * mUnit = nullptr;
+    const Cell2D & mCellActionStart;
 };
 
 } // namespace game

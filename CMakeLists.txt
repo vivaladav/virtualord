@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-project(virtualord LANGUAGES CXX VERSION 0.6.0)
+project(virtualord LANGUAGES CXX VERSION 0.6.7)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -46,12 +46,12 @@ add_executable(
     src/IsoObject.cpp
     src/MapIO.h
     src/MapIO.cpp
-    src/MapsRegistry.h
-    src/MapsRegistry.cpp
     src/MissionGoal.h
     src/MissionGoal.cpp
     src/MissionGoalsTracker.h
     src/MissionGoalsTracker.cpp
+    src/Planet.h
+    src/Planet.cpp
     src/Player.h
     src/Player.cpp
     src/StatValue.h
@@ -153,10 +153,20 @@ add_executable(
     src/Indicators/ConquestIndicator.cpp
     src/Indicators/HealingRangeIndicator.h
     src/Indicators/HealingRangeIndicator.cpp
+    src/Indicators/OverlayAttackRange.h
+    src/Indicators/OverlayAttackRange.cpp
+    src/Indicators/OverlayCellConquest.h
+    src/Indicators/OverlayCellConquest.cpp
+    src/Indicators/OverlayHealRange.h
+    src/Indicators/OverlayHealRange.cpp
+    src/Indicators/OverlayPath.h
+    src/Indicators/OverlayPath.cpp
+    src/Indicators/OverlayStructure.h
+    src/Indicators/OverlayStructure.cpp
+    src/Indicators/OverlayWall.h
+    src/Indicators/OverlayWall.cpp
     src/Indicators/PathIndicator.h
     src/Indicators/PathIndicator.cpp
-    src/Indicators/PathOverlay.h
-    src/Indicators/PathOverlay.cpp
     src/Indicators/StructureIndicator.h
     src/Indicators/StructureIndicator.cpp
     src/Indicators/WallIndicator.h
@@ -235,58 +245,190 @@ add_executable(
     src/States/StatesIds.h
     src/States/StateTest.h
     src/States/StateTest.cpp
+    src/Tutorial/StepAISetActive.h
+    src/Tutorial/StepAISetActive.cpp
     src/Tutorial/StepDelay.h
     src/Tutorial/StepDelay.cpp
+    src/Tutorial/StepGameAddEnemy.h
+    src/Tutorial/StepGameAddEnemy.cpp
+    src/Tutorial/StepGameBackToBase.h
+    src/Tutorial/StepGameBackToBase.cpp
     src/Tutorial/StepGameBase.h
     src/Tutorial/StepGameBase.cpp
+    src/Tutorial/StepGameBuildStructure.h
+    src/Tutorial/StepGameBuildStructure.cpp
     src/Tutorial/StepGameBaseBuildUnit.h
     src/Tutorial/StepGameBaseBuildUnit.cpp
     src/Tutorial/StepGameBaseBuildUnitIcon.h
     src/Tutorial/StepGameBaseBuildUnitIcon.cpp
+    src/Tutorial/StepGameBuildUnitStart.h
+    src/Tutorial/StepGameBuildUnitStart.cpp
+    src/Tutorial/StepGameBuildUnitEnd.h
+    src/Tutorial/StepGameBuildUnitEnd.cpp
     src/Tutorial/StepGameBaseFeatures.h
     src/Tutorial/StepGameBaseFeatures.cpp
+    src/Tutorial/StepGameBuildStructIntro.h
+    src/Tutorial/StepGameBuildStructIntro.cpp
+    src/Tutorial/StepGameBuildTowerEnd.h
+    src/Tutorial/StepGameBuildTowerEnd.cpp
     src/Tutorial/StepGameClearSelection.h
     src/Tutorial/StepGameClearSelection.cpp
+    src/Tutorial/StepGameCollectObjects.h
+    src/Tutorial/StepGameCollectObjects.cpp
+    src/Tutorial/StepGameConnectStructIntro.h
+    src/Tutorial/StepGameConnectStructIntro.cpp
     src/Tutorial/StepGameConquerCells.h
     src/Tutorial/StepGameConquerCells.cpp
+    src/Tutorial/StepGameConquerCellsEnd.h
+    src/Tutorial/StepGameConquerCellsEnd.cpp
+    src/Tutorial/StepGameConquerCellsSimple.h
+    src/Tutorial/StepGameConquerCellsSimple.cpp
+    src/Tutorial/StepGameConquerEnergyGenIntro.h
+    src/Tutorial/StepGameConquerEnergyGenIntro.cpp
+    src/Tutorial/StepGameConquerGeneratorIntro.h
+    src/Tutorial/StepGameConquerGeneratorIntro.cpp
+    src/Tutorial/StepGameConquerMaterialGenIntro.h
+    src/Tutorial/StepGameConquerMaterialGenIntro.cpp
     src/Tutorial/StepGameConquerStruct.h
     src/Tutorial/StepGameConquerStruct.cpp
+    src/Tutorial/StepGameConquerStructChoice.h
+    src/Tutorial/StepGameConquerStructChoice.cpp
+    src/Tutorial/StepGameConquerStructSimple.h
+    src/Tutorial/StepGameConquerStructSimple.cpp
+    src/Tutorial/StepGameDialogTrading.h
+    src/Tutorial/StepGameDialogTrading.cpp
     src/Tutorial/StepGameDisableCamera.h
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h
     src/Tutorial/StepGameEnableCamera.cpp
-    src/Tutorial/StepGameEnergyRegeneration.h
-    src/Tutorial/StepGameEnergyRegeneration.cpp
     src/Tutorial/StepGameEndTurn.h
     src/Tutorial/StepGameEndTurn.cpp
+    src/Tutorial/StepGameEndTurnIntro.h
+    src/Tutorial/StepGameEndTurnIntro.cpp
+    src/Tutorial/StepGameEndTurnSimple.h
+    src/Tutorial/StepGameEndTurnSimple.cpp
+    src/Tutorial/StepGameEnemyIntro.h
+    src/Tutorial/StepGameEnemyIntro.cpp
+    src/Tutorial/StepGameEnemyKilled.h
+    src/Tutorial/StepGameEnemyKilled.cpp
+    src/Tutorial/StepGameEnergyRegeneration.h
+    src/Tutorial/StepGameEnergyRegeneration.cpp
     src/Tutorial/StepGameIntro.h
     src/Tutorial/StepGameIntro.cpp
+    src/Tutorial/StepGameIntro2.h
+    src/Tutorial/StepGameIntro2.cpp
+    src/Tutorial/StepGameMakeEnemyAttack.h
+    src/Tutorial/StepGameMakeEnemyAttack.cpp
     src/Tutorial/StepGameMapNavigation.h
     src/Tutorial/StepGameMapNavigation.cpp
+    src/Tutorial/StepGameMaterialGenerator.h
+    src/Tutorial/StepGameMaterialGenerator.cpp
     src/Tutorial/StepGameMissionGoalsIcon.h
     src/Tutorial/StepGameMissionGoalsIcon.cpp
     src/Tutorial/StepGameMissionGoalsDialog.h
     src/Tutorial/StepGameMissionGoalsDialog.cpp
     src/Tutorial/StepGameMoveCamera.h
     src/Tutorial/StepGameMoveCamera.cpp
+    src/Tutorial/StepGameMoveCameraOverCell.h
+    src/Tutorial/StepGameMoveCameraOverCell.cpp
+    src/Tutorial/StepGameMoveCameraOverObject.h
+    src/Tutorial/StepGameMoveCameraOverObject.cpp
+    src/Tutorial/StepGameMoveToTower.h
+    src/Tutorial/StepGameMoveToTower.cpp
     src/Tutorial/StepGameMoveUnit.h
     src/Tutorial/StepGameMoveUnit.cpp
+    src/Tutorial/StepGameMoveUnitSimple.h
+    src/Tutorial/StepGameMoveUnitSimple.cpp
+    src/Tutorial/StepGameMoveUnitToArea.h
+    src/Tutorial/StepGameMoveUnitToArea.cpp
+    src/Tutorial/StepGameMoveUnitToCorner.h
+    src/Tutorial/StepGameMoveUnitToCorner.cpp
+    src/Tutorial/StepGamePanelHit.h
+    src/Tutorial/StepGamePanelHit.cpp
+    src/Tutorial/StepGamePrimaryMissionGoal.h
+    src/Tutorial/StepGamePrimaryMissionGoal.cpp
+    src/Tutorial/StepGameQuickUnitButton.h
+    src/Tutorial/StepGameQuickUnitButton.cpp
+    src/Tutorial/StepGameSecondaryMissionGoal.h
+    src/Tutorial/StepGameSecondaryMissionGoal.cpp
+    src/Tutorial/StepGameSelectObject.h
+    src/Tutorial/StepGameSelectObject.cpp
+    src/Tutorial/StepGameSetCollectableGeneratorTurns.h
+    src/Tutorial/StepGameSetCollectableGeneratorTurns.cpp
+    src/Tutorial/StepGameSetCollectableUnits.h
+    src/Tutorial/StepGameSetCollectableUnits.cpp
+    src/Tutorial/StepGameSetObjectAttackMode.h
+    src/Tutorial/StepGameSetObjectAttackMode.cpp
+    src/Tutorial/StepGameSetObjectEnergy.h
+    src/Tutorial/StepGameSetObjectEnergy.cpp
+    src/Tutorial/StepGameSetObjectFatalHit.h
+    src/Tutorial/StepGameSetObjectFatalHit.cpp
+    src/Tutorial/StepGameSetObjectHealth.h
+    src/Tutorial/StepGameSetObjectHealth.cpp
+    src/Tutorial/StepGameSetObjectMaxHealth.h
+    src/Tutorial/StepGameSetObjectMaxHealth.cpp
+    src/Tutorial/StepGameSetObjectPerfectShot.h
+    src/Tutorial/StepGameSetObjectPerfectShot.cpp
     src/Tutorial/StepGameSetSelectionActiveAction.h
     src/Tutorial/StepGameSetSelectionActiveAction.cpp
     src/Tutorial/StepGameSetSelectionDefaultAction.h
     src/Tutorial/StepGameSetSelectionDefaultAction.cpp
+    src/Tutorial/StepGameSetupResearch.h
+    src/Tutorial/StepGameSetupResearch.cpp
+    src/Tutorial/StepGameSetupResearchIcon.h
+    src/Tutorial/StepGameSetupResearchIcon.cpp
+    src/Tutorial/StepGameResourcesBar.h
+    src/Tutorial/StepGameResourcesBar.cpp
+    src/Tutorial/StepGameSingleInfo.h
+    src/Tutorial/StepGameSingleInfo.cpp
     src/Tutorial/StepGameStructConnected.h
     src/Tutorial/StepGameStructConnected.cpp
     src/Tutorial/StepGameStructDisconnected.h
     src/Tutorial/StepGameStructDisconnected.cpp
+    src/Tutorial/StepGameTechTreeDialog.h
+    src/Tutorial/StepGameTechTreeDialog.cpp
+    src/Tutorial/StepGameTechTreeIcon.h
+    src/Tutorial/StepGameTechTreeIcon.cpp
+    src/Tutorial/StepGameTestCameraFocus.h
+    src/Tutorial/StepGameTestCameraFocus.cpp
+    src/Tutorial/StepGameTowerIntro.h
+    src/Tutorial/StepGameTowerIntro.cpp
+    src/Tutorial/StepGameTradeIcon.h
+    src/Tutorial/StepGameTradeIcon.cpp
     src/Tutorial/StepGameTurnEnergy.h
     src/Tutorial/StepGameTurnEnergy.cpp
     src/Tutorial/StepGameUnit.h
     src/Tutorial/StepGameUnit.cpp
+    src/Tutorial/StepGameUnitAttackBurst.h
+    src/Tutorial/StepGameUnitAttackBurst.cpp
+    src/Tutorial/StepGameUnitAttackContinue.h
+    src/Tutorial/StepGameUnitAttackContinue.cpp
+    src/Tutorial/StepGameUnitAttackSimple.h
+    src/Tutorial/StepGameUnitAttackSimple.cpp
+    src/Tutorial/StepGameUnitAttackIcon.h
+    src/Tutorial/StepGameUnitAttackIcon.cpp
     src/Tutorial/StepGameUnitConquerCellsIcon.h
     src/Tutorial/StepGameUnitConquerCellsIcon.cpp
+    src/Tutorial/StepGameUpgradeIntro.h
+    src/Tutorial/StepGameUpgradeIntro.cpp
+    src/Tutorial/StepGameUpgradeUnit.h
+    src/Tutorial/StepGameUpgradeUnit.cpp
+    src/Tutorial/StepGameUpgradeUnitFree.h
+    src/Tutorial/StepGameUpgradeUnitFree.cpp
+    src/Tutorial/StepGameWaitEnemiesKilled.h
+    src/Tutorial/StepGameWaitEnemiesKilled.cpp
+    src/Tutorial/StepGameWaitEnemyKilled.h
+    src/Tutorial/StepGameWaitEnemyKilled.cpp
     src/Tutorial/StepGameWaitTurn.h
     src/Tutorial/StepGameWaitTurn.cpp
+    src/Tutorial/StepGameWallBuildEnd.h
+    src/Tutorial/StepGameWallBuildEnd.cpp
+    src/Tutorial/StepGameWallBuildIcon.h
+    src/Tutorial/StepGameWallBuildIcon.cpp
+    src/Tutorial/StepGameWallBuildIntro.h
+    src/Tutorial/StepGameWallBuildIntro.cpp
+    src/Tutorial/StepGameWallBuildStart.h
+    src/Tutorial/StepGameWallBuildStart.cpp
     src/Tutorial/StepPlanetMapConquerTerritory.h
     src/Tutorial/StepPlanetMapConquerTerritory.cpp
     src/Tutorial/StepPlanetMapConquerTerritoryStart.h
@@ -311,18 +453,30 @@ add_executable(
     src/Tutorial/Tutorial.cpp
     src/Tutorial/TutorialConstants.h
     src/Tutorial/TutorialConstants.cpp
-    src/Tutorial/TutorialGameIntro.h
-    src/Tutorial/TutorialGameIntro.cpp
+    src/Tutorial/TutorialGame.h
+    src/Tutorial/TutorialGame.cpp
+    src/Tutorial/TutorialGame1.h
+    src/Tutorial/TutorialGame1.cpp
+    src/Tutorial/TutorialGame2.h
+    src/Tutorial/TutorialGame2.cpp
+    src/Tutorial/TutorialGame3.h
+    src/Tutorial/TutorialGame3.cpp
     src/Tutorial/TutorialInfoStep.h
     src/Tutorial/TutorialInfoStep.cpp
     src/Tutorial/TutorialManager.h
     src/Tutorial/TutorialManager.cpp
     src/Tutorial/TutorialPlanetMap.h
     src/Tutorial/TutorialPlanetMap.cpp
+    src/Tutorial/TutorialPlanetMap1.h
+    src/Tutorial/TutorialPlanetMap1.cpp
+    src/Tutorial/TutorialPlanetMap2.h
+    src/Tutorial/TutorialPlanetMap2.cpp
     src/Tutorial/TutorialStep.h
     src/Tutorial/TutorialStep.cpp
-    src/Widgets/BlinkingIconEnergy.h
-    src/Widgets/BlinkingIconEnergy.cpp
+    src/Widgets/BlinkingHighlight.h
+    src/Widgets/BlinkingHighlight.cpp
+    src/Widgets/BlinkingIcon.h
+    src/Widgets/BlinkingIcon.cpp
     src/Widgets/ButtonDialogArrows.h
     src/Widgets/ButtonDialogArrows.cpp
     src/Widgets/ButtonDialogBack.h
@@ -435,6 +589,10 @@ add_executable(
     src/Widgets/PanelShotType.cpp
     src/Widgets/PanelTurnControl.h
     src/Widgets/PanelTurnControl.cpp
+    src/Widgets/PanelUnitEnergyUsage.h
+    src/Widgets/PanelUnitEnergyUsage.cpp
+    src/Widgets/PanelUnitResourcesUsage.h
+    src/Widgets/PanelUnitResourcesUsage.cpp
     src/Widgets/PlanetMap.h
     src/Widgets/PlanetMap.cpp
     src/Widgets/ProgressBarObjectVisualStat.h
@@ -463,10 +621,14 @@ add_executable(
     src/Widgets/Test/TestSliderH.cpp
     src/Widgets/Tutorial/FocusArea.h
     src/Widgets/Tutorial/FocusArea.cpp
+    src/Widgets/Tutorial/IsoFocusArea.h
+    src/Widgets/Tutorial/IsoFocusArea.cpp
     src/Widgets/Tutorial/PanelClickFilter.h
     src/Widgets/Tutorial/PanelClickFilter.cpp
     src/Widgets/Tutorial/PanelInfoTutorial.h
     src/Widgets/Tutorial/PanelInfoTutorial.cpp
+    # embed manifest file on Windows to disable scaling
+    $<$<PLATFORM_ID:Windows>:data/virtualord.exe.manifest>
 )
 
 target_include_directories(
@@ -483,6 +645,8 @@ target_link_libraries(
     PRIVATE sgui
     PRIVATE utilities
 )
+
+set_target_properties(game PROPERTIES OUTPUT_NAME "virtualord")
 
 # copy data to build directory when CMake is executed
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data/)

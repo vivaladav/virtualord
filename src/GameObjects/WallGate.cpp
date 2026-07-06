@@ -4,8 +4,11 @@
 #include "GameData.h"
 #include "GameMap.h"
 #include "IsoObject.h"
+#include "Player.h"
 
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
 
 namespace game
 {
@@ -19,6 +22,16 @@ WallGate::WallGate(const ObjectData & data, const ObjectInitData & initData,
     SetImage();
 }
 
+WallGate::~WallGate()
+{
+    auto p = GetOwner();
+
+    if(p == nullptr)
+        return ;
+
+    p->SetCellWalkable(GetRow0(), GetCol0(), false);
+}
+
 bool WallGate::Toggle()
 {
     if(!IsLinked())
@@ -26,6 +39,17 @@ bool WallGate::Toggle()
 
     // toggle open value
     mOpen = !mOpen;
+
+    // play SFX
+    if(IsVisible())
+    {
+        auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
+
+        if(mOpen)
+            ap->PlaySound("game/gate_open.ogg");
+        else
+            ap->PlaySound("game/gate_close.ogg");
+    }
 
     // set cell walkable if open and not walkable otherwise
     const GameMapCell * cell = GetCell();
@@ -39,6 +63,18 @@ bool WallGate::Toggle()
     return true;
 }
 
+void WallGate::OnNewTurn(PlayerFaction faction)
+{
+    Structure::OnNewTurn(faction);
+
+    if(faction != GetFaction())
+        return ;
+
+    // close gate if open and nothing on top
+    if(IsOpen() && GetCell()->objTop == nullptr)
+        GetGameMap()->CloseGate(this);
+}
+
 unsigned int WallGate::GetCostEnergy(unsigned int level)
 {
     const unsigned int cost0 = 5;
@@ -49,6 +85,18 @@ unsigned int WallGate::GetCostMaterial(unsigned int level)
 {
     const unsigned int cost0 = 10;
     return (level + 1) * cost0;
+}
+
+void WallGate::OnLinkedChanged()
+{
+    Structure::OnLinkedChanged();
+
+    auto p = GetOwner();
+
+    if(p == nullptr)
+        return ;
+
+    p->SetCellWalkable(GetRow0(), GetCol0(), IsLinked());
 }
 
 void WallGate::UpdateGraphics()

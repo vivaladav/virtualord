@@ -3,7 +3,7 @@
 #include "GameConstants.h"
 #include "IsoObject.h"
 #include "Player.h"
-#include "Widgets/BlinkingIconEnergy.h"
+#include "Widgets/BlinkingIcon.h"
 
 namespace game
 {
@@ -15,10 +15,7 @@ Structure::Structure(const ObjectData & data, const ObjectInitData & initData)
     SetStructure(true);
     SetStatic(true);
 
-    if(IsFactionLocal())
-        ShowIconEnergy();
-    else
-        HideIconEnergy();
+    UpdateIconEnergy();
 }
 
 Structure::~Structure()
@@ -26,23 +23,9 @@ Structure::~Structure()
     delete mIconEnergy;
 }
 
-void Structure::OnNewTurn(PlayerFaction faction)
-{
-    GameObject::OnNewTurn(faction);
-
-    if(faction != GetFaction())
-        return ;
-
-    if(!IsLinked())
-        return ;
-
-    ConsumeResources();
-    ProduceResources();
-}
-
 float Structure::GetTimeBuildUnit() const
 {
-    const float maxTime = 5.f;
+    const float maxTime = 2.f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONSTRUCTION));
 }
 
@@ -65,18 +48,14 @@ void Structure::OnFactionChanged()
 {
     GameObject::OnFactionChanged();
 
-    if(GetFaction() != NO_FACTION && !IsLinked())
-        ShowIconEnergy();
+    UpdateIconEnergy();
 }
 
 void Structure::OnLinkedChanged()
 {
     GameObject::OnLinkedChanged();
 
-    if(IsLinked())
-        HideIconEnergy();
-    else if(GetFaction() != NO_FACTION)
-        ShowIconEnergy();
+    UpdateIconEnergy();
 }
 
 void Structure::HideIconEnergy()
@@ -108,6 +87,14 @@ void Structure::PositionIconEnergy()
     const int iconY = isoY - mIconEnergy->GetHeight() - iconMarginV;
 
     mIconEnergy->SetPosition(iconX, iconY);
+}
+
+void Structure::UpdateIconEnergy()
+{
+    if(IsFactionLocal() && !IsLinked())
+        ShowIconEnergy();
+    else
+        HideIconEnergy();
 }
 
 void Structure::ProduceResources()

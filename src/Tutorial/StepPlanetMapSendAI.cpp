@@ -21,13 +21,13 @@ StepPlanetMapSendAI::StepPlanetMapSendAI(PanelPlanetActions * panel)
     auto btn = panel->GetButton(PanelPlanetActions::SEND_AI);
 
     const int padding = 10;
-    const int fX = panel->GetX() + btn->GetX() - padding;
-    const int fY = panel->GetY() + btn->GetY() - padding;
+    const int fX = btn->GetScreenX() - padding;
+    const int fY = btn->GetScreenY() - padding;
     const int fW = btn->GetWidth() + (padding * 2);
     const int fH = btn->GetHeight() + (padding * 2);
 
     mFocusArea->SetScreenArea(fX, fY, fW, fH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -35,10 +35,8 @@ StepPlanetMapSendAI::StepPlanetMapSendAI(PanelPlanetActions * panel)
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_SEND_AI_1"),
-                       TutorialConstants::colorText, 7.f, true, true);
-    info->AddInfoEntry(sm->GetCString("TUT_PM_SEND_AI_2"),
-                       TutorialConstants::colorText, 8.f, true, true, [this]
+    info->AddInfoEntry(sm->GetCString("TUT_PM_SEND_AI_1"), 7.f, true, true);
+    info->AddInfoEntry(sm->GetCString("TUT_PM_SEND_AI_2"), 8.f, true, true, [this]
                        {
                            mFocusArea->SetBlinking(true);
                            mFocusArea->SetVisible(true);

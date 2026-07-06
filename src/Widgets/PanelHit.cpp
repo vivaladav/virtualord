@@ -27,7 +27,6 @@ PanelHit::PanelHit()
     auto tm = graphic::TextureManager::Instance();
     auto fm = graphic::FontManager::Instance();
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     const int sizeHeader = 15;
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFilePanelHeader,
@@ -37,12 +36,12 @@ PanelHit::PanelHit()
     auto fontText = fm->GetFont(WidgetsConstants::FontFilePanelText,
                                 sizeText, graphic::Font::NORMAL);
 
-    const int marginT = 5;
+    const int marginT = 11;
     const int marginBlockB = 35;
     int y = marginT;
 
     // BACKGROUND
-    graphic::Texture * tex = tm->GetTexture(SpriteFilePanelHit);
+    graphic::Texture * tex = tm->GetSprite(SpriteFilePanelUnitActions, ID_PANEL_HIT_BG);
     mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 

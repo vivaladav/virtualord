@@ -19,17 +19,21 @@ public:
 public:
     WallGate(const ObjectData & data, const ObjectInitData & initData,
              GameObjectVariantId orientation);
+    ~WallGate();
 
     bool IsOpen() const;
     bool Toggle();
 
+    void OnNewTurn(PlayerFaction faction) override;
+
     static unsigned int GetCostEnergy(unsigned int level);
     static unsigned int GetCostMaterial(unsigned int level);
 
-protected:
+private:
+    void OnLinkedChanged() override;
+
     void UpdateGraphics() override;
 
-private:
     void SetImage();
 
 private:

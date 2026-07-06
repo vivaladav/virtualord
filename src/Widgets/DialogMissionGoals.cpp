@@ -257,7 +257,7 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
                 continue;
 
             tex = 0 == (n % 2) ? texRow1 : texRow2;
-            auto row = CreateGoalEntry(n, tex);
+            auto row = CreateGoalEntry(n, tex, mPrimaryCollectButtons);
             row->SetPosition(contentX, contentY);
 
             contentY += row->GetHeight() + marginRowV;
@@ -286,7 +286,7 @@ DialogMissionGoals::DialogMissionGoals(MissionGoalsTracker * mgt)
                 continue;
 
             tex = 0 == (n % 2) ? texRow1 : texRow2;
-            auto row = CreateGoalEntry(n, tex);
+            auto row = CreateGoalEntry(n, tex, mSecondCollectButtons);
             row->SetPosition(contentX, contentY);
 
             contentY += row->GetHeight() + marginRowV;
@@ -324,7 +324,8 @@ void DialogMissionGoals::RemoveFunctionOnEnd(unsigned int funId)
 }
 
 sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
-                                                        sgl::graphic::Texture * texBg)
+                                                       sgl::graphic::Texture * texBg,
+                                                       std::vector<sgl::sgui::AbstractButton *> & buttonsCollect)
 {
     using namespace sgl;
 
@@ -551,7 +552,11 @@ sgl::sgui::Widget * DialogMissionGoals::CreateGoalEntry(unsigned int goalInd,
 
             CheckIfEndAllowed();
         });
+
+        buttonsCollect.emplace_back(btn);
     }
+    else
+        buttonsCollect.emplace_back(nullptr);
 
     return bg;
 }

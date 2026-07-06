@@ -28,7 +28,7 @@ StepPlanetMapExploreTerritoryStart::StepPlanetMapExploreTerritoryStart(PanelPlan
     const int fH = mButton->GetHeight() + (padding * 2);
 
     mFocusArea->SetScreenArea(fX, fY, fW, fH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
@@ -37,11 +37,11 @@ StepPlanetMapExploreTerritoryStart::StepPlanetMapExploreTerritoryStart(PanelPlan
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_START_1"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, fX, fY, fW, fH]
-                       {
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
-                       });
+    info->AddActionEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_START_1"), 0.f, false, false,
+                         [this, fX, fY, fW, fH]
+                        {
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                        });
 
     // EXPLORE BUTTON
     mFuncId = mButton->AddOnClickFunction([this]

@@ -21,6 +21,24 @@ namespace game
 Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjectVariantId var)
     : GameObject(data, initData)
 {
+    const GameObjectTypeId type = GetObjectType();
+
+    if(type == ObjectData::TYPE_TREES2)
+    {
+        mNumVariants = NUM_TREE2_VARIANTS;
+        mMaxNum = MAX_TREE2_TREES;
+    }
+    else if(type == ObjectData::TYPE_TREES3)
+    {
+        mNumVariants = NUM_TREE3_VARIANTS;
+        mMaxNum = MAX_TREE3_TREES;
+    }
+    else
+    {
+        mNumVariants = NUM_TREE1_VARIANTS;
+        mMaxNum = MAX_TREE1_TREES;
+    }
+
     mVariant = var;
 
     SetStatic(true);
@@ -33,7 +51,7 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
 
     // randomize turns for change
     const int minTurns = 10;
-    const int maxTurns = 30;
+    const int maxTurns = 25;
     sgl::utilities::UniformDistribution dis(minTurns, maxTurns, GetGame()->GetRandSeed());
     mTurnsToChange = dis.GetNextValue();
 
@@ -55,17 +73,17 @@ void Trees::OnNewTurn(PlayerFaction faction)
     mTurns = 0;
 
     // still growing 1 tree
-    if(1 == mNumTrees && mVariant < (NUM_TREE1_VARIANTS - 1))
+    if(1 == mNumTrees && mVariant < (mNumVariants - 1))
     {
         ++mVariant;
 
         SetImage();
     }
     // grow more trees
-    else if(mNumTrees < MAX_TREE1_TREES)
+    else if(mNumTrees < mMaxNum)
     {
         // randomize new variant
-        sgl::utilities::UniformDistribution dis(0, NUM_TREE1_VARIANTS - 1, GetGame()->GetRandSeed());
+        sgl::utilities::UniformDistribution dis(0, mNumVariants - 1, GetGame()->GetRandSeed());
         mVariant = dis.GetNextValue();
 
         ++mNumTrees;
@@ -116,13 +134,13 @@ void Trees::SpawnTree(int r0, int c0)
 {
     GameMap * gm = GetGameMap();
 
-    sgl::utilities::UniformDistribution dis(0, NUM_TREE1_VARIANTS - 1, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution dis(0, mNumVariants - 1, GetGame()->GetRandSeed());
     const int variant = dis.GetNextValue();
 
-    gm->CreateObject(MapLayers::REGULAR_OBJECTS, ObjectData::TYPE_TREES, variant, NO_FACTION, r0, c0, false);
+    gm->CreateObject(MapLayers::REGULAR_OBJECTS, GetObjectType(), variant, NO_FACTION, r0, c0, false);
 
     // set cell type of new tree
-    gm->SetCellType(r0, c0, TREES1);
+    gm->SetCellType(r0, c0, CT_TREES1);
 
     // set cell type of surrounding cells
     const int rows = gm->GetNumRows();
@@ -144,7 +162,7 @@ void Trees::SpawnTree(int r0, int c0)
 
             if(!GameMapCell::IsTypePrimary(cell.basicType))
             {
-                gm->SetCellType(r, c, TREES1_SURR);
+                gm->SetCellType(r, c, CT_TREES1_SURR);
                 gm->UpdateCellType(ind, cell);
             }
         }
@@ -170,8 +188,16 @@ void Trees::SetImage()
     // set texture
     auto tm = sgl::graphic::TextureManager::Instance();
 
-    const unsigned int spriteId0 = IsSelected() ? TREE1_1T_1_SEL : TREE1_1T_1;
-    const unsigned int baseSpriteId = spriteId0 + (NUM_TREE1_VARIANTS * (mNumTrees - 1));
+    const GameObjectTypeId type = GetObjectType();
+
+    unsigned int spriteId0 = TREE1_1T_1;
+
+    if(type == ObjectData::TYPE_TREES2)
+        spriteId0 = TREE2_1T_1;
+    else if(type == ObjectData::TYPE_TREES3)
+        spriteId0 = TREE3_1T_1;
+
+    const unsigned int baseSpriteId = spriteId0 + (mNumVariants * (mNumTrees - 1));
     const unsigned int spriteId = baseSpriteId + mVariant;
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileTrees, spriteId);
 
@@ -182,12 +208,36 @@ void Trees::SetObjColors()
 {
     mObjColors.clear();
 
-    mObjColors.push_back(0x5d614bff);
-    mObjColors.push_back(0x858a6bff);
-    mObjColors.push_back(0x787d61ff);
-    mObjColors.push_back(0x515441ff);
-    mObjColors.push_back(0x6c7057ff);
-    mObjColors.push_back(0x454838ff);
+    const GameObjectTypeId type = GetObjectType();
+
+    if(type == ObjectData::TYPE_TREES2)
+    {
+        mObjColors.push_back(0x7d9056ff);
+        mObjColors.push_back(0x617043ff);
+        mObjColors.push_back(0x6b6548ff);
+        mObjColors.push_back(0x4d4933ff);
+        mObjColors.push_back(0x35392dff);
+        mObjColors.push_back(0x2b2922ff);
+    }
+    else if(type == ObjectData::TYPE_TREES3)
+    {
+        mObjColors.push_back(0x96a96fff);
+        mObjColors.push_back(0x7d9056ff);
+        mObjColors.push_back(0x536039ff);
+        mObjColors.push_back(0xa3b87aff);
+        mObjColors.push_back(0x37392dff);
+        mObjColors.push_back(0x727255ff);
+        mObjColors.push_back(0x464a36ff);
+    }
+    else
+    {
+        mObjColors.push_back(0x5d614bff);
+        mObjColors.push_back(0x858a6bff);
+        mObjColors.push_back(0x787d61ff);
+        mObjColors.push_back(0x515441ff);
+        mObjColors.push_back(0x6c7057ff);
+        mObjColors.push_back(0x454838ff);
+    }
 }
 
 } // namespace game

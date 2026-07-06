@@ -10,7 +10,6 @@
 #include "GameObjects/Blobs.h"
 #include "GameObjects/Diamonds.h"
 #include "GameObjects/GameObjectsGroup.h"
-#include "GameObjects/LootBox.h"
 #include "GameObjects/ResourceStorage.h"
 #include "GameObjects/Structure.h"
 #include "GameObjects/Unit.h"
@@ -21,19 +20,14 @@
 namespace game
 {
 
-constexpr float MAX_ENERGY0 = 100.f;
-
 Player::Player(const char * name, int pid)
     : mDummyStat(INVALID_STAT, 0)
     , mName(name)
-    , mOnNumCellsChanged([](int){})
     , mOnNumUnitsChanged([](){})
     , mOnTurnEnergyChanged([](){})
     , mOnTurnMaxEnergyChanged([](){})
     , mPlayerId(pid)
     , mFaction(NO_FACTION)
-    , mTurnEnergy(MAX_ENERGY0)
-    , mTurnMaxEnergy(MAX_ENERGY0)
 {
     mStats.emplace_back(Stat::BLOBS, 0);
     mStats.emplace_back(Stat::DIAMONDS, 0);
@@ -45,18 +39,28 @@ Player::Player(const char * name, int pid)
     for(StatValue & val : mStats)
         val.SetMin(0);
 
-    mStats[Stat::BLOBS].SetMax(100);
-    mStats[Stat::DIAMONDS].SetMax(100);
-    mStats[Stat::ENERGY].SetMax(1000);
-    mStats[Stat::MATERIAL].SetMax(1000);
+    mStats[Stat::BLOBS].SetMax(200);
+    mStats[Stat::DIAMONDS].SetMax(200);
+    mStats[Stat::ENERGY].SetMax(2250);
+    mStats[Stat::MATERIAL].SetMax(1800);
     mStats[Stat::MONEY].SetMax(99999999);
     mStats[Stat::RESEARCH].SetMax(999999);
 
     // -- UPGRADES --
     for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
-        mUpgrades.emplace(static_cast<TechUpgradeId>(i), false);
+    {
+        const auto tu = static_cast<TechUpgradeId>(i);
+
+        mUpgrades.emplace(tu, false);
+        mUpgradesAvailable.emplace(tu, false);
+    }
 
     mUpgrades.emplace(TECH_UP_NULL, false);
+
+    InitUpgrades();
+
+    // UPDATE VALUES
+    AdjustTurnMaxEnergy();
 }
 
 Player::~Player()
@@ -185,15 +189,20 @@ std::vector<Structure *> Player::GetStructuresByType(GameObjectTypeId type) cons
     return structures;
 }
 
-void Player::InitVisibility(int rows, int cols)
+void Player::InitMaps(int rows, int cols)
 {
     const unsigned int size = rows * cols;
 
+    // visibility map
     mVisMap.resize(size);
     mVisMap.assign(size, 0);
 
-    mVisMapRows = rows;
-    mVisMapCols = cols;
+    // walkable map
+    mWalkableOverrideMap.resize(size, false);
+
+    // size of map
+    mMapRows = rows;
+    mMapCols = cols;
 }
 
 bool Player::IsObjectVisible(const GameObject * obj) const
@@ -205,7 +214,7 @@ bool Player::IsObjectVisible(const GameObject * obj) const
 
     for(unsigned int r = tlR; r <= brR; ++r)
     {
-        const unsigned int ind0 = r * mVisMapCols;
+        const unsigned int ind0 = r * mMapCols;
 
         for(unsigned int c = tlC; c <= brC; ++c)
         {
@@ -335,13 +344,6 @@ void Player::RemoveOnResourceRangeChanged(Stat sid, unsigned int funId)
         mStats[sid].RemoveOnRangeChanged(funId);
 }
 
-void Player::SumCells(int val)
-{
-    mNumCells += val;
-
-    mOnNumCellsChanged(mNumCells);
-}
-
 void Player::HandleCollectable(GameObject * collected, GameObject * collector)
 {
     const GameObjectTypeId type = collected->GetObjectType();
@@ -350,29 +352,12 @@ void Player::HandleCollectable(GameObject * collected, GameObject * collector)
     if(type == ObjectData::TYPE_DIAMONDS)
     {
         auto d = static_cast<Diamonds *>(collected);
-        mStats[Stat::DIAMONDS].SumValue(d->GetNum());
+        mStats[Stat::DIAMONDS].SumValue(d->GetNumUnits());
     }
     else if(type == ObjectData::TYPE_BLOBS)
     {
         auto d = static_cast<Blobs *>(collected);
-        mStats[Stat::BLOBS].SumValue(d->GetNum());
-    }
-    else if(type == ObjectData::TYPE_LOOTBOX || type == ObjectData::TYPE_LOOTBOX2)
-    {
-        auto lb = static_cast<LootBox *>(collected);
-        auto type = static_cast<Player::Stat>(lb->GetPrizeType());
-
-        std::cout << "Player::HandleCollectable | LootBox type: " << type
-                  << " - quantity: " << lb->GetPrizeQuantity() << std::endl;
-
-        if(type != INVALID_STAT)
-            mStats[type].SumValue(lb->GetPrizeQuantity());
-        // special case -> exploding lootbox
-        else
-        {
-            const float damage = collected->GetEnergy();
-            collector->Hit(damage, nullptr, false);
-        }
+        mStats[Stat::BLOBS].SumValue(d->GetNumUnits());
     }
     else
     {
@@ -391,6 +376,19 @@ void Player::ClearUpgrades()
 {
     for(auto it : mUpgrades)
         it.second = false;
+
+    for(auto it : mUpgradesAvailable)
+        it.second = false;
+
+    InitUpgrades();
+}
+
+void Player::SetUpgradeAvailable(TechUpgradeId upgrade)
+{
+    auto it = mUpgradesAvailable.find(upgrade);
+
+    if(it != mUpgradesAvailable.end())
+        it->second = true;
 }
 
 void Player::UnlockUpgrade(TechUpgradeId upgrade)
@@ -471,9 +469,45 @@ void Player::UnlockUpgrade(TechUpgradeId upgrade)
             UpgradeResourceStorage(RES_BLOBS, 1.5f);
         break;
 
+        case TECH_UP_PRACTICE_TARGET:
+            AddAvailableStructure(ObjectData::TYPE_PRACTICE_TARGET);
+        break;
+
+        case TECH_UP_TRADING_POST:
+            AddAvailableStructure(ObjectData::TYPE_TRADING_POST);
+        break;
+
+
+        case TECH_UP_UNIT_SLOTS_1:
+        case TECH_UP_UNIT_SLOTS_2:
+        case TECH_UP_UNIT_SLOTS_3:
+        case TECH_UP_UNIT_SLOTS_4:
+        case TECH_UP_UNIT_SLOTS_5:
+            SetMaxUnits(GetMaxUnits() + 1);
+        break;
+
         default:
         break;
     }
+
+    NotifyUpgradeUnlock(upgrade);
+}
+
+unsigned int Player::AddOnUpgradeUnlocked(const std::function<void(TechUpgradeId)> & f)
+{
+    static unsigned int num = 0;
+
+    mOnUpgradeUnlocked.emplace(++num, f);
+
+    return num;
+}
+
+void Player::RemoveOnUpgradeUnlocked(unsigned int funId)
+{
+    auto it = mOnUpgradeUnlocked.find(funId);
+
+    if(it != mOnUpgradeUnlocked.end())
+        mOnUpgradeUnlocked.erase(it);
 }
 
 void Player::OnNewTurn()
@@ -481,34 +515,48 @@ void Player::OnNewTurn()
     // update turns counter
     ++mTurnsPlayed;
 
-    // consume energy of own cells
-    const int energy = GetCellsEnergyUsed();
-
-    if(energy > 0)
+    // UPDATE RESOURCES
+    const Player::Stat statIds[] =
     {
-        mStats[ENERGY].SumValue(-energy);
+        ENERGY,
+        MATERIAL,
+        DIAMONDS,
+        BLOBS,
+        MONEY,
+        RESEARCH
+    };
 
-        NotifyResourcesChanged();
+    for(unsigned int r = 0; r < NUM_EXTENDED_RESOURCES; ++r)
+    {
+        const auto er = static_cast<ExtendedResource>(r);
+        const int delta = GetResourceDelta(er);
+
+        mStats[statIds[r]].SumValue(delta);
     }
+
+    NotifyResourcesChanged();
 }
 
 void Player::AdjustTurnMaxEnergy()
 {
+    constexpr float maxEnergy0 = 100.f;
+    constexpr float delta = 1.f;
     const float oldMax = mTurnMaxEnergy;
 
     // UPDATE MAX
-    int totUnitsEnergy = 0;
+    float newMax = 0.f;
 
     for(Unit * u : mUnits)
-        totUnitsEnergy += u->GetMaxEnergy();
+        newMax += u->GetMaxEnergy();
 
-    const float maxPerc = 0.75f;
-    float newMax = totUnitsEnergy * maxPerc;
-
-    if(newMax < MAX_ENERGY0)
-        newMax = MAX_ENERGY0;
+    if(newMax < maxEnergy0)
+        newMax = maxEnergy0;
 
     mTurnMaxEnergy = newMax;
+
+    // nothing changed
+    if(std::fabs(mTurnMaxEnergy - oldMax) < delta)
+        return ;
 
     mOnTurnMaxEnergyChanged();
 
@@ -692,16 +740,46 @@ int Player::GetResourceConsumption(ExtendedResource type) const
     return tot;
 }
 
+int Player::GetResourceDelta(ExtendedResource type) const
+{
+    int delta = 0;
+
+    // consider usage and production  from structures
+    for(const auto s : mStructures)
+    {
+        if(s->IsLinked())
+            delta += s->GetResourceProduction(type) - s->GetResourceUsage(type);
+    }
+
+    // energy used by cells too
+    if(ER_ENERGY == type)
+        delta -= GetCellsEnergyUsed();
+
+    return delta;
+}
+
+void Player::InitUpgrades()
+{
+    mUpgradesAvailable[TECH_UP_BASE_IMPROVE_1] = true;
+    mUpgradesAvailable[TECH_UP_UNIT_SLOTS_1] = true;
+}
+
 int Player::GetCellsEnergyUsed() const
 {
     const int energyPerCell = 1;
-    return mNumCells * energyPerCell;
+    return mNumLinkedCells * energyPerCell;
 }
 
 void Player::NotifyResourcesChanged()
 {
     for(auto & it : mOnResourcesChanged)
         it.second();
+}
+
+void Player::NotifyUpgradeUnlock(TechUpgradeId upgrade)
+{
+    for(auto & it : mOnUpgradeUnlocked)
+        it.second(upgrade);
 }
 
 void Player::UpgradeResourceStorage(ResourceType res, float mult)

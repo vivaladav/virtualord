@@ -34,7 +34,7 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
     const int fH = mButton->GetHeight() + (padding * 2);
 
     mFocusArea->SetScreenArea(fX, fY, fW, fH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
@@ -63,17 +63,16 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_SUCCESS_1"),
-                       TutorialConstants::colorText, 8.f, true, true);
-    info->AddInfoEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_SUCCESS_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, fX, fY, fW, fH]
-                       {
-                           GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+    info->AddInfoEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_SUCCESS_1"), 8.f, true, true);
+    info->AddActionEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_SUCCESS_2"), 0.f, false, false,
+                         [this, fX, fY, fW, fH]
+                        {
+                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
 
-                           mFocusInfo->SetVisible(false);
-                           mFocusResources->SetVisible(false);
-                           mFocusArea->SetVisible(true);
-                       });
+                            mFocusInfo->SetVisible(false);
+                            mFocusResources->SetVisible(false);
+                            mFocusArea->SetVisible(true);
+                        });
 
     // EXPLORE BUTTON
     mFuncId = mButton->AddOnClickFunction([this]

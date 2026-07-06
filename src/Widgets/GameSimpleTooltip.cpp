@@ -7,8 +7,8 @@
 #include <sgl/graphic/Font.h>
 #include <sgl/graphic/FontManager.h>
 #include <sgl/graphic/Image.h>
-#include <sgl/graphic/TextureManager.h>
 #include <sgl/graphic/Text.h>
+#include <sgl/graphic/TextureManager.h>
 #include <sgl/graphic/Texture.h>
 
 // anonymous namespace for private stuff
@@ -27,7 +27,7 @@ GameSimpleTooltip::GameSimpleTooltip(const char * text)
     auto tm = graphic::TextureManager::Instance();
 
     // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFileTooltips, ID_TOOLTIP_GAME_BG_L);
+    auto tex = tm->GetSprite(SpriteFileTooltips, ID_TOOLTIP_GAME_BG_L);
 
     mBgL = new graphic::Image(tex);
     RegisterRenderable(mBgL);

@@ -401,11 +401,15 @@ void MissionGoal::SetMissionRewards()
         }
         else if(mType == TYPE_TERRITORY_CONTROL)
         {
-            const int multMoney = 100;
+            const int multMoney = 50;
             mRewards[ER_MONEY] = mQuantity * multMoney;
 
-            const int multResearch = 50;
-            mRewards[ER_RESEARCH] = mQuantity * multResearch;
+            const int divBlobs = 2;
+            mRewards[ER_BLOBS] = mQuantity / divBlobs;
+
+            const int divDiamonds = 2;
+            mRewards[ER_DIAMONDS] = mQuantity / divDiamonds;
+
         }
         else if(mType == TYPE_TERRITORY_CONTROL_TIME)
         {

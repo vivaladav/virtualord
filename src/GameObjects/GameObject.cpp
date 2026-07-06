@@ -365,14 +365,9 @@ int GameObject::GetExperienceToLevel(int level) const
 {
     // TODO use different values according to difficulty level
     // increments
-    //  0, 50, 100, 150, 250, 400, 650, 1050, 1700, 2750
-    //  0, 50, 150, 200, 350, 550, 900, 1450, 2350, 3800
-    //  0, 50, 200, 250, 450, 700, 1150, 1850, 3000, 4850
     const int points[MAX_LEVEL] =
     {
-      //0, 50, 150, 300, 550, 950, 1600, 2650, 4350, 7100
-        0, 50, 200, 400, 750, 1300, 2200, 3650, 6000, 9800
-      //0, 50, 250, 500, 950, 1650, 2800, 4650, 7650, 12500
+        0, 90, 200, 500, 1100, 2400, 5000, 11000, 19000, 30000
     };
 
     if(level < MAX_LEVEL)
@@ -408,6 +403,10 @@ void GameObject::UpgradeLevel(const std::vector<int> & attChanges)
     // update visibility if needed
     if(IsFactionLocal() && attChanges[OBJ_ATT_VIEW_RANGE] > 0)
         mGameMap->UpdateLocalObjectVisibility(this);
+
+    // update turn energy if unit
+    if(mCategory == ObjectData::CAT_UNIT && mOwner != nullptr)
+        mOwner->AdjustTurnMaxEnergy();
 
     // notify object and observers
     OnAttributeChanged();
@@ -474,6 +473,18 @@ void GameObject::SetAttackMode(AttackMode am)
 {
     if(mWeapon != nullptr)
         mWeapon->SetAttackMode(am);
+}
+
+void GameObject::SetPerfectShot(bool enabled)
+{
+    if(mWeapon != nullptr)
+        mWeapon->SetPerfectShot(enabled);
+}
+
+void GameObject::SetFatalHit(bool enabled)
+{
+    if(mWeapon != nullptr)
+        mWeapon->SetFatalHit(enabled);
 }
 
 void GameObject::FindAndSetEnemyTarget()
@@ -827,13 +838,14 @@ float GameObject::GetActionEnergyCost(GameObjectActionType action) const
         10.f,       // BUILD_UNIT
         0.f,        // SET_TARGET
         5.f,        // MOVE
-        10.f,       // CONQUER_CELL
+        5.f,        // CONQUER_CELL
         20.f,       // CONQUER_STRUCTURE
         0.f,        // ATTACK
         30.f,       // BUILD_STRUCTURE
         10.f,       // BUILD_WALL
         5.f,        // HEAL
         4.f,        // SPAWN
+        10.f,       // OPEN_LOOTBOX
         1.f,        // TOGGLE_GATE
         0.f,        // SELF_DESTRUCTION
     };
@@ -850,12 +862,13 @@ float GameObject::GetActionExperienceGain(GameObjectActionType action) const
         0,      // SET_TARGET
         1,      // MOVE
         2,      // CONQUER_CELL
-        5,      // CONQUER_STRUCTURE
+        8,      // CONQUER_STRUCTURE
         1,      // ATTACK
         5,      // BUILD_STRUCTURE
         2,      // BUILD_WALL
         2,      // HEAL
         5,      // SPAWN
+        4,      // OPEN_LOOTBOX
         1,      // TOGGLE_GATE
         0,      // SELF_DESTRUCTION
     };

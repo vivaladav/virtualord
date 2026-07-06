@@ -1,4 +1,5 @@
 build*
 *.user
 src/Version.h
-input/
+input*/
+.qtcreator

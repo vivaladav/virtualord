@@ -36,6 +36,7 @@ class ScreenGame;
 class Temple;
 class Unit;
 class WallBuildPath;
+class WallGate;
 class WeaponData;
 
 struct Cell2D;
@@ -54,16 +55,20 @@ public:
 
     bool HasObject(unsigned int ind) const;
     bool HasObject(unsigned int r, unsigned int c) const;
+    bool HasObjectType(GameObjectTypeId type, unsigned int ind) const;
+    bool HasObjectType(GameObjectTypeId type, unsigned int r, unsigned int c) const;
     bool HasObject(const GameObject * obj) const;
     bool IsObjectVisibleToLocalPlayer(const GameObject * obj) const;
 
     const std::vector<GameMapCell> & GetCells() const;
     const std::vector<GameObject *> & GetObjects() const;
+    const std::vector<CollectableGenerator *> & GetCollectableGenerators() const;
 
     bool IsCellVisibleToLocalPlayer(unsigned int ind) const;
     bool IsCellVisibleToLocalPlayer(unsigned int r, unsigned int c) const;
     bool IsAnyCellVisibleToLocalPlayer(unsigned int rTL, unsigned int cTL,
                                        unsigned int rBR, unsigned int cBR) const;
+
     bool IsCellWalkable(unsigned int cellInd) const;
     bool IsCellWalkable(unsigned int r, unsigned int c) const override;
     bool IsAnyNeighborCellWalkable(unsigned int r, unsigned int c) const;
@@ -114,11 +119,10 @@ public:
     bool AreCellsAdjacent(const Cell2D & cell1, const Cell2D & cell2) const;
     bool AreObjectsOrthoAdjacent(const GameObject * obj1, const GameObject * obj2) const;
     bool AreCellsOrthoAdjacent(const Cell2D & cell1, const Cell2D & cell2) const;
+    bool IsCellAdjacentToArea(const Cell2D & cell, const Cell2D & areaTL, const Cell2D & areaBR) const;
 
     // cell conquest
-    bool HasResourcesToConquerCell(Unit * unit);
     bool CanConquerCell(Unit * unit, const Cell2D & cell, Player * player);
-    void StartConquerCell(const Cell2D & cell, Player * player);
     void ConquerCell(const Cell2D & cell, Player * player);
     bool ConquerCells(ConquerPath * path);
     bool AbortCellConquest(GameObject * obj);
@@ -189,10 +193,15 @@ public:
     int ApproxDistance(const Cell2D & c1, const Cell2D & c2) const;
     int ApproxDistance(const GameObject * obj1, const GameObject * obj2) const;
     int Distance(const GameObject * obj1, const GameObject * obj2) const;
+    float ExactDistance(const GameObject * obj1, const GameObject * obj2) const;
     bool FindClosestCellConnectedToObject(const GameObject * obj, const Cell2D start, Cell2D & end);
     bool FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, Cell2D & linked);
     bool FindFreeArea(const Cell2D & start, int rows, int cols, int maxRadius, Cell2D & target);
     bool IsAreaFree(int brR, int brC, int rows, int cols);
+
+    // GATE
+    void OpenGate(WallGate * gate);
+    void CloseGate(WallGate * gate);
 
     // turn system
     void OnNewTurn(PlayerFaction faction);
@@ -286,7 +295,7 @@ private:
     std::vector<GameObject *> mObjects;
     std::vector<ObjectToAdd> mObjectsToAdd;
     std::unordered_set<const GameObject *> mObjectsSet;
-    std::vector<CollectableGenerator *> mCollGen;
+    std::vector<CollectableGenerator *> mCollGens;
     std::vector<ObjectPath *> mPaths;
     std::vector<ObjectPath *> mPathsToAdd;
     std::vector<ConquerPath *> mConquerPaths;
@@ -333,13 +342,18 @@ inline bool GameMap::HasObject(unsigned int ind) const
 inline bool GameMap::HasObject(unsigned int r, unsigned int c) const
 {
     const unsigned int ind = r * mCols + c;
-
     return ind < mCells.size() && mCells[ind].objTop != nullptr;
 }
 
 inline bool GameMap::HasObject(const GameObject * obj) const
 {
     return mObjectsSet.find(obj) != mObjectsSet.end();
+}
+
+inline bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int r, unsigned int c) const
+{
+    const unsigned int ind = r * mCols + c;
+    return HasObjectType(type, ind);
 }
 
 inline const std::vector<GameMapCell> & GameMap::GetCells() const
@@ -352,9 +366,15 @@ inline const std::vector<GameObject *> & GameMap::GetObjects() const
     return mObjects;
 }
 
-inline bool GameMap::IsCellWalkable(unsigned int cellInd) const
+inline const std::vector<CollectableGenerator *> & GameMap::GetCollectableGenerators() const
 {
-    return mCells[cellInd].walkable;
+    return mCollGens;
+}
+
+inline bool GameMap::IsCellWalkable(unsigned int r, unsigned int c) const
+{
+    const unsigned int ind = r * mCols + c;
+    return IsCellWalkable(ind);
 }
 
 inline void GameMap::SetCellWalkable(unsigned int cellInd, bool val)

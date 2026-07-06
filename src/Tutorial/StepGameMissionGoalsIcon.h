@@ -11,7 +11,7 @@ class PanelObjectActions;
 class StepGameMissionGoalsIcon : public TutorialInfoStep
 {
 public:
-    StepGameMissionGoalsIcon(PanelObjectActions * panel);
+    StepGameMissionGoalsIcon(PanelObjectActions * panel, bool showIntro);
     ~StepGameMissionGoalsIcon();
 
 private:

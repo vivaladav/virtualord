@@ -12,23 +12,17 @@
 namespace game
 {
 
-StepPlanetMapConquerTerritory::StepPlanetMapConquerTerritory(PanelPlanetActions * panelActions)
+StepPlanetMapConquerTerritory::StepPlanetMapConquerTerritory(PanelPlanetActions * panelActions,
+                                                             const char * text, bool intro)
     : TutorialInfoStep(TutorialConstants::infoPlanetMapW, TutorialConstants::infoPlanetMapH)
     , mFocusArea(new FocusArea)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
-    // FOCUS
     mButton = panelActions->GetButton(PanelPlanetActions::CONQUER);
 
-    const int padding = 10;
-    const int fX = panelActions->GetX() + mButton->GetX() - padding;
-    const int fY = panelActions->GetY() + mButton->GetY() - padding;
-    const int fW = mButton->GetWidth() + (padding * 2);
-    const int fH = mButton->GetHeight() + (padding * 2);
-
-    mFocusArea->SetScreenArea(fX, fY, fW, fH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    // FOCUS
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
@@ -37,18 +31,26 @@ StepPlanetMapConquerTerritory::StepPlanetMapConquerTerritory(PanelPlanetActions 
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_1"),
-                       TutorialConstants::colorText, 6.f, true, true);
-    info->AddInfoEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_2"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, fX, fY, fW, fH]
-                       {
-                           // CLICK FILTER
-                           auto cf = GetClickFilter();
-                           cf->SetScreenClickableArea(fX, fY, fW, fH);
-                           cf->SetEnabled(true);
+    if(intro)
+        info->AddInfoEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_1"), 6.f, true, true);
 
-                           // FOCUS
-                           mFocusArea->SetVisible(true);
+    info->AddActionEntry(sm->GetCString(text), 0.f, false, false,
+                         [this, panelActions]
+                        {
+                            // FOCUS
+                            const int padding = 10;
+                            const int fX = panelActions->GetX() + mButton->GetX() - padding;
+                            const int fY = panelActions->GetY() + mButton->GetY() - padding;
+                            const int fW = mButton->GetWidth() + (padding * 2);
+                            const int fH = mButton->GetHeight() + (padding * 2);
+
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetVisible(true);
+
+                            // CLICK FILTER
+                            auto cf = GetClickFilter();
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
+                            cf->SetEnabled(true);
                        });
 
     // CONQUER BUTTON

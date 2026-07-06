@@ -1,7 +1,7 @@
 #include "Widgets/PanelPlanetInfo.h"
 
 #include "GameConstants.h"
-#include "MapsRegistry.h"
+#include "Planet.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
 
@@ -31,7 +31,6 @@ PanelPlanetInfo::PanelPlanetInfo()
     auto tm = graphic::TextureManager::Instance();
     auto fm = graphic::FontManager::Instance();
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     // BACKGROUND
     graphic::Texture * tex = tm->GetSprite(SpriteFilePlanetMap2, IND_PM_PANEL_INFO);

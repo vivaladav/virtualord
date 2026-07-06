@@ -16,7 +16,7 @@
 namespace
 {
     constexpr unsigned int colorLink = 0xc2d6d6cc;
-    constexpr unsigned int colorLinkUnlocked = 0xa3f5b1cc;
+    constexpr unsigned int colorLinkUnlocked = 0x99ffbbcc;
 }
 
 namespace game
@@ -53,6 +53,18 @@ ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * 
     for(unsigned int i = 0; i < sgui::AbstractButton::NUM_VISUAL_STATES; ++i)
         mTexs[i] = tm->GetSprite(SpriteFileDialogTechTree, texIds[i]);
 
+    const unsigned int texIdsNU[sgui::AbstractButton::NUM_VISUAL_STATES] =
+        {
+            ID_DLG_TECHT_BTN_UPG_NU_NORMAL,
+            ID_DLG_TECHT_BTN_UPG_DISABLED,
+            ID_DLG_TECHT_BTN_UPG_NU_OVER,
+            ID_DLG_TECHT_BTN_UPG_NU_PUSHED,
+            ID_DLG_TECHT_BTN_UPG_NU_CHECKED,
+        };
+
+    for(unsigned int i = 0; i < sgui::AbstractButton::NUM_VISUAL_STATES; ++i)
+        mTexsNU[i] = tm->GetSprite(SpriteFileDialogTechTree, texIdsNU[i]);
+
     // ICONS
     mIconsIds.emplace(TECH_UP_NULL, ID_TECH_UP_ICON_TODO);
 
@@ -72,6 +84,13 @@ ButtonTechUpgrade::ButtonTechUpgrade(TechUpgradeId upgrade, sgl::sgui::Widget * 
     mIconsIds.emplace(TECH_UP_STORAGE_DIAMONDS_2, ID_TECH_UP_ICON_STORAGE_DIAMONDS);
     mIconsIds.emplace(TECH_UP_STORAGE_BLOBS_1, ID_TECH_UP_ICON_STORAGE_BLOBS);
     mIconsIds.emplace(TECH_UP_STORAGE_BLOBS_2, ID_TECH_UP_ICON_STORAGE_BLOBS);
+    mIconsIds.emplace(TECH_UP_PRACTICE_TARGET, ID_TECH_UP_ICON_TARGET);
+    mIconsIds.emplace(TECH_UP_TRADING_POST, ID_TECH_UP_ICON_TRADING_POST);
+    mIconsIds.emplace(TECH_UP_UNIT_SLOTS_1, ID_TECH_UP_ICON_UNIT_SLOTS);
+    mIconsIds.emplace(TECH_UP_UNIT_SLOTS_2, ID_TECH_UP_ICON_UNIT_SLOTS);
+    mIconsIds.emplace(TECH_UP_UNIT_SLOTS_3, ID_TECH_UP_ICON_UNIT_SLOTS);
+    mIconsIds.emplace(TECH_UP_UNIT_SLOTS_4, ID_TECH_UP_ICON_UNIT_SLOTS);
+    mIconsIds.emplace(TECH_UP_UNIT_SLOTS_5, ID_TECH_UP_ICON_UNIT_SLOTS);
 
     SetUpgrade(upgrade);
 
@@ -184,6 +203,16 @@ void ButtonTechUpgrade::SetUnlocked(bool unlocked)
     UpdateGraphics(GetState());
 }
 
+void ButtonTechUpgrade::SetUnlockable(bool val)
+{
+    if(val == mUnlockable)
+        return;
+
+    mUnlockable = val;
+
+    UpdateGraphics(GetState());
+}
+
 void ButtonTechUpgrade::ClearLinks()
 {
     mLinks.clear();
@@ -262,7 +291,10 @@ void ButtonTechUpgrade::UpdateGraphics(sgl::sgui::AbstractButton::VisualState st
     }
 
     // NOT UNLOCKED YET
-    mBg->SetTexture(mTexs[state]);
+    if(mUnlockable)
+        mBg->SetTexture(mTexs[state]);
+    else
+        mBg->SetTexture(mTexsNU[state]);
 
     SetSize(mBg->GetWidth(), mBg->GetHeight());
 
@@ -324,16 +356,32 @@ void ButtonTechUpgrade::UpdateColorsIcon()
     {
         const sgl::sgui::AbstractButton::VisualState state = GetState();
 
-        const unsigned int colorsIcon[] =
+        if(mUnlockable)
         {
-            0xbfe3f3ff,
-            0xffffffff,
-            0xd4ecf7ff,
-            0xb3d5e5ff,
-            0xe9f6fbff
-        };
+            const unsigned int colorsIcon[] =
+            {
+                0xbff3efff,
+                0xffffffff,
+                0xd4f7f4ff,
+                0xb3e5e1ff,
+                0xe9fbfaff,
+            };
 
-        mIcon->SetColor(colorsIcon[state]);
+            mIcon->SetColor(colorsIcon[state]);
+        }
+        else
+        {
+            const unsigned int colorsIcon[] =
+            {
+                0xbfe3f3ff,
+                0xffffffff,
+                0xd4ecf7ff,
+                0xb3d5e5ff,
+                0xe9f6fbff,
+            };
+
+            mIcon->SetColor(colorsIcon[state]);
+        }
     }
 }
 
@@ -344,26 +392,45 @@ void ButtonTechUpgrade::UpdateColorsLevel()
         const unsigned int colorBg = 0xe5ffe9ff;
         mBgLevel->SetColor(colorBg);
 
-        const unsigned int colorLvl = 0x004d0dff;
+        const unsigned int colorLvl = 0x003309ff;
         mLabelLevel->SetColor(colorLvl);
     }
     else
     {
         const sgl::sgui::AbstractButton::VisualState state = GetState();
 
-        const unsigned int colorsLevelBg[] =
+        if(mUnlockable)
         {
-            0xbfe3f3ff,
-            0xffffffff,
-            0xd4ecf7ff,
-            0xb3d5e5ff,
-            0xe9f6fbff
-        };
+            const unsigned int colorsLevelBg[] =
+            {
+                0xbff3efff,
+                0xffffffff,
+                0xd4f7f4ff,
+                0xb3e5e1ff,
+                0xe9fbfaff,
+            };
 
-        mBgLevel->SetColor(colorsLevelBg[state]);
+            mBgLevel->SetColor(colorsLevelBg[state]);
 
-        const unsigned int colorLevel = 0x00334dff;
-        mLabelLevel->SetColor(colorLevel);
+            const unsigned int colorLevel = 0x00332fff;
+            mLabelLevel->SetColor(colorLevel);
+        }
+        else
+        {
+            const unsigned int colorsLevelBg[] =
+            {
+                0xbfe3f3ff,
+                0xffffffff,
+                0xd4ecf7ff,
+                0xb3d5e5ff,
+                0xe9f6fbff,
+            };
+
+            mBgLevel->SetColor(colorsLevelBg[state]);
+
+            const unsigned int colorLevel = 0x00334dff;
+            mLabelLevel->SetColor(colorLevel);
+        }
     }
 }
 

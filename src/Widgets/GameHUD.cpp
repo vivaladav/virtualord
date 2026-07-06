@@ -47,8 +47,6 @@
 #include <sgl/graphic/Renderer.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
-#include <sgl/media/AudioManager.h>
-#include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/ButtonsGroup.h>
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/Stage.h>
@@ -63,7 +61,6 @@ GameHUD::GameHUD(ScreenGame * screen)
     using namespace sgl;
 
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     const int rendW = graphic::Renderer::Instance()->GetWidth();
     const int rendH = graphic::Renderer::Instance()->GetHeight();
@@ -73,10 +70,26 @@ GameHUD::GameHUD(ScreenGame * screen)
     Game * game = mScreen->GetGame();
 
     // LOCAL PLAYER
-    Player * player = game->GetLocalPlayer();
+    Player * local = game->GetLocalPlayer();
+
+    mResearchTrackerId = local->AddOnResourceChanged(Player::RESEARCH,
+                                                 [this](const StatValue *, int, int)
+                                                 {
+                                                     UpdateUpgradesNotification();
+                                                 });
+
+    // NOTE no need to remove callback in destructor as tracker is deleted before HUD
+    mScreen->mTrackerMG->AddOnGoalCompletedFunction([this]
+        {
+            UpdateGoalsNotification();
+        });
+    mScreen->mTrackerMG->AddOnGoalCollectedFunction([this]
+        {
+            UpdateGoalsNotification();
+        });
 
     // TOP RESOURCE BAR
-    mPanelRes = new PanelResources(player, mScreen->mGameMap, this);
+    mPanelRes = new PanelResources(local, mScreen->mGameMap, this);
     mPanelRes->SetX((rendW - mPanelRes->GetWidth()) / 2);
 
     // MINIMAP
@@ -98,9 +111,9 @@ GameHUD::GameHUD(ScreenGame * screen)
     });
 
     // QUICK UNIT SELECTION BUTTONS
-    mGroupUnitSel = new sgl::sgui::ButtonsGroup(sgl::sgui::ButtonsGroup::HORIZONTAL, this);
+    mGroupUnitSel = new sgl::sgui::ButtonsGroup(sgui::ButtonsGroup::HORIZONTAL, this);
 
-    const int numButtons = player->GetMaxUnits();
+    const int numButtons = local->GetMaxUnits();
 
     for(int i = 0; i < numButtons; ++i)
     {
@@ -108,19 +121,17 @@ GameHUD::GameHUD(ScreenGame * screen)
         mGroupUnitSel->AddButton(b);
     }
 
-    const int groupX = (rendW - mGroupUnitSel->GetWidth()) * 0.5f;
-    const int groupY = rendH - mGroupUnitSel->GetHeight();
-    mGroupUnitSel->SetPosition(groupX, groupY);
+    PositionQuickUnitButtons();
 
-    player->SetOnNumUnitsChanged([this, player]
+    local->SetOnNumUnitsChanged([this, local]
     {
-        const int numUnits = player->GetNumUnits();
-        const int maxUnits = player->GetMaxUnits();
+        const int numUnits = local->GetNumUnits();
+        const int maxUnits = local->GetMaxUnits();
 
         for(int i = 0; i < numUnits; ++i)
         {
             auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
-            b->SetUnit(player->GetUnit(i));
+            b->SetUnit(local->GetUnit(i));
         }
 
         for(int i = numUnits; i < maxUnits; ++i)
@@ -135,14 +146,18 @@ GameHUD::GameHUD(ScreenGame * screen)
     mPanelObjActions->SetVisible(false);
 
     // PANEL TURN CONTROL
-    mPanelTurnCtrl = new PanelTurnControl(player, this);
-    mPanelTurnCtrl->SetFunctionEndTurn([this]
+    mPanelTurnCtrl = new PanelTurnControl(local, this);
+    mPanelTurnCtrl->AddFunctionGoToBase([this, local]
+    {
+        mScreen->CenterCameraOverObject(local->GetBase());
+    });
+    mPanelTurnCtrl->AddFunctionEndTurn([this]
     {
         mScreen->EndTurn();
     });
 
     const int posPanelTurnX = (rendW - mPanelTurnCtrl->GetWidth()) / 2;
-    const int posPanelTurnY = groupY - mPanelTurnCtrl->GetHeight();
+    const int posPanelTurnY = mGroupUnitSel->GetY() - mPanelTurnCtrl->GetHeight();
     mPanelTurnCtrl->SetPosition(posPanelTurnX, posPanelTurnY);
 
     // PANEL SELECTED OBJECT
@@ -185,6 +200,7 @@ GameHUD::~GameHUD()
 {
     Player * player = mScreen->GetGame()->GetLocalPlayer();
 
+    player->RemoveOnResourceChanged(Player::RESEARCH, mResearchTrackerId);
     player->SetOnNumUnitsChanged([]{});
 }
 
@@ -211,6 +227,49 @@ void GameHUD::ShowPanelObjectActions(GameObject * obj)
     mPanelObjActions->SetObject(obj);
     mPanelObjActions->SetVisible(true);
     mPanelObjActions->SetActionsEnabled(obj->GetCurrentAction() == IDLE);
+
+    const GameObjectTypeId type = obj->GetObjectType();
+
+    // show notification of unlockable upgrades when it's research center
+    if(type == ObjectData::TYPE_RESEARCH_CENTER)
+        UpdateUpgradesNotification();
+    else if(type == ObjectData::TYPE_BASE)
+        UpdateGoalsNotification();
+}
+
+void GameHUD::UpdateUpgradesNotification()
+{
+    auto game = mScreen->GetGame();
+    auto player = game->GetLocalPlayer();
+
+    const int resPoints = player->GetStat(Player::RESEARCH).GetValue();
+    int count = 0;
+
+    for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
+    {
+        const auto tu = static_cast<TechUpgradeId>(i);
+
+        count += player->IsUpgradeAvailable(tu) && !player->IsUpgradeUnlocked(tu) &&
+                 game->GetTechUpgradecost(tu) <= resPoints;
+    }
+
+    const PanelObjectActions::Button btnID = PanelObjectActions::BTN_TECH_TREE;
+
+    if(count > 0)
+        mPanelObjActions->ShowNotification(btnID, count);
+    else
+        mPanelObjActions->HideNotification(btnID);
+}
+
+void GameHUD::UpdateGoalsNotification()
+{
+    const unsigned int count = mScreen->mTrackerMG->GetNumGoalsToCollect();
+    const PanelObjectActions::Button btnID = PanelObjectActions::BTN_MISSION_GOALS;
+
+    if(count > 0)
+        mPanelObjActions->ShowNotification(btnID, count);
+    else
+        mPanelObjActions->HideNotification(btnID);
 }
 
 void GameHUD::HidePanelSelfDestruction()
@@ -285,7 +344,7 @@ void GameHUD::ShowPanelShotType()
     sgl::sgui::Stage::Instance()->SetFocus();
 
     // change Attack Mode
-    mPanelShotType->SetFunctionOnToggle([this, selObj](unsigned int ind, bool checked)
+    mPanelShotType->AddFunctionOnToggle([this, selObj](unsigned int ind, bool checked)
     {
         if(!checked)
             return ;
@@ -362,6 +421,16 @@ void GameHUD::ClearQuickUnitButtonChecked()
 
     if(checked != -1)
         mGroupUnitSel->GetButton(checked)->SetChecked(false);
+}
+
+void GameHUD::AddQuickUnitButton()
+{
+    const unsigned int buttons = mGroupUnitSel->GetNumButtons();
+
+    auto b = new ButtonQuickUnitSelection(buttons, mScreen);
+    mGroupUnitSel->AddButton(b);
+
+    PositionQuickUnitButtons();
 }
 
 void GameHUD::ShowDialogMissionGoals()
@@ -480,14 +549,13 @@ void GameHUD::ShowDialogExit()
 
     auto tutMan = mScreen->GetGame()->GetTutorialManager();
 
-    auto buttons = DialogExit::BUTTONS_EXIT;
+    auto buttons = DialogExit::BUTTONS_EXIT_GAME;
 
     if(tutMan->HasActiveTutorial())
     {
         tutMan->SetTutorialPause(true);
 
-        buttons = static_cast<DialogExit::DialogButtons>(DialogExit::BTN_MAIN_MENU |
-                                                         DialogExit::BUTTONS_TUTORIAL);
+        buttons = static_cast<DialogExit::DialogButtons>(DialogExit::BUTTONS_TUTORIAL);
     }
 
     mDialogExit = new DialogExit(buttons, mScreen->GetGame(), mScreen);
@@ -706,50 +774,6 @@ void GameHUD::AddPlayedTurn()
     PositionMissionCountdown();
 }
 
-void GameHUD::ShowGoalCompletedIcon()
-{
-    using namespace sgl;
-
-    // icon already visible
-    if(mGoalCompletedIcon != nullptr)
-        return ;
-
-    const Player * p = mScreen->GetGame()->GetLocalPlayer();
-    const PlayerFaction pf = p->GetFaction();
-    const auto bases = p->GetStructuresByType(ObjectData::TYPE_BASE);
-
-    // this shouldn't happen
-    if(bases.empty())
-        return ;
-
-    // create icon
-    auto tm = graphic::TextureManager::Instance();
-    auto tex = tm->GetSprite(SpriteFileGameUI, ID_GAMEUI_GOAL_F1 + pf);
-
-    mGoalCompletedIcon = new sgui::Image(tex, this);
-    // set camera to default to follow screen
-    mGoalCompletedIcon->SetCamera(graphic::Camera::GetDefaultCamera());
-
-    // position icon over base
-    const Structure * base = bases[0];
-    const IsoObject * isoObj = base->GetIsoObject();
-
-    const int x = isoObj->GetX() + (isoObj->GetWidth() - mGoalCompletedIcon->GetWidth()) / 2;
-    const int y = isoObj->GetY() + (isoObj->GetHeight() - mGoalCompletedIcon->GetHeight()) / 2;
-
-    mGoalCompletedIcon->SetPosition(x, y);
-
-    // play sound
-    auto player = media::AudioManager::Instance()->GetPlayer();
-    player->PlaySound("UI/goal_completed.ogg");
-}
-
-void GameHUD::HideGoalCompletedIcon()
-{
-    delete mGoalCompletedIcon;
-    mGoalCompletedIcon = nullptr;
-}
-
 void GameHUD::HidePanelSelectedObject()
 {
     mButtonPanelSelObj->SetVisible(false);
@@ -911,7 +935,7 @@ void GameHUD::ShowDialogTechTree()
     mScreen->SetPause(true);
 
     Game * game = mScreen->GetGame();
-    mDialogTechTree = new DialogTechTree(game->GetLocalPlayer());
+    mDialogTechTree = new DialogTechTree(game->GetLocalPlayer(), mScreen->GetGame());
     mDialogTechTree->SetFocus();
 
     mDialogTechTree->SetFunctionOnClose([this]
@@ -1238,6 +1262,16 @@ void GameHUD::PositionMissionCountdown()
     const int y0 = isoObj->GetY() - mCountdownLabel->GetHeight();
 
     mCountdownLabel->SetPosition(x0, y0);
+}
+
+void GameHUD::PositionQuickUnitButtons()
+{
+    const int rendW = sgl::graphic::Renderer::Instance()->GetWidth();
+    const int rendH = sgl::graphic::Renderer::Instance()->GetHeight();
+    const int groupX = (rendW - mGroupUnitSel->GetWidth()) / 2;
+    const int groupY = rendH - mGroupUnitSel->GetHeight();
+
+    mGroupUnitSel->SetPosition(groupX, groupY);
 }
 
 void GameHUD::ResumeGameFromExit()

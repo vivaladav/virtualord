@@ -8,13 +8,20 @@ constexpr int MAX_NUM_PLAYERS = 4;
 constexpr int MAX_UNITS_LEVEL = 2;
 constexpr int COST_UNIT_UPGRADE[] = { 1, 2 };
 
-constexpr float TIME_AI_MIN = 0.2f;
+constexpr float TIME_AI_MIN = 0.1f;
 constexpr float TIME_GOD_MODE = 0.25f;
 
 constexpr float TIME_AUTO_END_TURN = 2.f;
 
 constexpr float MAX_STAT_FVAL = 10.f;
 constexpr int MAX_STAT_IVAL = 10;
+
+// minimum resources when starting a new mission
+constexpr int START_ENERGY = 1000;
+constexpr int START_MATERIAL = 1000;
+constexpr int START_MONEY = 1000;
+constexpr int START_DIAMONDS = 10;
+constexpr int START_BLOBS = 10;
 
 constexpr unsigned int PLAYER_COLOR[] =
 {
@@ -30,7 +37,7 @@ enum AttackMode : unsigned int
     ATT_AIMED_SHOT,
     ATT_BURST_SHOT,
 
-    NUM_ATTACK_MODES
+    NUM_ATTACK_MODES,
 };
 
 enum GameCursorId : unsigned int
@@ -164,6 +171,7 @@ enum ExtendedResource : unsigned int
 
 enum TechUpgradeId : unsigned int
 {
+    // STRUCTURES
     TECH_UP_BASE_IMPROVE_1,
     TECH_UP_BASE_IMPROVE_2,
     TECH_UP_BASE_IMPROVE_3,
@@ -180,6 +188,15 @@ enum TechUpgradeId : unsigned int
     TECH_UP_STORAGE_DIAMONDS_2,
     TECH_UP_STORAGE_BLOBS_1,
     TECH_UP_STORAGE_BLOBS_2,
+    TECH_UP_PRACTICE_TARGET,
+    TECH_UP_TRADING_POST,
+
+    // UNITS
+    TECH_UP_UNIT_SLOTS_1,
+    TECH_UP_UNIT_SLOTS_2,
+    TECH_UP_UNIT_SLOTS_3,
+    TECH_UP_UNIT_SLOTS_4,
+    TECH_UP_UNIT_SLOTS_5,
 
     NUM_TECH_UPGRADES,
 

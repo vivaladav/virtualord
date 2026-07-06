@@ -10,7 +10,7 @@ enum PlayerFaction : unsigned int;
 class HealingRangeIndicator : public IsoObject
 {
 public:
-    HealingRangeIndicator();
+    HealingRangeIndicator(PlayerFaction faction);
 
     void SetFaction(PlayerFaction faction);
 };

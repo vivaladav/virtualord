@@ -16,7 +16,7 @@ ProgressBarTurnEnergy::ProgressBarTurnEnergy(float min, float max, sgl::sgui::Wi
     auto tm = TextureManager::Instance();
 
     // background
-    Texture * tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURN_CONTROL_PB_BG);
+    Texture * tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURNC_PB_BG);
     mBg = new Image(tex);
     RegisterRenderable(mBg);
 
@@ -25,13 +25,13 @@ ProgressBarTurnEnergy::ProgressBarTurnEnergy(float min, float max, sgl::sgui::Wi
     // bar
     const unsigned int colorBar = 0xf5e1a3ff;
 
-    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURN_CONTROL_PB_BAR);
+    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURNC_PB_BAR);
     mBar = new Image(tex);
     mBar->SetColor(colorBar);
     RegisterRenderable(mBar);
 
     // marks overlay
-    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURN_CONTROL_PB_MARKS);
+    tex = tm->GetSprite(SpriteFilePanelTurnControl, ID_TURNC_PB_MARKS);
     mMarks = new Image(tex);
     RegisterRenderable(mMarks);
 

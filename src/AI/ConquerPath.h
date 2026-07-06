@@ -5,10 +5,10 @@
 namespace game
 {
 
-class ConquestIndicator;
 class GameMap;
 class GameMapProgressBar;
-class IsoMap;
+class OverlayCellConquest;
+class Player;
 class ScreenGame;
 class Unit;
 
@@ -29,14 +29,16 @@ public:
     };
 
 public:
-    ConquerPath(Unit * unit, IsoMap * im, GameMap * gm, ScreenGame * sg);
+    ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, OverlayCellConquest * overlay = nullptr);
     ~ConquerPath();
 
     Unit * GetUnit() const;
 
     ConquerState GetState() const;
 
-    float GetPathEnergyCost() const;
+    int GetCostUnitEnergy() const;
+    int GetCostResourceEnergy() const;
+    int GetCostResourceMaterial() const;
 
     void SetPathCells(const std::vector<unsigned int> & cells);
 
@@ -48,7 +50,7 @@ public:
     void Update(float delta);
 
 private:
-    void CreateIndicators();
+    bool HasResourcesToConquerCell();
 
     bool InitNextConquest();
     bool InitNextMove();
@@ -63,13 +65,13 @@ private:
 private:
     std::vector<unsigned int> mCells;
 
-    std::vector<ConquestIndicator *> mIndicators;
+    OverlayCellConquest * mOverlay = nullptr;
 
     GameMapProgressBar * mProgressBar = nullptr;
 
     Unit * mUnit = nullptr;
+    Player * mPlayer = nullptr;
 
-    IsoMap * mIsoMap = nullptr;
     GameMap * mGameMap = nullptr;
 
     ScreenGame * mScreen = nullptr;
@@ -78,7 +80,9 @@ private:
 
     unsigned int mNextCell = 0;
 
-    float mCost = 0.f;
+    int mCostUnitEnergy = 0;
+    int mCostResEnergy = 0;
+    int mCostResMaterial = 0;
 
     // movement
     float mObjX = 0.f;
@@ -88,14 +92,16 @@ private:
     float mTargetX = 0.f;
     float mTargetY = 0.f;
 
-    bool mLocalPlayer = false;
+    bool mLocal = false;
 };
 
 inline Unit * ConquerPath::GetUnit() const { return mUnit; }
 
 inline ConquerPath::ConquerState ConquerPath::GetState() const { return mState; }
 
-inline float ConquerPath::GetPathEnergyCost() const { return mCost; }
+inline int ConquerPath::GetCostUnitEnergy() const { return mCostUnitEnergy; }
+inline int ConquerPath::GetCostResourceEnergy() const { return mCostResEnergy; }
+inline int ConquerPath::GetCostResourceMaterial() const { return mCostResMaterial; }
 
 inline bool ConquerPath::HasStarted() const { return mState != READY; }
 

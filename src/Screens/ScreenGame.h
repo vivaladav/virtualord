@@ -8,7 +8,6 @@
 #include <sgl/core/Point.h>
 
 #include <functional>
-#include <unordered_map>
 #include <vector>
 
 namespace sgl
@@ -21,29 +20,29 @@ namespace sgl
 namespace game
 {
 
-class AttackRangeIndicator;
 class CameraMapController;
-class ConquestIndicator;
 class GameHUD;
 class GameMap;
 class GameObject;
 class GameObjectsGroup;
-class HealingRangeIndicator;
 class Hospital;
 class IsoLayer;
 class IsoMap;
 class MiniMap;
 class MiniUnit;
 class MissionGoalsTracker;
-class PathIndicator;
-class PathOverlay;
+class OverlayAttackRange;
+class OverlayCellConquest;
+class OverlayHealRange;
+class OverlayPath;
+class OverlayStructure;
+class OverlayWall;
 class Player;
 class PlayerAI;
-class StructureIndicator;
 class Unit;
-class WallIndicator;
 
 enum PlayerFaction : unsigned int;
+enum TechUpgradeId : unsigned int;
 enum TurnStage : unsigned int;
 
 class ScreenGame : public Screen
@@ -78,7 +77,12 @@ public:
     void ClearSelection(Player * player);
     void SelectObject(GameObject * obj, Player * player);
 
-    void CenterCameraOverObject(const GameObject * obj);
+    // speed < 0 : instant move | speed == 0 : default speed | speed > 0 : use value
+    void CenterCameraOverCell(int r, int c, float speed = -1.f);
+    void CenterCameraOverCell(const Cell2D & cell, float speed = -1.f);
+    void CenterCameraOverCell(unsigned int cellIndex, float speed = -1.f);
+    void CenterCameraOverObject(const GameObject * obj, float speed = -1.f);
+    void StopCameraMove();
 
     Player * GetActivePlayer() const;
 
@@ -101,8 +105,12 @@ public:
 private:
     void OnApplicationQuit(sgl::core::ApplicationEvent & event) override;
 
+    void AssignStartResources(Player * p);
+
+    void InitPlayers();
     void InitMusic();
     void InitParticlesSystem();
+    void InitTutorial();
 
     void CreateIsoMap();
     void CreateLayers();
@@ -130,10 +138,15 @@ private:
 
     int CellToIndex(const Cell2D & cell) const;
 
+    void ResetObjectAction(GameObject * obj);
+
     bool SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, GameObjectsGroup * group, Player * player,
                            int squads, int elements, const std::function<void(bool)> & onDone = [](bool){});
     bool SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * player,
                       const std::function<void(bool)> & onDone = [](bool){});
+    bool SetupObjectInteraction(Unit * unit, GameObject * objTarget, Player * player,
+                                const std::function<void(bool)> & onDone = [](bool){});
+    bool SetupCellConquest(Unit * unit);
     bool SetupStructureConquest(Unit * unit, const Cell2D & start, const Cell2D & end, Player * player,
                                 const std::function<void(bool)> & onDone = [](bool){});
     bool SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, Player * player,
@@ -162,20 +175,21 @@ private:
 
     void ShowActiveUnitIndicators(Unit * unit, const Cell2D & cell);
     void ShowActiveMiniUnitIndicators(MiniUnit * mu, const Cell2D & cell);
-    void ShowAttackIndicators(const GameObject * obj, int range);
     void ShowBuildStructureIndicator(Unit * unit, const Cell2D & currCell);
     void ShowBuildWallIndicator(Unit * unit, const Cell2D & dest);
-    void ShowConquestIndicator(Unit * unit, const Cell2D & dest);
-    void ShowHealingIndicators(const GameObject * obj, int range);
+    void ShowCellConquestIndicator(Unit * unit, const Cell2D & dest);
     void ShowMoveIndicator(GameObject * obj, const Cell2D & dest);
     void ClearCellOverlays();
-    void ClearTempStructIndicator();
+
+    int CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool building);
 
     void UpdatePanelHit(const GameObject * attacker);
 
     void UpdateCurrentCell();
 
     void AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, PlayerFaction f);
+
+    void OnUpgradeUnlocked(TechUpgradeId upgrade);
 
     // TURN
     void EndTurn();
@@ -190,19 +204,9 @@ private:
 
 private:
     friend class GameHUD;
-    friend class TutorialGameIntro;
+    friend class TutorialGame;
 
     std::vector<Player *> mAiPlayers;
-
-    std::vector<ConquestIndicator *> mConquestIndicators;
-    std::unordered_map<GameObjectTypeId, StructureIndicator *> mStructIndicators;
-    std::vector<WallIndicator *> mWallIndicators;
-    std::vector<AttackRangeIndicator *> mAttIndicators;
-    std::vector<HealingRangeIndicator *> mHealIndicators;
-    StructureIndicator * mTempStructIndicator = nullptr;
-
-    std::vector<unsigned int> mConquestPath;
-    std::vector<unsigned int> mWallPath;
 
     std::vector<GameObjectAction> mObjActions;
     std::vector<GameObjectAction> mObjActionsToDo;
@@ -212,6 +216,7 @@ private:
     CameraMapController * mCamController = nullptr;
 
     unsigned int mIdOnSettingsChanged = 0;
+    unsigned int mIdOnUnlockUpgraded = 0;
 
     sgl::graphic::ParticlesManager * mPartMan = nullptr;
 
@@ -229,18 +234,21 @@ private:
     sgl::core::Pointd2D mMousePos;
 
     // MAP OVERLAYS
-    PathOverlay * mPathOverlay = nullptr;
-
-    PathIndicator * mPathIndicator = nullptr;
+    OverlayAttackRange * mOverlayAttack = nullptr;
+    OverlayCellConquest * mOverlayCellConquest = nullptr;
+    OverlayHealRange * mOverlayHeal = nullptr;
+    OverlayPath * mOverlayPath = nullptr;
+    OverlayStructure * mOverlayStruct = nullptr;
+    OverlayWall * mOverlayWall = nullptr;
 
     // TURN MANAGEMENT
+    int mActivePlayerIdx = 0;
     Player * mLocalPlayer = nullptr;
+    Player * mActiveplayer = nullptr;
 
     GameObject * mLastSelected = nullptr;
 
     TurnStage mTurnStage;
-
-    int mActivePlayerIdx = 0;
 
     float mTimerAutoEndTurn = 0.f;
 
@@ -264,6 +272,8 @@ inline const sgl::graphic::ParticlesManager * ScreenGame::GetParticlesManager() 
 {
     return mPartMan;
 }
+
+inline Player * ScreenGame::GetActivePlayer() const { return mActiveplayer; }
 
 inline GameHUD * ScreenGame::GetHUD() const { return mHUD; }
 

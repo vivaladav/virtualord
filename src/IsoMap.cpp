@@ -349,7 +349,7 @@ bool IsoMap::ChangeObjectLayer(IsoObject * obj, unsigned int src, unsigned int d
         return false;
 
     // move object
-    layerSrc->ClearObject(obj);
+    layerSrc->RemoveObject(obj);
     const bool res = layerDst->AddObject(obj, obj->GetRow(), obj->GetCol());
 
     return res;

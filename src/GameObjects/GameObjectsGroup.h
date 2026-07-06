@@ -22,6 +22,7 @@ public:
 
     // actions on objects
     void DoForAll(const std::function<void(GameObject *)> & f) const;
+    void DoForObject(unsigned int index, const std::function<void(GameObject *)> & f) const;
 
     void SetSelected(bool selected) const;
 

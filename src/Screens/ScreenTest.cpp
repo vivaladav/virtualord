@@ -279,7 +279,7 @@ void ScreenTest::TestSGui()
     bgAlignH->SetButtonChecked(0, true);
     bgAlignH->SetPosition(ta->GetX(), ta->GetY() + ta->GetHeight());
 
-    bgAlignH->SetFunctionOnToggle([ta](unsigned int ind, bool checked)
+    bgAlignH->AddFunctionOnToggle([ta](unsigned int ind, bool checked)
     {
        if(checked)
            ta->setTextAlignmentHorizontal(static_cast<TextArea::Alignment>(ind));
@@ -293,7 +293,7 @@ void ScreenTest::TestSGui()
     bgAlignV->SetPosition(ta->GetX() + ta->GetWidth() - bgAlignV->GetWidth(),
                           ta->GetY() + ta->GetHeight());
 
-    bgAlignV->SetFunctionOnToggle([ta](unsigned int ind, bool checked)
+    bgAlignV->AddFunctionOnToggle([ta](unsigned int ind, bool checked)
     {
        if(checked)
            ta->setTextAlignmentVertical(static_cast<TextArea::Alignment>(ind + TextArea::ALIGN_V_TOP));
@@ -330,10 +330,16 @@ void ScreenTest::TestSGui()
     for(unsigned int n = 0; n < bg->GetNumButtons(); ++n)
     {
         auto btn = static_cast<ButtonUnitsSelector *>(bg->GetButton(n));
+
         btn->AddOnToggleFunction([label, n](bool checked)
         {
             if(checked)
                 label->SetText(std::to_string(n + 1).c_str());
+        });
+
+        btn->AddOnToggleFunction([label, n](bool checked)
+        {
+            std::cout << "BUTTON " << n << (checked ? " CHECKED" : " UNCHECKED") << std::endl;
         });
     }
 
@@ -435,10 +441,28 @@ void ScreenTest::TestSGui()
     font = fm->GetFont("Lato-Regular.ttf", 22, Font::NORMAL);
     label = new Label(std::to_string(slider->GetValue()).c_str(), font, container4);
     label->SetPosition(slider->GetX() + slider->GetWidth() + 50, slider->GetY());
+    label->SetAlpha(0);
 
-    slider->SetOnValueChanged([label](int val)
+    slider->AddOnValueChanged([label](int val)
     {
         label->SetText(std::to_string(val).c_str());
+        label->SetColor(0xFFFFFFFF);
+
+        label->SetAlpha((val * 255 / 100));
+    });
+
+    slider->AddOnValueFinalized([label](int val)
+    {
+        if(val == 50)
+        {
+            label->SetColor(0xFF6666FF);
+            label->SetAlpha(255);
+        }
+        else
+        {
+            label->SetColor(0xFFFFFFFF);
+            label->SetAlpha((val * 255 / 100));
+        }
     });
 
     wY += slider->GetHeight() * 2;
@@ -453,7 +477,7 @@ void ScreenTest::TestSGui()
     label = new Label(std::to_string(slider->GetValue()).c_str(), font, container4);
     label->SetPosition(slider->GetX() + slider->GetWidth() + 50, slider->GetY());
 
-    slider->SetOnValueChanged([label](int val)
+    slider->AddOnValueChanged([label](int val)
     {
         label->SetText(std::to_string(val).c_str());
     });
@@ -469,7 +493,7 @@ void ScreenTest::TestSGui()
     label = new Label(std::to_string(slider->GetValue()).c_str(), font, container4);
     label->SetPosition(slider->GetX() + slider->GetWidth() + 50, slider->GetY());
 
-    slider->SetOnValueChanged([label](int val)
+    slider->AddOnValueChanged([label](int val)
                               {
                                   label->SetText(std::to_string(val).c_str());
                               });

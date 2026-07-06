@@ -21,6 +21,8 @@ public:
     void SetWorldArea(int x0, int y0, int w, int h);
 
     void SetCornersColor(unsigned int color);
+    void SetCornersColorElement();
+    void SetCornersColorAction();
 
 private:
     void SetArea(int x0, int y0, int w, int h);

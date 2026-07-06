@@ -36,6 +36,8 @@ public:
     void SetScrollingSpeed(int val);
 
     void CenterCameraToPoint(int x, int y);
+    void MoveCenterCameraToPoint(int x, int y, float speed = 0.f);
+    void StopMovement();
     void ResetPosition();
 
     bool IsDragging() const;
@@ -54,8 +56,17 @@ private:
     bool IsPointInsideBL(const sgl::core::Pointd2D & p) const;
     bool IsPointInsideBR(const sgl::core::Pointd2D & p) const;
 
-    sgl::core::Pointd2D GetVectorPojection(const sgl::core::Pointd2D & a0, const sgl::core::Pointd2D & b0,
-                                           const sgl::core::Pointd2D & p) const;
+    sgl::core::Pointd2D ClampPointInside(int x, int y) const;
+
+    sgl::core::Pointd2D GetVectorProjection(const sgl::core::Pointd2D & a0,
+                                            const sgl::core::Pointd2D & b0,
+                                            const sgl::core::Pointd2D & p) const;
+
+    void ClearMovement();
+
+    void InitScrollingVelocity();
+
+    void UpdateMove(float delta);
 
 private:
     sgl::graphic::Camera * mCamera = nullptr;
@@ -67,8 +78,16 @@ private:
     sgl::core::Pointd2D mMapB;
     sgl::core::Pointd2D mMapL;
 
-    float mSpeedScrolling;
-    float mSpeedDragging;
+    sgl::core::Pointd2D mTargetMove;
+
+    float mMinSpeedScrolling = 100.f;
+    float mSpeedScrolling = 0.f;
+    float mSpeedDragging = 0.f;
+    float mSpeedMove = 0.f;
+    float mVelocityScrolling = 0.f;
+    float mAccelScrolling = 0.f;
+    float mVelocityMoveX = 0.f;
+    float mVelocityMoveY = 0.f;
 
     int mDirX = 0;
     int mDirY = 0;
@@ -83,6 +102,10 @@ private:
     bool mMouseScrollX = false;
     bool mMouseScrollY = false;
     bool mDragging = false;
+    bool mScrolling = false;
+    bool mMoving = false;
+    bool mMovingX = false;
+    bool mMovingY = false;
 };
 
 inline const sgl::graphic::Camera * CameraMapController::GetCamera() const
@@ -91,21 +114,6 @@ inline const sgl::graphic::Camera * CameraMapController::GetCamera() const
 }
 
 inline bool CameraMapController::IsEnabled() const { return mEnabled; }
-inline void CameraMapController::SetEnabled(bool enabled)
-{
-    mEnabled = enabled;
-
-    // make sure scrolling and dragging don't get in a weird state
-    if(!enabled)
-    {
-        mDirX = 0;
-        mDirY = 0;
-
-        mDragging = false;
-        mDragX = 0;
-        mDragY = 0;
-    }
-}
 
 inline void CameraMapController::SetDraggingSpeed(int val)
 {
@@ -120,13 +128,8 @@ inline void CameraMapController::SetDraggingSpeed(int val)
 
 inline void CameraMapController::SetScrollingSpeed(int val)
 {
-    const float mult = 100.f;
-    mSpeedScrolling = mult * val;
-
-    const float minSpeed = 175.f;
-
-    if(mSpeedScrolling < minSpeed)
-        mSpeedScrolling = minSpeed;
+    // add 1 so min is guaranteed and 5 is the old 6
+    mSpeedScrolling = mMinSpeedScrolling * (val + 1);
 }
 
 inline bool CameraMapController::IsDragging() const { return mDragging; }

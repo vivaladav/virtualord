@@ -21,12 +21,18 @@ enum ResourceType : unsigned int;
 class PlayerAI
 {
 public:
+    static constexpr int MAX_PRIORITY = 99;
+    static constexpr int MIN_PRIORITY = 1;
+
+public:
     PlayerAI(Player * player, const ObjectsDataRegistry * dataReg);
     ~PlayerAI();
 
     void SetGameMap(GameMap * gm);
 
     void DecideNextAction();
+    // this can be used to request the AI to do something, for example during the tutorial
+    void RequestNewAction(ActionAI * action);
 
     const ActionAI * GetNextActionTodo();
 
@@ -46,6 +52,12 @@ public:
     bool FindWhereToBuildStructure(Unit * unit, Cell2D & target) const;
     bool FindWhereToBuildTower(Unit * unit, Cell2D & target) const;
 
+    void SetActive(bool val);
+
+    void StartIdleTurn(float sec);
+
+    void Update(float delta);
+
 private:
     void ClearActionsDone();
     void ClearActionsTodo();
@@ -58,14 +70,18 @@ private:
     void UpdatePriorityRange();
 
     void AddActions();
+    void AddRequestedActions();
 
     void PushAction(ActionAI * action);
     const ActionAI * PopAction();
 
     void AddNewAction(ActionAI * action);
 
+    void SetIdleTurnDone();
+
     // GENERIC ACTIONS
     void AddActionEndTurn();
+    void AddActionIdleTurn(float sec);
     // STRUCTURE ACTIONS
     void AddActionsStructure(Structure * s);
     void AddActionBaseCreateUnit(Structure * base);
@@ -74,6 +90,7 @@ private:
     // UNIT ACTIONS
     void AddActionsUnit(Unit * u);
     void AddActionUnitAttackEnemyUnit(Unit * u);
+    void AddActionUnitAttackEnemyTower(Unit * u);
     void AddActionUnitAttackTrees(Unit * u);
     void AddActionUnitBuildStructure(Unit * u);
     void AddActionUnitBuildTower(Unit * u);
@@ -85,7 +102,7 @@ private:
     void AddActionUnitBuildRadarStructure(Unit * u, GameObjectTypeId structType, int priority0);
     void AddActionUnitCollectBlobs(Unit * u);
     void AddActionUnitCollectDiamonds(Unit * u);
-    void AddActionUnitCollectLootbox(Unit * u);
+    void AddActionUnitOpenLootbox(Unit * u);
     void AddActionUnitConnectStructure(Unit * u);
     void AddActionUnitConquerCity(Unit * u);
     void AddActionUnitConquerResGen(Unit * u, ResourceType type);
@@ -112,12 +129,17 @@ private:
     void PrintdActionDebug(const char * title, const ActionAI * a);
 
 private:
+    static unsigned int mNumActions;
+
+private:
     std::vector<ActionAI *> mActionsTodo;
+    std::vector<ActionAI *> mActionsRequested;
     std::vector<const ActionAI *> mActionsDoing;
     std::vector<const ActionAI *> mActionsDone;
 
     // shared data
     std::vector<GameObject *> mCollectables;
+    std::vector<GameObject *> mInteractiveObjects;
 
     std::vector<GameObject *> mOwnStructures;
     std::vector<GameObject *> mOwnUnits;
@@ -134,6 +156,11 @@ private:
     GameMap * mGm = nullptr;
 
     int mMinPriority = 0;
+
+    float mTimerIdle = 0.f;
+
+    bool mActive = true;
+    bool mIdle = false;
 };
 
 inline void PlayerAI::SetGameMap(GameMap * gm) { mGm = gm; }
@@ -145,6 +172,14 @@ inline bool PlayerAI::IsDoingSomething() const { return !mActionsDoing.empty(); 
 inline void PlayerAI::RegisterActionInProgress(const ActionAI * action)
 {
     mActionsDoing.push_back(action);
+}
+
+inline void PlayerAI::SetActive(bool val) { mActive = val; }
+
+inline void PlayerAI::StartIdleTurn(float sec)
+{
+    mTimerIdle = sec;
+    mIdle = true;
 }
 
 } // namespace game

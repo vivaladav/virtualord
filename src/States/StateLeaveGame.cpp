@@ -48,10 +48,8 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFileMiniUnits);
     // PARTICLES
     tm->DestroySprite(SpriteFileParticles);
-    // ROCKS
-    tm->DestroySprite(SpriteRocksFile);
     // SCENE ELEMENTS
-    tm->DestroySprite(SpriteFileSceneElements);
+    tm->DestroySprite(SpriteFileSceneObjects);
     // STRUCTURES
     tm->DestroySprite(SpriteFileStructures);
     // TREES
@@ -69,6 +67,7 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroyTexture(SpriteFileDialogExitExp);
     // DIALOG EXPLORE TEMPLE
     tm->DestroySprite(SpriteFileDialogExploreTemple);
+    tm->DestroySprite(SpriteFileDialogExploreTempleExp);
     // DIALOG MISSION GOALS
     tm->DestroySprite(SpriteFileDialogMissionGoals);
     tm->DestroySprite(SpriteFileDialogMissionGoalsExp);
@@ -89,17 +88,19 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroyTexture(SpriteFileDialogUpgradeExp);
     // FACTION SELECTION
     tm->DestroySprite(SpriteFileDialogFactionSelection);
+    tm->DestroyTexture(SpriteFileDialogFactionSelectionExp);
     // GAME UI
     tm->DestroySprite(SpriteFileGameUI);
     tm->DestroySprite(SpriteFileGameUIExp);
-    // PANEL HIT
-    tm->DestroyTexture(SpriteFilePanelHit);
     // MAP UI
     tm->DestroySprite(SpriteFilePanelMinimap);
     // PANEL SELECTED OBJECT
     tm->DestroySprite(SpriteFilePanelSelectedObject);
     // PANEL TURN CONTROL
     tm->DestroySprite(SpriteFilePanelTurnControl);
+    // PANEL UNIT ACTIONS
+    tm->DestroySprite(SpriteFilePanelUnitActions);
+    tm->DestroySprite(SpriteFilePanelUnitActionsExp);
     // MAP UI
     tm->DestroySprite(SpriteFileMapUI);
     // END MISSION DIALOG
@@ -109,7 +110,8 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFileDialogNewElement);
     tm->DestroySprite(SpriteFileDialogNewElementExp);
     // NEW MINI UNITS SQUAD DIALOG
-    tm->DestroyTexture(SpriteFileDialogNewMiniUnits);
+    tm->DestroySprite(SpriteFileDialogNewMiniUnits);
+    tm->DestroySprite(SpriteFileDialogNewMiniUnitsExp);
     // OBJECT ACTION BUTTON
     tm->DestroySprite(SpriteFileObjActionButton);
     // PLANET MAP

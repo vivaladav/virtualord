@@ -61,6 +61,9 @@ public:
     unsigned int AddButtonFunction(Button btnId, const std::function<void()> & f);
     void RemoveButtonFunction(Button btnId, unsigned int funId);
 
+    void ShowNotification(Button btnId, int val);
+    void HideNotification(Button btnId);
+
     void SetActionsEnabled(bool val);
 
     const sgl::sgui::AbstractButton * GetButton(Button btnId);

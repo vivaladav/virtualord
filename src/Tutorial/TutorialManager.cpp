@@ -1,13 +1,17 @@
 #include "TutorialManager.h"
 
 #include "Tutorial/TutorialConstants.h"
-#include "Tutorial/TutorialGameIntro.h"
-#include "Tutorial/TutorialPlanetMap.h"
+#include "Tutorial/TutorialGame1.h"
+#include "Tutorial/TutorialGame2.h"
+#include "Tutorial/TutorialGame3.h"
+#include "Tutorial/TutorialPlanetMap1.h"
+#include "Tutorial/TutorialPlanetMap2.h"
 
 namespace game
 {
 
 TutorialManager::TutorialManager()
+    : mLastStartedTutorialId(TUTORIAL_UNKNOWN)
 {
     mTutorialsState.resize(NUM_TUTORIALS, TS_TODO);
 }
@@ -39,16 +43,37 @@ bool TutorialManager::CreateTutorial(TutorialId tutId, Screen * screen)
     // tutorial not created yet -> let's make it
     switch (tutId)
     {
-        case TUTORIAL_MISSION_INTRO:
+        case TUTORIAL_MISSION_1:
         {
-            mActiveTutorial = new TutorialGameIntro(screen);
+            mActiveTutorial = new TutorialGame1(screen);
             return true;
         }
         break;
 
-        case TUTORIAL_PLANET_MAP:
+        case TUTORIAL_MISSION_2:
         {
-            mActiveTutorial = new TutorialPlanetMap(screen);
+            mActiveTutorial = new TutorialGame2(screen);
+            return true;
+        }
+        break;
+
+        case TUTORIAL_MISSION_3:
+        {
+            mActiveTutorial = new TutorialGame3(screen);
+            return true;
+        }
+        break;
+
+        case TUTORIAL_PLANET_MAP_1:
+        {
+            mActiveTutorial = new TutorialPlanetMap1(screen);
+            return true;
+        }
+        break;
+
+        case TUTORIAL_PLANET_MAP_2:
+        {
+            mActiveTutorial = new TutorialPlanetMap2(screen);
             return true;
         }
         break;
@@ -62,7 +87,9 @@ void TutorialManager::StartTutorial()
     if(nullptr == mActiveTutorial)
         return ;
 
-    SetTutorialState(mActiveTutorial->GetId(), TS_IN_PROGRESS);
+    mLastStartedTutorialId = mActiveTutorial->GetId();
+
+    SetTutorialState(mLastStartedTutorialId, TS_IN_PROGRESS);
 
     mActiveTutorial->Start();
 }

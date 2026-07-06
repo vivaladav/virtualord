@@ -28,6 +28,12 @@ public:
     AttackMode GetAttackMode() const;
     void SetAttackMode(AttackMode am);
 
+    // special methods used by tutorial
+    bool IsPerfectShotEnabled() const;
+    void SetPerfectShot(bool enabled);
+    bool IsFatalHitEnabled() const;
+    void SetFatalHit(bool enabled);
+
     // cost for whole attack (i.e.: all burst shots)
     int GetCostEnergy() const;
     // cost for a single shot of an attack
@@ -69,7 +75,8 @@ protected:
     GameObject * mTarget = nullptr;
 
 private:
-    float GetBonusOnAttackMode(float prob) const;
+    float GetBonusHitOnAttackMode(float prob) const;
+    float GetBonusFatalHitOnAttackMode(float prob) const;
 
     virtual void OnShoot(float x0, float y0) = 0;
 
@@ -96,10 +103,18 @@ private:
     float mMaxProbabilityFatal = 3.f;
 
     bool mReadyToShoot = false;
+    bool mPerfectShot = false;
+    bool mFatalHit = true;
 };
 
 inline AttackMode Weapon::GetAttackMode() const { return mAttackMode; }
 inline void Weapon::SetAttackMode(AttackMode am) { mAttackMode = am; }
+
+inline bool Weapon::IsPerfectShotEnabled() const { return mPerfectShot; }
+inline void Weapon::SetPerfectShot(bool enabled) { mPerfectShot = enabled; }
+
+inline bool Weapon::IsFatalHitEnabled() const { return mFatalHit; }
+inline void Weapon::SetFatalHit(bool enabled) { mFatalHit = enabled;}
 
 inline void Weapon::ClearTarget() { mTarget = nullptr; }
 inline bool Weapon::HasTarget() const { return mTarget != nullptr; }

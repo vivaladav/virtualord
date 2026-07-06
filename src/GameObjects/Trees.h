@@ -28,6 +28,9 @@ private:
 
     int mTurnsToChange = 1;
     int mTurns = 0;
+
+    unsigned int mNumVariants = 0;
+    unsigned int mMaxNum = 0;
 };
 
 } // namespace game

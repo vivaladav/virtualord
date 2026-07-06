@@ -2,25 +2,30 @@
 
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <sgl/core/Point.h>
+
 namespace game
 {
 
-class FocusArea;
+class Game;
+class IsoFocusArea;
+class IsoMap;
 class Player;
 class Unit;
 
 class StepGameUnit : public TutorialInfoStep
 {
 public:
-    StepGameUnit(const Player * p);
+    StepGameUnit(const Game * game, const IsoMap * im, const Unit * unit,
+                 const sgl::core::Pointd2D & p0);
     ~StepGameUnit();
 
     void Update(float delta) override;
 
 private:
-    FocusArea * mFocusArea = nullptr;
+    IsoFocusArea * mFocusArea = nullptr;
 
-    Unit * mUnit = nullptr;
+    const Unit * mUnit = nullptr;
 };
 
 } // namespace game

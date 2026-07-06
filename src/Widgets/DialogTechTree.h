@@ -33,7 +33,7 @@ enum TechUpgradeId : unsigned int;
 class DialogTechTree : public sgl::sgui::Widget
 {
 public:
-    DialogTechTree(Player * player);
+    DialogTechTree(Player * player, Game * game);
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
@@ -74,6 +74,9 @@ private:
 
     void UpdateUpgrades(UpgradeSections section);
 
+    void UpdateUnlockableStates();
+    void MarkLinkedAvailable(ButtonTechUpgrade * btn);
+
     void ClearButtonsUpgrade();
     ButtonTechUpgrade * GetNewButtonUpgrade(TechUpgradeId upgrade, int level,
                                             const std::vector<ButtonTechUpgrade *> & enablers,
@@ -86,10 +89,12 @@ private:
     void SetDescription(TechUpgradeId upgrade);
 
 private:
+    friend class StepGameTechTreeDialog;
+
     std::vector<ButtonTechUpgrade *> mButtonsUpgrade;
+    std::unordered_map<TechUpgradeId, ButtonTechUpgrade *> mVisibleButtonsUpgrade;
     std::vector<sgl::sgui::Image *> mLinks;
     std::unordered_map<TechUpgradeId, std::string> mDescriptions;
-    std::unordered_map<TechUpgradeId, int> mCosts;
 
     sgl::graphic::Image * mBgL = nullptr;
     sgl::graphic::Image * mBgC = nullptr;
@@ -105,6 +110,7 @@ private:
     ButtonUnlock * mBtnUnlock = nullptr;
 
     Player * mPlayer = nullptr;
+    Game * mGame = nullptr;
 
     unsigned int mButtonsUpgradeUsed = 0;
     unsigned int mLinksUsed = 0;

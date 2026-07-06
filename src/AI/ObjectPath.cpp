@@ -1,5 +1,6 @@
 #include "AI/ObjectPath.h"
 
+#include "CameraMapController.h"
 #include "Game.h"
 #include "GameMap.h"
 #include "IsoLayer.h"
@@ -8,11 +9,13 @@
 #include "Player.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/ObjectData.h"
+#include "GameObjects/WallGate.h"
 #include "Screens/ScreenGame.h"
 
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
+#include <cassert>
 #include <cmath>
 
 namespace game
@@ -24,6 +27,10 @@ ObjectPath::ObjectPath(GameObject * obj, IsoMap * im, GameMap * gm, ScreenGame *
     , mGameMap(gm)
     , mScreen(sg)
 {
+    assert(obj);
+    assert(sg);
+
+    mLocal = sg->GetGame()->GetLocalPlayerFaction() == obj->GetFaction();
 }
 
 bool ObjectPath::InitNextMove()
@@ -39,7 +46,17 @@ bool ObjectPath::InitNextMove()
     const GameMapCell & nextCell = mGameMap->GetCell(nextRow, nextCol);
 
     if(!nextCell.walkable)
-        return Fail();
+    {
+        if(nextCell.objTop != nullptr &&
+           nextCell.objTop->GetObjectType() == ObjectData::TYPE_WALL_GATE &&
+           nextCell.objTop->GetFaction() == mObj->GetFaction())
+        {
+            mOpenGate = static_cast<WallGate *>(nextCell.objTop);
+            mGameMap->OpenGate(mOpenGate);
+        }
+        else
+            return Fail();
+    }
 
     // set target for movement
     const IsoObject * isoObj = mObj->GetIsoObject();
@@ -47,9 +64,7 @@ bool ObjectPath::InitNextMove()
     const sgl::core::Pointd2D target = layerObj->GetObjectPosition(isoObj, nextRow, nextCol);
 
     // check if AI action not visible
-    Player * player = mScreen->GetGame()->GetPlayerByFaction(mObj->GetFaction());
-
-    if(!player->IsLocal() && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
+    if(!mLocal && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
     {
         mObjX = target.x;
         mObjY = target.y;
@@ -90,6 +105,23 @@ bool ObjectPath::Start()
     if(mState != READY)
         return false;
 
+    const GameMapCell & currCell = mGameMap->GetCell(mObj->GetRow0(), mObj->GetCol0());
+
+    // check if object is sitting on open gate
+    if(currCell.objBottom != nullptr &&
+       currCell.objBottom->GetObjectType() == ObjectData::TYPE_WALL_GATE &&
+       currCell.objBottom->GetFaction() == mObj->GetFaction())
+        mOpenGate = static_cast<WallGate *>(currCell.objBottom);
+
+    // center camera over target destination in the meanwhile
+    if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
+       mScreen->GetGame()->IsAutoUnitCameraEnabled())
+    {
+        const float multSpeed = 70.f;
+        const float speedCam = mObj->GetSpeed() * multSpeed;
+        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
+    }
+
     mNextCell = 1;
 
     return InitNextMove();
@@ -97,6 +129,10 @@ bool ObjectPath::Start()
 
 void ObjectPath::InstantAbort()
 {
+    if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
+       mScreen->GetGame()->IsAutoUnitCameraEnabled())
+        mScreen->StopCameraMove();
+
     mState = ABORTED;
 }
 
@@ -184,6 +220,14 @@ void ObjectPath::Update(float delta)
         // set action step completed for energy and experience update
         mObj->ActionStepCompleted(MOVE);
 
+        // close open gate
+        if(mOpenGate != nullptr &&
+           (mOpenGate->GetRow0() != targetRow || mOpenGate->GetCol0() != targetCol))
+        {
+            mGameMap->CloseGate(mOpenGate);
+            mOpenGate = nullptr;
+        }
+
         // update cell counter
         ++mNextCell;
 
@@ -217,6 +261,10 @@ bool ObjectPath::Fail()
     }
     else
         mState = FAILED;
+
+    if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
+       mScreen->GetGame()->IsAutoUnitCameraEnabled())
+        mScreen->StopCameraMove();
 
     return false;
 }

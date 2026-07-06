@@ -11,6 +11,7 @@
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Unit.h"
 #include "GameObjects/Wall.h"
+#include "Indicators/OverlayWall.h"
 #include "Indicators/WallIndicator.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/GameHUD.h"
@@ -19,53 +20,92 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
+#include <cassert>
 #include <cmath>
 
 namespace game
 {
 
-WallBuildPath::~WallBuildPath()
+
+WallBuildPath::WallBuildPath(Unit * unit, IsoMap * im, GameMap * gm, ScreenGame * sg,
+                             OverlayWall * ov)
+    : mOverlay(ov)
+    , mUnit(unit)
+    , mIsoMap(im)
+    , mGameMap(gm)
+    , mScreen(sg)
 {
-    // delete the ConquestIndicators
-    for(auto ind : mIndicators)
-        delete ind;
+    assert(unit);
+    assert(gm);
+
+    if(sg != nullptr)
+        mLocal = sg->GetGame()->GetLocalPlayerFaction() == unit->GetFaction();
 }
 
-void WallBuildPath::CreateIndicators()
+WallBuildPath::~WallBuildPath()
 {
-    const PlayerFaction faction = mUnit->GetFaction();
-    IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
+    if(mOverlay)
+        mOverlay->ClearPath();
+}
 
-    std::vector<Cell2D> cellsPath;
-    cellsPath.reserve(mCells.size());
+void WallBuildPath::SetPath(const std::vector<unsigned int> & cells)
+{
+    mCells = cells;
 
-    // store coordinates of first cell used only for moving (no indicator needed)
-    const unsigned int pathInd0 = mCells[0];
-    const unsigned int indRow0 = pathInd0 / mIsoMap->GetNumCols();
-    const unsigned int indCol0 = pathInd0 % mIsoMap->GetNumCols();
-    cellsPath.emplace_back(indRow0, indCol0);
+    SetIndicatorsType();
 
-    // create indicators
-    const unsigned int first = 1;
-    const unsigned int limit = mCells.size();
+    UpdatePathCost();
+}
 
-    for(unsigned int i = first; i < limit; ++i)
+void WallBuildPath::SetIndicatorsType()
+{
+    const unsigned int numCells = mCells.size();
+    const unsigned int lastIdx =  numCells - 1;
+
+    // no cells -> exit
+    if(numCells == 0)
+        return ;
+
+    mBlockTypes.clear();
+    mBlockTypes.reserve(numCells);
+
+    WallIndicator wi(NO_FACTION);
+
+    // only 1 cell
+    if(numCells == 1)
     {
-        // add cell to path
-        const unsigned int pathInd = mCells[i];
-        const unsigned int indRow = pathInd / mIsoMap->GetNumCols();
-        const unsigned int indCol = pathInd % mIsoMap->GetNumCols();
-        cellsPath.emplace_back(indRow, indCol);
-
-        // create indicator
-        auto ind = new WallIndicator;
-        ind->SetFaction(faction);
-
-        mIndicators.emplace_back(ind);
-        layer->AddObject(ind, indRow, indCol);
+        wi.SetBeforeAfterDirections(0, 0, 0, 0);
+        mBlockTypes.emplace_back(wi.GetBlockType());
     }
+    // 2 or more cells
+    else
+    {
+        // first indicator
+        const int ar = IndToRow(mCells[1]) - IndToRow(mCells[0]);
+        const int ac = IndToCol(mCells[1]) - IndToCol(mCells[0]);
 
-    SetIndicatorsType(cellsPath, mIndicators);
+        wi.SetBeforeAfterDirections(0, 0, ar, ac);
+        mBlockTypes.emplace_back(wi.GetBlockType());
+
+        // 2nd to n-1 indicators
+        for(unsigned int i = 1; i < lastIdx; ++i)
+        {
+            const int br = IndToRow(mCells[i]) - IndToRow(mCells[i - 1]);
+            const int bc = IndToCol(mCells[i]) - IndToCol(mCells[i - 1]);
+            const int ar = IndToRow(mCells[i + 1]) - IndToRow(mCells[i]);
+            const int ac = IndToCol(mCells[i + 1]) - IndToCol(mCells[i]);
+
+            wi.SetBeforeAfterDirections(br, bc, ar, ac);
+            mBlockTypes.emplace_back(wi.GetBlockType());
+        }
+
+        // set directions for last indicator
+        const int br = IndToRow(lastIdx) - IndToRow(lastIdx - 1);
+        const int bc = IndToCol(lastIdx) - IndToCol(lastIdx - 1);
+
+        wi.SetBeforeAfterDirections(br, bc, 0, 0);
+        mBlockTypes.emplace_back(wi.GetBlockType());
+    }
 }
 
 bool WallBuildPath::InitNextBuild()
@@ -75,22 +115,20 @@ bool WallBuildPath::InitNextBuild()
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
-    const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-    const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
-    const Cell2D nextCell(nextRow, nextCol);
+    const Cell2D nextCell(IndToRow(nextInd), IndToCol(nextInd));
 
     Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
+
+    // remove current cell from overlay
+    if(mOverlay)
+        mOverlay->PopFrontPath();
 
     // check if building is possible
     if(!mGameMap->CanBuildWall(nextCell, player, mLevel))
     {
-        // remove current indicator
-        layerOverlay->ClearObject(mIndicators[mNextCell]);
+        ++mNextCell;
 
-        --mNextCell;
-
-        if(mNextCell > 0)
+        if(mNextCell < mCells.size())
             return InitNextMove();
         else
             return Fail();
@@ -101,23 +139,19 @@ bool WallBuildPath::InitNextBuild()
 
     mGameMap->StartBuildWall(nextCell, player, mLevel);
 
-    // clear indicator before starting construction
-    layerOverlay->ClearObject(mIndicators[mNextCell - 1]);
-
     GameHUD * HUD = mScreen->GetHUD();
     mProgressBar = HUD->CreateProgressBarInCell(nextCell, mUnit->GetTimeBuildWall(),
                                                 player->GetFaction());
 
-    mProgressBar->AddFunctionOnCompleted([this, nextCell, player, layerOverlay]
+    mProgressBar->AddFunctionOnCompleted([this, nextCell, player]
     {
         mProgressBar = nullptr;
 
-        const GameObjectTypeId blockType = mIndicators[mNextCell - 1]->GetBlockType();
-        mGameMap->BuildWall(nextCell, player, blockType);
+        mGameMap->BuildWall(nextCell, player, mBlockTypes[mNextCell]);
 
         mUnit->ActionStepCompleted(BUILD_WALL);
 
-        --mNextCell;
+        ++mNextCell;
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/build-02.ogg", 200);
@@ -139,17 +173,43 @@ bool WallBuildPath::InitNextBuild()
 
 bool WallBuildPath::InitNextMove()
 {
+    // all done
+    const unsigned int numCells = mCells.size();
+
+    if(numCells == mNextCell)
+        return Finish();
+
+    // check if unit is next to only cell
+    const unsigned int indCurr = mCells[mNextCell];
+    const Cell2D cellUnit(mUnit->GetRow0(), mUnit->GetCol0());
+    const Cell2D cellCurr(IndToRow(indCurr), IndToCol(indCurr));
+
+    if(numCells == 1 && mGameMap->AreCellsAdjacent(cellUnit, cellCurr))
+        return InitNextBuild();
+
     // not enough energy -> FAIL
     if(!mUnit->HasEnergyForActionStep(MOVE))
         return Fail();
 
-    if(0 == mNextCell)
-        return Finish();
+    const unsigned int movCell = mNextCell + 1;
 
-    const unsigned int movCell = mNextCell - 1;
-    const unsigned int nextInd = mCells[movCell];
-    mTargetRow = nextInd / mIsoMap->GetNumCols();
-    mTargetCol = nextInd % mIsoMap->GetNumCols();
+    // last cell of the path -> move outside
+    if(movCell == numCells)
+    {
+        const Cell2D dest = mGameMap->GetAdjacentMoveTarget(cellUnit, cellCurr);
+
+        if(dest.row == -1 || dest.col == -1)
+            return Fail();
+
+        mTargetRow = dest.row;
+        mTargetCol = dest.col;
+    }
+    else
+    {
+        const unsigned int nextInd = mCells[movCell];
+        mTargetRow = nextInd / mIsoMap->GetNumCols();
+        mTargetCol = nextInd % mIsoMap->GetNumCols();
+    }
 
     const GameMapCell & nextCell = mGameMap->GetCell(mTargetRow, mTargetCol);
 
@@ -264,7 +324,7 @@ void WallBuildPath::UpdateMove(float delta)
         // handle next step or termination
         if(ABORTING == mState)
             InstantAbort();
-        else if(0 == mNextCell)
+        else if(mCells.size() == mNextCell)
             Finish();
         else
             InitNextBuild();
@@ -273,9 +333,28 @@ void WallBuildPath::UpdateMove(float delta)
 
 void WallBuildPath::UpdatePathCost()
 {
-    const unsigned int segments = mCells.size() - 1;
-    mEnergyCost = segments * Wall::GetCostEnergy(mLevel);
-    mMaterialCost = segments * Wall::GetCostMaterial(mLevel);
+    // reset costs
+    mCostUnitEnergy = 0;
+    mCostResEnergy = 0;
+    mCostResMaterial = 0;
+
+    // empty path -> exit
+    if(mCells.empty())
+        return ;
+
+    const unsigned int numBlocks = mCells.size();
+
+    // unit energy
+    const unsigned int ind0 = mCells[0];
+    const bool unitOnStart = mUnit->GetRow0() == IndToRow(ind0) && mUnit->GetCol0() == IndToCol(ind0);
+    const bool includeMove = numBlocks > 1 || unitOnStart;
+
+    mCostUnitEnergy = numBlocks * ((includeMove * mUnit->GetEnergyForActionStep(MOVE)) +
+                                   mUnit->GetEnergyForActionStep(BUILD_WALL));
+
+    // resources
+    mCostResEnergy = numBlocks * Wall::GetCostEnergy(mLevel);
+    mCostResMaterial = numBlocks * Wall::GetCostMaterial(mLevel);
 }
 
 bool WallBuildPath::Start()
@@ -284,12 +363,17 @@ bool WallBuildPath::Start()
     if(HasStarted())
         return false;
 
-    CreateIndicators();
+    mNextCell = 0;
 
-    // stat building from last cell
-    mNextCell = mCells.size() - 1;
+    // center camera over target destination in the meanwhile
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+    {
+        const float multSpeed = 20.f;
+        const float speedCam = mUnit->GetSpeed() * multSpeed;
+        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
+    }
 
-    return InitNextBuild();
+    return InitNextMove();
 }
 
 void WallBuildPath::Abort()
@@ -299,7 +383,12 @@ void WallBuildPath::Abort()
     else if(MOVING == mState)
         mState = ABORTING;
     else
+    {
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraMove();
+
         mState = ABORTED;
+    }
 }
 
 void WallBuildPath::InstantAbort()
@@ -307,10 +396,6 @@ void WallBuildPath::InstantAbort()
     // clear progress bar
     if(mNextCell < mCells.size())
     {
-        const unsigned int nextInd = mCells[mNextCell];
-        const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-        const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
-
         if(mProgressBar)
         {
             mProgressBar->DeleteLater();
@@ -321,9 +406,11 @@ void WallBuildPath::InstantAbort()
         }
     }
 
-    // clear indicators
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-    layerOverlay->ClearObjects();
+    if(mOverlay)
+        mOverlay->ClearPath();
+
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+        mScreen->StopCameraMove();
 
     // set new state
     mState = ABORTED;
@@ -335,55 +422,13 @@ void WallBuildPath::Update(float delta)
         UpdateMove(delta);
 }
 
-void WallBuildPath::SetIndicatorsType(const std::vector<Cell2D> & cells,
-                                      const std::vector<WallIndicator *> & indicators)
-{
-    const unsigned int lastIdx = cells.size() - 1;
-    const unsigned int lastIndicator = lastIdx - 1;
-
-    if(0 == lastIndicator)
-    {
-        const int br = cells[1].row - cells[0].row;
-        const int bc = cells[1].col - cells[0].col;
-        const int ar = 0;
-        const int ac = 0;
-
-        indicators[0]->SetBeforeAfterDirections(br, bc, ar, ac);
-    }
-    else
-    {
-        const int ar = cells[2].row - cells[1].row;
-        const int ac = cells[2].col - cells[1].col;
-
-        indicators[0]->SetBeforeAfterDirections(0, 0, ar, ac);
-
-        // 2nd to n-1 indicators
-        for(unsigned int i = 1; i < lastIndicator; ++i)
-        {
-            const int br = cells[i + 1].row - cells[i].row;
-            const int bc = cells[i + 1].col - cells[i].col;
-
-            const int ar = cells[i + 2].row - cells[i + 1].row;
-            const int ac = cells[i + 2].col - cells[i + 1].col;
-
-            indicators[i]->SetBeforeAfterDirections(br, bc, ar, ac);
-        }
-
-        // set directions for last indicator
-        const int br = cells[lastIdx].row - cells[lastIdx - 1].row;
-        const int bc = cells[lastIdx].col - cells[lastIdx - 1].col;
-        indicators[lastIndicator]->SetBeforeAfterDirections(br, bc, 0, 0);
-    }
-}
-
 bool WallBuildPath::Fail()
 {
-    // clear indicators
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-    layerOverlay->ClearObjects();
+    if(mOverlay)
+        mOverlay->ClearPath();
 
+    // clear action data
     if(HasStarted())
-        // clear action data
         mScreen->SetObjectActionFailed(mUnit);
 
     mState = FAILED;
@@ -403,7 +448,13 @@ bool WallBuildPath::Finish()
     else
         mState = COMPLETED;
 
+    if(mOverlay)
+        mOverlay->ClearPath();
+
     return true;
 }
+
+int WallBuildPath::IndToRow(unsigned int ind) const { return ind / mGameMap->GetNumCols(); }
+int WallBuildPath::IndToCol(unsigned int ind) const { return ind % mGameMap->GetNumCols(); }
 
 } // namespace game

@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameBaseBuildUnit.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -15,28 +14,25 @@ namespace game
 {
 
 StepGameBaseBuildUnit::StepGameBaseBuildUnit(GameHUD * HUD)
-    : TutorialInfoStep(530, 250)
+    : TutorialInfoStep(570, 200)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(40, 810);
+    info->SetPosition(600, 850);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_1"),
-                       TutorialConstants::colorText, 8.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_2"),
-                       TutorialConstants::colorText, 7.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_3"),
-                       TutorialConstants::colorTextAction, 0.f, false, false, [this, HUD]
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_1"), 8.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_2"), 7.f, true, false);
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_3"), 0.f, false, false, [this, HUD]
                        {
                            auto dialog = HUD->GetDialogNewElement();
                            auto btn = dialog->GetButtonBuild();
@@ -48,8 +44,8 @@ StepGameBaseBuildUnit::StepGameBaseBuildUnit(GameHUD * HUD)
 
                            // FOCUS
                            const int padding = 10;
-                           const int fX = dialog->GetX() + btn->GetX() - padding;
-                           const int fY = dialog->GetY() + btn->GetY() - padding;
+                           const int fX = btn->GetScreenX() - padding;
+                           const int fY = btn->GetScreenY() - padding;
                            const int fW = btn->GetWidth() + (padding * 2);
                            const int fH = btn->GetHeight() + (padding * 2);
 

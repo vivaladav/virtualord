@@ -59,7 +59,6 @@ void ButtonObjectActionOption::SetText(const char * text)
     }
 
     auto fm = graphic::FontManager::Instance();
-
     auto font = fm->GetFont(WidgetsConstants::FontFileButton, 17, graphic::Font::NORMAL);
     mLabel = new graphic::Text(text, font);
     RegisterRenderable(mLabel);

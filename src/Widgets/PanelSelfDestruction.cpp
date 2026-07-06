@@ -16,7 +16,6 @@ PanelSelfDestruction::PanelSelfDestruction()
     using namespace sgl;
 
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     SetResizePolicy(sgui::Widget::GROW_ONLY);
 

@@ -1,6 +1,11 @@
 #pragma once
 
+#include "Cell2D.h"
+
+
 #include <sgl/sgui/Widget.h>
+
+#include <vector>
 
 namespace game
 {
@@ -12,13 +17,18 @@ class PanelClickFilter : public sgl::sgui::Widget
 public:
     PanelClickFilter();
 
+    // set 1 cliclable area in screen OR world mode
     void SetScreenClickableArea(int x0, int y0, int w, int h);
     void SetWorldClickableArea(int x0, int y0, int w, int h);
+    // set 1 clickable cell OR
     void SetClickableCell(const IsoMap * im, int r, int c);
-    void SetClickableCells(const IsoMap * im, int tlR, int tlC, int brR, int brC);
+    void SetClickableCell(const IsoMap * im, const Cell2D & cell);
+    // set multiple groups of cell that can be clicked
+    void AddClickableCells(const IsoMap * im, int tlR, int tlC, int brR, int brC);
+    void AddClickableCells(const IsoMap * im, const Cell2D & tl, const Cell2D & br);
 
-    void ClearButtonToExclude();
-    void SetButtonToExclude(int button);
+    void ClearButtonToAllow();
+    void SetButtonToAllow(int button);
 
     void ExpandClickableArea();
     void ClearClickableArea();
@@ -32,6 +42,22 @@ private:
     void FilterMouseEvent(sgl::core::MouseButtonEvent & event);
 
 private:
+    struct CellsArea
+    {
+        CellsArea(int tlR, int tlC, int brR, int brC)
+            : rowTL(tlR)
+            , colTL(tlC)
+            , rowBR(brR)
+            , colBR(brC)
+        {
+        }
+
+        int rowTL;
+        int colTL;
+        int rowBR;
+        int colBR;
+    };
+
     int mXtl = 0;
     int mYtl = 0;
     int mXbr = 0;
@@ -42,15 +68,14 @@ private:
     const IsoMap * mIsoMap = nullptr;
     int mRow = -1;
     int mCol = -1;
-    int mTLR = -1;
-    int mTLC = -1;
-    int mBRR = -1;
-    int mBRC = -1;
 
+    std::vector<CellsArea> mCellAreas;
+
+    bool mAreaScreen = false;
     bool mAreaWorld = false;
 };
 
-inline void PanelClickFilter::SetButtonToExclude(int b) { mButton = b; }
+inline void PanelClickFilter::SetButtonToAllow(int b) { mButton = b; }
 
 inline void PanelClickFilter::SetClickableArea(int x0, int y0, int w, int h)
 {
@@ -62,6 +87,7 @@ inline void PanelClickFilter::SetClickableArea(int x0, int y0, int w, int h)
 
 inline void PanelClickFilter::SetScreenClickableArea(int x0, int y0, int w, int h)
 {
+    mAreaScreen = true;
     mAreaWorld = false;
 
     SetClickableArea(x0, y0, w, h);
@@ -69,6 +95,7 @@ inline void PanelClickFilter::SetScreenClickableArea(int x0, int y0, int w, int 
 
 inline void PanelClickFilter::SetWorldClickableArea(int x0, int y0, int w, int h)
 {
+    mAreaScreen = false;
     mAreaWorld = true;
 
     SetClickableArea(x0, y0, w, h);
@@ -81,13 +108,23 @@ inline void PanelClickFilter::SetClickableCell(const IsoMap * im, int r, int c)
     mCol = c;
 }
 
-inline void PanelClickFilter::SetClickableCells(const IsoMap * im, int tlR, int tlC, int brR, int brC)
+inline void PanelClickFilter::SetClickableCell(const IsoMap * im, const Cell2D & cell)
 {
     mIsoMap = im;
-    mTLR = tlR;
-    mTLC = tlC;
-    mBRR = brR;
-    mBRC = brC;
+    mRow = cell.row;
+    mCol = cell.col;
+}
+
+inline void PanelClickFilter::AddClickableCells(const IsoMap * im, int tlR, int tlC, int brR, int brC)
+{
+    mIsoMap = im;
+    mCellAreas.emplace_back(tlR, tlC, brR, brC);
+}
+
+inline void PanelClickFilter::AddClickableCells(const IsoMap * im, const Cell2D & tl, const Cell2D & br)
+{
+    mIsoMap = im;
+    mCellAreas.emplace_back(tl.row, tl.col, br.row, br.col);
 }
 
 inline void PanelClickFilter::ClearClickableArea()

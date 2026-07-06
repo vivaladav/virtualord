@@ -21,6 +21,13 @@ void GameObjectsGroup::DoForAll(const std::function<void(GameObject *)> & f) con
         f(o);
 }
 
+void GameObjectsGroup::DoForObject(unsigned int index,
+                                   const std::function<void(GameObject *)> & f) const
+{
+    if(index < mObjects.size())
+        f(mObjects[index]);
+}
+
 void GameObjectsGroup::SetSelected(bool selected) const
 {
     for(auto o : mObjects)

@@ -105,7 +105,7 @@ bool IsoLayer::AddObject(IsoObject * obj, unsigned int r, unsigned int c)
     return true;
 }
 
-void IsoLayer::ClearObject(IsoObject * obj)
+void IsoLayer::RemoveObject(IsoObject * obj)
 {
     if(nullptr == obj)
         return ;
@@ -122,7 +122,7 @@ void IsoLayer::ClearObject(IsoObject * obj)
  * @param r Row index, starting from 0
  * @param c Col index, starting from 0
  */
-void IsoLayer::ClearObject(unsigned int r, unsigned int c)
+void IsoLayer::RemoveObject(unsigned int r, unsigned int c)
 {
     const unsigned int rows = mMap->GetNumRows();
     const unsigned int cols = mMap->GetNumCols();
@@ -175,8 +175,9 @@ bool IsoLayer::MoveObject(unsigned int r0, unsigned int c0,
 
     const unsigned int index1 = r1 * cols + c1;
 
-    // cell is full
-    if(mObjectsMap[index1])
+    // cell is full with another object
+    const IsoObject * objInTargetCell = mObjectsMap[index1];
+    if(objInTargetCell != nullptr && objInTargetCell != obj)
         return false;
 
     // re-position object
@@ -185,7 +186,9 @@ bool IsoLayer::MoveObject(unsigned int r0, unsigned int c0,
 
     // remove object
     ClearObjectFromMap(obj);
-    RemoveObjectFromRenderList(obj);
+
+    if(obj->IsVisible())
+        RemoveObjectFromRenderList(obj);
 
     // need to update object position before adding it again
     obj->SetRow(r1);
@@ -193,13 +196,18 @@ bool IsoLayer::MoveObject(unsigned int r0, unsigned int c0,
 
     // add object back
     InsertObjectInMap(obj);
-    InsertObjectInRenderList(obj);
+
+    if(obj->IsVisible())
+        InsertObjectInRenderList(obj);
 
     return true;
 }
 
 void IsoLayer::SetObjectVisible(IsoObject * obj, bool visible)
 {
+    if(obj->IsVisible() == visible)
+        return ;
+
     obj->SetVisible(visible);
 
     if(visible)
@@ -281,7 +289,7 @@ void IsoLayer::ClearObject(unsigned int index)
 {
     IsoObject * obj = mObjectsMap[index];
 
-    ClearObject(obj);
+    RemoveObject(obj);
 }
 
 void IsoLayer::RemoveObjectFromList(IsoObject * obj)

@@ -9,6 +9,7 @@ class GameMap;
 class GameObject;
 class IsoMap;
 class ScreenGame;
+class WallGate;
 
 class ObjectPath
 {
@@ -63,6 +64,8 @@ private:
 
     GameObject * mObj = nullptr;
 
+    WallGate * mOpenGate = nullptr;
+
     IsoMap * mIsoMap = nullptr;
     GameMap * mGameMap = nullptr;
 
@@ -82,6 +85,8 @@ private:
     float mTargetY = 0.f;
 
     int mCost = 0;
+
+    bool mLocal = false;
 };
 
 inline GameObject * ObjectPath::GetObject() const { return mObj; }
@@ -117,7 +122,5 @@ inline void ObjectPath::Abort()
 {
     mState = ABORTING;
 }
-
-
 
 } // namespace game

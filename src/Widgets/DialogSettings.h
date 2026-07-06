@@ -35,12 +35,14 @@ public:
 private:
     void HandlePositionChanged() override;
 
+    int GetMouseButtonIndex(int buttonId) const;
+
     void SetPositions();
 
-    void CreatePanelGame(sgl::sgui::Widget * parent);
-    void CreatePanelAudio(sgl::sgui::Widget * parent);
-    void CreatePanelVideo(sgl::sgui::Widget * parent);
-    void CreatePanelControls(sgl::sgui::Widget * parent);
+    void CreatePanelGame();
+    void CreatePanelAudio();
+    void CreatePanelVideo();
+    void CreatePanelControls();
 
     void UpdateCurrentResolution();
 
@@ -62,6 +64,7 @@ private:
     std::vector<sgl::sgui::Label *> mHeadersGame;
     std::vector<sgl::sgui::Label *> mHeadersAudio;
     std::vector<sgl::sgui::Label *> mHeadersVideo;
+    std::vector<sgl::sgui::Label *> mHeadersControls;
 
     Game * mGame = nullptr;
 
@@ -80,6 +83,8 @@ private:
     sgl::sgui::ComboBox * mComboLang = nullptr;
     sgl::sgui::ComboBox * mComboRes = nullptr;
     sgl::sgui::ComboBox * mComboVMode = nullptr;
+    sgl::sgui::ComboBox * mComboBtnSelect = nullptr;
+    sgl::sgui::ComboBox * mComboBtnAction = nullptr;
 
     sgl::utilities::StringManager * mSM = nullptr;
 };

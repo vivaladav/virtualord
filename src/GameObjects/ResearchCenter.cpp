@@ -1,22 +1,32 @@
 #include "GameObjects/ResearchCenter.h"
 
+#include "Game.h"
 #include "GameConstants.h"
 #include "GameData.h"
 #include "IsoObject.h"
 #include "Player.h"
 #include "Particles/DataParticleOutput.h"
 #include "Particles/UpdaterOutput.h"
+#include "Widgets/BlinkingHighlight.h"
+#include "Widgets/BlinkingIcon.h"
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/sgui/Image.h>
 
 namespace game
 {
 
 ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & initData)
     : Structure(data, initData)
+    , mHighlight(new BlinkingHighlight(SpriteFileStructures, ID_STRUCT_RESEARCH_CENTER_W))
+    , mIconResearch(new BlinkingIconResearch)
 {
+    using namespace sgl;
+
     SetImage();
+
+    UpdateHighlight();
 
     // init resource usage
     mResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
@@ -39,15 +49,26 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
                                                  {
                                                      UpdateProduction();
                                                  });
+
+        mResearchTrackerId = p->AddOnResourceChanged(Player::RESEARCH,
+                                                     [this](const StatValue *, int, int)
+                                                    {
+                                                        UpdateHighlight();
+                                                    });
     }
 }
 
 ResearchCenter::~ResearchCenter()
 {
+    delete mHighlight;
+
     auto p = GetOwner();
 
     if(p != nullptr)
+    {
         p->RemoveOnResourcesChanged(mResTrackerId);
+        p->RemoveOnResourceChanged(Player::RESEARCH, mResearchTrackerId);
+    }
 }
 
 void ResearchCenter::OnNewTurn(PlayerFaction faction)
@@ -118,6 +139,17 @@ void ResearchCenter::SetResourceUsage(ExtendedResource res, int val)
     UpdateProduction();
 }
 
+void ResearchCenter::OnPositionChanged()
+{
+    Structure::OnPositionChanged();
+
+    const auto isoObj = GetIsoObject();
+    const int isoX = isoObj->GetX();
+    const int isoY = isoObj->GetY();
+
+    mHighlight->SetPosition(isoX, isoY);
+}
+
 void ResearchCenter::UpdateGraphics()
 {
     SetImage();
@@ -156,6 +188,7 @@ void ResearchCenter::UpdateProduction()
     if(p == nullptr)
     {
         mResearchPerTurn = 0;
+        UpdateIconResearch();
         return ;
     }
 
@@ -182,6 +215,7 @@ void ResearchCenter::UpdateProduction()
     if(mResUsage[ER_ENERGY] == 0 || mResUsage[ER_MATERIAL] == 0 || mResUsage[ER_MONEY] == 0)
     {
         mResearchPerTurn = 0;
+        UpdateIconResearch();
         return ;
     }
 
@@ -198,8 +232,8 @@ void ResearchCenter::UpdateProduction()
         mResUsage[ER_DIAMONDS] = diamonds;
 
     // -- define research points production --
-    const int maxProdElem = 30;
-    const int maxProdElem2 = 40;
+    const int maxProdElem = 40;
+    const int maxProdElem2 = 60;
     const int maxUsage = 100;
     const int baseProd = (maxProdElem * mResUsage[ER_ENERGY] / maxUsage) +
                          (maxProdElem * mResUsage[ER_MATERIAL] / maxUsage) +
@@ -208,6 +242,104 @@ void ResearchCenter::UpdateProduction()
 
     mResearchPerTurn = baseProd + (baseProd * multProd2 * mResUsage[ER_BLOBS] / maxUsage) +
                        (baseProd * multProd2 * mResUsage[ER_DIAMONDS] / maxUsage);
+
+    UpdateIconResearch();
+}
+
+void ResearchCenter::HideIconResearch()
+{
+    mIconResearch->SetVisible(false);
+    mIconResearch->SetEnabled(false);
+}
+
+void ResearchCenter::ShowIconResearch()
+{
+    if(!IsFactionLocal())
+        return ;
+
+    mIconResearch->SetVisible(true);
+    mIconResearch->SetEnabled(true);
+
+    PositionIconResearch();
+}
+
+void ResearchCenter::PositionIconResearch()
+{
+    const auto isoObj = GetIsoObject();
+    const int isoX = isoObj->GetX();
+    const int isoY = isoObj->GetY();
+    const int isoW = isoObj->GetWidth();
+
+    const int iconMarginV = 5;
+    const int iconX = isoX + (isoW - mIconResearch->GetWidth()) / 2;
+    const int iconY = isoY - mIconResearch->GetHeight() - iconMarginV;
+
+    mIconResearch->SetPosition(iconX, iconY);
+}
+
+void ResearchCenter::UpdateIconResearch()
+{
+    if(mResearchPerTurn == 0 && IsLinked() && IsFactionLocal())
+        ShowIconResearch();
+    else
+        HideIconResearch();
+}
+
+void ResearchCenter::HideHighlight()
+{
+    mHighlight->SetEnabled(false);
+    mHighlight->SetVisible(false);
+}
+
+void ResearchCenter::ShowHighlight()
+{
+    mHighlight->SetEnabled(true);
+    mHighlight->SetVisible(true);
+}
+
+void ResearchCenter::UpdateHighlight()
+{
+    // structure not local or not working -> HIDE
+    if(!IsFactionLocal() || !IsLinked())
+    {
+        HideHighlight();
+        return ;
+    }
+
+    const int resPoints = GetOwner()->GetStat(Player::RESEARCH).GetValue();
+
+    auto game = GetGame();
+    auto player = GetOwner();
+
+    for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
+    {
+        const auto tu = static_cast<TechUpgradeId>(i);
+
+        // there's at least 1 available upgrade that can be unlocked -> SHOW
+        if(!player->IsUpgradeUnlocked(tu) && player->IsUpgradeAvailable(tu) &&
+           game->GetTechUpgradecost(tu) <= resPoints)
+        {
+            ShowHighlight();
+            return ;
+        }
+    }
+
+    // none found -> HIDE
+    HideHighlight();
+}
+
+void ResearchCenter::OnFactionChanged()
+{
+    Structure::OnFactionChanged();
+
+    UpdateHighlight();
+}
+
+void ResearchCenter::OnLinkedChanged()
+{
+    Structure::OnLinkedChanged();
+
+    UpdateHighlight();
 }
 
 } // namespace game

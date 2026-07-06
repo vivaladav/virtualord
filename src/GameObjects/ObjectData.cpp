@@ -40,7 +40,9 @@ const GameObjectTypeId ObjectData::TYPE_ROCKS = 642473717644353764u;
 const GameObjectTypeId ObjectData::TYPE_SPAWN_TOWER = 3913629860324638827u;
 const GameObjectTypeId ObjectData::TYPE_TEMPLE = 5444014183845484671u;
 const GameObjectTypeId ObjectData::TYPE_TRADING_POST = 8633289264715340838u;
-const GameObjectTypeId ObjectData::TYPE_TREES = 2838858888503128034u;
+const GameObjectTypeId ObjectData::TYPE_TREES1 = 1043979647186399953u;
+const GameObjectTypeId ObjectData::TYPE_TREES2 = 152210149742476428u;
+const GameObjectTypeId ObjectData::TYPE_TREES3 = 13726963081426553537u;
 const GameObjectTypeId ObjectData::TYPE_UNIT_MEDIC1 = 11104197402347881621u;
 const GameObjectTypeId ObjectData::TYPE_UNIT_SCOUT1 = 5683934829746184003u;
 const GameObjectTypeId ObjectData::TYPE_UNIT_SOLDIER1 = 4212048785386180u;
@@ -81,7 +83,9 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::TITLES =
     { ObjectData::TYPE_SPAWN_TOWER, "SPAWN_TOWER"},
     { ObjectData::TYPE_TEMPLE, "TEMPLE"},
     { ObjectData::TYPE_TRADING_POST, "TRADING_POST"},
-    { ObjectData::TYPE_TREES, "TREES"},
+    { ObjectData::TYPE_TREES1, "TREES"},
+    { ObjectData::TYPE_TREES2, "TREES"},
+    { ObjectData::TYPE_TREES3, "TREES"},
     { ObjectData::TYPE_UNIT_MEDIC1, "UNIT_MEDIC1"},
     { ObjectData::TYPE_UNIT_SCOUT1, "UNIT_SCOUT1"},
     { ObjectData::TYPE_UNIT_SOLDIER1, "UNIT_SOLDIER1"},
@@ -122,7 +126,9 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::DESCRIPTIONS
     { ObjectData::TYPE_ROCKS, "DESC_ROCKS"},
     { ObjectData::TYPE_SPAWN_TOWER, "DESC_SPAWN_TOWER"},
     { ObjectData::TYPE_TEMPLE, "DESC_TEMPLE"},
-    { ObjectData::TYPE_TREES, "DESC_TREES"},
+    { ObjectData::TYPE_TREES1, "DESC_TREES"},
+    { ObjectData::TYPE_TREES2, "DESC_TREES"},
+    { ObjectData::TYPE_TREES3, "DESC_TREES"},
     { ObjectData::TYPE_TRADING_POST, "DESC_TRADING_POST"},
     { ObjectData::TYPE_UNIT_MEDIC1, "DESC_UNIT_MEDIC1"},
     { ObjectData::TYPE_UNIT_SCOUT1, "DESC_UNIT_SCOUT1"},
@@ -139,6 +145,7 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::DESCRIPTIONS
 const GameObjectCategoryId ObjectData::CAT_NULL = 0;
 
 const GameObjectCategoryId ObjectData::CAT_COLLECTABLE = 9419833046200742204u;
+const GameObjectCategoryId ObjectData::CAT_INTERACTIVE = 3041904281647136161u;
 const GameObjectCategoryId ObjectData::CAT_MINI_UNIT = 13146483742249843079u;
 const GameObjectCategoryId ObjectData::CAT_RES_GENERATOR = 7012214588672144715u;
 const GameObjectCategoryId ObjectData::CAT_RES_STORAGE = 12817435265416001740u;
@@ -174,6 +181,7 @@ const char * ObjectData::STR_CLASS[NUM_OBJ_CLASSES] =
 
     // OTHERS
     "COLLECTABLE",
+    "INTERACTIVE_OBJ",
     "SCENE"
 };
 

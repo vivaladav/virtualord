@@ -32,8 +32,8 @@ namespace sgl
 namespace game
 {
 
-class MapsRegistry;
 class ObjectsDataRegistry;
+class Planet;
 class Player;
 class TutorialManager;
 
@@ -43,6 +43,7 @@ enum LanguageId : unsigned int;
 enum PlanetId : unsigned int;
 enum PlayerFaction : unsigned int;
 enum StateId : int;
+enum TechUpgradeId : unsigned int;
 
 enum Difficulty : unsigned int
 {
@@ -52,6 +53,7 @@ enum Difficulty : unsigned int
 
     NUM_DIFFICULTIES
 };
+
 
 class Game : public sgl::core::Application
 {
@@ -71,10 +73,12 @@ public:
     void RegisterCursor(GameCursorId curId, sgl::graphic::Cursor * cursor);
     void SetCurrentCursor(GameCursorId curId);
 
+    // -- planets --
+    Planet * GetPlanet(PlanetId pid) const;
     const std::string & GetCurrentMapFile() const;
     unsigned int GetCurrentTerritory() const;
     void SetCurrentTerritory(unsigned int territory);
-    PlanetId GetCurrentPlanet() const;
+    Planet * GetCurrentPlanet() const;
     void SetCurrentPlanet(PlanetId planet);
 
     int GetResourcePriceBuy(ExtendedResource t) const;
@@ -89,12 +93,10 @@ public:
     Difficulty GetDifficulty() const;
     void SetDifficulty(Difficulty level);
 
-    MapsRegistry * GetMapsRegistry() const;
     const ObjectsDataRegistry * GetObjectsRegistry() const;
 
     // -- players --
     Player * AddPlayer(const char * name, int pid);
-    void ClearPlayers();
 
     int GetNumPlayers() const;
 
@@ -104,6 +106,9 @@ public:
 
     void SetLocalPlayerFaction(PlayerFaction faction);
     PlayerFaction GetLocalPlayerFaction() const;
+
+    // -- tech upgrades --
+    int GetTechUpgradecost(TechUpgradeId upgrade) const;
 
     // -- settings --
     LanguageId GetLanguage() const;
@@ -118,10 +123,21 @@ public:
     void SetMapScrollingSpeed(int val);
     bool IsMapScrollingOnEdges() const;
     void SetMapScrollingOnEdges(bool val);
+    bool IsMapScrollingConstant() const;
+    void SetMapScrollingConstant(bool val);
     bool IsAutoEndTurnEnabled() const;
     void SetAutoEndTurn(bool val);
+    bool IsAutoUnitCameraEnabled() const;
+    void SetAutoUnitCamera(bool val);
     bool IsTutorialEnabled() const;
     void SetTutorialEnabled(bool val);
+
+    float GetTimeAutoHideMouse() const;
+
+    int GetButtonSelect() const;
+    void SetButtonSelect(int btn);
+    int GetButtonAction() const;
+    void SetButtonAction(int btn);
 
     unsigned int AddOnSettingsChangedFunction(const std::function<void()> & f);
     void RemoveOnSettingsChangedFunction(unsigned int fId);
@@ -132,12 +148,19 @@ public:
     TutorialManager * GetTutorialManager() const;
 
 private:
+    void ClearPlayers();
+    void ClearPlanets();
+
     void NotifyOnSettingsChanged();
 
     void Update(float delta) override;
 
 private:
     std::vector<Player *> mPlayers;
+
+    std::unordered_map<PlanetId, Planet *> mPlanets;
+
+    std::unordered_map<TechUpgradeId, int> mCostUpgrades;
 
     std::map<unsigned int, std::function<void()>> mOnSettingsChanged;
 
@@ -154,7 +177,6 @@ private:
 
     TutorialManager * mTutMan = nullptr;
 
-    MapsRegistry * mMapsReg = nullptr;
     ObjectsDataRegistry * mObjsRegistry = nullptr;
 
     Difficulty mDiff = EASY;
@@ -170,10 +192,15 @@ private:
     // SETTINGS
     LanguageId mLanguage;
     int mMapDraggingSpeed = 5;
-    int mMapScrollingSpeed = 6;
+    int mMapScrollingSpeed = 5;
+    int mButtonSelect;
+    int mButtonAction;
+    float mTimeAutoHideMouse = 2.f;
     bool mMapDragging = true;
     bool mMapScrollingOnEdges = true;
+    bool mMapScrollingConstSpeed = false;
     bool mAutoEndTurn = true;
+    bool mAutoUnitCamera = true;
     bool mTutorialEnabled = true;
 
     unsigned char mClearR = 0;
@@ -188,7 +215,6 @@ inline void Game::SetCurrentTerritory(unsigned int territory)
     mCurrTerritory = territory;
 }
 
-inline PlanetId Game::GetCurrentPlanet() const { return mCurrPlanet; }
 inline void Game::SetCurrentPlanet(PlanetId planet) { mCurrPlanet = planet; }
 
 inline void Game::SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
@@ -202,7 +228,6 @@ inline void Game::SetClearColor(unsigned char r, unsigned char g, unsigned char 
 inline Difficulty Game::GetDifficulty() const { return mDiff; }
 inline void Game::SetDifficulty(Difficulty level) { mDiff = level; }
 
-inline MapsRegistry * Game::GetMapsRegistry() const { return mMapsReg; }
 inline const ObjectsDataRegistry * Game::GetObjectsRegistry() const { return mObjsRegistry; }
 
 inline int Game::GetNumPlayers() const { return mPlayers.size(); }
@@ -232,6 +257,16 @@ inline PlayerFaction Game::GetLocalPlayerFaction() const
     return mLocalFaction;
 }
 
+inline int Game::GetTechUpgradecost(TechUpgradeId upgrade) const
+{
+    auto it = mCostUpgrades.find(upgrade);
+
+    if(it != mCostUpgrades.end())
+        return it->second;
+    else
+        return 0;
+}
+
 inline LanguageId Game::GetLanguage() const { return mLanguage; }
 
 inline int Game::GetMapDraggingSpeed() const { return mMapDraggingSpeed; }
@@ -255,6 +290,8 @@ inline void Game::SetMapScrollingOnEdges(bool val)
         NotifyOnSettingsChanged();
     }
 }
+inline bool Game::IsMapScrollingConstant() const { return mMapScrollingConstSpeed; }
+inline void Game::SetMapScrollingConstant(bool val) { mMapScrollingConstSpeed = val; }
 inline bool Game::IsAutoEndTurnEnabled() const { return mAutoEndTurn; }
 inline void Game::SetAutoEndTurn(bool val)
 {
@@ -265,8 +302,18 @@ inline void Game::SetAutoEndTurn(bool val)
     }
 }
 
+inline bool Game::IsAutoUnitCameraEnabled() const { return mAutoUnitCamera; }
+inline void Game::SetAutoUnitCamera(bool val) { mAutoUnitCamera = val; }
+
 inline bool Game::IsTutorialEnabled() const { return mTutorialEnabled; }
 inline void Game::SetTutorialEnabled(bool val) { mTutorialEnabled = val; }
+
+inline float Game::GetTimeAutoHideMouse() const { return mTimeAutoHideMouse; }
+
+inline int Game::GetButtonSelect() const { return mButtonSelect; }
+inline void Game::SetButtonSelect(int btn) { mButtonSelect = btn; }
+inline int Game::GetButtonAction() const { return mButtonAction; }
+inline void Game::SetButtonAction(int btn) { mButtonAction = btn; }
 
 inline void Game::SetRandSeed(unsigned int seed) { mRandSeed = seed; }
 inline unsigned int Game::GetRandSeed() const { return mRandSeed; }

@@ -26,14 +26,33 @@ public:
     PanelInfoTutorial(int w, int h);
     ~PanelInfoTutorial();
 
-    void AddInfoEntry(const char * text, unsigned int color, float nextTime,
-        bool showContinue, bool hideAfter, const std::function<void()> & onShow = [](){});
+    void AddEntry(const char * text, unsigned int color, float timeNext, bool showContinue,
+                  bool hideAfter, const std::function<void()> & onShow = [](){});
+    void AddInfoEntry(const char * text, float timeNext, bool showContinue,
+                      bool hideAfter, const std::function<void()> & onShow = [](){});
+    void AddActionEntry(const char * text, float timeNext, bool showContinue,
+                        bool hideAfter, const std::function<void()> & onShow = [](){});
 
     void SetFunctionOnFinished(const std::function<void()> & f);
 
     void StartInfo();
 
+    void Continue();
+
 private:
+    struct InfoEntry
+    {
+        std::function<void()> mOnShowing = [](){};
+        sgl::sgui::TextArea * mTxtArea = nullptr;
+        float mTimeNext = 0.f;
+        bool mAutoContinue = false;
+        bool mShowContinue = false;
+        bool mHideAfter = false;
+    };
+
+private:
+    InfoEntry * GetCurrentEntry() const;
+
     void ShowNextInfo();
     void ShowCurrentInfo();
 
@@ -68,16 +87,6 @@ private:
         NUM_BG_EXPANDABLES = NUM_ALL_BG_PARTS - NUM_BG_CORNERS,
     };
 
-    struct InfoEntry
-    {
-        std::function<void()> mOnShowing = [](){};
-        sgl::sgui::TextArea * mTxtArea = nullptr;
-        float mTimeNext = 0.f;
-        bool mAutoContinue = false;
-        bool mShowContinue = false;
-        bool mHideAfter = false;
-    };
-
     std::vector<InfoEntry *> mInfoEntries;
     std::array<sgl::graphic::Image *, NUM_ALL_BG_PARTS> mBgParts;
 
@@ -96,6 +105,14 @@ private:
 inline void PanelInfoTutorial::SetFunctionOnFinished(const std::function<void()> & f)
 {
     mOnFinished = f;
+}
+
+inline PanelInfoTutorial::InfoEntry * PanelInfoTutorial::GetCurrentEntry() const
+{
+    if(mCurrEntry < mInfoEntries.size())
+        return mInfoEntries[mCurrEntry];
+    else
+        return nullptr;
 }
 
 } // namespace game

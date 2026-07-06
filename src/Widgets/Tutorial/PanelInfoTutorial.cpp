@@ -26,8 +26,8 @@ const int marginSide = 25;
 const float timeAutoContinue = 0.5f;
 const float minTimeShown = 0.1f;
 #else
-const float timeAutoContinue = 1.5f;
-const float minTimeShown = 1.f;
+const float timeAutoContinue = 1.0f;
+const float minTimeShown = 0.75f;
 #endif
 
 PanelInfoTutorial::PanelInfoTutorial(int w, int h)
@@ -36,7 +36,6 @@ PanelInfoTutorial::PanelInfoTutorial(int w, int h)
 
     auto tm = graphic::TextureManager::Instance();
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     graphic::Texture * tex = nullptr;
 
@@ -112,9 +111,9 @@ PanelInfoTutorial::~PanelInfoTutorial()
         delete entry;
 }
 
-void PanelInfoTutorial::AddInfoEntry(const char * text, unsigned int color, float timeNext,
-                                     bool showContinue, bool hideAfter,
-                                     const std::function<void ()> & onShow)
+void PanelInfoTutorial::AddEntry(const char * text, unsigned int color, float timeNext,
+                                 bool showContinue, bool hideAfter,
+                                 const std::function<void ()> & onShow)
 {
     using namespace sgl;
 
@@ -147,6 +146,18 @@ void PanelInfoTutorial::AddInfoEntry(const char * text, unsigned int color, floa
     mInfoEntries.push_back(entry);
 }
 
+void PanelInfoTutorial::AddInfoEntry(const char * text, float timeNext, bool showContinue,
+                                     bool hideAfter, const std::function<void()> & onShow)
+{
+    AddEntry(text, TutorialConstants::colorText, timeNext, showContinue, hideAfter, onShow);
+}
+
+void PanelInfoTutorial::AddActionEntry(const char * text, float timeNext, bool showContinue,
+                                       bool hideAfter, const std::function<void()> & onShow)
+{
+    AddEntry(text, TutorialConstants::colorTextAction, timeNext, showContinue, hideAfter, onShow);
+}
+
 void PanelInfoTutorial::StartInfo()
 {
     if(mInfoEntries.empty())
@@ -157,6 +168,11 @@ void PanelInfoTutorial::StartInfo()
 
     mCurrEntry = 0;
     ShowCurrentInfo();
+}
+
+void PanelInfoTutorial::Continue()
+{
+    ContinueOnInput();
 }
 
 void PanelInfoTutorial::ShowNextInfo()
@@ -214,7 +230,13 @@ void PanelInfoTutorial::ShowCurrentInfo()
 
 void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
 {
-    if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE && mTimerShown > minTimeShown)
+    auto entry = GetCurrentEntry();
+
+    if(nullptr == entry)
+        return;
+
+    if(event.GetKey() == sgl::core::KeyboardEvent::KEY_SPACE && mTimerShown > minTimeShown &&
+       entry->mShowContinue)
     {
         event.SetConsumed();
 
@@ -224,7 +246,13 @@ void PanelInfoTutorial::HandleKeyUp(sgl::core::KeyboardEvent & event)
 
 void PanelInfoTutorial::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
 {
-    if(event.GetButton() == sgl::core::MouseButtonEvent::BUTTON_LEFT && mTimerShown > minTimeShown)
+    auto entry = GetCurrentEntry();
+
+    if(nullptr == entry)
+        return;
+
+    if(event.GetButton() == sgl::core::MouseButtonEvent::BUTTON_LEFT &&
+       mTimerShown > minTimeShown && entry->mShowContinue)
     {
         event.SetConsumed();
 

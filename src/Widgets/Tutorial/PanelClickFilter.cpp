@@ -31,8 +31,8 @@ void PanelClickFilter::HandleMouseButtonUp(sgl::core::MouseButtonEvent & event)
 
 void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
 {
-    // check if button is filtered
-    if(mButton != sgl::core::MouseEvent::BUTTON_NULL && event.GetButton() == mButton)
+    // check if only 1 button is allowed
+    if(mButton != sgl::core::MouseEvent::BUTTON_NULL && event.GetButton() != mButton)
     {
         event.SetConsumed();
         return ;
@@ -45,7 +45,21 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
     const int wX = cam->GetScreenToWorldX(x);
     const int wY = cam->GetScreenToWorldY(y);
 
-    // filter by map cell first if required
+    // first filter by mouse position if required
+    // position in world
+    if(mAreaWorld)
+    {
+        if(wX >= mXtl && wX <= mXbr && wY >= mYtl && wY <= mYbr)
+            return;
+    }
+    // position in screen
+    else if(mAreaScreen)
+    {
+        if(x >= mXtl && x <= mXbr && y >= mYtl && y <= mYbr)
+            return;
+    }
+
+    // then filter by map cell if required
     if(mIsoMap)
     {
         const Cell2D cell = mIsoMap->CellFromWorldPoint(wX, wY);
@@ -53,38 +67,26 @@ void PanelClickFilter::FilterMouseEvent(sgl::core::MouseButtonEvent & event)
         // single cell check
         if(mRow != -1)
         {
-            if(cell.row != mRow || cell.col != mCol)
-            {
-                event.SetConsumed();
+            if(cell.row == mRow && cell.col == mCol)
                 return;
-            }
         }
-        // cells area check
+        // cells areas check
         else
         {
-            if(cell.row < mTLR || cell.col < mTLC || cell.row > mBRR || cell.col > mBRC)
+            for(const CellsArea & area : mCellAreas)
             {
-                event.SetConsumed();
-                return;
+                if(cell.row >= area.rowTL && cell.row <= area.rowBR &&
+                   cell.col >= area.colTL && cell.col <= area.colBR)
+                    return ;
             }
         }
     }
 
-    // first by position in world
-    if(mAreaWorld)
-    {
-        if(wX < mXtl || wX > mXbr || wY < mYtl || wY > mYbr)
-            event.SetConsumed();
-    }
-    // first by position in screen
-    else
-    {
-        if(x < mXtl || x > mXbr || y < mYtl || y > mYbr)
-            event.SetConsumed();
-    }
+    // block everything else
+    event.SetConsumed();
 }
 
-void PanelClickFilter::ClearButtonToExclude()
+void PanelClickFilter::ClearButtonToAllow()
 {
     mButton = sgl::core::MouseEvent::BUTTON_NULL;
 }

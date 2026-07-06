@@ -13,7 +13,7 @@ class PanelPlanetActions;
 class StepPlanetMapConquerTerritory : public TutorialInfoStep
 {
 public:
-    StepPlanetMapConquerTerritory(PanelPlanetActions * panelActions);
+    StepPlanetMapConquerTerritory(PanelPlanetActions * panelActions, const char * text, bool intro);
     ~StepPlanetMapConquerTerritory();
 
 private:

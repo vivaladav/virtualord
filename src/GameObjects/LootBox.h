@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Collectable.h"
+#include "GameObject.h"
 
 namespace game
 {
 
-class LootBox : public Collectable
+class LootBox : public GameObject
 {
 public:
     enum Prize : unsigned int
@@ -25,10 +25,9 @@ public:
 public:
     LootBox(const ObjectData & data, const ObjectInitData & initData);
 
-    int GetPrizeQuantity() const;
-    Prize GetPrizeType() const;
+    bool IsExploding() const;
 
-    void Collected(Player * collector) override;
+    void Open(Player * p);
 
 private:
     void UpdateGraphics() override;
@@ -43,7 +42,5 @@ private:
     Prize mPrizeType = LB_NULL;
 };
 
-inline int LootBox::GetPrizeQuantity() const { return mPrizeQuantity; }
-inline LootBox::Prize LootBox::GetPrizeType() const { return mPrizeType; }
 
 } // namespace game

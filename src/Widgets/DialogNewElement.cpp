@@ -164,10 +164,10 @@ public:
 private:
     void HandleButtonDown() override
     {
+        sgl::sgui::AbstractButton::HandleButtonDown();
+
         if(IsChecked())
             return ;
-
-        sgl::sgui::AbstractButton::HandleButtonDown();
 
         auto player = sgl::media::AudioManager::Instance()->GetPlayer();
         player->PlaySound("UI/checkbox-02.ogg");
@@ -405,7 +405,7 @@ DialogNewElement::DialogNewElement(ElemType type, Player * player,
         btn = new ButtonPanelTab(sm->GetCString("TECHNOLOGY"), this);
         mButtonsStructures->AddButton(btn);
 
-        mButtonsStructures->SetFunctionOnToggle([this](unsigned int ind, bool checked)
+        mButtonsStructures->AddFunctionOnToggle([this](unsigned int ind, bool checked)
                                                 {
                                                     if(!checked)
                                                         return ;

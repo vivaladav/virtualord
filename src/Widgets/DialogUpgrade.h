@@ -56,6 +56,9 @@ private:
     void OnPointsChanged();
 
 private:
+    friend class StepGameUpgradeUnit;
+    friend class StepGameUpgradeUnitFree;
+
     std::vector<int> mChangesToApply;
 
     std::vector<sgl::sgui::AbstractButton *> mButtonsDec;

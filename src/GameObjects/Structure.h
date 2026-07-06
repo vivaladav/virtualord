@@ -15,8 +15,6 @@ public:
     Structure(const ObjectData & data, const ObjectInitData & initData);
     ~Structure();
 
-    void OnNewTurn(PlayerFaction faction) override;
-
     float GetTimeBuildUnit() const;
 
     void OnPositionChanged() override;
@@ -32,6 +30,7 @@ private:
     void HideIconEnergy();
     void ShowIconEnergy();
     void PositionIconEnergy();
+    void UpdateIconEnergy();
 
     void ProduceResources();
     void ConsumeResources();

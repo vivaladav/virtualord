@@ -19,11 +19,11 @@ ButtonUnitsSelector::ButtonUnitsSelector(const char * text)
                     IND_TMULTISEL_BG5
                  },
                  {
+                     0xCCCCCCFF,
+                     0x777777ff,
                      0xFFFFFFFF,
-                     0xb2b2b2ff,
-                     0xFFFFFFFF,
-                     0xFFFFFFFF,
-                     0xFFFFFFFF
+                     0x33FFFFFF,
+                     0xFFFF33FF
                  },
                  nullptr)
 {

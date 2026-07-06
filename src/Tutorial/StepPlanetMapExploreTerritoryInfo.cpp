@@ -18,10 +18,8 @@ StepPlanetMapExploreTerritoryInfo::StepPlanetMapExploreTerritoryInfo()
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_INFO_1"),
-                       TutorialConstants::colorText, 7.f, true, true);
-    info->AddInfoEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_INFO_2"),
-                       TutorialConstants::colorText, 7.f, true, true);
+    info->AddInfoEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_INFO_1"), 7.f, true, true);
+    info->AddInfoEntry(sm->GetCString("TUT_PM_EXPLORE_TERRITORY_INFO_2"), 7.f, true, true);
 
     info->SetFunctionOnFinished([this]
     {

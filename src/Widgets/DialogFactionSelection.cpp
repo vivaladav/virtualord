@@ -184,6 +184,11 @@ DialogFactionSelection::DialogFactionSelection::DialogFactionSelection(Game * ga
     });
 }
 
+DialogFactionSelection::~DialogFactionSelection()
+{
+    delete mButtonsFact;
+}
+
 sgl::sgui::Widget * DialogFactionSelection::CreateFactionRow(PlayerFaction faction,
                                                              const std::vector<int> & attributes)
 {

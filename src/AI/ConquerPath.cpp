@@ -1,15 +1,13 @@
 #include "AI/ConquerPath.h"
 
 #include "Game.h"
-#include "GameConstants.h"
 #include "GameMap.h"
 #include "IsoLayer.h"
-#include "IsoMap.h"
 #include "IsoObject.h"
 #include "Player.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Unit.h"
-#include "Indicators/ConquestIndicator.h"
+#include "Indicators/OverlayCellConquest.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/GameMapProgressBar.h"
@@ -17,26 +15,38 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
+#include <cassert>
 #include <cmath>
-#include <unordered_set>
+
+namespace
+{
+constexpr int COST_ENERGY = 5;
+constexpr int COST_MATERIAL = 5;
+}
 
 namespace game
 {
 
-ConquerPath::ConquerPath(Unit * unit, IsoMap * im, GameMap * gm, ScreenGame * sg)
-    : mUnit(unit)
-    , mIsoMap(im)
+ConquerPath::ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, OverlayCellConquest * overlay)
+    : mOverlay(overlay)
+    , mUnit(unit)
     , mGameMap(gm)
     , mScreen(sg)
 {
-    mLocalPlayer = sg->GetGame()->GetPlayerByFaction(unit->GetFaction())->IsLocal();
+    assert(unit);
+    assert(gm);
+
+    if(sg != nullptr)
+    {
+        mPlayer = sg->GetGame()->GetPlayerByFaction(unit->GetFaction());
+        mLocal = mPlayer->IsLocal();
+    }
 }
 
 ConquerPath::~ConquerPath()
 {
-    // delete the ConquestIndicators
-    for(auto ind : mIndicators)
-        delete ind;
+    if(mOverlay)
+        mOverlay->ClearPath();
 }
 
 bool ConquerPath::Start()
@@ -45,10 +55,19 @@ bool ConquerPath::Start()
     if(mState != READY)
         return false;
 
-    if(mLocalPlayer)
-        CreateIndicators();
+    // object not inizialized properly
+    if(mPlayer == nullptr || mUnit == nullptr || mScreen == nullptr || mGameMap == nullptr)
+        return false;
 
     mNextCell = 0;
+
+    // center camera over target destination in the meanwhile
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+    {
+        const float multSpeed = 25.f;
+        const float speedCam = mUnit->GetSpeed() * multSpeed;
+        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
+    }
 
     // stat conquering first cell
     return InitNextConquest();
@@ -61,16 +80,17 @@ void ConquerPath::Abort()
     else if(MOVING == mState)
         mState = ABORTING;
     else
+    {
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraMove();
+
         mState = ABORTED;
+    }
 }
 
 void ConquerPath::InstantAbort()
 {
     // clear progress bar
-    const unsigned int nextInd = mCells[mNextCell];
-    const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-    const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
-
     if(mProgressBar)
     {
         mProgressBar->DeleteLater();
@@ -80,9 +100,11 @@ void ConquerPath::InstantAbort()
         ap->StopSound("game/conquer-01.ogg");
     }
 
-    // clear indicators
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-    layerOverlay->ClearObjects();
+    if(mOverlay)
+        mOverlay->ClearPath();
+
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+        mScreen->StopCameraMove();
 
     // set new state
     mState = ABORTED;
@@ -94,54 +116,42 @@ void ConquerPath::Update(float delta)
         UpdateMove(delta);
 }
 
-void ConquerPath::CreateIndicators()
+bool ConquerPath::HasResourcesToConquerCell()
 {
-    IsoLayer * layer = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
+    // check if unit has enough energy
+    if(!mUnit->HasEnergyForActionStep(CONQUER_CELL))
+        return false;
 
-    const PlayerFaction faction = mUnit->GetFaction();
-
-    // do not create indicator for cell 0 as it's current under conquest
-    for(unsigned int i = 1; i < mCells.size(); ++i)
-    {
-        ConquestIndicator * ind = new ConquestIndicator;
-            mIndicators.emplace_back(ind);
-
-        // add indicator to layer
-        const unsigned int pathInd = mCells[i];
-        const unsigned int indRow = pathInd / mIsoMap->GetNumCols();
-        const unsigned int indCol = pathInd % mIsoMap->GetNumCols();
-
-        layer->AddObject(ind, indRow, indCol);
-
-        ind->SetFaction(faction);
-    }
+    // check if player has enough resources
+    return mPlayer->HasEnough(Player::Stat::ENERGY, COST_ENERGY) &&
+           mPlayer->HasEnough(Player::Stat::MATERIAL, COST_MATERIAL);
 }
 
 bool ConquerPath::InitNextConquest()
 {
     // not enough resources -> FAIL
-    if(!mGameMap->HasResourcesToConquerCell(mUnit))
+    if(!HasResourcesToConquerCell())
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
-    const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-    const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
+    const unsigned int nextRow = nextInd / mGameMap->GetNumCols();
+    const unsigned int nextCol = nextInd % mGameMap->GetNumCols();
     const Cell2D nextCell(nextRow, nextCol);
 
     Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
-    IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
 
     // can't conquer current cell -> try to move to next one
     if(!mGameMap->CanConquerCell(mUnit, nextCell, player))
     {
-        // remove current indicator
-        if(mLocalPlayer && mNextCell < mIndicators.size())
-            layerOverlay->ClearObject(mIndicators[mNextCell]);
-
         ++mNextCell;
 
         if(mNextCell < mCells.size())
+        {
+            if(mOverlay != nullptr)
+                mOverlay->PopFrontPath();
+
             return InitNextMove();
+        }
         else
             return Fail();
     }
@@ -149,13 +159,19 @@ bool ConquerPath::InitNextConquest()
     // start conquest
     mState = CONQUERING;
 
-    mGameMap->StartConquerCell(nextCell, player);
+    if(mOverlay != nullptr)
+        mOverlay->PopFrontPath();
 
+    // take resource from player
+    mPlayer->SumResource(Player::Stat::ENERGY, -COST_ENERGY);
+    mPlayer->SumResource(Player::Stat::MATERIAL, -COST_MATERIAL);
+
+    // create progress bar
     GameHUD * HUD = mScreen->GetHUD();
     mProgressBar = HUD->CreateProgressBarInCell(nextCell, mUnit->GetTimeConquestCell(),
                                                 player->GetFaction());
 
-    mProgressBar->AddFunctionOnCompleted([this, nextCell, player, layerOverlay]
+    mProgressBar->AddFunctionOnCompleted([this, nextCell, player]
     {
         mProgressBar = nullptr;
 
@@ -169,13 +185,7 @@ bool ConquerPath::InitNextConquest()
         ++mNextCell;
 
         if(mNextCell < mCells.size())
-        {
             InitNextMove();
-
-            // remove current indicator
-            if(mLocalPlayer)
-                layerOverlay->ClearObject(mIndicators[mNextCell - 1]);
-        }
         else
             Finish();
     });
@@ -197,8 +207,8 @@ bool ConquerPath::InitNextMove()
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
-    const unsigned int nextRow = nextInd / mIsoMap->GetNumCols();
-    const unsigned int nextCol = nextInd % mIsoMap->GetNumCols();
+    const unsigned int nextRow = nextInd / mGameMap->GetNumCols();
+    const unsigned int nextCol = nextInd % mGameMap->GetNumCols();
 
     const GameMapCell & nextCell = mGameMap->GetCell(nextRow, nextCol);
 
@@ -211,9 +221,7 @@ bool ConquerPath::InitNextMove()
 
     const sgl::core::Pointd2D target = layerObj->GetObjectPosition(isoObj, nextRow, nextCol);
 
-    Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
-
-    if(!player->IsLocal() && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
+    if(!mLocal && !mGameMap->IsCellVisibleToLocalPlayer(nextInd))
     {
         mObjX = target.x;
         mObjY = target.y;
@@ -304,8 +312,8 @@ void ConquerPath::UpdateMove(float delta)
         mGameMap->DelPlayerObjVisibility(mUnit, player);
 
         const unsigned int targetInd = mCells[mNextCell];
-        const unsigned int targetRow = targetInd / mIsoMap->GetNumCols();
-        const unsigned int targetCol = targetInd % mIsoMap->GetNumCols();
+        const unsigned int targetRow = targetInd / mGameMap->GetNumCols();
+        const unsigned int targetCol = targetInd % mGameMap->GetNumCols();
 
         const GameMapCell & targetCell = mGameMap->GetCell(targetRow, targetCol);
 
@@ -337,33 +345,46 @@ void ConquerPath::UpdateMove(float delta)
 
 void ConquerPath::UpdatePathCost()
 {
+    // reset costs
+    mCostUnitEnergy = 0;
+    mCostResEnergy = 0;
+    mCostResMaterial = 0;
+
+    // empty path -> exit
     if(mCells.empty())
-    {
-        mCost = 0;
         return ;
+
+    // define cost checking if cells are already conquered
+    const unsigned int lenPath = mCells.size();
+
+    mCostUnitEnergy = (lenPath - 1) * mUnit->GetEnergyForActionStep(MOVE);
+
+    const PlayerFaction f = mUnit->GetFaction();
+
+    for(unsigned int i = 0; i < lenPath; ++i)
+    {
+        const unsigned int cellInd = mCells[i];
+
+        const Player * owner = mGameMap->GetCell(cellInd).owner;
+        const bool notConquered = owner == nullptr || owner->GetFaction() != f;
+
+        mCostUnitEnergy += notConquered * mUnit->GetEnergyForActionStep(CONQUER_CELL);
+        mCostResEnergy += notConquered * COST_ENERGY;
+        mCostResMaterial += notConquered * COST_MATERIAL;
     }
-
-    // TODO check if cells of mCells path are already conquered to give true cost
-
-    // use set to ignore repeated cells
-    const std::unordered_set<unsigned int> cells(mCells.begin(), mCells.end());
-
-    mCost = (mCells.size() - 1) * mUnit->GetEnergyForActionStep(MOVE) +
-            cells.size() * mUnit->GetEnergyForActionStep(CONQUER_CELL);
 }
 
 bool ConquerPath::Fail()
 {
-    //clear overlays
-    if(mLocalPlayer)
-    {
-        IsoLayer * layerOverlay = mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1);
-        layerOverlay->ClearObjects();
-    }
+    if(mOverlay)
+        mOverlay->ClearPath();
 
+    // clear action data once the action is completed
     if(HasStarted())
-        // clear action data once the action is completed
         mScreen->SetObjectActionFailed(mUnit);
+
+    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+        mScreen->StopCameraMove();
 
     mState = FAILED;
 
@@ -372,15 +393,11 @@ bool ConquerPath::Fail()
 
 bool ConquerPath::Finish()
 {
+    // clear action data once the action is completed
     if(HasStarted())
-    {
-        mState = COMPLETED;
-
-        // clear action data once the action is completed
         mScreen->SetObjectActionCompleted(mUnit);
-    }
-    else
-        mState = COMPLETED;
+
+    mState = COMPLETED;
 
     return true;
 }

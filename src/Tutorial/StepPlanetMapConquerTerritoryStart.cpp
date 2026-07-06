@@ -19,17 +19,11 @@ StepPlanetMapConquerTerritoryStart::StepPlanetMapConquerTerritoryStart(PanelPlan
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
-    // FOCUS
     mButton = panel->GetButtonOk();
 
-    const int padding = 10;
-    const int fX = panel->GetX() + mButton->GetX() - padding;
-    const int fY = panel->GetY() + mButton->GetY() - padding;
-    const int fW = mButton->GetWidth() + (padding * 2);
-    const int fH = mButton->GetHeight() + (padding * 2);
+    // FOCUS
 
-    mFocusArea->SetScreenArea(fX, fY, fW, fH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
 
@@ -38,18 +32,24 @@ StepPlanetMapConquerTerritoryStart::StepPlanetMapConquerTerritoryStart(PanelPlan
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_START_1"),
-                       TutorialConstants::colorTextAction, 0.f, false, false);
+    info->AddInfoEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_START_1"), 0.f, false, false);
 
-    info->SetFunctionOnFinished([this, fX, fY, fW, fH]
+    info->SetFunctionOnFinished([this, panel]
     {
+        // FOCUS
+        const int padding = 10;
+        const int fX = panel->GetX() + mButton->GetX() - padding;
+        const int fY = panel->GetY() + mButton->GetY() - padding;
+        const int fW = mButton->GetWidth() + (padding * 2);
+        const int fH = mButton->GetHeight() + (padding * 2);
+
+        mFocusArea->SetScreenArea(fX, fY, fW, fH);
+        mFocusArea->SetVisible(true);
+
         // CLICK FILTER
         auto cf = GetClickFilter();
         cf->SetScreenClickableArea(fX, fY, fW, fH);
         cf->SetEnabled(true);
-
-        // FOCUS
-        mFocusArea->SetVisible(true);
     });
 
     // CONQUER BUTTON

@@ -1,7 +1,7 @@
 #include "Game.h"
 
 #include "GameConstants.h"
-#include "MapsRegistry.h"
+#include "Planet.h"
 #include "Player.h"
 #include "Version.h"
 #include "GameObjects/ObjectsDataRegistry.h"
@@ -33,6 +33,7 @@
 #include <sgl/utilities/StringManager.h>
 
 #ifdef DEBUG
+#include <sgl/core/event/MouseEvent.h>
 #include <sgl/core/ModuleCore.h>
 #include <sgl/graphic/ModuleGraphic.h>
 #include <sgl/media/ModuleMedia.h>
@@ -51,14 +52,15 @@ bool Game::GOD_MODE = false;
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
     , mTutMan(new TutorialManager)
-    , mMapsReg(new MapsRegistry)
     , mObjsRegistry(new ObjectsDataRegistry)
     , mLocalFaction(NO_FACTION)
     , mCurrPlanet(PLANET_UNKNOWN)
     , mLanguage(LANG_NULL)
+    , mButtonSelect(sgl::core::MouseEvent::BUTTON_LEFT)
+    , mButtonAction(sgl::core::MouseEvent::BUTTON_RIGHT)
 #ifdef DEV_MODE
     // tutorial disabled in DEV MODE
-    , mTutorialEnabled(false)
+    //, mTutorialEnabled(false)
 #endif
 {
     using namespace sgl;
@@ -89,7 +91,6 @@ Game::Game(int argc, char * argv[])
     mWin = graphic::Window::Create(title.c_str(), 0, 0, this);
     mRenderer = graphic::Renderer::Create(mWin, true);
     mRenderer->SetLogicalSize(1920, 1080);
-    mWin->SetVideoMode(graphic::Window::VM_BORDERLESS);
 
     graphic::TextureManager::Instance()->SetNewTextureQuality(graphic::TextureQuality::BEST);
 
@@ -134,6 +135,38 @@ Game::Game(int argc, char * argv[])
     mStage = sgui::Stage::Create();
     AddKeyboardListener(mStage);
     AddMouseListener(mStage);
+
+#ifdef DEV_MODE
+    mTimeAutoHideMouse = 1.f;
+#endif
+
+    mStage->AutoHideInactiveCursor(true, mTimeAutoHideMouse);
+
+    // INIT TECH UPGRADES COST
+    mCostUpgrades.emplace(TECH_UP_NULL, 0);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_1, 500);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_2, 2000);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_3, 4000);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, 6500);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, 9500);
+    mCostUpgrades.emplace(TECH_UP_RADAR_STATION, 1000);
+    mCostUpgrades.emplace(TECH_UP_RADAR_TOWER, 1000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_STRUCTS, 2000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_ENERGY_1, 3000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_ENERGY_2, 6000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_MATERIAL_1, 3000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_MATERIAL_2, 6000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_DIAMONDS_1, 3000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_DIAMONDS_2, 6000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_BLOBS_1, 3000);
+    mCostUpgrades.emplace(TECH_UP_STORAGE_BLOBS_2, 6000);
+    mCostUpgrades.emplace(TECH_UP_PRACTICE_TARGET, 1000);
+    mCostUpgrades.emplace(TECH_UP_TRADING_POST, 1000);
+    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_1, 1500);
+    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_2, 3000);
+    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_3, 5000);
+    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_4, 8000);
+    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_5, 12000);
 }
 
 Game::~Game()
@@ -148,9 +181,9 @@ Game::~Game()
     // delete states and screens
     delete mStateMan;
 
-    delete mMapsReg;
     delete mObjsRegistry;
 
+    ClearPlanets();
     ClearPlayers();
 
     sgui::Stage::Destroy();
@@ -167,20 +200,28 @@ Game::~Game()
 
 void Game::InitGameData()
 {
+    Planet * planet = nullptr;
+
     // -- MAPS --
     // PLANET 1
-    mMapsReg->CreatePlanet(PLANET_1, PLANET_SIZE_S);
-    //               planetId, file, occupier, status
-    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", NO_FACTION, TER_ST_UNEXPLORED);
-    mMapsReg->AddMap(PLANET_1, "data/maps/60x60-01.map", NO_FACTION, TER_ST_UNEXPLORED);
-    mMapsReg->AddMap(PLANET_1, "data/maps/40x40-01.map", NO_FACTION, TER_ST_UNREACHABLE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/20x20-empty.map", NO_FACTION, TER_ST_UNREACHABLE);
-    mMapsReg->AddMap(PLANET_1, "data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
+    planet = new Planet(PLANET_1, PLANET_SIZE_S);
+#ifdef DEV_MODE
+    planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+#else
+    planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+#endif
+    planet->AddMap("data/maps/60x60-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+    planet->AddMap("data/maps/01-02.map", NO_FACTION, TER_ST_UNREACHABLE);
+    planet->AddMap("data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
+    planet->AddMap("data/maps/01-03.map", NO_FACTION, TER_ST_UNREACHABLE);
+
+    mPlanets.emplace(PLANET_1, planet);
 }
 
 void Game::ClearGameData()
 {
-    mMapsReg->ClearData();
+    ClearPlanets();
+
     ClearPlayers();
 }
 
@@ -200,9 +241,36 @@ void Game::SetCurrentCursor(GameCursorId curId)
     sgl::sgui::Stage::Instance()->SetCursor(it->second);
 }
 
+Planet * Game::GetPlanet(PlanetId planetId) const
+{
+    auto it = mPlanets.find(planetId);
+
+    if(it != mPlanets.end())
+        return it->second;
+    else
+        return nullptr;
+}
+
 const std::string & Game::GetCurrentMapFile() const
 {
-    return mMapsReg->GetMapFile(mCurrPlanet, mCurrTerritory);
+    static const std::string empty;
+
+    auto it = mPlanets.find(mCurrPlanet);
+
+    if(it != mPlanets.end())
+        return it->second->GetMapFile(mCurrTerritory);
+    else
+        return empty;
+}
+
+Planet * Game::GetCurrentPlanet() const
+{
+    auto it = mPlanets.find(mCurrPlanet);
+
+    if(it != mPlanets.end())
+        return it->second;
+    else
+        return nullptr;
 }
 
 int Game::GetResourcePriceBuy(ExtendedResource t) const
@@ -344,6 +412,14 @@ void Game::ClearPlayers()
         delete p;
 
     mPlayers.clear();
+}
+
+void Game::ClearPlanets()
+{
+    for(auto it : mPlanets)
+        delete it.second;
+
+    mPlanets.clear();
 }
 
 Player * Game::GetPlayerByFaction(PlayerFaction faction) const

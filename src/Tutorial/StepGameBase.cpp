@@ -1,9 +1,10 @@
 #include "Tutorial/StepGameBase.h"
 
+#include "Game.h"
 #include "IsoObject.h"
 #include "GameObjects/Base.h"
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/FocusArea.h"
+#include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
@@ -12,14 +13,15 @@
 namespace game
 {
 
-StepGameBase::StepGameBase(const Base * b)
+StepGameBase::StepGameBase(const Game * game, const IsoMap * im, const Base * b)
     : TutorialInfoStep(600, 250)
     , mFocusArea(new FocusArea)
+    , mIsoFocusArea(new IsoFocusArea(im))
     , mBase(b)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
-    // FOCUS
+    // FOCUS AREAS
     const auto isoObj = mBase->GetIsoObject();
     const int objX = isoObj->GetX();
     const int objY = isoObj->GetY();
@@ -27,27 +29,51 @@ StepGameBase::StepGameBase(const Base * b)
     const int objH = isoObj->GetHeight();
 
     mFocusArea->SetWorldArea(objX, objY, objW, objH);
-    mFocusArea->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
+
+    mIsoFocusArea->SetCellArea(mBase->GetRow0(), mBase->GetCol0(), mBase->GetRow1(), mBase->GetCol1());
+    mIsoFocusArea->SetVisible(false);
 
     // INFO
     auto info = GetPanelInfo();
 
     info->SetPosition(1150, 400);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_1"),
-                       TutorialConstants::colorText, 4.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_2"),
-                       TutorialConstants::colorText, 7.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_3"),
-                       TutorialConstants::colorTextAction, 0.f, false, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_1"), 4.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_2"), 7.f, true, false);
 
-    info->SetFunctionOnFinished([this, objX, objY, objW, objH]
+    const char * buttonsStr[] =
     {
-        mFocusArea->SetCornersColor(TutorialConstants::colorFocusAction);
-        mFocusArea->SetBlinking(true);
+        "",
+        "LMB_LO",
+        "MMB_LO",
+        "RMB_LO",
+    };
 
-        GetClickFilter()->SetWorldClickableArea(objX, objY, objW, objH);
+    const std::string & strMouse = sm->GetString(buttonsStr[game->GetButtonSelect()]);
+    const std::string str = sm->GetParametricString("TUT_GAME_BASE_3", strMouse);
+    info->AddActionEntry(str.c_str(), 0.f, false, false);
+
+    info->SetFunctionOnFinished([this, game]
+    {
+        // FOCUS AREAS
+        mFocusArea->SetVisible(false);
+
+        mIsoFocusArea->SetCornersColorAction();
+        mIsoFocusArea->SetBlinking(true);
+        mIsoFocusArea->SetVisible(true);
+
+        // CLICK FILTER
+        const auto isoObj = mBase->GetIsoObject();
+        const int objX = isoObj->GetX();
+        const int objY = isoObj->GetY();
+        const int objW = isoObj->GetWidth();
+        const int objH = isoObj->GetHeight();
+
+        auto cf = GetClickFilter();
+        cf->SetWorldClickableArea(objX, objY, objW, objH);
+        cf->SetButtonToAllow(game->GetButtonSelect());
 
         mCheckBaseSelected = true;
     });
@@ -56,13 +82,14 @@ StepGameBase::StepGameBase(const Base * b)
 StepGameBase::~StepGameBase()
 {
     delete mFocusArea;
+    delete mIsoFocusArea;
 }
 
 void StepGameBase::OnStart()
 {
     TutorialInfoStep::OnStart();
 
-    // FOCUS
+    // FOCUS AREA
     mFocusArea->SetVisible(true);
 }
 

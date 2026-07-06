@@ -15,27 +15,29 @@ enum PlayerFaction : unsigned int;
 
 enum CellTypes : int
 {
-    EMPTY = 0,
-    SCENE_ROCKS,
-    SCENE_ROCKS_SURR,
-    NO_FACTION_OBJ,
-    BLOBS_SOURCE,
-    DIAMONDS_SOURCE,
-    BLOBS_SURR,
-    DIAMONDS_SURR,
-    TREES1,
-    TREES1_SURR,
-    F1,
-    F1_CONNECTED,
-    F1_INFLUENCED,
-    F2,
-    F2_CONNECTED,
-    F2_INFLUENCED,
-    F3,
-    F3_CONNECTED,
-    F3_INFLUENCED,
-    FOG_OF_WAR,
-    NO_FACTION_OBJ_SURR,
+    CT_EMPTY = 0,
+    CT_MOUNTAINS,
+    CT_MOUNTAINS_SURR,
+    CT_NO_FACTION_OBJ,
+    CT_BLOBS_SOURCE,
+    CT_DIAMONDS_SOURCE,
+    CT_BLOBS_SURR,
+    CT_DIAMONDS_SURR,
+    CT_TREES1,
+    CT_TREES1_SURR,
+    CT_F1,
+    CT_F1_CONNECTED,
+    CT_F1_INFLUENCED,
+    CT_F2,
+    CT_F2_CONNECTED,
+    CT_F2_INFLUENCED,
+    CT_F3,
+    CT_F3_CONNECTED,
+    CT_F3_INFLUENCED,
+    CT_FOG_OF_WAR,
+    CT_NO_FACTION_OBJ_SURR,
+    CT_ROCKS,
+    CT_ROCKS_SURR,
 
     NUM_CELL_TYPES
 };
@@ -58,8 +60,8 @@ struct GameMapCell
     GameObject * objBottom = nullptr;
     GameObject * objTop = nullptr;
 
-    CellTypes currType = EMPTY;
-    CellTypes basicType = EMPTY;
+    CellTypes currType = CT_EMPTY;
+    CellTypes basicType = CT_EMPTY;
 
     int row = 0;
     int col = 0;

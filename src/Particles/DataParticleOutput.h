@@ -39,8 +39,8 @@ struct DataParticleOutput : public sgl::graphic::ParticleData
 
     int quantity = 0;
     OutputType type;
-    float decaySpeed = 100.f;
-    float timeLife = 1.f;
+    float decaySpeed = 70.f;
+    float timeLife = 1.5f;
 };
 
 } // namespace game

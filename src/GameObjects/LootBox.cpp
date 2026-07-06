@@ -22,7 +22,7 @@ namespace game
 {
 
 LootBox::LootBox(const ObjectData & data, const ObjectInitData & initData)
-    : Collectable(data, initData)
+    : GameObject(data, initData)
 {
     SetImage();
 
@@ -41,15 +41,17 @@ LootBox::LootBox(const ObjectData & data, const ObjectInitData & initData)
        SetPrize();
 }
 
-void LootBox::Collected(Player * collector)
+bool LootBox::IsExploding() const
 {
-    Collectable::Collected(collector);
+    return GetObjectType() == ObjectData::TYPE_LOOTBOX2 && mPrizeType == LB_NULL;
+}
 
+void LootBox::Open(Player * p)
+{
     auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
 
     // Lootbox has to explode
-    if(GetObjectType() == ObjectData::TYPE_LOOTBOX2 &&
-       mPrizeType == LB_NULL)
+    if(IsExploding())
     {
         SelfDestroy();
 
@@ -58,9 +60,24 @@ void LootBox::Collected(Player * collector)
 
         return ;
     }
+    // give something to player
+    else
+    {
+        Player::Stat stats[] =
+        {
+            Player::BLOBS,
+            Player::DIAMONDS,
+            Player::ENERGY,
+            Player::MATERIAL,
+            Player::MONEY,
+            Player::RESEARCH,
+        };
+
+        p->SumResource(stats[mPrizeType], mPrizeQuantity);
+    }
 
     // do not show anyting for AI players
-    if(collector->IsAI())
+    if(p ->IsAI())
         return ;
 
     // emit notification
@@ -85,7 +102,10 @@ void LootBox::Collected(Player * collector)
     static_assert(static_cast<unsigned int>(NUM_OUTPUT_TYPES) ==
                   static_cast<unsigned int>(NUM_LB_PRIZES));
 
-    DataParticleOutput pd(mPrizeQuantity, ot[mPrizeType], x0, y0);
+    const float speed = 40.f;
+    const float decaySpeed = 100.f;
+    const float timeLife = 1.f;
+    DataParticleOutput pd(mPrizeQuantity, ot[mPrizeType], x0, y0, speed, decaySpeed, timeLife);
 
     pu->AddParticle(pd);
 

@@ -71,8 +71,9 @@ public:
     unsigned int GetNumObjects() const;
     bool HasObjects() const;
 
+    void InitMaps(int rows, int cols);
+
     // visibility map
-    void InitVisibility(int rows, int cols);
     bool IsCellVisible(unsigned int ind) const;
     bool IsObjectVisible(const GameObject *obj) const;
     void AddVisibility(unsigned int ind);
@@ -80,12 +81,17 @@ public:
     void AddVisibilityToAll();
     void RemVisibilityToAll();
 
+    // walkable override
+    bool IsCellWalkable(unsigned int ind) const;
+    void SetCellWalkable(unsigned int ind, bool walkable);
+    void SetCellWalkable(unsigned int row, unsigned int col, bool walkable);
+
     const std::string & GetName() const;
 
     int GetPlayerId() const;
 
-    const Base * GetBase() const;
-    void SetBase(const Base * b);
+    Base * GetBase() const;
+    void SetBase(Base * b);
 
     // stats
     const StatValue & GetStat(Stat sid);
@@ -104,7 +110,10 @@ public:
 
     int GetNumCells() const;
     void SumCells(int val);
-    void SetOnNumCellsChanged(const std::function<void(int)> & f);
+    void ResetNumCells();
+
+    unsigned int GetNumLinkedCells() const;
+    void SetNumLinkedCells(unsigned int val);
 
     void SetOnNumUnitsChanged(const std::function<void()> & f);
 
@@ -130,13 +139,19 @@ public:
 
     int GetResourceProduction(ExtendedResource type) const;
     int GetResourceConsumption(ExtendedResource type) const;
+    // return production - consuption
+    int GetResourceDelta(ExtendedResource type) const;
 
     void HandleCollectable(GameObject * collected, GameObject * collector);
 
     // -- upgrades --
     void ClearUpgrades();
+    bool IsUpgradeAvailable(TechUpgradeId upgrade) const;
+    void SetUpgradeAvailable(TechUpgradeId upgrade);
     bool IsUpgradeUnlocked(TechUpgradeId upgrade) const;
     void UnlockUpgrade(TechUpgradeId upgrade);
+    unsigned int AddOnUpgradeUnlocked(const std::function<void(TechUpgradeId)> & f);
+    void RemoveOnUpgradeUnlocked(unsigned int funId);
 
     float GetBaseProductionMult() const;
     float GetStorageEnergyMult() const;
@@ -159,27 +174,29 @@ public:
 
     // -- AI --
     bool IsAI() const;
-    PlayerAI * GetAI();
+    PlayerAI * GetAI() const;
     void SetAI(PlayerAI * ai);
 
     bool IsLocal() const;
 
 private:
+    void InitUpgrades();
+
     int GetCellsEnergyUsed() const;
     void NotifyResourcesChanged();
+    void NotifyUpgradeUnlock(TechUpgradeId upgrade);
 
     void UpgradeResourceStorage(ResourceType res, float mult);
 
 private:
     std::unordered_map<TechUpgradeId, bool> mUpgrades;
+    std::unordered_map<TechUpgradeId, bool> mUpgradesAvailable;
 
     std::vector<Unit *> mUnits;
     std::vector<Structure *> mStructures;
     std::vector<ResourceGenerator *> mResGenerators;
 
     std::vector<int> mVisMap;
-    unsigned int mVisMapRows = 0;
-    unsigned int mVisMapCols = 0;
 
     std::vector<StatValue> mStats;
     StatValue mDummyStat;
@@ -188,10 +205,15 @@ private:
     std::vector<GameObjectTypeId> mAvailableStructures;
     std::vector<GameObjectTypeId> mAvailableUnits;
 
+    std::vector<bool> mWalkableOverrideMap;
+
+    unsigned int mMapRows = 0;
+    unsigned int mMapCols = 0;
+
     std::string mName;
 
     std::unordered_map<unsigned int, std::function<void()>> mOnResourcesChanged;
-    std::function<void(int)> mOnNumCellsChanged;
+    std::unordered_map<unsigned int, std::function<void(TechUpgradeId)>> mOnUpgradeUnlocked;
     std::function<void()> mOnNumUnitsChanged;
     std::function<void()> mOnTurnEnergyChanged;
     std::function<void()> mOnTurnMaxEnergyChanged;
@@ -200,18 +222,19 @@ private:
 
     GameObject * mSelObj = nullptr;
 
-    const Base * mBase = nullptr;
+    Base * mBase = nullptr;
 
     int mPlayerId;
 
     PlayerFaction mFaction;
 
-    float mTurnEnergy;
-    float mTurnMaxEnergy;
+    float mTurnEnergy = 0.f;
+    float mTurnMaxEnergy = 0.f;
 
     unsigned int mTurnsPlayed = 0;
 
     int mNumCells = 0;
+    unsigned int mNumLinkedCells = 0;
     unsigned int mMaxUnits = 0;
 
     // -- upgrades --
@@ -248,15 +271,9 @@ inline unsigned int Player::GetNumObjects() const
 
 inline bool Player::HasObjects() const { return GetNumObjects() > 0; }
 
-inline bool Player::IsCellVisible(unsigned int ind) const
-{
-    return mVisMap[ind] > 0;
-}
+inline bool Player::IsCellVisible(unsigned int ind) const { return mVisMap[ind] > 0; }
 
-inline void Player::AddVisibility(unsigned int ind)
-{
-    ++mVisMap[ind];
-}
+inline void Player::AddVisibility(unsigned int ind) { ++mVisMap[ind]; }
 
 inline void Player::RemVisibility(unsigned int ind)
 {
@@ -264,12 +281,23 @@ inline void Player::RemVisibility(unsigned int ind)
         --mVisMap[ind];
 }
 
+inline bool Player::IsCellWalkable(unsigned int ind) const { return mWalkableOverrideMap[ind]; }
+inline void Player::SetCellWalkable(unsigned int ind, bool walkable)
+{
+    mWalkableOverrideMap[ind] = walkable;
+}
+inline void Player::SetCellWalkable(unsigned int row, unsigned int col, bool walkable)
+{
+    const unsigned int ind = row * mMapCols + col;
+    mWalkableOverrideMap[ind] = walkable;
+}
+
 inline const std::string & Player::GetName() const { return mName; }
 
 inline int Player::GetPlayerId() const { return mPlayerId; }
 
-inline const Base * Player::GetBase() const { return mBase; }
-inline void Player::SetBase(const Base * b) { mBase = b; }
+inline Base * Player::GetBase() const { return mBase; }
+inline void Player::SetBase(Base * b) { mBase = b; }
 
 inline const StatValue & Player::GetStat(Stat sid)
 {
@@ -288,10 +316,11 @@ inline bool Player::HasEnough(Stat sid, int val)
 }
 
 inline int Player::GetNumCells() const { return mNumCells; }
-inline void Player::SetOnNumCellsChanged(const std::function<void(int)> & f)
-{
-    mOnNumCellsChanged = f;
-}
+inline void Player::SumCells(int val) { mNumCells += val; }
+inline void Player::ResetNumCells() { mNumCells = 0; }
+
+inline unsigned int Player::GetNumLinkedCells() const { return mNumLinkedCells; }
+inline void Player::SetNumLinkedCells(unsigned int val) { mNumLinkedCells = val; }
 
 inline void Player::SetOnNumUnitsChanged(const std::function<void()> & f)
 {
@@ -326,6 +355,16 @@ inline bool Player::IsUpgradeUnlocked(TechUpgradeId upgrade) const
         return false;
 }
 
+inline bool Player::IsUpgradeAvailable(TechUpgradeId upgrade) const
+{
+    auto it = mUpgradesAvailable.find(upgrade);
+
+    if(it != mUpgradesAvailable.end())
+        return it->second;
+    else
+        return false;
+}
+
 inline float Player::GetBaseProductionMult() const { return mBaseProdMult; }
 inline float Player::GetStorageEnergyMult() const { return mStorageEnergyMult; }
 inline float Player::GetStorageMaterialMult() const { return mStorageMaterialMult; }
@@ -348,7 +387,7 @@ inline unsigned int Player::GetTurnsPlayed() const { return mTurnsPlayed; }
 inline void Player::ResetTurnsPlayed(unsigned int start) { mTurnsPlayed = start; }
 
 inline bool Player::IsAI() const { return mAI != nullptr; }
-inline PlayerAI * Player::GetAI() { return mAI; }
+inline PlayerAI * Player::GetAI() const { return mAI; }
 inline void Player::SetAI(PlayerAI * ai) { mAI = ai; }
 
 inline bool Player::IsLocal() const { return nullptr == mAI; }

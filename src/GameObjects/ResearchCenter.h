@@ -7,6 +7,9 @@
 namespace game
 {
 
+class BlinkingHighlight;
+class BlinkingIconResearch;
+
 class ResearchCenter : public Structure
 {
 public:
@@ -20,6 +23,8 @@ public:
 
     void SetResourceUsage(ExtendedResource res, int val);
 
+    void OnPositionChanged() override;
+
 private:
     void UpdateGraphics() override;
 
@@ -27,12 +32,30 @@ private:
 
     void UpdateProduction();
 
+    void HideIconResearch();
+    void ShowIconResearch();
+    void PositionIconResearch();
+    void UpdateIconResearch();
+
+    void HideHighlight();
+    void ShowHighlight();
+    void UpdateHighlight();
+
+    void OnFactionChanged() override;
+    void OnLinkedChanged() override;
+
 private:
     std::vector<int> mResUsage;
+
+    BlinkingHighlight * mHighlight = nullptr;
+    BlinkingIconResearch * mIconResearch = nullptr;
 
     int mResearchPerTurn = 0;
 
     unsigned int mResTrackerId = 0;
+    unsigned int mResearchTrackerId = 0;
+
+    float mAlphaAnim = 0.f;
 };
 
 } // namespace game

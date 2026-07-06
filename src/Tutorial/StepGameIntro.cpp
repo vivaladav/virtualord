@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameIntro.h"
 
-#include "Tutorial/TutorialConstants.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
 #include <sgl/utilities/StringManager.h>
@@ -18,10 +17,8 @@ StepGameIntro::StepGameIntro()
 
     info->SetPosition(200, 100);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_INTRO_1"),
-                       TutorialConstants::colorText, 4.f, true, false);
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_INTRO_2"),
-                       TutorialConstants::colorText, 7.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_INTRO_1"), 5.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_INTRO_2"), 7.f, true, false);
 
     info->SetFunctionOnFinished([this]
     {

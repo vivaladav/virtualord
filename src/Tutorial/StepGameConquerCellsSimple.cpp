@@ -1,0 +1,61 @@
+#include "Tutorial/StepGameConquerCellsSimple.h"
+
+#include "Game.h"
+#include "IsoMap.h"
+#include "Widgets/Tutorial/IsoFocusArea.h"
+#include "Widgets/Tutorial/PanelClickFilter.h"
+#include "Widgets/Tutorial/PanelInfoTutorial.h"
+
+#include <sgl/core/event/MouseEvent.h>
+#include <sgl/utilities/StringManager.h>
+
+namespace game
+{
+
+StepGameConquerCellsSimple::StepGameConquerCellsSimple(const Game * game, const IsoMap * isoMap,
+                                                       const Cell2D & start, const Cell2D & target,
+                                                       const sgl::core::Pointd2D & p0)
+    : TutorialInfoStep(550, 150)
+    , mFocusArea(new IsoFocusArea(isoMap))
+    , mCellActionStart(start)
+    , mCellTarget(target)
+{
+    auto sm = sgl::utilities::StringManager::Instance();
+
+    // FOCUS
+    mFocusArea->SetVisible(false);
+
+    // INFO
+    auto info = GetPanelInfo();
+
+    info->SetPosition(p0.x, p0.y);
+
+    info->AddActionEntry(sm->GetCString("TUT_GAME_CONQUER_CELLS_2"), 0.f, false, false,
+                         [this, isoMap, game]
+                        {
+                            // FOCUS
+                            mFocusArea->SetCell(mCellTarget.row, mCellTarget.col);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
+
+                            // CLICK FILTER
+                            auto cf = GetClickFilter();
+                            cf->SetClickableCell(isoMap, mCellTarget.row, mCellTarget.col);
+                            cf->SetButtonToAllow(game->GetButtonAction());
+                        });
+}
+
+StepGameConquerCellsSimple::~StepGameConquerCellsSimple()
+{
+    delete mFocusArea;
+}
+
+void StepGameConquerCellsSimple::Update(float)
+{
+
+    if(mCellActionStart.row == mCellTarget.row && mCellActionStart.col == mCellTarget.col)
+        SetDone();
+}
+
+} // namespace game

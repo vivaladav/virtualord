@@ -18,7 +18,6 @@ PanelShotType::PanelShotType()
     using namespace sgl;
 
     auto sm = utilities::StringManager::Instance();
-    sm->AddListener(this);
 
     // spacing between buttons
     const int spacing = 10;

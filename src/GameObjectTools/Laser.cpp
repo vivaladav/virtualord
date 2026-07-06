@@ -90,17 +90,29 @@ void Laser::OnShoot(float x0, float y0)
     float damage = 0.f;
     bool fatal = false;
 
-    // hit
-    if(valHit < probHit)
+    // check if it's a hit and if fatal
+#ifdef DEV_MODE
+    const float maxDamage = Game::GOD_MODE ? 60.f : 30.f;
+#else
+    const float maxDamage = 30.f;
+#endif
+
+    // perfect shot always inflicts damage
+    if(IsPerfectShotEnabled())
+        damage = maxDamage * owner->GetAttribute(OBJ_ATT_ATTACK_POWER) / MAX_STAT_FVAL;
+    // regular shot
+    else if(valHit < probHit)
     {
-        const float maxDamage = 20.f;
         damage = maxDamage * owner->GetAttribute(OBJ_ATT_ATTACK_POWER) / MAX_STAT_FVAL;
 
-        // check for fatal hit
-        const float probFatal = GetProbabilityFatalHit(mTarget);
-        const float valFatal = dist.GetNextValue();
+        // check if fatal hit is allowed
+        if(IsFatalHitEnabled())
+        {
+            const float probFatal = GetProbabilityFatalHit(mTarget);
+            const float valFatal = dist.GetNextValue();
 
-        fatal = valFatal < probFatal;
+            fatal = valFatal < probFatal;
+        }
     }
 
     const DataParticleSingleLaser pd =

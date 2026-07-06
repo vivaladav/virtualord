@@ -3,6 +3,7 @@
 #include <sgl/sgui/Widget.h>
 
 #include <functional>
+#include <vector>
 
 namespace sgl
 {
@@ -34,7 +35,8 @@ public:
     void RemoveFunctionOnEnd(unsigned int funId);
 
 private:
-    sgl::sgui::Widget * CreateGoalEntry(unsigned int goalInd, sgl::graphic::Texture * texBg);
+    sgl::sgui::Widget * CreateGoalEntry(unsigned int goalInd, sgl::graphic::Texture * texBg,
+                                        std::vector<sgl::sgui::AbstractButton * > & buttonsCollect);
 
     void CheckIfEndAllowed();
 
@@ -43,12 +45,19 @@ private:
     void SetPositions();
 
 private:
+    friend class StepGameMissionGoalsDialog;
+    friend class StepGamePrimaryMissionGoal;
+    friend class StepGameSecondaryMissionGoal;
+
     sgl::graphic::Image * mBgTop = nullptr;
     sgl::graphic::Image * mBgMid = nullptr;
     sgl::graphic::Image * mBgBot = nullptr;
 
     sgl::sgui::AbstractButton * mBtnClose = nullptr;
     sgl::sgui::AbstractButton * mBtnEnd = nullptr;
+
+    std::vector<sgl::sgui::AbstractButton * > mPrimaryCollectButtons;
+    std::vector<sgl::sgui::AbstractButton * > mSecondCollectButtons;
 
     MissionGoalsTracker * mTrackerMG = nullptr;
 };
