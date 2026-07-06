@@ -997,10 +997,11 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT WORKER AND BUILD MORE WALL
-    AddStep([hud]
+    AddStep([local, game, isoMap]
             {
+                const auto unit = local->GetUnit(indWorker1);
                 const sgl::core::Pointd2D p0(100, 600);
-                return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
+                return new StepGameUnit(game, isoMap, unit, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
