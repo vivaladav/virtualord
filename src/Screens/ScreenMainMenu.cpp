@@ -358,7 +358,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.7 - \"Defend to win\"", font, content);
+    auto title = new sgui::Label("0.6.9 - \"...\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -369,44 +369,11 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "- Completed tutorial for mission 2.\n"
-                  "- Added second part of tutorial for planet screen.\n"
-                  "- Added option in settings to enable/disable constant speed scrolling"
-                  " (disabled by default).\n"
-                  "- Controls settings allow to set what mouse button to use as SELECT and ACTION"
-                  " buttons.\n"
-                  "- Added SFX played after conquering a structure.\n"
-                  "- Camera automatically follows what's happening during a mission.\n"
-                  "- Research center shows a blinking icon on top when not producing"
-                  " research points.\n"
-                  "- Research Center flashes when a tech upgrade is unlockable.\n"
-                  "- Action button that opens the tech tree dialog now shows a notification"
-                  " with the number of upgrades that can be unlocked.\n"
-                  "- Gates close automatically on new turn.\n"
-                  "- Gates open automatically when your units want to cross them.\n"
-                  "- Base flashes when a mission goal is completed.\n"
-                  "- Added new tech upgrades: increase unit slots.\n"
-                  "- Added new tech upgrade: structure trading post.\n"
+                  "\n"
                   "\nCHANGES\n"
-                  "- Make default scrolling speed a 5.\n"
-                  "- Reduced time / actions to complete first map tutorial.\n"
-                  "- Reduced times of unit and structure actions.\n"
-                  "- New graphics for barracks.\n"
-                  "- After units shoot action doesn't go back to default (move) to continue shooting.\n"
-                  "- Generators and Base produce more resources.\n"
-                  "- Increased initial storage space of energy and material.\n"
+                  "\n"
                   "\nFIXES\n"
-                  "- Fixed crash when opening trading dialog.\n"
-                  "- Fixed crash after closing trading dialog and resources change.\n"
-                  "- Fixed AI not active after first tutorial.\n"
-                  "- Fixed new structure indicator not updating the position in same cases.\n"
-                  "- Fixed ComboBox not deleting entries when destroyed.\n"
-                  "- Fixed blinking energy icon appearing on some structures when it shouldn't.\n"
-                  "- Fixed crash when moving mouse outside of map while unit is attacking.\n"
-                  "- Fixed computation of probability of weapon hit.\n"
-                  "- Fixed resources update in some corner cases giving wrong numbers.\n"
-                  "- Fixed structure indicator rendered below other structures.\n"
-                  "- Fixed Trading Post not reducing quantities to sell.\n"
+                  "\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
