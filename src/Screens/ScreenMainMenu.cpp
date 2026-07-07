@@ -373,7 +373,7 @@ void ScreenMainMenu::CreateChangelog()
                   "\nCHANGES\n"
                   "\n"
                   "\nFIXES\n"
-                  "\n"
+                  "- Walls now connect to bunkers too.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
