@@ -15,6 +15,7 @@
 #include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameDisableCamera.h"
+#include "Tutorial/StepGameIntro3.h"
 #include "Tutorial/StepGameSingleInfo.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
@@ -53,11 +54,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
 
     // ===== PART 1 =====
-    AddStep([]
-            {
-                const core::Pointd2D p0(1100, 200);
-                return new StepGameSingleInfo(p0, "TODO");
-            });
+    // INTRO
+    AddStep([] { return new StepGameIntro3; });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
