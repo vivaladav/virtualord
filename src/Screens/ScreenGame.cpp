@@ -632,8 +632,8 @@ void ScreenGame::InitTutorial()
     }
 
 #ifdef DEV_MODE
-    // force tutorial 2 in dev mode as now working on it
-    //tutorialId = TUTORIAL_MISSION_2;
+    // force tutorial 3 in dev mode as now working on it
+    tutorialId = TUTORIAL_MISSION_3;
 #endif
 
     // start tutorial if still TODO

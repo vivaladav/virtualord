@@ -206,7 +206,7 @@ void Game::InitGameData()
     // PLANET 1
     planet = new Planet(PLANET_1, PLANET_SIZE_S);
 #ifdef DEV_MODE
-    planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+    planet->AddMap("data/maps/01-03.map", NO_FACTION, TER_ST_UNEXPLORED);
 #else
     planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
 #endif
