@@ -101,6 +101,8 @@ GameObject::~GameObject()
     delete mIconUpgrade;
 
     ClearGroup();
+
+    mOnValueChanged.clear();
 }
 
 // GROUP
