@@ -41,7 +41,7 @@ void OverlayStructure::ClearIndicator()
 void OverlayStructure::ShowIndicator(GameObjectTypeId type, int row, int col,
                                      int unitCost, bool doable)
 {
-    auto ind = GetNewIndicator(type);
+    auto ind = GetNewIndicator(type, doable);
 
     // remove previous indicator if not the right type
     if(mIndicator != ind)
@@ -71,7 +71,7 @@ void OverlayStructure::ShowIndicator(GameObjectTypeId type, int row, int col,
         mPanelUnitCost->SetVisible(false);
 }
 
-StructureIndicator * OverlayStructure::GetNewIndicator(GameObjectTypeId type)
+StructureIndicator * OverlayStructure::GetNewIndicator(GameObjectTypeId type, bool doable)
 {
     StructureIndicator * ind = nullptr;
 
@@ -84,6 +84,8 @@ StructureIndicator * OverlayStructure::GetNewIndicator(GameObjectTypeId type)
         ind = new StructureIndicator(mObjDataReg->GetObjectData(type), mFaction);
         mIndicators.emplace(type, ind);
     }
+
+    ind->SetDoable(doable);
 
     return ind;
 }
