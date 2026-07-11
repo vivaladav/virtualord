@@ -899,7 +899,7 @@ bool GameMap::IsCellAdjacentToArea(const Cell2D & cell, const Cell2D & areaTL, c
 
     // check if adjacent
     const bool insideRows = cell.row >= (areaTL.row - 1) && cell.row <= (areaBR.row + 1);
-    const bool insideCols = cell.col >= (areaTL.col - 1) && cell.col <= (areaBR.row + 1);
+    const bool insideCols = cell.col >= (areaTL.col - 1) && cell.col <= (areaBR.col + 1);
 
     return insideRows && insideCols;
 }

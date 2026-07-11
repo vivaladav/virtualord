@@ -374,6 +374,7 @@ void ScreenMainMenu::CreateChangelog()
                   "\n"
                   "\nFIXES\n"
                   "- Walls now connect to bunkers too.\n"
+                  "- Units no longer can build structures far away without moving.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
