@@ -3,6 +3,8 @@
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
 
 namespace game
 {
@@ -12,6 +14,8 @@ GameSliderH::GameSliderH(const char * fileSprite, unsigned int texBgID, unsigned
     : sgl::sgui::Slider(sgl::sgui::Slider::HORIZONTAL, parent)
 {
     using namespace sgl;
+
+    InitSound();
 
     auto tm = graphic::TextureManager::Instance();
 
@@ -33,6 +37,8 @@ GameSliderH::GameSliderH(sgl::graphic::Texture * texBg, sgl::graphic::Texture * 
     : sgl::sgui::Slider(sgl::sgui::Slider::HORIZONTAL, parent)
     , mTexBar(texBar)
 {
+    InitSound();
+
     mBg->SetTexture(texBg);
     mBar->SetTexture(texBar);
     mButton->SetTexture(texButton);
@@ -40,6 +46,15 @@ GameSliderH::GameSliderH(sgl::graphic::Texture * texBg, sgl::graphic::Texture * 
     UpdateGraphics(GetState());
 
     UpdatePositions();
+}
+
+void GameSliderH::InitSound()
+{
+    AddOnValueFinalized([](int)
+    {
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_click-03.ogg");
+    });
 }
 
 void GameSliderH::OnStateChanged(VisualState state)
