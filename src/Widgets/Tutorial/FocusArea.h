@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sgl/core/Point.h>
 #include <sgl/sgui/Widget.h>
 
 namespace sgl
@@ -36,10 +37,17 @@ private:
     sgl::graphic::Image * mCornerBL = nullptr;
     sgl::graphic::Image * mCornerBR = nullptr;
 
+    sgl::core::Pointf2D mCornerPosTL;
+    sgl::core::Pointf2D mCornerPosTR;
+    sgl::core::Pointf2D mCornerPosBL;
+    sgl::core::Pointf2D mCornerPosBR;
+
     float mTimerBlinking = 0.f;
+    float mAnimationMove = 0.f;
+
     bool mBlinking = false;
     bool mBlinkOn = true;
-
+    bool mAnimating = false;
 };
 
 } // namespace game

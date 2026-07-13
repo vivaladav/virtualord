@@ -7,11 +7,18 @@
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/TextureManager.h>
 
+#include <cmath>
+
+namespace
+{
+constexpr float TIME_BLINK_ON = 0.8f;
+constexpr float TIME_BLINK_OFF = 0.4f;
+
+constexpr float GAP_ANIM = 200.f;
+}
+
 namespace game
 {
-
-const float TIME_BLINK_ON = 0.8f;
-const float TIME_BLINK_OFF = 0.4f;
 
 FocusArea::FocusArea()
 {
@@ -83,40 +90,67 @@ void FocusArea::SetArea(int x0, int y0, int w, int h)
     SetSize(w, h);
 
     // TOP LEFT
-    int x = x0;
-    int y = y0;
+    mCornerPosTL.x = x0 - GAP_ANIM;
+    mCornerPosTL.y = y0 - GAP_ANIM;
 
-    mCornerTL->SetPosition(x, y);
+    mCornerTL->SetPosition(mCornerPosTL.x, mCornerPosTL.y);
 
     // TOP RIGHT
-    x = x0 + w - mCornerTR->GetWidth();
-    y = y0;
+    mCornerPosTR.x = x0 + w - mCornerTR->GetWidth() + GAP_ANIM;
+    mCornerPosTR.y = y0 - GAP_ANIM;
 
-    mCornerTR->SetPosition(x, y);
+    mCornerTR->SetPosition(mCornerPosTR.x, mCornerPosTR.y);
 
     // BOTTOM LEFT
-    x = x0;
-    y = y0 + h - mCornerBL->GetHeight();
+    mCornerPosBL.x = x0 - GAP_ANIM;
+    mCornerPosBL.y = y0 + h - mCornerBL->GetHeight() + GAP_ANIM;
 
-    mCornerBL->SetPosition(x, y);
+    mCornerBL->SetPosition(mCornerPosBL.x, mCornerPosBL.y);
 
     // BOTTOM RIGHT
-    x = x0 + w - mCornerBR->GetWidth();
-    y = y0 + h - mCornerBR->GetHeight();
+    mCornerPosBR.x = x0 + w - mCornerBR->GetWidth() + GAP_ANIM;
+    mCornerPosBR.y = y0 + h - mCornerBR->GetHeight() + GAP_ANIM;
 
-    mCornerBR->SetPosition(x, y);
+    mCornerBR->SetPosition(mCornerPosBR.x, mCornerPosBR.y);
+
+    mAnimating = true;
 }
 
 void FocusArea::OnRender()
 {
     // only render if not blinking or in ON state of blinking
-    if(!mBlinking || mBlinkOn)
+    if(!mBlinking || mBlinkOn || mAnimating)
         sgl::sgui::Widget::OnRender();
 }
 
 void FocusArea::OnUpdate(float delta)
 {
-    if(mBlinking && IsVisible())
+    if(mAnimating)
+    {
+        const float animSpeed = 500.f;
+
+        const float move = delta * animSpeed;
+        mAnimationMove += move;
+
+        mCornerPosTL.x += move;
+        mCornerPosTL.y += move;
+        mCornerTL->SetPosition(std::roundf(mCornerPosTL.x), std::roundf(mCornerPosTL.y));
+
+        mCornerPosTR.x -= move;
+        mCornerPosTR.y += move;
+        mCornerTR->SetPosition(std::roundf(mCornerPosTR.x), std::roundf(mCornerPosTR.y));
+
+        mCornerPosBL.x += move;
+        mCornerPosBL.y -= move;
+        mCornerBL->SetPosition(std::roundf(mCornerPosBL.x), std::roundf(mCornerPosBL.y));
+
+        mCornerPosBR.x -= move;
+        mCornerPosBR.y -= move;
+        mCornerBR->SetPosition(std::roundf(mCornerPosBR.x), std::roundf(mCornerPosBR.y));
+
+        mAnimating = mAnimationMove < GAP_ANIM;
+    }
+    else if(mBlinking && IsVisible())
     {
         mTimerBlinking -= delta;
 
