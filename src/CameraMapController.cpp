@@ -56,8 +56,11 @@ void CameraMapController::CenterCameraToPoint(int x, int y)
     // to add a SetInputEnabled to disable all mouse/keyboard interaction while leaving on
     // programatically moves like this one
 
-    const auto p = ClampPointInside(x, y);
+    // stop any active movement
+    ClearMovement();
 
+    // set camera position
+    const auto p = ClampPointInside(x, y);
     mCamera->CenterToPoint(p.x, p.y);
 }
 
