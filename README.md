@@ -2,9 +2,9 @@
 
 ![Virtualord - The Virtual Conqueror](https://i.imgur.com/aKLCYd1.png)
 
-An isometric Turn Based Strategy game with TD and RPG elements for PC (Linux and Windows).
+An isometric Turn Based Strategy game with Tower Defense and RPG elements for PC (Linux and Windows).
 
-Code here on GitHub is usually updated once a month, when I publish a new dev log on Steam.
+Code here on GitHub is usually updated once a month, or when I release a new build on Discord. 
 
 ## Wishlist and follow on Steam
 [![Wishlist and follow on Steam](https://i.imgur.com/euSZC0a.png)](https://store.steampowered.com/app/1607580/Virtualord_The_Virtual_Conqueror/?utm_source=github&utm_medium=web&utm_campaign=ongoing&utm_content=readme&utm_term=img)
@@ -22,11 +22,18 @@ You can also follow all the less frequent updates on social media:
 - [X / Twitter](https://twitter.com/vivaladev)
 - [Linkedin](https://www.linkedin.com/company/voxelay)
 - [Facebook](https://www.facebook.com/voxelay/)
+- [Instagram](https://www.instagram.com/voxelay)
 
 
 ## Current status
-**0.6.0 - alpha**
+**0.6.7 (alpha)**
 
+### Videos
+Announcement trailer
+
+<a href="https://youtu.be/7vOECjtEBig"><img src="https://i.imgur.com/wNpvwVQ.jpeg" title ="Virtualord, announcement trailer" alt="Virtualord, announcement trailer" width="806" height="auto" /></a>
+
+### Screenshots
 click to enlarge the images
 
 <img src="https://i.imgur.com/PYeMVMz.jpeg" title ="Virtualord, faction Zulox" alt="Virtualord, faction Zulox" width="640" height="auto" />
