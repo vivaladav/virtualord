@@ -31,7 +31,7 @@ You can also follow all the less frequent updates on social media:
 ### Videos
 Announcement trailer
 
-<a href="https://youtu.be/7vOECjtEBig"><img src="https://i.imgur.com/wNpvwVQ.jpeg" title ="Virtualord, announcement trailer" alt="Virtualord, announcement trailer" width="806" height="auto" /></a>
+<a href="https://youtu.be/7vOECjtEBig" target="_blank"><img src="https://i.imgur.com/wNpvwVQ.jpeg" title ="Virtualord, announcement trailer" alt="Virtualord, announcement trailer" width="806" height="auto" /></a>
 
 ### Screenshots
 click to enlarge the images
