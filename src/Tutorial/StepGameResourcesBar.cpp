@@ -25,7 +25,7 @@ StepGameResourcesBar::StepGameResourcesBar(GameHUD * HUD)
     const int areaW = panel->GetWidth() - (-paddingX * 2);
     const int areaH = panel->GetHeight();
 
-    mFocusArea->SetScreenArea(areaX, areaY, areaW, areaH);
+    mFocusArea->SetScreenArea(areaX, areaY, areaW, areaH, false);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 

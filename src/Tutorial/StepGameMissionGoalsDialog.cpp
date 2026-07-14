@@ -37,7 +37,7 @@ StepGameMissionGoalsDialog::StepGameMissionGoalsDialog(GameHUD * HUD)
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_1"), 13.f, true, true, [this]
                        {
                            mFocusArea->SetCornersColorElement();
-                           mFocusArea->SetScreenArea(340, 320, 1230, 160);
+                           mFocusArea->SetScreenArea(340, 320, 1230, 160, false);
                            mFocusArea->SetBlinking(false);
                            mFocusArea->SetVisible(true);
                        });
@@ -45,7 +45,7 @@ StepGameMissionGoalsDialog::StepGameMissionGoalsDialog(GameHUD * HUD)
     info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_2"), 9.f, true, true, [this]
                        {
                            mFocusArea->SetCornersColorElement();
-                           mFocusArea->SetScreenArea(340, 500, 1230, 240);
+                           mFocusArea->SetScreenArea(340, 500, 1230, 240, false);
                            mFocusArea->SetBlinking(false);
                            mFocusArea->SetVisible(true);
                        });
@@ -70,7 +70,7 @@ StepGameMissionGoalsDialog::StepGameMissionGoalsDialog(GameHUD * HUD)
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
@@ -101,7 +101,7 @@ StepGameMissionGoalsDialog::StepGameMissionGoalsDialog(GameHUD * HUD)
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);

@@ -18,15 +18,15 @@ public:
 
     void SetBlinking(bool enabled);
 
-    void SetScreenArea(int x0, int y0, int w, int h);
-    void SetWorldArea(int x0, int y0, int w, int h);
+    void SetScreenArea(int x0, int y0, int w, int h, bool anim, float delayAnim = 0.5f);
+    void SetWorldArea(int x0, int y0, int w, int h, bool anim, float delayAnim = 0.5f);
 
     void SetCornersColor(unsigned int color);
     void SetCornersColorElement();
     void SetCornersColorAction();
 
 private:
-    void SetArea(int x0, int y0, int w, int h);
+    void SetArea(int x0, int y0, int w, int h, bool anim, float delayAnim);
 
     void OnRender() override;
     void OnUpdate(float delta) override;

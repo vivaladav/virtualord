@@ -56,7 +56,7 @@ StepGameSecondaryMissionGoal::StepGameSecondaryMissionGoal(GameHUD * HUD, int go
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
@@ -81,7 +81,7 @@ StepGameSecondaryMissionGoal::StepGameSecondaryMissionGoal(GameHUD * HUD, int go
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);

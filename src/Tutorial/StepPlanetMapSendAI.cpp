@@ -26,7 +26,7 @@ StepPlanetMapSendAI::StepPlanetMapSendAI(PanelPlanetActions * panel)
     const int fW = btn->GetWidth() + (padding * 2);
     const int fH = btn->GetHeight() + (padding * 2);
 
-    mFocusArea->SetScreenArea(fX, fY, fW, fH);
+    mFocusArea->SetScreenArea(fX, fY, fW, fH, false);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 

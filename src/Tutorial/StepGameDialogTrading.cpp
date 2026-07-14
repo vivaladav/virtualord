@@ -70,7 +70,7 @@ StepGameDialogTrading::StepGameDialogTrading(GameHUD * HUD)
 
                              GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                             mFocusArea->SetScreenArea(x, y, w, h);
+                             mFocusArea->SetScreenArea(x, y, w, h, true);
                              mFocusArea->SetCornersColorAction();
                              mFocusArea->SetBlinking(true);
                              mFocusArea->SetVisible(true);
@@ -109,7 +109,7 @@ void StepGameDialogTrading::HandleButton(sgl::sgui::AbstractButton * btn)
     const int fW = btn->GetWidth() + (padding * 2);
     const int fH = btn->GetHeight() + (padding * 2);
 
-    mFocusArea->SetScreenArea(fX, fY, fW, fH);
+    mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
     mFocusArea->SetVisible(true);
 
     // CLICK FILTER

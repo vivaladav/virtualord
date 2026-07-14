@@ -44,7 +44,7 @@ StepGameUnitAttackBurst::StepGameUnitAttackBurst(PanelShotType * panel, const ch
                                const int fW = mPanel->GetWidth() + (padding * 2);
                                const int fH = mPanel->GetHeight() + (padding * 2);
 
-                               mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                               mFocusArea->SetScreenArea(fX, fY, fW, fH, false);
                                mFocusArea->SetVisible(true);
                            });
     }
@@ -69,7 +69,7 @@ StepGameUnitAttackBurst::StepGameUnitAttackBurst(PanelShotType * panel, const ch
                             const int f2W = fW + (padding * 2);
                             const int f2H = fH + (padding * 2);
 
-                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
+                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H, true);
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetCornersColorAction();
                         });

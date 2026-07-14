@@ -42,7 +42,7 @@ StepGameBackToBase::StepGameBackToBase(const PanelTurnControl * panel, const cha
 
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
-                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER

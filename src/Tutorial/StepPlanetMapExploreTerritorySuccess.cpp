@@ -33,7 +33,7 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
     const int fW = mButton->GetWidth() + (padding * 2);
     const int fH = mButton->GetHeight() + (padding * 2);
 
-    mFocusArea->SetScreenArea(fX, fY, fW, fH);
+    mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
     mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
@@ -43,8 +43,8 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
     const int fW1 = panelInfo->GetWidth() - (padding * 2);
     const int fH1 = panelInfo->GetHeight() - (padding * 2);
 
-    mFocusInfo->SetScreenArea(fX1, fY1, fW1, fH1);
-    mFocusInfo->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusInfo->SetScreenArea(fX1, fY1, fW1, fH1, false);
+    mFocusInfo->SetCornersColorElement();
     mFocusInfo->SetBlinking(true);
     mFocusInfo->SetVisible(false);
 
@@ -53,8 +53,8 @@ StepPlanetMapExploreTerritorySuccess::StepPlanetMapExploreTerritorySuccess(const
     const int fW2 = panelResources->GetWidth() - (padding * 2);
     const int fH2 = panelResources->GetHeight() - (padding * 2);
 
-    mFocusResources->SetScreenArea(fX2, fY2, fW2, fH2);
-    mFocusResources->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusResources->SetScreenArea(fX2, fY2, fW2, fH2, false);
+    mFocusResources->SetCornersColorElement();
     mFocusResources->SetBlinking(true);
     mFocusResources->SetVisible(false);
 

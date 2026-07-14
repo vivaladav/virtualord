@@ -59,7 +59,7 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgr
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
@@ -87,7 +87,7 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgr
 
                              GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                             mFocusArea->SetScreenArea(x, y, w, h);
+                             mFocusArea->SetScreenArea(x, y, w, h, true);
                              mFocusArea->SetCornersColorAction();
                              mFocusArea->SetBlinking(true);
                              mFocusArea->SetVisible(true);
@@ -115,7 +115,7 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgr
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);

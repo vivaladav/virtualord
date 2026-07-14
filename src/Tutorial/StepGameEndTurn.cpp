@@ -42,7 +42,7 @@ StepGameEndTurn::StepGameEndTurn(const PanelTurnControl * panel)
 
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
-                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER

@@ -51,20 +51,20 @@ void FocusArea::SetBlinking(bool enabled)
     mTimerBlinking = TIME_BLINK_ON;
 }
 
-void FocusArea::SetScreenArea(int x0, int y0, int w, int h)
+void FocusArea::SetScreenArea(int x0, int y0, int w, int h, bool anim, float delayAnim)
 {
     auto cam = sgl::graphic::Camera::GetDummyCamera();
     SetCamera(cam);
 
-    SetArea(x0, y0, w, h);
+    SetArea(x0, y0, w, h, anim, delayAnim);
 }
 
-void FocusArea::SetWorldArea(int x0, int y0, int w, int h)
+void FocusArea::SetWorldArea(int x0, int y0, int w, int h, bool anim, float delayAnim)
 {
     auto cam = sgl::graphic::Camera::GetDefaultCamera();
     SetCamera(cam);
 
-    SetArea(x0, y0, w, h);
+    SetArea(x0, y0, w, h, anim, delayAnim);
 }
 
 void FocusArea::SetCornersColor(unsigned int color)
@@ -85,37 +85,39 @@ void FocusArea::SetCornersColorAction()
     SetCornersColor(TutorialConstants::colorFocusAction);
 }
 
-void FocusArea::SetArea(int x0, int y0, int w, int h)
+void FocusArea::SetArea(int x0, int y0, int w, int h, bool anim, float delayAnim)
 {
     SetSize(w, h);
 
+    const float padding = GAP_ANIM * anim;
+
     // TOP LEFT
-    mCornerPosTL.x = x0 - GAP_ANIM;
-    mCornerPosTL.y = y0 - GAP_ANIM;
+    mCornerPosTL.x = x0 - padding;
+    mCornerPosTL.y = y0 - padding;
 
     mCornerTL->SetPosition(mCornerPosTL.x, mCornerPosTL.y);
 
     // TOP RIGHT
-    mCornerPosTR.x = x0 + w - mCornerTR->GetWidth() + GAP_ANIM;
-    mCornerPosTR.y = y0 - GAP_ANIM;
+    mCornerPosTR.x = x0 + w - mCornerTR->GetWidth() + padding;
+    mCornerPosTR.y = y0 - padding;
 
     mCornerTR->SetPosition(mCornerPosTR.x, mCornerPosTR.y);
 
     // BOTTOM LEFT
-    mCornerPosBL.x = x0 - GAP_ANIM;
-    mCornerPosBL.y = y0 + h - mCornerBL->GetHeight() + GAP_ANIM;
+    mCornerPosBL.x = x0 - padding;
+    mCornerPosBL.y = y0 + h - mCornerBL->GetHeight() + padding;
 
     mCornerBL->SetPosition(mCornerPosBL.x, mCornerPosBL.y);
 
     // BOTTOM RIGHT
-    mCornerPosBR.x = x0 + w - mCornerBR->GetWidth() + GAP_ANIM;
-    mCornerPosBR.y = y0 + h - mCornerBR->GetHeight() + GAP_ANIM;
+    mCornerPosBR.x = x0 + w - mCornerBR->GetWidth() + padding;
+    mCornerPosBR.y = y0 + h - mCornerBR->GetHeight() + padding;
 
     mCornerBR->SetPosition(mCornerPosBR.x, mCornerPosBR.y);
 
-    mRendering = false;
-    mAnimating = true;
-    mAnimationDelay = 0.5f;
+    mRendering = !anim;
+    mAnimating = anim;
+    mAnimationDelay = delayAnim;
 }
 
 void FocusArea::OnRender()

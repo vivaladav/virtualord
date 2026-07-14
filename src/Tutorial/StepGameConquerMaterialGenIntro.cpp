@@ -25,7 +25,7 @@ StepGameConquerMaterialGenIntro::StepGameConquerMaterialGenIntro(const GameObjec
     const int objW = isoObj->GetWidth();
     const int objH = isoObj->GetHeight();
 
-    mFocusArea->SetWorldArea(objX, objY, objW, objH);
+    mFocusArea->SetWorldArea(objX, objY, objW, objH, false);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 

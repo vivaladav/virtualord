@@ -67,7 +67,7 @@ StepGameBuildStructure::StepGameBuildStructure(GameHUD * HUD, const char * textC
                                 const int fW2 = fW + (padding * 2);
                                 const int fH2 = fH + (padding * 2);
 
-                                mFocusArea->SetScreenArea(fX2, fY2, fW2, fH2);
+                                mFocusArea->SetScreenArea(fX2, fY2, fW2, fH2, true);
                                 mFocusArea->SetVisible(true);
                             });
     }
@@ -100,7 +100,7 @@ StepGameBuildStructure::StepGameBuildStructure(GameHUD * HUD, const char * textC
                                 const int fW2 = fW + (padding * 2);
                                 const int fH2 = fH + (padding * 2);
 
-                                mFocusArea->SetScreenArea(fX2, fY2, fW2, fH2);
+                                mFocusArea->SetScreenArea(fX2, fY2, fW2, fH2, true);
                                 mFocusArea->SetVisible(true);
                            });
     }
@@ -122,7 +122,7 @@ StepGameBuildStructure::StepGameBuildStructure(GameHUD * HUD, const char * textC
                             const int fW = btn->GetWidth() + (padding * 2);
                             const int fH = btn->GetHeight() + (padding * 2);
 
-                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER

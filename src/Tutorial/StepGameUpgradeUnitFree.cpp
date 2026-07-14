@@ -59,7 +59,7 @@ StepGameUpgradeUnitFree::StepGameUpgradeUnitFree(GameHUD * HUD)
                             const int fH = (btn1->GetScreenY() - fY) + btn1->GetHeight() +
                                            (padding * 2);
 
-                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER
@@ -81,7 +81,7 @@ StepGameUpgradeUnitFree::StepGameUpgradeUnitFree(GameHUD * HUD)
                             const int fW = btn->GetWidth() + (padding * 2);
                             const int fH = btn->GetHeight() + (padding * 2);
 
-                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER

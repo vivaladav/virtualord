@@ -24,7 +24,7 @@ StepGameBaseFeatures::StepGameBaseFeatures(const PanelSelectedObject * panelObj,
     const int fW = panelObj->GetWidth() + padding;
     const int fH = panelObj->GetHeight() + padding;
 
-    mFocusArea->SetScreenArea(fX, fY, fW, fH);
+    mFocusArea->SetScreenArea(fX, fY, fW, fH, false);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
@@ -47,7 +47,7 @@ StepGameBaseFeatures::StepGameBaseFeatures(const PanelSelectedObject * panelObj,
                            const int fH = panelActions->GetHeight() + (2 * padding);
 
                            mFocusArea->SetBlinking(true);
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                           mFocusArea->SetScreenArea(fX, fY, fW, fH, false);
                        });
 
     info->SetFunctionOnFinished([this]

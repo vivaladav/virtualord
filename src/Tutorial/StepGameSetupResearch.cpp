@@ -78,7 +78,7 @@ StepGameSetupResearch::StepGameSetupResearch(GameHUD * HUD)
 
                              GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                             mFocusArea->SetScreenArea(x, y, w, h);
+                             mFocusArea->SetScreenArea(x, y, w, h, true);
                              mFocusArea->SetCornersColorAction();
                              mFocusArea->SetBlinking(true);
                              mFocusArea->SetVisible(true);
@@ -117,7 +117,7 @@ void StepGameSetupResearch::HandleSlider(sgl::sgui::Slider * slider, int target)
     const int fW = slider->GetWidth() + (paddingX * 2);
     const int fH = slider->GetHeight() + (paddingY * 2);
 
-    mFocusArea->SetScreenArea(fX, fY, fW, fH);
+    mFocusArea->SetScreenArea(fX, fY, fW, fH, false);
     mFocusArea->SetVisible(true);
 
     // CLICK FILTER
