@@ -47,7 +47,7 @@ void FocusArea::SetBlinking(bool enabled)
     mBlinking = enabled;
 
     // reset blinking state
-    mBlinkOn = true;
+    mRendering = true;
     mTimerBlinking = TIME_BLINK_ON;
 }
 
@@ -113,13 +113,15 @@ void FocusArea::SetArea(int x0, int y0, int w, int h)
 
     mCornerBR->SetPosition(mCornerPosBR.x, mCornerPosBR.y);
 
+    mRendering = false;
     mAnimating = true;
+    mAnimationDelay = 0.5f;
 }
 
 void FocusArea::OnRender()
 {
-    // only render if not blinking or in ON state of blinking
-    if(!mBlinking || mBlinkOn || mAnimating)
+    // control rendering for animation delay and blinking
+    if(mRendering)
         sgl::sgui::Widget::OnRender();
 }
 
@@ -127,6 +129,16 @@ void FocusArea::OnUpdate(float delta)
 {
     if(mAnimating)
     {
+        if(mAnimationDelay > 0.f)
+        {
+            mAnimationDelay -= delta;
+
+            if(mAnimationDelay < 0.f)
+                mRendering = true;
+            else
+                return;
+        }
+
         const float animSpeed = 500.f;
 
         const float move = delta * animSpeed;
@@ -156,9 +168,9 @@ void FocusArea::OnUpdate(float delta)
 
         if(mTimerBlinking <= 0.f)
         {
-            mBlinkOn = !mBlinkOn;
+            mRendering = !mRendering;
 
-            mTimerBlinking = mBlinkOn ? TIME_BLINK_ON : TIME_BLINK_OFF;
+            mTimerBlinking = mRendering ? TIME_BLINK_ON : TIME_BLINK_OFF;
         }
     }
 }

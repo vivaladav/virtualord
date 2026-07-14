@@ -44,9 +44,10 @@ private:
 
     float mTimerBlinking = 0.f;
     float mAnimationMove = 0.f;
+    float mAnimationDelay = 0.f;
 
     bool mBlinking = false;
-    bool mBlinkOn = true;
+    bool mRendering = true;
     bool mAnimating = false;
 };
 
