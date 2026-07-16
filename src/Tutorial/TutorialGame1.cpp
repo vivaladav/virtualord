@@ -48,7 +48,6 @@
 #include "Tutorial/StepGameMissionGoalsDialog.h"
 #include "Tutorial/StepGameMoveCamera.h"
 #include "Tutorial/StepGameMoveCameraOverObject.h"
-#include "Tutorial/StepGameMoveToTower.h"
 #include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameMoveUnitToCorner.h"
 #include "Tutorial/StepGamePrimaryMissionGoal.h"
@@ -483,7 +482,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([gs] { return new StepGameClearSelection(gs); });
     // EXPLAIN CAMERA MOVE AND MOVE TO TOWER 1
     AddStep([] { return new StepGameMapNavigation; });
-    AddStep([] { return new StepGameMoveToTower; });
     AddStep([this] { return new StepGameEnableCamera(GetCameraMapController()); });
     AddStep([this, local]
             {
@@ -498,7 +496,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
 
                 const auto cam = GetCameraMapController()->GetCamera();
 
-                return new StepGameTestCameraFocus(cam, tlX, tlY, brX, brY);
+                return new StepGameTestCameraFocus("TUT_GAME_MAP_NAVIGATION_5", cam,
+                                                   tlX, tlY, brX, brY);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this]
