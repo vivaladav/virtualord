@@ -8,11 +8,19 @@
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/TextureManager.h>
 
+#include <cmath>
+
+namespace
+{
+constexpr float TIME_BLINK_ON = 0.8f;
+constexpr float TIME_BLINK_OFF = 0.4f;
+
+constexpr float GAP_ANIM_X = 200.f;
+constexpr float GAP_ANIM_Y = 100.f;
+}
+
 namespace game
 {
-
-const float TIME_BLINK_ON = 0.8f;
-const float TIME_BLINK_OFF = 0.4f;
 
 IsoFocusArea::IsoFocusArea(const IsoMap * im)
     : mIM(im)
@@ -44,12 +52,15 @@ void IsoFocusArea::SetBlinking(bool enabled)
     mBlinking = enabled;
 
     // reset blinking state
-    mBlinkOn = true;
+    mRendering = !mAnimating;
     mTimerBlinking = TIME_BLINK_ON;
 }
 
-void IsoFocusArea::SetCellArea(int r0, int c0, int r1, int c1)
+void IsoFocusArea::SetCellArea(int r0, int c0, int r1, int c1, bool anim, float delayAnim)
 {
+    const float paddingX = GAP_ANIM_X * anim;
+    const float paddingY = GAP_ANIM_Y * anim;
+
     // widget size
     const sgl::core::Pointd2D p0 = mIM->GetCellPosition(r0, c0);
     const sgl::core::Pointd2D p1 = mIM->GetCellPosition(r1, c1);
@@ -58,18 +69,33 @@ void IsoFocusArea::SetCellArea(int r0, int c0, int r1, int c1)
 
     SetSize(w, h);
 
-    // area size
-    const unsigned int rows = r0 - r1 + 1;
-    const unsigned int cols = c0 - c1 + 1;
-
     // position corners
     const sgl::core::Pointd2D pTR = mIM->GetCellPosition(r1, c0);
     const sgl::core::Pointd2D pBL = mIM->GetCellPosition(r0, c1);
 
-    mCornerTL->SetPosition(p1.x, p1.y);
-    mCornerTR->SetPosition(pTR.x, pTR.y);
-    mCornerBR->SetPosition(p0.x, p0.y);
-    mCornerBL->SetPosition(pBL.x, pBL.y);
+    // TOP LEFT
+    mCornerPosTL.x = p1.x;
+    mCornerPosTL.y = p1.y - paddingY;
+    mCornerTL->SetPosition(mCornerPosTL.x, mCornerPosTL.y);
+
+    // TOP RIGHT
+    mCornerPosTR.x = pTR.x + paddingX;
+    mCornerPosTR.y = pTR.y;
+    mCornerTR->SetPosition(mCornerPosTR.x, mCornerPosTR.y);
+
+    // BOTTOM LEFT
+    mCornerPosBL.x = pBL.x - paddingX;
+    mCornerPosBL.y = pBL.y;
+    mCornerBL->SetPosition(mCornerPosBL.x, mCornerPosBL.y);
+
+    // BOTTOM RIGHT
+    mCornerPosBR.x = p0.x;
+    mCornerPosBR.y = p0.y + paddingY;
+    mCornerBR->SetPosition(mCornerPosBR.x, mCornerPosBR.y);
+
+    mRendering = !anim;
+    mAnimating = anim;
+    mAnimationDelay = delayAnim;
 }
 
 void IsoFocusArea::SetCornersColor(unsigned int color)
@@ -92,22 +118,54 @@ void IsoFocusArea::SetCornersColorAction()
 
 void IsoFocusArea::OnRender()
 {
-    // only render if not blinking or in ON state of blinking
-    if(!mBlinking || mBlinkOn)
+    // control rendering for animation delay and blinking
+    if(mRendering)
         sgl::sgui::Widget::OnRender();
 }
 
 void IsoFocusArea::OnUpdate(float delta)
 {
-    if(mBlinking && IsVisible())
+    if(mAnimating)
+    {
+        if(mAnimationDelay > 0.f)
+        {
+            mAnimationDelay -= delta;
+
+            if(mAnimationDelay < 0.f)
+                mRendering = true;
+            else
+                return;
+        }
+
+        const float animSpeed = 500.f;
+
+        const float moveX = delta * animSpeed;
+        const float moveY = moveX * 0.5f;
+        mAnimationMove += moveX;
+
+        mCornerPosTL.y += moveY;
+        mCornerTL->SetPosition(std::roundf(mCornerPosTL.x), std::roundf(mCornerPosTL.y));
+
+        mCornerPosTR.x -= moveX;
+        mCornerTR->SetPosition(std::roundf(mCornerPosTR.x), std::roundf(mCornerPosTR.y));
+
+        mCornerPosBL.x += moveX;
+        mCornerBL->SetPosition(std::roundf(mCornerPosBL.x), std::roundf(mCornerPosBL.y));
+
+        mCornerPosBR.y -= moveY;
+        mCornerBR->SetPosition(std::roundf(mCornerPosBR.x), std::roundf(mCornerPosBR.y));
+
+        mAnimating = mAnimationMove < GAP_ANIM_X;
+    }
+    else if(mBlinking && IsVisible())
     {
         mTimerBlinking -= delta;
 
         if(mTimerBlinking <= 0.f)
         {
-            mBlinkOn = !mBlinkOn;
+            mRendering = !mRendering;
 
-            mTimerBlinking = mBlinkOn ? TIME_BLINK_ON : TIME_BLINK_OFF;
+            mTimerBlinking = mRendering ? TIME_BLINK_ON : TIME_BLINK_OFF;
         }
     }
 }
