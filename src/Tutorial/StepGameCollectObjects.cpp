@@ -28,7 +28,7 @@ StepGameCollectObjects::StepGameCollectObjects(const Unit * unit, GameObjectType
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCellArea(areaBR.row, areaBR.col, areaTL.row, areaTL.col);
+    mFocusArea->SetCellArea(areaBR.row, areaBR.col, areaTL.row, areaTL.col, false);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
