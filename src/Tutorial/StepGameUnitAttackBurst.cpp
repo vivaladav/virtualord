@@ -25,7 +25,6 @@ StepGameUnitAttackBurst::StepGameUnitAttackBurst(PanelShotType * panel, const ch
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -44,6 +43,7 @@ StepGameUnitAttackBurst::StepGameUnitAttackBurst(PanelShotType * panel, const ch
                                const int fW = mPanel->GetWidth() + (padding * 2);
                                const int fH = mPanel->GetHeight() + (padding * 2);
 
+                               mFocusArea->SetCornersColorElement();
                                mFocusArea->SetScreenArea(fX, fY, fW, fH, false);
                                mFocusArea->SetVisible(true);
                            });

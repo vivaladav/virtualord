@@ -26,7 +26,6 @@ StepGameMissionGoalsDialog::StepGameMissionGoalsDialog(GameHUD * HUD)
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO

@@ -21,7 +21,6 @@ StepGameBackToBase::StepGameBackToBase(const PanelTurnControl * panel, const cha
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO

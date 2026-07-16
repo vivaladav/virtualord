@@ -19,7 +19,6 @@ StepGameEndTurnSimple::StepGameEndTurnSimple(const PanelTurnControl * panel)
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
