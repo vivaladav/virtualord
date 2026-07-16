@@ -47,7 +47,7 @@ void FocusArea::SetBlinking(bool enabled)
     mBlinking = enabled;
 
     // reset blinking state
-    mRendering = true;
+    mRendering = !mAnimating;
     mTimerBlinking = TIME_BLINK_ON;
 }
 
@@ -94,25 +94,21 @@ void FocusArea::SetArea(int x0, int y0, int w, int h, bool anim, float delayAnim
     // TOP LEFT
     mCornerPosTL.x = x0 - padding;
     mCornerPosTL.y = y0 - padding;
-
     mCornerTL->SetPosition(mCornerPosTL.x, mCornerPosTL.y);
 
     // TOP RIGHT
     mCornerPosTR.x = x0 + w - mCornerTR->GetWidth() + padding;
     mCornerPosTR.y = y0 - padding;
-
     mCornerTR->SetPosition(mCornerPosTR.x, mCornerPosTR.y);
 
     // BOTTOM LEFT
     mCornerPosBL.x = x0 - padding;
     mCornerPosBL.y = y0 + h - mCornerBL->GetHeight() + padding;
-
     mCornerBL->SetPosition(mCornerPosBL.x, mCornerPosBL.y);
 
     // BOTTOM RIGHT
     mCornerPosBR.x = x0 + w - mCornerBR->GetWidth() + padding;
     mCornerPosBR.y = y0 + h - mCornerBR->GetHeight() + padding;
-
     mCornerBR->SetPosition(mCornerPosBR.x, mCornerPosBR.y);
 
     mRendering = !anim;
