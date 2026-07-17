@@ -96,6 +96,7 @@ void IsoFocusArea::SetCellArea(int r0, int c0, int r1, int c1, bool anim, float 
     mRendering = !anim;
     mAnimating = anim;
     mAnimationDelay = delayAnim;
+    mAnimationMove = 0.f;
 }
 
 void IsoFocusArea::SetCornersColor(unsigned int color)

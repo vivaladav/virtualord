@@ -29,7 +29,7 @@ public:
 
 private:
      void OnRender() override;
-    void OnUpdate(float delta) override;
+     void OnUpdate(float delta) override;
 
 private:
     const IsoMap * mIM = nullptr;

@@ -114,6 +114,7 @@ void FocusArea::SetArea(int x0, int y0, int w, int h, bool anim, float delayAnim
     mRendering = !anim;
     mAnimating = anim;
     mAnimationDelay = delayAnim;
+    mAnimationMove = 0.f;
 }
 
 void FocusArea::OnRender()
