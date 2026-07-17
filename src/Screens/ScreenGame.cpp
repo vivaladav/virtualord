@@ -3099,8 +3099,8 @@ void ScreenGame::HandleSelectionClick(sgl::core::MouseButtonEvent & event)
 {
     GameObject * currSel = mLocalPlayer->GetSelectedObject();
 
-    // do not allow any selecting/deselection when an action is in progress
-    if(currSel != nullptr && currSel->GetCurrentAction() != IDLE)
+    // do not allow any selecting/deselection if disabled or when an action is in progress
+    if(!mAllowSelection || (currSel != nullptr && currSel->GetCurrentAction() != IDLE))
         return ;
 
     const sgl::graphic::Camera * cam = mCamController->GetCamera();

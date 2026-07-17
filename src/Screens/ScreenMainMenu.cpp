@@ -378,7 +378,8 @@ void ScreenMainMenu::CreateChangelog()
                   "\nFIXES\n"
                   "- Walls now connect to bunkers too.\n"
                   "- Units no longer can build structures far away without moving.\n"
-                  "- Camera no longer keeps moving when view is centered on some object or cell.\n"
+                  "- Camera no longer keeps moving when view is centered on some object or cell."
+                  "- Selection no longer allowed when moving camera in tutorial 1.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

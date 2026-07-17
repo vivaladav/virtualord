@@ -335,8 +335,6 @@ add_executable(
     src/Tutorial/StepGameMoveCameraOverCell.cpp
     src/Tutorial/StepGameMoveCameraOverObject.h
     src/Tutorial/StepGameMoveCameraOverObject.cpp
-
-
     src/Tutorial/StepGameMoveUnit.h
     src/Tutorial/StepGameMoveUnit.cpp
     src/Tutorial/StepGameMoveUnitSimple.h
@@ -373,6 +371,8 @@ add_executable(
     src/Tutorial/StepGameSetObjectPerfectShot.cpp
     src/Tutorial/StepGameSetSelectionActiveAction.h
     src/Tutorial/StepGameSetSelectionActiveAction.cpp
+    src/Tutorial/StepGameSetSelectionAllowed.h
+    src/Tutorial/StepGameSetSelectionAllowed.cpp
     src/Tutorial/StepGameSetSelectionDefaultAction.h
     src/Tutorial/StepGameSetSelectionDefaultAction.cpp
     src/Tutorial/StepGameSetupResearch.h

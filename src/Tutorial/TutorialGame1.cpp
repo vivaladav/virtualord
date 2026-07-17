@@ -56,6 +56,7 @@
 #include "Tutorial/StepGameSetObjectMaxHealth.h"
 #include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
+#include "Tutorial/StepGameSetSelectionAllowed.h"
 #include "Tutorial/StepGameSetSelectionDefaultAction.h"
 #include "Tutorial/StepGameStructConnected.h"
 #include "Tutorial/StepGameStructDisconnected.h"
@@ -482,6 +483,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([gs] { return new StepGameClearSelection(gs); });
     // EXPLAIN CAMERA MOVE AND MOVE TO TOWER 1
     AddStep([] { return new StepGameMapNavigation; });
+    AddStep([gs] { return new StepGameSetSelectionAllowed(gs, false); });
     AddStep([this] { return new StepGameEnableCamera(GetCameraMapController()); });
     AddStep([this, local]
             {
@@ -500,6 +502,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                                                    tlX, tlY, brX, brY);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([gs] { return new StepGameSetSelectionAllowed(gs, true); });
     AddStep([this]
             {
                 const GameObject * tower = GetObjectInCell(cellDT1);
@@ -642,6 +645,9 @@ TutorialGame1::~TutorialGame1()
 
     if(tower != nullptr && tower->GetObjectType() == ObjectData::TYPE_DEFENSIVE_TOWER)
         tower->SetPerfectShot(false);
+
+    // make sure selection is allowed again
+    GetScreen()->SetSelectionAllowed(true);
 }
 
 } // namespace game

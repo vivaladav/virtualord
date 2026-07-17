@@ -74,6 +74,8 @@ public:
 
     const sgl::graphic::ParticlesManager * GetParticlesManager() const;
 
+    void SetSelectionAllowed(bool allowed);
+    bool IsSelectionAllowed() const;
     void ClearSelection(Player * player);
     void SelectObject(GameObject * obj, Player * player);
 
@@ -255,7 +257,7 @@ private:
     float mTimePlayed = 0.f;
 
     bool mPaused = false;
-
+    bool mAllowSelection = true;
     bool mLocalTurnInitDone = false;
 };
 
@@ -272,6 +274,9 @@ inline const sgl::graphic::ParticlesManager * ScreenGame::GetParticlesManager() 
 {
     return mPartMan;
 }
+
+inline void ScreenGame::SetSelectionAllowed(bool allowed) { mAllowSelection = allowed; }
+inline bool ScreenGame::IsSelectionAllowed() const { return mAllowSelection; }
 
 inline Player * ScreenGame::GetActivePlayer() const { return mActiveplayer; }
 
