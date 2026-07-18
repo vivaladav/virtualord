@@ -52,6 +52,7 @@ class GameObjectsGroup;
 class IconUpgrade;
 class IsoObject;
 class ObjectEnergyBar;
+class ObjectHealthBar;
 class ObjectInitData;
 class Player;
 class WarningMessage;
@@ -249,6 +250,12 @@ private:
     void ShowEnergyBar();
     void HideEnergyBar();
     void PositionEnergyBar();
+    void UpdateEnergyBar();
+
+    void ShowHealthBar();
+    void HideHealthBar();
+    void PositionHealthBar();
+    void UpdateHealthBar();
 
     void SetEnergy(float val);
     void SetExperience(int val);
@@ -286,6 +293,7 @@ private:
 
     IconUpgrade * mIconUpgrade = nullptr;
     ObjectEnergyBar * mBarEnergy = nullptr;
+    ObjectHealthBar * mBarHealth = nullptr;
 
     GameObjectTypeId mType = ObjectData::TYPE_NULL;
     GameObjectCategoryId mCategory = ObjectData::CAT_NULL;

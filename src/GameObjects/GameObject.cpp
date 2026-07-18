@@ -18,6 +18,7 @@
 #include "Screens/ScreenGame.h"
 #include "Widgets/IconUpgrade.h"
 #include "Widgets/ObjectEnergyBar.h"
+#include "Widgets/ObjectHealthBar.h"
 #include "Widgets/WarningMessage.h"
 
 #include <sgl/core/Math.h>
@@ -160,6 +161,7 @@ void GameObject::SetPosition(int x, int y)
 
     PositionIconUpgrade();
     PositionEnergyBar();
+    PositionHealthBar();
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -174,6 +176,7 @@ void GameObject::SetX(int x)
 
     PositionIconUpgrade();
     PositionEnergyBar();
+    PositionHealthBar();
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -187,6 +190,7 @@ void GameObject::SetY(int y)
 
     PositionIconUpgrade();
     PositionEnergyBar();
+    PositionHealthBar();
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -223,9 +227,15 @@ void GameObject::SetSelected(bool val)
     mSelected = val;
 
     if(mSelected)
+    {
         ShowEnergyBar();
+        ShowHealthBar();
+    }
     else
+    {
         HideEnergyBar();
+        HideHealthBar();
+    }
 
     UpdateGraphics();
 }
@@ -956,7 +966,7 @@ void GameObject::ShowEnergyBar()
     if(!IsFactionLocal())
         return;
 
-    const unsigned int val = std::roundf(ObjectEnergyBar::MAX_VAL * mEnergy / GetMaxEnergy());
+    const unsigned int val = std::roundf(ObjectEnergyBar::MAX_VAL * GetEnergy() / GetMaxEnergy());
     mBarEnergy = new ObjectEnergyBar(val);
 
     PositionEnergyBar();
@@ -984,6 +994,62 @@ void GameObject::PositionEnergyBar()
     mBarEnergy->SetPosition(iconX, iconY);
 }
 
+void GameObject::UpdateEnergyBar()
+{
+    if(mBarEnergy == nullptr)
+        return ;
+
+    const unsigned int val = std::roundf(ObjectEnergyBar::MAX_VAL * GetEnergy() / GetMaxEnergy());
+    mBarEnergy->SetValue(val);
+}
+
+void GameObject::ShowHealthBar()
+{
+    // already showing it
+    if(mBarHealth != nullptr)
+        return ;
+
+    // only show for local player
+    if(!IsFactionLocal())
+        return;
+
+    const unsigned int val = std::roundf(ObjectHealthBar::MAX_VAL * GetHealth() / GetMaxHealth());
+    mBarHealth = new ObjectHealthBar(val);
+
+    PositionHealthBar();
+}
+
+void GameObject::HideHealthBar()
+{
+    delete mBarHealth;
+    mBarHealth = nullptr;
+}
+
+void GameObject::PositionHealthBar()
+{
+    if(mBarHealth == nullptr)
+        return ;
+
+    const int isoX = mIsoObj->GetX();
+    const int isoY = mIsoObj->GetY();
+    const int isoW = mIsoObj->GetWidth();
+
+    const int iconMarginV = 18;
+    const int iconX = isoX + (isoW - mBarHealth->GetWidth()) / 2;
+    const int iconY = isoY - mBarHealth->GetHeight() - iconMarginV;
+
+    mBarHealth->SetPosition(iconX, iconY);
+}
+
+void GameObject::UpdateHealthBar()
+{
+    if(mBarHealth == nullptr)
+        return ;
+
+    const unsigned int val = std::roundf(ObjectHealthBar::MAX_VAL * GetHealth() / GetMaxHealth());
+    mBarHealth->SetValue(val);
+}
+
 void GameObject::SetEnergy(float val)
 {
     const float oldEn = mEnergy;
@@ -1002,10 +1068,15 @@ void GameObject::SetEnergy(float val)
         mEnergy = val;
 #endif
 
+    // check if value changed
     const float diff = std::fabs(mEnergy - oldEn);
 
     if(diff > minDelta)
+    {
+        UpdateEnergyBar();
+
         NotifyValueChanged();
+    }
 }
 
 void GameObject::SetExperience(int val)
@@ -1036,10 +1107,15 @@ void GameObject::SetHealth(float val)
     else if(mHealth < 0.f)
         mHealth = 0.f;
 
+    // check if value changed
     const float diff = std::fabs(mHealth - oldH);
 
     if(diff > minDelta)
+    {
+        UpdateHealthBar();
+
         NotifyValueChanged();
+    }
 }
 
 void GameObject::RestoreTurnEnergy()

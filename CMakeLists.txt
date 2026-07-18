@@ -565,6 +565,8 @@ add_executable(
     src/Widgets/ObjectActionButton.cpp
     src/Widgets/ObjectEnergyBar.h
     src/Widgets/ObjectEnergyBar.cpp
+    src/Widgets/ObjectHealthBar.h
+    src/Widgets/ObjectHealthBar.cpp
     src/Widgets/ObjectVisualAttribute.h
     src/Widgets/ObjectVisualAttribute.cpp
     src/Widgets/PanelHit.h
