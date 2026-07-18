@@ -237,6 +237,8 @@ void GameObject::SetSelected(bool val)
         HideHealthBar();
     }
 
+    PositionIconUpgrade();
+
     UpdateGraphics();
 }
 
@@ -949,9 +951,14 @@ void GameObject::PositionIconUpgrade()
     const int isoY = mIsoObj->GetY();
     const int isoW = mIsoObj->GetWidth();
 
+    int y0 = isoY;
+
+    if(mBarHealth != nullptr)
+        y0 = mBarHealth->GetY();
+
     const int iconMarginV = 5;
     const int iconX = isoX + (isoW - mIconUpgrade->GetWidth()) / 2;
-    const int iconY = isoY - mIconUpgrade->GetHeight() - iconMarginV;
+    const int iconY = y0 - mIconUpgrade->GetHeight() - iconMarginV;
 
     mIconUpgrade->SetPosition(iconX, iconY);
 }
