@@ -126,6 +126,10 @@ void FocusArea::OnRender()
 
 void FocusArea::OnUpdate(float delta)
 {
+    // do nothing while not visible
+    if(!IsVisible())
+        return;
+
     if(mAnimating)
     {
         if(mAnimationDelay > 0.f)
