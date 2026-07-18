@@ -162,8 +162,8 @@ void Hospital::Heal()
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterHealing *>(partMan->GetUpdater(PU_HEALING));
 
-    const unsigned int texInd = SpriteIdUnitsParticles::IND_UPAR_HEAL_F1 + faction;
-    Texture * tex = TextureManager::Instance()->GetSprite(SpriteFileUnitsParticles, texInd);
+    const unsigned int texInd = ID_PAR_HEAL_F1 + faction;
+    Texture * tex = TextureManager::Instance()->GetSprite(SpriteFileGameObjectsRelated, texInd);
 
     IsoObject * isoObj = GetIsoObject();
     IsoObject * isoTarget = mTargetHealing->GetIsoObject();

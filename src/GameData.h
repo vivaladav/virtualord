@@ -394,25 +394,6 @@ enum SpriteIdMiniUnits : unsigned int
     NUM_MUNIT_SPRITES_PER_FACTION = SID_MUNIT_01_1X_F2 - SID_MUNIT_01_1X_F1,
 };
 
-// PARTICLES
-extern const char SpriteFileParticles[];
-
-enum SpriteIdParticles : unsigned int
-{
-    ID_PART_RECT_4x4,
-
-    // RESOURCE ICONS
-    ID_PART_ICON_MONEY,
-    ID_PART_ICON_ENERGY,
-    ID_PART_ICON_MATERIAL,
-    ID_PART_ICON_DIAMONDS,
-    ID_PART_ICON_BLOBS,
-    ID_PART_ICON_RESEARCH,
-
-    // UPGRADE ICON
-    ID_PART_ICON_UPGRADE,
-};
-
 // SCENE ELEMENTS
 extern const char SpriteFileSceneObjects[];
 
@@ -851,21 +832,51 @@ enum SpriteIdUnits : unsigned int
 };
 
 // UNITS PARTICLES
-extern const char SpriteFileUnitsParticles[];
+extern const char SpriteFileGameObjectsRelated[];
 
-enum SpriteIdUnitsParticles : unsigned int
+enum SpriteIdGameObjectsRelated : unsigned int
 {
-    // laser
-    IND_UPAR_LASER_F1,
-    IND_UPAR_LASER_F2,
-    IND_UPAR_LASER_F3,
+    // OBJECT ENERGY BAR
+    ID_GO_BAR_ENERGY_0,
+    ID_GO_BAR_ENERGY_1,
+    ID_GO_BAR_ENERGY_2,
+    ID_GO_BAR_ENERGY_3,
+    ID_GO_BAR_ENERGY_4,
+    ID_GO_BAR_ENERGY_5,
+    ID_GO_BAR_ENERGY_6,
+    ID_GO_BAR_ENERGY_7,
+    ID_GO_BAR_ENERGY_8,
+    ID_GO_BAR_ENERGY_9,
+    ID_GO_BAR_ENERGY_10,
 
-    // healing
-    IND_UPAR_HEAL_F1,
-    IND_UPAR_HEAL_F2,
-    IND_UPAR_HEAL_F3,
+    // OBJECT HEALTH BAR
+    ID_GO_BAR_HEALTH_0,
+    ID_GO_BAR_HEALTH_1,
+    ID_GO_BAR_HEALTH_2,
+    ID_GO_BAR_HEALTH_3,
+    ID_GO_BAR_HEALTH_4,
+    ID_GO_BAR_HEALTH_5,
+    ID_GO_BAR_HEALTH_6,
+    ID_GO_BAR_HEALTH_7,
+    ID_GO_BAR_HEALTH_8,
+    ID_GO_BAR_HEALTH_9,
+    ID_GO_BAR_HEALTH_10,
 
-    NUM_UNIT_PART_SPRITES_PER_FACTION = 1
+    // UPGRADE
+    ID_GO_UPGRADE_ICON,
+
+    // DAMAGE PARTICLES
+    ID_PARTICLE_W_4x4,
+
+    // HEALING
+    ID_PAR_HEAL_F1,
+    ID_PAR_HEAL_F2,
+    ID_PAR_HEAL_F3,
+
+    // LASER
+    ID_PAR_LASER_F1,
+    ID_PAR_LASER_F2,
+    ID_PAR_LASER_F3,
 };
 
 // WALLS

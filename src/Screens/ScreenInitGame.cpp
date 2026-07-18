@@ -519,30 +519,6 @@ void ScreenInitGame::SetupTextures()
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileMiniUnits, rects);
     });
 
-    // PARTICLES
-    mJobs.emplace_back([this, tm]
-    {
-        const std::vector<sgl::core::Rectd> rects
-        {
-            { 0, 0, 4, 4 },
-
-            // RESOURCE ICONS
-            { 5, 0, 24, 24 },
-            { 30, 0, 24, 24 },
-            { 55, 0, 24, 24 },
-            { 80, 0, 24, 24 },
-            { 105, 0, 24, 24 },
-            { 130, 0, 24, 24 },
-
-            // UPGRADE ICON
-            { 155, 0, 24, 24 },
-        };
-
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileParticles, rects);
-    });
-
-
-
     // SCENE ELEMENTS
     mJobs.emplace_back([this, tm]
     {
@@ -960,18 +936,51 @@ void ScreenInitGame::SetupTextures()
     {
         const std::vector<sgl::core::Rectd> rectsUnitsPart
         {
-            // laser
-            { 0, 0, 10, 2 },
-            { 0, 3, 10, 2 },
-            { 0, 6, 10, 2 },
-            // healing
-            { 11, 0, 12, 12 },
-            { 24, 0, 12, 12 },
-            { 37, 0, 12, 12 },
+            // OBJECT ENERGY BAR
+            { 0, 0, 60, 8 },
+            { 0, 9, 60, 8 },
+            { 0, 18, 60, 8 },
+            { 0, 27, 60, 8 },
+            { 0, 36, 60, 8 },
+            { 0, 45, 60, 8 },
+            { 0, 54, 60, 8 },
+            { 0, 63, 60, 8 },
+            { 0, 72, 60, 8 },
+            { 0, 81, 60, 8 },
+            { 0, 90, 60, 8 },
+
+            // OBJECT HEALTH BAR
+            { 61, 0, 60, 8 },
+            { 61, 9, 60, 8 },
+            { 61, 18, 60, 8 },
+            { 61, 27, 60, 8 },
+            { 61, 36, 60, 8 },
+            { 61, 45, 60, 8 },
+            { 61, 54, 60, 8 },
+            { 61, 63, 60, 8 },
+            { 61, 72, 60, 8 },
+            { 61, 81, 60, 8 },
+            { 61, 90, 60, 8 },
+
+            // UPGRADE
+            { 0, 99, 24, 24 },
+
+            // DAMAGE PARTICLES
+            { 25, 99, 4, 4 },
+
+            // HEALING
+            { 30, 99, 12, 12 },
+            { 43, 99, 12, 12 },
+            { 56, 99, 12, 12 },
+
+            // LASER
+            { 69, 99, 10, 2 },
+            { 69, 102, 10, 2 },
+            { 69, 105, 10, 2 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME],
-                           SpriteFileUnitsParticles, rectsUnitsPart);
+                           SpriteFileGameObjectsRelated, rectsUnitsPart);
     });
 
     // WALLS
@@ -1369,16 +1378,6 @@ void ScreenInitGame::SetupTextures()
     // GAME UI
     mJobs.emplace_back([this, tm]
     {
-        const std::vector<sgl::core::Rectd> rects
-        {
-            // GOAL COMPLETED
-            { 0, 0, 32, 32 },
-            { 33, 0, 32, 32 },
-            { 66, 0, 32, 32 },
-        };
-
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUI, rects);
-
         const std::vector<sgl::core::Rectd> rectsExp
         {
             // SCREEN OVERLAY BG

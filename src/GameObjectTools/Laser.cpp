@@ -31,8 +31,8 @@ Laser::Laser(const WeaponData & data, GameObject * owner, const Game * g,
     auto tm = graphic::TextureManager::Instance();
 
     const PlayerFaction faction = owner->GetFaction();
-    const unsigned int texInd = SpriteIdUnitsParticles::IND_UPAR_LASER_F1 + faction;
-    mTex = tm->GetSprite(SpriteFileUnitsParticles, texInd);
+    const unsigned int texInd = ID_PAR_LASER_F1 + faction;
+    mTex = tm->GetSprite(SpriteFileGameObjectsRelated, texInd);
 }
 
 void Laser::OnShoot(float x0, float y0)

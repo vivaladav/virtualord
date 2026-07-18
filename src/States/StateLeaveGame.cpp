@@ -46,8 +46,6 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFileMapIndicators);
     // MINI UNITS
     tm->DestroySprite(SpriteFileMiniUnits);
-    // PARTICLES
-    tm->DestroySprite(SpriteFileParticles);
     // SCENE ELEMENTS
     tm->DestroySprite(SpriteFileSceneObjects);
     // STRUCTURES
@@ -57,7 +55,7 @@ void StateLeaveGame::DestroyTextures()
     // UNITS
     tm->DestroySprite(SpriteFileUnits);
     // UNIT PARTICLES
-    tm->DestroySprite(SpriteFileUnitsParticles);
+    tm->DestroySprite(SpriteFileGameObjectsRelated);
     // WALLS
     tm->DestroySprite(SpriteFileWalls);
 
@@ -90,7 +88,6 @@ void StateLeaveGame::DestroyTextures()
     tm->DestroySprite(SpriteFileDialogFactionSelection);
     tm->DestroyTexture(SpriteFileDialogFactionSelectionExp);
     // GAME UI
-    tm->DestroySprite(SpriteFileGameUI);
     tm->DestroySprite(SpriteFileGameUIExp);
     // MAP UI
     tm->DestroySprite(SpriteFilePanelMinimap);

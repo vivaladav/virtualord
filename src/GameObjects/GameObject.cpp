@@ -662,8 +662,8 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterDamage *>(partMan->GetUpdater(PU_DAMAGE));
 
-    const unsigned int texInd = SpriteIdParticles::ID_PART_RECT_4x4;
-    auto tex = graphic::TextureManager::Instance()->GetSprite(SpriteFileParticles, texInd);
+    const unsigned int texInd = ID_PARTICLE_W_4x4;
+    auto tex = graphic::TextureManager::Instance()->GetSprite(SpriteFileGameObjectsRelated, texInd);
 
     IsoObject * isoObj = GetIsoObject();
     const float objXC = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
