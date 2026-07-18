@@ -633,7 +633,7 @@ void PlayerAI::AddActionEndTurn()
         totMaxEnergy += obj->GetMaxEnergy();
     }
 
-    const float energyLeftUnits = totEnergy * c / totMaxEnergy;
+    const float energyLeftUnits = totMaxEnergy > 0.f ?  totEnergy * c / totMaxEnergy : 0.f;
 
     // consider total structures energy
     totEnergy = 0.f;
@@ -651,7 +651,7 @@ void PlayerAI::AddActionEndTurn()
         }
     }
 
-    const float energyLeftStructs = totEnergy * c / totMaxEnergy;
+    const float energyLeftStructs = totMaxEnergy > 0.f ? totEnergy * c / totMaxEnergy : 0.f;
 
     // combine units and structure energy left
     const unsigned int numUnits = mPlayer->GetNumUnits();
