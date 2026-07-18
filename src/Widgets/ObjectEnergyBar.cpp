@@ -9,12 +9,11 @@ namespace game
 {
 
 ObjectEnergyBar::ObjectEnergyBar(unsigned int val)
-    : mValue(val)
 {
     // ObjectEnergyBar is part of the game scene
     SetCamera(sgl::graphic::Camera::GetDefaultCamera());
 
-    UpdateImage();
+    SetValue(val);
 }
 
 void ObjectEnergyBar::SetValue(unsigned int val)

@@ -9,12 +9,11 @@ namespace game
 {
 
 ObjectHealthBar::ObjectHealthBar(unsigned int val)
-    : mValue(val)
 {
     // ObjectHealthBar is part of the game scene
     SetCamera(sgl::graphic::Camera::GetDefaultCamera());
 
-    UpdateImage();
+    SetValue(val);
 }
 
 void ObjectHealthBar::SetValue(unsigned int val)

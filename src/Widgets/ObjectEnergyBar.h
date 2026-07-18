@@ -21,7 +21,7 @@ private:
     void UpdateImage();
 
 private:
-    unsigned int mValue = 0;
+    unsigned int mValue = -1;
 };
 
 } // namespace game
