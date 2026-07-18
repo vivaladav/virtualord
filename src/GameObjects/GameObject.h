@@ -51,6 +51,7 @@ class GameMap;
 class GameObjectsGroup;
 class IconUpgrade;
 class IsoObject;
+class ObjectEnergyBar;
 class ObjectInitData;
 class Player;
 class WarningMessage;
@@ -245,6 +246,10 @@ private:
     void HideIconUpgrade();
     void PositionIconUpgrade();
 
+    void ShowEnergyBar();
+    void HideEnergyBar();
+    void PositionEnergyBar();
+
     void SetEnergy(float val);
     void SetExperience(int val);
 
@@ -280,6 +285,7 @@ private:
     WarningMessage * mWarnMessage = nullptr;
 
     IconUpgrade * mIconUpgrade = nullptr;
+    ObjectEnergyBar * mBarEnergy = nullptr;
 
     GameObjectTypeId mType = ObjectData::TYPE_NULL;
     GameObjectCategoryId mCategory = ObjectData::CAT_NULL;

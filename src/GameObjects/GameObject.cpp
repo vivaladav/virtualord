@@ -17,6 +17,7 @@
 #include "Particles/UpdaterHitPoints.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/IconUpgrade.h"
+#include "Widgets/ObjectEnergyBar.h"
 #include "Widgets/WarningMessage.h"
 
 #include <sgl/core/Math.h>
@@ -157,8 +158,8 @@ void GameObject::SetPosition(int x, int y)
 {
     mIsoObj->SetPosition(x, y);
 
-    if(mIconUpgrade != nullptr)
-        PositionIconUpgrade();
+    PositionIconUpgrade();
+    PositionEnergyBar();
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -171,8 +172,8 @@ void GameObject::SetX(int x)
 {
     mIsoObj->SetX(x);
 
-    if(mIconUpgrade != nullptr)
-        PositionIconUpgrade();
+    PositionIconUpgrade();
+    PositionEnergyBar();
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -184,8 +185,8 @@ void GameObject::SetY(int y)
 {
     mIsoObj->SetY(y);
 
-    if(mIconUpgrade != nullptr)
-        PositionIconUpgrade();
+    PositionIconUpgrade();
+    PositionEnergyBar();
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -220,6 +221,11 @@ void GameObject::SetSelected(bool val)
         return ;
 
     mSelected = val;
+
+    if(mSelected)
+        ShowEnergyBar();
+    else
+        HideEnergyBar();
 
     UpdateGraphics();
 }
@@ -926,6 +932,9 @@ void GameObject::HideIconUpgrade()
 
 void GameObject::PositionIconUpgrade()
 {
+    if(mIconUpgrade == nullptr)
+        return ;
+
     const int isoX = mIsoObj->GetX();
     const int isoY = mIsoObj->GetY();
     const int isoW = mIsoObj->GetWidth();
@@ -935,6 +944,44 @@ void GameObject::PositionIconUpgrade()
     const int iconY = isoY - mIconUpgrade->GetHeight() - iconMarginV;
 
     mIconUpgrade->SetPosition(iconX, iconY);
+}
+
+void GameObject::ShowEnergyBar()
+{
+    // already showing it
+    if(mBarEnergy != nullptr)
+        return ;
+
+    // only show for local player
+    if(!IsFactionLocal())
+        return;
+
+    const unsigned int val = std::roundf(ObjectEnergyBar::MAX_VAL * mEnergy / GetMaxEnergy());
+    mBarEnergy = new ObjectEnergyBar(val);
+
+    PositionEnergyBar();
+}
+
+void GameObject::HideEnergyBar()
+{
+    delete mBarEnergy;
+    mBarEnergy = nullptr;
+}
+
+void GameObject::PositionEnergyBar()
+{
+    if(mBarEnergy == nullptr)
+        return ;
+
+    const int isoX = mIsoObj->GetX();
+    const int isoY = mIsoObj->GetY();
+    const int isoW = mIsoObj->GetWidth();
+
+    const int iconMarginV = 5;
+    const int iconX = isoX + (isoW - mBarEnergy->GetWidth()) / 2;
+    const int iconY = isoY - mBarEnergy->GetHeight() - iconMarginV;
+
+    mBarEnergy->SetPosition(iconX, iconY);
 }
 
 void GameObject::SetEnergy(float val)
