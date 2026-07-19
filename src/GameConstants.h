@@ -64,15 +64,14 @@ enum LanguageId : unsigned int
 
 enum MapLayers : unsigned int
 {
+    CELL_OVERLAYS0,
     CELL_OVERLAYS1,
-    CELL_OVERLAYS2,
-    CELL_OVERLAYS3,
     FACTION_INFLUENCE,
     // used for objects below the regular ones, like Gate when closed
     GROUND_OBJECTS,
     // normal objects
     REGULAR_OBJECTS,
-    CELL_OVERLAYS4,
+    CELL_OVERLAYS_TOP,
 
     NUM_LAYERS,
 };

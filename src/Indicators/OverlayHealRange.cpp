@@ -13,7 +13,7 @@ namespace game
 
 OverlayHealRange::OverlayHealRange(IsoMap * im)
     : mIsoMap(im)
-    , mLayer(im->GetLayer(MapLayers::CELL_OVERLAYS2))
+    , mLayer(im->GetLayer(MapLayers::CELL_OVERLAYS0))
 {
 }
 

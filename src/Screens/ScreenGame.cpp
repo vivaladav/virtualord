@@ -190,23 +190,23 @@ ScreenGame::ScreenGame(Game * game)
     // OVERLAYS
     const PlayerFaction localFaction = mLocalPlayer->GetFaction();
 
-    mOverlaySelection = new OverlaySelection(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1));
-
     mOverlayAttack = new OverlayAttackRange(mIsoMap);
-
-    mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
-                                                   localFaction, mIsoMap->GetNumCols());
 
     mOverlayHeal = new OverlayHealRange(mIsoMap);
 
-    mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
+    mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
+                                                   localFaction, mIsoMap->GetNumCols());
+
+    mOverlayWall = new OverlayWall(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
                                    localFaction, mIsoMap->GetNumCols());
 
-    mOverlayStruct = new OverlayStructure(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS4),
+    mOverlaySelection = new OverlaySelection(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1));
+
+    mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
+                                   localFaction, mIsoMap->GetNumCols());
+
+    mOverlayStruct = new OverlayStructure(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
                                           game->GetObjectsRegistry(), localFaction);
-
-    mOverlayWall = new OverlayWall(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS2),
-                                   localFaction, mIsoMap->GetNumCols());
 
     // set initial camera position
     CenterCameraOverObject(mLocalPlayer->GetBase());
@@ -246,11 +246,12 @@ ScreenGame::~ScreenGame()
 
     // NOTE delete overlays after GameMap because they're still used by its destructors
     delete mOverlayAttack;
-    delete mOverlayCellConquest;
     delete mOverlayHeal;
+    delete mOverlayCellConquest;
+    delete mOverlayWall;
+    delete mOverlaySelection;
     delete mOverlayPath;
     delete mOverlayStruct;
-    delete mOverlayWall;
 
     delete mCamController;
 
@@ -687,13 +688,12 @@ void ScreenGame::CreateIsoMap()
 
 void ScreenGame::CreateLayers()
 {
+    mIsoMap->CreateLayer(MapLayers::CELL_OVERLAYS0);
     mIsoMap->CreateLayer(MapLayers::CELL_OVERLAYS1);
-    mIsoMap->CreateLayer(MapLayers::CELL_OVERLAYS2);
-    mIsoMap->CreateLayer(MapLayers::CELL_OVERLAYS3);
     mIsoMap->CreateLayer(MapLayers::FACTION_INFLUENCE);
     mIsoMap->CreateLayer(MapLayers::GROUND_OBJECTS);
     mIsoMap->CreateLayer(MapLayers::REGULAR_OBJECTS);
-    mIsoMap->CreateLayer(MapLayers::CELL_OVERLAYS4);
+    mIsoMap->CreateLayer(MapLayers::CELL_OVERLAYS_TOP);
 }
 
 void ScreenGame::CreateUI()
