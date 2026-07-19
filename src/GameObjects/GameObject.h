@@ -54,6 +54,7 @@ class IsoObject;
 class ObjectEnergyBar;
 class ObjectHealthBar;
 class ObjectInitData;
+class OverlaySelection;
 class Player;
 class WarningMessage;
 class Weapon;
@@ -101,7 +102,7 @@ public:
     bool CanBeCollected() const;
 
     bool IsSelected() const;
-    void SetSelected(bool val);
+    void SetSelected(bool val, OverlaySelection * overlay);
 
     bool IsBusy() const;
 
@@ -279,6 +280,8 @@ private:
     GameObjectsGroup * mGroup = nullptr;
 
     IsoObject * mIsoObj = nullptr;
+
+    OverlaySelection * mOverlaySel = nullptr;
 
     unsigned int mObjId;
 

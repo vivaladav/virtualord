@@ -301,6 +301,13 @@ enum SpriteIdIndicators : unsigned int
     ID_MIND_PATH_F3,
     ID_MIND_PATH_DEST_F3,
 
+    // SELECTION
+    ID_SEL_CELL,
+    ID_SEL_CELL_TL,
+    ID_SEL_CELL_BR,
+    ID_SEL_CELL_BL,
+    ID_SEL_CELL_TR,
+
     // TOTAL
     NUM_IND_SPRITES,
     // SPECIAL

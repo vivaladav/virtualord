@@ -7,6 +7,7 @@ namespace game
 {
 
 class GameObject;
+class OverlaySelection;
 
 class GameObjectsGroup
 {
@@ -24,7 +25,7 @@ public:
     void DoForAll(const std::function<void(GameObject *)> & f) const;
     void DoForObject(unsigned int index, const std::function<void(GameObject *)> & f) const;
 
-    void SetSelected(bool selected) const;
+    void SetSelected(bool selected, OverlaySelection * overlay) const;
 
 protected:
     const std::vector<GameObject *> & GetObjects() const;

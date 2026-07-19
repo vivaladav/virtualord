@@ -35,6 +35,7 @@ class OverlayAttackRange;
 class OverlayCellConquest;
 class OverlayHealRange;
 class OverlayPath;
+class OverlaySelection;
 class OverlayStructure;
 class OverlayWall;
 class Player;
@@ -240,6 +241,7 @@ private:
     OverlayCellConquest * mOverlayCellConquest = nullptr;
     OverlayHealRange * mOverlayHeal = nullptr;
     OverlayPath * mOverlayPath = nullptr;
+    OverlaySelection * mOverlaySelection = nullptr;
     OverlayStructure * mOverlayStruct = nullptr;
     OverlayWall * mOverlayWall = nullptr;
 

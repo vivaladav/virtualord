@@ -425,7 +425,6 @@ void ScreenInitGame::SetupTextures()
             { 485, 445, 96, 48 },
             { 0, 494, 96, 48 },
             { 97, 494, 96, 48 },
-
             // MOVE PATH
             { 582, 147, 96, 48 },
             { 582, 196, 96, 48 },
@@ -433,6 +432,12 @@ void ScreenInitGame::SetupTextures()
             { 582, 294, 96, 48 },
             { 582, 343, 96, 48 },
             { 582, 392, 96, 48 },
+            // SELECTION
+            { 194, 494, 96, 48 },
+            { 291, 494, 96, 48 },
+            { 388, 494, 96, 48 },
+            { 485, 494, 96, 48 },
+            { 582, 494, 96, 48 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileMapIndicators, rects);

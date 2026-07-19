@@ -34,6 +34,7 @@
 #include "Indicators/OverlayCellConquest.h"
 #include "Indicators/OverlayHealRange.h"
 #include "Indicators/OverlayPath.h"
+#include "Indicators/OverlaySelection.h"
 #include "Indicators/OverlayStructure.h"
 #include "Indicators/OverlayWall.h"
 #include "Particles/UpdaterDamage.h"
@@ -188,6 +189,8 @@ ScreenGame::ScreenGame(Game * game)
 
     // OVERLAYS
     const PlayerFaction localFaction = mLocalPlayer->GetFaction();
+
+    mOverlaySelection = new OverlaySelection(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1));
 
     mOverlayAttack = new OverlayAttackRange(mIsoMap);
 
@@ -352,6 +355,9 @@ void ScreenGame::ClearSelection(Player * player)
 
     player->ClearSelectedObject();
 
+    if(player->IsLocal())
+        mOverlaySelection->ClearIndicators();
+
     ClearCellOverlays();
     HideActionPanels();
 }
@@ -361,6 +367,29 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
 
     player->SetSelectedObject(obj);
+
+    // handle group or single selection
+    auto og = obj->GetGroup();
+
+    // in case object is part of a group -> select all members
+    if(og != nullptr)
+    {
+        og->DoForAll([this](GameObject * o)
+                     {
+                         o->SetActiveActionToDefault();
+                         o->SetSelected(true, mOverlaySelection);
+                     });
+    }
+    // standard single object -> select
+    else
+    {
+        // show indicator on map
+        mOverlaySelection->AddCellIndicator(obj);
+
+        // reset active action
+        obj->SetActiveActionToDefault();
+        obj->SetSelected(true, mOverlaySelection);
+    }
 
     const auto cat = obj->GetObjectCategory();
 
@@ -633,7 +662,7 @@ void ScreenGame::InitTutorial()
 
 #ifdef DEV_MODE
     // force tutorial 3 in dev mode as now working on it
-    tutorialId = TUTORIAL_MISSION_3;
+    //tutorialId = TUTORIAL_MISSION_2;
 #endif
 
     // start tutorial if still TODO

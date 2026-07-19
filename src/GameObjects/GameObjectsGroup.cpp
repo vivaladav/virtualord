@@ -28,10 +28,10 @@ void GameObjectsGroup::DoForObject(unsigned int index,
         f(mObjects[index]);
 }
 
-void GameObjectsGroup::SetSelected(bool selected) const
+void GameObjectsGroup::SetSelected(bool selected, OverlaySelection * overlay) const
 {
     for(auto o : mObjects)
-        o->SetSelected(selected);
+        o->SetSelected(selected, overlay);
 }
 
 } // namespace game

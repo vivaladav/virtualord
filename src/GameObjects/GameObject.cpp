@@ -11,6 +11,7 @@
 #include "GameObjects/ObjectInitData.h"
 #include "GameObjectTools/Weapon.h"
 #include "GameObjectTools/WeaponData.h"
+#include "Indicators/OverlaySelection.h"
 #include "Particles/DataParticleDamage.h"
 #include "Particles/DataParticleHitPoints.h"
 #include "Particles/UpdaterDamage.h"
@@ -163,6 +164,9 @@ void GameObject::SetPosition(int x, int y)
     PositionEnergyBar();
     PositionHealthBar();
 
+    if(mOverlaySel)
+        mOverlaySel->UpdateIndicatorPosition(this);
+
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
         mWarnMessage->FadeOut();
@@ -178,6 +182,9 @@ void GameObject::SetX(int x)
     PositionEnergyBar();
     PositionHealthBar();
 
+    if(mOverlaySel)
+        mOverlaySel->UpdateIndicatorPosition(this);
+
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
         mWarnMessage->FadeOut();
@@ -191,6 +198,9 @@ void GameObject::SetY(int y)
     PositionIconUpgrade();
     PositionEnergyBar();
     PositionHealthBar();
+
+    if(mOverlaySel)
+        mOverlaySel->UpdateIndicatorPosition(this);
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -218,7 +228,7 @@ void GameObject::ShowWarning(const char * text, float time)
     player->PlaySound("game/error_action_01.ogg");
 }
 
-void GameObject::SetSelected(bool val)
+void GameObject::SetSelected(bool val, OverlaySelection * overlay)
 {
     // same value -> nothing to do
     if(val == mSelected)
@@ -236,6 +246,8 @@ void GameObject::SetSelected(bool val)
         HideEnergyBar();
         HideHealthBar();
     }
+
+    mOverlaySel = overlay;
 
     PositionIconUpgrade();
 
@@ -265,6 +277,9 @@ void GameObject::SetCell(const GameMapCell * cell)
 
     mIsoObj->SetRow(cell->row);
     mIsoObj->SetCol(cell->col);
+
+    if(mOverlaySel != nullptr)
+        mOverlaySel->UpdateIndicatorCell(this);
 }
 
 int GameObject::GetVisibilityLevel() const
