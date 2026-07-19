@@ -7,10 +7,13 @@
 namespace game
 {
 
-IndicatorSelection::IndicatorSelection(IndicatorType type)
+IndicatorSelection::IndicatorSelection(IndicatorType type, bool primary)
     : IsoObject(1, 1)
+    , mPrimary(!primary)    // temporarily set to opposit value to let SetPrimary work
 {
     SetType(type);
+
+    SetPrimary(primary);
 }
 
 void IndicatorSelection::SetType(IndicatorType type)
@@ -29,6 +32,17 @@ void IndicatorSelection::SetType(IndicatorType type)
     graphic::Texture * tex = tm->GetSprite(SpriteFileMapIndicators, indSprite);
 
     SetTexture(tex);
+}
+
+void IndicatorSelection::SetPrimary(bool val)
+{
+    if(val == mPrimary)
+        return ;
+
+    mPrimary = val;
+
+    const unsigned int color = val ? 0xffc34cff : 0xfffbe5ff;
+    SetColor(color);
 }
 
 } // namespace game

@@ -31,7 +31,7 @@ void OverlaySelection::ClearIndicators()
     mCellIndicators.clear();
 }
 
-void OverlaySelection::AddObject(GameObject * obj)
+void OverlaySelection::AddObject(GameObject * obj, bool primary)
 {
     const int r0 = obj->GetRow0();
     const int c0 = obj->GetCol0();
@@ -48,10 +48,10 @@ void OverlaySelection::AddObject(GameObject * obj)
         const int r1 = obj->GetRow1();
         const int c1 = obj->GetCol1();
 
-        auto indTL = GetNewIndicator(IndicatorSelection::SEL_IND_TL);
-        auto indTR = GetNewIndicator(IndicatorSelection::SEL_IND_TR);
-        auto indBL = GetNewIndicator(IndicatorSelection::SEL_IND_BL);
-        auto indBR = GetNewIndicator(IndicatorSelection::SEL_IND_BR);
+        auto indTL = GetNewIndicator(IndicatorSelection::SEL_IND_TL, primary);
+        auto indTR = GetNewIndicator(IndicatorSelection::SEL_IND_TR, primary);
+        auto indBL = GetNewIndicator(IndicatorSelection::SEL_IND_BL, primary);
+        auto indBR = GetNewIndicator(IndicatorSelection::SEL_IND_BR, primary);
 
         mLayer->AddObject(indTL, r1, c1);
         mLayer->AddObject(indTR, r1, c0);
@@ -63,7 +63,7 @@ void OverlaySelection::AddObject(GameObject * obj)
     // single cell object
     else
     {
-        auto ind = GetNewIndicator(IndicatorSelection::SEL_IND_CELL);
+        auto ind = GetNewIndicator(IndicatorSelection::SEL_IND_CELL, primary);
 
         mLayer->AddObject(ind, r0, c0);
 
@@ -174,13 +174,13 @@ void OverlaySelection::UpdateObjectCell(GameObject * obj)
     }
 }
 
-IndicatorSelection * OverlaySelection::GetNewIndicator(unsigned int type)
+IndicatorSelection * OverlaySelection::GetNewIndicator(unsigned int type, bool primary)
 {
     IndicatorSelection * ind = nullptr;
 
     // create new indicator
     if(mAvailableIndicators.empty())
-        ind = new IndicatorSelection(static_cast<IndicatorSelection::IndicatorType>(type));
+        ind = new IndicatorSelection(static_cast<IndicatorSelection::IndicatorType>(type), primary);
     else
     // reuse existing indicator
     {
@@ -188,6 +188,7 @@ IndicatorSelection * OverlaySelection::GetNewIndicator(unsigned int type)
         mAvailableIndicators.pop_back();
 
         ind->SetType(static_cast<IndicatorSelection::IndicatorType>(type));
+        ind->SetPrimary(primary);
     }
 
     return ind;

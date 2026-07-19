@@ -22,14 +22,16 @@ public:
     };
 
 public:
-    IndicatorSelection(IndicatorType type);
+    IndicatorSelection(IndicatorType type, bool primary);
 
     void SetType(IndicatorType type);
 
-private:
+    void SetPrimary(bool val);
 
 private:
     IndicatorType mType = SEL_IND_NULL;
+
+    bool mPrimary;
 };
 
 } // namespace game

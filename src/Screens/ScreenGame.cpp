@@ -374,14 +374,14 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     // in case object is part of a group -> select all members
     if(og != nullptr)
     {
-        og->DoForAll([this](GameObject * o)
-                     {
+        og->DoForAll([this, obj](GameObject * o)
+                    {
                         // show indicator on map
-                        mOverlaySelection->AddObject(o);
+                        mOverlaySelection->AddObject(o, o == obj);
 
-                         o->SetActiveActionToDefault();
-                         o->SetSelected(true, mOverlaySelection);
-                     });
+                        o->SetActiveActionToDefault();
+                        o->SetSelected(true, mOverlaySelection);
+                    });
     }
     // standard single object -> select
     else
