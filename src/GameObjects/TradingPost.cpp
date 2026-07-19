@@ -36,7 +36,7 @@ void TradingPost::SetImage()
     unsigned int texInd = ID_STRUCT_TRADING_POST;
 
     if(faction != NO_FACTION)
-        texInd = ID_STRUCT_TRADING_POST_F1 + (faction * NUM_TRADIN_POST_SPRITES_PER_FAC);
+        texInd = ID_STRUCT_TRADING_POST_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

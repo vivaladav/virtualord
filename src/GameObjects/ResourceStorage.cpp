@@ -137,28 +137,28 @@ void ResourceStorage::SetImage()
     if(RES_ENERGY == mResource)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_STORAGE_ENERGY_F1 + (faction * NUM_ENE_STO_SPRITES_PER_FAC);
+            texId = ID_STRUCT_STORAGE_ENERGY_F1 + faction;
         else
             texId = ID_STRUCT_STORAGE_ENERGY;
     }
     else if(RES_MATERIAL1 == mResource)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_STORAGE_MATERIAL_F1 + (faction * NUM_ENE_STO_SPRITES_PER_FAC);
+            texId = ID_STRUCT_STORAGE_MATERIAL_F1 + faction ;
         else
             texId = ID_STRUCT_STORAGE_MATERIAL;
     }
     else if(RES_DIAMONDS == mResource)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_STORAGE_DIAMONDS_F1 + (faction * NUM_ENE_STO_SPRITES_PER_FAC);
+            texId = ID_STRUCT_STORAGE_DIAMONDS_F1 + faction;
         else
             texId = ID_STRUCT_STORAGE_DIAMONDS;
     }
     else if(RES_BLOBS == mResource)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_STORAGE_BLOBS_F1 + (faction * NUM_ENE_STO_SPRITES_PER_FAC);
+            texId = ID_STRUCT_STORAGE_BLOBS_F1 + faction;
         else
             texId = ID_STRUCT_STORAGE_BLOBS;
     }

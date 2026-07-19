@@ -200,8 +200,7 @@ void Unit::SetImage()
     const GameObjectTypeId type = GetObjectType();
     const unsigned int ind = TypeToIndex(type);
 
-    const unsigned int texInd = (NUM_UNIT_SPRITES_PER_FACTION * faction) +
-                                (NUM_UNIT_SPRITES_PER_TYPE * ind);
+    const unsigned int texInd = faction + (NUM_UNIT_SPRITES_PER_TYPE * ind);
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex =tm->GetSprite(SpriteFileUnits, texInd);
 

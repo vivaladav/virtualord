@@ -42,7 +42,7 @@ void SpawningTower::SetImage()
     unsigned int texInd = ID_STRUCT_SPAWN_TOWER;
 
     if(faction != NO_FACTION)
-        texInd = ID_STRUCT_SPAWN_TOWER_F1 + (faction * NUM_DEFAULT_SPRITES_PER_FAC);
+        texInd = ID_STRUCT_SPAWN_TOWER_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

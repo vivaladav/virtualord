@@ -36,7 +36,7 @@ void Barracks::SetImage()
     if(NO_FACTION == faction)
         texInd = ID_STRUCT_BARRACKS;
     else
-        texInd = ID_STRUCT_BARRACKS_F1 + (faction * NUM_BARRACKS_SPRITES_PER_FAC);
+        texInd = ID_STRUCT_BARRACKS_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

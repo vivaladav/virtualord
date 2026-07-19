@@ -177,7 +177,7 @@ void ResearchCenter::SetImage()
     if(NO_FACTION == faction)
         texInd = ID_STRUCT_RESEARCH_CENTER;
     else
-        texInd = ID_STRUCT_RESEARCH_CENTER_F1 + (faction * NUM_RESEARCH_CENTER_SPRITES_PER_FAC);
+        texInd = ID_STRUCT_RESEARCH_CENTER_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

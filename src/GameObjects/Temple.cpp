@@ -287,7 +287,7 @@ void Temple::SetImage()
     if(NO_FACTION == faction)
         texInd = ID_STRUCT_TEMPLE;
     else
-        texInd = ID_STRUCT_TEMPLE_F1 + (faction * NUM_TEMPLE_SPRITES_PER_FAC);
+        texInd = ID_STRUCT_TEMPLE_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

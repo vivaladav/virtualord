@@ -40,7 +40,7 @@ void RadarTower::SetImage()
     if(NO_FACTION == faction)
         texInd = ID_STRUCT_RADAR_TOWER;
     else
-        texInd = ID_STRUCT_RADAR_TOWER_F1 + (faction * NUM_RADAR_TOWER_SPRITES_PER_FAC);
+        texInd = ID_STRUCT_RADAR_TOWER_F1 + faction;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
     isoObj->SetTexture(tex);

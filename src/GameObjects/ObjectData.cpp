@@ -246,7 +246,7 @@ unsigned int ObjectData::GetIconTexId(PlayerFaction f, const GameObject * obj) c
     {
         const auto mu = static_cast<const MiniUnit *>(obj);
         const unsigned int texInd0 = mIconTexIds[f];
-        return  texInd0 + NUM_MUNIT_SPRITES_PER_SQUAD * (mu->GetNumElements() - 1);
+        return  texInd0 + (mu->GetNumElements() - 1);
     }
     else
         return mIconTexIds[f];

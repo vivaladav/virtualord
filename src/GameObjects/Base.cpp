@@ -127,7 +127,7 @@ void Base::SetImage()
     if(NO_FACTION == faction)
         texInd = ID_STRUCT_BASE_L1;
     else
-        texInd = ID_STRUCT_BASE_L1_F1 + (faction * NUM_BASE_SPRITES_PER_FAC);
+        texInd = ID_STRUCT_BASE_L1_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

@@ -53,7 +53,7 @@ void Bunker::SetImage()
     unsigned int texInd = ID_STRUCT_BUNKER;
 
     if(faction != NO_FACTION)
-        texInd = ID_STRUCT_BUNKER_F1 + (faction * NUM_BUNKER_SPRITES_PER_FAC);
+        texInd = ID_STRUCT_BUNKER_F1 + faction;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
     isoObj->SetTexture(tex);

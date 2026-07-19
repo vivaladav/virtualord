@@ -56,7 +56,7 @@ void DefensiveTower::SetImage()
     unsigned int texInd = ID_STRUCT_DTOWER_L1;
 
 if(faction != NO_FACTION)
-        texInd = ID_STRUCT_DTOWER_L1_F1 + (faction * NUM_DTOWER_SPRITES_PER_FAC);
+        texInd = ID_STRUCT_DTOWER_L1_F1 + faction;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
     isoObj->SetTexture(tex);

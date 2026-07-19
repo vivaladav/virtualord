@@ -123,10 +123,10 @@ void WallGate::SetImage()
 
     // set texture
     const int ind0 = mVariant == HORIZ ? WALL_GATE_L1_F1_HORIZ_CLOSED : WALL_GATE_L1_F1_VERT_CLOSED;
-    const int ind1 = ind0 + (NUM_SPRITES_PER_WALL_GATE_STATE * static_cast<int>(mOpen));
+    const int ind1 = ind0 + static_cast<int>(mOpen);
     const int ind = ind1 + NUM_SPRITES_PER_WALL_GATE * faction;
 
-    sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileWalls, ind);
+    sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, ind);
     isoObj->SetTexture(tex);
 }
 

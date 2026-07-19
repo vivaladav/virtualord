@@ -367,7 +367,7 @@ void ObjectsDataRegistry::InitObjectData()
                      {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 7} },
                    { 150, 150, 0, 0 },
                    { WALL_GATE_L1_F1_HORIZ_CLOSED, WALL_GATE_L1_F2_HORIZ_CLOSED,
-                     WALL_GATE_L1_F3_HORIZ_CLOSED }, SpriteFileWalls,
+                     WALL_GATE_L1_F3_HORIZ_CLOSED }, SpriteFileStructures,
                    ObjectData::TYPE_WALL_GATE, ObjectData::CAT_STRUCTURE,
                    OCS_WALL, OCAT_DEFENSE, WeaponData::TYPE_NULL, 1, 1));
 
