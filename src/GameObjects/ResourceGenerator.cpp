@@ -98,6 +98,8 @@ void ResourceGenerator::OnNewTurn(PlayerFaction faction)
 
 void ResourceGenerator::UpdateGraphics()
 {
+    Structure::UpdateGraphics();
+
     SetImage();
 }
 

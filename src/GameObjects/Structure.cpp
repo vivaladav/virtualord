@@ -58,6 +58,11 @@ void Structure::OnLinkedChanged()
     UpdateIconEnergy();
 }
 
+void Structure::UpdateGraphics()
+{
+    UpdateIconEnergy();
+}
+
 void Structure::HideIconEnergy()
 {
     mIconEnergy->SetVisible(false);
@@ -78,13 +83,14 @@ void Structure::ShowIconEnergy()
 void Structure::PositionIconEnergy()
 {
     const auto isoObj = GetIsoObject();
-    const int isoX = isoObj->GetX();
-    const int isoY = isoObj->GetY();
+
     const int isoW = isoObj->GetWidth();
+    const int x0 = isoObj->GetX();
+    const int y0 = GetStatusIconBaseY();
 
     const int iconMarginV = 5;
-    const int iconX = isoX + (isoW - mIconEnergy->GetWidth()) / 2;
-    const int iconY = isoY - mIconEnergy->GetHeight() - iconMarginV;
+    const int iconX = x0 + (isoW - mIconEnergy->GetWidth()) / 2;
+    const int iconY = y0 - mIconEnergy->GetHeight() - iconMarginV;
 
     mIconEnergy->SetPosition(iconX, iconY);
 }

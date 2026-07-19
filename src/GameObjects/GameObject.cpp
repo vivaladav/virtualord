@@ -830,6 +830,11 @@ void GameObject::OnAttributeChanged()
 {
 }
 
+int GameObject::GetStatusIconBaseY() const
+{
+    return (mBarHealth != nullptr) ? mBarHealth->GetY() : mIsoObj->GetY();
+}
+
 void GameObject::NotifyValueChanged()
 {
     for(const auto & it : mOnValueChanged)
@@ -962,17 +967,12 @@ void GameObject::PositionIconUpgrade()
     if(mIconUpgrade == nullptr)
         return ;
 
-    const int isoX = mIsoObj->GetX();
-    const int isoY = mIsoObj->GetY();
     const int isoW = mIsoObj->GetWidth();
-
-    int y0 = isoY;
-
-    if(mBarHealth != nullptr)
-        y0 = mBarHealth->GetY();
+    const int x0 = mIsoObj->GetX();
+    const int y0 = GetStatusIconBaseY();
 
     const int iconMarginV = 5;
-    const int iconX = isoX + (isoW - mIconUpgrade->GetWidth()) / 2;
+    const int iconX = x0 + (isoW - mIconUpgrade->GetWidth()) / 2;
     const int iconY = y0 - mIconUpgrade->GetHeight() - iconMarginV;
 
     mIconUpgrade->SetPosition(iconX, iconY);

@@ -20,10 +20,9 @@ public:
 
     void OnNewTurn(PlayerFaction faction) override;
 
-protected:
+private:
     void UpdateGraphics() override;
 
-private:
     void SetImage();
 
     void UpdateOutput();

@@ -211,6 +211,8 @@ protected:
     const sgl::graphic::ParticlesManager * GetParticlesManager() const;
     Player * GetOwner() const;
 
+    int GetStatusIconBaseY() const;
+
     void SetStructure(bool val);
     void SetCanBeConquered(bool val);
     void SetStatic(bool val);

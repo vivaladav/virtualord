@@ -60,6 +60,8 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
 
 ResearchCenter::~ResearchCenter()
 {
+    delete mIconResearch;
+
     delete mHighlight;
 
     auto p = GetOwner();
@@ -152,7 +154,11 @@ void ResearchCenter::OnPositionChanged()
 
 void ResearchCenter::UpdateGraphics()
 {
+    Structure::UpdateGraphics();
+
     SetImage();
+
+    PositionIconResearch();
 }
 
 void ResearchCenter::SetImage()
@@ -266,13 +272,14 @@ void ResearchCenter::ShowIconResearch()
 void ResearchCenter::PositionIconResearch()
 {
     const auto isoObj = GetIsoObject();
-    const int isoX = isoObj->GetX();
-    const int isoY = isoObj->GetY();
+
     const int isoW = isoObj->GetWidth();
+    const int x0 = isoObj->GetX();
+    const int y0 = GetStatusIconBaseY();
 
     const int iconMarginV = 5;
-    const int iconX = isoX + (isoW - mIconResearch->GetWidth()) / 2;
-    const int iconY = isoY - mIconResearch->GetHeight() - iconMarginV;
+    const int iconX = x0 + (isoW - mIconResearch->GetWidth()) / 2;
+    const int iconY = y0 - mIconResearch->GetHeight() - iconMarginV;
 
     mIconResearch->SetPosition(iconX, iconY);
 }
