@@ -372,6 +372,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Structure indicator turns green when it's possible to build and red when not.\n"
                   "- Add missing sound to UI sliders.\n"
                   "- Focus areas in tutorial are animated on show.\n"
+                  "- New UI for selected objects.\n"
                   "\nCHANGES\n"
                   "- In tutorial 1, text explaining to move to tower stays on screen until you"
                   " center the view on it.\n"
