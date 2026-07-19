@@ -988,6 +988,10 @@ void GameObject::ShowEnergyBar()
     if(!IsFactionLocal())
         return;
 
+    // do not show on top of mini-units
+    if(ObjectData::CAT_MINI_UNIT == mCategory)
+        return;
+
     const unsigned int val = std::roundf(ObjectEnergyBar::MAX_VAL * GetEnergy() / GetMaxEnergy());
     mBarEnergy = new ObjectEnergyBar(val);
 
@@ -1033,6 +1037,10 @@ void GameObject::ShowHealthBar()
 
     // only show for local player
     if(!IsFactionLocal())
+        return;
+
+    // do not show on top of mini-units
+    if(ObjectData::CAT_MINI_UNIT == mCategory)
         return;
 
     const unsigned int val = std::roundf(ObjectHealthBar::MAX_VAL * GetHealth() / GetMaxHealth());
