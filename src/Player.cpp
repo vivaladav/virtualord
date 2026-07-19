@@ -674,10 +674,10 @@ void Player::ClearSelectedObject()
 
     // in case object is part of a group -> deselect all members
     if(og != nullptr)
-        og->SetSelected(false);
+        og->SetSelected(false, nullptr);
     // standard single object -> deselect
     else
-        mSelObj->SetSelected(false);
+        mSelObj->SetSelected(false, nullptr);
 
     mSelObj = nullptr;
 }
@@ -685,28 +685,9 @@ void Player::ClearSelectedObject()
 void Player::SetSelectedObject(GameObject * obj)
 {
     if(mSelObj != nullptr)
-        mSelObj->SetSelected(false);
+        mSelObj->SetSelected(false, nullptr);
 
     mSelObj = obj;
-
-    auto og = mSelObj->GetGroup();
-
-    // in case object is part of a group -> select all members
-    if(og != nullptr)
-    {
-        og->DoForAll([](GameObject * o)
-        {
-            o->SetActiveActionToDefault();
-            o->SetSelected(true);
-        });
-    }
-    // standard single object -> select
-    else
-    {
-        // reset active action
-        mSelObj->SetActiveActionToDefault();
-        mSelObj->SetSelected(true);
-    }
 }
 
 int Player::GetResourceProduction(ExtendedResource type) const

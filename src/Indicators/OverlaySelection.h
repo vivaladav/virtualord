@@ -18,13 +18,13 @@ public:
     ~OverlaySelection();
 
     void ClearIndicators();
-    void AddCellIndicator(GameObject * obj);
+    void AddObject(GameObject * obj);
 
-    void UpdateIndicatorPosition(GameObject * obj);
-    void UpdateIndicatorCell(GameObject * obj);
+    void UpdateObjectPosition(GameObject * obj);
+    void UpdateObjectCell(GameObject * obj);
 
 private:
-    IndicatorSelection * GetNewIndicator();
+    IndicatorSelection * GetNewIndicator(unsigned int type);
 
 private:
     struct MultiIndicator

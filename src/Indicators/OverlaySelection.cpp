@@ -31,64 +31,163 @@ void OverlaySelection::ClearIndicators()
     mCellIndicators.clear();
 }
 
-void OverlaySelection::AddCellIndicator(GameObject * obj)
+void OverlaySelection::AddObject(GameObject * obj)
 {
     const int r0 = obj->GetRow0();
     const int c0 = obj->GetCol0();
 
+    // cell already occupied -> exit
     if(mLayer->HasObject(r0, c0))
         return ;
 
-    auto ind = GetNewIndicator();
+    const int objSize = obj->GetRows() * obj->GetCols();
 
-    mLayer->AddObject(ind, r0, c0);
+    // multiple cells object
+    if(objSize > 1)
+    {
+        const int r1 = obj->GetRow1();
+        const int c1 = obj->GetCol1();
 
-    mCellIndicators.emplace(obj, ind);
+        auto indTL = GetNewIndicator(IndicatorSelection::SEL_IND_TL);
+        auto indTR = GetNewIndicator(IndicatorSelection::SEL_IND_TR);
+        auto indBL = GetNewIndicator(IndicatorSelection::SEL_IND_BL);
+        auto indBR = GetNewIndicator(IndicatorSelection::SEL_IND_BR);
+
+        mLayer->AddObject(indTL, r1, c1);
+        mLayer->AddObject(indTR, r1, c0);
+        mLayer->AddObject(indBL, r0, c1);
+        mLayer->AddObject(indBR, r0, c0);
+
+        mAreaIndicators.emplace(obj, MultiIndicator(indTL, indTR, indBL, indBR));
+    }
+    // single cell object
+    else
+    {
+        auto ind = GetNewIndicator(IndicatorSelection::SEL_IND_CELL);
+
+        mLayer->AddObject(ind, r0, c0);
+
+        mCellIndicators.emplace(obj, ind);
+    }
 }
 
-void OverlaySelection::UpdateIndicatorPosition(GameObject * obj)
+void OverlaySelection::UpdateObjectPosition(GameObject * obj)
 {
-    auto it = mCellIndicators.find(obj);
+    const int objSize = obj->GetRows() * obj->GetCols();
 
-    if(it == mCellIndicators.end())
-        return;
+    // multiple cells object
+    if(objSize > 1)
+    {
+        auto it = mAreaIndicators.find(obj);
 
-    auto ind = it->second;
-    auto isoObj = obj->GetIsoObject();
+        if(it == mAreaIndicators.end())
+            return;
 
-    const int x = isoObj->GetX();
-    const int y = isoObj->GetY() + isoObj->GetHeight() - ind->GetHeight();
+        const MultiIndicator & mi = it->second;
 
-    //const int pos
-    ind->SetPosition(x, y);
+        auto isoObj = obj->GetIsoObject();
+
+        const int x0 = isoObj->GetX();
+        const int y0 = isoObj->GetY();
+        const int objW = isoObj->GetWidth();
+        const int objH = isoObj->GetHeight();
+        const int indW = mi.indTL->GetWidth();
+        const int indH = mi.indTL->GetHeight();
+
+        int x = 0;
+        int y = 0;
+
+        // TOP-LEFT
+        x = x0 + (objW - indW) / 2;
+        y = y0;
+        mi.indTL->SetPosition(x, y);
+
+        // TOP-RIGHT
+        x = x0 + objW - indW;
+        y = y0 + (objH - indH) / 2;
+        mi.indTR->SetPosition(x, y);
+
+        // BOTTOM-LEFT
+        x = x0;
+        y = y0 + (objH - indH) / 2;
+        mi.indBL->SetPosition(x, y);
+
+        // BOTTOM-RIGHT
+        x = x0 + (objW - indW) / 2;
+        y = y0 + objH - indH;
+        mi.indBR->SetPosition(x, y);
+    }
+    // single cell object
+    else
+    {
+        auto it = mCellIndicators.find(obj);
+
+        if(it == mCellIndicators.end())
+            return;
+
+        auto ind = it->second;
+        auto isoObj = obj->GetIsoObject();
+
+        const int x = isoObj->GetX();
+        const int y = isoObj->GetY() + isoObj->GetHeight() - ind->GetHeight();
+
+        //const int pos
+        ind->SetPosition(x, y);
+    }
 }
 
-void OverlaySelection::UpdateIndicatorCell(GameObject * obj)
+void OverlaySelection::UpdateObjectCell(GameObject * obj)
 {
-    auto it = mCellIndicators.find(obj);
+    const int objSize = obj->GetRows() * obj->GetCols();
 
-    if(it == mCellIndicators.end())
-        return;
+    // multiple cells object
+    if(objSize > 1)
+    {
+        auto it = mAreaIndicators.find(obj);
 
-    auto ind = it->second;
+        if(it == mAreaIndicators.end())
+            return;
 
-    mLayer->MoveObject(ind, obj->GetRow0(), obj->GetCol0());
+        const MultiIndicator & mi = it->second;
+
+        const int r0 = obj->GetRow0();
+        const int c0 = obj->GetCol0();
+        const int r1 = obj->GetRow1();
+        const int c1 = obj->GetCol1();
+
+        mLayer->AddObject(mi.indTL, r1, c1);
+        mLayer->AddObject(mi.indTR, r1, c0);
+        mLayer->AddObject(mi.indBL, r0, c1);
+        mLayer->AddObject(mi.indBR, r0, c0);
+    }
+    // single cell object
+    else
+    {
+        auto it = mCellIndicators.find(obj);
+
+        if(it == mCellIndicators.end())
+            return;
+
+        auto ind = it->second;
+
+        mLayer->MoveObject(ind, obj->GetRow0(), obj->GetCol0());
+    }
 }
 
-IndicatorSelection * OverlaySelection::GetNewIndicator()
+IndicatorSelection * OverlaySelection::GetNewIndicator(unsigned int type)
 {
     IndicatorSelection * ind = nullptr;
 
     // create new indicator
     if(mAvailableIndicators.empty())
-        ind = new IndicatorSelection(IndicatorSelection::SEL_IND_CELL);
+        ind = new IndicatorSelection(static_cast<IndicatorSelection::IndicatorType>(type));
     else
     // reuse existing indicator
     {
         ind = mAvailableIndicators.back();
         mAvailableIndicators.pop_back();
 
-        ind->SetType(IndicatorSelection::SEL_IND_CELL);
+        ind->SetType(static_cast<IndicatorSelection::IndicatorType>(type));
     }
 
     return ind;

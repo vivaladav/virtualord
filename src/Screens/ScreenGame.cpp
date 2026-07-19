@@ -376,6 +376,9 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     {
         og->DoForAll([this](GameObject * o)
                      {
+                        // show indicator on map
+                        mOverlaySelection->AddObject(o);
+
                          o->SetActiveActionToDefault();
                          o->SetSelected(true, mOverlaySelection);
                      });
@@ -384,7 +387,7 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     else
     {
         // show indicator on map
-        mOverlaySelection->AddCellIndicator(obj);
+        mOverlaySelection->AddObject(obj);
 
         // reset active action
         obj->SetActiveActionToDefault();

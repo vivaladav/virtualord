@@ -12,9 +12,9 @@ public:
     {
         SEL_IND_CELL,
         SEL_IND_TL,
-        SEL_IND_TR,
-        SEL_IND_BL,
         SEL_IND_BR,
+        SEL_IND_BL,
+        SEL_IND_TR,
 
         NUM_INDICATOR_SELECTION_TYPES,
 

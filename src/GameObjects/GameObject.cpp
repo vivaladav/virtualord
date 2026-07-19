@@ -165,7 +165,7 @@ void GameObject::SetPosition(int x, int y)
     PositionHealthBar();
 
     if(mOverlaySel)
-        mOverlaySel->UpdateIndicatorPosition(this);
+        mOverlaySel->UpdateObjectPosition(this);
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -183,7 +183,7 @@ void GameObject::SetX(int x)
     PositionHealthBar();
 
     if(mOverlaySel)
-        mOverlaySel->UpdateIndicatorPosition(this);
+        mOverlaySel->UpdateObjectPosition(this);
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -200,7 +200,7 @@ void GameObject::SetY(int y)
     PositionHealthBar();
 
     if(mOverlaySel)
-        mOverlaySel->UpdateIndicatorPosition(this);
+        mOverlaySel->UpdateObjectPosition(this);
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -279,7 +279,7 @@ void GameObject::SetCell(const GameMapCell * cell)
     mIsoObj->SetCol(cell->col);
 
     if(mOverlaySel != nullptr)
-        mOverlaySel->UpdateIndicatorCell(this);
+        mOverlaySel->UpdateObjectCell(this);
 }
 
 int GameObject::GetVisibilityLevel() const
