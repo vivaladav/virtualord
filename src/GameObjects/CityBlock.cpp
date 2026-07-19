@@ -108,7 +108,6 @@ void CityBlock::SetImage()
 
     sgl::graphic::Texture * tex = nullptr;
 
-    const int sel = static_cast<int>(IsSelected());
     const PlayerFaction f = GetFaction();
 
     const unsigned int factionSpriteIds[] =
@@ -121,7 +120,7 @@ void CityBlock::SetImage()
     static_assert((sizeof(factionSpriteIds) / sizeof(unsigned int)) == NUM_FACTIONS);
 
     const unsigned int spriteId0 = f != NO_FACTION ? factionSpriteIds[f] : ID_CITY_TL1_NF;
-    const unsigned int spriteId = spriteId0 + mVariant + (sel * NUM_CITY_SPRITES);
+    const unsigned int spriteId = spriteId0 + mVariant;
     tex = tm->GetSprite(SpriteFileCity, spriteId);
 
     isoObj->SetTexture(tex);

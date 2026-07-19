@@ -175,10 +175,8 @@ void LootBox::SetImage()
     else
         isoObj->SetColor(COLOR_FOW);
 
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
-    const unsigned int texInd0 = GetObjectType() == ObjectData::TYPE_LOOTBOX2 ?
-                                 IND_LOOTBOX_L2 : IND_LOOTBOX;
-    const unsigned int texInd = texInd0 + sel;
+    const unsigned int texInd = GetObjectType() == ObjectData::TYPE_LOOTBOX2 ?
+                                IND_LOOTBOX_L2 : IND_LOOTBOX;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteCollectiblesFile, texInd);
     isoObj->SetTexture(tex);

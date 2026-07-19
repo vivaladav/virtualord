@@ -32,14 +32,11 @@ void TradingPost::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texInd = ID_STRUCT_TRADING_POST;
 
-    if(NO_FACTION == faction)
-        texInd += sel;
-    else
-        texInd = ID_STRUCT_TRADING_POST_F1 + (faction * NUM_TRADIN_POST_SPRITES_PER_FAC) + sel;
+    if(faction != NO_FACTION)
+        texInd = ID_STRUCT_TRADING_POST_F1 + (faction * NUM_TRADIN_POST_SPRITES_PER_FAC);
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

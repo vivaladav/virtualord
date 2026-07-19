@@ -49,14 +49,11 @@ void Bunker::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texInd = ID_STRUCT_BUNKER;
 
-    if(NO_FACTION == faction)
-        texInd += sel;
-    else
-        texInd = ID_STRUCT_BUNKER_F1 + (faction * NUM_BUNKER_SPRITES_PER_FAC) + sel;
+    if(faction != NO_FACTION)
+        texInd = ID_STRUCT_BUNKER_F1 + (faction * NUM_BUNKER_SPRITES_PER_FAC);
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
     isoObj->SetTexture(tex);

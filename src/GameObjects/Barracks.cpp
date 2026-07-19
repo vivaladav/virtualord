@@ -30,14 +30,13 @@ void Barracks::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texInd = ID_STRUCT_BARRACKS;
 
     if(NO_FACTION == faction)
-        texInd = ID_STRUCT_BARRACKS + sel;
+        texInd = ID_STRUCT_BARRACKS;
     else
-        texInd = ID_STRUCT_BARRACKS_F1 + (faction * NUM_BARRACKS_SPRITES_PER_FAC) + sel;
+        texInd = ID_STRUCT_BARRACKS_F1 + (faction * NUM_BARRACKS_SPRITES_PER_FAC);
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

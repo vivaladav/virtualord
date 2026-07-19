@@ -109,8 +109,7 @@ void MiniUnit::SetImage()
 
     const unsigned int texInd = texInd0 +
                                 (NUM_MUNIT_SPRITES_PER_FACTION * faction) +
-                                (NUM_MUNIT_SPRITES_PER_SQUAD * (mElements - 1)) +
-                                static_cast<unsigned int>(IsSelected());
+                                (NUM_MUNIT_SPRITES_PER_SQUAD * (mElements - 1));
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex =tm->GetSprite(SpriteFileMiniUnits, texInd);
