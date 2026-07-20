@@ -59,6 +59,8 @@ public:
     bool HasObjectType(GameObjectTypeId type, unsigned int r, unsigned int c) const;
     bool HasObject(const GameObject * obj) const;
     bool IsObjectVisibleToLocalPlayer(const GameObject * obj) const;
+    GameObject * GetObject(unsigned int ind) const;
+    GameObject * GetObject(unsigned int r, unsigned int c) const;
 
     const std::vector<GameMapCell> & GetCells() const;
     const std::vector<GameObject *> & GetObjects() const;
@@ -336,18 +338,29 @@ inline const ControlMap * GameMap::GetControlMap() const { return mControlMap; }
 
 inline bool GameMap::HasObject(unsigned int ind) const
 {
-    return mCells[ind].objTop != nullptr;
+    return ind < mCells.size() && mCells[ind].objTop != nullptr;
 }
 
 inline bool GameMap::HasObject(unsigned int r, unsigned int c) const
 {
     const unsigned int ind = r * mCols + c;
-    return ind < mCells.size() && mCells[ind].objTop != nullptr;
+    return HasObject(ind);
 }
 
 inline bool GameMap::HasObject(const GameObject * obj) const
 {
     return mObjectsSet.find(obj) != mObjectsSet.end();
+}
+
+inline GameObject * GameMap::GetObject(unsigned int ind) const
+{
+    return ind < mCells.size() ? mCells[ind].objTop : nullptr;
+}
+
+inline GameObject * GameMap::GetObject(unsigned int r, unsigned int c) const
+{
+    const unsigned int ind = r * mCols + c;
+    return GetObject(ind);
 }
 
 inline bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int r, unsigned int c) const

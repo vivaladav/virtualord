@@ -2219,8 +2219,7 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     if(!mGameMap->CanConquerStructure(unit, end, player))
         return false;
 
-    const GameMapCell & gameCell = mGameMap->GetCell(end.row, end.col);
-    GameObject * target = gameCell.objTop;
+    GameObject * target = mGameMap->GetObject(end.row, end.col);
 
     // handle special case: TEMPLE
     if(player->IsLocal())
@@ -2236,9 +2235,11 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     mGameMap->StartConquerStructure(end, player);
 
     // create and init progress bar
-    auto pb = mHUD->CreateProgressBarInCell(start, unit->GetTimeConquestStructure(), player->GetFaction());
+    const Cell2D targetCell0(target->GetRow0(), target->GetCol0());
 
-    pb->AddFunctionOnCompleted([this, start, end, player, unit]
+    auto pb = mHUD->CreateProgressBarInCell(targetCell0, unit->GetTimeConquestStructure(), player->GetFaction());
+
+    pb->AddFunctionOnCompleted([this, end, player, unit]
     {
         mGameMap->ConquerStructure(end, player);
 
@@ -2271,13 +2272,10 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     });
 
     // store active action
-    const GameMapCell & targetCell = mGameMap->GetCell(end.row, end.col);
+    mObjActionsToDo.emplace_back(unit, target, CONQUER_STRUCTURE, start, pb, onDone);
 
-    mObjActionsToDo.emplace_back(unit, targetCell.objTop, GameObjectActionType::CONQUER_STRUCTURE,
-                                 start, pb, onDone);
-
-    unit->SetActiveAction(GameObjectActionType::IDLE);
-    unit->SetCurrentAction(GameObjectActionType::CONQUER_STRUCTURE);
+    unit->SetActiveAction(IDLE);
+    unit->SetCurrentAction(CONQUER_STRUCTURE);
 
     // disable actions panel (if action is done by local player)
     if(player->IsLocal())
