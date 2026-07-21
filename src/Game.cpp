@@ -29,6 +29,7 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/Stage.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/StateManager.h>
 #include <sgl/utilities/StringManager.h>
 
@@ -41,6 +42,13 @@
 #include <iostream>
 #endif
 
+#ifdef DEV_MODE
+#include <chrono>
+#include <iostream>
+#endif
+
+#include <filesystem>
+
 namespace game
 {
 
@@ -48,6 +56,8 @@ namespace game
 // this makes everything faster
 bool Game::GOD_MODE = false;
 #endif
+
+const std::string Game::SAVE_VERSION("0.1.0");
 
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
@@ -167,6 +177,15 @@ Game::Game(int argc, char * argv[])
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_3, 5000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_4, 8000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_5, 12000);
+
+    // TEMP CODE
+    // TODO handle save directory properly
+    mDirSave = "save/";
+
+    InitDirectories();
+
+    // TODO handle save files properly
+    mCurrSaveFile = mDirSave + std::string("001.sav");
 }
 
 Game::~Game()
@@ -206,7 +225,7 @@ void Game::InitGameData()
     // PLANET 1
     planet = new Planet(PLANET_1, PLANET_SIZE_S);
 #ifdef DEV_MODE
-    planet->AddMap("data/maps/01-03.map", NO_FACTION, TER_ST_UNEXPLORED);
+    planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
 #else
     planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
 #endif
@@ -223,6 +242,48 @@ void Game::ClearGameData()
     ClearPlanets();
 
     ClearPlayers();
+}
+
+// -- LOAD & SAVE --
+bool Game::SaveGame()
+{
+    using namespace sgl;
+
+#ifdef DEV_MODE
+    // TODO remove later, now left just for reference on testing times
+    auto t0 = std::chrono::high_resolution_clock::now();
+    std::cout << "Game::SaveGame - START SAVING: " << mCurrSaveFile << std::endl;
+#endif
+
+    bool res = false;
+
+    // OPEN map file
+    utilities::BinaryFile bf(mCurrSaveFile, utilities::BinaryFile::OPEN_OUTPUT, true);
+
+    if(!bf.IsOpen())
+    {
+        std::cout << "[ERR] Game::SaveGame - can't open file " << mCurrSaveFile << std::endl;
+        return false;
+    }
+
+    // version
+    bf.WriteString(SAVE_VERSION);
+
+    // number of Players
+    const unsigned int numPlayers = mPlayers.size();
+    bf.WriteUint(numPlayers);
+
+    // CLOSE map file
+    bf.Close();
+
+#ifdef DEV_MODE
+    // TODO remove later, now left just for reference on testing times
+    auto t1 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
+    std::cout << "Game::SaveGame - GAME SAVED in: " << duration.count() << " ms" << std::endl;
+#endif
+
+    return res;
 }
 
 // -- mouse cursors --
@@ -392,6 +453,18 @@ void Game::Update(float delta)
     mStage->Render();
 
     mRenderer->Finalize();
+}
+
+// -- LOAD & SAVE --
+void Game::InitDirectories()
+{
+    using namespace std;
+
+    // create SAVE directory if missing
+    filesystem::path pathSave(mDirSave);
+
+    if(!filesystem::exists(pathSave))
+        filesystem::create_directories(pathSave);
 }
 
 Player * Game::AddPlayer(const char * name, int pid)

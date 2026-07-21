@@ -63,11 +63,18 @@ public:
 #endif
 
 public:
+    static const std::string SAVE_VERSION;
+
+public:
     Game(int argc, char * argv[]);
     ~Game();
 
     void InitGameData();
     void ClearGameData();
+
+    // -- LOAD & SAVE --
+    const std::string & GetCurrentSaveFile() const;
+    bool SaveGame();
 
     // -- mouse cursors --
     void RegisterCursor(GameCursorId curId, sgl::graphic::Cursor * cursor);
@@ -155,6 +162,9 @@ private:
 
     void Update(float delta) override;
 
+    // -- LOAD & SAVE --
+    void InitDirectories();
+
 private:
     std::vector<Player *> mPlayers;
 
@@ -165,6 +175,9 @@ private:
     std::map<unsigned int, std::function<void()>> mOnSettingsChanged;
 
     std::unordered_map<GameCursorId, sgl::graphic::Cursor *> mCursors;
+
+    std::string mDirSave;
+    std::string mCurrSaveFile;
 
     sgl::graphic::Renderer * mRenderer = nullptr;
     sgl::graphic::Window * mWin = nullptr;
@@ -208,6 +221,8 @@ private:
     unsigned char mClearB = 0;
     unsigned char mClearA = 255;
 };
+
+inline const std::string & Game::GetCurrentSaveFile() const { return mCurrSaveFile; }
 
 inline unsigned int Game::GetCurrentTerritory() const { return mCurrTerritory; }
 inline void Game::SetCurrentTerritory(unsigned int territory)

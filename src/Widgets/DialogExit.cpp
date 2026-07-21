@@ -247,7 +247,6 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
     GameButton * btn = nullptr;
 
     // BUTTON SAVE
-/*
     if(buttons & BTN_SAVE)
     {
         btn = new ButtonDialogExit(this);
@@ -256,15 +255,14 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
         btnX = (w - btn->GetWidth()) / 2;
         btn->SetPosition(btnX, btnY);
 
-        btn->AddOnClickFunction([this, screen]
+        btn->AddOnClickFunction([this, game]
                                 {
-
+                                    game->SaveGame();
                                 });
 
         btnY += btn->GetHeight() + marginBtnV;
         contentH += btn->GetHeight() + marginBtnV;
     }
-*/
 
     // BUTTON SETTINGS
     if(buttons & BTN_SETTINGS)
