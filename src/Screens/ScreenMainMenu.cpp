@@ -26,6 +26,7 @@
 #include <sgl/sgui/PushButton.h>
 #include <sgl/sgui/Stage.h>
 #include <sgl/sgui/TextArea.h>
+#include <sgl/utilities/Filesystem.h>
 #include <sgl/utilities/System.h>
 #include <sgl/utilities/StringManager.h>
 
@@ -105,17 +106,18 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     button->SetTooltipDelay(250);
 
     // -- BUTTON LOAD GAME --
-    /*
     button = new ButtonMainMenu(sm->GetCString("LOAD_GAME"), panelButtons);
     button->SetY(buttonY);
 
     button->AddOnClickFunction([game]
                                {
-                                    // TODO
+                                    game->LoadGame();
                                });
 
+    utilities::Filesystem fs;
+    button->SetEnabled(fs.DoesPathExist(game->GetCurrentSaveFile()));
+
     buttonY += button->GetHeight() + VMARGIN;
-    */
 
     // -- BUTTON SETTINGS --
     button = new ButtonMainMenu(sm->GetCString("SETTINGS"), panelButtons);

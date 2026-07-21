@@ -252,6 +252,11 @@ void Game::ClearGameData()
 }
 
 // -- LOAD & SAVE --
+bool Game::LoadGame()
+{
+    return false;
+}
+
 bool Game::SaveGame()
 {
     using namespace sgl;

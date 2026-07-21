@@ -75,6 +75,7 @@ public:
 
     // -- LOAD & SAVE --
     const std::string & GetCurrentSaveFile() const;
+    bool LoadGame();
     bool SaveGame();
     bool LoadSettings();
     bool SaveSettings();
