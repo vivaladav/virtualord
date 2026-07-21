@@ -14,8 +14,12 @@
 #include "GameObjects/Structure.h"
 #include "GameObjects/Unit.h"
 
-#include <cmath>
+#include <sgl/utilities/BinaryFile.h>
+
+#include <algorithm>
 #include <iostream>
+
+#include <cmath>
 
 namespace game
 {
@@ -66,6 +70,81 @@ Player::Player(const char * name, int pid)
 Player::~Player()
 {
     delete mAI;
+}
+
+bool Player::Load(sgl::utilities::BinaryFile & bf) const
+{
+    return false;
+}
+
+bool Player::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // player ID
+    bf.WriteInt(mPlayerId);
+
+    // faction
+    bf.WriteUint(mFaction);
+
+    // name
+    bf.WriteInt(mName.size());
+    bf.WriteString(mName);
+
+
+    // upgrades status - write only unlocked ones
+    const unsigned int unlocked = std::count_if(mUpgrades.begin(), mUpgrades.end(),
+                                                [](const std::pair<TechUpgradeId, bool> & it)
+                                                {
+                                                    return it.second == true;
+                                                });
+    bf.WriteUint(unlocked);
+
+    for(auto it : mUpgrades)
+    {
+        if(it.second)
+            bf.WriteUint(it.first);
+    }
+
+    // upgrades available - write only available ones
+    const unsigned int available = std::count_if(mUpgradesAvailable.begin(), mUpgradesAvailable.end(),
+                                                [](const std::pair<TechUpgradeId, bool> & it)
+                                                {
+                                                    return it.second == true;
+                                                });
+    bf.WriteUint(available);
+
+    for(auto it : mUpgradesAvailable)
+    {
+        if(it.second)
+            bf.WriteUint(it.first);
+    }
+
+    // stats
+    for(const StatValue & s : mStats)
+    {
+        bf.WriteUint(s.GetId());
+        bf.WriteInt(s.GetValue());
+        bf.WriteInt(s.GetMin());
+        bf.WriteInt(s.GetMax());
+    }
+
+    // turn data
+    bf.WriteFloat(mTurnEnergy);
+    bf.WriteFloat(mTurnMaxEnergy);
+
+    // stats
+    bf.WriteUint(mTurnsPlayed);
+    bf.WriteUint(mNumCells);
+    bf.WriteUint(mNumLinkedCells);
+    bf.WriteUint(mMaxUnits);
+
+    // upgrade multiplayers
+    bf.WriteFloat(mBaseProdMult);
+    bf.WriteFloat(mStorageEnergyMult);
+    bf.WriteFloat(mStorageMaterialMult);
+    bf.WriteFloat(mStorageDiamondsMult);
+    bf.WriteFloat(mStorageBlobsMult);
+
+    return true;
 }
 
 unsigned int Player::GetNumUnitsByType(GameObjectTypeId type) const

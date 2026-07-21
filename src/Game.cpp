@@ -273,6 +273,9 @@ bool Game::SaveGame()
     const unsigned int numPlayers = mPlayers.size();
     bf.WriteUint(numPlayers);
 
+    for(Player * p : mPlayers)
+        p->Save(bf);
+
     // CLOSE map file
     bf.Close();
 

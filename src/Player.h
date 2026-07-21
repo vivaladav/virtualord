@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace sgl { namespace utilities { class BinaryFile; } }
+
 namespace game
 {
 
@@ -43,6 +45,9 @@ public:
 public:
     Player(const char * name, int pid);
     ~Player();
+
+    bool Load(sgl::utilities::BinaryFile & bf) const;
+    bool Save(sgl::utilities::BinaryFile & bf) const;
 
     PlayerFaction GetFaction() const;
     void SetFaction(PlayerFaction faction);
@@ -106,7 +111,7 @@ public:
     void RemoveOnResourceChanged(Stat sid, unsigned int funId);
     void RemoveOnResourceRangeChanged(Stat sid, unsigned int funId);
 
-    int GetNumCells() const;
+    unsigned int GetNumCells() const;
     void SumCells(int val);
     void ResetNumCells();
 
@@ -230,7 +235,7 @@ private:
 
     unsigned int mTurnsPlayed = 0;
 
-    int mNumCells = 0;
+    unsigned int mNumCells = 0;
     unsigned int mNumLinkedCells = 0;
     unsigned int mMaxUnits = 0;
 
@@ -310,7 +315,7 @@ inline bool Player::HasEnough(Stat sid, int val)
         return false;
 }
 
-inline int Player::GetNumCells() const { return mNumCells; }
+inline unsigned int Player::GetNumCells() const { return mNumCells; }
 inline void Player::SumCells(int val) { mNumCells += val; }
 inline void Player::ResetNumCells() { mNumCells = 0; }
 
