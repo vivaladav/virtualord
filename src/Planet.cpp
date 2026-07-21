@@ -3,6 +3,8 @@
 #include "GameConstants.h"
 #include "MapIO.h"
 
+#include <sgl/utilities/BinaryFile.h>
+
 namespace game
 {
 
@@ -38,6 +40,35 @@ Planet::Planet(PlanetId pid, PlanetSize size)
     mMaps.reserve(numMissions[size]);
 }
 
+bool Planet::Load(sgl::utilities::BinaryFile & bf)
+{
+    return false;
+}
+
+bool Planet::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // planet data
+    bf.WriteUint(mId);
+    bf.WriteUint(mSize);
+
+    // maps
+    for(const MapData & map : mMaps)
+    {
+        bf.WriteString(map.mFile);
+        bf.WriteInt(map.mEnergy);
+        bf.WriteInt(map.mMaterial);
+        bf.WriteInt(map.mDiamonds);
+        bf.WriteInt(map.mBlobs);
+        bf.WriteUint(map.mRows);
+        bf.WriteUint(map.mCols);
+        bf.WriteInt(map.mValue);
+        bf.WriteUint(map.mOccupier);
+        bf.WriteUint(map.mStatus);
+        bf.WriteUint(map.mMission);
+    }
+
+    return true;
+}
 
 bool Planet::AddMap(const std::string & file,
                           PlayerFaction occupier, TerritoryStatus status)

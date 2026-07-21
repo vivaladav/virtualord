@@ -279,7 +279,21 @@ bool Game::SaveGame()
     // version
     bf.WriteString(SAVE_VERSION);
 
-    // number of Players
+    // game data
+    bf.WriteUint(mDifficulty);
+    bf.WriteUint(mLocalFaction);
+    bf.WriteUint(mCurrPlanet);
+    bf.WriteUint(mCurrTerritory);
+    bf.WriteUint(mRandSeed);
+
+    // Planets
+    const unsigned int numPlanets = mPlanets.size();
+    bf.WriteUint(numPlanets);
+
+    for(auto it : mPlanets)
+        it.second->Save(bf);
+
+    // Players
     const unsigned int numPlayers = mPlayers.size();
     bf.WriteUint(numPlayers);
 

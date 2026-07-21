@@ -46,7 +46,7 @@ public:
     Player(const char * name, int pid);
     ~Player();
 
-    bool Load(sgl::utilities::BinaryFile & bf) const;
+    bool Load(sgl::utilities::BinaryFile & bf);
     bool Save(sgl::utilities::BinaryFile & bf) const;
 
     PlayerFaction GetFaction() const;

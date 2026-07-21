@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+namespace sgl { namespace utilities { class BinaryFile; } }
+
 namespace game
 {
 
@@ -50,6 +52,9 @@ public:
 
 public:
     Planet(PlanetId pid, PlanetSize size);
+
+    bool Load(sgl::utilities::BinaryFile & bf);
+    bool Save(sgl::utilities::BinaryFile & bf) const;
 
     PlanetId GetPlanetId() const;
 

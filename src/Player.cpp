@@ -72,7 +72,7 @@ Player::~Player()
     delete mAI;
 }
 
-bool Player::Load(sgl::utilities::BinaryFile & bf) const
+bool Player::Load(sgl::utilities::BinaryFile & bf)
 {
     return false;
 }

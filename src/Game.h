@@ -197,7 +197,7 @@ private:
 
     ObjectsDataRegistry * mObjsRegistry = nullptr;
 
-    Difficulty mDiff = EASY;
+    Difficulty mDifficulty = EASY;
 
     PlayerFaction mLocalFaction;
 
@@ -244,8 +244,8 @@ inline void Game::SetClearColor(unsigned char r, unsigned char g, unsigned char 
     mClearA = a;
 }
 
-inline Difficulty Game::GetDifficulty() const { return mDiff; }
-inline void Game::SetDifficulty(Difficulty level) { mDiff = level; }
+inline Difficulty Game::GetDifficulty() const { return mDifficulty; }
+inline void Game::SetDifficulty(Difficulty level) { mDifficulty = level; }
 
 inline const ObjectsDataRegistry * Game::GetObjectsRegistry() const { return mObjsRegistry; }
 
