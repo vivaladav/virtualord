@@ -314,8 +314,16 @@ bool Game::LoadSettings()
     }
 
     // version
+    const unsigned int sizeVersion = bf.ReadUint();
     std::string ver;
-    bf.ReadString(ver, SETTINGS_VERSION.size());
+    bf.ReadString(ver, sizeVersion);
+
+    if(ver != SETTINGS_VERSION)
+    {
+        std::cout << "[ERR] Game::LoadSettings - loaded version different from expected: " << ver
+                  << " (" << SETTINGS_VERSION << ")"  << std::endl;
+        return false;
+    }
 
     // settings
     const unsigned int lang = bf.ReadUint();
@@ -365,6 +373,7 @@ bool Game::SaveSettings()
     }
 
     // version
+    bf.WriteUint(SAVE_VERSION.size());
     bf.WriteString(SAVE_VERSION);
 
     // settings
