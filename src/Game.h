@@ -64,6 +64,7 @@ public:
 
 public:
     static const std::string SAVE_VERSION;
+    static const std::string SETTINGS_VERSION;
 
 public:
     Game(int argc, char * argv[]);
@@ -75,6 +76,8 @@ public:
     // -- LOAD & SAVE --
     const std::string & GetCurrentSaveFile() const;
     bool SaveGame();
+    bool LoadSettings();
+    bool SaveSettings();
 
     // -- mouse cursors --
     void RegisterCursor(GameCursorId curId, sgl::graphic::Cursor * cursor);
@@ -178,6 +181,7 @@ private:
 
     std::string mDirSave;
     std::string mCurrSaveFile;
+    std::string mSettingsFile;
 
     sgl::graphic::Renderer * mRenderer = nullptr;
     sgl::graphic::Window * mWin = nullptr;

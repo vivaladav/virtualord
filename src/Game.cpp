@@ -58,6 +58,8 @@ bool Game::GOD_MODE = false;
 #endif
 
 const std::string Game::SAVE_VERSION("0.1.0");
+const std::string Game::SETTINGS_VERSION("0.1.0");
+
 
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
@@ -186,6 +188,11 @@ Game::Game(int argc, char * argv[])
 
     // TODO handle save files properly
     mCurrSaveFile = mDirSave + std::string("001.sav");
+
+    mSettingsFile = mDirSave + std::string("settings.sav");
+
+    // load settings when starting
+    LoadSettings();
 }
 
 Game::~Game()
@@ -255,9 +262,7 @@ bool Game::SaveGame()
     std::cout << "Game::SaveGame - START SAVING: " << mCurrSaveFile << std::endl;
 #endif
 
-    bool res = false;
-
-    // OPEN map file
+    // OPEN save file
     utilities::BinaryFile bf(mCurrSaveFile, utilities::BinaryFile::OPEN_OUTPUT, true);
 
     if(!bf.IsOpen())
@@ -286,7 +291,107 @@ bool Game::SaveGame()
     std::cout << "Game::SaveGame - GAME SAVED in: " << duration.count() << " ms" << std::endl;
 #endif
 
-    return res;
+    return true;
+}
+
+bool Game::LoadSettings()
+{
+    using namespace sgl;
+
+#ifdef DEV_MODE
+    // TODO remove later, now left just for reference on testing times
+    auto t0 = std::chrono::high_resolution_clock::now();
+    std::cout << "Game::LoadSettings - START LOADING: " << mSettingsFile << std::endl;
+#endif
+
+    // OPEN settings file
+    utilities::BinaryFile bf(mSettingsFile, utilities::BinaryFile::OPEN_INPUT, false);
+
+    if(!bf.IsOpen())
+    {
+        std::cout << "[ERR] Game::LoadSettings - can't open file " << mSettingsFile << std::endl;
+        return false;
+    }
+
+    // version
+    std::string ver;
+    bf.ReadString(ver, SETTINGS_VERSION.size());
+
+    // settings
+    const unsigned int lang = bf.ReadUint();
+    SetLanguage(static_cast<LanguageId>(lang));
+
+    mMapDraggingSpeed = bf.ReadInt();
+    mMapScrollingSpeed = bf.ReadInt();
+    mButtonSelect = bf.ReadInt();
+    mButtonAction = bf.ReadInt();
+
+    mTimeAutoHideMouse = bf.ReadFloat();
+
+    mMapDragging = bf.ReadBool();
+    mMapScrollingOnEdges = bf.ReadBool();
+    mMapScrollingConstSpeed = bf.ReadBool();
+    mAutoEndTurn = bf.ReadBool();
+    mAutoUnitCamera = bf.ReadBool();
+    mTutorialEnabled = bf.ReadBool();
+
+#ifdef DEV_MODE
+    // TODO remove later, now left just for reference on testing times
+    auto t1 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
+    std::cout << "Game::LoadSettings - SETTINGS LOADED in: " << duration.count() << " ms" << std::endl;
+#endif
+
+    return true;
+}
+
+bool Game::SaveSettings()
+{
+    using namespace sgl;
+
+#ifdef DEV_MODE
+    // TODO remove later, now left just for reference on testing times
+    auto t0 = std::chrono::high_resolution_clock::now();
+    std::cout << "Game::SaveSettings - START SAVING: " << mSettingsFile << std::endl;
+#endif
+
+    // OPEN settings file
+    utilities::BinaryFile bf(mSettingsFile, utilities::BinaryFile::OPEN_OUTPUT, true);
+
+    if(!bf.IsOpen())
+    {
+        std::cout << "[ERR] Game::SaveSettings - can't open file " << mSettingsFile << std::endl;
+        return false;
+    }
+
+    // version
+    bf.WriteString(SAVE_VERSION);
+
+    // settings
+    bf.WriteUint(mLanguage);
+
+    bf.WriteInt(mMapDraggingSpeed);
+    bf.WriteInt(mMapScrollingSpeed);
+    bf.WriteInt(mButtonSelect);
+    bf.WriteInt(mButtonAction);
+
+    bf.WriteFloat(mTimeAutoHideMouse);
+
+    bf.WriteBool(mMapDragging);
+    bf.WriteBool(mMapScrollingOnEdges);
+    bf.WriteBool(mMapScrollingConstSpeed);
+    bf.WriteBool(mAutoEndTurn);
+    bf.WriteBool(mAutoUnitCamera);
+    bf.WriteBool(mTutorialEnabled);
+
+#ifdef DEV_MODE
+    // TODO remove later, now left just for reference on testing times
+    auto t1 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
+    std::cout << "Game::SaveSettings - SETTINGS SAVED in: " << duration.count() << " ms" << std::endl;
+#endif
+
+    return true;
 }
 
 // -- mouse cursors --

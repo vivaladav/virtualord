@@ -373,6 +373,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Add missing sound to UI sliders.\n"
                   "- Focus areas in tutorial are animated on show.\n"
                   "- New UI for selected objects.\n"
+                  "- Settings are saved on file and loaded when restarting the game.\n"
                   "\nCHANGES\n"
                   "- In tutorial 1, text explaining to move to tower stays on screen until you"
                   " center the view on it.\n"
