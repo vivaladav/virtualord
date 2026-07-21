@@ -200,7 +200,6 @@ private:
 
     PlayerFaction mLocalFaction;
 
-    unsigned int mCurrMap = 0;
     PlanetId mCurrPlanet;
     unsigned int mCurrTerritory = 0;
 

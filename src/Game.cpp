@@ -258,8 +258,8 @@ bool Game::SaveGame()
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
-    auto t0 = std::chrono::high_resolution_clock::now();
     std::cout << "Game::SaveGame - START SAVING: " << mCurrSaveFile << std::endl;
+    auto t0 = std::chrono::high_resolution_clock::now();
 #endif
 
     // OPEN save file
@@ -300,8 +300,8 @@ bool Game::LoadSettings()
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
-    auto t0 = std::chrono::high_resolution_clock::now();
     std::cout << "Game::LoadSettings - START LOADING: " << mSettingsFile << std::endl;
+    auto t0 = std::chrono::high_resolution_clock::now();
 #endif
 
     // OPEN settings file
@@ -314,9 +314,8 @@ bool Game::LoadSettings()
     }
 
     // version
-    const unsigned int sizeVersion = bf.ReadUint();
     std::string ver;
-    bf.ReadString(ver, sizeVersion);
+    bf.ReadString(ver);
 
     if(ver != SETTINGS_VERSION)
     {
@@ -359,8 +358,8 @@ bool Game::SaveSettings()
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
-    auto t0 = std::chrono::high_resolution_clock::now();
     std::cout << "Game::SaveSettings - START SAVING: " << mSettingsFile << std::endl;
+    auto t0 = std::chrono::high_resolution_clock::now();
 #endif
 
     // OPEN settings file
@@ -373,7 +372,6 @@ bool Game::SaveSettings()
     }
 
     // version
-    bf.WriteUint(SAVE_VERSION.size());
     bf.WriteString(SAVE_VERSION);
 
     // settings
