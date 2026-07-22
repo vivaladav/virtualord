@@ -52,6 +52,9 @@ bool Planet::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(mSize);
 
     // maps
+    const unsigned int numMaps = mMaps.size();
+    bf.WriteUint(numMaps);
+
     for(const MapData & map : mMaps)
     {
         bf.WriteString(map.mFile);
