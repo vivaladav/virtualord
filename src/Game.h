@@ -42,7 +42,7 @@ enum GameCursorId : unsigned int;
 enum LanguageId : unsigned int;
 enum PlanetId : unsigned int;
 enum PlayerFaction : unsigned int;
-enum StateId : int;
+enum StateId : unsigned int;
 enum TechUpgradeId : unsigned int;
 
 enum Difficulty : unsigned int
@@ -98,7 +98,7 @@ public:
     void SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
     // GAME STATE
-    int GetActiveStateId() const;
+    unsigned int GetActiveStateId() const;
     void RequestNextActiveState(StateId sid, sgl::utilities::StateData * data = nullptr);
 
     Difficulty GetDifficulty() const;

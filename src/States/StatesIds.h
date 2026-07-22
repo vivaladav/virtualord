@@ -3,7 +3,7 @@
 namespace game
 {
 
-enum StateId : int
+enum StateId : unsigned int
 {
     INIT,
     INIT_GAME,

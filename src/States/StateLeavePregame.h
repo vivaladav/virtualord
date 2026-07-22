@@ -5,7 +5,7 @@
 namespace game
 {
 
-enum StateId : int;
+enum StateId : unsigned int;
 
 // -- STATE DATA --
 class StateDataLeavePregame : public sgl::utilities::StateData

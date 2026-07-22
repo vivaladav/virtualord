@@ -510,7 +510,7 @@ int Game::GetResourcePriceSell(ExtendedResource t) const
         return 0;
 }
 
-int Game::GetActiveStateId() const { return mStateMan->GetActiveStateId(); }
+unsigned int Game::GetActiveStateId() const { return mStateMan->GetActiveStateId(); }
 
 void Game::RequestNextActiveState(StateId sid, sgl::utilities::StateData * data)
 {
