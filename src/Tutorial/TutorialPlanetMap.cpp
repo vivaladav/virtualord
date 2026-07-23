@@ -16,7 +16,7 @@ TutorialPlanetMap::TutorialPlanetMap(Screen * screen, TutorialId tutId)
 
 PlanetMap * TutorialPlanetMap::GetPlanetMap() const
 {
-    return mScreen->mPlanet;
+    return mScreen->mPlanetMap;
 }
 
 PanelPlanetInfo * TutorialPlanetMap::GetPanelInfo() const { return mScreen->mPanelInfo; }

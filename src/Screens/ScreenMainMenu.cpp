@@ -376,6 +376,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Focus areas in tutorial are animated on show.\n"
                   "- New UI for selected objects.\n"
                   "- Settings are saved on file and loaded when restarting the game.\n"
+                  "- Enemy faction is truly random when starting a new mission.\n"
                   "\nCHANGES\n"
                   "- In tutorial 1, text explaining to move to tower stays on screen until you"
                   " center the view on it.\n"

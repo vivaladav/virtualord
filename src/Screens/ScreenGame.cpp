@@ -82,7 +82,7 @@ ScreenGame::ScreenGame(Game * game)
     , mCurrCell(-1, -1)
     , mTimerAutoEndTurn(TIME_AUTO_END_TURN)
     , mLocalPlayer(game->GetLocalPlayer())
-    , mActiveplayer(game->GetPlayerByIndex(mActivePlayerIdx))
+    , mActiveplayer(game->GetActivePlayerByIndex(mActivePlayerIdx))
     , mTurnStage(TURN_STAGE_PLAY)
 {
     game->SetClearColor(0x1A, 0x1A, 0x1A, 0xFF);
@@ -131,9 +131,9 @@ ScreenGame::~ScreenGame()
     // clear Players
     Game * game = GetGame();
 
-    for(int i = 0; i < game->GetNumPlayers(); ++i)
+    for(int i = 0; i < game->GetNumActivePlayers(); ++i)
     {
-        Player * p = game->GetPlayerByIndex(i);
+        Player * p = game->GetActivePlayerByIndex(i);
         p->ClearMissionObjects();
         p->ClearSelectedObject();
     }
@@ -141,6 +141,7 @@ ScreenGame::~ScreenGame()
     mLocalPlayer->RemoveOnUpgradeUnlocked(mIdOnUnlockUpgraded);
 
     game->RemoveOnSettingsChangedFunction(mIdOnSettingsChanged);
+    game->ClearAllAIActivePlayers();
 
     delete mPathfinder;
     delete mPartMan;
@@ -330,7 +331,7 @@ void ScreenGame::OnObjectDestroyed(GameObject * obj)
     // clear selection if object is selected
     if(obj->IsSelected())
     {
-        Player * owner = GetGame()->GetPlayerByFaction(obj->GetFaction());
+        Player * owner = GetGame()->GetActivePlayerByFaction(obj->GetFaction());
         ClearSelection(owner);
     }
 
@@ -567,11 +568,11 @@ void ScreenGame::InitPlayers()
 {
     auto game = GetGame();
 
-    const unsigned int numPlayers = game->GetNumPlayers();
+    const unsigned int numPlayers = game->GetNumActivePlayers();
 
     for(int i = 0; i < numPlayers; ++i)
     {
-        Player * p = game->GetPlayerByIndex(i);
+        Player * p = game->GetActivePlayerByIndex(i);
 
         p->ResetTurnEnergy();
         p->ResetNumCells();
@@ -2464,7 +2465,7 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
     const auto path = mPathfinder->MakePath(start.row, start.col, end.row, end.col,
                                             sgl::ai::Pathfinder::ALL_OPTIONS);
 
-    const Player * player = GetGame()->GetPlayerByFaction(unit->GetFaction());
+    const Player * player = GetGame()->GetActivePlayerByFaction(unit->GetFaction());
 
     // empty path -> exit
     if(path.empty())
@@ -3909,11 +3910,11 @@ void ScreenGame::EndTurn()
     }
 
     // START NEW TURN
-    const int players = game->GetNumPlayers();
+    const int players = game->GetNumActivePlayers();
 
     mActivePlayerIdx = (mActivePlayerIdx + 1) % players;
 
-    mActiveplayer = game->GetPlayerByIndex(mActivePlayerIdx);
+    mActiveplayer = game->GetActivePlayerByIndex(mActivePlayerIdx);
 
 #ifdef DEBUG
     std::cout << "ScreenGame::EndTurn - START PLAYER " << mActivePlayerIdx << std::endl;

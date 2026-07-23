@@ -249,8 +249,8 @@ void GameMap::SetSize(unsigned int rows, unsigned int cols)
     }
 
     // init players visibility map
-    for(int i = 0; i < mGame->GetNumPlayers(); ++i)
-        mGame->GetPlayerByIndex(i)->InitMaps(mRows, mCols);
+    for(int i = 0; i < mGame->GetNumActivePlayers(); ++i)
+        mGame->GetActivePlayerByIndex(i)->InitMaps(mRows, mCols);
 
     // init control map
     mControlMap->SetSize(rows, cols);
@@ -448,7 +448,7 @@ void GameMap::CreateObjectFromFile(unsigned int layerId, GameObjectTypeId type, 
        ObjectData::TYPE_UNIT_SPAWNER1 == type || ObjectData::TYPE_UNIT_SPAWNER2 == type ||
        ObjectData::TYPE_UNIT_WORKER1 == type)
     {
-        Player * owner =  mGame->GetPlayerByFaction(pf);
+        Player * owner =  mGame->GetActivePlayerByFaction(pf);
 
         if(nullptr == owner)
             return ;
@@ -495,12 +495,12 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
 
     // create game object
     o2a.obj = nullptr;
-    o2a.owner = mGame->GetPlayerByFaction(faction);
+    o2a.owner = mGame->GetActivePlayerByFaction(faction);
 
     // CONVERT BASE SPOT TO BASE
     if(ObjectData::TYPE_BASE_SPOT == type)
     {
-        o2a.owner = mGame->GetPlayerByIndex(variant);
+        o2a.owner = mGame->GetActivePlayerByIndex(variant);
         type = ObjectData::TYPE_BASE;
     }
 
@@ -1127,7 +1127,7 @@ bool GameMap::HasResourcesToBuildWall(Unit * unit, unsigned int level)
     const int costMat = Wall::GetCostMaterial(level);
     const int costEne = Wall::GetCostEnergy(level);
 
-    Player * player = mGame->GetPlayerByFaction(unit->GetFaction());
+    Player * player = mGame->GetActivePlayerByFaction(unit->GetFaction());
 
     return player->HasEnough(Player::Stat::MATERIAL, costMat)  &&
            player->HasEnough(Player::Stat::ENERGY, costEne);
@@ -1305,7 +1305,7 @@ void GameMap::ConquerStructure(const Cell2D & end, Player * player)
         }
     }
 
-    Player * prevOwner = mGame->GetPlayerByFaction(obj->GetFaction());
+    Player * prevOwner = mGame->GetActivePlayerByFaction(obj->GetFaction());
 
     // assign owner to object
     obj->SetOwner(player);
@@ -2557,7 +2557,7 @@ bool GameMap::FindClosestCellConnectedToObject(const GameObject * obj, const Cel
     if(faction == NO_FACTION)
         return false;
 
-    const Player * player = mGame->GetPlayerByFaction(faction);
+    const Player * player = mGame->GetActivePlayerByFaction(faction);
 
     // FIND CONNECTED (SAME FACTION) CELLS
     std::vector<unsigned int> todo;
@@ -2643,7 +2643,7 @@ bool GameMap::FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, C
     const int maxDist = mRows * mCols;
     int minDist = maxDist;
 
-    const Player * player = mGame->GetPlayerByFaction(faction);
+    const Player * player = mGame->GetActivePlayerByFaction(faction);
 
     const int r0 = start.row;
     const int c0 = start.col;
@@ -2999,7 +2999,7 @@ void GameMap::Update(float delta)
 
             DestroyObjectPaths(obj);
 
-            Player * p = mGame->GetPlayerByFaction(obj->GetFaction());
+            Player * p = mGame->GetActivePlayerByFaction(obj->GetFaction());
 
             if(p != nullptr && p->IsAI())
                 p->GetAI()->HandleObjectDestroyed(obj);
@@ -3496,7 +3496,7 @@ void GameMap::DestroyObject(GameObject * obj)
 {
     mScreenGame->OnObjectDestroyed(obj);
 
-    Player * owner = mGame->GetPlayerByFaction(obj->GetFaction());
+    Player * owner = mGame->GetActivePlayerByFaction(obj->GetFaction());
 
     if(owner != nullptr)
     {

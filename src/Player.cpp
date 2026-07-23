@@ -24,9 +24,8 @@
 namespace game
 {
 
-Player::Player(const char * name, int pid)
+Player::Player(int pid)
     : mDummyStat(INVALID_STAT, 0)
-    , mName(name)
     , mOnNumUnitsChanged([](){})
     , mOnTurnEnergyChanged([](){})
     , mOnTurnMaxEnergyChanged([](){})

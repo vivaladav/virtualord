@@ -43,7 +43,7 @@ public:
     };
 
 public:
-    Player(const char * name, int pid);
+    Player(int pid);
     ~Player();
 
     bool Load(sgl::utilities::BinaryFile & bf);
@@ -89,6 +89,7 @@ public:
     void SetCellWalkable(unsigned int ind, bool walkable);
     void SetCellWalkable(unsigned int row, unsigned int col, bool walkable);
 
+    void SetName(const std::string & name);
     const std::string & GetName() const;
 
     int GetPlayerId() const;
@@ -292,6 +293,7 @@ inline void Player::SetCellWalkable(unsigned int row, unsigned int col, bool wal
     mWalkableOverrideMap[ind] = walkable;
 }
 
+inline void Player::SetName(const std::string & name) { mName = name; }
 inline const std::string & Player::GetName() const { return mName; }
 
 inline int Player::GetPlayerId() const { return mPlayerId; }

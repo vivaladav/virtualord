@@ -70,7 +70,7 @@ public:
     Game(int argc, char * argv[]);
     ~Game();
 
-    void InitGameData();
+    void InitNewGameData();
     void ClearGameData();
 
     // -- LOAD & SAVE --
@@ -107,12 +107,14 @@ public:
     const ObjectsDataRegistry * GetObjectsRegistry() const;
 
     // -- players --
-    Player * AddPlayer(const char * name, int pid);
+    int GetNumActivePlayers() const;
 
-    int GetNumPlayers() const;
+    Player * GetActivePlayerByIndex(unsigned int index) const;
+    Player * GetActivePlayerByFaction(PlayerFaction faction) const;
+    void ClearAllAIActivePlayers();
+    void AddToActivePlayersRandomAI();
+    void AddToActivePlayersAI(PlayerFaction f);
 
-    Player * GetPlayerByIndex(unsigned int index) const;
-    Player * GetPlayerByFaction(PlayerFaction faction) const;
     Player * GetLocalPlayer() const;
 
     void SetLocalPlayerFaction(PlayerFaction faction);
@@ -159,6 +161,12 @@ public:
     TutorialManager * GetTutorialManager() const;
 
 private:
+    void CreatePlayers();
+    void InitPlayerLocal(Player * p);
+    void InitPlayerAI(Player * p);
+
+    void CreatePlanets();
+
     void ClearPlayers();
     void ClearPlanets();
 
@@ -171,6 +179,8 @@ private:
 
 private:
     std::vector<Player *> mPlayers;
+    std::vector<Player *> mActivePlayers;
+    std::vector<Player *> mAIPlayers;
 
     std::unordered_map<PlanetId, Planet *> mPlanets;
 
@@ -249,12 +259,12 @@ inline void Game::SetDifficulty(Difficulty level) { mDifficulty = level; }
 
 inline const ObjectsDataRegistry * Game::GetObjectsRegistry() const { return mObjsRegistry; }
 
-inline int Game::GetNumPlayers() const { return mPlayers.size(); }
+inline int Game::GetNumActivePlayers() const { return mActivePlayers.size(); }
 
-inline Player * Game::GetPlayerByIndex(unsigned int index) const
+inline Player * Game::GetActivePlayerByIndex(unsigned int index) const
 {
-    if(index < mPlayers.size())
-        return mPlayers[index];
+    if(index < mActivePlayers.size())
+        return mActivePlayers[index];
     else
         return nullptr;
 }
@@ -262,19 +272,12 @@ inline Player * Game::GetPlayerByIndex(unsigned int index) const
 inline Player * Game::GetLocalPlayer() const
 {
     // NOTE for now local player is always at index 0. This might change in the future
-    const int indLocal = 0;
-    return mPlayers[indLocal];
+    const unsigned int indLocal = 0;
+    return mActivePlayers[indLocal];
 }
 
-inline void Game::SetLocalPlayerFaction(PlayerFaction faction)
-{
-    mLocalFaction = faction;
-}
-
-inline PlayerFaction Game::GetLocalPlayerFaction() const
-{
-    return mLocalFaction;
-}
+inline void Game::SetLocalPlayerFaction(PlayerFaction faction) { mLocalFaction = faction; }
+inline PlayerFaction Game::GetLocalPlayerFaction() const { return mLocalFaction; }
 
 inline int Game::GetTechUpgradecost(TechUpgradeId upgrade) const
 {

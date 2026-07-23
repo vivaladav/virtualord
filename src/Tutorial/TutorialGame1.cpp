@@ -108,8 +108,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     auto hud = gs->GetHUD();
     auto isoMap = GetIsoMap();
 
-    const Player * local = game->GetPlayerByIndex(0);
-    Player * playerAI = game->GetPlayerByIndex(1);
+    const Player * local = game->GetActivePlayerByIndex(0);
+    Player * playerAI = game->GetActivePlayerByIndex(1);
 
     auto panelActions = hud->GetPanelObjectActions();
     auto panelTurn = hud->GetPanelTurnControl();

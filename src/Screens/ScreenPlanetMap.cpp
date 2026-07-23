@@ -97,15 +97,15 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     // -- PLANET --
     const Planet * planet = game->GetCurrentPlanet();
 
-    mPlanet = new PlanetMap(planet->GetSize());
+    mPlanetMap = new PlanetMap(planet->GetSize());
 
-    const int planetX = (mBg->GetWidth() - mPlanet->GetWidth()) * 0.5f;
+    const int planetX = (mBg->GetWidth() - mPlanetMap->GetWidth()) * 0.5f;
     const int planetY = 190;
-    mPlanet->SetPosition(planetX, planetY);
+    mPlanetMap->SetPosition(planetX, planetY);
 
     UpdatePlanetButtons();
 
-    mPlanet->SetFunctionOnToggle([this](unsigned int ind, bool enabled)
+    mPlanetMap->SetFunctionOnToggle([this](unsigned int ind, bool enabled)
         {
             if(!enabled)
                 return;
@@ -207,7 +207,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
         // handle the result
         Planet * planet = game->GetCurrentPlanet();
-        const int territory = mPlanet->GetSelectedTerritoryId();
+        const int territory = mPlanetMap->GetSelectedTerritoryId();
 
         const PlayerFaction occupier = planet->GetMapOccupier(territory);
 
@@ -256,7 +256,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
         mPanelActions->UpdateButtons(status, playerOccupier);
 
-        mPlanet->SetButtonState(territory, occupier, status);
+        mPlanetMap->SetButtonState(territory, occupier, status);
     });
 
     mPanelExplore->AddOnButtonCancelClickFunction([this]
@@ -274,8 +274,20 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     {
         Game * game = GetGame();
 
-        const int territory = mPlanet->GetSelectedTerritoryId();
+        // set map id for next mission
+        const int territory = mPlanetMap->GetSelectedTerritoryId();
         game->SetCurrentTerritory(territory);
+
+        // add enemy
+        const Planet * planet = game->GetCurrentPlanet();
+        const PlayerFaction occupier = planet->GetMapOccupier(territory);
+
+        if(occupier != NO_FACTION)
+            game->AddToActivePlayersAI(occupier);
+        else
+            game->AddToActivePlayersRandomAI();
+
+        // move to GAME
         game->RequestNextActiveState(StateId::GAME);
     });
 
@@ -303,7 +315,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         player->SumResource(Player::Stat::DIAMONDS, -costConquestDiamonds);
 
         // attempt the conquest
-        const int territory = mPlanet->GetSelectedTerritoryId();
+        const int territory = mPlanetMap->GetSelectedTerritoryId();
         const bool res = TryToConquerTerritory(territory);
 
         const PlayerFaction pf = game->GetLocalPlayerFaction();
@@ -333,7 +345,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
             player->SumResource(Player::Stat::DIAMONDS, multRes2 * planet->GetMapDiamonds(territory));
 
             // update UI
-            mPlanet->SetButtonState(territory, pf, status);
+            mPlanetMap->SetButtonState(territory, pf, status);
             mPanelActions->UpdateButtons(status, true);
 
             ShowInfo(territory);
@@ -367,7 +379,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
             planet->SetMapStatus(territory, status);
 
             // update UI
-            mPlanet->SetButtonState(territory, faction, status);
+            mPlanetMap->SetButtonState(territory, faction, status);
 
             // PANEL INFO
             if(status == TER_ST_OCCUPIED_UNEXPLORED)
@@ -556,7 +568,7 @@ void ScreenPlanetMap::UpdatePlanetButtons()
         const PlayerFaction occupier = planet->GetMapOccupier(i);
         const TerritoryStatus ts = planet->GetMapStatus(i);
 
-        mPlanet->SetButtonState(i, occupier, ts);
+        mPlanetMap->SetButtonState(i, occupier, ts);
     }
 }
 

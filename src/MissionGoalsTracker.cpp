@@ -54,11 +54,11 @@ MissionGoalsTracker::MissionGoalsTracker(Game * g, Player * p)
     }
 
     // -- PLAYERS --
-    const unsigned int numPlayers = mGame->GetNumPlayers();
+    const unsigned int numPlayers = mGame->GetNumActivePlayers();
 
     for(int i = 0; i < numPlayers; ++i)
     {
-        Player * p = mGame->GetPlayerByIndex(i);
+        Player * p = mGame->GetActivePlayerByIndex(i);
 
         if(p->IsAI())
             mAiPlayers.emplace_back(p);

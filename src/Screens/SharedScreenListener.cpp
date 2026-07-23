@@ -35,7 +35,7 @@ void SharedScreenListener::OnKeyUp(sgl::core::KeyboardEvent & event)
         win->SetSize(2560, 1440);
     else if(key == core::KeyboardEvent::KEY_C)
     {
-        if(mGame->GetNumPlayers() == 0)
+        if(mGame->GetNumActivePlayers() == 0)
             return ;
 
         Player * p = mGame->GetLocalPlayer();

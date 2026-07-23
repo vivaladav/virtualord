@@ -62,7 +62,7 @@ private:
     sgl::sgui::Label * mLabelName = nullptr;
     sgl::sgui::Label * mLabelDate = nullptr;
 
-    PlanetMap * mPlanet = nullptr;
+    PlanetMap * mPlanetMap = nullptr;
 
     DialogExit * mDialogExit = nullptr;
 

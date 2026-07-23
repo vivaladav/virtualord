@@ -117,7 +117,7 @@ bool WallBuildPath::InitNextBuild()
     const unsigned int nextInd = mCells[mNextCell];
     const Cell2D nextCell(IndToRow(nextInd), IndToCol(nextInd));
 
-    Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+    Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
 
     // remove current cell from overlay
     if(mOverlay)
@@ -297,7 +297,7 @@ void WallBuildPath::UpdateMove(float delta)
     // handle reached target
     if(0 == todo)
     {
-        Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+        Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
 
         mGameMap->DelPlayerObjVisibility(mUnit, player);
 

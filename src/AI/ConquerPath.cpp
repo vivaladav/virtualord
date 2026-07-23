@@ -38,7 +38,7 @@ ConquerPath::ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, OverlayCell
 
     if(sg != nullptr)
     {
-        mPlayer = sg->GetGame()->GetPlayerByFaction(unit->GetFaction());
+        mPlayer = sg->GetGame()->GetActivePlayerByFaction(unit->GetFaction());
         mLocal = mPlayer->IsLocal();
     }
 }
@@ -138,7 +138,7 @@ bool ConquerPath::InitNextConquest()
     const unsigned int nextCol = nextInd % mGameMap->GetNumCols();
     const Cell2D nextCell(nextRow, nextCol);
 
-    Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+    Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
 
     // can't conquer current cell -> try to move to next one
     if(!mGameMap->CanConquerCell(mUnit, nextCell, player))
@@ -307,7 +307,7 @@ void ConquerPath::UpdateMove(float delta)
     // handle reached target
     if(0 == todo)
     {
-        Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+        Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
 
         mGameMap->DelPlayerObjVisibility(mUnit, player);
 

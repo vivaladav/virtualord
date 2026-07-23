@@ -191,7 +191,7 @@ void ObjectPath::Update(float delta)
     // handle reached target
     if(0 == todo)
     {
-        Player * player = mScreen->GetGame()->GetPlayerByFaction(mObj->GetFaction());
+        Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mObj->GetFaction());
 
         mGameMap->DelPlayerObjVisibility(mObj, player);
 

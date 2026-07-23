@@ -156,8 +156,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     auto gameMap = GetGameMap();
     auto isoMap = GetIsoMap();
 
-    const Player * local = game->GetPlayerByIndex(0);
-    Player * playerAI = game->GetPlayerByIndex(1);
+    const Player * local = game->GetActivePlayerByIndex(0);
+    Player * playerAI = game->GetActivePlayerByIndex(1);
 
     auto localBase = local->GetBase();
     auto panelActions = hud->GetPanelObjectActions();
@@ -2243,7 +2243,7 @@ TutorialGame2::~TutorialGame2()
     auto game = GetScreen()->GetGame();
 
     // reset flags for unit soldier 1
-    const Player * local = game->GetPlayerByIndex(0);
+    const Player * local = game->GetActivePlayerByIndex(0);
     auto unit1 = local->GetUnit(indSoldier1);
 
     if(unit1 != nullptr)

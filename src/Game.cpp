@@ -4,6 +4,7 @@
 #include "Planet.h"
 #include "Player.h"
 #include "Version.h"
+#include "AI/PlayerAI.h"
 #include "GameObjects/ObjectsDataRegistry.h"
 #include "States/StatesIds.h"
 #include "States/StateFactionSelection.h"
@@ -32,6 +33,7 @@
 #include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/StateManager.h>
 #include <sgl/utilities/StringManager.h>
+#include <sgl/utilities/UniformDistribution.h>
 
 #ifdef DEBUG
 #include <sgl/core/event/MouseEvent.h>
@@ -48,6 +50,13 @@
 #endif
 
 #include <filesystem>
+
+#include <cassert>
+
+namespace
+{
+constexpr int MAX_UNITS0 = 5;
+}
 
 namespace game
 {
@@ -224,24 +233,11 @@ Game::~Game()
     utilities::StringManager::Destroy();
 }
 
-void Game::InitGameData()
+void Game::InitNewGameData()
 {
-    Planet * planet = nullptr;
+    CreatePlayers();
 
-    // -- MAPS --
-    // PLANET 1
-    planet = new Planet(PLANET_1, PLANET_SIZE_S);
-#ifdef DEV_MODE
-    planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
-#else
-    planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
-#endif
-    planet->AddMap("data/maps/60x60-01.map", NO_FACTION, TER_ST_UNEXPLORED);
-    planet->AddMap("data/maps/01-02.map", NO_FACTION, TER_ST_UNREACHABLE);
-    planet->AddMap("data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
-    planet->AddMap("data/maps/01-03.map", NO_FACTION, TER_ST_UNREACHABLE);
-
-    mPlanets.emplace(PLANET_1, planet);
+    CreatePlanets();
 }
 
 void Game::ClearGameData()
@@ -299,6 +295,10 @@ bool Game::SaveGame()
 
     for(Player * p : mPlayers)
         p->Save(bf);
+
+    // State
+    const unsigned int stateId = GetActiveStateId();
+    bf.WriteUint(numPlayers);
 
     // CLOSE map file
     bf.Close();
@@ -601,16 +601,115 @@ void Game::InitDirectories()
         filesystem::create_directories(pathSave);
 }
 
-Player * Game::AddPlayer(const char * name, int pid)
+void Game::CreatePlayers()
 {
-    if(mPlayers.size() == MAX_NUM_PLAYERS)
-        return nullptr;
+    assert(mLocalFaction != NO_FACTION);
 
-    Player * p = new Player(name, pid);
+    // create a Player for each faction
+    for(unsigned int i = 0; i < NUM_FACTIONS; ++i)
+    {
+        auto f = static_cast<PlayerFaction>(i);
 
-    mPlayers.push_back(p);
+        auto p = new Player(i);
+        p->SetFaction(f);
 
-    return p;
+        if(f == mLocalFaction)
+        {
+            InitPlayerLocal(p);
+
+            // add local player as first active one
+            mActivePlayers.emplace_back(p);
+        }
+        else
+        {
+            InitPlayerAI(p);
+
+            mAIPlayers.emplace_back(p);
+        }
+
+        mPlayers.emplace_back(p);
+    }
+}
+
+void Game::InitPlayerLocal(Player * p)
+{
+    p->SetMaxUnits(MAX_UNITS0);
+
+    // assign initial available structures
+    p->AddAvailableStructure(ObjectData::TYPE_BARRACKS);
+    p->AddAvailableStructure(ObjectData::TYPE_BUNKER);
+    p->AddAvailableStructure(ObjectData::TYPE_DEFENSIVE_TOWER);
+    p->AddAvailableStructure(ObjectData::TYPE_HOSPITAL);
+    p->AddAvailableStructure(ObjectData::TYPE_RESEARCH_CENTER);
+    p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR);
+    p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT);
+    p->AddAvailableStructure(ObjectData::TYPE_SPAWN_TOWER);
+    p->AddAvailableStructure(ObjectData::TYPE_WALL_GATE);
+
+    // assign initial available units
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_WORKER1);
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_SOLDIER1);
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_SPAWNER1);
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_SCOUT1);
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_SOLDIER2);
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_MEDIC1);
+
+    // assign initial available mini units
+    p->AddAvailableMiniUnit(ObjectData::TYPE_MINI_UNIT1);
+    p->AddAvailableMiniUnit(ObjectData::TYPE_MINI_UNIT2);
+}
+
+void Game::InitPlayerAI(Player * p)
+{
+    p->SetMaxUnits(MAX_UNITS0);
+
+    auto * ai = new PlayerAI(p, mObjsRegistry);
+    p->SetAI(ai);
+
+    // assign initial available structures
+    p->AddAvailableStructure(ObjectData::TYPE_BARRACKS);
+    p->AddAvailableStructure(ObjectData::TYPE_BUNKER);
+    p->AddAvailableStructure(ObjectData::TYPE_DEFENSIVE_TOWER);
+    p->AddAvailableStructure(ObjectData::TYPE_HOSPITAL);
+    p->AddAvailableStructure(ObjectData::TYPE_PRACTICE_TARGET);
+    p->AddAvailableStructure(ObjectData::TYPE_RADAR_STATION);
+    p->AddAvailableStructure(ObjectData::TYPE_RADAR_TOWER);
+    p->AddAvailableStructure(ObjectData::TYPE_RESEARCH_CENTER);
+    p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR);
+    p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT);
+    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_BLOBS);
+    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_DIAMONDS);
+    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_ENERGY);
+    p->AddAvailableStructure(ObjectData::TYPE_RES_STORAGE_MATERIAL);
+    p->AddAvailableStructure(ObjectData::TYPE_TRADING_POST);
+    p->AddAvailableStructure(ObjectData::TYPE_WALL_GATE);
+
+    // assign initial available units
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_WORKER1);
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_SOLDIER1);
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_SCOUT1);
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_SOLDIER2);
+    p->AddAvailableUnit(ObjectData::TYPE_UNIT_MEDIC1);
+}
+
+void Game::CreatePlanets()
+{
+    Planet * planet = nullptr;
+
+    // -- MAPS --
+    // PLANET 1
+    planet = new Planet(PLANET_1, PLANET_SIZE_S);
+#ifdef DEV_MODE
+    planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+#else
+    planet->AddMap("data/maps/01-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+#endif
+    planet->AddMap("data/maps/60x60-01.map", NO_FACTION, TER_ST_UNEXPLORED);
+    planet->AddMap("data/maps/01-02.map", NO_FACTION, TER_ST_UNREACHABLE);
+    planet->AddMap("data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
+    planet->AddMap("data/maps/01-03.map", NO_FACTION, TER_ST_UNREACHABLE);
+
+    mPlanets.emplace(PLANET_1, planet);
 }
 
 void Game::ClearPlayers()
@@ -619,6 +718,10 @@ void Game::ClearPlayers()
         delete p;
 
     mPlayers.clear();
+    mActivePlayers.clear();
+    mAIPlayers.clear();
+
+    mLocalFaction = NO_FACTION;
 }
 
 void Game::ClearPlanets()
@@ -629,15 +732,47 @@ void Game::ClearPlanets()
     mPlanets.clear();
 }
 
-Player * Game::GetPlayerByFaction(PlayerFaction faction) const
+Player * Game::GetActivePlayerByFaction(PlayerFaction faction) const
 {
-    for(Player * p : mPlayers)
+    for(Player * p : mActivePlayers)
     {
         if(p->GetFaction() == faction)
             return p;
     }
 
     return nullptr;
+}
+
+void Game::ClearAllAIActivePlayers()
+{
+    mActivePlayers.erase(mActivePlayers.begin() + 1, mActivePlayers.end());
+}
+
+void Game::AddToActivePlayersRandomAI()
+{
+    assert(!mAIPlayers.empty());
+
+    const unsigned int lastAI = mAIPlayers.size() - 1;
+
+    sgl::utilities::UniformDistribution ud(0, lastAI);
+
+    auto p = mAIPlayers[ud.GetNextValue()];
+
+    mActivePlayers.emplace_back(p);
+}
+
+void Game::AddToActivePlayersAI(PlayerFaction f)
+{
+    assert(!mAIPlayers.empty());
+
+    for(Player * p : mAIPlayers)
+    {
+        if(p->GetFaction() == f)
+        {
+            mActivePlayers.emplace_back(p);
+            return ;
+        }
+    }
 }
 
 void Game::SetLanguage(LanguageId lang)
