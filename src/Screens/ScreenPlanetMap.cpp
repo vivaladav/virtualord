@@ -462,6 +462,14 @@ ScreenPlanetMap::~ScreenPlanetMap()
     sgl::sgui::Stage::Instance()->ClearWidgets();
 }
 
+
+bool ScreenPlanetMap::Save(sgl::utilities::BinaryFile & bf) const
+{
+    Screen::Save(bf);
+
+    return false;
+}
+
 void ScreenPlanetMap::OnKeyUp(sgl::core::KeyboardEvent & event)
 {
     using namespace sgl;

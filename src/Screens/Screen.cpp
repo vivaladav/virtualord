@@ -29,6 +29,11 @@ Screen::~Screen()
     delete mSharedListener;
 }
 
+bool Screen::Save(sgl::utilities::BinaryFile &) const
+{
+    return true;
+}
+
 DialogSettings * Screen::ShowDialogSettings()
 {
     using namespace sgl;
@@ -42,7 +47,7 @@ DialogSettings * Screen::ShowDialogSettings()
     mSettings = new DialogSettings(mGame);
     mSettings->SetFocus();
     mSettings->SetPosition((screenW - mSettings->GetWidth()) / 2,
-                         (screenH - mSettings->GetHeight()) / 2);
+                           (screenH - mSettings->GetHeight()) / 2);
 
     mSettings->AddOnCloseClickedFunction([this]
     {

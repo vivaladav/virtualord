@@ -298,9 +298,12 @@ bool Game::SaveGame()
 
     // State
     const unsigned int stateId = GetActiveStateId();
-    bf.WriteUint(numPlayers);
+    bf.WriteUint(stateId);
 
-    // CLOSE map file
+    auto state = static_cast<BaseGameState *>(mStateMan->GetActiveState());
+    state->Save(bf);
+
+    // CLOSE save file
     bf.Close();
 
 #ifdef DEV_MODE

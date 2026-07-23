@@ -8,6 +8,8 @@
 namespace sgl
 {
     namespace sgui { class Widget; }
+
+    namespace utilities { class BinaryFile; }
 }
 
 namespace game
@@ -23,6 +25,8 @@ class Screen : public sgl::core::ApplicationEventListener, public sgl::core::Key
 public:
     Screen(Game * game);
     ~Screen();
+
+    virtual bool Save(sgl::utilities::BinaryFile & bf) const;
 
     Game * GetGame() const;
 

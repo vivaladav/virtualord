@@ -12,6 +12,15 @@ StatePlanetMap::StatePlanetMap(Game * game)
 {
 }
 
+bool StatePlanetMap::Save(sgl::utilities::BinaryFile & bf) const
+{
+    BaseGameState::Save(bf);
+
+    mScreen->Save(bf);
+
+    return true;
+}
+
 void StatePlanetMap::OnActive()
 {
     mScreen = new ScreenPlanetMap(mGame);

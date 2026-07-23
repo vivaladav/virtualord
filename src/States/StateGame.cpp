@@ -14,6 +14,15 @@ StateGame::StateGame(Game * game)
 {
 }
 
+bool StateGame::Save(sgl::utilities::BinaryFile & bf) const
+{
+    BaseGameState::Save(bf);
+
+    mScreen->Save(bf);
+
+    return true;
+}
+
 void StateGame::OnActive()
 {
     // create and init game screen

@@ -58,7 +58,8 @@ public:
 
     void InitNewGame();
     bool LoadGame(sgl::utilities::BinaryFile * bf);
-    bool SaveGame(sgl::utilities::BinaryFile * bf);
+
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
 
     unsigned int GetPlayTimeInSec() const;
 

@@ -255,8 +255,10 @@ bool ScreenGame::LoadGame(sgl::utilities::BinaryFile * bf)
     return false;
 }
 
-bool ScreenGame::SaveGame(sgl::utilities::BinaryFile * bf)
+bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
 {
+    Screen::Save(bf);
+
     return false;
 }
 
