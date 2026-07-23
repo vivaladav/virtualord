@@ -85,9 +85,7 @@ bool Player::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(mFaction);
 
     // name
-    bf.WriteInt(mName.size());
     bf.WriteString(mName);
-
 
     // upgrades status - write only unlocked ones
     const unsigned int unlocked = std::count_if(mUpgrades.begin(), mUpgrades.end(),
@@ -125,6 +123,27 @@ bool Player::Save(sgl::utilities::BinaryFile & bf) const
         bf.WriteInt(s.GetMin());
         bf.WriteInt(s.GetMax());
     }
+
+    // available mini-units
+    const unsigned int numAvMiniUnits = mAvailableMiniUnits.size();
+    bf.WriteUint(numAvMiniUnits);
+
+    for(const GameObjectTypeId type : mAvailableMiniUnits)
+        bf.WriteUint(type);
+
+    // available structures
+    const unsigned int numAvStructures = mAvailableStructures.size();
+    bf.WriteUint(numAvStructures);
+
+    for(const GameObjectTypeId type : mAvailableStructures)
+        bf.WriteUint(type);
+
+    // available mini-units
+    const unsigned int numAvUnits = mAvailableUnits.size();
+    bf.WriteUint(numAvUnits);
+
+    for(const GameObjectTypeId type : mAvailableUnits)
+        bf.WriteUint(type);
 
     // turn data
     bf.WriteFloat(mTurnEnergy);
