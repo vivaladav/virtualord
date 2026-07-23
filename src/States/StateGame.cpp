@@ -16,8 +16,19 @@ StateGame::StateGame(Game * game)
 
 void StateGame::OnActive()
 {
-    mScreen = new ScreenGame(mGame);
+    // create and init game screen
+    auto screen = new ScreenGame(mGame);
 
+    // start a new game
+    if(mBinFile == nullptr)
+        screen->InitNewGame();
+    else
+    // load saved game
+        screen->LoadGame(mBinFile);
+
+    mScreen = screen;
+
+    // setup listeners
     mGame->AddApplicationListener(mScreen);
     mGame->AddKeyboardListener(mScreen);
     mGame->AddMouseListener(mScreen);

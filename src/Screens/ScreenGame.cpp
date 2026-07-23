@@ -62,6 +62,7 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/Stage.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/StringManager.h>
 
 #include <cassert>
@@ -123,27 +124,73 @@ ScreenGame::ScreenGame(Game * game)
 
     mIsoMap->SetOrigin(rendW * 0.5, (rendH - mapH) * 0.5);
     mIsoMap->SetVisibleArea(cam->GetX(), cam->GetY(), cam->GetWidth(), cam->GetHeight());
+}
 
+ScreenGame::~ScreenGame()
+{
+    // clear Players
+    Game * game = GetGame();
+
+    for(int i = 0; i < game->GetNumPlayers(); ++i)
+    {
+        Player * p = game->GetPlayerByIndex(i);
+        p->ClearMissionObjects();
+        p->ClearSelectedObject();
+    }
+
+    mLocalPlayer->RemoveOnUpgradeUnlocked(mIdOnUnlockUpgraded);
+
+    game->RemoveOnSettingsChangedFunction(mIdOnSettingsChanged);
+
+    delete mPathfinder;
+    delete mPartMan;
+
+    delete mTrackerMG;
+
+    delete mIsoMap;
+    delete mGameMap;
+
+    // NOTE delete overlays after GameMap because they're still used by its destructors
+    delete mOverlayAttack;
+    delete mOverlayHeal;
+    delete mOverlayCellConquest;
+    delete mOverlayWall;
+    delete mOverlaySelection;
+    delete mOverlayPath;
+    delete mOverlayStruct;
+
+    delete mCamController;
+
+    auto stage = sgl::sgui::Stage::Instance();
+    stage->ClearWidgets();
+    // make sure to reset stage visibility in case it was off before exit
+    stage->SetVisible(true);
+}
+
+void ScreenGame::InitNewGame()
+{
     // LOAD MAP
     LoadMapFile();
 
     // TRACK MISSION GOALS
     // NOTE no need to remove them later as tracker is deleted with screen
     mTrackerMG->AddOnGoalCompletedFunction([this]
-        {
-            auto base = mLocalPlayer->GetBase();
-            base->OnGoalCompleted();
-        });
+                                           {
+                                               auto base = mLocalPlayer->GetBase();
+                                               base->OnGoalCompleted();
+                                           });
     mTrackerMG->AddOnGoalCollectedFunction([this]
-        {
-            auto base = mLocalPlayer->GetBase();
-            const int count = mTrackerMG->GetNumGoalsToCollect();
+                                           {
+                                               auto base = mLocalPlayer->GetBase();
+                                               const int count = mTrackerMG->GetNumGoalsToCollect();
 
-            if(count == 0)
-                base->OnGoalsCollected();
-        });
+                                               if(count == 0)
+                                                   base->OnGoalsCollected();
+                                           });
 
     // CONFIGURE CAMERA LIMITS
+    auto cam = sgl::graphic::Camera::GetDefaultCamera();
+
     cam->SetFunctionOnMove([this]
                            {
                                const sgl::graphic::Camera * cam = mCamController->GetCamera();
@@ -188,25 +235,7 @@ ScreenGame::ScreenGame(Game * game)
     CreateUI();
 
     // OVERLAYS
-    const PlayerFaction localFaction = mLocalPlayer->GetFaction();
-
-    mOverlayAttack = new OverlayAttackRange(mIsoMap);
-
-    mOverlayHeal = new OverlayHealRange(mIsoMap);
-
-    mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
-                                                   localFaction, mIsoMap->GetNumCols());
-
-    mOverlayWall = new OverlayWall(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
-                                   localFaction, mIsoMap->GetNumCols());
-
-    mOverlaySelection = new OverlaySelection(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1));
-
-    mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
-                                   localFaction, mIsoMap->GetNumCols());
-
-    mOverlayStruct = new OverlayStructure(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
-                                          game->GetObjectsRegistry(), localFaction);
+    CreateOverlays();
 
     // set initial camera position
     CenterCameraOverObject(mLocalPlayer->GetBase());
@@ -220,45 +249,14 @@ ScreenGame::ScreenGame(Game * game)
     InitTutorial();
 }
 
-ScreenGame::~ScreenGame()
+bool ScreenGame::LoadGame(sgl::utilities::BinaryFile * bf)
 {
-    // clear Players
-    Game * game = GetGame();
+    return false;
+}
 
-    for(int i = 0; i < game->GetNumPlayers(); ++i)
-    {
-        Player * p = game->GetPlayerByIndex(i);
-        p->ClearMissionObjects();
-        p->ClearSelectedObject();
-    }
-
-    mLocalPlayer->RemoveOnUpgradeUnlocked(mIdOnUnlockUpgraded);
-
-    game->RemoveOnSettingsChangedFunction(mIdOnSettingsChanged);
-
-    delete mPathfinder;
-    delete mPartMan;
-
-    delete mTrackerMG;
-
-    delete mIsoMap;
-    delete mGameMap;
-
-    // NOTE delete overlays after GameMap because they're still used by its destructors
-    delete mOverlayAttack;
-    delete mOverlayHeal;
-    delete mOverlayCellConquest;
-    delete mOverlayWall;
-    delete mOverlaySelection;
-    delete mOverlayPath;
-    delete mOverlayStruct;
-
-    delete mCamController;
-
-    auto stage = sgl::sgui::Stage::Instance();
-    stage->ClearWidgets();
-    // make sure to reset stage visibility in case it was off before exit
-    stage->SetVisible(true);
+bool ScreenGame::SaveGame(sgl::utilities::BinaryFile * bf)
+{
+    return false;
 }
 
 unsigned int ScreenGame::GetPlayTimeInSec() const
@@ -958,6 +956,31 @@ void ScreenGame::CreateUI()
 
     // set initial focus to Stage
     sgl::sgui::Stage::Instance()->SetFocus();
+}
+
+ void ScreenGame::CreateOverlays()
+{
+     auto game = GetGame();
+
+    const PlayerFaction localFaction = game->GetLocalPlayerFaction();
+
+     mOverlayAttack = new OverlayAttackRange(mIsoMap);
+
+     mOverlayHeal = new OverlayHealRange(mIsoMap);
+
+     mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
+                                                    localFaction, mIsoMap->GetNumCols());
+
+     mOverlayWall = new OverlayWall(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
+                                    localFaction, mIsoMap->GetNumCols());
+
+     mOverlaySelection = new OverlaySelection(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1));
+
+     mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
+                                    localFaction, mIsoMap->GetNumCols());
+
+     mOverlayStruct = new OverlayStructure(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
+                                           game->GetObjectsRegistry(), localFaction);
 }
 
 void ScreenGame::HideActionPanels()

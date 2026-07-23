@@ -14,7 +14,11 @@ namespace sgl
 {
     namespace ai { class Pathfinder; }
     namespace graphic { class ParticlesManager; }
-    namespace utilities { class StringManager; }
+    namespace utilities
+    {
+        class BinaryFile;
+        class StringManager;
+    }
 }
 
 namespace game
@@ -51,6 +55,10 @@ class ScreenGame : public Screen
 public:
     ScreenGame(Game * game);
     ~ScreenGame();
+
+    void InitNewGame();
+    bool LoadGame(sgl::utilities::BinaryFile * bf);
+    bool SaveGame(sgl::utilities::BinaryFile * bf);
 
     unsigned int GetPlayTimeInSec() const;
 
@@ -119,6 +127,7 @@ private:
     void CreateLayers();
 
     void CreateUI();
+    void CreateOverlays();
     void HideActionPanels();
 
     void LoadMapFile();
