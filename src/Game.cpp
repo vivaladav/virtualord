@@ -296,6 +296,20 @@ bool Game::SaveGame()
     for(Player * p : mPlayers)
         p->Save(bf);
 
+    // active Players
+    const unsigned int numActivePlayers = mActivePlayers.size();
+    bf.WriteUint(numActivePlayers);
+
+    for(Player * p : mActivePlayers)
+        bf.WriteInt(p->GetPlayerId());
+
+    // AI Players
+    const unsigned int numAIPlayers = mAIPlayers.size();
+    bf.WriteUint(numAIPlayers);
+
+    for(Player * p : mAIPlayers)
+        bf.WriteInt(p->GetPlayerId());
+
     // State
     const unsigned int stateId = GetActiveStateId();
     bf.WriteUint(stateId);
