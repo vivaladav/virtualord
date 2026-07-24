@@ -8,6 +8,8 @@
 #include <vector>
 #include <unordered_map>
 
+namespace sgl { namespace utilities { class BinaryFile; } }
+
 namespace game
 {
 
@@ -21,6 +23,8 @@ class MissionGoalsTracker
 public:
     MissionGoalsTracker(Game * g, Player * p);
     ~MissionGoalsTracker();
+
+    bool Save(sgl::utilities::BinaryFile & bf) const;
 
     void SetGameHUD(GameHUD * gh);
     void SetControlMap(const ControlMap * cm);

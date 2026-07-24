@@ -13,7 +13,11 @@
 namespace sgl
 {
     namespace ai { class Pathfinder; }
-    namespace utilities { class StringManager; }
+    namespace utilities
+    {
+        class BinaryFile;
+        class StringManager;
+    }
 }
 
 namespace game
@@ -50,6 +54,8 @@ class GameMap : public sgl::ai::IPathMap
 public:
     GameMap(Game * game, ScreenGame * sg, IsoMap * isoMap);
     ~GameMap();
+
+    bool Save(sgl::utilities::BinaryFile & bf) const;
 
     const ControlMap * GetControlMap() const;
 

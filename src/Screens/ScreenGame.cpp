@@ -259,6 +259,22 @@ bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
 {
     Screen::Save(bf);
 
+    mTrackerMG->Save(bf);
+
+    mGameMap->Save(bf);
+
+    bf.WriteInt(mActivePlayerIdx);
+
+    if(mLastSelected != nullptr)
+        bf.WriteUint(mLastSelected->GetObjectId());
+
+    bf.WriteUint(mTurnStage);
+
+    bf.WriteFloat(mTimePlayed);
+
+    bf.WriteBool(mAllowSelection);
+    bf.WriteBool(mLocalTurnInitDone);
+
     return false;
 }
 

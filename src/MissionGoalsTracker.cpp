@@ -76,6 +76,12 @@ MissionGoalsTracker::~MissionGoalsTracker()
     }
 }
 
+bool MissionGoalsTracker::Save(sgl::utilities::BinaryFile & bf) const
+{
+
+    return true;
+}
+
 void MissionGoalsTracker::SetGoals(const std::vector<MissionGoal> & goals)
 {
     mMissionGoals = goals;

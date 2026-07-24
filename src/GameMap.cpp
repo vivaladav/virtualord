@@ -126,6 +126,12 @@ GameMap::~GameMap()
         delete cp;
 }
 
+bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
+{
+
+    return true;
+}
+
 bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int ind) const
 {
     return ind < mCells.size() && mCells[ind].objTop != nullptr &&
