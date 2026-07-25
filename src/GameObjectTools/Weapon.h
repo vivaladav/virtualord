@@ -5,6 +5,7 @@
 namespace sgl
 {
     namespace graphic { class ParticlesManager; }
+    namespace utilities { class BinaryFile; }
 }
 
 namespace game
@@ -24,6 +25,8 @@ public:
     Weapon(const WeaponData & data, GameObject * owner, const Game * g,
            GameMap * gm, const sgl::graphic::ParticlesManager * partMan);
     virtual ~Weapon() = default;
+
+    virtual bool Save(sgl::utilities::BinaryFile & bf) const;
 
     AttackMode GetAttackMode() const;
     void SetAttackMode(AttackMode am);
