@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace sgl { namespace utilities { class BinaryFile; } }
+
 namespace game
 {
 
@@ -53,6 +55,8 @@ public:
 public:
     MissionGoal(MissionGoalType type, unsigned int quantity, unsigned int extraVal,
                 bool primary, bool hidden);
+
+    bool Save(sgl::utilities::BinaryFile & bf) const;
 
     // ATTRIBUTES
     unsigned int GetId() const;

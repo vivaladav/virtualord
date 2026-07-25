@@ -3,6 +3,7 @@
 #include "GameConstants.h"
 #include "Player.h"
 
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/StringManager.h>
 
 #include <cstddef>
@@ -127,6 +128,33 @@ MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
     SetCategory();
 
     SetMissionRewards();
+}
+
+
+bool MissionGoal::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // data
+    bf.WriteUint(mId);
+    bf.WriteUint(mType);
+    bf.WriteUint(mCategory);
+    bf.WriteUint(mQuantity);
+    bf.WriteUint(mExtraValue);
+    bf.WriteInt(mProgress);
+
+    // rewards
+    bf.WriteUint(mRewards.size());
+
+    for(const int r : mRewards)
+        bf.WriteInt(r);
+
+    // flags
+    bf.WriteBool(mCompleted);
+    bf.WriteBool(mFailed);
+    bf.WriteBool(mRewardCollected);
+    bf.WriteBool(mPrimary);
+    bf.WriteBool(mHidden);
+
+    return true;
 }
 
 void MissionGoal::AssignReward(Player * p)

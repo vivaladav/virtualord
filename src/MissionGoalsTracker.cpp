@@ -9,6 +9,8 @@
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/GameHUD.h"
 
+#include <sgl/utilities/BinaryFile.h>
+
 #ifdef DEV_MODE
 #include <iostream>
 #endif
@@ -78,6 +80,57 @@ MissionGoalsTracker::~MissionGoalsTracker()
 
 bool MissionGoalsTracker::Save(sgl::utilities::BinaryFile & bf) const
 {
+    // mission goals
+    bf.WriteUint(mMissionGoals.size());
+
+    for(const MissionGoal & mg : mMissionGoals)
+        mg.Save(bf);
+
+    // resources gained
+    bf.WriteUint(mResourcesGained.size());
+
+    for(const int r : mResourcesGained)
+        bf.WriteInt(r);
+
+    // structures built
+    bf.WriteUint(mStructuresBuilt.size());
+
+    for(const auto it : mStructuresBuilt)
+    {
+        bf.WriteUint(it.first);
+        bf.WriteUint(it.second);
+    }
+
+    // structures conquered
+    bf.WriteUint(mStructuresConquered.size());
+
+    for(const auto it : mStructuresConquered)
+    {
+        bf.WriteUint(it.first);
+        bf.WriteUint(it.second);
+    }
+
+    // categories destroyed
+    bf.WriteUint(mCategoriesDestroyed.size());
+
+    for(const auto it : mCategoriesDestroyed)
+    {
+        bf.WriteUint(it.first);
+        bf.WriteUint(it.second);
+    }
+
+    // data tracking
+    bf.WriteUint(mCompletedGoals);
+    bf.WriteUint(mGoalsToCollect);
+    bf.WriteUint(mMiniUnitsCreated);
+    bf.WriteUint(mUnitsCreated);
+    bf.WriteUint(mTotStructuresBuilt);
+    bf.WriteUint(mTotStructuresConquered);
+    bf.WriteUint(mWallBuilt);
+    bf.WriteUint(mPlayedTime);
+    bf.WriteUint(mPlayedTurns);
+    bf.WriteUint(mSelfDestructed);
+    bf.WriteBool(mMapCompleted);
 
     return true;
 }
