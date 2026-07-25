@@ -28,6 +28,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 #include <cstdlib>
@@ -106,6 +107,13 @@ GameObject::~GameObject()
     ClearGroup();
 
     mOnValueChanged.clear();
+}
+
+bool GameObject::Save(sgl::utilities::BinaryFile & bf) const
+{
+
+
+    return true;
 }
 
 // GROUP

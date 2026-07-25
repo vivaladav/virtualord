@@ -2,6 +2,8 @@
 
 #include "GameObjects/GameObjectTypes.h"
 
+namespace sgl { namespace utilities { class BinaryFile; } }
+
 namespace game
 {
 
@@ -14,6 +16,8 @@ public:
     CollectableGenerator(const Game * g, GameMap * gm, int turnsMin, int turnsMax,
                          GameObjectTypeId productType);
     virtual ~CollectableGenerator();
+
+    bool Save(sgl::utilities::BinaryFile & bf) const;
 
     void SetCell(int row, int col);
     int GetRow() const;

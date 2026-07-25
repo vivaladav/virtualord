@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "GameMap.h"
 
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 namespace game
@@ -19,6 +20,12 @@ CollectableGenerator::CollectableGenerator(const Game * g, GameMap * gm, int tur
 
 CollectableGenerator::~CollectableGenerator()
 {
+}
+
+bool CollectableGenerator::Save(sgl::utilities::BinaryFile & bf) const
+{
+
+    return true;
 }
 
 void CollectableGenerator::OnNewTurn()

@@ -2,10 +2,18 @@
 
 #include "GameObjects/GameObject.h"
 
+#include <sgl/utilities/BinaryFile.h>
+
 #include <algorithm>
 
 namespace game
 {
+
+bool GameObjectsGroup::Save(sgl::utilities::BinaryFile & bf) const
+{
+
+    return true;
+}
 
 void GameObjectsGroup::RemoveObject(GameObject * o)
 {

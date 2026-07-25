@@ -55,6 +55,7 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/Stage.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/StringManager.h>
 
 #include <algorithm>
@@ -118,6 +119,38 @@ GameMap::~GameMap()
 
 bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
 {
+    // cells map
+    bf.WriteUint(mCells.size());
+
+    for(const GameMapCell & cell : mCells)
+    {
+        bf.WriteInt(cell.currType);
+        bf.WriteInt(cell.basicType);
+    }
+
+    // objects
+    bf.WriteUint(mObjects.size());
+
+    for(const GameObject * obj : mObjects)
+        obj->Save(bf);
+
+    // collectible generators
+    bf.WriteUint(mCollGens.size());
+
+    for(const CollectableGenerator * gen : mCollGens)
+        gen->Save(bf);
+
+    // mini-unit groups
+    bf.WriteUint(mMiniUnitsGroups.size());
+
+    for(const MiniUnitsGroup * g : mMiniUnitsGroups)
+        g->Save(bf);
+
+    // city groups
+    bf.WriteUint(mCities.size());
+
+    for(const CityGroup * g : mCities)
+        g->Save(bf);
 
     return true;
 }

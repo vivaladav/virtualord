@@ -11,6 +11,7 @@
 namespace sgl
 {
     namespace graphic { class ParticlesManager; }
+    namespace utilities { class BinaryFile; }
 }
 
 namespace game
@@ -74,6 +75,8 @@ public:
 public:
     GameObject(const ObjectData & data, const ObjectInitData & initData);
     virtual ~GameObject();
+
+    virtual bool Save(sgl::utilities::BinaryFile & bf) const;
 
     // GROUP
     bool IsInGroup() const;

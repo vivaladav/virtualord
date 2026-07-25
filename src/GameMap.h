@@ -6,7 +6,6 @@
 #include <sgl/ai/IPathMap.h>
 
 #include <functional>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 

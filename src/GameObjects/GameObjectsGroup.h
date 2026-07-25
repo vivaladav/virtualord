@@ -3,6 +3,8 @@
 #include<functional>
 #include <vector>
 
+namespace sgl { namespace utilities { class BinaryFile; } }
+
 namespace game
 {
 
@@ -13,6 +15,8 @@ class GameObjectsGroup
 {
 public:
     virtual ~GameObjectsGroup() = default;
+
+    virtual bool Save(sgl::utilities::BinaryFile & bf) const;
 
     // basic objects handling
     void AddObject(GameObject * o);
