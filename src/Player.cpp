@@ -154,6 +154,8 @@ bool Player::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(mNumCells);
     bf.WriteUint(mNumLinkedCells);
     bf.WriteUint(mMaxUnits);
+    bf.WriteUint(mEnemiesKilled);
+    bf.WriteUint(mCasualties);
 
     // upgrade multiplayers
     bf.WriteFloat(mBaseProdMult);
