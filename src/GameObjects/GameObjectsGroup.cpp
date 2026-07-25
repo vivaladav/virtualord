@@ -11,6 +11,10 @@ namespace game
 
 bool GameObjectsGroup::Save(sgl::utilities::BinaryFile & bf) const
 {
+    bf.WriteUint(mObjects.size());
+
+    for(const GameObject * obj : mObjects)
+        bf.WriteUint(obj->GetObjectId());
 
     return true;
 }

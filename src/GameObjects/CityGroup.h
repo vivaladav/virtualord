@@ -13,6 +13,8 @@ class CityGroup : public GameObjectsGroup
 public:
     CityGroup(GameMap * gm);
 
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     bool IsCityConquered() const;
 
     void UpdateCityConquered(Player * conqueror);

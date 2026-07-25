@@ -7,6 +7,7 @@
 
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/utilities/BinaryFile.h>
 
 namespace game
 {
@@ -48,6 +49,19 @@ void CityGroup::UpdateCityConquered(Player * conqueror)
             mGameMap->ConquerStructure(c, conqueror);
         }
     }
+}
+
+bool CityGroup::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObjectsGroup::Save(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    bf.WriteBool(mConquered);
+
+    return true;
 }
 
 } // namespace game

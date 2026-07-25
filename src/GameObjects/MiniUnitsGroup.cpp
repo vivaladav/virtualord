@@ -3,12 +3,37 @@
 #include "GameConstants.h"
 #include "GameObjects/GameObject.h"
 
+#include <sgl/utilities/BinaryFile.h>
+
 namespace game
 {
 
 MiniUnitsGroup::MiniUnitsGroup(PlayerFaction faction)
     : mFaction(faction)
 {
+}
+
+bool MiniUnitsGroup::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObjectsGroup::Save(bf);
+
+    if(!res)
+        return false;
+
+    // path
+    bf.WriteUint(mPath.size());
+
+    for(const unsigned int ind : mPath)
+        bf.WriteUint(ind);
+
+    // target
+    bf.WriteInt(mTarget.row);
+    bf.WriteInt(mTarget.col);
+
+    // faction
+    bf.WriteUint(mFaction);
+
+    return true;
 }
 
 bool MiniUnitsGroup::CanAttack() const

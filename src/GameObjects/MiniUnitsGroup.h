@@ -17,6 +17,8 @@ class MiniUnitsGroup : public GameObjectsGroup
 public:
     MiniUnitsGroup(PlayerFaction faction);
 
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     PlayerFaction GetFaction() const;
 
     bool CanAttack() const;
