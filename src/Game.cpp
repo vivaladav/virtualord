@@ -250,6 +250,45 @@ void Game::ClearGameData()
 // -- LOAD & SAVE --
 bool Game::LoadGame()
 {
+    using namespace sgl;
+
+#ifdef DEV_MODE
+    // TODO remove later, now left just for reference on testing times
+    std::cout << "Game::LoadGame - START LOADING: " << mCurrSaveFile << std::endl;
+    auto t0 = std::chrono::high_resolution_clock::now();
+#endif
+
+    // OPEN save file
+    utilities::BinaryFile bf(mCurrSaveFile, utilities::BinaryFile::OPEN_INPUT);
+
+    if(!bf.IsOpen())
+    {
+        std::cout << "[ERR] Game::LoadGame - can't open file " << mCurrSaveFile << std::endl;
+        return false;
+    }
+
+    // version
+    std::string version;
+    bf.ReadString(version);
+
+    if(version != SAVE_VERSION)
+    {
+        std::cout << "[ERR] Game::LoadGame - version in file " << mCurrSaveFile << " is "
+                  << version << " (expected " << SAVE_VERSION << ")" << std::endl;
+        return false;
+    }
+
+    // CLOSE save file
+    bf.Close();
+
+#ifdef DEV_MODE
+    // TODO remove later, now left just for reference on testing times
+    auto t1 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
+    std::cout << "Game::LoadGame - GAME LOADED in: " << duration.count() << " ms" << std::endl;
+#endif
+
+
     return false;
 }
 
