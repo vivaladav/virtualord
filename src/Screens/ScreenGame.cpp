@@ -593,7 +593,7 @@ void ScreenGame::InitPlayers()
         Player * p = game->GetActivePlayerByIndex(i);
 
         p->ResetTurnEnergy();
-        p->ResetNumCells();
+        p->ResetMissionData();
 
         AssignStartResources(p);
 
@@ -1118,8 +1118,8 @@ void ScreenGame::OnKeyUp(sgl::core::KeyboardEvent & event)
                   << "TERRITORY CONTROLLED: " << territory << "%\n"
                   << "CELLS CONTROLLED: " << mLocalPlayer->GetNumCells() << "\n"
                   << "CELLS LINKED: " << mLocalPlayer->GetNumLinkedCells() << "\n"
-                  << "ENEMIS KILLED: " << mGameMap->GetEnemiesKilled(pf) << "\n"
-                  << "CASUALTIES: " << mGameMap->GetCasualties(pf)  << "\n"
+                  << "ENEMIS KILLED: " << mLocalPlayer->GetEnemiesKilled() << "\n"
+                  << "CASUALTIES: " << mLocalPlayer->GetCasualties()  << "\n"
                   << "CURRENT CELL: " << mCurrCell.row << "," << mCurrCell.col
                   << " (" << pcc.x << "," << pcc.y << ")" << "\n"
                   << "RESOURCES"

@@ -501,8 +501,8 @@ void GameHUD::ShowDialogEndMission(bool won)
     const PlayerFaction pf = p->GetFaction();
     const unsigned int turns = p->GetTurnsPlayed();
     const unsigned int territory = gm->GetControlMap()->GetPercentageControlledByFaction(pf);
-    const unsigned int killed = gm->GetEnemiesKilled(pf);
-    const unsigned int casualties = gm->GetCasualties(pf);
+    const unsigned int killed = p->GetEnemiesKilled();
+    const unsigned int casualties = p->GetCasualties();
     const unsigned int played = mScreen->GetPlayTimeInSec();
 
     // create dialog

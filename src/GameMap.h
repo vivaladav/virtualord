@@ -117,11 +117,9 @@ public:
 
     void InitCities();
 
-    // player stats
+    // kills
     void RegisterEnemyKill(GameObject * killer, GameObject * victim);
     void RegisterCasualty(PlayerFaction killed);
-    unsigned int GetEnemiesKilled(PlayerFaction killer) const;
-    unsigned int GetCasualties(PlayerFaction faction) const;
 
     bool AreObjectsAdjacent(const GameObject * obj1, const GameObject * obj2) const;
     bool AreCellsAdjacent(const Cell2D & cell1, const Cell2D & cell2) const;
@@ -332,10 +330,6 @@ private:
 
     unsigned int mRows = 0;
     unsigned int mCols = 0;
-
-    // Player stats
-    std::unordered_map<PlayerFaction, unsigned int> mEnemiesKilled;
-    std::unordered_map<PlayerFaction, unsigned int> mCasualties;
 };
 
 // ==================== INLINE METHODS ====================
@@ -434,10 +428,6 @@ inline Player * GameMap::GetCellOwner(unsigned int r, unsigned int c) const
     else
         return nullptr;
 }
-
-inline void GameMap::RegisterCasualty(PlayerFaction killed) { ++mCasualties[killed]; }
-inline unsigned int GameMap::GetEnemiesKilled(PlayerFaction killer) const { return mEnemiesKilled.at(killer); }
-inline unsigned int GameMap::GetCasualties(PlayerFaction faction) const { return mCasualties.at(faction); }
 
 inline bool GameMap::IsDoingAutomaticMoves() const
 {

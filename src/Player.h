@@ -112,9 +112,16 @@ public:
     void RemoveOnResourceChanged(Stat sid, unsigned int funId);
     void RemoveOnResourceRangeChanged(Stat sid, unsigned int funId);
 
+    // kills
+    unsigned int GetEnemiesKilled() const;
+    void RegisterEnemyKill();
+    unsigned int GetCasualties() const;
+    void RegisterCasualty();
+
     unsigned int GetNumCells() const;
     void SumCells(int val);
-    void ResetNumCells();
+
+    void ResetMissionData();
 
     unsigned int GetNumLinkedCells() const;
     void SetNumLinkedCells(unsigned int val);
@@ -240,6 +247,9 @@ private:
     unsigned int mNumLinkedCells = 0;
     unsigned int mMaxUnits = 0;
 
+    unsigned int mEnemiesKilled = 0;
+    unsigned int mCasualties = 0;
+
     // -- upgrades --
     float mBaseProdMult = 1.f;
     float mStorageEnergyMult = 1.f;
@@ -317,9 +327,13 @@ inline bool Player::HasEnough(Stat sid, int val)
         return false;
 }
 
+inline unsigned int Player::GetEnemiesKilled() const { return mEnemiesKilled;  }
+inline void Player::RegisterEnemyKill() { ++mEnemiesKilled; }
+inline unsigned int Player::GetCasualties() const { return mCasualties; }
+inline void Player::RegisterCasualty() { ++mCasualties; }
+
 inline unsigned int Player::GetNumCells() const { return mNumCells; }
 inline void Player::SumCells(int val) { mNumCells += val; }
-inline void Player::ResetNumCells() { mNumCells = 0; }
 
 inline unsigned int Player::GetNumLinkedCells() const { return mNumLinkedCells; }
 inline void Player::SetNumLinkedCells(unsigned int val) { mNumLinkedCells = val; }

@@ -87,16 +87,6 @@ GameMap::GameMap(Game * game, ScreenGame * sg, IsoMap * isoMap)
 {
     SetSize(isoMap->GetNumRows(), isoMap->GetNumCols());
 
-    mEnemiesKilled[FACTION_1] = 0;
-    mEnemiesKilled[FACTION_2] = 0;
-    mEnemiesKilled[FACTION_3] = 0;
-    mEnemiesKilled[NO_FACTION] = 0;
-
-    mCasualties[FACTION_1] = 0;
-    mCasualties[FACTION_2] = 0;
-    mCasualties[FACTION_3] = 0;
-    mCasualties[NO_FACTION] = 0;
-
     // PATHFINDER
     mPathfinder = new sgl::ai::Pathfinder;
 }
@@ -810,11 +800,18 @@ void GameMap::RegisterEnemyKill(GameObject * killer, GameObject * victim)
     const int experienceKill = 25;
     killer->SumExperience(experienceKill);
 
-    ++mEnemiesKilled[killer->GetFaction()];
+    Player * p = mGame->GetActivePlayerByFaction(killer->GetFaction());
+    p->RegisterEnemyKill();
 
     // track kill for mission goals
     auto trackerMG = mScreenGame->GetMissionGoalsTracker();
     trackerMG->AddObjectDestroyedByCategory(victim->GetObjectCategory());
+}
+
+void GameMap::RegisterCasualty(PlayerFaction killed)
+{
+    Player * p = mGame->GetActivePlayerByFaction(killed);
+    p->RegisterCasualty();
 }
 
 bool GameMap::AreObjectsAdjacent(const GameObject * obj1, const GameObject * obj2) const

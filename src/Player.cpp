@@ -441,6 +441,13 @@ void Player::RemoveOnResourceRangeChanged(Stat sid, unsigned int funId)
         mStats[sid].RemoveOnRangeChanged(funId);
 }
 
+void Player::ResetMissionData()
+{
+    mNumCells = 0;
+    mEnemiesKilled = 0;
+    mCasualties = 0;
+}
+
 void Player::HandleCollectable(GameObject * collected, GameObject * collector)
 {
     const GameObjectTypeId type = collected->GetObjectType();
