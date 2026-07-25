@@ -24,6 +24,13 @@ CollectableGenerator::~CollectableGenerator()
 
 bool CollectableGenerator::Save(sgl::utilities::BinaryFile & bf) const
 {
+    bf.WriteUint(mProductType);
+
+    bf.WriteInt(mRegenTurns);
+    bf.WriteInt(mCounterRegen);
+
+    bf.WriteInt(mRow);
+    bf.WriteInt(mCol);
 
     return true;
 }

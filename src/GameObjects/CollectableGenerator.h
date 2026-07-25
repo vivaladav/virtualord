@@ -17,7 +17,7 @@ public:
                          GameObjectTypeId productType);
     virtual ~CollectableGenerator();
 
-    bool Save(sgl::utilities::BinaryFile & bf) const;
+    virtual bool Save(sgl::utilities::BinaryFile & bf) const;
 
     void SetCell(int row, int col);
     int GetRow() const;
