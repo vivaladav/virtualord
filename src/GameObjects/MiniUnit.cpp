@@ -10,6 +10,7 @@
 #include <sgl/core/Point.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 namespace
@@ -41,6 +42,23 @@ MiniUnit::MiniUnit(const ObjectData & data, const ObjectInitData & initData, int
 
     // INIT GRAPHICS
     SetImage();
+}
+
+bool MiniUnit::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObject::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteInt(mElements);
+
+    // flags
+    bf.WriteBool(mMoving);
+    bf.WriteBool(mTargetReached);
+
+    return true;
 }
 
 void MiniUnit::SetNumElements(int num)

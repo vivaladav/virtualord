@@ -7,6 +7,7 @@
 #include "IsoObject.h"
 
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 namespace
@@ -57,6 +58,24 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
 
     SetObjColors();
     SetImage();
+}
+
+bool Trees::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObject::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteInt(mLevel);
+    bf.WriteInt(mNumTrees);
+    bf.WriteInt(mTurnsToChange);
+    bf.WriteInt(mTurns);
+    bf.WriteUint(mNumVariants);
+    bf.WriteUint(mMaxNum);
+
+    return true;
 }
 
 void Trees::OnNewTurn(PlayerFaction faction)

@@ -14,6 +14,7 @@
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 #include <unordered_map>
 #include <cmath>
@@ -38,6 +39,29 @@ Unit::Unit(const ObjectData & data, const ObjectInitData & initData)
 
     // init graphics
     SetImage();
+}
+
+bool Unit::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObject::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteFloat(mTimeHealing);
+    bf.WriteFloat(mTimerHealing);
+
+    // target healing
+    if(mTargetHealing != nullptr)
+        bf.WriteUint(mTargetHealing->GetObjectId());
+    else
+        bf.WriteUint(0);
+
+    // structure to build
+    bf.WriteUint(mStructToBuild);
+
+    return true;
 }
 
 bool Unit::CanAttack() const

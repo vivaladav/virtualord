@@ -12,6 +12,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/LoadedDie.h>
 #include <sgl/utilities/UniformDistribution.h>
 
@@ -39,6 +40,20 @@ LootBox::LootBox(const ObjectData & data, const ObjectInitData & initData)
     // ObjectData::TYPE_LOOTBOX
     else
        SetPrize();
+}
+
+bool LootBox::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObject::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteInt(mPrizeQuantity);
+    bf.WriteUint(mPrizeType);
+
+    return true;
 }
 
 bool LootBox::IsExploding() const

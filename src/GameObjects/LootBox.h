@@ -25,6 +25,8 @@ public:
 public:
     LootBox(const ObjectData & data, const ObjectInitData & initData);
 
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     bool IsExploding() const;
 
     void Open(Player * p);

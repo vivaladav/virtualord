@@ -11,6 +11,8 @@ public:
     Trees(const ObjectData & data, const ObjectInitData & initData,
           GameObjectVariantId var);
 
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     void OnNewTurn(PlayerFaction faction) override;
 
 private:

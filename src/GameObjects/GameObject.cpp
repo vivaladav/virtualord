@@ -111,7 +111,53 @@ GameObject::~GameObject()
 
 bool GameObject::Save(sgl::utilities::BinaryFile & bf) const
 {
+    // ID
+    bf.WriteUint(mObjId);
 
+    // core data
+    bf.WriteUint(mVariant);
+    bf.WriteUint(mType);
+    bf.WriteUint(mCategory);
+    bf.WriteUint(mFaction);
+
+    // weapon, if any
+    if(mWeapon != nullptr)
+        mWeapon->Save(bf);
+    else
+        bf.WriteUint(0);
+
+    // actions
+    bf.WriteUint(mActiveAction);
+    bf.WriteUint(mCurrAction);
+    bf.WriteUint(mDefaultAction);
+
+    // attributes
+    bf.WriteUint(mAttributes.size());
+
+    for(const auto it : mAttributes)
+    {
+        bf.WriteUint(it.first);
+        bf.WriteInt(it.second);
+    }
+
+    // stats
+    bf.WriteInt(mMaxVisLevel);
+    bf.WriteInt(mExpLevel);
+    bf.WriteInt(mExp);
+    bf.WriteFloat(mMaxEnergy);
+    bf.WriteFloat(mEnergy);
+    bf.WriteFloat(mMaxHealth);
+    bf.WriteFloat(mHealth);
+    bf.WriteFloat(mMaxSpeed);
+
+    // flags
+    bf.WriteBool(mStructure);
+    bf.WriteBool(mStatic);
+    bf.WriteBool(mCanBeConq);
+    bf.WriteBool(mSelected);
+    bf.WriteBool(mVisible);
+    bf.WriteBool(mVisited);
+    bf.WriteBool(mLinked);
 
     return true;
 }

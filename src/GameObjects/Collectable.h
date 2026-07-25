@@ -13,6 +13,8 @@ public:
     Collectable(const ObjectData & data, const ObjectInitData & initData,
                 unsigned int min, unsigned int max);
 
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     int GetNumUnits() const;
     void RandomizeNumUnits(unsigned int min, unsigned int max);
     void MaximizeUnits();
