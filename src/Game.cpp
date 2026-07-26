@@ -14,6 +14,7 @@
 #include "States/StateInitGame.h"
 #include "States/StateLeaveGame.h"
 #include "States/StateLeavePregame.h"
+#include "States/StateLoadGame.h"
 #include "States/StateMainMenu.h"
 #include "States/StateNewGame.h"
 #include "States/StatePlanetMap.h"
@@ -134,6 +135,7 @@ Game::Game(int argc, char * argv[])
     mStateMan->AddState(new StateLeavePregame(this));
     mStateMan->AddState(new StateMainMenu(this));
     mStateMan->AddState(new StateNewGame(this));
+    mStateMan->AddState(new StateLoadGame(this));
     mStateMan->AddState(new StatePlanetMap(this));
     mStateMan->AddState(new StateSettings(this));
     mStateMan->AddState(new StateTest(this));
@@ -392,7 +394,10 @@ bool Game::LoadGame()
     }
 
     // State
-    const unsigned int stateId = mReaderSave->ReadUint();
+    const auto stateId = static_cast<StateId>(mReaderSave->ReadUint());
+
+    StateDataLoadGame data(stateId);
+    RequestNextActiveState(StateId::LOAD_GAME, &data);
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times

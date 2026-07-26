@@ -20,7 +20,6 @@ void StateLeavePregame::SetNextStateData(sgl::utilities::StateData * data)
     assert(data != nullptr);
 
     auto d = static_cast<StateDataLeavePregame *>(data);
-
     mNextState = d->GetNextState();
 }
 

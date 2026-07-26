@@ -28,12 +28,14 @@ void StateGame::OnActive()
     // create and init game screen
     auto screen = new ScreenGame(mGame);
 
+    auto bf = mGame->GetSaveFileForReading();
+
     // start a new game
-    if(mBinFile == nullptr)
+    if(bf == nullptr)
         screen->InitNewGame();
     else
     // load saved game
-        screen->LoadGame(mBinFile);
+        screen->Load(*bf);
 
     mScreen = screen;
 

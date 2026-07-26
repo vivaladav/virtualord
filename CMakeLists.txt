@@ -214,6 +214,8 @@ add_executable(
     src/Screens/ScreenInit.cpp
     src/Screens/ScreenInitGame.h
     src/Screens/ScreenInitGame.cpp
+    src/Screens/ScreenLoadGame.h
+    src/Screens/ScreenLoadGame.cpp
     src/Screens/ScreenMainMenu.h
     src/Screens/ScreenMainMenu.cpp
     src/Screens/ScreenNewGame.h
@@ -240,6 +242,8 @@ add_executable(
     src/States/StateLeaveGame.cpp
     src/States/StateLeavePregame.h
     src/States/StateLeavePregame.cpp
+    src/States/StateLoadGame.h
+    src/States/StateLoadGame.cpp
     src/States/StateMainMenu.h
     src/States/StateMainMenu.cpp
     src/States/StateNewGame.h

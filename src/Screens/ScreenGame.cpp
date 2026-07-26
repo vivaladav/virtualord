@@ -250,9 +250,9 @@ void ScreenGame::InitNewGame()
     InitTutorial();
 }
 
-bool ScreenGame::LoadGame(sgl::utilities::BinaryFile * bf)
+bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
 {
-    return false;
+    return true;
 }
 
 bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
@@ -275,7 +275,7 @@ bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteBool(mAllowSelection);
     bf.WriteBool(mLocalTurnInitDone);
 
-    return false;
+    return true;
 }
 
 unsigned int ScreenGame::GetPlayTimeInSec() const

@@ -13,6 +13,7 @@ enum StateId : unsigned int
     LEAVE_GAME,
     LEAVE_PREGAME,
     NEW_GAME,
+    LOAD_GAME,
     PLANET_MAP,
     SETTINGS,
     TEST,
