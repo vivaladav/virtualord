@@ -1087,7 +1087,7 @@ void ScreenGame::LoadMapFile()
     {
         const auto & e = objEntries[i];
 
-        mGameMap->CreateObjectFromFile(e.layerId, e.typeId, e.variantId, e.faction, e.r0, e.c0);
+        mGameMap->CreateObjectFromFile(e.typeId, e.variantId, e.faction, e.r0, e.c0);
     }
 
     mGameMap->InitCities();

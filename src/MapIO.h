@@ -21,7 +21,6 @@ enum MissionCategory : unsigned int;
 // structure used to define GameObjects to create
 struct MapObjectEntry
 {
-    unsigned int layerId;
     GameObjectTypeId typeId;
     GameObjectVariantId variantId;
     unsigned int faction;

@@ -156,7 +156,7 @@ void Trees::SpawnTree(int r0, int c0)
     sgl::utilities::UniformDistribution dis(0, mNumVariants - 1, GetGame()->GetRandSeed());
     const int variant = dis.GetNextValue();
 
-    gm->CreateObject(MapLayers::REGULAR_OBJECTS, GetObjectType(), variant, NO_FACTION, r0, c0, false);
+    gm->CreateObject(GetObjectType(), variant, NO_FACTION, r0, c0, false);
 
     // set cell type of new tree
     gm->SetCellType(r0, c0, CT_TREES1);

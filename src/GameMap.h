@@ -105,13 +105,12 @@ public:
 
     Player * GetCellOwner(unsigned int r, unsigned int c) const;
 
-    void CreateObjectFromFile(unsigned int layerId, GameObjectTypeId type,
-                              GameObjectVariantId variant, unsigned int faction,
-                              unsigned int r0, unsigned int c0);
+    void CreateObjectFromFile(GameObjectTypeId type, GameObjectVariantId variant,
+                              unsigned int faction, unsigned int r0, unsigned int c0);
 
-    GameObject * CreateObject(unsigned int layerId, GameObjectTypeId type,
-                              GameObjectVariantId variant, PlayerFaction faction,
-                              unsigned int r0, unsigned int c0, bool instantAdd);
+    GameObject * CreateObject(GameObjectTypeId type, GameObjectVariantId variant,
+                              PlayerFaction faction, unsigned int r0, unsigned int c0,
+                              bool instantAdd);
 
     bool RemoveAndDestroyObject(GameObject * obj);
 
@@ -289,7 +288,6 @@ private:
         unsigned int r1;
         unsigned int c1;
         Player * owner;
-        unsigned int layer;
     };
 
     // to access visibility functions

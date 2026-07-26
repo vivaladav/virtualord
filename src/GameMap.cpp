@@ -485,7 +485,7 @@ void GameMap::UpdateLocalObjectVisibility(GameObject * go)
     ApplyLocalVisibility();
 }
 
-void GameMap::CreateObjectFromFile(unsigned int layerId, GameObjectTypeId type, GameObjectVariantId variant,
+void GameMap::CreateObjectFromFile(GameObjectTypeId type, GameObjectVariantId variant,
                                    unsigned int faction, unsigned int r0, unsigned int c0)
 {
     const auto pf = static_cast<PlayerFaction>(faction);
@@ -505,12 +505,12 @@ void GameMap::CreateObjectFromFile(unsigned int layerId, GameObjectTypeId type, 
         CreateUnit(type, dest, owner);
     }
     else
-        CreateObject(layerId, type, variant, pf, r0, c0, true);
+        CreateObject(type, variant, pf, r0, c0, true);
 }
 
-GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
-                                   GameObjectVariantId variant, PlayerFaction faction,
-                                   unsigned int r0, unsigned int c0, bool instantAdd)
+GameObject * GameMap::CreateObject(GameObjectTypeId type, GameObjectVariantId variant,
+                                   PlayerFaction faction, unsigned int r0, unsigned int c0,
+                                   bool instantAdd)
 {
     // object origin is out of map
     if(r0 >= mRows || c0 >= mCols)
@@ -526,7 +526,6 @@ GameObject * GameMap::CreateObject(unsigned int layerId, GameObjectTypeId type,
     o2a.c0 = c0;
     o2a.r1 = 1 + r0 - rows;
     o2a.c1 = 1 + c0 - cols;
-    o2a.layer = layerId;
 
     // full size is out of map
     if(o2a.r1 >= mRows || o2a.c1 >= mCols)
@@ -1138,7 +1137,7 @@ void GameMap::BuildStructure(const Cell2D & cell, Player * player, GameObjectTyp
     Player * prevOwner = gcell.owner;
     gcell.owner = player;
 
-    GameObject * obj = CreateObject(REGULAR_OBJECTS, st, 0, player->GetFaction(), cell.row, cell.col, true);
+    GameObject * obj = CreateObject(st, 0, player->GetFaction(), cell.row, cell.col, true);
 
     // update player
     const int numCells = obj->GetRows() * obj->GetCols();
@@ -1240,8 +1239,7 @@ void GameMap::BuildWall(const Cell2D & cell, Player * player, GameObjectTypeId p
     UpdateInfluencedCells(cell.row, cell.col);
 
     // add object wall
-    CreateObject(REGULAR_OBJECTS, ObjectData::TYPE_WALL, planned,
-                 player->GetFaction(), cell.row, cell.col, true);
+    CreateObject(ObjectData::TYPE_WALL, planned, player->GetFaction(), cell.row, cell.col, true);
 
     UpdateLinkedCells(player);
 
@@ -3538,7 +3536,7 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
     }
 
     // create object in iso map
-    mIsoMap->GetLayer(o2a.layer)->AddObject(o2a.obj->GetIsoObject(), o2a.r0, o2a.c0);
+    mIsoMap->GetLayer(REGULAR_OBJECTS)->AddObject(o2a.obj->GetIsoObject(), o2a.r0, o2a.c0);
 
     o2a.obj->OnPositionChanged();
 
