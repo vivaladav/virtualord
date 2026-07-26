@@ -51,6 +51,7 @@ public:
     static const char * PLANETS_NAME[NUM_PLANETS];
 
 public:
+    Planet();
     Planet(PlanetId pid, PlanetSize size);
 
     bool Load(sgl::utilities::BinaryFile & bf);
@@ -91,6 +92,7 @@ private:
 private:
     struct MapData
     {
+        MapData() { }
         MapData(const std::string & file, int energy, int material, int diamonds,
                 int blobs, unsigned int rows, unsigned int cols, int value,
                 PlayerFaction occupier, TerritoryStatus status, MissionCategory mission);

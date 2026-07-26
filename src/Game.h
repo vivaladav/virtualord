@@ -24,6 +24,7 @@ namespace sgl
 
     namespace utilities
     {
+        class BinaryFile;
         class StateData;
         class StateManager;
     }
@@ -77,7 +78,11 @@ public:
     void ClearGameData();
 
     // -- LOAD & SAVE --
-    const std::string & GetCurrentSaveFile() const;
+    const std::string & GetCurrentSaveFilePath() const;
+    sgl::utilities::BinaryFile * GetSaveFileForReading() const;
+    void CloseSaveFileForReading();
+    bool IsSaveFileValid() const;
+
     bool LoadGame();
     bool SaveGame();
     bool LoadSettings();
@@ -212,6 +217,8 @@ private:
 
     ObjectsDataRegistry * mObjsRegistry = nullptr;
 
+    sgl::utilities::BinaryFile * mReaderSave = nullptr;
+
     Difficulty mDifficulty = EASY;
 
     PlayerFaction mLocalFaction;
@@ -243,7 +250,11 @@ private:
 
 inline ResourceLoader * Game::GetResourceLoader() const { return mResLoader; }
 
-inline const std::string & Game::GetCurrentSaveFile() const { return mCurrSaveFile; }
+inline const std::string & Game::GetCurrentSaveFilePath() const { return mCurrSaveFile; }
+inline sgl::utilities::BinaryFile * Game::GetSaveFileForReading() const
+{
+    return mReaderSave;
+}
 
 inline unsigned int Game::GetCurrentTerritory() const { return mCurrTerritory; }
 inline void Game::SetCurrentTerritory(unsigned int territory)

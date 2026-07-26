@@ -32,6 +32,8 @@ Planet::MapData::MapData(const std::string & file, int energy, int material, int
 }
 
 // == PLANET ==
+Planet::Planet() { }
+
 Planet::Planet(PlanetId pid, PlanetSize size)
     : mId(pid)
     , mSize(size)
@@ -42,7 +44,31 @@ Planet::Planet(PlanetId pid, PlanetSize size)
 
 bool Planet::Load(sgl::utilities::BinaryFile & bf)
 {
-    return false;
+    // planet data
+    mId = static_cast<PlanetId>(bf.ReadUint());
+    mSize = static_cast<PlanetSize>(bf.ReadUint());
+
+    const unsigned int numMaps = bf.ReadUint();
+    mMaps.resize(numMaps);
+
+    for(unsigned int i = 0 ; i < numMaps; ++i)
+    {
+        MapData & map = mMaps[i];
+
+        bf.ReadString(map.mFile);
+        map.mEnergy = bf.ReadInt();
+        map.mMaterial = bf.ReadInt();
+        map.mDiamonds = bf.ReadInt();
+        map.mBlobs = bf.ReadInt();
+        map.mRows = bf.ReadUint();
+        map.mCols = bf.ReadUint();
+        map.mValue = bf.ReadInt();
+        map.mOccupier = static_cast<PlayerFaction>(bf.ReadUint());
+        map.mStatus = static_cast<TerritoryStatus>(bf.ReadUint());
+        map.mMission = static_cast<MissionCategory>(bf.ReadUint());
+    }
+
+    return true;
 }
 
 bool Planet::Save(sgl::utilities::BinaryFile & bf) const

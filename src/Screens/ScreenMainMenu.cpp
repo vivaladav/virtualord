@@ -26,7 +26,6 @@
 #include <sgl/sgui/PushButton.h>
 #include <sgl/sgui/Stage.h>
 #include <sgl/sgui/TextArea.h>
-#include <sgl/utilities/Filesystem.h>
 #include <sgl/utilities/System.h>
 #include <sgl/utilities/StringManager.h>
 
@@ -114,8 +113,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
                                     game->LoadGame();
                                });
 
-    utilities::Filesystem fs;
-    button->SetEnabled(fs.DoesPathExist(game->GetCurrentSaveFile()));
+    button->SetEnabled(game->IsSaveFileValid());
 
     buttonY += button->GetHeight() + VMARGIN;
 

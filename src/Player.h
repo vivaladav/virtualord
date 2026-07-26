@@ -43,6 +43,7 @@ public:
     };
 
 public:
+    Player();
     Player(int pid);
     ~Player();
 

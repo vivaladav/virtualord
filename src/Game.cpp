@@ -224,6 +224,8 @@ Game::~Game()
 
     delete mResLoader;
 
+    CloseSaveFileForReading();
+
     sgui::Stage::Destroy();
 
     media::AudioManager::Destroy();
@@ -251,6 +253,47 @@ void Game::ClearGameData()
 }
 
 // -- LOAD & SAVE --
+void Game::CloseSaveFileForReading()
+{
+    if(mReaderSave == nullptr)
+        return ;
+
+    mReaderSave->Close();
+
+    delete mReaderSave;
+    mReaderSave = nullptr;
+}
+
+bool Game::IsSaveFileValid() const
+{
+    using namespace sgl;
+
+    // OPEN save file
+    utilities::BinaryFile bf(mCurrSaveFile, utilities::BinaryFile::OPEN_INPUT);
+
+    if(!bf.IsOpen())
+    {
+        std::cout << "[ERR] Game::IsSaveFileValid - can't open file " << mCurrSaveFile << std::endl;
+        return false;
+    }
+
+    // version
+    std::string version;
+    bf.ReadString(version);
+
+    if(version != SAVE_VERSION)
+    {
+        std::cout << "[ERR] Game::IsSaveFileValid - version in file " << mCurrSaveFile << " is "
+                  << version << " (expected " << SAVE_VERSION << ")" << std::endl;
+        return false;
+    }
+
+    // CLOSE save file
+    bf.Close();
+
+    return true;
+}
+
 bool Game::LoadGame()
 {
     using namespace sgl;
@@ -261,28 +304,95 @@ bool Game::LoadGame()
     auto t0 = std::chrono::high_resolution_clock::now();
 #endif
 
-    // OPEN save file
-    utilities::BinaryFile bf(mCurrSaveFile, utilities::BinaryFile::OPEN_INPUT);
+    if(mReaderSave != nullptr)
+        CloseSaveFileForReading();
 
-    if(!bf.IsOpen())
+    // OPEN save file for reading
+    mReaderSave = new utilities::BinaryFile(mCurrSaveFile, utilities::BinaryFile::OPEN_INPUT);
+
+    if(!mReaderSave->IsOpen())
     {
-        std::cout << "[ERR] Game::LoadGame - can't open file " << mCurrSaveFile << std::endl;
-        return false;
+        std::cout << "[ERR] Game::GetSaveFileForReading - can't open file " << mCurrSaveFile << std::endl;
+
+        delete mReaderSave;
+        mReaderSave = nullptr;
     }
 
     // version
     std::string version;
-    bf.ReadString(version);
+    mReaderSave->ReadString(version);
 
     if(version != SAVE_VERSION)
     {
-        std::cout << "[ERR] Game::LoadGame - version in file " << mCurrSaveFile << " is "
+        std::cout << "[ERR] Game::IsSaveFileValid - version in file " << mCurrSaveFile << " is "
                   << version << " (expected " << SAVE_VERSION << ")" << std::endl;
         return false;
     }
 
-    // CLOSE save file
-    bf.Close();
+    // game data
+    mDifficulty = static_cast<Difficulty>(mReaderSave->ReadUint());
+    mLocalFaction = static_cast<PlayerFaction>(mReaderSave->ReadUint());
+    mCurrPlanet = static_cast<PlanetId>(mReaderSave->ReadUint());
+    mCurrTerritory = mReaderSave->ReadUint();
+    mRandSeed = mReaderSave->ReadUint();
+
+    // Planets
+    const unsigned int numPlanets = mReaderSave->ReadUint();
+
+    for(unsigned int i = 0; i < numPlanets; ++i)
+    {
+        auto p = new Planet;
+        p->Load(*mReaderSave);
+
+        mPlanets.emplace(p->GetPlanetId(), p);
+    }
+
+    // Players
+    const unsigned int numPlayers = mReaderSave->ReadUint();
+
+    for(unsigned int i = 0; i < numPlayers; ++i)
+    {
+        auto p = new Player;
+        p->Load(*mReaderSave);
+
+        mPlayers.emplace_back(p);
+    }
+
+    // active Players
+    const unsigned int numActivePlayers = mReaderSave->ReadUint();
+
+    for(unsigned int i = 0; i < numActivePlayers; ++i)
+    {
+        const int playerId = mReaderSave->ReadInt();
+
+        for(auto p : mPlayers)
+        {
+            if(p->GetPlayerId() == playerId)
+                mActivePlayers.emplace_back(p);
+        }
+    }
+
+    // AI Players
+    const unsigned int numAIPlayers = mReaderSave->ReadUint();
+
+    for(unsigned int i = 0; i < numAIPlayers; ++i)
+    {
+        const int playerId = mReaderSave->ReadInt();
+
+        for(auto p : mPlayers)
+        {
+            if(p->GetPlayerId() == playerId)
+            {
+                auto * ai = new PlayerAI(p, mObjsRegistry);
+                p->SetAI(ai);
+
+                mAIPlayers.emplace_back(p);
+            }
+        }
+    }
+
+    // State
+    const unsigned int stateId = mReaderSave->ReadUint();
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
@@ -291,8 +401,7 @@ bool Game::LoadGame()
     std::cout << "Game::LoadGame - GAME LOADED in: " << duration.count() << " ms" << std::endl;
 #endif
 
-
-    return false;
+    return true;
 }
 
 bool Game::SaveGame()
