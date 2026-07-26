@@ -38,8 +38,6 @@ private:
     void OnActive() override;
     void OnInactive() override;
 
-    void DestroyPregameTextures();
-
 private:
     StateId mNextState;
 };

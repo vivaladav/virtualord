@@ -22,9 +22,11 @@ public:
     // data loading
     void LoadFirstInitData();
     void LoadPreGameData();
+    void LoadGameData();
 
     // data destruction
     void DestroyPreGameTextures();
+    void DestroyGameTextures();
 
     void Update(float delta);
 
@@ -38,6 +40,7 @@ private:
 
     void SetupPermanentTextures();
     void SetupPregameTextures();
+    void SetupGameTextures();
 
     void SetupMouseCursors();
 

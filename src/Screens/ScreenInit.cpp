@@ -36,7 +36,7 @@ using namespace sgl;
     auto tm = graphic::TextureManager::Instance();
     auto fm = graphic::FontManager::Instance();
 
-    // == SETUP JOBS ==
+    // SETUP JOBS
     if(firstInit)
         mResLoader->LoadFirstInitData();
 

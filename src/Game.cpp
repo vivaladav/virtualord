@@ -222,6 +222,8 @@ Game::~Game()
     ClearPlanets();
     ClearPlayers();
 
+    delete mResLoader;
+
     sgui::Stage::Destroy();
 
     media::AudioManager::Destroy();

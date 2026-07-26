@@ -28,7 +28,9 @@ void StateLeavePregame::OnActive()
 {
     mScreen = new DummyScreen(mGame);
 
-    DestroyPregameTextures();
+    // destroy textures
+    auto loader = mGame->GetResourceLoader();
+    loader->DestroyPreGameTextures();
 
     mGame->RequestNextActiveState(mNextState);
 }
@@ -37,13 +39,6 @@ void StateLeavePregame::OnInactive()
 {
     delete mScreen;
     mScreen = nullptr;
-}
-
-void StateLeavePregame::DestroyPregameTextures()
-{
-    auto loader = mGame->GetResourceLoader();
-
-    loader->DestroyPreGameTextures();
 }
 
 } // namespace game
