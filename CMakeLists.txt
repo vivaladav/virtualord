@@ -54,6 +54,8 @@ add_executable(
     src/Planet.cpp
     src/Player.h
     src/Player.cpp
+    src/ResourceLoader.h
+    src/ResourceLoader.cpp
     src/StatValue.h
     src/StatValue.cpp
     src/Version.h

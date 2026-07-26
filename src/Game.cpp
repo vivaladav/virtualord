@@ -3,6 +3,7 @@
 #include "GameConstants.h"
 #include "Planet.h"
 #include "Player.h"
+#include "ResourceLoader.h"
 #include "Version.h"
 #include "AI/PlayerAI.h"
 #include "GameObjects/ObjectsDataRegistry.h"
@@ -69,9 +70,9 @@ bool Game::GOD_MODE = false;
 const std::string Game::SAVE_VERSION("0.1.0");
 const std::string Game::SETTINGS_VERSION("0.1.0");
 
-
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
+    , mResLoader(new ResourceLoader(this))
     , mTutMan(new TutorialManager)
     , mObjsRegistry(new ObjectsDataRegistry)
     , mLocalFaction(NO_FACTION)

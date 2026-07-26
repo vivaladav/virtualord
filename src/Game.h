@@ -35,6 +35,7 @@ namespace game
 class ObjectsDataRegistry;
 class Planet;
 class Player;
+class ResourceLoader;
 class TutorialManager;
 
 enum ExtendedResource : unsigned int;
@@ -69,6 +70,8 @@ public:
 public:
     Game(int argc, char * argv[]);
     ~Game();
+
+    ResourceLoader * GetResourceLoader() const;
 
     void InitNewGameData();
     void ClearGameData();
@@ -203,6 +206,8 @@ private:
 
     sgl::media::AudioManager * mAudioMan = nullptr;
 
+    ResourceLoader * mResLoader = nullptr;
+
     TutorialManager * mTutMan = nullptr;
 
     ObjectsDataRegistry * mObjsRegistry = nullptr;
@@ -235,6 +240,8 @@ private:
     unsigned char mClearB = 0;
     unsigned char mClearA = 255;
 };
+
+inline ResourceLoader * Game::GetResourceLoader() const { return mResLoader; }
 
 inline const std::string & Game::GetCurrentSaveFile() const { return mCurrSaveFile; }
 
