@@ -78,6 +78,56 @@ MissionGoalsTracker::~MissionGoalsTracker()
     }
 }
 
+bool MissionGoalsTracker::Load(sgl::utilities::BinaryFile & bf)
+{
+    // mission goals
+    const unsigned int numGoals = bf.ReadUint();
+    mMissionGoals.resize(numGoals);
+
+    for(unsigned int i = 0; i < numGoals; ++i)
+        mMissionGoals[i].Load(bf);
+
+    // resources gained
+    const unsigned int numResGained = bf.ReadUint();
+    mResourcesGained.resize(numResGained);
+
+    for(unsigned int i = 0; i < numResGained; ++i)
+        mResourcesGained[i] = bf.ReadInt();
+
+    // structures built
+    const unsigned int numStructBuilt = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numStructBuilt; ++i)
+        mStructuresBuilt.emplace(bf.ReadUint(), bf.ReadUint());
+
+    // structures conquered
+    const unsigned int numStructConquered = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numStructConquered; ++i)
+        mStructuresConquered.emplace(bf.ReadUint(), bf.ReadUint());
+
+    // categories destroyed
+    const unsigned int numCatDestroyed = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numCatDestroyed; ++i)
+        mCategoriesDestroyed.emplace(bf.ReadUint(), bf.ReadUint());
+
+    // data tracking
+    mCompletedGoals = bf.ReadUint();
+    mGoalsToCollect = bf.ReadUint();
+    mMiniUnitsCreated = bf.ReadUint();
+    mUnitsCreated = bf.ReadUint();
+    mTotStructuresBuilt = bf.ReadUint();
+    mTotStructuresConquered = bf.ReadUint();
+    mWallBuilt = bf.ReadUint();
+    mPlayedTime = bf.ReadUint();
+    mPlayedTurns = bf.ReadUint();
+    mSelfDestructed = bf.ReadUint();
+    mMapCompleted = bf.ReadBool();
+
+    return true;
+}
+
 bool MissionGoalsTracker::Save(sgl::utilities::BinaryFile & bf) const
 {
     // mission goals

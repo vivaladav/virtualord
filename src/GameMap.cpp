@@ -117,11 +117,29 @@ GameMap::~GameMap()
         delete cp;
 }
 
+bool GameMap::Load(sgl::utilities::BinaryFile & bf)
+{
+    // cells
+    SetSize(bf.ReadUint(), bf.ReadUint());
+
+    for(GameMapCell & cell : mCells)
+    {
+        cell.currType = static_cast<CellTypes>(bf.ReadInt());
+        cell.basicType = static_cast<CellTypes>(bf.ReadInt());
+    }
+
+    return true;
+}
+
 bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
 {
-    // cells map
-    bf.WriteUint(mCells.size());
+    // TODO change data to reflect same needed for CreateObjectFromFile
 
+    // map size
+    bf.WriteUint(mIsoMap->GetNumRows());
+    bf.WriteUint(mIsoMap->GetNumCols());
+
+    // cells map
     for(const GameMapCell & cell : mCells)
     {
         bf.WriteInt(cell.currType);

@@ -54,6 +54,7 @@ public:
     GameMap(Game * game, ScreenGame * sg, IsoMap * isoMap);
     ~GameMap();
 
+    bool Load(sgl::utilities::BinaryFile & bf);
     bool Save(sgl::utilities::BinaryFile & bf) const;
 
     const ControlMap * GetControlMap() const;

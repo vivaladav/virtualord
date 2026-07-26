@@ -252,6 +252,37 @@ void ScreenGame::InitNewGame()
 
 bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
 {
+    mTrackerMG->Load(bf);
+
+    mGameMap->Load(bf);
+
+    // active player
+    mActivePlayerIdx = bf.ReadInt();
+
+    // last local object selected
+    const unsigned int selectedId = bf.ReadUint();
+
+    if(selectedId != 0)
+    {
+        const std::vector<GameObject *> & objs = mGameMap->GetObjects();
+
+        for(GameObject * obj : objs)
+        {
+            if(obj->GetObjectId() == selectedId)
+            {
+                mLastSelected = obj;
+                break;
+            }
+        }
+    }
+
+    mTurnStage = static_cast<TurnStage>(bf.ReadUint());
+
+    mTimePlayed = bf.ReadFloat();
+
+    mAllowSelection = bf.ReadBool();
+    mLocalTurnInitDone = bf.ReadBool();
+
     return true;
 }
 
@@ -267,6 +298,8 @@ bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
 
     if(mLastSelected != nullptr)
         bf.WriteUint(mLastSelected->GetObjectId());
+    else
+        bf.WriteUint(0);
 
     bf.WriteUint(mTurnStage);
 

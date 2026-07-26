@@ -24,6 +24,7 @@ public:
     MissionGoalsTracker(Game * g, Player * p);
     ~MissionGoalsTracker();
 
+    bool Load(sgl::utilities::BinaryFile & bf);
     bool Save(sgl::utilities::BinaryFile & bf) const;
 
     void SetGameHUD(GameHUD * gh);

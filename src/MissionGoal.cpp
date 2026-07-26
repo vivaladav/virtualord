@@ -114,6 +114,8 @@ const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORI
     { TYPE_TERRITORY_CONTROL_TURNS, MC_CONQUEST },
 };
 
+MissionGoal::MissionGoal() { }
+
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
                          unsigned int extraVal, bool primary, bool hidden)
     : mId(++num)
@@ -130,6 +132,32 @@ MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
     SetMissionRewards();
 }
 
+bool MissionGoal::Load(sgl::utilities::BinaryFile & bf)
+{
+    // data
+    mId = bf.ReadUint();
+    mType = bf.ReadUint();
+    mCategory = static_cast<MissionCategory>(bf.ReadUint());
+    mQuantity = bf.ReadUint();
+    mExtraValue = bf.ReadUint();
+    mProgress = bf.ReadUint();
+
+    // rewards
+    const unsigned int numRewards = bf.ReadUint();
+    mRewards.resize(numRewards);
+
+    for(unsigned int i = 0; i < numRewards; ++i)
+        mRewards[i] = bf.ReadInt();
+
+    // flags
+    mCompleted = bf.ReadBool();
+    mFailed = bf.ReadBool();
+    mRewardCollected = bf.ReadBool();
+    mPrimary = bf.ReadBool();
+    mHidden = bf.ReadBool();
+
+    return true;
+}
 
 bool MissionGoal::Save(sgl::utilities::BinaryFile & bf) const
 {
