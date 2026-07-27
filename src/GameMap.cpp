@@ -128,6 +128,76 @@ bool GameMap::Load(sgl::utilities::BinaryFile & bf)
         cell.basicType = static_cast<CellTypes>(bf.ReadInt());
     }
 
+    // objects
+    const unsigned int numObjs = bf.ReadUint();
+
+    mObjects.reserve(numObjs);
+    mObjectsSet.reserve(numObjs);
+
+    for(unsigned int i = 0; i < numObjs; ++i)
+    {
+        // data for creation
+        const GameObjectTypeId type = bf.ReadUint();
+        const GameObjectVariantId variant = bf.ReadUint();
+        const auto faction = static_cast<PlayerFaction>(bf.ReadUint());
+        const int r0 = bf.ReadInt();
+        const int c0 = bf.ReadInt();
+
+        // create object and add it to the map
+        GameObject * obj = CreateObjectFromFile(type, variant, faction, r0, c0, false);
+
+        // load object data
+        obj->Load(bf);
+
+        // weapon
+        const WeaponType wt = bf.ReadUint();
+
+        if(wt != WeaponData::TYPE_NULL)
+        {
+            // create and set the weapon
+            auto weapon = AssignWeaponToObject(wt, obj);
+            // load weapon data
+            weapon->Load(bf);
+        }
+    }
+
+    // collectible generators
+    const unsigned int numCollGen = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numCollGen; ++i)
+    {
+        const GameObjectTypeId type = bf.ReadUint();
+        const int r = bf.ReadInt();
+        const int c = bf.ReadInt();
+
+        auto gen = CreateCollectableGenerator(r, c, type);
+        gen->Load(bf);
+    }
+
+    // mini-unit groups
+    const unsigned int numMiniUnitGroups = bf.ReadUint();
+    mMiniUnitsGroups.reserve(numMiniUnitGroups);
+
+    for(unsigned int i = 0; i < numCollGen; ++i)
+    {
+        auto g = CreateMiniUnitsGroup();
+        g->Load(bf);
+
+        mMiniUnitsGroups.emplace_back(g);
+    }
+
+    // cities groups
+    const unsigned int numCityGroups = bf.ReadUint();
+    mCities.reserve(numCityGroups);
+
+    for(unsigned int i = 0; i < numCollGen; ++i)
+    {
+        auto g = new CityGroup(this);
+        g->Load(bf);
+
+        mCities.emplace_back(g);
+    }
+
     return true;
 }
 
@@ -150,25 +220,67 @@ bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(mObjects.size());
 
     for(const GameObject * obj : mObjects)
+    {
+        // data for creation
+        bf.WriteUint(obj->GetObjectType());
+        bf.WriteUint(obj->GetObjectVariant());
+        bf.WriteUint(obj->GetFaction());
+        bf.WriteInt(obj->GetRow0());
+        bf.WriteInt(obj->GetCol0());
+
+        // save object data
         obj->Save(bf);
+
+        // weapon, if any
+        auto weapon = obj->GetWeapon();
+
+        if(weapon != nullptr)
+        {
+            // save weapon type for creation
+            bf.WriteUint(weapon->GetType());
+
+            // save weapon data
+            weapon->Save(bf);
+        }
+        else
+            bf.WriteUint(WeaponData::TYPE_NULL);
+    }
 
     // collectible generators
     bf.WriteUint(mCollGens.size());
 
     for(const CollectableGenerator * gen : mCollGens)
+    {
+        // data for creation
+        bf.WriteUint(gen->GetProductType());
+        bf.WriteInt(gen->GetRow());
+        bf.WriteInt(gen->GetCol());
+
+        // object data
         gen->Save(bf);
+    }
 
     // mini-unit groups
     bf.WriteUint(mMiniUnitsGroups.size());
 
     for(const MiniUnitsGroup * g : mMiniUnitsGroups)
+    {
+        if(g->IsEmpty())
+            continue;
+
         g->Save(bf);
+    }
 
     // city groups
     bf.WriteUint(mCities.size());
 
     for(const CityGroup * g : mCities)
+    {
+        if(g->IsEmpty())
+            continue;
+
         g->Save(bf);
+    }
 
     return true;
 }
@@ -294,6 +406,9 @@ void GameMap::SetSize(unsigned int rows, unsigned int cols)
             cell.col = c;
         }
     }
+
+    // init isometric map
+    mIsoMap->SetSize(rows, cols, false);
 
     // init players visibility map
     for(int i = 0; i < mGame->GetNumActivePlayers(); ++i)
