@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GameObjects/GameObjectTypes.h"
+
 #include <unordered_map>
 
 namespace sgl
@@ -26,7 +28,10 @@ public:
            GameMap * gm, const sgl::graphic::ParticlesManager * partMan);
     virtual ~Weapon() = default;
 
+    virtual bool Load(sgl::utilities::BinaryFile & bf);
     virtual bool Save(sgl::utilities::BinaryFile & bf) const;
+
+    WeaponType GetType() const;
 
     AttackMode GetAttackMode() const;
     void SetAttackMode(AttackMode am);
@@ -86,7 +91,7 @@ private:
 private:
     std::unordered_map<ObjAttId, int> mAttributes;
 
-    const std::unordered_map<AttackMode, int> mEnergyCosts;
+    std::unordered_map<AttackMode, int> mEnergyCosts;
 
     GameObject * mOwner = nullptr;
 
@@ -94,6 +99,8 @@ private:
     GameMap * mGameMap = nullptr;
 
     const sgl::graphic::ParticlesManager * mPartMan = nullptr;
+
+    WeaponType mType;
 
     // attack
     AttackMode mAttackMode;
@@ -109,6 +116,8 @@ private:
     bool mPerfectShot = false;
     bool mFatalHit = true;
 };
+
+inline WeaponType Weapon::GetType() const { return mType; }
 
 inline AttackMode Weapon::GetAttackMode() const { return mAttackMode; }
 inline void Weapon::SetAttackMode(AttackMode am) { mAttackMode = am; }

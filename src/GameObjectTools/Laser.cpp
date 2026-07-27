@@ -22,7 +22,7 @@ namespace game
 {
 
 Laser::Laser(const WeaponData & data, GameObject * owner, const Game * g,
-             GameMap * gm, const sgl::graphic::ParticlesManager *partMan)
+             GameMap * gm, const sgl::graphic::ParticlesManager * partMan)
     : Weapon(data, owner, g, gm, partMan)
     , mPartUpdater(static_cast<UpdaterSingleLaser *>(partMan->GetUpdater(PU_SINGLE_LASER)))
 {
