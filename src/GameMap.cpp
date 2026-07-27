@@ -306,20 +306,23 @@ void GameMap::SetSize(unsigned int rows, unsigned int cols)
     mPathfinder->SetMap(this);
 }
 
-void GameMap::CreateCollectableGenerator(unsigned int r, unsigned int c, ResourceType type)
+CollectableGenerator * GameMap::CreateCollectableGenerator(unsigned int r, unsigned int c,
+                                                           GameObjectTypeId type)
 {
     CollectableGenerator * gen = nullptr;
 
-    if(RES_DIAMONDS == type)
+    if(ObjectData::TYPE_DIAMONDS == type)
         gen = new DiamondsGenerator(mGame, this);
-    else if(RES_BLOBS == type)
+    else if(ObjectData::TYPE_BLOBS == type)
         gen = new BlobsGenerator(mGame, this);
     else
-        return ;
+        return nullptr;
 
     gen->SetCell(r, c);
 
     mCollGens.emplace_back(gen);
+
+    return gen;
 }
 
 void GameMap::ApplyLocalVisibility()

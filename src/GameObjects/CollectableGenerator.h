@@ -13,10 +13,12 @@ class GameMap;
 class CollectableGenerator
 {
 public:
+    CollectableGenerator(const Game * g, GameMap * gm, GameObjectTypeId productType);
     CollectableGenerator(const Game * g, GameMap * gm, int turnsMin, int turnsMax,
                          GameObjectTypeId productType);
     virtual ~CollectableGenerator();
 
+    virtual bool Load(sgl::utilities::BinaryFile & bf);
     virtual bool Save(sgl::utilities::BinaryFile & bf) const;
 
     void SetCell(int row, int col);
@@ -35,7 +37,7 @@ protected:
 private:
     void ResetCounter(int min, int max);
 
-    virtual void OnGeneration() = 0;
+    virtual void OnGeneration();
 
 private:
     friend class StepGameSetCollectableGeneratorTurns;

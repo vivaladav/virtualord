@@ -40,6 +40,7 @@ class Temple;
 class Unit;
 class WallBuildPath;
 class WallGate;
+class Weapon;
 class WeaponData;
 
 struct Cell2D;
@@ -92,7 +93,8 @@ public:
 
     void SetSize(unsigned int rows, unsigned int cols);
 
-    void CreateCollectableGenerator(unsigned int r, unsigned int c, ResourceType type);
+    CollectableGenerator * CreateCollectableGenerator(unsigned int r, unsigned int c,
+                                                      GameObjectTypeId type);
 
     void ApplyLocalVisibility();
     void ApplyVisibility(Player * player);
