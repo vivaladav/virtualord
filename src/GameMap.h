@@ -105,12 +105,13 @@ public:
 
     Player * GetCellOwner(unsigned int r, unsigned int c) const;
 
-    void CreateObjectFromFile(GameObjectTypeId type, GameObjectVariantId variant,
-                              unsigned int faction, unsigned int r0, unsigned int c0);
+    GameObject * CreateObjectFromFile(GameObjectTypeId type, GameObjectVariantId variant,
+                                      unsigned int faction, unsigned int r0, unsigned int c0,
+                                      bool assignWeapon = true);
 
     GameObject * CreateObject(GameObjectTypeId type, GameObjectVariantId variant,
                               PlayerFaction faction, unsigned int r0, unsigned int c0,
-                              bool instantAdd);
+                              bool instantAdd, bool assignWeapon = true);
 
     bool RemoveAndDestroyObject(GameObject * obj);
 
@@ -156,15 +157,15 @@ public:
     bool CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * player);
     Cell2D GetNewUnitDestination(GameObject * gen) const;
     void StartCreateUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & dest, Player * player);
-    Unit * CreateUnit(GameObjectTypeId ut, const Cell2D & dest, Player * player);
+    Unit * CreateUnit(GameObjectTypeId ut, const Cell2D & dest, Player * player, bool assignWeapon = true);
 
     // mini units
     bool CanCreateMiniUnit(GameObjectTypeId ut, GameObject * gen, int elements, Player * player);
     GameObject * CreateMiniUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & dest,
-                                int elements, Player * player);
+                                int elements, Player * player, bool assignWeapon = true);
     Cell2D GetNewMiniUnitDestination(const Cell2D & genCell) const;
 
-    MiniUnitsGroup * CreateMiniUnitsGroup(PlayerFaction faction);
+    MiniUnitsGroup * CreateMiniUnitsGroup();
 
     bool IsDoingAutomaticMoves() const;
 
@@ -260,7 +261,7 @@ private:
     const ObjectData & GetObjectData(GameObjectTypeId t) const;
     const WeaponData & GetWeaponData(WeaponType t) const;
 
-    void AssignWeaponToObject(WeaponType wt, GameObject * obj);
+    Weapon * AssignWeaponToObject(WeaponType wt, GameObject * obj);
 
     // mini units
     void DeleteEmptyMiniUnitsGroups();

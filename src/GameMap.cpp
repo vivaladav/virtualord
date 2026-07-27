@@ -485,32 +485,44 @@ void GameMap::UpdateLocalObjectVisibility(GameObject * go)
     ApplyLocalVisibility();
 }
 
-void GameMap::CreateObjectFromFile(GameObjectTypeId type, GameObjectVariantId variant,
-                                   unsigned int faction, unsigned int r0, unsigned int c0)
+GameObject * GameMap::CreateObjectFromFile(GameObjectTypeId type, GameObjectVariantId variant,
+                                          unsigned int faction, unsigned int r0, unsigned int c0,
+                                          bool assignWeapon)
 {
     const auto pf = static_cast<PlayerFaction>(faction);
 
-    if(ObjectData::TYPE_UNIT_MEDIC1 == type || ObjectData::TYPE_UNIT_SCOUT1 == type ||
-       ObjectData::TYPE_UNIT_SOLDIER1 == type || ObjectData::TYPE_UNIT_SOLDIER2 == type ||
-       ObjectData::TYPE_UNIT_SPAWNER1 == type || ObjectData::TYPE_UNIT_SPAWNER2 == type ||
-       ObjectData::TYPE_UNIT_WORKER1 == type)
+    const ObjectData & data = GetObjectData(type);
+    const GameObjectCategoryId cat = data.GetCategory();
+
+    if(cat == ObjectData::CAT_UNIT)
     {
         Player * owner =  mGame->GetActivePlayerByFaction(pf);
 
         if(nullptr == owner)
-            return ;
+            return nullptr;
 
         const Cell2D dest(r0, c0);
 
-        CreateUnit(type, dest, owner);
+        return CreateUnit(type, dest, owner, assignWeapon);
+    }
+    else if(cat == ObjectData::CAT_MINI_UNIT)
+    {
+        Player * owner =  mGame->GetActivePlayerByFaction(pf);
+
+        if(nullptr == owner)
+            return nullptr;
+
+        const Cell2D dest(r0, c0);
+
+        return CreateMiniUnit(type, nullptr, dest, variant, owner);
     }
     else
-        CreateObject(type, variant, pf, r0, c0, true);
+        return CreateObject(type, variant, pf, r0, c0, true, assignWeapon);
 }
 
 GameObject * GameMap::CreateObject(GameObjectTypeId type, GameObjectVariantId variant,
-                                   PlayerFaction faction, unsigned int r0, unsigned int c0,
-                                   bool instantAdd)
+                                  PlayerFaction faction, unsigned int r0, unsigned int c0,
+                                  bool instantAdd, bool assignWeapon)
 {
     // object origin is out of map
     if(r0 >= mRows || c0 >= mCols)
@@ -642,7 +654,8 @@ GameObject * GameMap::CreateObject(GameObjectTypeId type, GameObjectVariantId va
     o2a.obj->SetCell(&mCells[ind0]);
 
     // weapon
-    AssignWeaponToObject(data.GetWeapon(), o2a.obj);
+    if(assignWeapon)
+        AssignWeaponToObject(data.GetWeapon(), o2a.obj);
 
     // schedule object for map addition
     if(instantAdd)
@@ -1817,7 +1830,7 @@ void GameMap::StartCreateUnit(GameObjectTypeId ut, GameObject * gen,
     player->SumResource(Player::Stat::BLOBS, -costs[RES_BLOBS]);
 }
 
-Unit * GameMap::CreateUnit(GameObjectTypeId ut, const Cell2D & dest, Player * player)
+Unit * GameMap::CreateUnit(GameObjectTypeId ut, const Cell2D & dest, Player * player, bool assignWeapon)
 {
     const unsigned int r = static_cast<unsigned int>(dest.row);
     const unsigned int c = static_cast<unsigned int>(dest.col);
@@ -1835,7 +1848,8 @@ Unit * GameMap::CreateUnit(GameObjectTypeId ut, const Cell2D & dest, Player * pl
     unit->SetCell(&mCells[ind]);
 
     // weapon
-    AssignWeaponToObject(data.GetWeapon(), unit);
+    if(assignWeapon)
+        AssignWeaponToObject(data.GetWeapon(), unit);
 
     // update cell
     gcell.objTop = unit;
@@ -1881,7 +1895,7 @@ bool GameMap::CanCreateMiniUnit(GameObjectTypeId ut, GameObject * gen, int eleme
 }
 
 GameObject * GameMap::CreateMiniUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & dest,
-                                     int elements, Player * player)
+                                    int elements, Player * player, bool assignWeapon)
 {
     const int ind = dest.row * mCols + dest.col;
     GameMapCell & gcell = mCells[ind];
@@ -1905,7 +1919,8 @@ GameObject * GameMap::CreateMiniUnit(GameObjectTypeId ut, GameObject * gen, cons
     mu->SetCell(&mCells[ind]);
 
     // weapon
-    AssignWeaponToObject(data.GetWeapon(), mu);
+    if(assignWeapon)
+        AssignWeaponToObject(data.GetWeapon(), mu);
 
     // update cell
     gcell.objTop = mu;
@@ -4119,10 +4134,10 @@ const WeaponData & GameMap::GetWeaponData(WeaponType t) const
     return objReg->GetWeaponData(t);
 }
 
-void GameMap::AssignWeaponToObject(WeaponType wt, GameObject * obj)
+Weapon * GameMap::AssignWeaponToObject(WeaponType wt, GameObject * obj)
 {
     if(wt == WeaponData::TYPE_NULL)
-        return ;
+        return nullptr;
 
     auto pm = mScreenGame->GetParticlesManager();
 
@@ -4133,6 +4148,8 @@ void GameMap::AssignWeaponToObject(WeaponType wt, GameObject * obj)
         weapon = new Laser(wData, obj, mGame, this, pm);
 
     obj->SetWeapon(weapon);
+
+    return weapon;
 }
 
 void GameMap::DeleteEmptyMiniUnitsGroups()
