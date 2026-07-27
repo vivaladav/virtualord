@@ -109,22 +109,26 @@ GameObject::~GameObject()
     mOnValueChanged.clear();
 }
 
+bool GameObject::Load(sgl::utilities::BinaryFile & bf)
+{
+    // ID
+    mObjId = bf.ReadUint();
+
+    if(mObjId > counter)
+        counter = mObjId + 1;
+
+    // actions
+    mActiveAction = static_cast<GameObjectActionType>(bf.ReadUint());
+    mCurrAction = static_cast<GameObjectActionType>(bf.ReadUint());
+    mDefaultAction = static_cast<GameObjectActionType>(bf.ReadUint());
+
+    return true;
+}
+
 bool GameObject::Save(sgl::utilities::BinaryFile & bf) const
 {
     // ID
     bf.WriteUint(mObjId);
-
-    // core data
-    bf.WriteUint(mVariant);
-    bf.WriteUint(mType);
-    bf.WriteUint(mCategory);
-    bf.WriteUint(mFaction);
-
-    // weapon, if any
-    if(mWeapon != nullptr)
-        mWeapon->Save(bf);
-    else
-        bf.WriteUint(0);
 
     // actions
     bf.WriteUint(mActiveAction);

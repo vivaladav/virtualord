@@ -46,9 +46,21 @@ void CityGroup::UpdateCityConquered(Player * conqueror)
         {
             const Cell2D c(o->GetRow0(), o->GetCol0());
 
-            mGameMap->ConquerStructure(c, conqueror);
+            GetGameMap()->ConquerStructure(c, conqueror);
         }
     }
+}
+
+bool CityGroup::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObjectsGroup::Load(bf);
+
+    if(!res)
+        return false;
+
+    mConquered = bf.ReadBool();
+
+    return true;
 }
 
 bool CityGroup::Save(sgl::utilities::BinaryFile & bf) const
@@ -57,6 +69,9 @@ bool CityGroup::Save(sgl::utilities::BinaryFile & bf) const
 
     if(!res)
         return false;
+
+    if(IsEmpty())
+        return true;
 
     // flags
     bf.WriteBool(mConquered);

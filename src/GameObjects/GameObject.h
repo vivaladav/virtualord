@@ -76,6 +76,7 @@ public:
     GameObject(const ObjectData & data, const ObjectInitData & initData);
     virtual ~GameObject();
 
+    virtual bool Load(sgl::utilities::BinaryFile & bf);
     virtual bool Save(sgl::utilities::BinaryFile & bf) const;
 
     // GROUP

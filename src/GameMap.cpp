@@ -1970,9 +1970,9 @@ Cell2D GameMap::GetNewMiniUnitDestination(const Cell2D & genCell) const
     return Cell2D(-1, -1);
 }
 
-MiniUnitsGroup * GameMap::CreateMiniUnitsGroup(PlayerFaction faction)
+MiniUnitsGroup * GameMap::CreateMiniUnitsGroup()
 {
-    auto group = new MiniUnitsGroup(faction);
+    auto group = new MiniUnitsGroup(this);
 
     mMiniUnitsGroups.emplace_back(group);
 

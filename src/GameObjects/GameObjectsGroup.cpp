@@ -1,5 +1,6 @@
 #include "GameObjects/GameObjectsGroup.h"
 
+#include "GameMap.h"
 #include "GameObjects/GameObject.h"
 
 #include <sgl/utilities/BinaryFile.h>
@@ -9,14 +10,32 @@
 namespace game
 {
 
+bool GameObjectsGroup::Load(sgl::utilities::BinaryFile & bf)
+{
+    const unsigned int numObjs = bf.ReadUint();
+
+    const std::vector<GameObject *> & objs = mGameMap->GetObjects();
+
+    for(unsigned int i = 0; i < numObjs; ++i)
+    {
+        const unsigned int objID = bf.ReadUint();
+
+        for(GameObject * obj: objs)
+        {
+            if(obj->GetObjectId() == objID)
+            {
+                obj->SetGroup(this);
+                break;
+            }
+        }
+    }
+
+    return true;
+}
+
 bool GameObjectsGroup::Save(sgl::utilities::BinaryFile & bf) const
 {
-    if(mObjects.empty())
-        return true;
-
     bf.WriteUint(mObjects.size());
-
-    bf.WriteUint(mObjects[0]->GetObjectId());
 
     for(const GameObject * obj : mObjects)
         bf.WriteUint(obj->GetObjectId());
@@ -30,6 +49,14 @@ void GameObjectsGroup::RemoveObject(GameObject * o)
 
     if(it != mObjects.end())
         mObjects.erase(it);
+}
+
+GameObjectTypeId GameObjectsGroup::GetObjectsType() const
+{
+    if(mObjects.empty())
+        return ObjectData::TYPE_NULL;
+    else
+        return mObjects[0]->GetObjectType();
 }
 
 void GameObjectsGroup::DoForAll(const std::function<void(GameObject *)> & f) const

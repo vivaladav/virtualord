@@ -1053,9 +1053,6 @@ void ScreenGame::LoadMapFile()
     const unsigned int rows = mio.GetMapRows();
     const unsigned int cols = mio.GetMapCols();
 
-    // update iso map
-    mIsoMap->SetSize(rows, cols, true);
-
     // update game map
     mGameMap->SetSize(rows, cols);
 
@@ -2084,7 +2081,10 @@ bool ScreenGame::SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, Game
 
     // no group set yet -> create one
     if(nullptr == group)
-        group = mGameMap->CreateMiniUnitsGroup(gen->GetFaction());
+    {
+        group = mGameMap->CreateMiniUnitsGroup();
+        static_cast<MiniUnitsGroup*>(group)->SetFaction(gen->GetFaction());
+    }
 
     GameMapProgressBar * pb = mHUD->CreateProgressBarInCell(cell, timeSpawn, player->GetFaction());
 
