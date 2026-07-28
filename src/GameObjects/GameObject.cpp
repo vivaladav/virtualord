@@ -122,6 +122,31 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     mCurrAction = static_cast<GameObjectActionType>(bf.ReadUint());
     mDefaultAction = static_cast<GameObjectActionType>(bf.ReadUint());
 
+    // attributes
+    const unsigned int numAttr = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numAttr; ++i)
+         mAttributes[static_cast<ObjAttId>(bf.ReadUint())] = bf.ReadInt();
+
+    // stats
+    mMaxVisLevel = bf.ReadInt();
+    mExpLevel = bf.ReadInt();
+    mExp = bf.ReadInt();
+    mMaxEnergy = bf.ReadFloat();
+    mEnergy = bf.ReadFloat();
+    mMaxHealth = bf.ReadFloat();
+    mHealth = bf.ReadFloat();
+    mMaxSpeed = bf.ReadFloat();
+
+    // flags
+    mStructure = bf.ReadBool();
+    mStatic = bf.ReadBool();
+    mCanBeConq = bf.ReadBool();
+    mSelected = bf.ReadBool();
+    mVisible = bf.ReadBool();
+    mVisited = bf.ReadBool();
+    mLinked = bf.ReadBool();
+
     return true;
 }
 
