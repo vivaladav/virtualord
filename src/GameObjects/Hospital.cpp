@@ -13,6 +13,7 @@
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 namespace game
 {
@@ -33,6 +34,60 @@ Hospital::Hospital(const ObjectData & data, const ObjectInitData & initData)
     mHealingPower = HealPowers[data.GetAttribute(OBJ_ATT_HEALING_POWER)];
 
     SetImage();
+}
+
+bool Hospital::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // healing
+    mTimeHealing = bf.ReadFloat();
+    mTimerHealing = bf.ReadFloat();
+    mHealingPower = bf.ReadFloat();
+    mRangeHealing = bf.ReadInt();
+
+    // target healing
+    const unsigned int targetID = bf.ReadUint();
+
+    if(targetID != 0)
+    {
+        const std::vector<GameObject *> &  objs = GetGameMap()->GetObjects();
+
+        for(GameObject * obj : objs)
+        {
+            if(obj->GetObjectId() == targetID)
+            {
+                mTargetHealing = obj;
+                break;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool Hospital::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // healing
+    bf.WriteFloat(mTimeHealing);
+    bf.WriteFloat(mTimerHealing);
+    bf.WriteFloat(mHealingPower);
+    bf.WriteInt(mRangeHealing);
+
+    if(mTargetHealing != nullptr)
+        bf.WriteUint(mTargetHealing->GetObjectId());
+    else
+        bf.WriteUint(0);
+
+    return true;
 }
 
 bool Hospital::IsTargetHealingInRange(GameObject * obj) const

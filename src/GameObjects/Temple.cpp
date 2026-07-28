@@ -7,6 +7,7 @@
 #include "Widgets/GameProgressBar.h"
 
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/LoadedDie.h>
 #include <sgl/utilities/StringManager.h>
 #include <sgl/utilities/UniformDistribution.h>
@@ -28,6 +29,62 @@ Temple::Temple(const ObjectData & data, const ObjectInitData & initData)
 
     SetImage();
     SetObjColors();
+}
+
+bool Temple::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mMaxMoney = bf.ReadInt();
+    mMaxMaterial = bf.ReadInt();
+    mMaxBlobs = bf.ReadInt();
+    mMaxDiamonds = bf.ReadInt();
+    mInvestedMoney = bf.ReadInt();
+    mInvestedMaterial = bf.ReadInt();
+    mInvestedBlobs = bf.ReadInt();
+    mInvestedDiamonds = bf.ReadInt();
+    mExplorationTurns = bf.ReadInt();
+    mExplorationSuccess = bf.ReadInt();
+
+    mOutcomeCat = static_cast<ExplorationOutcomeCategory>(bf.ReadUint());
+    mOutcome1 = static_cast<ExplorationOutcome>(bf.ReadUint());
+    mOutcome2 = static_cast<ExplorationOutcome>(bf.ReadUint());
+
+    mExplorer = static_cast<PlayerFaction>(bf.ReadUint());
+
+    return true;
+}
+
+bool Temple::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteInt(mMaxMoney);
+    bf.WriteInt(mMaxMaterial);
+    bf.WriteInt(mMaxBlobs);
+    bf.WriteInt(mMaxDiamonds);
+    bf.WriteInt(mInvestedMoney);
+    bf.WriteInt(mInvestedMaterial);
+    bf.WriteInt(mInvestedBlobs);
+    bf.WriteInt(mInvestedDiamonds);
+    bf.WriteInt(mExplorationTurns);
+    bf.WriteInt(mExplorationSuccess);
+
+    bf.WriteUint(mOutcomeCat);
+    bf.WriteUint(mOutcome1);
+    bf.WriteUint(mOutcome2);
+
+    bf.WriteUint(mExplorer);
+
+    return true;
 }
 
 void Temple::SetInvestedResources(int money, int material, int blobs, int diamonds)

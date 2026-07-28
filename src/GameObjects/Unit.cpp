@@ -41,6 +41,40 @@ Unit::Unit(const ObjectData & data, const ObjectInitData & initData)
     SetImage();
 }
 
+bool Unit::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mTimeHealing = bf.ReadFloat();
+    mTimerHealing = bf.ReadFloat();
+
+    // target healing
+    const unsigned int targetID = bf.ReadUint();
+
+    if(targetID != 0)
+    {
+        const std::vector<GameObject *> &  objs = GetGameMap()->GetObjects();
+
+        for(GameObject * obj : objs)
+        {
+            if(obj->GetObjectId() == targetID)
+            {
+                mTargetHealing = obj;
+                break;
+            }
+        }
+    }
+
+    // structure to build
+    mStructToBuild = bf.ReadUint();
+
+    return true;
+}
+
 bool Unit::Save(sgl::utilities::BinaryFile & bf) const
 {
     const bool res = GameObject::Save(bf);

@@ -16,6 +16,9 @@ public:
     ResearchCenter(const ObjectData & data, const ObjectInitData & initData);
     ~ResearchCenter();
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     void OnNewTurn(PlayerFaction faction) override;
 
     int GetResourceProduction(ExtendedResource res) const override;

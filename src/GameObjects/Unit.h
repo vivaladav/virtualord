@@ -13,6 +13,7 @@ class Unit : public GameObject
 public:
     Unit(const ObjectData & data, const ObjectInitData & initData);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
     bool Save(sgl::utilities::BinaryFile & bf) const override;
 
     // attack

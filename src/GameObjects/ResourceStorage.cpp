@@ -7,6 +7,7 @@
 #include "Player.h"
 
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 #include <cmath>
 
@@ -35,6 +36,32 @@ ResourceStorage::ResourceStorage(const ObjectData & data, const ObjectInitData &
     UpdateCapacity();
 
     SetImage();
+}
+
+bool ResourceStorage::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    mCapacity = bf.ReadInt();
+
+    return true;
+}
+
+bool ResourceStorage::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    bf.WriteInt(mCapacity);
+
+    return true;
 }
 
 void ResourceStorage::UpdateGraphics()

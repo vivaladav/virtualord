@@ -13,6 +13,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/utilities/BinaryFile.h>
 
 #include <cmath>
 
@@ -33,6 +34,34 @@ Base::Base(const ObjectData & data, const ObjectInitData & initData)
 Base::~Base()
 {
     delete mHighlight;
+}
+
+bool Base::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mOutputEnergy = bf.ReadFloat();
+    mOutputMaterial = bf.ReadFloat();
+
+    return true;
+}
+
+bool Base::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteFloat(mOutputEnergy);
+    bf.WriteFloat(mOutputMaterial);
+
+    return true;
 }
 
 void Base::OnNewTurn(PlayerFaction faction)

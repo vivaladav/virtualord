@@ -9,6 +9,7 @@
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 namespace game
 {
@@ -26,6 +27,32 @@ CityBlock::CityBlock(const ObjectData & data, const ObjectInitData & initData,
     SetMaxHealth(maxHealthValue);
 
     SetImage();
+}
+
+bool CityBlock::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mBorder = bf.ReadBool();
+
+    return true;
+}
+
+bool CityBlock::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    bf.WriteBool(mBorder);
+
+    return true;
 }
 
 void CityBlock::OnNewTurn(PlayerFaction faction)

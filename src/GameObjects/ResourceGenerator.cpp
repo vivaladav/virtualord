@@ -8,6 +8,7 @@
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 #include <cmath>
 
@@ -34,6 +35,32 @@ ResourceGenerator::ResourceGenerator(const ObjectData & data, const ObjectInitDa
     SetImage();
 
     UpdateOutput();
+}
+
+bool ResourceGenerator::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    mOutput = bf.ReadInt();
+
+    return true;
+}
+
+bool ResourceGenerator::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    bf.WriteInt(mOutput);
+
+    return true;
 }
 
 void ResourceGenerator::ScaleOutput(float mult)

@@ -13,6 +13,7 @@
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/sgui/Image.h>
+#include <sgl/utilities/BinaryFile.h>
 
 namespace game
 {
@@ -72,6 +73,48 @@ ResearchCenter::~ResearchCenter()
         p->RemoveOnResourceChanged(Player::RESEARCH, mResearchTrackerId);
     }
 }
+
+bool ResearchCenter::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // resource usage
+    const unsigned int numRes = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numRes; ++i)
+        mResUsage[i] = bf.ReadInt();
+
+    // values
+    mResearchPerTurn = bf.ReadInt();
+    mAlphaAnim = bf.ReadFloat();
+
+    return true;
+}
+
+bool ResearchCenter::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // resource usage
+    const unsigned int numRes = mResUsage.size();
+    bf.WriteUint(numRes);
+
+    for(int val : mResUsage)
+        bf.WriteInt(val);
+
+    // values
+    bf.WriteInt(mResearchPerTurn);
+    bf.WriteFloat(mAlphaAnim);
+
+    return true;
+}
+
 
 void ResearchCenter::OnNewTurn(PlayerFaction faction)
 {

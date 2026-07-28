@@ -18,6 +18,21 @@ Collectable::Collectable(const ObjectData & data, const ObjectInitData & initDat
     mNum = ran.GetNextValue();
 }
 
+bool Collectable::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mMin = bf.ReadUint();
+    mMax = bf.ReadUint();
+    mNum = bf.ReadUint();
+
+    return true;
+}
+
 bool Collectable::Save(sgl::utilities::BinaryFile & bf) const
 {
     const bool res = GameObject::Save(bf);

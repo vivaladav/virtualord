@@ -60,6 +60,24 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
     SetImage();
 }
 
+bool Trees::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mLevel = bf.ReadInt();
+    mNumTrees = bf.ReadInt();
+    mTurnsToChange = bf.ReadInt();
+    mTurns = bf.ReadInt();
+    mNumVariants = bf.ReadUint();
+    mMaxNum = bf.ReadUint();
+
+    return true;
+}
+
 bool Trees::Save(sgl::utilities::BinaryFile & bf) const
 {
     const bool res = GameObject::Save(bf);

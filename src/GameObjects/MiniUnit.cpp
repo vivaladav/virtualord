@@ -44,6 +44,23 @@ MiniUnit::MiniUnit(const ObjectData & data, const ObjectInitData & initData, int
     SetImage();
 }
 
+bool MiniUnit::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mElements = bf.ReadInt();
+
+    // flags
+    mMoving = bf.ReadBool();
+    mTargetReached = bf.ReadBool();
+
+    return true;
+}
+
 bool MiniUnit::Save(sgl::utilities::BinaryFile & bf) const
 {
     const bool res = GameObject::Save(bf);

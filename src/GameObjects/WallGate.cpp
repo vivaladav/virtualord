@@ -9,6 +9,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/utilities/BinaryFile.h>
 
 namespace game
 {
@@ -30,6 +31,32 @@ WallGate::~WallGate()
         return ;
 
     p->SetCellWalkable(GetRow0(), GetCol0(), false);
+}
+
+bool WallGate::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    mOpen = bf.ReadBool();
+
+    return true;
+}
+
+bool WallGate::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    bf.WriteBool(mOpen);
+
+    return true;
 }
 
 bool WallGate::Toggle()

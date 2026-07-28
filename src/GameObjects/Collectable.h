@@ -13,6 +13,7 @@ public:
     Collectable(const ObjectData & data, const ObjectInitData & initData,
                 unsigned int min, unsigned int max);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
     bool Save(sgl::utilities::BinaryFile & bf) const override;
 
     int GetNumUnits() const;

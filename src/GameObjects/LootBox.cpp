@@ -42,6 +42,20 @@ LootBox::LootBox(const ObjectData & data, const ObjectInitData & initData)
        SetPrize();
 }
 
+bool LootBox::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mPrizeQuantity = bf.ReadInt();
+    mPrizeType = static_cast<Prize>(bf.ReadUint());
+
+    return true;
+}
+
 bool LootBox::Save(sgl::utilities::BinaryFile & bf) const
 {
     const bool res = GameObject::Save(bf);

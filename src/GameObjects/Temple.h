@@ -68,6 +68,9 @@ public:
 public:
     Temple(const ObjectData & data, const ObjectInitData & initData);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     void SetInvestedResources(int money, int material, int blobs, int diamonds);
     int GetInvestedMoney() const;
     int GetInvestedMaterial() const;

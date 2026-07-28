@@ -11,6 +11,7 @@ class MiniUnit : public GameObject
 public:
     MiniUnit(const ObjectData & data, const ObjectInitData & initData, int elements);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
     bool Save(sgl::utilities::BinaryFile & bf) const override;
 
     int GetNumElements() const;
