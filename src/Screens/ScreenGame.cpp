@@ -480,7 +480,8 @@ MiniMap * ScreenGame::GetMiniMap() const
 
 void ScreenGame::SetMiniMapEnabled(bool val)
 {
-    mHUD->SetMiniMapEnabled(val);
+    if(mHUD != nullptr)
+        mHUD->SetMiniMapEnabled(val);
 }
 
 void ScreenGame::SetPause(bool paused)

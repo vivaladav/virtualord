@@ -206,7 +206,7 @@ GameHUD::~GameHUD()
 
 void GameHUD::SetMiniMapEnabled(bool val)
 {
-    if(mMiniMap->IsEnabled() == val)
+    if(mMiniMap == nullptr || mMiniMap->IsEnabled() == val)
         return ;
 
     mMiniMap->SetEnabled(val);
