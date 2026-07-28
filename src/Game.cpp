@@ -905,6 +905,14 @@ void Game::ClearPlanets()
     mPlanets.clear();
 }
 
+Player * Game::GetPlayerByFaction(PlayerFaction faction) const
+{
+    if(faction < NUM_FACTIONS)
+        return mPlayers[faction];
+    else
+        return nullptr;
+}
+
 Player * Game::GetActivePlayerByFaction(PlayerFaction faction) const
 {
     for(Player * p : mActivePlayers)

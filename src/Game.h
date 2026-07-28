@@ -117,6 +117,7 @@ public:
     // -- players --
     int GetNumActivePlayers() const;
 
+    Player * GetPlayerByFaction(PlayerFaction faction) const;
     Player * GetActivePlayerByIndex(unsigned int index) const;
     Player * GetActivePlayerByFaction(PlayerFaction faction) const;
     void ClearAllAIActivePlayers();

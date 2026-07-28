@@ -126,6 +126,11 @@ bool GameMap::Load(sgl::utilities::BinaryFile & bf)
     {
         cell.currType = static_cast<CellTypes>(bf.ReadInt());
         cell.basicType = static_cast<CellTypes>(bf.ReadInt());
+
+        const auto faction = static_cast<PlayerFaction>(bf.ReadUint());
+
+        if(faction != NO_FACTION)
+            cell.owner = mGame->GetPlayerByFaction(faction);
     }
 
     // objects
@@ -214,6 +219,11 @@ bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
     {
         bf.WriteInt(cell.currType);
         bf.WriteInt(cell.basicType);
+
+        if(cell.owner != nullptr)
+            bf.WriteUint(cell.owner->GetFaction());
+        else
+            bf.WriteUint(NO_FACTION);
     }
 
     // objects
