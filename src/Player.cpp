@@ -116,21 +116,21 @@ bool Player::Load(sgl::utilities::BinaryFile & bf)
     mAvailableMiniUnits.reserve(numAvMiniUnits);
 
     for(unsigned int i = 0; i < numAvMiniUnits; ++i)
-        mAvailableMiniUnits.emplace_back(bf.ReadUint());
+        mAvailableMiniUnits.emplace_back(bf.ReadSizeT());
 
     // available structures
     const unsigned int numAvStructures = bf.ReadUint();
     mAvailableStructures.reserve(numAvStructures);
 
     for(unsigned int i = 0; i < numAvStructures; ++i)
-        mAvailableStructures.emplace_back(bf.ReadUint());
+        mAvailableStructures.emplace_back(bf.ReadSizeT());
 
     // available units
     const unsigned int numAvUnits = bf.ReadUint();
     mAvailableUnits.reserve(numAvUnits);
 
     for(unsigned int i = 0; i < numAvUnits; ++i)
-        mAvailableUnits.emplace_back(bf.ReadUint());
+        mAvailableUnits.emplace_back(bf.ReadSizeT());
 
     // turn data
     mTurnEnergy = bf.ReadFloat();
@@ -205,21 +205,21 @@ bool Player::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(numAvMiniUnits);
 
     for(const GameObjectTypeId type : mAvailableMiniUnits)
-        bf.WriteUint(type);
+        bf.WriteSizeT(type);
 
     // available structures
     const unsigned int numAvStructures = mAvailableStructures.size();
     bf.WriteUint(numAvStructures);
 
     for(const GameObjectTypeId type : mAvailableStructures)
-        bf.WriteUint(type);
+        bf.WriteSizeT(type);
 
     // available units
     const unsigned int numAvUnits = mAvailableUnits.size();
     bf.WriteUint(numAvUnits);
 
     for(const GameObjectTypeId type : mAvailableUnits)
-        bf.WriteUint(type);
+        bf.WriteSizeT(type);
 
     // turn data
     bf.WriteFloat(mTurnEnergy);

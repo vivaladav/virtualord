@@ -70,7 +70,7 @@ bool Unit::Load(sgl::utilities::BinaryFile & bf)
     }
 
     // structure to build
-    mStructToBuild = bf.ReadUint();
+    mStructToBuild = bf.ReadSizeT();
 
     return true;
 }
@@ -93,7 +93,7 @@ bool Unit::Save(sgl::utilities::BinaryFile & bf) const
         bf.WriteUint(0);
 
     // structure to build
-    bf.WriteUint(mStructToBuild);
+    bf.WriteSizeT(mStructToBuild);
 
     return true;
 }

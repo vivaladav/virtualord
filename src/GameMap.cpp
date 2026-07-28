@@ -137,8 +137,8 @@ bool GameMap::Load(sgl::utilities::BinaryFile & bf)
     for(unsigned int i = 0; i < numObjs; ++i)
     {
         // data for creation
-        const GameObjectTypeId type = bf.ReadUint();
-        const GameObjectVariantId variant = bf.ReadUint();
+        const GameObjectTypeId type = bf.ReadSizeT();
+        const GameObjectVariantId variant = bf.ReadSizeT();
         const auto faction = static_cast<PlayerFaction>(bf.ReadUint());
         const int r0 = bf.ReadInt();
         const int c0 = bf.ReadInt();
@@ -150,7 +150,7 @@ bool GameMap::Load(sgl::utilities::BinaryFile & bf)
         obj->Load(bf);
 
         // weapon
-        const WeaponType wt = bf.ReadUint();
+        const WeaponType wt = bf.ReadSizeT();
 
         if(wt != WeaponData::TYPE_NULL)
         {
@@ -222,8 +222,8 @@ bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
     for(const GameObject * obj : mObjects)
     {
         // data for creation
-        bf.WriteUint(obj->GetObjectType());
-        bf.WriteUint(obj->GetObjectVariant());
+        bf.WriteSizeT(obj->GetObjectType());
+        bf.WriteSizeT(obj->GetObjectVariant());
         bf.WriteUint(obj->GetFaction());
         bf.WriteInt(obj->GetRow0());
         bf.WriteInt(obj->GetCol0());
@@ -237,13 +237,13 @@ bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
         if(weapon != nullptr)
         {
             // save weapon type for creation
-            bf.WriteUint(weapon->GetType());
+            bf.WriteSizeT(weapon->GetType());
 
             // save weapon data
             weapon->Save(bf);
         }
         else
-            bf.WriteUint(WeaponData::TYPE_NULL);
+            bf.WriteSizeT(WeaponData::TYPE_NULL);
     }
 
     // collectible generators

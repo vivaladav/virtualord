@@ -136,7 +136,7 @@ bool MissionGoal::Load(sgl::utilities::BinaryFile & bf)
 {
     // data
     mId = bf.ReadUint();
-    mType = bf.ReadUint();
+    mType = bf.ReadSizeT();
     mCategory = static_cast<MissionCategory>(bf.ReadUint());
     mQuantity = bf.ReadUint();
     mExtraValue = bf.ReadUint();
@@ -163,7 +163,7 @@ bool MissionGoal::Save(sgl::utilities::BinaryFile & bf) const
 {
     // data
     bf.WriteUint(mId);
-    bf.WriteUint(mType);
+    bf.WriteSizeT(mType);
     bf.WriteUint(mCategory);
     bf.WriteUint(mQuantity);
     bf.WriteUint(mExtraValue);

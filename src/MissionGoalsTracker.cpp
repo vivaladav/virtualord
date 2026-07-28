@@ -98,19 +98,19 @@ bool MissionGoalsTracker::Load(sgl::utilities::BinaryFile & bf)
     const unsigned int numStructBuilt = bf.ReadUint();
 
     for(unsigned int i = 0; i < numStructBuilt; ++i)
-        mStructuresBuilt.emplace(bf.ReadUint(), bf.ReadUint());
+        mStructuresBuilt.emplace(bf.ReadSizeT(), bf.ReadUint());
 
     // structures conquered
     const unsigned int numStructConquered = bf.ReadUint();
 
     for(unsigned int i = 0; i < numStructConquered; ++i)
-        mStructuresConquered.emplace(bf.ReadUint(), bf.ReadUint());
+        mStructuresConquered.emplace(bf.ReadSizeT(), bf.ReadUint());
 
     // categories destroyed
     const unsigned int numCatDestroyed = bf.ReadUint();
 
     for(unsigned int i = 0; i < numCatDestroyed; ++i)
-        mCategoriesDestroyed.emplace(bf.ReadUint(), bf.ReadUint());
+        mCategoriesDestroyed.emplace(bf.ReadSizeT(), bf.ReadUint());
 
     // data tracking
     mCompletedGoals = bf.ReadUint();
@@ -147,7 +147,7 @@ bool MissionGoalsTracker::Save(sgl::utilities::BinaryFile & bf) const
 
     for(const auto it : mStructuresBuilt)
     {
-        bf.WriteUint(it.first);
+        bf.WriteSizeT(it.first);
         bf.WriteUint(it.second);
     }
 
@@ -156,7 +156,7 @@ bool MissionGoalsTracker::Save(sgl::utilities::BinaryFile & bf) const
 
     for(const auto it : mStructuresConquered)
     {
-        bf.WriteUint(it.first);
+        bf.WriteSizeT(it.first);
         bf.WriteUint(it.second);
     }
 
@@ -165,7 +165,7 @@ bool MissionGoalsTracker::Save(sgl::utilities::BinaryFile & bf) const
 
     for(const auto it : mCategoriesDestroyed)
     {
-        bf.WriteUint(it.first);
+        bf.WriteSizeT(it.first);
         bf.WriteUint(it.second);
     }
 
