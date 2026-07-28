@@ -123,22 +123,9 @@ GameHUD::GameHUD(ScreenGame * screen)
 
     PositionQuickUnitButtons();
 
-    local->SetOnNumUnitsChanged([this, local]
+    local->SetOnNumUnitsChanged([this]
     {
-        const int numUnits = local->GetNumUnits();
-        const int maxUnits = local->GetMaxUnits();
-
-        for(int i = 0; i < numUnits; ++i)
-        {
-            auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
-            b->SetUnit(local->GetUnit(i));
-        }
-
-        for(int i = numUnits; i < maxUnits; ++i)
-        {
-            auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
-            b->ClearUnit();
-        }
+        UpdateQuickUnitButtons();
     });
 
     // OBJECT ACTIONS
@@ -431,6 +418,26 @@ void GameHUD::AddQuickUnitButton()
     mGroupUnitSel->AddButton(b);
 
     PositionQuickUnitButtons();
+}
+
+void GameHUD::UpdateQuickUnitButtons()
+{
+    Player * local = mScreen->GetGame()->GetLocalPlayer();
+
+    const int numUnits = local->GetNumUnits();
+    const int maxUnits = local->GetMaxUnits();
+
+    for(int i = 0; i < numUnits; ++i)
+    {
+        auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
+        b->SetUnit(local->GetUnit(i));
+    }
+
+    for(int i = numUnits; i < maxUnits; ++i)
+    {
+        auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
+        b->ClearUnit();
+    }
 }
 
 void GameHUD::ShowDialogMissionGoals()

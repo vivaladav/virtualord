@@ -83,6 +83,7 @@ public:
     void SetQuickUnitButtonChecked(GameObject * obj);
     void ClearQuickUnitButtonChecked();
     void AddQuickUnitButton();
+    void UpdateQuickUnitButtons();
 
     DialogMissionGoals * GetDialogMissionGoals() const;
     void ShowDialogMissionGoals();

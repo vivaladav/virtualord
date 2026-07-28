@@ -196,6 +196,9 @@ void ScreenGame::InitLoadedGame()
 
         mLastSelected = nullptr;
     }
+
+    // update quick unit buttons
+    mHUD->UpdateQuickUnitButtons();
 }
 
 bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
