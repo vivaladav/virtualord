@@ -22,6 +22,11 @@ TutorialManager::~TutorialManager()
     mActiveTutorial = nullptr;
 }
 
+void TutorialManager::ResetTutorialState()
+{
+    mTutorialsState.assign(NUM_TUTORIALS, TS_TODO);
+}
+
 TutorialState TutorialManager::GetTutorialState(TutorialId tut)
 {
     if(tut < NUM_TUTORIALS)

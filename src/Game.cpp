@@ -252,6 +252,8 @@ void Game::ClearGameData()
     ClearPlanets();
 
     ClearPlayers();
+
+    mTutMan->ResetTutorialState();
 }
 
 // -- LOAD & SAVE --

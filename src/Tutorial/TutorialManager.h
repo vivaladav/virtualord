@@ -19,6 +19,8 @@ public:
 
     TutorialState GetTutorialState(TutorialId tut);
 
+    void ResetTutorialState();
+
     // -- ACTIVE TUTORIAL --
     bool CreateTutorial(TutorialId tutId, Screen * screen);
     void StartTutorial();

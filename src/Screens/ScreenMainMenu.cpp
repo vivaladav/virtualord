@@ -383,6 +383,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Units no longer can build structures far away without moving.\n"
                   "- Camera no longer keeps moving when view is centered on some object or cell."
                   "- Selection no longer allowed when moving camera in tutorial 1.\n"
+                  "- Tutorial always starting if enabled and starting a new game."
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
