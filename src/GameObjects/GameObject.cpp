@@ -142,10 +142,8 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     mStructure = bf.ReadBool();
     mStatic = bf.ReadBool();
     mCanBeConq = bf.ReadBool();
-    mSelected = bf.ReadBool();
     mVisible = bf.ReadBool();
     mVisited = bf.ReadBool();
-    mLinked = bf.ReadBool();
 
     return true;
 }
@@ -183,10 +181,8 @@ bool GameObject::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteBool(mStructure);
     bf.WriteBool(mStatic);
     bf.WriteBool(mCanBeConq);
-    bf.WriteBool(mSelected);
     bf.WriteBool(mVisible);
     bf.WriteBool(mVisited);
-    bf.WriteBool(mLinked);
 
     return true;
 }

@@ -188,6 +188,14 @@ void ScreenGame::InitLoadedGame()
     // set camera
     auto cam = sgl::graphic::Camera::GetDefaultCamera();
     cam->SetPosition(mCameraInitPos.x, mCameraInitPos.y);
+
+    // update selection
+    if(mLastSelected != nullptr)
+    {
+        SelectObject(mLastSelected, mLocalPlayer);
+
+        mLastSelected = nullptr;
+    }
 }
 
 bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
@@ -200,6 +208,7 @@ bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
     mActivePlayerIdx = bf.ReadInt();
 
     // last local object selected
+    // NOTE using mLastSelected to store the pointer for the selection after init
     const unsigned int selectedId = bf.ReadUint();
 
     if(selectedId != 0)
@@ -241,8 +250,10 @@ bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
     // data
     bf.WriteInt(mActivePlayerIdx);
 
-    if(mLastSelected != nullptr)
-        bf.WriteUint(mLastSelected->GetObjectId());
+    auto selected = mLocalPlayer->GetSelectedObject();
+
+    if(selected != nullptr)
+        bf.WriteUint(selected->GetObjectId());
     else
         bf.WriteUint(0);
 
@@ -1039,27 +1050,27 @@ void ScreenGame::CreateUI()
 
  void ScreenGame::CreateOverlays()
 {
-     auto game = GetGame();
+    auto game = GetGame();
 
     const PlayerFaction localFaction = game->GetLocalPlayerFaction();
 
-     mOverlayAttack = new OverlayAttackRange(mIsoMap);
+    mOverlayAttack = new OverlayAttackRange(mIsoMap);
 
-     mOverlayHeal = new OverlayHealRange(mIsoMap);
+    mOverlayHeal = new OverlayHealRange(mIsoMap);
 
-     mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
-                                                    localFaction, mIsoMap->GetNumCols());
+    mOverlayCellConquest = new OverlayCellConquest(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
+                                                   localFaction, mIsoMap->GetNumCols());
 
-     mOverlayWall = new OverlayWall(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
+    mOverlayWall = new OverlayWall(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS0),
+                                   localFaction, mIsoMap->GetNumCols());
+
+    mOverlaySelection = new OverlaySelection(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1));
+
+    mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
                                     localFaction, mIsoMap->GetNumCols());
 
-     mOverlaySelection = new OverlaySelection(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS1));
-
-     mOverlayPath = new OverlayPath(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
-                                    localFaction, mIsoMap->GetNumCols());
-
-     mOverlayStruct = new OverlayStructure(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
-                                           game->GetObjectsRegistry(), localFaction);
+    mOverlayStruct = new OverlayStructure(mIsoMap->GetLayer(MapLayers::CELL_OVERLAYS_TOP),
+                                          game->GetObjectsRegistry(), localFaction);
 }
 
 void ScreenGame::HideActionPanels()
