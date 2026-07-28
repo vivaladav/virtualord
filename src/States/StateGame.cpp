@@ -34,8 +34,13 @@ void StateGame::OnActive()
     if(bf == nullptr)
         screen->InitNewGame();
     else
-    // load saved game
+    {
+        // load saved game
         screen->Load(*bf);
+        screen->InitLoadedGame();
+
+        mGame->CloseSaveFileForReading();
+    }
 
     mScreen = screen;
 

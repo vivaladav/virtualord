@@ -173,81 +173,12 @@ void ScreenGame::InitNewGame()
     // LOAD MAP
     LoadMapFile();
 
-    // TRACK MISSION GOALS
-    // NOTE no need to remove them later as tracker is deleted with screen
-    mTrackerMG->AddOnGoalCompletedFunction([this]
-                                           {
-                                               auto base = mLocalPlayer->GetBase();
-                                               base->OnGoalCompleted();
-                                           });
-    mTrackerMG->AddOnGoalCollectedFunction([this]
-                                           {
-                                               auto base = mLocalPlayer->GetBase();
-                                               const int count = mTrackerMG->GetNumGoalsToCollect();
+    InitGame();
+}
 
-                                               if(count == 0)
-                                                   base->OnGoalsCollected();
-                                           });
-
-    // CONFIGURE CAMERA LIMITS
-    auto cam = sgl::graphic::Camera::GetDefaultCamera();
-
-    cam->SetFunctionOnMove([this]
-                           {
-                               const sgl::graphic::Camera * cam = mCamController->GetCamera();
-                               const int camW = cam->GetWidth();
-                               const int camH = cam->GetHeight();
-                               const int camX0 = cam->GetX();
-                               const int camY0 = cam->GetY();
-                               const int camX1 = camX0 + camW;
-                               const int camY1 = camY0 + camH;
-
-                               // update map
-                               mIsoMap->SetVisibleArea(camX0, camY0, camW, camH);
-
-                               // update MiniMap
-                               MiniMap * mm = mHUD->GetMinimap();
-                               mm->SetCameraCells(mIsoMap->CellFromWorldPoint(camX0, camY0),
-                                                  mIsoMap->CellFromWorldPoint(camX1, camY0),
-                                                  mIsoMap->CellFromWorldPoint(camX0, camY1),
-                                                  mIsoMap->CellFromWorldPoint(camX1, camY1));
-                           });
-
-    // set reduced map area to cam controller so camera will stop closer to inside cells
-    const sgl::core::Pointd2D isoMapO = mIsoMap->GetOrigin();
-    const int isoMapHalfW = mIsoMap->GetWidth() / 2;
-    const int isoMapHalfH = mIsoMap->GetHeight() / 2;
-    const int marginCameraMult = 2;
-    const int tileW = mIsoMap->GetTileWidth();
-    const int tileH = mIsoMap->GetTileHeight();
-    const int marginCameraX = marginCameraMult * tileW;
-    const int marginCameraY = marginCameraMult * tileH;
-
-    const sgl::core::Pointd2D pT(isoMapO.x, isoMapO.y + marginCameraY);
-    const sgl::core::Pointd2D pR(pT.x + isoMapHalfW - marginCameraX, pT.y + isoMapHalfH);
-    const sgl::core::Pointd2D pB(pT.x, pT.y + mIsoMap->GetHeight() - marginCameraY);
-    const sgl::core::Pointd2D pL(pT.x - isoMapHalfW + marginCameraX, pT.y + isoMapHalfH);
-    mCamController->SetMapArea(pT, pR, pB, pL);
-
-    // init pathfinder
-    mPathfinder->SetMap(mGameMap);
-
-    // UI
-    CreateUI();
-
-    // OVERLAYS
-    CreateOverlays();
-
-    // set initial camera position
-    CenterCameraOverObject(mLocalPlayer->GetBase());
-
-    // apply initial visibility to the game map
-    mGameMap->InitVisibility(mLocalPlayer);
-
-    InitMusic();
-
-    // TUTORIAL
-    InitTutorial();
+void ScreenGame::InitLoadedGame()
+{
+    InitGame();
 }
 
 bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
@@ -613,6 +544,85 @@ void ScreenGame::AssignStartResources(Player * p)
 
     if(p->GetStat(Player::Stat::MONEY).GetValue() < START_MONEY)
         p->SetResource(Player::Stat::MONEY, START_MONEY);
+}
+
+void ScreenGame::InitGame()
+{
+    // TRACK MISSION GOALS
+    // NOTE no need to remove them later as tracker is deleted with screen
+    mTrackerMG->AddOnGoalCompletedFunction([this]
+                                           {
+                                               auto base = mLocalPlayer->GetBase();
+                                               base->OnGoalCompleted();
+                                           });
+    mTrackerMG->AddOnGoalCollectedFunction([this]
+                                           {
+                                               auto base = mLocalPlayer->GetBase();
+                                               const int count = mTrackerMG->GetNumGoalsToCollect();
+
+                                               if(count == 0)
+                                                   base->OnGoalsCollected();
+                                           });
+
+    // CONFIGURE CAMERA LIMITS
+    auto cam = sgl::graphic::Camera::GetDefaultCamera();
+
+    cam->SetFunctionOnMove([this]
+                           {
+                               const sgl::graphic::Camera * cam = mCamController->GetCamera();
+                               const int camW = cam->GetWidth();
+                               const int camH = cam->GetHeight();
+                               const int camX0 = cam->GetX();
+                               const int camY0 = cam->GetY();
+                               const int camX1 = camX0 + camW;
+                               const int camY1 = camY0 + camH;
+
+                               // update map
+                               mIsoMap->SetVisibleArea(camX0, camY0, camW, camH);
+
+                               // update MiniMap
+                               MiniMap * mm = mHUD->GetMinimap();
+                               mm->SetCameraCells(mIsoMap->CellFromWorldPoint(camX0, camY0),
+                                                  mIsoMap->CellFromWorldPoint(camX1, camY0),
+                                                  mIsoMap->CellFromWorldPoint(camX0, camY1),
+                                                  mIsoMap->CellFromWorldPoint(camX1, camY1));
+                           });
+
+    // set reduced map area to cam controller so camera will stop closer to inside cells
+    const sgl::core::Pointd2D isoMapO = mIsoMap->GetOrigin();
+    const int isoMapHalfW = mIsoMap->GetWidth() / 2;
+    const int isoMapHalfH = mIsoMap->GetHeight() / 2;
+    const int marginCameraMult = 2;
+    const int tileW = mIsoMap->GetTileWidth();
+    const int tileH = mIsoMap->GetTileHeight();
+    const int marginCameraX = marginCameraMult * tileW;
+    const int marginCameraY = marginCameraMult * tileH;
+
+    const sgl::core::Pointd2D pT(isoMapO.x, isoMapO.y + marginCameraY);
+    const sgl::core::Pointd2D pR(pT.x + isoMapHalfW - marginCameraX, pT.y + isoMapHalfH);
+    const sgl::core::Pointd2D pB(pT.x, pT.y + mIsoMap->GetHeight() - marginCameraY);
+    const sgl::core::Pointd2D pL(pT.x - isoMapHalfW + marginCameraX, pT.y + isoMapHalfH);
+    mCamController->SetMapArea(pT, pR, pB, pL);
+
+    // init pathfinder
+    mPathfinder->SetMap(mGameMap);
+
+    // UI
+    CreateUI();
+
+    // OVERLAYS
+    CreateOverlays();
+
+    // set initial camera position
+    CenterCameraOverObject(mLocalPlayer->GetBase());
+
+    // apply initial visibility to the game map
+    mGameMap->InitVisibility(mLocalPlayer);
+
+    InitMusic();
+
+    // TUTORIAL
+    InitTutorial();
 }
 
 void ScreenGame::InitPlayers()

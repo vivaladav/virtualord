@@ -57,6 +57,7 @@ public:
     ~ScreenGame();
 
     void InitNewGame();
+    void InitLoadedGame();
 
     bool Load(sgl::utilities::BinaryFile & bf);
     bool Save(sgl::utilities::BinaryFile & bf) const override;
@@ -118,6 +119,8 @@ private:
     void OnApplicationQuit(sgl::core::ApplicationEvent & event) override;
 
     void AssignStartResources(Player * p);
+
+    void InitGame();
 
     void InitPlayers();
     void InitMusic();
