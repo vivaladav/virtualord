@@ -179,6 +179,8 @@ void ScreenGame::InitNewGame()
 void ScreenGame::InitLoadedGame()
 {
     InitGame();
+
+    mGameMap->InitAfterLoad();
 }
 
 bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)

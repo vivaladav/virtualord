@@ -58,6 +58,8 @@ public:
     bool Load(sgl::utilities::BinaryFile & bf);
     bool Save(sgl::utilities::BinaryFile & bf) const;
 
+    void InitAfterLoad();
+
     const ControlMap * GetControlMap() const;
 
     bool HasObject(unsigned int ind) const;

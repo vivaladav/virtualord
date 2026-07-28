@@ -295,6 +295,18 @@ bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
     return true;
 }
 
+void GameMap::InitAfterLoad()
+{
+    const unsigned int numPlayers = mGame->GetNumActivePlayers();
+
+    for(unsigned int i = 0; i < numPlayers; ++i)
+    {
+        Player * p = mGame->GetActivePlayerByIndex(i);
+
+        UpdateLinkedCells(p);
+    }
+}
+
 bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int ind) const
 {
     return ind < mCells.size() && mCells[ind].objTop != nullptr &&
