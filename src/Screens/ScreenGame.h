@@ -230,6 +230,7 @@ private:
     MissionGoalsTracker * mTrackerMG = nullptr;
 
     CameraMapController * mCamController = nullptr;
+    sgl::core::Pointd2D mCameraInitPos;
 
     unsigned int mIdOnSettingsChanged = 0;
     unsigned int mIdOnUnlockUpgraded = 0;

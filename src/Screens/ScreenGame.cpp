@@ -174,6 +174,9 @@ void ScreenGame::InitNewGame()
     LoadMapFile();
 
     InitGame();
+
+    // set initial camera position
+    CenterCameraOverObject(mLocalPlayer->GetBase());
 }
 
 void ScreenGame::InitLoadedGame()
@@ -181,6 +184,10 @@ void ScreenGame::InitLoadedGame()
     InitGame();
 
     mGameMap->InitAfterLoad();
+
+    // set camera
+    auto cam = sgl::graphic::Camera::GetDefaultCamera();
+    cam->SetPosition(mCameraInitPos.x, mCameraInitPos.y);
 }
 
 bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
@@ -216,6 +223,10 @@ bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
     mAllowSelection = bf.ReadBool();
     mLocalTurnInitDone = bf.ReadBool();
 
+    // camera position
+    mCameraInitPos.x = bf.ReadInt();
+    mCameraInitPos.y = bf.ReadInt();
+
     return true;
 }
 
@@ -227,6 +238,7 @@ bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
 
     mGameMap->Save(bf);
 
+    // data
     bf.WriteInt(mActivePlayerIdx);
 
     if(mLastSelected != nullptr)
@@ -240,6 +252,11 @@ bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
 
     bf.WriteBool(mAllowSelection);
     bf.WriteBool(mLocalTurnInitDone);
+
+    // save camera position
+    auto cam = mCamController->GetCamera();
+    bf.WriteInt(cam->GetX());
+    bf.WriteInt(cam->GetY());
 
     return true;
 }
@@ -615,9 +632,6 @@ void ScreenGame::InitGame()
 
     // OVERLAYS
     CreateOverlays();
-
-    // set initial camera position
-    CenterCameraOverObject(mLocalPlayer->GetBase());
 
     // apply initial visibility to the game map
     mGameMap->InitVisibility(mLocalPlayer);
