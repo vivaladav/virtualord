@@ -7,6 +7,8 @@
 #include "Tutorial/TutorialPlanetMap1.h"
 #include "Tutorial/TutorialPlanetMap2.h"
 
+#include <sgl/utilities/BinaryFile.h>
+
 namespace game
 {
 
@@ -22,9 +24,49 @@ TutorialManager::~TutorialManager()
     mActiveTutorial = nullptr;
 }
 
+bool TutorialManager::Load(sgl::utilities::BinaryFile & bf)
+{
+    // tutorials state
+    const unsigned int numTuts = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numTuts; ++i)
+        mTutorialsState[i] = static_cast<TutorialState>(bf.ReadUint());
+
+    // active tutorial
+    // TODO handle load/save when tutorial is active
+    const auto activeTutId = static_cast<TutorialId>(bf.ReadUint());
+
+    // last tutorial
+    mLastStartedTutorialId = static_cast<TutorialId>(bf.ReadUint());
+
+    return true;
+}
+
+bool TutorialManager::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // tutorials state
+    bf.WriteUint(mTutorialsState.size());
+
+    for(TutorialState state : mTutorialsState)
+        bf.WriteUint(state);
+
+    // active tutorial
+    if(mActiveTutorial != nullptr)
+        bf.WriteUint(mActiveTutorial->GetId());
+    else
+        bf.WriteUint(TUTORIAL_UNKNOWN);
+
+    // last tutorial
+    bf.WriteUint(mLastStartedTutorialId);
+
+    return true;
+}
+
 void TutorialManager::ResetTutorialState()
 {
     mTutorialsState.assign(NUM_TUTORIALS, TS_TODO);
+
+    mLastStartedTutorialId = TUTORIAL_UNKNOWN;
 }
 
 TutorialState TutorialManager::GetTutorialState(TutorialId tut)

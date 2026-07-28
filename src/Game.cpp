@@ -340,6 +340,9 @@ bool Game::LoadGame()
     mCurrTerritory = mReaderSave->ReadUint();
     mRandSeed = mReaderSave->ReadUint();
 
+    // Tutorial
+    mTutMan->Load(*mReaderSave);
+
     // Planets
     const unsigned int numPlanets = mReaderSave->ReadUint();
 
@@ -439,6 +442,9 @@ bool Game::SaveGame()
     bf.WriteUint(mCurrPlanet);
     bf.WriteUint(mCurrTerritory);
     bf.WriteUint(mRandSeed);
+
+    // Tutorial
+    mTutMan->Save(bf);
 
     // Planets
     const unsigned int numPlanets = mPlanets.size();

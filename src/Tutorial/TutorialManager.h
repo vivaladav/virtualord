@@ -2,6 +2,8 @@
 
 #include <vector>
 
+namespace sgl { namespace utilities { class BinaryFile; } }
+
 namespace game
 {
 
@@ -16,6 +18,9 @@ class TutorialManager
 public:
     TutorialManager();
     ~TutorialManager();
+
+    bool Load(sgl::utilities::BinaryFile & bf);
+    bool Save(sgl::utilities::BinaryFile & bf) const;
 
     TutorialState GetTutorialState(TutorialId tut);
 
