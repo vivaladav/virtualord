@@ -27,12 +27,19 @@ void StateGame::OnActive()
 {
     // create and init game screen
     auto screen = new ScreenGame(mGame);
+    mScreen = screen;
 
     auto bf = mGame->GetSaveFileForReading();
 
     // start a new game
     if(bf == nullptr)
+    {
         screen->InitNewGame();
+
+        // auto save, if enabled
+        if(mGame->IsAutosaveEnabled())
+            mGame->SaveGame();
+    }
     else
     {
         // load saved game
@@ -41,8 +48,6 @@ void StateGame::OnActive()
 
         mGame->CloseSaveFileForReading();
     }
-
-    mScreen = screen;
 
     // setup listeners
     mGame->AddApplicationListener(mScreen);

@@ -541,6 +541,7 @@ bool Game::LoadSettings()
     mAutoEndTurn = bf.ReadBool();
     mAutoUnitCamera = bf.ReadBool();
     mTutorialEnabled = bf.ReadBool();
+    mAutoSave = bf.ReadBool();
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
@@ -590,6 +591,7 @@ bool Game::SaveSettings()
     bf.WriteBool(mAutoEndTurn);
     bf.WriteBool(mAutoUnitCamera);
     bf.WriteBool(mTutorialEnabled);
+    bf.WriteBool(mAutoSave);
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times

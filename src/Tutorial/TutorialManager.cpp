@@ -47,8 +47,16 @@ bool TutorialManager::Save(sgl::utilities::BinaryFile & bf) const
     // tutorials state
     bf.WriteUint(mTutorialsState.size());
 
-    for(TutorialState state : mTutorialsState)
-        bf.WriteUint(state);
+    for(const TutorialState state : mTutorialsState)
+    {
+        // NOTE forcing tutorial TODO state when in progress as now saving during tutorial is
+        // not supported yet and Save is only called when starting a new game
+        // TODO remove the if/else when implementing save during tutorial
+        if(state == TS_IN_PROGRESS)
+            bf.WriteUint(TS_TODO);
+        else
+            bf.WriteUint(state);
+    }
 
     // active tutorial
     if(mActiveTutorial != nullptr)

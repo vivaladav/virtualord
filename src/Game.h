@@ -153,6 +153,8 @@ public:
     void SetAutoUnitCamera(bool val);
     bool IsTutorialEnabled() const;
     void SetTutorialEnabled(bool val);
+    bool IsAutosaveEnabled() const;
+    void SetAutosaveEnabled(bool val);
 
     float GetTimeAutoHideMouse() const;
 
@@ -242,6 +244,7 @@ private:
     bool mAutoEndTurn = true;
     bool mAutoUnitCamera = true;
     bool mTutorialEnabled = true;
+    bool mAutoSave = true;
 
     unsigned char mClearR = 0;
     unsigned char mClearG = 0;
@@ -348,6 +351,9 @@ inline void Game::SetAutoUnitCamera(bool val) { mAutoUnitCamera = val; }
 
 inline bool Game::IsTutorialEnabled() const { return mTutorialEnabled; }
 inline void Game::SetTutorialEnabled(bool val) { mTutorialEnabled = val; }
+
+inline bool Game::IsAutosaveEnabled() const { return mAutoSave; }
+inline void Game::SetAutosaveEnabled(bool val) { mAutoSave = val; }
 
 inline float Game::GetTimeAutoHideMouse() const { return mTimeAutoHideMouse; }
 

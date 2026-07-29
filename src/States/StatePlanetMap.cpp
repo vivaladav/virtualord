@@ -25,8 +25,16 @@ void StatePlanetMap::OnActive()
 {
     mScreen = new ScreenPlanetMap(mGame);
 
-    // close in case it was open for load
-    mGame->CloseSaveFileForReading();
+    // close binary file used to load
+    if(mGame->GetSaveFileForReading() != nullptr)
+        mGame->CloseSaveFileForReading();
+    // not loading, opening the screen in game
+    else
+    {
+        // auto save, if enabled
+        if(mGame->IsAutosaveEnabled())
+            mGame->SaveGame();
+    }
 
     mGame->AddKeyboardListener(mScreen);
 }
