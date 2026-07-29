@@ -375,6 +375,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- New UI for selected objects.\n"
                   "- Settings are saved on file and loaded when restarting the game.\n"
                   "- Enemy faction is truly random when starting a new mission.\n"
+                  "- Game load & save (experimental).\n"
+                  "- New option in settings to control auto-save.\n"
                   "\nCHANGES\n"
                   "- In tutorial 1, text explaining to move to tower stays on screen until you"
                   " center the view on it.\n"
