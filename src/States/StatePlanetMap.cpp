@@ -25,6 +25,9 @@ void StatePlanetMap::OnActive()
 {
     mScreen = new ScreenPlanetMap(mGame);
 
+    // close in case it was open for load
+    mGame->CloseSaveFileForReading();
+
     mGame->AddKeyboardListener(mScreen);
 }
 
