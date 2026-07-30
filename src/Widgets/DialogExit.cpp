@@ -247,6 +247,7 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
 
     GameButton * btn = nullptr;
 
+#ifdef DEV_MODE
     // BUTTON SAVE
     if(buttons & BTN_SAVE)
     {
@@ -256,17 +257,15 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
         btnX = (w - btn->GetWidth()) / 2;
         btn->SetPosition(btnX, btnY);
 
-        btn->AddOnClickFunction([this, screen]
+        btn->AddOnClickFunction([game]
                                 {
-                                    mButtonClose->Click();
-
-                                    auto HUD = static_cast<ScreenGame *>(screen)->GetHUD();
-                                    HUD->ShowDialogSave();
+                                    game->SaveGame();
                                 });
 
         btnY += btn->GetHeight() + marginBtnV;
         contentH += btn->GetHeight() + marginBtnV;
     }
+#endif
 
     // BUTTON SETTINGS
     if(buttons & BTN_SETTINGS)
