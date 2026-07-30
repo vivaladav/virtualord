@@ -2156,6 +2156,7 @@ void ResourceLoader::SetupGameTextures()
             { 53, 180, 52, 52 },
             { 106, 180, 52, 52 },
             { 159, 180, 52, 52 },
+            { 212, 180, 52, 52 },
             // BUTTON ACTION OPTION
             { 371, 0, 258, 40 },
             { 371, 41, 258, 40 },

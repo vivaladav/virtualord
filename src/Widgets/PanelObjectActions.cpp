@@ -78,7 +78,9 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     mButtons[BTN_TECH_TREE] =
         new ObjectActionButton(ObjectActionButton::TECH_TREE, "T", KeyboardEvent::KEY_T,
                                sm->GetCString("TT_TECHTREE"), this);
-
+    mButtons[BTN_SAVE_GAME] =
+        new ObjectActionButton(ObjectActionButton::SAVE_GAME, "S", KeyboardEvent::KEY_S,
+                               sm->GetCString("TT_SAVE_GAME"), this);
     // keep these 2 last
     mButtons[BTN_SELF_DESTROY] =
         new ObjectActionButton(ObjectActionButton::SELF_DESTROY, "E", KeyboardEvent::KEY_E,
@@ -110,11 +112,11 @@ void PanelObjectActions::SetObject(GameObject * obj)
     const GameObjectTypeId objType = mObj->GetObjectType();
 
     // self destruction available for all, but base
-    if(objType != ObjectData::TYPE_BASE)
-        mButtons[BTN_SELF_DESTROY]->SetVisible(true);
+    mButtons[BTN_SELF_DESTROY]->SetVisible(objType != ObjectData::TYPE_BASE);
 
     if(objType == ObjectData::TYPE_BASE)
     {
+        mButtons[BTN_SAVE_GAME]->SetVisible(true);
         mButtons[BTN_MISSION_GOALS]->SetVisible(true);
         mButtons[BTN_BUILD_UNIT_BASE]->SetVisible(true);
     }

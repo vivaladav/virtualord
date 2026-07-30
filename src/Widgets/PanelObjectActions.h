@@ -43,6 +43,7 @@ public:
         BTN_SET_TARGET,
         BTN_RESEARCH,
         BTN_TECH_TREE,
+        BTN_SAVE_GAME,
 
         // keep these 2 last
         BTN_SELF_DESTROY,

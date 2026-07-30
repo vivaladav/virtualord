@@ -826,6 +826,12 @@ void ScreenGame::CreateUI()
         mHUD->ShowDialogMissionGoals();
     });
 
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_SAVE_GAME,
+    [this, panelObjActions]
+    {
+        mHUD->ShowDialogSave();
+    });
+
     // UNIT ACTIONS
     // build structure
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_STRUCT,
