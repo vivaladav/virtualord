@@ -116,7 +116,6 @@ enum SpriteIdDialogMissionGoalsExp : unsigned int
     ID_DLG_MGOALS_BG_ROW2,
     // SECTION HORIZONTAL LINE
     ID_DLG_MGOALS_SECTION_LINE,
-
 };
 
 // NEW ELEMENT DIALOG
@@ -210,6 +209,18 @@ enum SpriteIdDialogResearch : unsigned int
 };
 
 extern const char SpriteFileDialogResearchExp[];
+
+// DIALOG SAVE
+extern const char SpriteFileDialogSave[];
+
+enum SpriteIdDialogSave : unsigned int
+{
+    // BACKGROUND
+    ID_DLG_SAVE_BG_TOP,
+    ID_DLG_SAVE_BG_BOT,
+};
+
+extern const char SpriteFileDialogSaveExp[];
 
 // DIALOG TECH TREE
 extern const char SpriteFileDialogTechTree[];

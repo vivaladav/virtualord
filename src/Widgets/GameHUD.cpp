@@ -30,6 +30,7 @@
 #include "Widgets/DialogNewMiniUnitsSquad.h"
 #include "Widgets/DialogObject.h"
 #include "Widgets/DialogResearch.h"
+#include "Widgets/DialogSave.h"
 #include "Widgets/DialogTechTree.h"
 #include "Widgets/DialogTrading.h"
 #include "Widgets/DialogUpgrade.h"
@@ -925,6 +926,48 @@ void GameHUD::HideDialogResearch()
     // schedule dialog deletion
     mDialogResearch->DeleteLater();
     mDialogResearch = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
+}
+
+void GameHUD::ShowDialogSave()
+{
+    if(mDialogSave != nullptr)
+        return ;
+
+    mScreen->ShowScreenOverlay();
+
+    ++mVisibleDialogs;
+
+    mScreen->SetPause(true);
+
+    Game * game = mScreen->GetGame();
+    mDialogSave = new DialogSave(game);
+    mDialogSave->SetFocus();
+
+    mDialogSave->SetFunctionOnClose([this]
+    {
+        HideDialogSave();
+    });
+
+    TemporaryClosePanels();
+
+    // position dialog
+    CenterWidget(mDialogSave);
+}
+
+void GameHUD::HideDialogSave()
+{
+    --mVisibleDialogs;
+
+    mScreen->HideScreenOverlay();
+
+    ReopenPanels();
+
+    // schedule dialog deletion
+    mDialogSave->DeleteLater();
+    mDialogSave = nullptr;
 
     // un-pause game
     mScreen->SetPause(false);

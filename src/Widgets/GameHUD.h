@@ -27,6 +27,7 @@ class DialogNewElement;
 class DialogNewMiniUnitsSquad;
 class DialogObject;
 class DialogResearch;
+class DialogSave;
 class DialogTechTree;
 class DialogTrading;
 class DialogUpgrade;
@@ -117,6 +118,10 @@ public:
     void HideDialogResearch();
     const DialogResearch * GetDialogResearch() const;
 
+    void ShowDialogSave();
+    void HideDialogSave();
+    const DialogSave * GetDialogSave() const;
+
     void ShowDialogTechTree();
     void HideDialogTechTree();
     const DialogTechTree * GetDialogTechTree() const;
@@ -182,6 +187,7 @@ private:
     DialogNewMiniUnitsSquad * mDialogNewMiniUnits = nullptr;
     DialogObject * mDialogObj = nullptr;
     DialogResearch * mDialogResearch = nullptr;
+    DialogSave * mDialogSave = nullptr;
     DialogTechTree * mDialogTechTree = nullptr;
     DialogTrading * mDialogTrading = nullptr;
     DialogUpgrade * mDialogUpgrade = nullptr;
@@ -219,6 +225,8 @@ inline const PanelSelectedObject * GameHUD::GetPanelSelectedObject() const { ret
 inline const PanelTurnControl * GameHUD::GetPanelTurnControl() const { return mPanelTurnCtrl; }
 
 inline const DialogResearch * GameHUD::GetDialogResearch() const { return mDialogResearch; }
+
+inline const DialogSave * GameHUD::GetDialogSave() const { return mDialogSave; }
 
 inline const DialogTechTree * GameHUD::GetDialogTechTree() const { return mDialogTechTree; }
 

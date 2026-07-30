@@ -88,6 +88,9 @@ public:
     bool LoadSettings();
     bool SaveSettings();
 
+    const std::unordered_map<ExtendedResource, int> & GetCostSaveGame() const;
+    void LowerCostSaveGame();
+
     // -- mouse cursors --
     void RegisterCursor(GameCursorId curId, sgl::graphic::Cursor * cursor);
     void SetCurrentCursor(GameCursorId curId);
@@ -187,6 +190,7 @@ private:
 
     // -- LOAD & SAVE --
     void InitDirectories();
+    void InitCostSaveGame();
 
 private:
     std::vector<Player *> mPlayers;
@@ -200,6 +204,8 @@ private:
     std::map<unsigned int, std::function<void()>> mOnSettingsChanged;
 
     std::unordered_map<GameCursorId, sgl::graphic::Cursor *> mCursors;
+
+    std::unordered_map<ExtendedResource, int> mCostSave;
 
     std::string mDirSave;
     std::string mCurrSaveFile;
@@ -258,6 +264,11 @@ inline const std::string & Game::GetCurrentSaveFilePath() const { return mCurrSa
 inline sgl::utilities::BinaryFile * Game::GetSaveFileForReading() const
 {
     return mReaderSave;
+}
+
+inline const std::unordered_map<ExtendedResource, int> & Game::GetCostSaveGame() const
+{
+    return mCostSave;
 }
 
 inline unsigned int Game::GetCurrentTerritory() const { return mCurrTerritory; }

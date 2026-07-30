@@ -5,6 +5,7 @@
 #include "States/StatesIds.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonDialogClose.h"
+#include "Widgets/DialogSave.h"
 #include "Widgets/DialogSettings.h"
 #include "Widgets/GameButton.h"
 #include "Widgets/GameHUD.h"
@@ -255,9 +256,12 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
         btnX = (w - btn->GetWidth()) / 2;
         btn->SetPosition(btnX, btnY);
 
-        btn->AddOnClickFunction([this, game]
+        btn->AddOnClickFunction([this, screen]
                                 {
-                                    game->SaveGame();
+                                    mButtonClose->Click();
+
+                                    auto HUD = static_cast<ScreenGame *>(screen)->GetHUD();
+                                    HUD->ShowDialogSave();
                                 });
 
         btnY += btn->GetHeight() + marginBtnV;

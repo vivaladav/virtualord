@@ -1641,6 +1641,23 @@ void ResourceLoader::SetupGameTextures()
                             SpriteFileDialogResearchExp);
     });
 
+    // DIALOG SAVE
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 704, 65 },
+            { 0, 66, 704, 80 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogSave, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                            SpriteFileDialogSaveExp);
+    });
+
     // DIALOG TECH TREE
     mJobs.emplace_back([this, tm]
     {

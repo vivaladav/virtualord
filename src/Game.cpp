@@ -245,6 +245,8 @@ void Game::InitNewGameData()
     CreatePlayers();
 
     CreatePlanets();
+
+    InitCostSaveGame();
 }
 
 void Game::ClearGameData()
@@ -491,6 +493,9 @@ bool Game::SaveGame()
     std::cout << "Game::SaveGame - GAME SAVED in: " << duration.count() << " ms" << std::endl;
 #endif
 
+    // reset cost of saving
+    InitCostSaveGame();
+
     return true;
 }
 
@@ -601,6 +606,25 @@ bool Game::SaveSettings()
 #endif
 
     return true;
+}
+
+void Game::LowerCostSaveGame()
+{
+    const unsigned int minMoney = 1000;
+    const unsigned int minEnergy = 100;
+    const unsigned int minMaterial = 10;
+    const unsigned int decMoney = 1000;
+    const unsigned int decEnergy = 100;
+    const unsigned int decMaterial = 10;
+
+    const int newMoney = mCostSave[ER_MONEY] - decMoney;
+    mCostSave[ER_MONEY] = (newMoney < minMoney) ? minMoney : newMoney;
+
+    const int newEnergy = mCostSave[ER_ENERGY] - decEnergy;
+    mCostSave[ER_ENERGY] = (newEnergy < minEnergy) ? minEnergy : newEnergy;
+
+    const int newMaterial = mCostSave[ER_MATERIAL] - decMaterial;
+    mCostSave[ER_MATERIAL] = (newMaterial < minMaterial) ? minMaterial : newMaterial;
 }
 
 // -- mouse cursors --
@@ -782,6 +806,17 @@ void Game::InitDirectories()
 
     if(!filesystem::exists(pathSave))
         filesystem::create_directories(pathSave);
+}
+
+void Game::InitCostSaveGame()
+{
+    const unsigned int maxMoney = 10000;
+    const unsigned int maxEnergy = 1000;
+    const unsigned int maxMaterial = 100;
+
+    mCostSave.insert_or_assign(ER_MONEY, maxMoney);
+    mCostSave.insert_or_assign(ER_ENERGY, maxEnergy);
+    mCostSave.insert_or_assign(ER_MATERIAL, maxMaterial);
 }
 
 void Game::CreatePlayers()

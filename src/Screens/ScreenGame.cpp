@@ -4032,6 +4032,9 @@ void ScreenGame::EndTurn()
 
         if(!mGameMap->IsDoingAutomaticMoves())
             InitLocalTurn();
+
+        // lower cost of save at every new turn
+        GetGame()->LowerCostSaveGame();
     }
     // new active player is AI
     else

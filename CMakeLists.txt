@@ -543,6 +543,8 @@ add_executable(
     src/Widgets/DialogObject.cpp
     src/Widgets/DialogResearch.h
     src/Widgets/DialogResearch.cpp
+    src/Widgets/DialogSave.h
+    src/Widgets/DialogSave.cpp
     src/Widgets/DialogSettings.h
     src/Widgets/DialogSettings.cpp
     src/Widgets/DialogTechTree.h
