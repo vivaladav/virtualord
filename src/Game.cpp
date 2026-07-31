@@ -400,9 +400,15 @@ bool Game::LoadGame()
         }
     }
 
+    // save cost of saving
+    mCostSave[ER_MONEY] = mReaderSave->ReadInt();
+    mCostSave[ER_ENERGY] = mReaderSave->ReadInt();
+    mCostSave[ER_MATERIAL] = mReaderSave->ReadInt();
+
     // State
     const auto stateId = static_cast<StateId>(mReaderSave->ReadUint());
 
+    // move to screen for loading
     StateDataLoadGame data(stateId);
     RequestNextActiveState(StateId::LOAD_GAME, &data);
 
@@ -476,6 +482,15 @@ bool Game::SaveGame()
     for(Player * p : mAIPlayers)
         bf.WriteInt(p->GetPlayerId());
 
+    // reset cost of saving before writing the values
+    InitCostSaveGame();
+
+    // save cost of saving
+    bf.WriteInt(mCostSave[ER_MONEY]);
+    bf.WriteInt(mCostSave[ER_ENERGY]);
+    bf.WriteInt(mCostSave[ER_MATERIAL]);
+
+    // NOTE KEEP THIS LAST SAVE BLOCK
     // State
     const unsigned int stateId = GetActiveStateId();
     bf.WriteUint(stateId);
@@ -492,9 +507,6 @@ bool Game::SaveGame()
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
     std::cout << "Game::SaveGame - GAME SAVED in: " << duration.count() << " ms" << std::endl;
 #endif
-
-    // reset cost of saving
-    InitCostSaveGame();
 
     return true;
 }
