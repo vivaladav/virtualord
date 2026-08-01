@@ -257,9 +257,10 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
         btnX = (w - btn->GetWidth()) / 2;
         btn->SetPosition(btnX, btnY);
 
-        btn->AddOnClickFunction([game]
+        btn->AddOnClickFunction([game, screen]
                                 {
                                     game->SaveGame();
+                                    screen->ShowLabelGameSaved();
                                 });
 
         btnY += btn->GetHeight() + marginBtnV;

@@ -38,7 +38,10 @@ void StateGame::OnActive()
 
         // auto save, if enabled
         if(mGame->IsAutosaveEnabled())
+        {
             mGame->SaveGame();
+            screen->ShowLabelGameSaved();
+        }
     }
     else
     {

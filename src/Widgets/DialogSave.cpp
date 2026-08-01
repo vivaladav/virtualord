@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Player.h"
 #include "GameConstants.h"
+#include "Screens/Screen.h"
 #include "Widgets/ButtonDialogClose.h"
 #include "Widgets/ButtonDialogOk.h"
 #include "Widgets/GameUIData.h"
@@ -24,7 +25,7 @@ namespace game
 const int marginSide = 40;
 const int marginButtonsB = 20;
 
-DialogSave::DialogSave(Game * game)
+DialogSave::DialogSave(Game * game, Screen * screen)
 {
     using namespace sgl;
 
@@ -150,7 +151,7 @@ DialogSave::DialogSave(Game * game)
     btnSave->SetEnabled(canSave);
 
     // handle click
-    btnSave->AddOnClickFunction([this, game]
+    btnSave->AddOnClickFunction([this, game, screen]
     {
         // pay costs
         const std::unordered_map<ExtendedResource, int> & cost = game->GetCostSaveGame();
@@ -162,6 +163,8 @@ DialogSave::DialogSave(Game * game)
 
         // save game
         game->SaveGame();
+
+        screen->ShowLabelGameSaved();
 
         // close dialog
         mBtnClose->Click();

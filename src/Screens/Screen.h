@@ -30,7 +30,10 @@ public:
 
     Game * GetGame() const;
 
+    // UI
     DialogSettings * ShowDialogSettings();
+
+    void ShowLabelGameSaved();
 
     virtual void Update(float delta) = 0;
 

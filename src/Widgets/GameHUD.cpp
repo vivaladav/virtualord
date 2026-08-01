@@ -943,7 +943,7 @@ void GameHUD::ShowDialogSave()
     mScreen->SetPause(true);
 
     Game * game = mScreen->GetGame();
-    mDialogSave = new DialogSave(game);
+    mDialogSave = new DialogSave(game, mScreen);
     mDialogSave->SetFocus();
 
     mDialogSave->SetFunctionOnClose([this]

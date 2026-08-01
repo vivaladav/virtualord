@@ -33,7 +33,10 @@ void StatePlanetMap::OnActive()
     {
         // auto save, if enabled
         if(mGame->IsAutosaveEnabled())
+        {
             mGame->SaveGame();
+            mScreen->ShowLabelGameSaved();
+        }
     }
 
     mGame->AddKeyboardListener(mScreen);

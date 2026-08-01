@@ -14,11 +14,12 @@ namespace game
 {
 
 class Game;
+class Screen;
 
 class DialogSave : public sgl::sgui::Widget
 {
 public:
-    DialogSave(Game * game);
+    DialogSave(Game * game, Screen * screen);
 
     void SetFunctionOnClose(const std::function<void()> & f);
 
