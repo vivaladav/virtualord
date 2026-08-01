@@ -555,6 +555,8 @@ add_executable(
     src/Widgets/DialogUpgrade.cpp
     src/Widgets/DigitsDisplay.h
     src/Widgets/DigitsDisplay.cpp
+    src/Widgets/DisappearingLabel.h
+    src/Widgets/DisappearingLabel.cpp
     src/Widgets/GameButton.h
     src/Widgets/GameButton.cpp
     src/Widgets/GameHUD.h
