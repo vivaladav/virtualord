@@ -2079,24 +2079,24 @@ GameObject * GameMap::CreateMiniUnit(GameObjectTypeId ut, GameObject * gen, cons
     return mu;
 }
 
-Cell2D GameMap::GetNewMiniUnitDestination(const Cell2D & genCell) const
+Cell2D GameMap::GetNewMiniUnitDestination(const GameObject * gen) const
 {
     // TODO quick code that will need to be improved later
     const int maxDist = 2;
 
     for(int d = 1; d <= maxDist; ++d)
     {
-        const int r0 = (d < genCell.row) ? genCell.row - d : 0;
-        const int r1uc = genCell.row + d;
-        const int r1 = r1uc < mRows ? r1uc + 1 : mRows;
+        const int r0 = ((gen->GetRow0() + d) < mRows) ? gen->GetRow0() + d : gen->GetRow0();
+        const int r1 = ((gen->GetRow1() - d) >= 0) ? gen->GetRow1() - d : gen->GetRow1();
 
-        for(int r = r0; r < r1; ++r)
+        // search from bottom to top
+        for(int r = r0; r >= r1; --r)
         {
-            const int c0 = (d < genCell.col) ? genCell.col - d : 0;
-            const int c1uc = genCell.col + d;
-            const int c1 = c1uc < mCols ? c1uc + 1 : mCols;
+            const int c0 = ((gen->GetCol0() + d) < mCols) ? gen->GetCol0() + d : gen->GetCol0();
+            const int c1 = ((gen->GetCol1() - d) >= 0) ? gen->GetCol1() - d : gen->GetCol1();
 
-            for(int c = c0; c < c1; ++c)
+            // search from left to right
+            for(int c = c1; c <= c0; ++c)
             {
                 if(mCells[r * mCols + c].walkable)
                     return Cell2D(r, c);

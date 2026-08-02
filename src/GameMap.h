@@ -167,7 +167,7 @@ public:
     bool CanCreateMiniUnit(GameObjectTypeId ut, GameObject * gen, int elements, Player * player);
     GameObject * CreateMiniUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & dest,
                                 int elements, Player * player, bool assignWeapon = true);
-    Cell2D GetNewMiniUnitDestination(const Cell2D & genCell) const;
+    Cell2D GetNewMiniUnitDestination(const GameObject * gen) const;
 
     MiniUnitsGroup * CreateMiniUnitsGroup();
 
