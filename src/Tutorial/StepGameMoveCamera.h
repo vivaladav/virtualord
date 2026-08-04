@@ -10,15 +10,10 @@ namespace sgl
 namespace game
 {
 
-class PanelClickFilter;
-
 class StepGameMoveCamera : public TutorialStep
 {
 public:
     StepGameMoveCamera(int deltaX, int deltaY, float speed = 500.f);
-    ~StepGameMoveCamera();
-
-    void OnStart() override;
 
     void Update(float delta) override;
 
@@ -30,8 +25,6 @@ protected:
     sgl::graphic::Camera * GetCamera() const;
 
 private:
-    PanelClickFilter * mClickFilter = nullptr;
-
     sgl::graphic::Camera * mCamera = nullptr;
 
     float mSpeed = 0.f;

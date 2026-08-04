@@ -13,6 +13,8 @@ StepAISetActive::StepAISetActive(PlayerAI * ai, bool active)
 
 void StepAISetActive::OnStart()
 {
+    TutorialStep::OnStart();
+
     mAI->SetActive(mActive);
 
     SetDone();

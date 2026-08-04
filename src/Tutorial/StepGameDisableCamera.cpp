@@ -12,6 +12,8 @@ StepGameDisableCamera::StepGameDisableCamera(CameraMapController * c)
 
 void StepGameDisableCamera::OnStart()
 {
+    TutorialStep::OnStart();
+
     mController->SetEnabled(false);
 
     SetDone();
