@@ -79,7 +79,7 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
         new ObjectActionButton(ObjectActionButton::TECH_TREE, "T", KeyboardEvent::KEY_T,
                                sm->GetCString("TT_TECHTREE"), this);
     mButtons[BTN_SAVE_GAME] =
-        new ObjectActionButton(ObjectActionButton::SAVE_GAME, "S", KeyboardEvent::KEY_S,
+        new ObjectActionButton(ObjectActionButton::SAVE_GAME, "V", KeyboardEvent::KEY_V,
                                sm->GetCString("TT_SAVE_GAME"), this);
     // keep these 2 last
     mButtons[BTN_SELF_DESTROY] =
