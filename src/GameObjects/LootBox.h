@@ -41,6 +41,8 @@ private:
     void SetObjColors();
 
 private:
+    friend class StepGameSetLootboxPrize;
+
     int mPrizeQuantity = 0;
     Prize mPrizeType = LB_NULL;
 };

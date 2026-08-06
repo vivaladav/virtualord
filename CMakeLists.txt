@@ -353,6 +353,8 @@ add_executable(
     src/Tutorial/StepGameMoveUnitToArea.cpp
     src/Tutorial/StepGameMoveUnitToCorner.h
     src/Tutorial/StepGameMoveUnitToCorner.cpp
+    src/Tutorial/StepGameOpenLootbox.h
+    src/Tutorial/StepGameOpenLootbox.cpp
     src/Tutorial/StepGamePanelHit.h
     src/Tutorial/StepGamePanelHit.cpp
     src/Tutorial/StepGamePrimaryMissionGoal.h
@@ -367,6 +369,8 @@ add_executable(
     src/Tutorial/StepGameSetCollectableGeneratorTurns.cpp
     src/Tutorial/StepGameSetCollectableUnits.h
     src/Tutorial/StepGameSetCollectableUnits.cpp
+    src/Tutorial/StepGameSetLootboxPrize.h
+    src/Tutorial/StepGameSetLootboxPrize.cpp
     src/Tutorial/StepGameSetObjectAttackMode.h
     src/Tutorial/StepGameSetObjectAttackMode.cpp
     src/Tutorial/StepGameSetObjectEnergy.h

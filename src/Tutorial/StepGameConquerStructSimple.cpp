@@ -2,7 +2,6 @@
 
 #include "Game.h"
 #include "IsoMap.h"
-#include "IsoObject.h"
 #include "GameObjects/Unit.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"

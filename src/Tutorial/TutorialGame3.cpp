@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "AI/PlayerAI.h"
 #include "GameObjects/Base.h"
+#include "GameObjects/LootBox.h"
 #include "GameObjects/ObjectData.h"
 #include "GameObjects/Unit.h"
 #include "Indicators/OverlayCellConquest.h"
@@ -16,20 +17,24 @@
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameBuildStructIntro.h"
 #include "Tutorial/StepGameBuildStructure.h"
+#include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameBuildUnitEnd.h"
 #include "Tutorial/StepGameBuildUnitStart.h"
-#include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
-#include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameIntro3.h"
+#include "Tutorial/StepGameMoveUnitToCorner.h"
+#include "Tutorial/StepGameOpenLootbox.h"
 #include "Tutorial/StepGameSelectObject.h"
+#include "Tutorial/StepGameSetLootboxPrize.h"
 #include "Tutorial/StepGameSingleInfo.h"
+#include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameWaitTurn.h"
+
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/PanelObjectActions.h"
@@ -44,6 +49,8 @@ constexpr int catResources = 2;
 
 constexpr int structDefTower = 1;
 constexpr int structMatExtr = 1;
+
+const Cell2D cellLootbox1(74, 63);
 
 }
 
@@ -210,6 +217,35 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // MOVE WORKER 1 TO LOOTBOX
+    AddStep([this, local, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const Cell2D target(74, 66);
+            const core::Pointd2D p0(1000, 150);
+            return new StepGameMoveUnitToCorner(unit, isoMap, target, p0);
+        });
+    // OPEN LOOTBOX
+    AddStep([this]
+        {
+            auto lootbox = static_cast<LootBox *>(GetObjectInCell(cellLootbox1));
+            const unsigned int prizeType = LootBox::LB_MATERIAL;
+            const int prizeQuantity = 200;
+            return new StepGameSetLootboxPrize(lootbox, prizeType, prizeQuantity);
+        });
+    AddStep([this, local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const GameObject * lootbox = GetObjectInCell(cellLootbox1);
+            const core::Pointd2D p0(500, 150);
+
+            return new StepGameOpenLootbox(game, unit, lootbox, isoMap, p0);
+        });
+    AddStep([local]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            return new StepDelay(unit->GetTimeOpenLootbox());
+        });
 }
 
 TutorialGame3::~TutorialGame3()
