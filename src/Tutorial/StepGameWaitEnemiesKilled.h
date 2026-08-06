@@ -15,6 +15,8 @@ class StepGameWaitEnemiesKilled : public TutorialStep
 public:
     StepGameWaitEnemiesKilled(const std::vector<const GameObject *> && objs, const GameMap * gm);
 
+    void OnStart() override;
+
     void Update(float delta) override;
 
 private:

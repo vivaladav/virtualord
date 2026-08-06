@@ -386,6 +386,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Selection no longer allowed when moving camera in tutorial 1.\n"
                   "- Tutorial always starting if enabled and starting a new game.\n"
                   "- It's no longer possible to select random objects during the tutorial.\n"
+                  "- Automatic camera works fine when moving near map's border too.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
