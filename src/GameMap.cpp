@@ -1953,12 +1953,8 @@ Cell2D GameMap::GetNewUnitDestination(GameObject * gen) const
     return Cell2D(-1, -1);
 }
 
-void GameMap::StartCreateUnit(GameObjectTypeId ut, GameObject * gen,
-                              const Cell2D & dest, Player * player)
+void GameMap::StartCreateUnit(GameObjectTypeId ut, Player * player)
 {
-    const int ind = dest.row * mCols + dest.col;
-    GameMapCell & gcell = mCells[ind];
-
     // make player pay
     const auto & costs = GetObjectData(ut).GetCosts();
 
@@ -2032,6 +2028,17 @@ bool GameMap::CanCreateMiniUnit(GameObjectTypeId ut, GameObject * gen, int eleme
     return true;
 }
 
+void GameMap::StartCreateMiniUnit(GameObjectTypeId ut, Player * player, int elements)
+{
+    // pay costs
+    const auto & costs = GetObjectData(ut).GetCosts();
+
+    player->SumResource(Player::Stat::ENERGY, -costs[RES_ENERGY] * elements);
+    player->SumResource(Player::Stat::MATERIAL, -costs[RES_MATERIAL1] * elements);
+    player->SumResource(Player::Stat::DIAMONDS, -costs[RES_DIAMONDS] * elements);
+    player->SumResource(Player::Stat::BLOBS, -costs[RES_BLOBS] * elements);
+}
+
 GameObject * GameMap::CreateMiniUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & dest,
                                     int elements, Player * player, bool assignWeapon)
 {
@@ -2043,14 +2050,6 @@ GameObject * GameMap::CreateMiniUnit(GameObjectTypeId ut, GameObject * gen, cons
     // data to pass to new object
     const ObjectInitData initData(mGame, this, mScreenGame->GetParticlesManager(),
                                   player, mScreenGame);
-
-    // pay costs
-    const auto & costs = data.GetCosts();
-
-    player->SumResource(Player::Stat::ENERGY, -costs[RES_ENERGY] * elements);
-    player->SumResource(Player::Stat::MATERIAL, -costs[RES_MATERIAL1] * elements);
-    player->SumResource(Player::Stat::DIAMONDS, -costs[RES_DIAMONDS] * elements);
-    player->SumResource(Player::Stat::BLOBS, -costs[RES_BLOBS] * elements);
 
     // create object
     auto mu = new MiniUnit(data, initData, elements);

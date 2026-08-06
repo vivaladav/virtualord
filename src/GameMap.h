@@ -160,11 +160,12 @@ public:
     // unit create
     bool CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * player);
     Cell2D GetNewUnitDestination(GameObject * gen) const;
-    void StartCreateUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & dest, Player * player);
+    void StartCreateUnit(GameObjectTypeId ut, Player * player);
     Unit * CreateUnit(GameObjectTypeId ut, const Cell2D & dest, Player * player, bool assignWeapon = true);
 
     // mini units
     bool CanCreateMiniUnit(GameObjectTypeId ut, GameObject * gen, int elements, Player * player);
+    void StartCreateMiniUnit(GameObjectTypeId ut, Player * player, int elements);
     GameObject * CreateMiniUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & dest,
                                 int elements, Player * player, bool assignWeapon = true);
     Cell2D GetNewMiniUnitDestination(const GameObject * gen) const;

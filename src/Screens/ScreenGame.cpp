@@ -2139,6 +2139,7 @@ bool ScreenGame::SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, Game
         gen->ActionStepCompleted(SPAWN);
         gen->SetCurrentAction(GameObjectActionType::IDLE);
 
+        mGameMap->StartCreateMiniUnit(type, player, elements);
         auto mu = mGameMap->CreateMiniUnit(type, gen, cell, elements, player);
 
         assert(mu != nullptr);
@@ -2198,7 +2199,7 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
     }
 
     // start create
-    mGameMap->StartCreateUnit(type, gen, cell, player);
+    mGameMap->StartCreateUnit(type, player);
 
     // create and init progress bar
     assert(gen->IsStructure());
