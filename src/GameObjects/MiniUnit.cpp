@@ -26,18 +26,19 @@ namespace game
 
 MiniUnit::MiniUnit(const ObjectData & data, const ObjectInitData & initData, int elements)
     : GameObject(data, initData)
-    , mElements(elements)
 {
+    SetObjectVariant(elements);
+
     // set actual speed
     const float maxSpeed = 10.f;
     SetMaxSpeed(maxSpeed);
 
     // health
-    const float maxHealthValue = maxSingleHealthValue * mElements;
+    const float maxHealthValue = maxSingleHealthValue * elements;
     SetMaxHealth(maxHealthValue);
 
     // energy
-    const float maxEnergy = maxSingleEnergyValue * mElements;
+    const float maxEnergy = maxSingleEnergyValue * elements;
     SetMaxEnergy(maxEnergy);
 
     // INIT GRAPHICS
@@ -50,9 +51,6 @@ bool MiniUnit::Load(sgl::utilities::BinaryFile & bf)
 
     if(!res)
         return false;
-
-    // values
-    mElements = bf.ReadInt();
 
     // flags
     mMoving = bf.ReadBool();
@@ -68,9 +66,6 @@ bool MiniUnit::Save(sgl::utilities::BinaryFile & bf) const
     if(!res)
         return false;
 
-    // values
-    bf.WriteInt(mElements);
-
     // flags
     bf.WriteBool(mMoving);
     bf.WriteBool(mTargetReached);
@@ -85,17 +80,17 @@ void MiniUnit::SetNumElements(int num)
         num = MAX_ELEMENTS;
 
     // nothing has changed
-    if(num == mElements)
+    if(num == GetObjectVariant())
         return ;
 
-    mElements = num;
+    SetObjectVariant(num);
 
     // health
-    const float maxHealthValue = maxSingleHealthValue * mElements;
+    const float maxHealthValue = maxSingleHealthValue * num;
     SetMaxHealth(maxHealthValue);
 
     // energy
-    const float maxEnergy = maxSingleEnergyValue * mElements;
+    const float maxEnergy = maxSingleEnergyValue * num;
     SetMaxEnergy(maxEnergy);
 
     UpdateGraphics();
@@ -143,7 +138,7 @@ void MiniUnit::SetImage()
         texInd0 = SID_MUNIT_02_1X_F1;
 
     const unsigned int texInd = texInd0 + (NUM_MUNIT_SPRITES_PER_FACTION * faction) +
-                                (mElements - 1);
+                                (GetObjectVariant() - 1);
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex =tm->GetSprite(SpriteFileMiniUnits, texInd);
@@ -198,27 +193,28 @@ void MiniUnit::PrepareShoot()
     using namespace sgl;
 
     const IsoObject * isoObj = GetIsoObject();
+    const int numElements = GetObjectVariant();
 
     core::Pointd2D delta;
 
-    if(1 == mElements)
+    if(1 == numElements)
         delta = {48, 9};
     else
     {
         std::vector<core::Pointd2D> deltas;
 
-        if(2 == mElements)
+        if(2 == numElements)
         {
             deltas.emplace_back(24, 9);
             deltas.emplace_back(72, 9);
         }
-        else if(3 == mElements)
+        else if(3 == numElements)
         {
             deltas.emplace_back(16, 15);
             deltas.emplace_back(48, 15);
             deltas.emplace_back(80, 15);
         }
-        else if(4 == mElements)
+        else if(4 == numElements)
         {
             deltas.emplace_back(48, 0);
             deltas.emplace_back(16, 15);

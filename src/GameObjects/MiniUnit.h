@@ -33,13 +33,11 @@ private:
     void PrepareShoot();
 
 private:
-    int mElements;
-
     bool mMoving = false;
     bool mTargetReached = false;
 };
 
-inline int MiniUnit::GetNumElements() const { return mElements; }
+inline int MiniUnit::GetNumElements() const { return GetObjectVariant(); }
 
 inline bool MiniUnit::IsMoving() const { return mMoving; }
 inline void MiniUnit::SetMoving(bool moving) { mMoving = moving; }
