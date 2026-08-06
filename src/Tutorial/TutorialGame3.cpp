@@ -13,17 +13,23 @@
 #include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepAISetActive.h"
+#include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameBuildStructIntro.h"
 #include "Tutorial/StepGameBuildStructure.h"
 #include "Tutorial/StepGameBuildUnitEnd.h"
 #include "Tutorial/StepGameBuildUnitStart.h"
 #include "Tutorial/StepGameBuildTowerEnd.h"
-#include "Tutorial/StepDelay.h"
+#include "Tutorial/StepGameConnectStructIntro.h"
+#include "Tutorial/StepGameConquerCellsEnd.h"
+#include "Tutorial/StepGameUnitConquerCellsIcon.h"
+#include "Tutorial/StepGameConquerCellsSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
+#include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameIntro3.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSingleInfo.h"
 #include "Tutorial/StepGameUnit.h"
+#include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/PanelObjectActions.h"
@@ -35,6 +41,9 @@ using namespace game;
 constexpr unsigned int indWorker1 = 0;
 
 constexpr int catResources = 2;
+
+constexpr int structDefTower = 1;
+constexpr int structMatExtr = 1;
 
 }
 
@@ -128,6 +137,51 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const auto unit = local->GetUnit(indWorker1);
             const core::Pointd2D p0(1000, 200);
             const Cell2D target(74, 77);
+            return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONNECT SOLAR PANELS TO BASE
+    AddStep([]
+            {
+                const core::Pointd2D p0(1100, 350);
+                return new StepGameConnectStructIntro(p0);
+            });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this, isoMap, game]
+            {
+                const core::Pointd2D p0(1100, 400);
+                const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+                const Cell2D target(75, 77);
+                return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const core::Pointd2D p0(1100, 300);
+                const Cell2D cellEnd(76, 77);
+                return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // BUILD MATERIAL EXTRACTOR
+    AddStep([panelActions]
+        {
+            const core::Pointd2D p0(1100, 250);
+            return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_MORE", p0);
+        });
+    AddStep([hud]
+        {
+            return new StepGameBuildStructure(hud, "TUT_GAME_CAT_RES_GEN", "TUT_GAME_BUILD_MAT_EXTR",
+                                              catResources, structMatExtr);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1000, 200);
+            const Cell2D target(74, 74);
             return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
