@@ -13,8 +13,11 @@
 #include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepAISetActive.h"
+#include "Tutorial/StepGameBuildStructIntro.h"
+#include "Tutorial/StepGameBuildStructure.h"
 #include "Tutorial/StepGameBuildUnitEnd.h"
 #include "Tutorial/StepGameBuildUnitStart.h"
+#include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameIntro3.h"
@@ -30,6 +33,8 @@ namespace
 using namespace game;
 
 constexpr unsigned int indWorker1 = 0;
+
+constexpr int catResources = 2;
 
 }
 
@@ -65,24 +70,66 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD FIRST UNIT
     AddStep([localBase, game, isoMap]
-            {
-                const core::Pointd2D p0(500, 200);
-                return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
-            });
+        {
+            const core::Pointd2D p0(500, 200);
+            return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
+        });
     AddStep([panelActions]
-            {
-                return new StepGameBuildUnitStart(panelActions, PanelObjectActions::BTN_BUILD_UNIT_BASE);
-            });
+        {
+            return new StepGameBuildUnitStart(panelActions, PanelObjectActions::BTN_BUILD_UNIT_BASE);
+        });
     AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
     // SELECT WORKER 1
     AddStep([local, game, isoMap]
-            {
-                const auto unit = local->GetUnit(indWorker1);
-                const core::Pointd2D p0(1300, 450);
-                return new StepGameUnit(game, isoMap, unit, p0);
-            });
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1300, 450);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD SOLAR PANEL 1
+    AddStep([panelActions]
+        {
+           const core::Pointd2D p0(1100, 300);
+            return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_RES_GEN", p0);
+        });
+    AddStep([hud]
+        {
+            const int indStruct = 0;
+            return new StepGameBuildStructure(hud, "TUT_GAME_CAT_RES_GEN", nullptr,
+                                              catResources, indStruct);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1000, 200);
+            const Cell2D target(74, 78);
+            return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD SOLAR PANEL 2
+    AddStep([panelActions]
+        {
+            const core::Pointd2D p0(1100, 250);
+            return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_MORE", p0);
+        });
+    AddStep([hud]
+        {
+            const int indStruct = 0;
+            return new StepGameBuildStructure(hud, "TUT_GAME_CAT_RES_GEN", nullptr,
+                                              catResources, indStruct);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1000, 200);
+            const Cell2D target(74, 77);
+            return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
+        });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
