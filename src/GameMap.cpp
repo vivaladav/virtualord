@@ -183,24 +183,22 @@ bool GameMap::Load(sgl::utilities::BinaryFile & bf)
     const unsigned int numMiniUnitGroups = bf.ReadUint();
     mMiniUnitsGroups.reserve(numMiniUnitGroups);
 
-    for(unsigned int i = 0; i < numCollGen; ++i)
+    for(unsigned int i = 0; i < numMiniUnitGroups; ++i)
     {
         auto g = CreateMiniUnitsGroup();
         g->Load(bf);
-
-        mMiniUnitsGroups.emplace_back(g);
     }
 
     // cities groups
     const unsigned int numCityGroups = bf.ReadUint();
     mCities.reserve(numCityGroups);
 
-    for(unsigned int i = 0; i < numCollGen; ++i)
+    for(unsigned int i = 0; i < numCityGroups; ++i)
     {
         auto g = new CityGroup(this);
-        g->Load(bf);
-
         mCities.emplace_back(g);
+
+        g->Load(bf);
     }
 
     return true;
