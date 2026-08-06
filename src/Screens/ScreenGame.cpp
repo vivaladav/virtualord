@@ -1117,9 +1117,9 @@ void ScreenGame::LoadMapFile()
 
             // create collectable generators
             if(t == CT_BLOBS_SOURCE)
-                mGameMap->CreateCollectableGenerator(r, c, RES_BLOBS);
+                mGameMap->CreateCollectableGenerator(r, c, ObjectData::TYPE_BLOBS);
             else if(t == CT_DIAMONDS_SOURCE)
-                mGameMap->CreateCollectableGenerator(r, c, RES_DIAMONDS);
+                mGameMap->CreateCollectableGenerator(r, c, ObjectData::TYPE_DIAMONDS);
         }
     }
 
