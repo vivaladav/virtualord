@@ -185,6 +185,31 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
+    // CONNECT MATERIAL EXTRACTOR TO BASE
+    AddStep([]
+        {
+            const core::Pointd2D p0(1100, 350);
+            return new StepGameConnectStructIntro(p0);
+        });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this, isoMap, game]
+        {
+            const core::Pointd2D p0(1100, 400);
+            const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+            const Cell2D target(74, 75);
+            return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+        });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1100, 300);
+            const Cell2D cellEnd(74, 76);
+            return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
 }
 
 TutorialGame3::~TutorialGame3()
