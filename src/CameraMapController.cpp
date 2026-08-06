@@ -60,20 +60,17 @@ void CameraMapController::CenterCameraToPoint(int x, int y)
     ClearMovement();
 
     // set camera position
-    const auto p = ClampPointInside(x, y);
-    mCamera->CenterToPoint(p.x, p.y);
+    mCamera->CenterToPoint(x, y);
 }
 
 void CameraMapController::MoveCenterCameraToPoint(int x, int y, float speed)
 {
-    const auto center = ClampPointInside(x, y);
-
     // define move target
+    mTargetMove.x = x - (mCamera->GetWidth() / 2);
+    mTargetMove.y = y - (mCamera->GetHeight() / 2);
+
     const int cameraX = mCamera->GetX();
     const int cameraY = mCamera->GetY();
-    mTargetMove.x = center.x - (mCamera->GetWidth() / 2);
-    mTargetMove.y = center.y - (mCamera->GetHeight() / 2);
-
     const int deltaX = mTargetMove.x - cameraX;
     const int deltaY = mTargetMove.y - cameraY;
 
