@@ -53,7 +53,7 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
     // randomize turns for change
     const int minTurns = 10;
     const int maxTurns = 25;
-    sgl::utilities::UniformDistribution dis(minTurns, maxTurns, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution dis(minTurns, maxTurns);
     mTurnsToChange = dis.GetNextValue();
 
     SetObjColors();
@@ -120,7 +120,7 @@ void Trees::OnNewTurn(PlayerFaction faction)
     else if(mNumTrees < mMaxNum)
     {
         // randomize new variant
-        sgl::utilities::UniformDistribution dis(0, mNumVariants - 1, GetGame()->GetRandSeed());
+        sgl::utilities::UniformDistribution dis(0, mNumVariants - 1);
         mVariant = dis.GetNextValue();
 
         ++mNumTrees;
@@ -171,7 +171,7 @@ void Trees::SpawnTree(int r0, int c0)
 {
     GameMap * gm = GetGameMap();
 
-    sgl::utilities::UniformDistribution dis(0, mNumVariants - 1, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution dis(0, mNumVariants - 1);
     const int variant = dis.GetNextValue();
 
     gm->CreateObject(GetObjectType(), variant, NO_FACTION, r0, c0, false);

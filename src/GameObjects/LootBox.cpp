@@ -186,7 +186,7 @@ void LootBox::SetPrize()
         max = mult * 250;
     }
 
-    sgl::utilities::UniformDistribution d(min, max, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution d(min, max);
 
     // round quantity to 5
     const int r = 5;

@@ -230,7 +230,7 @@ void MiniUnit::PrepareShoot()
             deltas.emplace_back(48, 30);
         }
 
-        utilities::UniformDistribution ud(0, deltas.size() - 1, GetGame()->GetRandSeed());
+        utilities::UniformDistribution ud(0, deltas.size() - 1);
         delta = deltas[ud.GetNextValue()];
     }
 

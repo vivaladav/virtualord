@@ -14,7 +14,7 @@ Collectable::Collectable(const ObjectData & data, const ObjectInitData & initDat
     , mMin(min)
     , mMax(max)
 {
-    sgl::utilities::UniformDistribution ran(mMin, mMax, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution ran(mMin, mMax);
     mNum = ran.GetNextValue();
 }
 
@@ -57,7 +57,7 @@ void Collectable::RandomizeNumUnits(unsigned int min, unsigned int max)
         max = mMax;
 
     // randomize num
-    sgl::utilities::UniformDistribution ran(min, max, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution ran(min, max);
     mNum = ran.GetNextValue();
 
     UpdateGraphics();

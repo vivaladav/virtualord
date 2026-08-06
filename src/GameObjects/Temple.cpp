@@ -287,7 +287,7 @@ void Temple::DefineMaxValues()
 
 void Temple::DecideRewards()
 {
-    sgl::utilities::UniformDistribution dist(FIRST_EXP_REW, LAST_EXP_REW, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution dist(FIRST_EXP_REW, LAST_EXP_REW);
 
     mOutcome1 = static_cast<ExplorationOutcome>(dist.GetNextValue());
     mOutcome2 = static_cast<ExplorationOutcome>(dist.GetNextValue());
@@ -305,7 +305,7 @@ void Temple::DecideRewards()
 
 void Temple::DecidePunishments()
 {
-    sgl::utilities::UniformDistribution dist(FIRST_EXP_PUN, LAST_EXP_PUN, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution dist(FIRST_EXP_PUN, LAST_EXP_PUN);
 
     mOutcome1 = static_cast<ExplorationOutcome>(dist.GetNextValue());
     mOutcome2 = static_cast<ExplorationOutcome>(dist.GetNextValue());

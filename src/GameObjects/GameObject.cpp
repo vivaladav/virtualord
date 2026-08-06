@@ -741,7 +741,7 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     if(mHealth > 0.f)
     {
         const int quad0 = 0;
-        utilities::UniformDistribution genQuad(quad0, maxQuad - 1, mGame->GetRandSeed());
+        utilities::UniformDistribution genQuad(quad0, maxQuad - 1);
 
         ang0 += angInc * genQuad.GetNextValue();
 
@@ -784,34 +784,33 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     // random generator of rotation angle
     const int minRot = 0;
     const int maxRot = 360;
-    utilities::UniformDistribution genRot(minRot, maxRot, mGame->GetRandSeed());
+    utilities::UniformDistribution genRot(minRot, maxRot);
 
     // random generator for velocity direction
-    utilities::UniformDistribution genVel(static_cast<int>(ang0), static_cast<int>(ang1),
-                                          mGame->GetRandSeed());
+    utilities::UniformDistribution genVel(static_cast<int>(ang0), static_cast<int>(ang1));
 
     const float deg2rad = sgl::core::Math::PIf / 180.f;
 
     // random generator for speed
     const int minSpeed = 100;
     const int maxSpeed = 300;
-    utilities::UniformDistribution genSpeed(minSpeed, maxSpeed, mGame->GetRandSeed());
+    utilities::UniformDistribution genSpeed(minSpeed, maxSpeed);
 
     // random generator for decay speed
     const int minDecSpeed = 200;
     const int maxDecSpeed = 400;
-    utilities::UniformDistribution genDecSpeed(minDecSpeed, maxDecSpeed, mGame->GetRandSeed());
+    utilities::UniformDistribution genDecSpeed(minDecSpeed, maxDecSpeed);
 
     // random generator for scale
     const int minScale = 1;
     const int maxScale = 2;
-    utilities::UniformDistribution genScale(minScale, maxScale, mGame->GetRandSeed());
+    utilities::UniformDistribution genScale(minScale, maxScale);
 
     // random generator for color
     const int color0 = 0;
     const int colorN = mObjColors.size() - 1;
 
-    utilities::UniformDistribution genColor(color0, colorN, mGame->GetRandSeed());
+    utilities::UniformDistribution genColor(color0, colorN);
 
     for(int q = 0; q < numQuad; ++q)
     {
@@ -850,7 +849,7 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     const int maxXDeltaHP = isoObj->GetWidth() * 0.25;
     const int minXDeltaHP = -maxXDeltaHP;
 
-    utilities::UniformDistribution genPosHP(minXDeltaHP, maxXDeltaHP, mGame->GetRandSeed());
+    utilities::UniformDistribution genPosHP(minXDeltaHP, maxXDeltaHP);
 
     const float posXHP = objXC + genPosHP.GetNextValue();
     const float posYHP = objYC - (isoObj->GetHeight() * 0.25f);

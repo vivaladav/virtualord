@@ -69,7 +69,7 @@ void CollectableGenerator::OnNewTurn()
 void CollectableGenerator::ResetCounter(int min, int max)
 {
     // randomize generation time between min and max
-    sgl::utilities::UniformDistribution ran(min, max, mGame->GetRandSeed());
+    sgl::utilities::UniformDistribution ran(min, max);
 
     mRegenTurns = ran.GetNextValue();
     mCounterRegen = mRegenTurns;

@@ -358,8 +358,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
             if(NO_FACTION == faction)
             {
-                utilities::UniformDistribution dist(FACTION_1, FACTION_3,
-                                                    game->GetRandSeed());
+                utilities::UniformDistribution dist(FACTION_1, FACTION_3);
 
                 int f = dist.GetNextValue();
 
