@@ -306,6 +306,38 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
+    // SELECT WORKER 2
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(1300, 450);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+     // START TO CONNECT MATERIAL GENERATOR
+    AddStep([]
+        {
+            const core::Pointd2D p0(1150, 150);
+            return new StepGameConnectStructIntro(p0);
+        });
+    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([this, isoMap, game]
+        {
+            const core::Pointd2D p0(900, 250);
+            const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+            const Cell2D target(74, 72);
+            return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+        });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(700, 200);
+            const Cell2D cellEnd(74, 66);
+            return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
 }
 
 TutorialGame3::~TutorialGame3()
