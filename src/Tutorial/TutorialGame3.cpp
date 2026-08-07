@@ -23,13 +23,17 @@
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
+#include "Tutorial/StepGameConquerMaterialGenIntro.h"
+#include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameIntro3.h"
+#include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGameMoveUnitToCorner.h"
 #include "Tutorial/StepGameOpenLootbox.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetLootboxPrize.h"
+#include "Tutorial/StepGameSetSelectionActiveAction.h"
 #include "Tutorial/StepGameSingleInfo.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameUnit.h"
@@ -51,6 +55,7 @@ constexpr int structDefTower = 1;
 constexpr int structMatExtr = 1;
 
 const Cell2D cellLootbox1(74, 63);
+const Cell2D cellMatGen1(66, 62);
 
 }
 
@@ -246,6 +251,38 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const auto unit = local->GetUnit(indWorker1);
             return new StepDelay(unit->GetTimeOpenLootbox());
         });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // MOVE TO MATERIAL GENERATOR
+    AddStep([]
+        {
+            const core::Pointd2D p0(600, 250);
+            return new StepGameSingleInfo(p0, "TUT_GAME_CONT_EXPL");
+        });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const Cell2D target(68, 62);
+            const core::Pointd2D p0(450, 250);
+            return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONQUER MATERIAL GENERATOR WITH SOLDIER
+    AddStep([this, local]
+            {
+                const GameObject * gen = GetObjectInCell(cellMatGen1);
+                return new StepGameConquerMaterialGenIntro(gen);
+            });
+    AddStep([this, local, isoMap, game]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const GameObject * gen = GetObjectInCell(cellMatGen1);
+                const core::Pointd2D p0(4000, 200);
+                return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, IDLE); });
 }
 
 TutorialGame3::~TutorialGame3()
