@@ -15,6 +15,7 @@
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepDelay.h"
+#include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBuildStructIntro.h"
 #include "Tutorial/StepGameBuildStructure.h"
 #include "Tutorial/StepGameBuildTowerEnd.h"
@@ -48,6 +49,7 @@ namespace
 using namespace game;
 
 constexpr unsigned int indWorker1 = 0;
+constexpr unsigned int indWorker2 = 1;
 
 constexpr int catResources = 2;
 
@@ -264,25 +266,46 @@ TutorialGame3::TutorialGame3(Screen * screen)
         {
             const auto unit = local->GetUnit(indWorker1);
             const Cell2D target(68, 62);
-            const core::Pointd2D p0(450, 250);
+            const core::Pointd2D p0(450, 200);
             return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER MATERIAL GENERATOR WITH SOLDIER
     AddStep([this, local]
-            {
-                const GameObject * gen = GetObjectInCell(cellMatGen1);
-                return new StepGameConquerMaterialGenIntro(gen);
-            });
+        {
+            const GameObject * gen = GetObjectInCell(cellMatGen1);
+            const core::Pointd2D p0(1250, 350);
+            return new StepGameConquerMaterialGenIntro(gen, p0);
+        });
     AddStep([this, local, isoMap, game]
-            {
-                const auto unit = local->GetUnit(indWorker1);
-                const GameObject * gen = GetObjectInCell(cellMatGen1);
-                const core::Pointd2D p0(4000, 200);
-                return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
-            });
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const GameObject * gen = GetObjectInCell(cellMatGen1);
+            const core::Pointd2D p0(400, 200);
+            return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
+        });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, IDLE); });
+    // MOVE VIEW BACK TO BASE
+    AddStep([panelTurn, game]
+        {
+            const core::Pointd2D p0(50, 600);
+            return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1", p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD SECOND WORKER UNIT
+    AddStep([localBase, game, isoMap]
+        {
+            const core::Pointd2D p0(500, 200);
+            return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
+        });
+    AddStep([panelActions]
+        {
+            return new StepGameBuildUnitStart(panelActions, PanelObjectActions::BTN_BUILD_UNIT_BASE);
+        });
+    AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
 }
 
 TutorialGame3::~TutorialGame3()
