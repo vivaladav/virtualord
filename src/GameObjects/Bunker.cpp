@@ -22,6 +22,8 @@ Bunker::Bunker(const ObjectData & data, const ObjectInitData & initData)
 
 void Bunker::Update(float delta)
 {
+    GameObject::Update(delta);
+
     // do nothing if not linked
     if(!IsLinked())
         return ;

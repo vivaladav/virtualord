@@ -119,6 +119,8 @@ bool Hospital::SetTargetHealing(GameObject * obj)
 
 void Hospital::Update(float delta)
 {
+    GameObject::Update(delta);
+
     // HEALING OTHER OBJECTS
     if(mTargetHealing)
         UpdateHealing(delta);

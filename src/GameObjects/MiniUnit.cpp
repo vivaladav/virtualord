@@ -98,6 +98,8 @@ void MiniUnit::SetNumElements(int num)
 
 void MiniUnit::Update(float delta)
 {
+    GameObject::Update(delta);
+
     if(mTargetReached)
     {
         const GameObjectTypeId type = GetObjectType();

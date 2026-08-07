@@ -174,6 +174,8 @@ bool Unit::SetTargetHealing(GameObject * obj)
 
 void Unit::Update(float delta)
 {
+    GameObject::Update(delta);
+
     // ATTACKING OTHER OBJECTS
     if(mWeapon != nullptr)
     {

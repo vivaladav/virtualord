@@ -25,6 +25,8 @@ DefensiveTower::DefensiveTower(const ObjectData & data, const ObjectInitData & i
 
 void DefensiveTower::Update(float delta)
 {
+    GameObject::Update(delta);
+
     // do nothing if not linked
     if(!IsLinked())
         return ;
