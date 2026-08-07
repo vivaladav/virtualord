@@ -18,7 +18,7 @@ namespace game
 StepGameOpenLootbox::StepGameOpenLootbox(const Game * game, const Unit * unit,
                                          const GameObject * lootbox, const IsoMap * isoMap,
                                          const sgl::core::Pointd2D & p0)
-    : TutorialInfoStep(550, 150)
+    : TutorialInfoStep(600, 170)
     , mFocusArea(new FocusArea)
     , mIsoFocusArea(new IsoFocusArea(isoMap))
     , mLootbox(lootbox)
@@ -77,7 +77,8 @@ StepGameOpenLootbox::~StepGameOpenLootbox()
 
 void StepGameOpenLootbox::Update(float)
 {
-    if(mUnit != nullptr && mUnit->GetCurrentAction() == OPEN_LOOTBOX)
+    if(mUnit != nullptr &&
+       (mUnit->GetCurrentAction() == OPEN_LOOTBOX || mUnit->GetCurrentAction() == MOVE))
         SetDone();
 }
 
