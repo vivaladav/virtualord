@@ -3,7 +3,6 @@
 #include "CameraMapController.h"
 #include "Game.h"
 #include "GameMap.h"
-#include "IsoObject.h"
 #include "Player.h"
 #include "AI/PlayerAI.h"
 #include "GameObjects/Base.h"
@@ -24,6 +23,7 @@
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
+#include "Tutorial/StepGameConquerEnergyGenIntro.h"
 #include "Tutorial/StepGameConquerMaterialGenIntro.h"
 #include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
@@ -58,6 +58,7 @@ constexpr int structMatExtr = 1;
 
 const Cell2D cellLootbox1(74, 63);
 const Cell2D cellMatGen1(66, 62);
+const Cell2D cellEneGen1(62, 66);
 
 }
 
@@ -254,6 +255,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepDelay(unit->GetTimeOpenLootbox());
         });
     // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     // MOVE TO MATERIAL GENERATOR
@@ -270,7 +272,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
-    // CONQUER MATERIAL GENERATOR WITH SOLDIER
+    // CONQUER MATERIAL GENERATOR WITH WORKER 1
     AddStep([this, local]
         {
             const GameObject * gen = GetObjectInCell(cellMatGen1);
@@ -336,6 +338,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
     // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     // CONTINUE TO CONNECT MATERIAL GENERATOR WITH WORKER 2
@@ -380,6 +383,25 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
+    // CONQUER ENERGY GENERATOR WITH WORKER 1
+    AddStep([this, local]
+        {
+            const GameObject * gen = GetObjectInCell(cellEneGen1);
+            const core::Pointd2D p0(800, 150);
+            return new StepGameConquerEnergyGenIntro(gen, p0);
+        });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const GameObject * gen = GetObjectInCell(cellEneGen1);
+            const core::Pointd2D p0(850, 200);
+            return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
+        });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, IDLE); });
+    // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
 }
 
 TutorialGame3::~TutorialGame3()
