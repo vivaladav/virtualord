@@ -626,6 +626,19 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const Cell2D cellEnd(54, 55);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
+    // UPGRADE WORKER 2
+    AddStep([panelActions]
+        {
+            core::Pointd2D p0(900, 150);
+            return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b", p0);
+        });
+    AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
