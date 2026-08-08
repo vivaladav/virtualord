@@ -525,6 +525,57 @@ TutorialGame3::TutorialGame3(Screen * screen)
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
+    // START TO CONNECT DEFENSIVE TOWER WITH WORKER 1
+    AddStep([]
+        {
+            const core::Pointd2D p0(1000, 200);
+            return new StepGameConnectStructIntro(p0);
+        });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([this, isoMap, game]
+        {
+            const core::Pointd2D p0(1000, 200);
+            const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+            const Cell2D target(58, 59);
+            return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+        });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(900, 100);
+            const Cell2D cellEnd(58, 60);
+            return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    // SELECT WORKER 2
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(1100, 350);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONTINUE TO CONNECT DEFENSIVE TOWER WITH WORKER 2
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([this, isoMap, game]
+        {
+            const core::Pointd2D p0(1000, 200);
+            const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+            const Cell2D target(61, 64);
+            return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+        });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(900, 100);
+            const Cell2D cellEnd(58, 61);
+            return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
