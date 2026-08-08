@@ -54,6 +54,7 @@ using namespace game;
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indWorker2 = 1;
 
+constexpr int catDefenses = 1;
 constexpr int catResources = 2;
 
 constexpr int structDefTower = 1;
@@ -63,6 +64,7 @@ const Cell2D cellLootbox1(74, 63);
 const Cell2D cellSpecialLootbox1(61, 73);
 const Cell2D cellMatGen1(66, 62);
 const Cell2D cellEneGen1(62, 66);
+const Cell2D cellTower1(58, 58);
 
 }
 
@@ -465,7 +467,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         {
             const auto unit = local->GetUnit(indWorker1);
             const GameObject * lootbox = GetObjectInCell(cellSpecialLootbox1);
-            const core::Pointd2D p0(1000, 100);
+            const core::Pointd2D p0(1000, 200);
 
             return new StepGameOpenLootbox(game, unit, lootbox, isoMap, "TUT_GAME_LOOTBOX_1b", p0);
         });
@@ -493,6 +495,34 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE CAMERA
+    AddStep([game]
+            {
+                const int movX = 0;
+                const int movY = -200;
+                return new StepGameMoveCamera(movX, movY);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD DEFENSIVE TOWER
+    AddStep([game, panelActions]
+            {
+                const core::Pointd2D p0(1000, 250);
+                return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+            });
+    AddStep([hud]
+            {
+                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
+                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this, local, isoMap]
+            {
+                const auto unit = local->GetUnit(indWorker1);
+                const core::Pointd2D p0(900, 250);
+                return new StepGameBuildTowerEnd(isoMap, unit, cellTower1, p0);
+            });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
