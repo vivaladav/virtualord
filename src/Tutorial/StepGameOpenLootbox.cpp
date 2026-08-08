@@ -17,7 +17,7 @@ namespace game
 
 StepGameOpenLootbox::StepGameOpenLootbox(const Game * game, const Unit * unit,
                                          const GameObject * lootbox, const IsoMap * isoMap,
-                                         const sgl::core::Pointd2D & p0)
+                                         const char * intro, const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(600, 170)
     , mFocusArea(new FocusArea)
     , mIsoFocusArea(new IsoFocusArea(isoMap))
@@ -48,7 +48,7 @@ StepGameOpenLootbox::StepGameOpenLootbox(const Game * game, const Unit * unit,
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_LOOTBOX_1"), 7.f, true, false,
+    info->AddInfoEntry(sm->GetCString(intro), 7.f, true, false,
                        [this]
                        {
                             mFocusArea->SetVisible(true);

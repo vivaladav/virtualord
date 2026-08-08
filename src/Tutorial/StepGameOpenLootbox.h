@@ -19,7 +19,7 @@ class StepGameOpenLootbox : public TutorialInfoStep
 {
 public:
     StepGameOpenLootbox(const Game * game, const Unit * unit, const GameObject * lootbox,
-                        const IsoMap * isoMap, const sgl::core::Pointd2D & p0);
+                        const IsoMap * isoMap, const char * intro, const sgl::core::Pointd2D & p0);
     ~StepGameOpenLootbox();
 
     void Update(float delta) override;

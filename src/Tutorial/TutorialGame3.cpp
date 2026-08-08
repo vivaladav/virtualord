@@ -58,6 +58,7 @@ constexpr int structDefTower = 1;
 constexpr int structMatExtr = 1;
 
 const Cell2D cellLootbox1(74, 63);
+const Cell2D cellSpecialLootbox1(61, 73);
 const Cell2D cellMatGen1(66, 62);
 const Cell2D cellEneGen1(62, 66);
 
@@ -248,7 +249,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const GameObject * lootbox = GetObjectInCell(cellLootbox1);
             const core::Pointd2D p0(500, 100);
 
-            return new StepGameOpenLootbox(game, unit, lootbox, isoMap, p0);
+            return new StepGameOpenLootbox(game, unit, lootbox, isoMap, "TUT_GAME_LOOTBOX_1", p0);
         });
     AddStep([local]
         {
@@ -310,6 +311,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
     // SELECT WORKER 2
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([local, game, isoMap]
         {
             const auto unit = local->GetUnit(indWorker2);
@@ -418,6 +420,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1300, 450);
             return new StepGameUnit(game, isoMap, unit, p0);
         });
+    AddStep([] { return new StepDelay(0.5f); });
     // CONNECT ENERGY GENERATOR WITH WORKER 2
     AddStep([]
         {
@@ -438,6 +441,42 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1200, 150);
             const Cell2D cellEnd(63, 65);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    // SELECT WORKER 1
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1200, 350);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // OPEN SPECIAL LOOTBOX
+    AddStep([this]
+        {
+            auto lootbox = static_cast<LootBox *>(GetObjectInCell(cellSpecialLootbox1));
+            const unsigned int prizeType = LootBox::LB_NULL;
+            const int prizeQuantity = 0;
+            return new StepGameSetLootboxPrize(lootbox, prizeType, prizeQuantity);
+        });
+    AddStep([this, local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const GameObject * lootbox = GetObjectInCell(cellSpecialLootbox1);
+            const core::Pointd2D p0(1000, 100);
+
+            return new StepGameOpenLootbox(game, unit, lootbox, isoMap, "TUT_GAME_LOOTBOX_1b", p0);
+        });
+    AddStep([local]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            return new StepDelay(unit->GetTimeOpenLootbox());
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([]
+        {
+            const core::Pointd2D p0(1100, 400);
+            return new StepGameSingleInfo(p0, "TUT_GAME_NO_LUCK");
         });
     AddStep([] { return new StepDelay(0.5f); });
 }
