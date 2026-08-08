@@ -39,6 +39,8 @@
 #include "Tutorial/StepGameSingleInfo.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameUnit.h"
+#include "Tutorial/StepGameUpgradeIntro.h"
+#include "Tutorial/StepGameUpgradeUnit.h"
 #include "Tutorial/StepGameWaitTurn.h"
 
 #include "Tutorial/TutorialConstants.h"
@@ -478,6 +480,19 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1100, 400);
             return new StepGameSingleInfo(p0, "TUT_GAME_NO_LUCK");
         });
+    AddStep([] { return new StepDelay(0.5f); });
+    // UPGRADE WORKER 1
+    AddStep([panelActions]
+        {
+            core::Pointd2D p0(900, 150);
+            return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b", p0);
+        });
+    AddStep([hud] { return new StepGameUpgradeUnit(hud, false); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
