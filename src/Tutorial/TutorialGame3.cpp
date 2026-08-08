@@ -601,8 +601,32 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1200, 350);
             return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
         });
+    // SELECT WORKER 2
     AddStep([] { return new StepDelay(0.5f); });
-P}
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(1100, 350);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONNECT CITY WITH WORKER 2
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([this, isoMap, game]
+        {
+            const core::Pointd2D p0(1050, 350);
+            const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+            const Cell2D target(57, 58);
+            return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+        });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(950, 250);
+            const Cell2D cellEnd(54, 55);
+            return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+        });
+}
 
 TutorialGame3::~TutorialGame3()
 {
