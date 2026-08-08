@@ -29,6 +29,7 @@
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameIntro3.h"
+#include "Tutorial/StepGameMoveCamera.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGameMoveUnitToCorner.h"
 #include "Tutorial/StepGameOpenLootbox.h"
@@ -315,11 +316,18 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1300, 450);
             return new StepGameUnit(game, isoMap, unit, p0);
         });
+        // MOVE CAMERA
     AddStep([] { return new StepDelay(0.5f); });
+    AddStep([game]
+            {
+                const int movX = 0;
+                const int movY = -350;
+                return new StepGameMoveCamera(movX, movY);
+            });
      // START TO CONNECT MATERIAL GENERATOR WITH WORKER 2
     AddStep([]
         {
-            const core::Pointd2D p0(1150, 150);
+            const core::Pointd2D p0(1000, 200);
             return new StepGameConnectStructIntro(p0);
         });
     AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
