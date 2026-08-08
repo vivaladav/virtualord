@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameBuildUnitStart.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,8 +12,8 @@
 namespace game
 {
 
-StepGameBuildUnitStart::StepGameBuildUnitStart(PanelObjectActions * panel,
-                                                       unsigned int buttonId)
+StepGameBuildUnitStart::StepGameBuildUnitStart(const Game * game, PanelObjectActions * panel,
+                                               unsigned int buttonId)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
@@ -33,7 +34,7 @@ StepGameBuildUnitStart::StepGameBuildUnitStart(PanelObjectActions * panel,
     const auto btnID = static_cast<PanelObjectActions::Button>(mBtnId);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_ICON_3"),
-                         0.f, false, false, [this, panel, btnID]
+                         0.f, false, false, [this, panel, btnID, game]
                         {
                             auto btn = panel->GetButton(btnID);
 
@@ -43,7 +44,9 @@ StepGameBuildUnitStart::StepGameBuildUnitStart(PanelObjectActions * panel,
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;

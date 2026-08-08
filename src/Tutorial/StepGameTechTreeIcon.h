@@ -8,12 +8,14 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class PanelObjectActions;
 
 class StepGameTechTreeIcon : public TutorialInfoStep
 {
 public:
-    StepGameTechTreeIcon(PanelObjectActions * panel, const sgl::core::Pointd2D & p0);
+    StepGameTechTreeIcon(const Game * game, PanelObjectActions * panel,
+                         const sgl::core::Pointd2D & p0);
     ~StepGameTechTreeIcon();
 
 private:

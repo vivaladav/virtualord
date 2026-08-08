@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameBuildStructIntro.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,7 +12,8 @@
 namespace game
 {
 
-StepGameBuildStructIntro::StepGameBuildStructIntro(PanelObjectActions * panel, const char * textIntro,
+StepGameBuildStructIntro::StepGameBuildStructIntro(const Game * game, PanelObjectActions * panel,
+                                                   const char * textIntro,
                                                    const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(570, 180)
     , mFocusArea(new FocusArea)
@@ -31,7 +33,8 @@ StepGameBuildStructIntro::StepGameBuildStructIntro(PanelObjectActions * panel, c
 
     info->AddInfoEntry(sm->GetCString(textIntro), 7.f, true, false);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_2"), 0.f, false, false, [this, panel]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_2"), 0.f, false, false,
+                        [this, panel, game]
                         {
 
                             auto btn = panel->GetButton(PanelObjectActions::BTN_BUILD_STRUCT);
@@ -42,7 +45,9 @@ StepGameBuildStructIntro::StepGameBuildStructIntro(PanelObjectActions * panel, c
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;

@@ -6,12 +6,13 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class PanelObjectActions;
 
 class StepGameBuildUnitStart : public TutorialInfoStep
 {
 public:
-    StepGameBuildUnitStart(PanelObjectActions * panel, unsigned int buttonId);
+    StepGameBuildUnitStart(const Game * game, PanelObjectActions * panel, unsigned int buttonId);
     ~StepGameBuildUnitStart();
 
 private:

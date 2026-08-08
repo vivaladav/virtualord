@@ -8,12 +8,14 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class PanelObjectActions;
 
 class StepGameUnitAttackIcon : public TutorialInfoStep
 {
 public:
-    StepGameUnitAttackIcon(PanelObjectActions * panel, const sgl::core::Pointd2D & p0);
+    StepGameUnitAttackIcon(const Game * game, PanelObjectActions * panel,
+                           const sgl::core::Pointd2D & p0);
     ~StepGameUnitAttackIcon();
 
 private:

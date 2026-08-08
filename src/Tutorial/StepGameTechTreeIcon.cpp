@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameTechTreeIcon.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -18,8 +19,8 @@ constexpr PanelObjectActions::Button btnId = PanelObjectActions::BTN_TECH_TREE;
 namespace game
 {
 
-StepGameTechTreeIcon::StepGameTechTreeIcon(PanelObjectActions * panel,
-                                                     const sgl::core::Pointd2D & p0)
+StepGameTechTreeIcon::StepGameTechTreeIcon(const Game *game, PanelObjectActions * panel,
+                                           const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
@@ -37,7 +38,7 @@ StepGameTechTreeIcon::StepGameTechTreeIcon(PanelObjectActions * panel,
     info->SetPosition(p0.x, p0.y);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_UPGRADES_ICON"),
-                         0.f, false, false, [this, panel]
+                         0.f, false, false, [this, panel, game]
                         {
                             auto btn = panel->GetButton(btnId);
 
@@ -47,7 +48,9 @@ StepGameTechTreeIcon::StepGameTechTreeIcon(PanelObjectActions * panel,
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;

@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameWallBuildIcon.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,7 +12,7 @@
 namespace game
 {
 
-StepGameWallBuildIcon::StepGameWallBuildIcon(PanelObjectActions * panel)
+StepGameWallBuildIcon::StepGameWallBuildIcon(const Game * game, PanelObjectActions * panel)
     : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
@@ -28,7 +29,7 @@ StepGameWallBuildIcon::StepGameWallBuildIcon(PanelObjectActions * panel)
 
     info->SetPosition(1100, 650);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_WALL_2"), 0.f, false, false, [this, panel]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_WALL_2"), 0.f, false, false, [this, panel, game]
                         {
                             auto btn = panel->GetButton(PanelObjectActions::BTN_BUILD_WALL);
 
@@ -38,7 +39,9 @@ StepGameWallBuildIcon::StepGameWallBuildIcon(PanelObjectActions * panel)
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;

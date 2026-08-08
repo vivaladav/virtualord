@@ -387,6 +387,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- Tutorial always starting if enabled and starting a new game.\n"
                   "- It's no longer possible to select random objects during the tutorial.\n"
                   "- Automatic camera works fine when moving near map's border too.\n"
+                  "- It's no longer possible to move units when clicking action buttons during"
+                  " the tutorial.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

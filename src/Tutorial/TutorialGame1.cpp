@@ -129,7 +129,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([game, isoMap, localBase] { return new StepGameBase(game, isoMap, localBase); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD NEW UNIT
-    AddStep([panelActions] { return new StepGameBaseBuildUnitIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameBaseBuildUnitIcon(game, panelActions); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([hud] { return new StepGameBaseBuildUnit(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
@@ -167,7 +167,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     // EXPLAIN STRUCTURE CONNECTIONS AND CONNECT GENERATOR TO BASE
     AddStep([] { return new StepGameStructDisconnected; });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
             const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
@@ -219,7 +219,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1250, 200);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1200, 400);
@@ -260,11 +260,11 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER 1
-    AddStep([panelActions]
+    AddStep([game, panelActions]
         {
             const core::Pointd2D p0(900, 250);
 
-            return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
         });
     AddStep([hud]
             {
@@ -292,7 +292,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1000, 150);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
             const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
@@ -313,7 +313,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // BUILD WALL FROM TOWER
     AddStep([] { return new StepGameWallBuildIntro(); });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
@@ -342,9 +342,9 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(500, 200);
                 return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
             });
-    AddStep([panelActions]
+    AddStep([game, panelActions]
             {
-                return new StepGameBuildUnitStart(panelActions,
+                return new StepGameBuildUnitStart(game, panelActions,
                                                   PanelObjectActions::BTN_BUILD_UNIT_BASE);
             });
     AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
@@ -383,7 +383,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(1150, 500);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(200, 550);
@@ -414,11 +414,11 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER
-    AddStep([panelActions]
+    AddStep([game, panelActions]
             {
                 const core::Pointd2D p0(900, 250);
 
-                return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+                return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
             });
     AddStep([hud]
             {
@@ -445,7 +445,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1100, 450);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1100, 450);
@@ -529,7 +529,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameWallBuildIntro(); });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([panelActions] { return new StepGameWallBuildIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
@@ -588,7 +588,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(500, 200);
                 return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
             });
-    AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions, true); });
+    AddStep([game, panelActions] { return new StepGameMissionGoalsIcon(game, panelActions, true); });
     AddStep([hud] { return new StepGameMissionGoalsDialog(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -605,7 +605,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(1250, 350);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 350);
@@ -634,7 +634,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(500, 200);
                 return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
             });
-    AddStep([panelActions] { return new StepGameMissionGoalsIcon(panelActions, false); });
+    AddStep([game, panelActions] { return new StepGameMissionGoalsIcon(game, panelActions, false); });
     AddStep([hud] { return new StepGamePrimaryMissionGoal(hud); });
 }
 

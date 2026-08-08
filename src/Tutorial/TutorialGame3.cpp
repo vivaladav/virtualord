@@ -98,9 +98,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(500, 200);
             return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
         });
-    AddStep([panelActions]
+    AddStep([game, panelActions]
         {
-            return new StepGameBuildUnitStart(panelActions, PanelObjectActions::BTN_BUILD_UNIT_BASE);
+            return new StepGameBuildUnitStart(game, panelActions, PanelObjectActions::BTN_BUILD_UNIT_BASE);
         });
     AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
@@ -114,10 +114,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD SOLAR PANEL 1
-    AddStep([panelActions]
+    AddStep([game, panelActions]
         {
            const core::Pointd2D p0(1100, 300);
-            return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_RES_GEN", p0);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_RES_GEN", p0);
         });
     AddStep([hud]
         {
@@ -135,10 +135,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD SOLAR PANEL 2
-    AddStep([panelActions]
+    AddStep([game, panelActions]
         {
             const core::Pointd2D p0(1100, 250);
-            return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_MORE", p0);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_MORE", p0);
         });
     AddStep([hud]
         {
@@ -161,7 +161,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
                 const core::Pointd2D p0(1100, 350);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 400);
@@ -181,10 +181,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     // BUILD MATERIAL EXTRACTOR
-    AddStep([panelActions]
+    AddStep([game, panelActions]
         {
             const core::Pointd2D p0(1100, 250);
-            return new StepGameBuildStructIntro(panelActions, "TUT_GAME_BUILD_MORE", p0);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_MORE", p0);
         });
     AddStep([hud]
         {
@@ -206,7 +206,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1100, 350);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1100, 400);
@@ -301,9 +301,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(500, 200);
             return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
         });
-    AddStep([panelActions]
+    AddStep([game, panelActions]
         {
-            return new StepGameBuildUnitStart(panelActions, PanelObjectActions::BTN_BUILD_UNIT_BASE);
+            return new StepGameBuildUnitStart(game, panelActions, PanelObjectActions::BTN_BUILD_UNIT_BASE);
         });
     AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
@@ -322,7 +322,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1150, 150);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);
@@ -342,7 +342,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     // CONTINUE TO CONNECT MATERIAL GENERATOR WITH WORKER 2
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);
@@ -367,7 +367,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // FINISH TO CONNECT MATERIAL GENERATOR WITH WORKER 1
-    AddStep([panelActions] { return new StepGameUnitConquerCellsIcon(panelActions); });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);

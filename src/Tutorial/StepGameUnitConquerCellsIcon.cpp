@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,7 +12,8 @@
 namespace game
 {
 
-StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * panel)
+StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(const Game * game,
+                                                           PanelObjectActions * panel)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
@@ -29,7 +31,7 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
     info->SetPosition(1100, 650);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_UNIT_CONQUE_CELLS_ICON_1"), 0.f, false, false,
-                         [this, panel]
+                         [this, panel, game]
                         {
 
                             auto btn = panel->GetButton(PanelObjectActions::BTN_CONQUER_CELL);
@@ -40,7 +42,9 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;

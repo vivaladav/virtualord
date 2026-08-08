@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameUnitAttackIcon.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,7 +12,7 @@
 namespace game
 {
 
-StepGameUnitAttackIcon::StepGameUnitAttackIcon(PanelObjectActions * panel,
+StepGameUnitAttackIcon::StepGameUnitAttackIcon(const Game * game, PanelObjectActions * panel,
                                                const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
@@ -30,7 +31,7 @@ StepGameUnitAttackIcon::StepGameUnitAttackIcon(PanelObjectActions * panel,
     info->SetPosition(p0.x, p0.y);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_ATTACK_2"), 0.f, false, false,
-                         [this, panel]
+                         [this, panel, game]
                         {
 
                             auto btn = panel->GetButton(PanelObjectActions::BTN_ATTACK);
@@ -41,7 +42,9 @@ StepGameUnitAttackIcon::StepGameUnitAttackIcon(PanelObjectActions * panel,
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;
