@@ -316,7 +316,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1300, 450);
             return new StepGameUnit(game, isoMap, unit, p0);
         });
-        // MOVE CAMERA
+    // MOVE CAMERA
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
             {
@@ -410,6 +410,36 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SELECT WORKER 2
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(1300, 450);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    // CONNECT ENERGY GENERATOR WITH WORKER 2
+    AddStep([]
+        {
+            const core::Pointd2D p0(1150, 150);
+            return new StepGameConnectStructIntro(p0);
+        });
+    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([this, isoMap, game]
+        {
+            const core::Pointd2D p0(1000, 200);
+            const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+            const Cell2D target(65, 63);
+            return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
+        });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(1200, 150);
+            const Cell2D cellEnd(63, 65);
+            return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
