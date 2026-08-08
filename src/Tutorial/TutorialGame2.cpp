@@ -98,13 +98,6 @@ constexpr int turnsCollGenMax2 = 15;
 constexpr int collectablesMin = 2;
 constexpr int collectablesMax = 4;
 
-constexpr int catGeneric = 0;
-constexpr int catDefenses = 1;
-constexpr int catTech = 3;
-constexpr int structGate = 2;
-constexpr int structDefTower = 1;
-constexpr int structTradingPost = 3;
-
 constexpr float healthEnemyDef = 65.f;
 constexpr float energyEnemyDef = 60.f;
 
@@ -691,9 +684,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([hud]
             {
-                const int indStruct = 0;
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_RES_CEN_2", nullptr,
-                                                  catTech, indStruct);
+                                                  TutorialConstants::catTech,
+                                                  TutorialConstants::structResearchCenter);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
@@ -960,9 +953,10 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([hud]
             {
-                const int indStruct = 2;
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_GATE_2", catDefenses, indStruct);
+                                                  "TUT_GAME_BUILD_GATE_2",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structGate);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
@@ -1022,7 +1016,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -1252,7 +1248,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -1330,7 +1328,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_GATE_2", catDefenses, structGate);
+                                                  "TUT_GAME_BUILD_GATE_2",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structGate);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
@@ -1354,7 +1354,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -1395,7 +1397,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_GATE_2", catDefenses, structGate);
+                                                  "TUT_GAME_BUILD_GATE_2",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structGate);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
@@ -1501,7 +1505,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -1542,7 +1548,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -1587,7 +1595,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -1790,7 +1800,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -1864,7 +1876,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -1921,7 +1935,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -1961,7 +1977,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_GATE_2", catDefenses, structGate);
+                                                  "TUT_GAME_BUILD_GATE_2",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structGate);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
@@ -2065,7 +2083,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, nullptr, "TUT_GAME_BUILD_TRAD_POST_2",
-                                                  catGeneric, structTradingPost);
+                                                  TutorialConstants::catGeneric,
+                                                  TutorialConstants::structTradingPost);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]

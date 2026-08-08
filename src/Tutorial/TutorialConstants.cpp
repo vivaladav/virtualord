@@ -16,4 +16,18 @@ const int TutorialConstants::infoPlanetMapY = 750;
 const int TutorialConstants::infoPlanetMapW = 800;
 const int TutorialConstants::infoPlanetMapH = 125;
 
+// structure categories in build dialog
+const int TutorialConstants::catGeneric = 0;
+const int TutorialConstants::catDefenses = 1;
+const int TutorialConstants::catResources = 2;
+const int TutorialConstants::catTech = 3;
+
+// indexes of structures in build dialog
+const int TutorialConstants::structGate = 2;
+const int TutorialConstants::structDefTower = 1;
+const int TutorialConstants::structMatExtr = 1;
+const int TutorialConstants::structResearchCenter = 0;
+const int TutorialConstants::structSolarPanel = 0;
+const int TutorialConstants::structTradingPost = 3;
+
 } // namespace game

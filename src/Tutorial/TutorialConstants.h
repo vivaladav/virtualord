@@ -43,6 +43,20 @@ public:
     static const int infoPlanetMapY;
     static const int infoPlanetMapW;
     static const int infoPlanetMapH;
+
+    // structure categories in build dialog
+    static const int catGeneric;
+    static const int catDefenses;
+    static const int catResources;
+    static const int catTech;
+
+    // indexes of structures in build dialog
+    static const int structGate;
+    static const int structDefTower;
+    static const int structMatExtr;
+    static const int structResearchCenter;
+    static const int structSolarPanel;
+    static const int structTradingPost;
 };
 
 } // namespace game

@@ -268,10 +268,10 @@ TutorialGame1::TutorialGame1(Screen * screen)
         });
     AddStep([hud]
             {
-                const int indCat = 1;
-                const int indStruct = 1;
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", indCat, indStruct);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -422,10 +422,10 @@ TutorialGame1::TutorialGame1(Screen * screen)
             });
     AddStep([hud]
             {
-                const int indCat = 1;
-                const int indStruct = 1;
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", indCat, indStruct);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]

@@ -43,7 +43,6 @@
 #include "Tutorial/StepGameUpgradeUnit.h"
 #include "Tutorial/StepGameWaitLootboxOpen.h"
 #include "Tutorial/StepGameWaitTurn.h"
-
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/PanelObjectActions.h"
@@ -54,12 +53,6 @@ using namespace game;
 
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indWorker2 = 1;
-
-constexpr int catDefenses = 1;
-constexpr int catResources = 2;
-
-constexpr int structDefTower = 1;
-constexpr int structMatExtr = 1;
 
 const Cell2D cellLootbox1(74, 63);
 const Cell2D cellSpecialLootbox1(61, 73);
@@ -128,9 +121,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([hud]
         {
-            const int indStruct = 0;
             return new StepGameBuildStructure(hud, "TUT_GAME_CAT_RES_GEN", nullptr,
-                                              catResources, indStruct);
+                                              TutorialConstants::catResources,
+                                              TutorialConstants::structSolarPanel);
         });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
@@ -151,7 +144,8 @@ TutorialGame3::TutorialGame3(Screen * screen)
         {
             const int indStruct = 0;
             return new StepGameBuildStructure(hud, "TUT_GAME_CAT_RES_GEN", nullptr,
-                                              catResources, indStruct);
+                                              TutorialConstants::catResources,
+                                              TutorialConstants::structSolarPanel);
         });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
@@ -196,7 +190,8 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([hud]
         {
             return new StepGameBuildStructure(hud, "TUT_GAME_CAT_RES_GEN", "TUT_GAME_BUILD_MAT_EXTR",
-                                              catResources, structMatExtr);
+                                              TutorialConstants::catResources,
+                                              TutorialConstants::structMatExtr);
         });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
@@ -514,7 +509,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([hud]
             {
                 return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4", catDefenses, structDefTower);
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
             });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
