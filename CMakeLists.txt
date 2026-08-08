@@ -435,6 +435,8 @@ add_executable(
     src/Tutorial/StepGameWaitEnemiesKilled.cpp
     src/Tutorial/StepGameWaitEnemyKilled.h
     src/Tutorial/StepGameWaitEnemyKilled.cpp
+    src/Tutorial/StepGameWaitLootboxOpen.h
+    src/Tutorial/StepGameWaitLootboxOpen.cpp
     src/Tutorial/StepGameWaitTurn.h
     src/Tutorial/StepGameWaitTurn.cpp
     src/Tutorial/StepGameWallBuildEnd.h

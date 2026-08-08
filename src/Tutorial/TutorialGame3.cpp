@@ -41,6 +41,7 @@
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUpgradeIntro.h"
 #include "Tutorial/StepGameUpgradeUnit.h"
+#include "Tutorial/StepGameWaitLootboxOpen.h"
 #include "Tutorial/StepGameWaitTurn.h"
 
 #include "Tutorial/TutorialConstants.h"
@@ -255,10 +256,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
 
             return new StepGameOpenLootbox(game, unit, lootbox, isoMap, "TUT_GAME_LOOTBOX_1", p0);
         });
-    AddStep([local]
+    AddStep([this]
         {
-            const auto unit = local->GetUnit(indWorker1);
-            return new StepDelay(unit->GetTimeOpenLootbox());
+            const GameObject * lootbox = GetObjectInCell(cellLootbox1);
+            return new StepGameWaitLootboxOpen(GetGameMap(), lootbox);
         });
     // END TURN
     AddStep([] { return new StepDelay(0.5f); });
@@ -471,10 +472,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
 
             return new StepGameOpenLootbox(game, unit, lootbox, isoMap, "TUT_GAME_LOOTBOX_1b", p0);
         });
-    AddStep([local]
+    AddStep([this]
         {
-            const auto unit = local->GetUnit(indWorker1);
-            return new StepDelay(unit->GetTimeOpenLootbox());
+            const GameObject * lootbox = GetObjectInCell(cellSpecialLootbox1);
+            return new StepGameWaitLootboxOpen(GetGameMap(), lootbox);
         });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([]
@@ -499,7 +500,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // MOVE CAMERA
     AddStep([game]
             {
-                const int movX = 0;
+                const int movX = -200;
                 const int movY = -200;
                 return new StepGameMoveCamera(movX, movY);
             });

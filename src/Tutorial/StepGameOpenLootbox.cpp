@@ -18,7 +18,7 @@ namespace game
 StepGameOpenLootbox::StepGameOpenLootbox(const Game * game, const Unit * unit,
                                          const GameObject * lootbox, const IsoMap * isoMap,
                                          const char * intro, const sgl::core::Pointd2D & p0)
-    : TutorialInfoStep(600, 170)
+    : TutorialInfoStep(600, 200)
     , mFocusArea(new FocusArea)
     , mIsoFocusArea(new IsoFocusArea(isoMap))
     , mLootbox(lootbox)
