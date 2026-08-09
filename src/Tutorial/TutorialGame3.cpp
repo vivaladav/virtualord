@@ -656,7 +656,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // CONQUER ALL CITY WITH WORKER 1
     AddStep([]
     {
-        const core::Pointd2D p0(600, 250);
+        const core::Pointd2D p0(600, 150);
         return new StepGameSingleInfo(p0, "TUT_GAME_CITY_2");
     });
     AddStep([this, local, isoMap, game]
@@ -760,7 +760,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         {
             const auto unit = local->GetUnit(indWorker1);
             const GameObject * gen = GetObjectInCell(cellMatGen2);
-            const core::Pointd2D p0(500, 250);
+            const core::Pointd2D p0(550, 150);
             return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
@@ -772,7 +772,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([local, game, isoMap]
         {
             const auto unit = local->GetUnit(indWorker2);
-            const core::Pointd2D p0(400, 350);
+            const core::Pointd2D p0(1000, 500);
             return new StepGameUnit(game, isoMap, unit, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
