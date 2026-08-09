@@ -6,6 +6,8 @@
 #include "Player.h"
 #include "AI/PlayerAI.h"
 #include "GameObjects/Base.h"
+#include "GameObjects/CityBlock.h"
+#include "GameObjects/CityGroup.h"
 #include "GameObjects/LootBox.h"
 #include "GameObjects/ObjectData.h"
 #include "GameObjects/Unit.h"
@@ -42,6 +44,7 @@
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUpgradeIntro.h"
 #include "Tutorial/StepGameUpgradeUnit.h"
+#include "Tutorial/StepGameWaitCityConquered.h"
 #include "Tutorial/StepGameWaitLootboxOpen.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/TutorialConstants.h"
@@ -55,7 +58,8 @@ using namespace game;
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indWorker2 = 1;
 
-const Cell2D cellCityBlock1(54, 54);
+const Cell2D cellBRCity1(54, 54);
+const Cell2D cellTLCity1(51, 51);
 const Cell2D cellLootbox1(74, 63);
 const Cell2D cellSpecialLootbox1(61, 73);
 const Cell2D cellMatGen1(66, 62);
@@ -477,7 +481,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([]
         {
-            const core::Pointd2D p0(1100, 400);
+            const core::Pointd2D p0(1150, 350);
             return new StepGameSingleInfo(p0, "TUT_GAME_NO_LUCK");
         });
     AddStep([] { return new StepDelay(0.5f); });
@@ -578,11 +582,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // INTRODUCE FIRST CITY AREA
     AddStep([isoMap]
         {
-            const int cityDiag = 3;
-            const Cell2D tl(cellCityBlock1.row - cityDiag, cellCityBlock1.col - cityDiag);
             const core::Pointd2D p0(1000, 300);
 
-            return new StepGameCityIntro(tl, cellCityBlock1, isoMap, p0);
+            return new StepGameCityIntro(cellTLCity1, cellBRCity1, isoMap, p0);
         });
     // SELECT WORKER 1
     AddStep([] { return new StepDelay(0.5f); });
@@ -597,7 +599,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([this, local, isoMap, game]
         {
             const auto unit = local->GetUnit(indWorker1);
-            const GameObject * gen = GetObjectInCell(cellCityBlock1);
+            const GameObject * gen = GetObjectInCell(cellBRCity1);
             const core::Pointd2D p0(1200, 350);
             return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
         });
@@ -638,7 +640,24 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SELECT WORKER 1
     AddStep([] { return new StepDelay(0.5f); });
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1100, 350);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // CONQUER ALL CITY WITH WORKER 1
+    AddStep([this, local, isoMap, game]
+    {
+        const auto block = static_cast<CityBlock *>(GetObjectInCell(cellBRCity1));
+        const auto city = static_cast<CityGroup *>(block->GetGroup());
+        core::Pointd2D p0(1150, 250);
+
+        return new StepGameWaitCityConquered(city, cellTLCity1, cellBRCity1, isoMap, game, p0);
+    });
 }
 
 TutorialGame3::~TutorialGame3()
