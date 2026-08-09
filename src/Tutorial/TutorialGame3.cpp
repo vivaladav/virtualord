@@ -11,7 +11,6 @@
 #include "GameObjects/ObjectData.h"
 #include "GameObjects/Unit.h"
 #include "Indicators/OverlayCellConquest.h"
-#include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepDelay.h"
@@ -43,6 +42,7 @@
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUpgradeIntro.h"
 #include "Tutorial/StepGameUpgradeUnit.h"
+#include "Tutorial/StepGameUpgradeUnitFree.h"
 #include "Tutorial/StepGameWaitLootboxOpen.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/TutorialConstants.h"
@@ -819,6 +819,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
     // CONNECT ENERGY GENERATOR WITH WORKER 1
     AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
@@ -835,6 +836,16 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const Cell2D cellEnd(48, 47);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
+    AddStep([] { return new StepDelay(0.5f); });
+    // UPGRADE WORKER 1
+    AddStep([panelActions, game]
+            {
+                core::Pointd2D p0(1000, 300);
+                return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b", p0);
+            });
+    AddStep([hud] { return new StepGameUpgradeUnitFree(hud); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
