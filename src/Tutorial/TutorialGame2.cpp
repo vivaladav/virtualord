@@ -76,6 +76,7 @@
 #include "Tutorial/StepGameWallBuildIcon.h"
 #include "Tutorial/StepGameWallBuildIntro.h"
 #include "Tutorial/StepGameWallBuildStart.h"
+#include "Tutorial/StepSaveGame.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/PanelObjectActions.h"
@@ -274,6 +275,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
         });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND GENERATOR
     AddStep([game]
@@ -460,6 +463,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE SOLDIER TO DIAMONDS AND COLLECT THEM
     AddStep([this, local, isoMap]
@@ -621,6 +626,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND ENERGY GENERATOR WITH WORKER 1
     AddStep([]
@@ -721,6 +728,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // EXPLAIN RESOURCES BAR
     AddStep([hud]
@@ -885,6 +894,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD WALL ON RIGHT SIDE WITH WORKER
     AddStep([] { return new StepGameWallBuildIntro(); });
@@ -1032,8 +1043,10 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // MOVE WORKER AWAY FROM WALL
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // MOVE WORKER AWAY FROM WALL
     AddStep([game]
         {
             const int movX = -300;
@@ -1217,6 +1230,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // START TO BUILD WALL WITH WORKER 2
     AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
@@ -1473,6 +1488,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER CELLS WITH SOLDIER 1
     AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
@@ -1720,6 +1737,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE VIEW BACK TO BASE
     AddStep([panelTurn]
@@ -1951,6 +1970,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD WALL WITH WORKER 1
     AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
@@ -2113,6 +2134,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameDialogTrading(hud);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD SOLDIER 2
     AddStep([]
@@ -2218,6 +2241,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(200, 600);
                 return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // ANNOUNCE FIGHT
     AddStep([]
