@@ -120,7 +120,9 @@ GameMap::~GameMap()
 bool GameMap::Load(sgl::utilities::BinaryFile & bf)
 {
     // cells
-    SetSize(bf.ReadUint(), bf.ReadUint());
+    const unsigned int rows = bf.ReadUint();
+    const unsigned int cols = bf.ReadUint();
+    SetSize(rows, cols);
 
     for(GameMapCell & cell : mCells)
     {

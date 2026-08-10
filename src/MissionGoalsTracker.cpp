@@ -98,19 +98,31 @@ bool MissionGoalsTracker::Load(sgl::utilities::BinaryFile & bf)
     const unsigned int numStructBuilt = bf.ReadUint();
 
     for(unsigned int i = 0; i < numStructBuilt; ++i)
-        mStructuresBuilt.emplace(bf.ReadSizeT(), bf.ReadUint());
+    {
+        const GameObjectTypeId type = bf.ReadSizeT();
+        const unsigned int val = bf.ReadUint();
+        mStructuresBuilt.emplace(type, val);
+    }
 
     // structures conquered
     const unsigned int numStructConquered = bf.ReadUint();
 
     for(unsigned int i = 0; i < numStructConquered; ++i)
-        mStructuresConquered.emplace(bf.ReadSizeT(), bf.ReadUint());
+    {
+        const GameObjectTypeId type = bf.ReadSizeT();
+        const unsigned int val = bf.ReadUint();
+        mStructuresConquered.emplace(type, val);
+    }
 
     // categories destroyed
     const unsigned int numCatDestroyed = bf.ReadUint();
 
     for(unsigned int i = 0; i < numCatDestroyed; ++i)
-        mCategoriesDestroyed.emplace(bf.ReadSizeT(), bf.ReadUint());
+    {
+        const GameObjectTypeId type = bf.ReadSizeT();
+        const unsigned int val = bf.ReadUint();
+        mCategoriesDestroyed.emplace(type, val);
+    }
 
     // data tracking
     mCompletedGoals = bf.ReadUint();
