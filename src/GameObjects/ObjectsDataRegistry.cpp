@@ -198,7 +198,7 @@ void ObjectsDataRegistry::InitObjectData()
     mDataObjects.emplace(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT,
         ObjectData({ {OBJ_ATT_ENERGY, 4}, {OBJ_ATT_VIEW_RANGE, 2}, {OBJ_ATT_REGENERATION, 2},
                      {OBJ_ATT_RESISTANCE, 2}, {OBJ_ATT_SHIELD, 2}, {OBJ_ATT_HEALTH, 4} },
-                   { 250, 250, 10, 10 },
+                   { 250, 250, 5, 5 },
                    { ID_MATERIAL_EXTRACTOR_F1, ID_MATERIAL_EXTRACTOR_F2,
                      ID_MATERIAL_EXTRACTOR_F3, ID_MATERIAL_EXTRACTOR }, SpriteFileStructures,
                    ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT, ObjectData::CAT_RES_GENERATOR,
