@@ -45,6 +45,7 @@
 #include "Tutorial/StepGameUpgradeUnitFree.h"
 #include "Tutorial/StepGameWaitLootboxOpen.h"
 #include "Tutorial/StepGameWaitTurn.h"
+#include "Tutorial/StepSaveGame.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/PanelObjectActions.h"
@@ -237,6 +238,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([] { return new StepDelay(0.5f); });
     // MOVE WORKER 1 TO LOOTBOX
     AddStep([this, local, isoMap]
         {
@@ -361,6 +365,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([] { return new StepDelay(0.5f); });
     // CONTINUE TO CONNECT MATERIAL GENERATOR WITH WORKER 2
     AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
@@ -501,6 +508,8 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE CAMERA
     AddStep([game]
@@ -682,9 +691,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1200, 200);
             return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
         });
+        // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT WORKER 2
-    AddStep([] { return new StepDelay(0.5f); });
     AddStep([local, game, isoMap]
         {
             const auto unit = local->GetUnit(indWorker2);
@@ -819,6 +829,8 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT ENERGY GENERATOR WITH WORKER 1
     AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
@@ -845,6 +857,8 @@ TutorialGame3::TutorialGame3(Screen * screen)
             });
     AddStep([hud] { return new StepGameUpgradeUnitFree(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
