@@ -126,7 +126,12 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     const unsigned int numAttr = bf.ReadUint();
 
     for(unsigned int i = 0; i < numAttr; ++i)
-         mAttributes[static_cast<ObjAttId>(bf.ReadUint())] = bf.ReadInt();
+    {
+        const auto attID = static_cast<ObjAttId>(bf.ReadUint());
+        const int val = bf.ReadInt();
+
+        mAttributes[attID] = val;
+    }
 
     // stats
     mMaxVisLevel = bf.ReadInt();
