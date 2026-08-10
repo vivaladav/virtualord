@@ -74,6 +74,7 @@
 #include "Tutorial/StepGameWallBuildIcon.h"
 #include "Tutorial/StepGameWallBuildIntro.h"
 #include "Tutorial/StepGameWallBuildStart.h"
+#include "Tutorial/StepSaveGame.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/PanelObjectActions.h"
@@ -143,7 +144,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
             });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
-
     AddStep([game, isoMap, local] { return new StepGameMoveUnit(game, local, isoMap); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     // CONQUER ENERGY GENERATOR
@@ -164,6 +164,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepGameEnergyRegeneration; });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // EXPLAIN STRUCTURE CONNECTIONS AND CONNECT GENERATOR TO BASE
     AddStep([] { return new StepGameStructDisconnected; });
@@ -309,6 +311,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD WALL FROM TOWER
     AddStep([] { return new StepGameWallBuildIntro(); });
@@ -401,6 +405,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE UNIT TO VISIBLE CORNER
     AddStep([this, local, isoMap]
@@ -460,6 +466,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1100, 450);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // ===== PART 3 =====
     // ADD ENEMY NEAR TOWER 1
@@ -525,8 +533,10 @@ TutorialGame1::TutorialGame1(Screen * screen)
             return new StepGameQuickUnitButton(hud, indUnit2, "TUT_GAME_QUICK_SEL_1", p0);
         });
     // ===== PART 4 =====
-    // BUILD WALL FROM TOWER
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // BUILD WALL FROM TOWER
     AddStep([] { return new StepGameWallBuildIntro(); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
@@ -598,6 +608,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const sgl::core::Pointd2D p0(450, 620);
                 return new StepGameQuickUnitButton(hud, indUnit2, "TUT_GAME_QUICK_SEL_1", p0);
             });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND ENERGY GENERATOR
     AddStep([]
