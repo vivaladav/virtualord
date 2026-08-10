@@ -253,6 +253,7 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
     {
         btn = new ButtonDialogExit(this);
         btn->SetLabel(sm->GetCString("SAVE_GAME"));
+        btn->SetEnabled(!game->GetTutorialManager()->HasActiveTutorial());
 
         btnX = (w - btn->GetWidth()) / 2;
         btn->SetPosition(btnX, btnY);

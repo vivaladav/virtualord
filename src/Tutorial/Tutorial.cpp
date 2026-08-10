@@ -28,6 +28,16 @@ void Tutorial::Start()
     StartNextStep();
 }
 
+void Tutorial::Continue(unsigned int firstStep)
+{
+    mStepsAtStart = mSteps.size();
+
+    // remove steps that are already done
+    mSteps.erase(mSteps.begin(), mSteps.begin() + firstStep);
+
+    StartNextStep();
+}
+
 void Tutorial::SetPause(bool paused)
 {
     mPaused = paused;

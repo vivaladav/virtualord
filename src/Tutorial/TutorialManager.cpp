@@ -32,9 +32,8 @@ bool TutorialManager::Load(sgl::utilities::BinaryFile & bf)
     for(unsigned int i = 0; i < numTuts; ++i)
         mTutorialsState[i] = static_cast<TutorialState>(bf.ReadUint());
 
-    // active tutorial
-    // TODO handle load/save when tutorial is active
-    const auto activeTutId = static_cast<TutorialId>(bf.ReadUint());
+    // current step of active tutorial
+    mStartStep = bf.ReadUint();
 
     // last tutorial
     mLastStartedTutorialId = static_cast<TutorialId>(bf.ReadUint());
@@ -48,21 +47,15 @@ bool TutorialManager::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(mTutorialsState.size());
 
     for(const TutorialState state : mTutorialsState)
-    {
-        // NOTE forcing tutorial TODO state when in progress as now saving during tutorial is
-        // not supported yet and Save is only called when starting a new game
-        // TODO remove the if/else when implementing save during tutorial
-        if(state == TS_IN_PROGRESS)
-            bf.WriteUint(TS_TODO);
-        else
-            bf.WriteUint(state);
-    }
+        bf.WriteUint(state);
 
     // active tutorial
+    // NOTE saving steps + 1 to skip the one that's actually saving the game
+    // as only the StepSaveGame can trigger a save during the tutorial
     if(mActiveTutorial != nullptr)
-        bf.WriteUint(mActiveTutorial->GetId());
+        bf.WriteUint(mActiveTutorial->GetNumStepsDone() + 1);
     else
-        bf.WriteUint(TUTORIAL_UNKNOWN);
+        bf.WriteUint(0);
 
     // last tutorial
     bf.WriteUint(mLastStartedTutorialId);
@@ -147,6 +140,14 @@ void TutorialManager::StartTutorial()
     SetTutorialState(mLastStartedTutorialId, TS_IN_PROGRESS);
 
     mActiveTutorial->Start();
+}
+
+void TutorialManager::ContinueTutorial()
+{
+    if(nullptr == mActiveTutorial)
+        return ;
+
+    mActiveTutorial->Continue(mStartStep);
 }
 
 void TutorialManager::AbortTutorial()

@@ -767,11 +767,22 @@ void ScreenGame::InitTutorial()
     //tutorialId = TUTORIAL_MISSION_2;
 #endif
 
-    // start tutorial if still TODO
-    if(tutorialId != TUTORIAL_UNKNOWN && tutMan->GetTutorialState(tutorialId) == TS_TODO)
+    if(tutorialId != TUTORIAL_UNKNOWN)
     {
-        tutMan->CreateTutorial(tutorialId, this);
-        tutMan->StartTutorial();
+        const TutorialState state = tutMan->GetTutorialState(tutorialId);
+
+        // start tutorial if still TODO
+        if(state == TS_TODO)
+        {
+            tutMan->CreateTutorial(tutorialId, this);
+            tutMan->StartTutorial();
+        }
+        // continue if in progress (loaded)
+        else if(state == TS_IN_PROGRESS)
+        {
+            tutMan->CreateTutorial(tutorialId, this);
+            tutMan->ContinueTutorial();
+        }
     }
 }
 

@@ -438,18 +438,42 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         auto tutMan = game->GetTutorialManager();
 
         PlayerFaction localFaction = game->GetLocalPlayerFaction();
-        const PlayerFaction occupier0 = planet->GetMapOccupier(0);
-        const PlayerFaction occupier2 = planet->GetMapOccupier(2);
 
-        if(tutMan->GetTutorialState(TUTORIAL_PLANET_MAP_1) == TS_TODO && occupier0 == localFaction)
+        if(planet->GetMapOccupier(2) == localFaction)
         {
-            tutMan->CreateTutorial(TUTORIAL_PLANET_MAP_1, this);
-            tutMan->StartTutorial();
+            const TutorialId tutorialId = TUTORIAL_PLANET_MAP_2;
+            const TutorialState state = tutMan->GetTutorialState(tutorialId);
+
+            // start tutorial if still TODO
+            if(state == TS_TODO)
+            {
+                tutMan->CreateTutorial(tutorialId, this);
+                tutMan->StartTutorial();
+            }
+            // continue if in progress (loaded)
+            else if(state == TS_IN_PROGRESS)
+            {
+                tutMan->CreateTutorial(tutorialId, this);
+                tutMan->ContinueTutorial();
+            }
         }
-        else if(tutMan->GetTutorialState(TUTORIAL_PLANET_MAP_2) == TS_TODO && occupier2 == localFaction)
+        else if(planet->GetMapOccupier(0) == localFaction)
         {
-            tutMan->CreateTutorial(TUTORIAL_PLANET_MAP_2, this);
-            tutMan->StartTutorial();
+            const TutorialId tutorialId = TUTORIAL_PLANET_MAP_1;
+            const TutorialState state = tutMan->GetTutorialState(tutorialId);
+
+            // start tutorial if still TODO
+            if(state == TS_TODO)
+            {
+                tutMan->CreateTutorial(tutorialId, this);
+                tutMan->StartTutorial();
+            }
+            // continue if in progress (loaded)
+            else if(state == TS_IN_PROGRESS)
+            {
+                tutMan->CreateTutorial(tutorialId, this);
+                tutMan->ContinueTutorial();
+            }
         }
     }
 }

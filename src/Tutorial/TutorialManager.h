@@ -29,6 +29,7 @@ public:
     // -- ACTIVE TUTORIAL --
     bool CreateTutorial(TutorialId tutId, Screen * screen);
     void StartTutorial();
+    void ContinueTutorial();
     void AbortTutorial();
     void SetTutorialPause(bool paused);
 
@@ -47,6 +48,8 @@ private:
     Tutorial * mActiveTutorial = nullptr;
 
     TutorialId mLastStartedTutorialId;
+
+    unsigned int mStartStep = 0;
 };
 
 inline const Tutorial * TutorialManager::GetActiveTutorial() const { return mActiveTutorial; }
