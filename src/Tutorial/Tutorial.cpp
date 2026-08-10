@@ -34,6 +34,7 @@ void Tutorial::Continue(unsigned int firstStep)
 
     // remove steps that are already done
     mSteps.erase(mSteps.begin(), mSteps.begin() + firstStep);
+    mStepsDone = firstStep;
 
     StartNextStep();
 }

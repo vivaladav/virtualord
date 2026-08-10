@@ -52,7 +52,7 @@ bool TutorialManager::Save(sgl::utilities::BinaryFile & bf) const
     // active tutorial
     // NOTE saving steps + 1 to skip the one that's actually saving the game
     // as only the StepSaveGame can trigger a save during the tutorial
-    if(mActiveTutorial != nullptr)
+    if(mActiveTutorial != nullptr && mActiveTutorial->GetNumStepsDone() > 0)
         bf.WriteUint(mActiveTutorial->GetNumStepsDone() + 1);
     else
         bf.WriteUint(0);
