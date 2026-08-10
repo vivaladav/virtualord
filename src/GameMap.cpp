@@ -171,7 +171,7 @@ bool GameMap::Load(sgl::utilities::BinaryFile & bf)
 
     for(unsigned int i = 0; i < numCollGen; ++i)
     {
-        const GameObjectTypeId type = bf.ReadUint();
+        const GameObjectTypeId type = bf.ReadSizeT();
         const int r = bf.ReadInt();
         const int c = bf.ReadInt();
 
@@ -260,7 +260,7 @@ bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
     for(const CollectableGenerator * gen : mCollGens)
     {
         // data for creation
-        bf.WriteUint(gen->GetProductType());
+        bf.WriteSizeT(gen->GetProductType());
         bf.WriteInt(gen->GetRow());
         bf.WriteInt(gen->GetCol());
 
