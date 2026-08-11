@@ -14,7 +14,7 @@
 namespace game
 {
 
-StepGameSetupResearch::StepGameSetupResearch(GameHUD * HUD)
+StepGameSetupResearch::StepGameSetupResearch(GameHUD * HUD, const std::vector<int> & values)
     : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
 {
@@ -34,28 +34,37 @@ StepGameSetupResearch::StepGameSetupResearch(GameHUD * HUD)
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_RESEARCH_1"), 9.f, true, true);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_RESEARCH_2"), 0.f, false, true,
-                        [this, dialog, info]
+    const std::string str1 = sm->GetParametricString("TUT_GAME_RESEARCH_2",
+                                                     std::to_string(values[0]));
+
+    info->AddActionEntry(str1.c_str(), 0.f, false, true,
+                        [this, dialog, info, values]
                         {
                             auto slider = dialog->mSliderMoney;
 
-                            HandleSlider(slider, 100);
+                            HandleSlider(slider, values[0]);
                         });
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_RESEARCH_3"), 0.f, false, true,
-                         [this, dialog, info]
+    const std::string str2 = sm->GetParametricString("TUT_GAME_RESEARCH_3",
+                                                     std::to_string(values[1]));
+
+    info->AddActionEntry(str2.c_str(), 0.f, false, true,
+                         [this, dialog, info, values]
                          {
                              auto slider = dialog->mSliderEnergy;
 
-                             HandleSlider(slider, 50);
+                             HandleSlider(slider, values[1]);
                          });
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_RESEARCH_4"), 0.f, false, true,
-                         [this, dialog, info]
+    const std::string str3 = sm->GetParametricString("TUT_GAME_RESEARCH_4",
+                                                     std::to_string(values[2]));
+
+    info->AddActionEntry(str3.c_str(), 0.f, false, true,
+                         [this, dialog, info, values]
                          {
                              auto slider = dialog->mSliderMaterial;
 
-                             HandleSlider(slider, 50);
+                             HandleSlider(slider, values[2]);
                          });
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_5"), 0.f, false, false,

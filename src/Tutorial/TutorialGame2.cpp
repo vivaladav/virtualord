@@ -717,7 +717,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             });
     AddStep([hud]
             {
-                return new StepGameSetupResearch(hud);
+                return new StepGameSetupResearch(hud, { 100, 50, 50 });
             });
     // CLEAR SELECTION AND END TURN
     AddStep([gs]

@@ -2,6 +2,8 @@
 
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <vector>
+
 namespace sgl
 {
     namespace sgui { class Slider; }
@@ -16,7 +18,7 @@ class FocusArea;
 class StepGameSetupResearch : public TutorialInfoStep
 {
 public:
-    StepGameSetupResearch(GameHUD * HUD);
+    StepGameSetupResearch(GameHUD * HUD, const std::vector<int> & values);
     ~StepGameSetupResearch();
 
     void OnStart() override;
