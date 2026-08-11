@@ -37,6 +37,8 @@
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetLootboxPrize.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
+#include "Tutorial/StepGameSetupResearch.h"
+#include "Tutorial/StepGameSetupResearchIcon.h"
 #include "Tutorial/StepGameSingleInfo.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameUnit.h"
@@ -63,6 +65,7 @@ const Cell2D cellCityBlock2(54, 52);
 const Cell2D cellCityBlock3(52, 52);
 const Cell2D cellCityBlock4(52, 54);
 const Cell2D cellLootbox1(74, 63);
+const Cell2D cellResCenter(45, 47);
 const Cell2D cellSpecialLootbox1(61, 73);
 const Cell2D cellMatGen1(66, 62);
 const Cell2D cellMatGen2(41, 49);
@@ -859,6 +862,52 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 2
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(1000, 500);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD RESEARCH CENTER
+    AddStep([game, panelActions]
+        {
+            const core::Pointd2D p0(1100, 500);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_RES_CEN_1", p0);
+        });
+    AddStep([hud]
+        {
+            return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_RES_CEN_2", nullptr,
+                                              TutorialConstants::catTech,
+                                              TutorialConstants::structResearchCenter);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(400, 250);
+            return new StepGameBuildTowerEnd(isoMap, unit, cellResCenter, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SETUP RESEARCH
+    AddStep([this, game, isoMap]
+        {
+            const core::Pointd2D p0(1100, 600);
+            const GameObject * obj = GetObjectInCell(cellResCenter);
+            return new StepGameSelectObject(game, isoMap, obj, "TUT_GAME_RES_CEN_1", p0);
+        });
+    AddStep([game, panelActions]
+        {
+            const core::Pointd2D p0(1000, 650);
+            return new StepGameSetupResearchIcon(game, panelActions, p0);
+        });
+    AddStep([hud] { return new StepGameSetupResearch(hud, { 100, 70, 70 }); });
+    // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
