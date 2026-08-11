@@ -11,6 +11,7 @@
 #include "GameObjects/ObjectData.h"
 #include "GameObjects/Unit.h"
 #include "Indicators/OverlayCellConquest.h"
+#include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepDelay.h"
@@ -20,6 +21,7 @@
 #include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameBuildUnitEnd.h"
 #include "Tutorial/StepGameBuildUnitStart.h"
+#include "Tutorial/StepGameWallBuildIntro.h"
 #include "Tutorial/StepGameCityIntro.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
@@ -34,6 +36,7 @@
 #include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGameMoveUnitToCorner.h"
 #include "Tutorial/StepGameOpenLootbox.h"
+#include "Tutorial/StepGameQuickUnitButton.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetLootboxPrize.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
@@ -47,6 +50,9 @@
 #include "Tutorial/StepGameUpgradeUnitFree.h"
 #include "Tutorial/StepGameWaitLootboxOpen.h"
 #include "Tutorial/StepGameWaitTurn.h"
+#include "Tutorial/StepGameWallBuildIcon.h"
+#include "Tutorial/StepGameWallBuildStart.h"
+#include "Tutorial/StepGameWallBuildEnd.h"
 #include "Tutorial/StepSaveGame.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
@@ -921,23 +927,23 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD BUNKER WITH WORKER 2
     AddStep([game, panelActions]
-            {
-                const core::Pointd2D p0(1000, 250);
-                return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
-            });
+        {
+            const core::Pointd2D p0(1000, 250);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
+        });
     AddStep([hud]
-            {
-                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3", nullptr,
-                                                  TutorialConstants::catDefenses,
-                                                  TutorialConstants::structBunker);
-            });
+        {
+            return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3", nullptr,
+                                              TutorialConstants::catDefenses,
+                                              TutorialConstants::structBunker);
+        });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
-            {
-                const auto unit = local->GetUnit(indWorker2);
-                const core::Pointd2D p0(900, 200);
-                return new StepGameBuildTowerEnd(isoMap, unit, cellBunker1, p0);
-            });
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(900, 200);
+            return new StepGameBuildTowerEnd(isoMap, unit, cellBunker1, p0);
+        });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT BUNKER WITH WORKER 2
@@ -967,34 +973,34 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // MOVE CAMERA
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([game]
-            {
-                const int movX = -350;
+        {
+            const int movX = -400;
                 const int movY = 0;
                 return new StepGameMoveCamera(movX, movY);
             });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD BUNKER WITH WORKER 1
     AddStep([game, panelActions]
-            {
-                const core::Pointd2D p0(1000, 250);
-                return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
-            });
+        {
+            const core::Pointd2D p0(1000, 250);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
+        });
     AddStep([hud]
-            {
-                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3", nullptr,
-                                                  TutorialConstants::catDefenses,
-                                                  TutorialConstants::structBunker);
-            });
+        {
+            return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3", nullptr,
+                                              TutorialConstants::catDefenses,
+                                              TutorialConstants::structBunker);
+        });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
-            {
-                const auto unit = local->GetUnit(indWorker1);
-                const core::Pointd2D p0(900, 250);
-                return new StepGameBuildTowerEnd(isoMap, unit, cellBunker2, p0);
-            });
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(900, 250);
+            return new StepGameBuildTowerEnd(isoMap, unit, cellBunker2, p0);
+        });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
-    // CONNECT BUNKER WITH WORKER 2
+    // CONNECT BUNKER WITH WORKER 1
     AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
     AddStep([this, isoMap, game]
         {
@@ -1014,6 +1020,110 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD WALL CELL WITH WORKER 1
+    AddStep([] { return new StepGameWallBuildIntro(); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
+    AddStep([isoMap, local, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const Cell2D cellEnd(50, 38);
+            const core::Pointd2D p0(900, 300);
+            return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD GATE WITH WORKER 1
+    AddStep([game, panelActions]
+        {
+            const core::Pointd2D p0(1100, 400);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_GATE_1", p0);
+        });
+    AddStep([hud]
+        {
+            return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
+                                              "TUT_GAME_BUILD_GATE_2",
+                                              TutorialConstants::catDefenses,
+                                              TutorialConstants::structGate);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1100, 450);
+            const Cell2D target(51, 38);
+            return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD WALL CELL WITH WORKER 1
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
+    AddStep([isoMap, local, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const Cell2D cellEnd(52, 38);
+            const core::Pointd2D p0(900, 300);
+            return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 2
+    AddStep([hud]
+        {
+            const sgl::core::Pointd2D p0(100, 600);
+            return new StepGameQuickUnitButton(hud, indWorker2, nullptr, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD WALL CELL WITH WORKER 2
+    AddStep([] { return new StepGameWallBuildIntro(); });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
+    AddStep([isoMap, local, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const Cell2D cellEnd(38, 50);
+            const core::Pointd2D p0(900, 300);
+            return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD GATE WITH WORKER 1
+    AddStep([game, panelActions]
+        {
+            const core::Pointd2D p0(1100, 400);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_GATE_1", p0);
+        });
+    AddStep([hud]
+        {
+            return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
+                                              "TUT_GAME_BUILD_GATE_2",
+                                              TutorialConstants::catDefenses,
+                                              TutorialConstants::structGate);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(1100, 450);
+            const Cell2D target(38, 51);
+            return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD WALL CELL WITH WORKER 2
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
+    AddStep([isoMap, local, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const Cell2D cellEnd(38, 52);
+            const core::Pointd2D p0(900, 300);
+            return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
