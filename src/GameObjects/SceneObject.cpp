@@ -17,7 +17,9 @@ SceneObject::SceneObject(const ObjectData & data, const ObjectInitData & initDat
     mVariant = part;
 
     // set object health
-    if(ObjectData::TYPE_MOUNTAINS == data.GetType())
+    const GameObjectTypeId type = data.GetType();
+
+    if(ObjectData::TYPE_MOUNTAINS1 == type || ObjectData::TYPE_MOUNTAINS2 == type)
     {
         // health
         const float maxHealthValue = 5000.f;
@@ -50,20 +52,19 @@ void SceneObject::SetImage()
 
     const GameObjectTypeId type = GetObjectType();
 
+    unsigned int spriteId = 0;
+
     if(type == ObjectData::TYPE_ROCKS)
-    {
-        const unsigned int spriteId = ID_ROCKS1_01 + mVariant;
-        tex = tm->GetSprite(SpriteFileSceneObjects, spriteId);
-    }
-    else if(type == ObjectData::TYPE_MOUNTAINS)
-    {
-        const unsigned int spriteId = ID_MOUNTAIN1_L + mVariant;
-        tex = tm->GetSprite(SpriteFileSceneObjects, spriteId);
-    }
+        spriteId = ID_ROCKS1_01 + mVariant;
+    else if(type == ObjectData::TYPE_MOUNTAINS1)
+        spriteId = ID_MOUNTAIN1_L + mVariant;
+    else if(type == ObjectData::TYPE_MOUNTAINS2)
+        spriteId = ID_MOUNTAIN2_L + mVariant;
     // this should never happen
     else
         return ;
 
+    tex = tm->GetSprite(SpriteFileSceneObjects, spriteId);
     isoObj->SetTexture(tex);
 }
 
@@ -73,7 +74,7 @@ void SceneObject::SetObjColors()
 
     const GameObjectTypeId type = GetObjectType();
 
-    if(type == ObjectData::TYPE_MOUNTAINS)
+    if(type == ObjectData::TYPE_MOUNTAINS1)
     {
         mObjColors.push_back(0xad9485ff);
         mObjColors.push_back(0xa38776ff);
@@ -81,6 +82,15 @@ void SceneObject::SetObjColors()
         mObjColors.push_back(0x7a6152ff);
         mObjColors.push_back(0x6b5548ff);
         mObjColors.push_back(0x584a41ff);
+    }
+    if(type == ObjectData::TYPE_MOUNTAINS2)
+    {
+        mObjColors.push_back(0x736059ff);
+        mObjColors.push_back(0x544840ff);
+        mObjColors.push_back(0x607656ff);
+        mObjColors.push_back(0x485841ff);
+        mObjColors.push_back(0x303b2bff);
+        mObjColors.push_back(0x303b2bff);
     }
     else if(type == ObjectData::TYPE_ROCKS)
     {

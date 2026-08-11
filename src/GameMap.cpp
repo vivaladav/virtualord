@@ -706,7 +706,7 @@ GameObject * GameMap::CreateObject(GameObjectTypeId type, GameObjectVariantId va
     const ObjectInitData initData(mGame, this, mScreenGame->GetParticlesManager(),
                                   o2a.owner, mScreenGame);
 
-    if(ObjectData::TYPE_MOUNTAINS == type ||
+    if(ObjectData::TYPE_MOUNTAINS1 == type || ObjectData::TYPE_MOUNTAINS2 == type ||
        ObjectData::TYPE_ROCKS == type)
         o2a.obj = new SceneObject(data, initData, variant);
     else if(ObjectData::TYPE_RES_GEN_ENERGY == type ||

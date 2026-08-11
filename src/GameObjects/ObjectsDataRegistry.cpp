@@ -128,9 +128,14 @@ void ObjectsDataRegistry::InitObjectData()
                    ObjectData::TYPE_MINI_UNIT2, ObjectData::CAT_MINI_UNIT,
                    OCMU_SOLDIER, OCAT_MINI_UNIT, WeaponData::TYPE_LASER2, 1, 1));
 
-    mDataObjects.emplace(ObjectData::TYPE_MOUNTAINS,
+    mDataObjects.emplace(ObjectData::TYPE_MOUNTAINS1,
         ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 9}, {OBJ_ATT_RESISTANCE, 7} }, {},
-                   { ID_MOUNTAIN1_1 }, SpriteFileSceneObjects, ObjectData::TYPE_MOUNTAINS,
+                   { ID_MOUNTAIN1_1 }, SpriteFileSceneObjects, ObjectData::TYPE_MOUNTAINS1,
+                   ObjectData::CAT_SCENE_OBJ, OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 2, 2));
+
+    mDataObjects.emplace(ObjectData::TYPE_MOUNTAINS2,
+        ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 9}, {OBJ_ATT_RESISTANCE, 7} }, {},
+                   { ID_MOUNTAIN2_1 }, SpriteFileSceneObjects, ObjectData::TYPE_MOUNTAINS2,
                    ObjectData::CAT_SCENE_OBJ, OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 2, 2));
 
     mDataObjects.emplace(ObjectData::TYPE_PRACTICE_TARGET,

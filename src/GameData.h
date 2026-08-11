@@ -371,7 +371,7 @@ extern const char SpriteFileSceneObjects[];
 
 enum SpriteIdSceneElements : unsigned int
 {
-    // MOUNTAINS
+    // MOUNTAINS 1
     ID_MOUNTAIN1_L,
     ID_MOUNTAIN1_T,
     ID_MOUNTAIN1_B,
@@ -384,6 +384,20 @@ enum SpriteIdSceneElements : unsigned int
     ID_MOUNTAIN1_6,
     ID_MOUNTAIN1_7,
     ID_MOUNTAIN1_8,
+
+    // MOUNTAINS 2
+    ID_MOUNTAIN2_L,
+    ID_MOUNTAIN2_T,
+    ID_MOUNTAIN2_B,
+    ID_MOUNTAIN2_R,
+    ID_MOUNTAIN2_1,
+    ID_MOUNTAIN2_2,
+    ID_MOUNTAIN2_3,
+    ID_MOUNTAIN2_4,
+    ID_MOUNTAIN2_5,
+    ID_MOUNTAIN2_6,
+    ID_MOUNTAIN2_7,
+    ID_MOUNTAIN2_8,
 
     // ROCKS TYPE 1
     ID_ROCKS1_01,
