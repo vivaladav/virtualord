@@ -51,6 +51,7 @@ public:
     static const int catTech;
 
     // indexes of structures in build dialog
+    static const int structBunker;
     static const int structGate;
     static const int structDefTower;
     static const int structMatExtr;

@@ -23,6 +23,7 @@ const int TutorialConstants::catResources = 2;
 const int TutorialConstants::catTech = 3;
 
 // indexes of structures in build dialog
+const int TutorialConstants::structBunker = 0;
 const int TutorialConstants::structGate = 2;
 const int TutorialConstants::structDefTower = 1;
 const int TutorialConstants::structMatExtr = 1;
