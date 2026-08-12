@@ -27,6 +27,7 @@ const int TutorialConstants::structBunker = 0;
 const int TutorialConstants::structGate = 2;
 const int TutorialConstants::structDefTower = 1;
 const int TutorialConstants::structMatExtr = 1;
+const int TutorialConstants::structRadarStation = 1;
 const int TutorialConstants::structResearchCenter = 0;
 const int TutorialConstants::structSolarPanel = 0;
 const int TutorialConstants::structTradingPost = 3;

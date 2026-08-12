@@ -55,6 +55,7 @@ public:
     static const int structGate;
     static const int structDefTower;
     static const int structMatExtr;
+    static const int structRadarStation;
     static const int structResearchCenter;
     static const int structSolarPanel;
     static const int structTradingPost;

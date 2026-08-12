@@ -23,6 +23,7 @@
 #include "Tutorial/StepGameBuildUnitStart.h"
 #include "Tutorial/StepGameWallBuildIntro.h"
 #include "Tutorial/StepGameCityIntro.h"
+#include "Tutorial/StepGameClearSelection.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
@@ -74,6 +75,7 @@ const Cell2D cellCityBlock2(54, 52);
 const Cell2D cellCityBlock3(52, 52);
 const Cell2D cellCityBlock4(52, 54);
 const Cell2D cellLootbox1(74, 63);
+const Cell2D cellRadar(41, 41);
 const Cell2D cellResCenter(45, 47);
 const Cell2D cellSpecialLootbox1(61, 73);
 const Cell2D cellMatGen1(66, 62);
@@ -1395,6 +1397,11 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([hud] { return new StepGameTechTreeDialog(hud, TECH_UP_RADAR_STATION, false); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    // CLEAR SELECTION
+    AddStep([gs]
+            {
+                return new StepGameClearSelection(gs);
+            });
     // END TURN
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
@@ -1402,7 +1409,34 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
-
+    // SELECT WORKER 1
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1300, 450);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD RADAR STATION
+    AddStep([game, panelActions]
+        {
+            const core::Pointd2D p0(1100, 500);
+            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_RADAR_1", p0);
+        });
+    AddStep([hud]
+        {
+            return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_RES_CEN_2",
+                                              "TUT_GAME_BUILD_RADAR_2", TutorialConstants::catTech,
+                                              TutorialConstants::structRadarStation);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1100, 250);
+            return new StepGameBuildTowerEnd(isoMap, unit, cellRadar, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
