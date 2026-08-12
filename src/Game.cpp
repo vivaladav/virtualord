@@ -395,12 +395,15 @@ bool Game::LoadGame()
     for(unsigned int i = 0; i < numAIPlayers; ++i)
     {
         const int playerId = mReaderSave->ReadInt();
+        const bool active = mReaderSave->ReadBool();
 
         for(auto p : mPlayers)
         {
             if(p->GetPlayerId() == playerId)
             {
                 auto * ai = new PlayerAI(p, mObjsRegistry);
+                ai->SetActive(active);
+
                 p->SetAI(ai);
 
                 mAIPlayers.emplace_back(p);
@@ -488,7 +491,12 @@ bool Game::SaveGame()
     bf.WriteUint(numAIPlayers);
 
     for(Player * p : mAIPlayers)
+    {
+        auto ai = p->GetAI();
+
         bf.WriteInt(p->GetPlayerId());
+        bf.WriteBool(ai->IsActive());
+    }
 
     // reset cost of saving before writing the values
     InitCostSaveGame();
