@@ -58,6 +58,14 @@
 namespace
 {
 constexpr int MAX_UNITS0 = 5;
+
+// resources when starting a new game
+constexpr int START_ENERGY = 1000;
+constexpr int START_MATERIAL = 1000;
+constexpr int START_MONEY = 1000;
+constexpr int START_DIAMONDS = 10;
+constexpr int START_BLOBS = 10;
+constexpr int START_RESEARCH = 0;
 }
 
 namespace game
@@ -842,6 +850,14 @@ void Game::CreatePlayers()
 
         auto p = new Player(i);
         p->SetFaction(f);
+
+        // set initial resources
+        p->SetResource(Player::Stat::BLOBS, START_BLOBS);
+        p->SetResource(Player::Stat::DIAMONDS, START_DIAMONDS);
+        p->SetResource(Player::Stat::ENERGY, START_ENERGY);
+        p->SetResource(Player::Stat::MATERIAL, START_MATERIAL);
+        p->SetResource(Player::Stat::MONEY, START_MONEY);
+        p->SetResource(Player::Stat::RESEARCH, START_RESEARCH);
 
         if(f == mLocalFaction)
         {

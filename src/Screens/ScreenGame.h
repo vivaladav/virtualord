@@ -118,8 +118,6 @@ public:
 private:
     void OnApplicationQuit(sgl::core::ApplicationEvent & event) override;
 
-    void AssignStartResources(Player * p);
-
     void InitGame();
 
     void InitPlayers();
