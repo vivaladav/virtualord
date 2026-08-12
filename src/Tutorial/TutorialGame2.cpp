@@ -234,7 +234,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(900, 250);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
@@ -284,7 +284,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             core::Pointd2D p0(700, 200);
             return new StepGameConnectStructIntro(p0, "TUT_GAME_CONNECT_STRUCT_1");
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
@@ -576,7 +576,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1150, 150);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(900, 250);
@@ -635,7 +635,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1150, 150);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1000, 200);
@@ -658,7 +658,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1300, 450);
                 return new StepGameUnit(game, isoMap, unit, p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1000, 200);
@@ -791,7 +791,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1100, 350);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 500);
@@ -823,7 +823,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1300, 450);
                 return new StepGameUnit(game, isoMap, unit, p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 500);
@@ -875,7 +875,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1100, 250);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 300);
@@ -985,7 +985,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(1200, 250);
                 return new StepGameUnit(game, isoMap, unit, p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1200, 300);
@@ -1314,7 +1314,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const sgl::core::Pointd2D p0(100, 600);
                 return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1200, 450);
@@ -1461,7 +1461,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
             });
     // CONQUER CELLS WITH SOLDIER 1
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1200, 450);
@@ -1492,7 +1492,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER CELLS WITH SOLDIER 1
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1200, 450);
@@ -1583,7 +1583,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER CELLS WITH WORKER 2
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1200, 450);
@@ -1709,7 +1709,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameQuickUnitButton(hud, indWorker2, nullptr, p0);
             });
     // CONQUER CELLS WITH WORKER 2
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1200, 450);
@@ -1790,7 +1790,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const sgl::core::Pointd2D p0(100, 600);
                 return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(600, 200);
@@ -1915,7 +1915,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameQuickUnitButton(hud, indSoldier1, nullptr, p0);
             });
     // CONQUER CELLS WITH SOLDIER
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(600, 200);
@@ -2039,7 +2039,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER CELLS WITH WORKER 2
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(600, 200);

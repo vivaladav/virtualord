@@ -1,6 +1,7 @@
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 
 #include "Game.h"
+#include "Screens/ScreenGame.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -12,10 +13,11 @@
 namespace game
 {
 
-StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(const Game * game,
+StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(const Game * game, ScreenGame * screen,
                                                            PanelObjectActions * panel)
     : TutorialInfoStep(550, 150)
     , mFocusArea(new FocusArea)
+    , mScreen(screen)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -33,7 +35,6 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(const Game * game,
     info->AddActionEntry(sm->GetCString("TUT_GAME_UNIT_CONQUE_CELLS_ICON_1"), 0.f, false, false,
                          [this, panel, game]
                         {
-
                             auto btn = panel->GetButton(PanelObjectActions::BTN_CONQUER_CELL);
 
                             // CLICK FILTER
@@ -68,6 +69,24 @@ StepGameUnitConquerCellsIcon::~StepGameUnitConquerCellsIcon()
     mPanelActions->RemoveButtonFunction(PanelObjectActions::BTN_CONQUER_CELL, mClickId);
 
     delete mFocusArea;
+}
+
+void StepGameUnitConquerCellsIcon::OnStart()
+{
+    TutorialInfoStep::OnStart();
+
+    // store selection allowed in screen
+    mSelAllowed = mScreen->IsSelectionAllowed();
+    // disable selection allowed in screen to avoid to select random objects
+    mScreen->SetSelectionAllowed(false);
+}
+
+void StepGameUnitConquerCellsIcon::OnEnd()
+{
+    TutorialInfoStep::OnEnd();
+
+    // restore selection allowed as before starting
+    mScreen->SetSelectionAllowed(mSelAllowed);
 }
 
 } // namespace game

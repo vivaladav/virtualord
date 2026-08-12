@@ -169,7 +169,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     // EXPLAIN STRUCTURE CONNECTIONS AND CONNECT GENERATOR TO BASE
     AddStep([] { return new StepGameStructDisconnected; });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
@@ -221,7 +221,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1250, 200);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1200, 400);
@@ -294,7 +294,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1000, 150);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
@@ -387,7 +387,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(1150, 500);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(200, 550);
@@ -451,7 +451,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1100, 450);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1100, 450);
@@ -617,7 +617,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(1250, 350);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 350);

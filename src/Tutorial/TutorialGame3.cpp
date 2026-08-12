@@ -193,7 +193,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
                 const core::Pointd2D p0(1100, 350);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 400);
@@ -239,7 +239,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1100, 350);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1100, 400);
@@ -366,7 +366,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1000, 200);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);
@@ -389,7 +389,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONTINUE TO CONNECT MATERIAL GENERATOR WITH WORKER 2
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);
@@ -414,7 +414,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // FINISH TO CONNECT MATERIAL GENERATOR WITH WORKER 1
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);
@@ -464,7 +464,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1150, 150);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);
@@ -567,7 +567,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1000, 200);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);
@@ -592,7 +592,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // CONTINUE TO CONNECT DEFENSIVE TOWER WITH WORKER 2
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);
@@ -646,7 +646,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT CITY WITH WORKER 2
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1050, 350);
@@ -753,7 +753,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1000, 200);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1000, 200);
@@ -807,7 +807,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT MATERIAL GENERATOR WITH WORKER 2
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1050, 350);
@@ -853,7 +853,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT ENERGY GENERATOR WITH WORKER 1
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1050, 350);
@@ -1002,7 +1002,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1100, 350);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1050, 350);
@@ -1049,7 +1049,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1100, 350);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1050, 350);
@@ -1177,7 +1177,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
                 const core::Pointd2D p0(1100, 350);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 400);
@@ -1221,7 +1221,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
                 const core::Pointd2D p0(1100, 350);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 400);
@@ -1245,7 +1245,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONTINUE TO CONNECT MATERIAL GENERATOR WITH WORKER 2
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 400);
@@ -1413,7 +1413,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1000, 250);
             return new StepGameConnectStructIntro(p0);
         });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1050, 350);
@@ -1437,7 +1437,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT WALL WITH WORKER 1
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1050, 350);
@@ -1623,7 +1623,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
                 const core::Pointd2D p0(1100, 350);
                 return new StepGameConnectStructIntro(p0);
             });
-    AddStep([game, panelActions] { return new StepGameUnitConquerCellsIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const core::Pointd2D p0(1100, 400);
