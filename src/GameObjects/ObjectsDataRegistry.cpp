@@ -149,7 +149,7 @@ void ObjectsDataRegistry::InitObjectData()
     mDataObjects.emplace(ObjectData::TYPE_RADAR_STATION,
         ObjectData({ {OBJ_ATT_ENERGY, 5}, {OBJ_ATT_VIEW_RANGE, 8}, {OBJ_ATT_REGENERATION, 4},
                      {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 3}, {OBJ_ATT_HEALTH, 4} },
-                   { 250, 200, 0, 0 },
+                   { 450, 300, 0, 0 },
                    { ID_STRUCT_RADAR_F1, ID_STRUCT_RADAR_F2, ID_STRUCT_RADAR_F3,
                      ID_STRUCT_RADAR }, SpriteFileStructures,
                    ObjectData::TYPE_RADAR_STATION, ObjectData::CAT_STRUCTURE,
