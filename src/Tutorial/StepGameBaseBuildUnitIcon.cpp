@@ -1,6 +1,7 @@
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
 
 #include "Game.h"
+#include "Screens/ScreenGame.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -12,9 +13,11 @@
 namespace game
 {
 
-StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(const Game * game, PanelObjectActions * panel)
+StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(const Game * game, ScreenGame * screen,
+                                                     PanelObjectActions * panel)
     : TutorialInfoStep(550, 200)
     , mFocusArea(new FocusArea)
+    , mScreen(screen)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -67,6 +70,24 @@ StepGameBaseBuildUnitIcon::~StepGameBaseBuildUnitIcon()
     mPanelActions->RemoveButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE, mClickId);
 
     delete mFocusArea;
+}
+
+void StepGameBaseBuildUnitIcon::OnStart()
+{
+    TutorialInfoStep::OnStart();
+
+    // store selection allowed in screen
+    mSelAllowed = mScreen->IsSelectionAllowed();
+    // disable selection allowed in screen to avoid to select random objects
+    mScreen->SetSelectionAllowed(false);
+}
+
+void StepGameBaseBuildUnitIcon::OnEnd()
+{
+    TutorialInfoStep::OnEnd();
+
+    // restore selection allowed as before starting
+    mScreen->SetSelectionAllowed(mSelAllowed);
 }
 
 } // namespace game

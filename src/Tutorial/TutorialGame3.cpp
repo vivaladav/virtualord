@@ -145,10 +145,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD SOLAR PANEL 1
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
         {
            const core::Pointd2D p0(1100, 300);
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_RES_GEN", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_RES_GEN", p0);
         });
     AddStep([hud]
         {
@@ -166,10 +166,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD SOLAR PANEL 2
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
         {
             const core::Pointd2D p0(1100, 250);
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_MORE", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_MORE", p0);
         });
     AddStep([hud]
         {
@@ -213,10 +213,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     // BUILD MATERIAL EXTRACTOR
-    AddStep([game, panelActions]
+    AddStep([game, gs,panelActions]
         {
             const core::Pointd2D p0(1100, 250);
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_MORE", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_MORE", p0);
         });
     AddStep([hud]
         {
@@ -540,10 +540,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
             });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER WITH WORKER 1
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
             {
                 const core::Pointd2D p0(1000, 250);
-                return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+                return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
             });
     AddStep([hud]
             {
@@ -723,10 +723,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER WITH WORKER 2
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
             {
                 const core::Pointd2D p0(1000, 250);
-                return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+                return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
             });
     AddStep([hud]
             {
@@ -890,10 +890,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD RESEARCH CENTER
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
         {
             const core::Pointd2D p0(1100, 500);
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_RES_CEN_1", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_RES_CEN_1", p0);
         });
     AddStep([hud]
         {
@@ -935,10 +935,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD BUNKER WITH WORKER 2
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
         {
             const core::Pointd2D p0(1000, 250);
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
         });
     AddStep([hud]
         {
@@ -972,10 +972,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
             });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD BUNKER WITH WORKER 1
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
         {
             const core::Pointd2D p0(1000, 250);
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
         });
     AddStep([hud]
         {
@@ -1322,10 +1322,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD RADAR STATION
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
         {
             const core::Pointd2D p0(1100, 500);
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_RADAR_1", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_RADAR_1", p0);
         });
     AddStep([hud]
         {
@@ -1357,10 +1357,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD BUNKER WITH WORKER 2
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
             {
                 const core::Pointd2D p0(1000, 250);
-                return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+                return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
             });
     AddStep([hud]
             {
@@ -1462,10 +1462,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD GATE WITH WORKER 2
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
         {
             const core::Pointd2D p0(1100, 400);
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_GATE_1", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_GATE_1", p0);
         });
     AddStep([hud]
         {
@@ -1529,10 +1529,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER WITH WORKER 1
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
             {
                 const core::Pointd2D p0(1000, 250);
-                return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+                return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
             });
     AddStep([hud]
             {
@@ -1572,10 +1572,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
                 return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
             });
     // BUILD GATE WITH WORKER 1
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
         {
             const core::Pointd2D p0(1100, 400);
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_GATE_1", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_GATE_1", p0);
         });
     AddStep([hud]
         {

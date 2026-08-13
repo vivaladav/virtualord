@@ -1,6 +1,7 @@
 #include "Tutorial/StepGameBuildStructIntro.h"
 
 #include "Game.h"
+#include "Screens/ScreenGame.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -12,11 +13,13 @@
 namespace game
 {
 
-StepGameBuildStructIntro::StepGameBuildStructIntro(const Game * game, PanelObjectActions * panel,
+StepGameBuildStructIntro::StepGameBuildStructIntro(const Game * game, ScreenGame * screen,
+                                                   PanelObjectActions * panel,
                                                    const char * textIntro,
                                                    const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(570, 180)
     , mFocusArea(new FocusArea)
+    , mScreen(screen)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -73,4 +76,21 @@ StepGameBuildStructIntro::~StepGameBuildStructIntro()
     delete mFocusArea;
 }
 
+void StepGameBuildStructIntro::OnStart()
+{
+    TutorialInfoStep::OnStart();
+
+    // store selection allowed in screen
+    mSelAllowed = mScreen->IsSelectionAllowed();
+    // disable selection allowed in screen to avoid to select random objects
+    mScreen->SetSelectionAllowed(false);
+}
+
+void StepGameBuildStructIntro::OnEnd()
+{
+    TutorialInfoStep::OnEnd();
+
+    // restore selection allowed as before starting
+    mScreen->SetSelectionAllowed(mSelAllowed);
+}
 } // namespace game

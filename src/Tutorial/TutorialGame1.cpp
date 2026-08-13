@@ -130,7 +130,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([game, isoMap, localBase] { return new StepGameBase(game, isoMap, localBase); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD NEW UNIT
-    AddStep([game, panelActions] { return new StepGameBaseBuildUnitIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameBaseBuildUnitIcon(game, gs, panelActions); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([hud] { return new StepGameBaseBuildUnit(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
@@ -262,11 +262,11 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER 1
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
         {
             const core::Pointd2D p0(900, 250);
 
-            return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
         });
     AddStep([hud]
             {
@@ -420,11 +420,11 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
             {
                 const core::Pointd2D p0(900, 250);
 
-                return new StepGameBuildStructIntro(game, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+                return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
             });
     AddStep([hud]
             {
