@@ -899,7 +899,7 @@ void GameObject::OnNewTurn(PlayerFaction faction)
 void GameObject::Update(float)
 {
     // check if selected object has anything on top below energy and health bars
-    if(mSelected)
+    if(mSelected && mBarEnergy != nullptr && mBarHealth != nullptr)
     {
         const int row1 = GetRow1();
         const int col1 = GetCol1();
