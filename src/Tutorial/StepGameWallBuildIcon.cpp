@@ -12,12 +12,16 @@
 namespace game
 {
 
-StepGameWallBuildIcon::StepGameWallBuildIcon(const Game * game, PanelObjectActions * panel)
-    : TutorialInfoStep(600, 150)
+StepGameWallBuildIcon::StepGameWallBuildIcon(const Game * game, Screen * screen,
+                                             PanelObjectActions * panel)
+    : TutorialInfoStep(screen, 600, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
+
+    // do not allow object selection during this step
+    DisableObjectSelection();
 
     // FOCUS
     mFocusArea->SetCornersColorAction();

@@ -317,7 +317,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // BUILD WALL FROM TOWER
     AddStep([] { return new StepGameWallBuildIntro(); });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameWallBuildIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
@@ -539,7 +539,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // BUILD WALL FROM TOWER
     AddStep([] { return new StepGameWallBuildIntro(); });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([game, panelActions] { return new StepGameWallBuildIcon(game, panelActions); });
+    AddStep([game, gs, panelActions] { return new StepGameWallBuildIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
             {
                 const Cell2D & cellStart = GetOverlayWall()->GetCellStart();

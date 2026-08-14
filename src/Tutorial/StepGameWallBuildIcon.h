@@ -12,7 +12,7 @@ class PanelObjectActions;
 class StepGameWallBuildIcon : public TutorialInfoStep
 {
 public:
-    StepGameWallBuildIcon(const Game * game, PanelObjectActions * panel);
+    StepGameWallBuildIcon(const Game * game, Screen * screen, PanelObjectActions * panel);
     ~StepGameWallBuildIcon();
 
 private:
