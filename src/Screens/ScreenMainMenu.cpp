@@ -102,7 +102,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     // assign it to NEW GAME button
     button->SetTooltip(tooltipWarning);
     button->SetTooltipShowingTime(7000);
-    button->SetTooltipDelay(250);
+    button->SetTooltipDelay(100);
 
     // -- BUTTON LOAD GAME --
     button = new ButtonMainMenu(sm->GetCString("LOAD_GAME"), panelButtons);
