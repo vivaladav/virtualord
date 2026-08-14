@@ -430,8 +430,11 @@ void GameHUD::UpdateQuickUnitButtons()
 
     for(int i = 0; i < numUnits; ++i)
     {
+        auto unit = local->GetUnit(i);
+
         auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
-        b->SetUnit(local->GetUnit(i));
+        b->SetUnit(unit);
+        b->SetChecked(unit->IsSelected());
     }
 
     for(int i = numUnits; i < maxUnits; ++i)
