@@ -357,7 +357,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.9 - \"...\"", font, content);
+    auto title = new sgui::Label("0.6.8 - \"GWB Game Awards build\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -383,7 +383,7 @@ void ScreenMainMenu::CreateChangelog()
                   "\nFIXES\n"
                   "- Walls now connect to bunkers too.\n"
                   "- Units no longer can build structures far away without moving.\n"
-                  "- Camera no longer keeps moving when view is centered on some object or cell."
+                  "- Camera no longer keeps moving when view is centered on some object or cell.\n"
                   "- Selection no longer allowed when moving camera in tutorial 1.\n"
                   "- Tutorial always starting if enabled and starting a new game.\n"
                   "- It's no longer possible to select random objects during the tutorial.\n"
