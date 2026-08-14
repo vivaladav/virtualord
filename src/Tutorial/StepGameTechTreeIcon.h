@@ -14,7 +14,7 @@ class PanelObjectActions;
 class StepGameTechTreeIcon : public TutorialInfoStep
 {
 public:
-    StepGameTechTreeIcon(const Game * game, PanelObjectActions * panel,
+    StepGameTechTreeIcon(const Game * game, Screen * screen, PanelObjectActions * panel,
                          const sgl::core::Pointd2D & p0);
     ~StepGameTechTreeIcon();
 

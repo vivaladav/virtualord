@@ -12,14 +12,17 @@
 namespace game
 {
 
-StepGameBuildUnitStart::StepGameBuildUnitStart(const Game * game, PanelObjectActions * panel,
-                                               unsigned int buttonId)
-    : TutorialInfoStep(550, 150)
+StepGameBuildUnitStart::StepGameBuildUnitStart(const Game * game, Screen * screen,
+                                               PanelObjectActions * panel, unsigned int buttonId)
+    : TutorialInfoStep(screen, 550, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
     , mBtnId(buttonId)
 {
     auto sm = sgl::utilities::StringManager::Instance();
+
+    // do not allow object selection during this step
+    DisableObjectSelection();
 
     // FOCUS
     mFocusArea->SetCornersColorAction();

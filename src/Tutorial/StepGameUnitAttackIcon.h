@@ -14,7 +14,7 @@ class PanelObjectActions;
 class StepGameUnitAttackIcon : public TutorialInfoStep
 {
 public:
-    StepGameUnitAttackIcon(const Game * game, PanelObjectActions * panel,
+    StepGameUnitAttackIcon(const Game * game, Screen * screen, PanelObjectActions * panel,
                            const sgl::core::Pointd2D & p0);
     ~StepGameUnitAttackIcon();
 

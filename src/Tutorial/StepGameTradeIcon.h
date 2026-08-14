@@ -14,7 +14,8 @@ class PanelObjectActions;
 class StepGameTradeIcon : public TutorialInfoStep
 {
 public:
-    StepGameTradeIcon(const Game * game, PanelObjectActions * panel, const sgl::core::Pointd2D & p0);
+    StepGameTradeIcon(const Game * game, Screen * screen, PanelObjectActions * panel,
+                      const sgl::core::Pointd2D & p0);
     ~StepGameTradeIcon();
 
 private:

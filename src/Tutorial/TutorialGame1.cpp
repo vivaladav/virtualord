@@ -251,10 +251,10 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
     // UPGRADE UNIT
-    AddStep([panelActions]
+    AddStep([game, gs, panelActions]
         {
             core::Pointd2D p0(900, 250);
-            return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1", p0);
+            return new StepGameUpgradeIntro(game, gs, panelActions, "TUT_GAME_UPGRADE_1", p0);
         });
     AddStep([hud] { return new StepGameUpgradeUnit(hud, true); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
@@ -346,9 +346,9 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(500, 200);
                 return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
             });
-    AddStep([game, panelActions]
+    AddStep([game, gs, panelActions]
             {
-                return new StepGameBuildUnitStart(game, panelActions,
+                return new StepGameBuildUnitStart(game, gs, panelActions,
                                                   PanelObjectActions::BTN_BUILD_UNIT_BASE);
             });
     AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
@@ -555,10 +555,10 @@ TutorialGame1::TutorialGame1(Screen * screen)
             });
     AddStep([] { return new StepDelay(0.5f); });
     // UPGRADE UNIT
-    AddStep([panelActions, game]
+    AddStep([game, gs, panelActions]
         {
             core::Pointd2D p0(1000, 550);
-            return new StepGameUpgradeIntro(panelActions, "TUT_GAME_UPGRADE_1b", p0);
+            return new StepGameUpgradeIntro(game, gs, panelActions, "TUT_GAME_UPGRADE_1b", p0);
         });
     AddStep([hud] { return new StepGameUpgradeUnitFree(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
@@ -598,7 +598,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(500, 200);
                 return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
             });
-    AddStep([game, panelActions] { return new StepGameMissionGoalsIcon(game, panelActions, true); });
+    AddStep([game, gs, panelActions] { return new StepGameMissionGoalsIcon(game, gs, panelActions, true); });
     AddStep([hud] { return new StepGameMissionGoalsDialog(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -646,7 +646,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 const core::Pointd2D p0(500, 200);
                 return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
             });
-    AddStep([game, panelActions] { return new StepGameMissionGoalsIcon(game, panelActions, false); });
+    AddStep([game, gs, panelActions] { return new StepGameMissionGoalsIcon(game, gs, panelActions, false); });
     AddStep([hud] { return new StepGamePrimaryMissionGoal(hud); });
 }
 

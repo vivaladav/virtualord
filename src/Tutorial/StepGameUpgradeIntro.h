@@ -8,13 +8,14 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class PanelObjectActions;
 
 class StepGameUpgradeIntro : public TutorialInfoStep
 {
 public:
-    StepGameUpgradeIntro(PanelObjectActions * panel, const char * text1,
-                         const sgl::core::Pointd2D & p0);
+    StepGameUpgradeIntro(const Game * game, Screen * screen, PanelObjectActions * panel,
+                         const char * text1, const sgl::core::Pointd2D & p0);
     ~StepGameUpgradeIntro();
 
 private:

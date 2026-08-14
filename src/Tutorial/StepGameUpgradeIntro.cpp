@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameUpgradeIntro.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,13 +12,17 @@
 namespace game
 {
 
-StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const char * text1,
+StepGameUpgradeIntro::StepGameUpgradeIntro(const Game * game, Screen * screen,
+                                           PanelObjectActions * panel, const char * text1,
                                            const sgl::core::Pointd2D & p0)
-    : TutorialInfoStep(550, 175)
+    : TutorialInfoStep(screen, 550, 175)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
+
+    // do not allow object selection during this step
+    DisableObjectSelection();
 
     // FOCUS
     mFocusArea->SetCornersColorAction();
@@ -31,9 +36,8 @@ StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const cha
 
     info->AddInfoEntry(sm->GetCString(text1), 8.f, true, false);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_UPGRADE_2"), 0.f, false, false, [this, panel]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_UPGRADE_2"), 0.f, false, false, [this, panel, game]
                         {
-
                             auto btn = panel->GetButton(PanelObjectActions::BTN_UPGRADE);
 
                             // CLICK FILTER
@@ -42,7 +46,9 @@ StepGameUpgradeIntro::StepGameUpgradeIntro(PanelObjectActions * panel, const cha
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;

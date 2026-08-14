@@ -12,7 +12,8 @@ class PanelObjectActions;
 class StepGameBuildUnitStart : public TutorialInfoStep
 {
 public:
-    StepGameBuildUnitStart(const Game * game, PanelObjectActions * panel, unsigned int buttonId);
+    StepGameBuildUnitStart(const Game * game, Screen * screen, PanelObjectActions * panel,
+                           unsigned int buttonId);
     ~StepGameBuildUnitStart();
 
 private:

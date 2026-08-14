@@ -14,7 +14,7 @@ class PanelObjectActions;
 class StepGameSetupResearchIcon : public TutorialInfoStep
 {
 public:
-    StepGameSetupResearchIcon(const Game * game, PanelObjectActions * panel,
+    StepGameSetupResearchIcon(const Game * game, Screen * screen, PanelObjectActions * panel,
                               const sgl::core::Pointd2D & p0);
     ~StepGameSetupResearchIcon();
 

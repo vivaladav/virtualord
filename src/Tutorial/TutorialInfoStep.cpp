@@ -59,7 +59,6 @@ void TutorialInfoStep::OnStart()
     mInfo->SetEnabled(true);
     mInfo->SetVisible(true);
     mInfo->SetFocus();
-
     mInfo->StartInfo();
 }
 

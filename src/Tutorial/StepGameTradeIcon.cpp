@@ -19,13 +19,16 @@ constexpr PanelObjectActions::Button btnId = PanelObjectActions::BTN_TRADE;
 namespace game
 {
 
-StepGameTradeIcon::StepGameTradeIcon(const Game * game, PanelObjectActions * panel,
+StepGameTradeIcon::StepGameTradeIcon(const Game * game, Screen * screen, PanelObjectActions * panel,
                                      const sgl::core::Pointd2D & p0)
-    : TutorialInfoStep(550, 150)
+    : TutorialInfoStep(screen, 550, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
+
+    // do not allow object selection during this step
+    DisableObjectSelection();
 
     // FOCUS
     mFocusArea->SetCornersColorAction();
