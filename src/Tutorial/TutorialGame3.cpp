@@ -90,6 +90,7 @@ const Cell2D cellTower3(41, 58);
 const Cell2D cellTower4(56, 42);
 const Cell2D cellBunker1(37, 50);
 const Cell2D cellBunker2(50, 37);
+const Cell2D cellBarracks(53, 47);
 
 }
 
@@ -346,8 +347,10 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
-    // SELECT WORKER 2
+    // CLEAR SELECTION
+    AddStep([gs] { return new StepGameClearSelection(gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 2
     AddStep([local, game, isoMap]
         {
             const auto unit = local->GetUnit(indWorker2);
@@ -1311,10 +1314,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([hud] { return new StepGameTechTreeDialog(hud, TECH_UP_RADAR_STATION, false); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     // CLEAR SELECTION
-    AddStep([gs]
-            {
-                return new StepGameClearSelection(gs);
-            });
+    AddStep([gs] { return new StepGameClearSelection(gs); });
     // SELECT WORKER 1
     AddStep([local, game, isoMap]
         {
@@ -1647,6 +1647,43 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD BARRACKS WITH WORKER 2
+    AddStep([game, gs, panelActions]
+            {
+                const core::Pointd2D p0(1000, 625);
+                return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_BARRACKS_1", p0);
+            });
+    AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(900, 650);
+            return new StepGameBuildTowerEnd(isoMap, unit, cellBarracks, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD SOLDIER
+    AddStep([this, game, isoMap]
+        {
+            const core::Pointd2D p0(500, 200);
+            const GameObject * barracks = GetObjectInCell(cellBarracks);
+            return new StepGameSelectObject(game, isoMap, barracks, "TUT_GAME_BARRACKS_1", p0);
+        });
+    AddStep([game, gs, panelActions]
+        {
+            return new StepGameBuildUnitStart(game, gs, panelActions,
+                                              PanelObjectActions::BTN_BUILD_UNIT_BARRACKS);
+        });
+    AddStep([hud] { return new StepGameBuildUnitEnd(hud); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this]
+        {
+            const auto barracks = static_cast<Structure *>(GetObjectInCell(cellBarracks));
+            return new StepDelay(barracks->GetTimeBuildUnit());
+        });
+    // CLEAR SELECTION
+    AddStep([gs] { return new StepGameClearSelection(gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
