@@ -179,8 +179,8 @@ Game::Game(int argc, char * argv[])
     mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_1, 500);
     mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_2, 2000);
     mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_3, 4000);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, 6500);
-    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, 9500);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_4, 7000);
+    mCostUpgrades.emplace(TECH_UP_BASE_IMPROVE_5, 11000);
     mCostUpgrades.emplace(TECH_UP_RADAR_STATION, 1000);
     mCostUpgrades.emplace(TECH_UP_RADAR_TOWER, 1000);
     mCostUpgrades.emplace(TECH_UP_STORAGE_STRUCTS, 2000);
@@ -194,7 +194,7 @@ Game::Game(int argc, char * argv[])
     mCostUpgrades.emplace(TECH_UP_STORAGE_BLOBS_2, 6000);
     mCostUpgrades.emplace(TECH_UP_PRACTICE_TARGET, 1000);
     mCostUpgrades.emplace(TECH_UP_TRADING_POST, 1000);
-    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_1, 1500);
+    mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_1, 2000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_2, 3000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_3, 5000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_4, 8000);
