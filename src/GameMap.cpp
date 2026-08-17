@@ -2126,8 +2126,8 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
         // ALONG COLS FROM LEFT TO RIGHT
         const int c0UC = srcTL.col - rad;
         const int c0 = (c0UC > 0) ? c0UC : 0;
-        const int c1UC = srcBR.col + rad;
-        const int c1 = (c1UC <= mCols) ? c1UC : mCols;
+        const int c1UC = srcBR.col + rad + 1;
+        const int c1 = (c1UC < mCols) ? c1UC : mCols;
 
         // TOP
         const int tRow = srcTL.row - rad;

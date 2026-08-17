@@ -390,6 +390,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Automatic camera works fine when moving near map's border too.\n"
                   "- It's no longer possible to move units when clicking action buttons during"
                   " the tutorial.\n"
+                  "- Exploding objects damage all surrounding objects.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
