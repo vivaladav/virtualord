@@ -167,6 +167,9 @@ void ResourceLoader::DestroyGameTextures()
     // DIALOG RESEARCH
     tm->DestroySprite(SpriteFileDialogResearch);
     tm->DestroyTexture(SpriteFileDialogResearchExp);
+    // DIALOG SAVE
+    tm->DestroySprite(SpriteFileDialogSave);
+    tm->DestroyTexture(SpriteFileDialogSaveExp);
     // DIALOG TECH TREE
     tm->DestroySprite(SpriteFileDialogTechTree);
     tm->DestroyTexture(SpriteFileDialogTechTreeExp);
