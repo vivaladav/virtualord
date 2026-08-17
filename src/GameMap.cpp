@@ -57,6 +57,7 @@
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/StringManager.h>
+#include <sgl/utilities/UniformDistribution.h>
 
 #include <algorithm>
 #include <cmath>
@@ -2121,7 +2122,10 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
 
     for(int rad = 1; rad <= radius; ++rad)
     {
-        const float damage = std::roundf(maxDamage / rad);
+        // define damage
+        const int maxDamage1 = std::roundf(maxDamage / rad);
+        const int maxDamage0 = maxDamage1 / 2;
+        auto distDamage = sgl::utilities::UniformDistribution(maxDamage0, maxDamage1);
 
         // ALONG COLS FROM LEFT TO RIGHT
         const int c0UC = srcTL.col - rad;
@@ -2141,10 +2145,10 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
                 const int ind = ind0 + c;
 
                 if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(damage, nullptr, fatal);
+                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), nullptr, fatal);
 
                 if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(damage, nullptr, fatal);
+                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), nullptr, fatal);
             }
         }
 
@@ -2160,10 +2164,10 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
                 const int ind = ind0 + c;
 
                 if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(damage, nullptr, fatal);
+                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), nullptr, fatal);
 
                 if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(damage, nullptr, fatal);
+                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), nullptr, fatal);
             }
         }
 
@@ -2183,10 +2187,10 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
                 const int ind = r * mCols + lCol;
 
                 if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(damage, nullptr, fatal);
+                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), nullptr, fatal);
 
                 if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(damage, nullptr, fatal);
+                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), nullptr, fatal);
             }
         }
 
@@ -2200,10 +2204,10 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
                 const int ind = r * mCols + rCol;
 
                 if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(damage, nullptr, fatal);
+                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), nullptr, fatal);
 
                 if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(damage, nullptr, fatal);
+                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), nullptr, fatal);
             }
         }
     }
@@ -3197,9 +3201,9 @@ void GameMap::Update(float delta)
         {
             GameObject * obj = *itObj;
 
-            // apply damage to surrounding area based on onject's energy and size
+            // apply damage to surrounding area based on object's damage value and size
             const int damageRadius = obj->GetRows();
-            const float maxDamage = obj->GetEnergy();
+            const float maxDamage = obj->GetExplosionDamage();
             DamageArea(Cell2D(obj->GetRow0(), obj->GetCol0()), Cell2D(obj->GetRow1(), obj->GetCol1()),
                        damageRadius, maxDamage);
 

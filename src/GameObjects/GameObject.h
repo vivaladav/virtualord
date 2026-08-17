@@ -155,6 +155,8 @@ public:
     void SumEnergy(float val);
     float GetMaxEnergy() const;
 
+    float GetExplosionDamage() const;
+
     float GetEnergyForActionStep(GameObjectActionType action) const;
     bool HasEnergyForActionStep(GameObjectActionType action) const;
     void ActionStepCompleted(GameObjectActionType action);

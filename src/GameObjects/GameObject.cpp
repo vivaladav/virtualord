@@ -445,6 +445,11 @@ float GameObject::GetMaxEnergy() const
     return std::roundf(mMaxEnergy * GetAttribute(OBJ_ATT_ENERGY) / MAX_STAT_FVAL);
 }
 
+float GameObject::GetExplosionDamage() const
+{
+    return GetMaxEnergy();
+}
+
 bool GameObject::HasEnergyForActionStep(GameObjectActionType action) const
 {
     if(action < NUM_OBJ_ACTIONS)
