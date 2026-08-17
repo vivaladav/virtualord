@@ -121,7 +121,7 @@ void ObjectsDataRegistry::InitObjectData()
                    OCMU_SOLDIER, OCAT_MINI_UNIT, WeaponData::TYPE_NULL, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_MINI_UNIT2,
-        ObjectData({ {OBJ_ATT_ENERGY, 2}, {OBJ_ATT_VIEW_RANGE, 6}, {OBJ_ATT_REGENERATION, 4},
+        ObjectData({ {OBJ_ATT_ENERGY, 3}, {OBJ_ATT_VIEW_RANGE, 6}, {OBJ_ATT_REGENERATION, 4},
                      {OBJ_ATT_RESISTANCE, 2}, {OBJ_ATT_SHIELD, 2},  {OBJ_ATT_SPEED, 9},
                      {OBJ_ATT_HEALTH, 4} }, { 15, 15, 0, 0 },
                    { SID_MUNIT_02_1X_F1, SID_MUNIT_02_1X_F2, SID_MUNIT_02_1X_F3 }, SpriteFileMiniUnits,

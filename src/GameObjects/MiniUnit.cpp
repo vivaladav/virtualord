@@ -16,7 +16,7 @@
 namespace
 {
     const float maxSingleHealthValue = 50.f;
-    const float maxSingleEnergyValue = 200.f;
+    const float maxSingleEnergyValue = 120.f;
 
     const int MAX_ELEMENTS = 5;
 }
