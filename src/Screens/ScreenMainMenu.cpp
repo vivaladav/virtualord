@@ -392,6 +392,7 @@ void ScreenMainMenu::CreateChangelog()
                   " the tutorial.\n"
                   "- Exploding objects damage all surrounding objects.\n"
                   "- End mission dialog shows correct number of casualties.\n"
+                  "- Mini-units no longer shoot only once.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

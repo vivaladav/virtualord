@@ -4646,7 +4646,7 @@ void GameMap::UpdateMiniUnitsAttacking(float delta)
         return ;
 
     // unit not processed yet -> try to find a target
-    if(mu->GetCurrentAction() == GameObjectActionType::IDLE)
+    if(mu->HasEnergyForActionStep(GameObjectActionType::ATTACK))
         mu->FindAndSetEnemyTarget();
 
     // target found -> start attack
