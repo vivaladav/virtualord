@@ -2116,7 +2116,8 @@ MiniUnitsGroup * GameMap::CreateMiniUnitsGroup()
     return group;
 }
 
-void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius, float maxDamage)
+void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject * attacker,
+                         int radius, float maxDamage)
 {
     const bool fatal = false;
 
@@ -2145,10 +2146,10 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
                 const int ind = ind0 + c;
 
                 if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), nullptr, fatal);
+                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
 
                 if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), nullptr, fatal);
+                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
             }
         }
 
@@ -2164,10 +2165,10 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
                 const int ind = ind0 + c;
 
                 if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), nullptr, fatal);
+                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
 
                 if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), nullptr, fatal);
+                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
             }
         }
 
@@ -2187,10 +2188,10 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
                 const int ind = r * mCols + lCol;
 
                 if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), nullptr, fatal);
+                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
 
                 if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), nullptr, fatal);
+                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
             }
         }
 
@@ -2204,10 +2205,10 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius,
                 const int ind = r * mCols + rCol;
 
                 if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), nullptr, fatal);
+                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
 
                 if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), nullptr, fatal);
+                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
             }
         }
     }
@@ -3205,7 +3206,7 @@ void GameMap::Update(float delta)
             const int damageRadius = obj->GetRows();
             const float maxDamage = obj->GetExplosionDamage();
             DamageArea(Cell2D(obj->GetRow0(), obj->GetCol0()), Cell2D(obj->GetRow1(), obj->GetCol1()),
-                       damageRadius, maxDamage);
+                       obj, damageRadius, maxDamage);
 
             DestroyObjectPaths(obj);
 

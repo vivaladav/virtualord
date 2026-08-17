@@ -716,6 +716,8 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     if(IsDestroyed())
         return ;
 
+    const bool selfDestruct = damage < 0.f;
+
     // fatal hit
     if(fatal)
         damage = GetMaxHealth();
@@ -773,7 +775,9 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
             if(attacker != nullptr)
                 mGameMap->RegisterEnemyKill(attacker, this);
 
-            mGameMap->RegisterCasualty(GetFaction());
+            // do not register casualty when exploding mini-units explode near enemies
+            if(mType != ObjectData::TYPE_MINI_UNIT1 || !selfDestruct)
+                mGameMap->RegisterCasualty(GetFaction());
         }
     }
 
@@ -891,7 +895,7 @@ void GameObject::MissHit()
     puHP->AddParticle(dataHP);
 }
 
-void GameObject::SelfDestroy() { Hit(0.f, nullptr, true, false); }
+void GameObject::SelfDestroy() { Hit(-1.f, nullptr, true, false); }
 
 void GameObject::SetActiveActionToDefault() { mActiveAction = mDefaultAction; }
 

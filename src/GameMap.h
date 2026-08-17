@@ -175,7 +175,7 @@ public:
     bool IsDoingAutomaticMoves() const;
 
     // damage
-    void DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius, float maxDamage);
+    void DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject * attacker, int radius, float maxDamage);
 
     // move units
     bool CanUnitMove(const Cell2D & start, const Cell2D & end, Player * player) const;
