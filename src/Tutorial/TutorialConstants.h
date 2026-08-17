@@ -59,6 +59,12 @@ public:
     static const int structResearchCenter;
     static const int structSolarPanel;
     static const int structTradingPost;
+
+    // unit categories in build dialog
+    static const int catUnitGeneric;
+
+    // indexes of units in build dialog
+    static const int unitMiniSpawner;
 };
 
 } // namespace game

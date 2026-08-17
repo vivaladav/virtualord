@@ -68,6 +68,8 @@ using namespace game;
 
 constexpr unsigned int indWorker1 = 0;
 constexpr unsigned int indWorker2 = 1;
+constexpr unsigned int indSoldier1 = 2;
+constexpr unsigned int indSpawner1 = 3;
 
 const Cell2D cellTLCity1(51, 51);
 const Cell2D cellBRCity1(54, 54);
@@ -1687,6 +1689,48 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE VIEW BACK TO BASE
+    AddStep([panelTurn, game]
+        {
+            const core::Pointd2D p0(50, 600);
+            return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1", p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD SPAWNER
+    AddStep([]
+        {
+            const core::Pointd2D p0(300, 300);
+            return new StepGameSingleInfo(p0, "TUT_GAME_BUILD_SPAWNER_1");
+        });
+    AddStep([localBase, game, isoMap]
+        {
+            const core::Pointd2D p0(350, 300);
+            return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
+        });
+    AddStep([game, gs, panelActions]
+        {
+            return new StepGameBuildUnitStart(game, gs, panelActions,
+                                              PanelObjectActions::BTN_BUILD_UNIT_BASE);
+        });
+    AddStep([hud]
+        {
+            return new StepGameBuildStructure(hud, nullptr, "TUT_GAME_BUILD_SPAWNER_2",
+                                              TutorialConstants::catUnitGeneric,
+                                              TutorialConstants::unitMiniSpawner);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([localBase] { return new StepDelay(localBase->GetTimeBuildUnit()); });
+    // CLEAR SELECTION
+    AddStep([gs] { return new StepGameClearSelection(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT SPAWNER
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indSpawner1);
+            const core::Pointd2D p0(1300, 450);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
     AddStep([] { return new StepDelay(0.5f); });
 }
 

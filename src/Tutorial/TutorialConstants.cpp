@@ -32,4 +32,10 @@ const int TutorialConstants::structResearchCenter = 0;
 const int TutorialConstants::structSolarPanel = 0;
 const int TutorialConstants::structTradingPost = 3;
 
+// unit categories in build dialog
+const int TutorialConstants::catUnitGeneric = 0;
+
+// indexes of units in build dialog
+const int TutorialConstants::unitMiniSpawner = 1;
+
 } // namespace game
