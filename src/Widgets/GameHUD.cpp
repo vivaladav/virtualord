@@ -517,7 +517,7 @@ void GameHUD::ShowDialogEndMission(bool won)
     const unsigned int played = mScreen->GetPlayTimeInSec();
 
     // create dialog
-    mDialogEnd = new DialogEndMission(played, territory, killed, pf, turns, won);
+    mDialogEnd = new DialogEndMission(played, territory, killed, casualties, turns, won);
     mDialogEnd->SetFocus();
 
     mDialogEnd->SetFunctionOnClose([this, won]
