@@ -15,6 +15,7 @@
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepDelay.h"
+#include "Tutorial/StepGameAddEnemy.h"
 #include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBuildStructIntro.h"
 #include "Tutorial/StepGameBuildStructure.h"
@@ -32,6 +33,7 @@
 #include "Tutorial/StepGameConquerStructSimple.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
+#include "Tutorial/StepGameEnemyIntro.h"
 #include "Tutorial/StepGameIntro3.h"
 #include "Tutorial/StepGameMoveCamera.h"
 #include "Tutorial/StepGameMoveCameraOverObject.h"
@@ -93,6 +95,7 @@ const Cell2D cellTower4(56, 42);
 const Cell2D cellBunker1(37, 50);
 const Cell2D cellBunker2(50, 37);
 const Cell2D cellBarracks(53, 47);
+const Cell2D cellEnemy1(63,52);
 
 }
 
@@ -1730,6 +1733,34 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const auto unit = local->GetUnit(indSpawner1);
             const core::Pointd2D p0(1300, 450);
             return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // ADD ENEMY NEAR BASE
+    AddStep([]
+            {
+                const core::Pointd2D p0(600, 150);
+                return new StepGameEnemyIntro(p0);
+            });
+    AddStep([this, playerAI]
+            {
+                return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SOLDIER1,
+                                            cellEnemy1, true);
+            });
+    // MOVE CAMERA
+    AddStep([game]
+            {
+                const int movX = -250;
+                const int movY = -250;
+                return new StepGameMoveCamera(movX, movY);
+            });
+    // MOVE SPAWNER NEAR ENEMY
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indSpawner1);
+            const Cell2D target(70, 63);
+            const core::Pointd2D p0(1100, 300);
+            return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
 }
