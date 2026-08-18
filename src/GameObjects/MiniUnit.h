@@ -20,6 +20,7 @@ public:
     bool IsMoving() const;
     void SetMoving(bool moving);
     void setTargetReached();
+    void OnMoveTerminated();
 
     void Update(float delta) override;
 
@@ -35,6 +36,7 @@ private:
 private:
     bool mMoving = false;
     bool mTargetReached = false;
+    bool mExplode = false;
 };
 
 inline int MiniUnit::GetNumElements() const { return GetObjectVariant(); }

@@ -96,16 +96,21 @@ void MiniUnit::SetNumElements(int num)
     UpdateGraphics();
 }
 
+void MiniUnit::OnMoveTerminated()
+{
+    const GameObjectTypeId type = GetObjectType();
+
+    if(type == ObjectData::TYPE_MINI_UNIT1)
+        ExplodeNearEnemy();
+}
+
 void MiniUnit::Update(float delta)
 {
     GameObject::Update(delta);
 
     if(mTargetReached)
     {
-        const GameObjectTypeId type = GetObjectType();
-
-        if(type == ObjectData::TYPE_MINI_UNIT1)
-            ExplodeNearEnemy();
+        // NOTE not used at the moment, but leaving this block here for future usage if needed
 
         // reset flag
         mTargetReached = false;
@@ -119,6 +124,10 @@ void MiniUnit::Update(float delta)
         if(mWeapon->IsReadyToShoot())
             PrepareShoot();
     }
+
+    // handle exploding mini-units
+    if(mExplode)
+        SelfDestroy();
 }
 
 void MiniUnit::UpdateGraphics()
@@ -161,9 +170,9 @@ void MiniUnit::ExplodeNearEnemy()
     const int cc = GetCol0();
 
     const int rad = 1;
-    const int r0 = cr >= rad ? cr - rad : 0;
+    const int r0 = cr > rad ? cr - rad : 0;
     const int r1 = cr + rad < mapRows ? cr + rad + 1 : mapRows;
-    const int c0 = cc >= rad ? cc - rad : 0;
+    const int c0 = cc > rad ? cc - rad : 0;
     const int c1 = cc + rad < mapCols ? cc + rad + 1 : mapCols;
 
     const PlayerFaction ownFaction = GetFaction();
@@ -183,7 +192,7 @@ void MiniUnit::ExplodeNearEnemy()
                 (cell.objBottom != nullptr && cell.objBottom->GetFaction() != ownFaction &&
                  cell.objBottom->GetFaction() != NO_FACTION))
             {
-                SelfDestroy();
+                mExplode = true;
                 return ;
             }
         }

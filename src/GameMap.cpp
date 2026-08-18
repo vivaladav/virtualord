@@ -4012,8 +4012,15 @@ void GameMap::UpdateObjectPaths(float delta)
         if(path->IsTerminated())
         {
             // AUTO MOVING MINI UNITS -> continue if possible
-            if(path->GetObject()->GetObjectCategory() == ObjectData::CAT_MINI_UNIT)
+            GameObject * obj = path->GetObject();
+
+            if(obj->GetObjectCategory() == ObjectData::CAT_MINI_UNIT)
+            {
+                // notify mini-unit of movement terminated
+                static_cast<MiniUnit *>(obj)->OnMoveTerminated();
+
                 ContinueMiniUnitGroupMove(path);
+            }
 
             delete path;
             itPath = mPaths.erase(itPath);

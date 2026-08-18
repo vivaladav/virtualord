@@ -380,6 +380,8 @@ void ScreenMainMenu::CreateChangelog()
                   "\nCHANGES\n"
                   "- In tutorial 1, text explaining to move to tower stays on screen until you"
                   " center the view on it.\n"
+                  "- Exploding mini-units now explode when they stop next to an enemy even if they"
+                  " haven't reached their target yet.\n"
                   "\nFIXES\n"
                   "- Walls now connect to bunkers too.\n"
                   "- Units no longer can build structures far away without moving.\n"
