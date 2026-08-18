@@ -92,23 +92,31 @@ void FocusArea::SetArea(int x0, int y0, int w, int h, bool anim, float delayAnim
     const float padding = GAP_ANIM * anim;
 
     // TOP LEFT
-    mCornerPosTL.x = x0 - padding;
-    mCornerPosTL.y = y0 - padding;
+    mTargetCornerPosTL.x = x0;
+    mTargetCornerPosTL.y = y0;
+    mCornerPosTL.x = mTargetCornerPosTL.x - padding;
+    mCornerPosTL.y = mTargetCornerPosTL.y - padding;
     mCornerTL->SetPosition(mCornerPosTL.x, mCornerPosTL.y);
 
     // TOP RIGHT
-    mCornerPosTR.x = x0 + w - mCornerTR->GetWidth() + padding;
-    mCornerPosTR.y = y0 - padding;
+    mTargetCornerPosTR.x = x0 + w - mCornerTR->GetWidth();
+    mTargetCornerPosTR.y = y0;
+    mCornerPosTR.x = mTargetCornerPosTR.x + padding;
+    mCornerPosTR.y = mTargetCornerPosTR.y - padding;
     mCornerTR->SetPosition(mCornerPosTR.x, mCornerPosTR.y);
 
     // BOTTOM LEFT
-    mCornerPosBL.x = x0 - padding;
-    mCornerPosBL.y = y0 + h - mCornerBL->GetHeight() + padding;
+    mTargetCornerPosBL.x = x0;
+    mTargetCornerPosBL.y = y0 + h - mCornerBL->GetHeight();
+    mCornerPosBL.x = mTargetCornerPosBL.x - padding;
+    mCornerPosBL.y = mTargetCornerPosBL.y + padding;
     mCornerBL->SetPosition(mCornerPosBL.x, mCornerPosBL.y);
 
     // BOTTOM RIGHT
-    mCornerPosBR.x = x0 + w - mCornerBR->GetWidth() + padding;
-    mCornerPosBR.y = y0 + h - mCornerBR->GetHeight() + padding;
+    mTargetCornerPosBR.x = x0 + w - mCornerBR->GetWidth();
+    mTargetCornerPosBR.y = y0 + h - mCornerBR->GetHeight();
+    mCornerPosBR.x = mTargetCornerPosBR.x + padding;
+    mCornerPosBR.y = mTargetCornerPosBR.y + padding;
     mCornerBR->SetPosition(mCornerPosBR.x, mCornerPosBR.y);
 
     mRendering = !anim;
@@ -164,6 +172,15 @@ void FocusArea::OnUpdate(float delta)
         mCornerBR->SetPosition(std::roundf(mCornerPosBR.x), std::roundf(mCornerPosBR.y));
 
         mAnimating = mAnimationMove < GAP_ANIM;
+
+        // finished animation -> make sure positions are correct
+        if(!mAnimating)
+        {
+            mCornerTL->SetPosition(mTargetCornerPosTL.x, mTargetCornerPosTL.y);
+            mCornerTR->SetPosition(mTargetCornerPosTR.x, mTargetCornerPosTR.y);
+            mCornerBL->SetPosition(mTargetCornerPosBL.x, mTargetCornerPosBL.y);
+            mCornerBR->SetPosition(mTargetCornerPosBR.x, mTargetCornerPosBR.y);
+        }
     }
     else if(mBlinking && IsVisible())
     {

@@ -74,21 +74,29 @@ void IsoFocusArea::SetCellArea(int r0, int c0, int r1, int c1, bool anim, float 
     const sgl::core::Pointd2D pBL = mIM->GetCellPosition(r0, c1);
 
     // TOP LEFT
-    mCornerPosTL.x = p1.x;
-    mCornerPosTL.y = p1.y - paddingY;
+    mTargetCornerPosTL.x = p1.x;
+    mTargetCornerPosTL.y = p1.y;
+    mCornerPosTL.x = mTargetCornerPosTL.x;
+    mCornerPosTL.y = mTargetCornerPosTL.y - paddingY;
     mCornerTL->SetPosition(mCornerPosTL.x, mCornerPosTL.y);
 
     // TOP RIGHT
-    mCornerPosTR.x = pTR.x + paddingX;
-    mCornerPosTR.y = pTR.y;
+    mTargetCornerPosTR.x = pTR.x;
+    mTargetCornerPosTR.y = pTR.y;
+    mCornerPosTR.x = mTargetCornerPosTR.x + paddingX;
+    mCornerPosTR.y = mTargetCornerPosTR.y;
     mCornerTR->SetPosition(mCornerPosTR.x, mCornerPosTR.y);
 
     // BOTTOM LEFT
+    mTargetCornerPosBL.x = pBL.x;
+    mTargetCornerPosBL.y = pBL.y;
     mCornerPosBL.x = pBL.x - paddingX;
     mCornerPosBL.y = pBL.y;
     mCornerBL->SetPosition(mCornerPosBL.x, mCornerPosBL.y);
 
     // BOTTOM RIGHT
+    mTargetCornerPosBR.x = p0.x;
+    mTargetCornerPosBR.y = p0.y;
     mCornerPosBR.x = p0.x;
     mCornerPosBR.y = p0.y + paddingY;
     mCornerBR->SetPosition(mCornerPosBR.x, mCornerPosBR.y);
@@ -161,6 +169,15 @@ void IsoFocusArea::OnUpdate(float delta)
         mCornerBR->SetPosition(std::roundf(mCornerPosBR.x), std::roundf(mCornerPosBR.y));
 
         mAnimating = mAnimationMove < GAP_ANIM_X;
+
+        // finished animation -> make sure positions are correct
+        if(!mAnimating)
+        {
+            mCornerTL->SetPosition(mTargetCornerPosTL.x, mTargetCornerPosTL.y);
+            mCornerTR->SetPosition(mTargetCornerPosTR.x, mTargetCornerPosTR.y);
+            mCornerBL->SetPosition(mTargetCornerPosBL.x, mTargetCornerPosBL.y);
+            mCornerBR->SetPosition(mTargetCornerPosBR.x, mTargetCornerPosBR.y);
+        }
     }
     else if(mBlinking && IsVisible())
     {

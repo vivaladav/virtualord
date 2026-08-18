@@ -43,6 +43,10 @@ private:
     sgl::core::Pointf2D mCornerPosTR;
     sgl::core::Pointf2D mCornerPosBL;
     sgl::core::Pointf2D mCornerPosBR;
+    sgl::core::Pointd2D mTargetCornerPosTL;
+    sgl::core::Pointd2D mTargetCornerPosTR;
+    sgl::core::Pointd2D mTargetCornerPosBL;
+    sgl::core::Pointd2D mTargetCornerPosBR;
 
     float mTimerBlinking = 0.f;
     float mAnimationMove = 0.f;
