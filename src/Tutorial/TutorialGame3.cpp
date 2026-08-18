@@ -57,6 +57,7 @@
 #include "Tutorial/StepGameUpgradeUnit.h"
 #include "Tutorial/StepGameUpgradeUnitFree.h"
 #include "Tutorial/StepGameWaitLootboxOpen.h"
+#include "Tutorial/StepGameWaitObjectIdle.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/StepGameWallBuildIcon.h"
 #include "Tutorial/StepGameWallBuildStart.h"
@@ -309,7 +310,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(600, 250);
             return new StepGameSingleInfo(p0, "TUT_GAME_CONT_EXPL");
         });
-    AddStep([this, local, isoMap, game]
+    AddStep([local, isoMap, game]
         {
             const auto unit = local->GetUnit(indWorker1);
             const Cell2D target(68, 62);
@@ -1116,7 +1117,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameMoveCamera(movX, movY);
         });
     // MOVE WORKER 2 TO MATERIAL GENERATOR
-    AddStep([this, local, isoMap, game]
+    AddStep([local, isoMap, game]
         {
             const auto unit = local->GetUnit(indWorker2);
             const Cell2D target(51, 66);
@@ -1156,7 +1157,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE WORKER 1 TO MATERIAL GENERATOR
-    AddStep([this, local, isoMap, game]
+    AddStep([local, isoMap, game]
         {
             const auto unit = local->GetUnit(indWorker1);
             const Cell2D target(68, 53);
@@ -1281,7 +1282,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE WORKER 1 BACK TO FRONT
-    AddStep([this, local, isoMap, game]
+    AddStep([local, isoMap, game]
         {
             const auto unit = local->GetUnit(indWorker1);
             const Cell2D target(55, 51);
@@ -1521,7 +1522,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE UNIT 2
-    AddStep([this, local, isoMap, game]
+    AddStep([local, isoMap, game]
         {
             const auto unit = local->GetUnit(indWorker2);
             const Cell2D target(49, 45);
@@ -1757,7 +1758,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             });
     // MOVE SPAWNER NEAR ENEMY
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([this, local, isoMap, game]
+    AddStep([local, isoMap, game]
         {
             const auto unit = local->GetUnit(indSpawner1);
             const Cell2D target(70, 63);
@@ -1767,12 +1768,26 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     // SPAWN MINI UNITS
     AddStep([game, gs, panelActions]
-    {
-        const core::Pointd2D p0(200, 600);
-        return new StepGameSpawnIcon(game, gs, panelActions, p0);
-    });
+        {
+            const core::Pointd2D p0(200, 600);
+            return new StepGameSpawnIcon(game, gs, panelActions, p0);
+        });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([hud] { return new StepGameSetupMiniUnits(hud, { 2, 3 }); });
+    AddStep([local]
+        {
+            const auto unit = local->GetUnit(indSpawner1);
+            return new StepGameWaitObjectIdle(unit);
+        });
+    // SELECT MINI UNITS
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this, game, isoMap]
+        {
+            const auto mu = GetObjectInCell(71, 62);
+            const core::Pointd2D p0(500, 250);
+            return new StepGameSelectObject(game, isoMap, mu, "TUT_GAME_MU_1", p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()

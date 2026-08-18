@@ -13,7 +13,7 @@ namespace game
 {
 
 StepGameSelectObject::StepGameSelectObject(const Game * game, const IsoMap * im, const GameObject * obj,
-                                       const char * text, const sgl::core::Pointd2D & p0)
+                                           const char * text, const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(500, 150)
     , mFocusArea(new IsoFocusArea(im))
     , mObj(obj)
