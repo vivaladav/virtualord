@@ -2011,6 +2011,31 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 2
+    AddStep([hud]
+        {
+            const sgl::core::Pointd2D p0(200, 600);
+            return new StepGameQuickUnitButton(hud, indWorker2, nullptr, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD WALL WITH WORKER 2
+    AddStep([game, gs, panelActions] { return new StepGameWallBuildIcon(game, gs, panelActions); });
+    AddStep([this, isoMap, game]
+        {
+            const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
+            const Cell2D target(42, 64);
+            return new StepGameWallBuildStart(game, isoMap, cellStart, target);
+        });
+    AddStep([isoMap, local, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const Cell2D cellEnd(41, 62);
+            const core::Pointd2D p0(1000, 200);
+            return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
