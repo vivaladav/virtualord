@@ -44,9 +44,11 @@
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetLootboxPrize.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
+#include "Tutorial/StepGameSetupMiniUnits.h"
 #include "Tutorial/StepGameSetupResearch.h"
 #include "Tutorial/StepGameSetupResearchIcon.h"
 #include "Tutorial/StepGameSingleInfo.h"
+#include "Tutorial/StepGameSpawnIcon.h"
 #include "Tutorial/StepGameTechTreeDialog.h"
 #include "Tutorial/StepGameTechTreeIcon.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
@@ -95,7 +97,7 @@ const Cell2D cellTower4(56, 42);
 const Cell2D cellBunker1(37, 50);
 const Cell2D cellBunker2(50, 37);
 const Cell2D cellBarracks(53, 47);
-const Cell2D cellEnemy1(63,52);
+const Cell2D cellEnemy1(64,53);
 
 }
 
@@ -1763,6 +1765,14 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
+    // SPAWN MINI UNITS
+    AddStep([game, gs, panelActions]
+    {
+        const core::Pointd2D p0(200, 600);
+        return new StepGameSpawnIcon(game, gs, panelActions, p0);
+    });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([hud] { return new StepGameSetupMiniUnits(hud, { 2, 3 }); });
 }
 
 TutorialGame3::~TutorialGame3()

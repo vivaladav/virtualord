@@ -59,6 +59,8 @@ private:
     void SetPositions();
 
 private:
+    friend class StepGameSetupMiniUnits;
+
     std::vector<ObjectVisualAttribute *> mAttributes;
 
     sgl::graphic::Image * mBgL = nullptr;

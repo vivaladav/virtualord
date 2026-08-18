@@ -113,6 +113,7 @@ public:
 
     void ShowDialogNewMiniUnitsSquad(GameObject * spawner);
     void HideDialogNewMiniUnitsSquad();
+    const DialogNewMiniUnitsSquad * GetDialogNewMiniUnitsSquad();
 
     void ShowDialogResearch(ResearchCenter * rc);
     void HideDialogResearch();
@@ -223,6 +224,11 @@ inline PanelShotType * GameHUD::GetPanelShotType() const { return mPanelShotType
 inline const PanelSelectedObject * GameHUD::GetPanelSelectedObject() const { return mPanelSelObj; }
 
 inline const PanelTurnControl * GameHUD::GetPanelTurnControl() const { return mPanelTurnCtrl; }
+
+inline const DialogNewMiniUnitsSquad * GameHUD::GetDialogNewMiniUnitsSquad()
+{
+    return mDialogNewMiniUnits;
+}
 
 inline const DialogResearch * GameHUD::GetDialogResearch() const { return mDialogResearch; }
 
