@@ -1823,6 +1823,98 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // MOVE CAMERA OVER WORKER 1
+    AddStep([local]
+            {
+                const GameObject * unit = local->GetUnit(indWorker1);
+                const float speed = 600.f;
+                return new StepGameMoveCameraOverObject(unit, speed);
+            });
+    // INTRO BUILD WALL
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([] { return new StepGameWallBuildIntro(); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 1
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1300, 450);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD WALL WITH WORKER 1
+    AddStep([game, gs, panelActions] { return new StepGameWallBuildIcon(game, gs, panelActions); });
+    AddStep([this, isoMap, game]
+        {
+            const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
+            const Cell2D target(58,42);
+            return new StepGameWallBuildStart(game, isoMap, cellStart, target);
+        });
+    AddStep([isoMap, local, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const Cell2D cellEnd(59,42);
+            const core::Pointd2D p0(1100, 250);
+            return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD GATE WITH WORKER 1
+    AddStep([game, gs, panelActions]
+        {
+            const core::Pointd2D p0(1100, 400);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_GATE_1", p0);
+        });
+    AddStep([hud]
+        {
+            return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
+                                              "TUT_GAME_BUILD_GATE_2",
+                                              TutorialConstants::catDefenses,
+                                              TutorialConstants::structGate);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1100, 450);
+            const Cell2D target(60, 42);
+            return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 2
+    AddStep([local, game, isoMap]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const core::Pointd2D p0(600, 300);
+            return new StepGameUnit(game, isoMap, unit, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE CAMERA
+    AddStep([game]
+        {
+            const int movX = 1000;
+            const int movY = 0;
+            return new StepGameMoveCamera(movX, movY);
+        });
+    // BUILD WALL WITH WORKER 2
+    AddStep([game, gs, panelActions] { return new StepGameWallBuildIcon(game, gs, panelActions); });
+    AddStep([this, isoMap, game]
+        {
+            const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
+            const Cell2D target(41,59);
+            return new StepGameWallBuildStart(game, isoMap, cellStart, target);
+        });
+    AddStep([isoMap, local, game]
+        {
+            const auto unit = local->GetUnit(indWorker2);
+            const Cell2D cellEnd(41,60);
+            const core::Pointd2D p0(1000, 200);
+            return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
