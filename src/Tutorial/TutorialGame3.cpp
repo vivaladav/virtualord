@@ -8,6 +8,7 @@
 #include "GameObjects/Base.h"
 #include "GameObjects/CityGroup.h"
 #include "GameObjects/LootBox.h"
+#include "GameObjects/MiniUnitsGroup.h"
 #include "GameObjects/ObjectData.h"
 #include "GameObjects/Unit.h"
 #include "Indicators/OverlayCellConquest.h"
@@ -34,6 +35,7 @@
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameEnemyIntro.h"
+#include "Tutorial/StepGameEnemyKilled.h"
 #include "Tutorial/StepGameIntro3.h"
 #include "Tutorial/StepGameMoveCamera.h"
 #include "Tutorial/StepGameMoveCameraOverObject.h"
@@ -44,6 +46,8 @@
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetLootboxPrize.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
+#include "Tutorial/StepGameSetTarget.h"
+#include "Tutorial/StepGameSetTargetIcon.h"
 #include "Tutorial/StepGameSetupMiniUnits.h"
 #include "Tutorial/StepGameSetupResearch.h"
 #include "Tutorial/StepGameSetupResearchIcon.h"
@@ -56,6 +60,7 @@
 #include "Tutorial/StepGameUpgradeIntro.h"
 #include "Tutorial/StepGameUpgradeUnit.h"
 #include "Tutorial/StepGameUpgradeUnitFree.h"
+#include "Tutorial/StepGameWaitEnemyKilled.h"
 #include "Tutorial/StepGameWaitLootboxOpen.h"
 #include "Tutorial/StepGameWaitObjectIdle.h"
 #include "Tutorial/StepGameWaitTurn.h"
@@ -99,6 +104,7 @@ const Cell2D cellBunker1(37, 50);
 const Cell2D cellBunker2(50, 37);
 const Cell2D cellBarracks(53, 47);
 const Cell2D cellEnemy1(64,53);
+const Cell2D cellMiniUnits1(71, 62);
 
 }
 
@@ -1783,10 +1789,39 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, game, isoMap]
         {
-            const auto mu = GetObjectInCell(71, 62);
+            const auto mu = GetObjectInCell(cellMiniUnits1);
             const core::Pointd2D p0(500, 250);
             return new StepGameSelectObject(game, isoMap, mu, "TUT_GAME_MU_1", p0);
         });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SET TARGET FOR MINI UNITS
+    AddStep([game, gs, panelActions]
+        {
+            const core::Pointd2D p0(200, 600);
+            return new StepGameSetTargetIcon(game, gs, panelActions, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this, isoMap]
+        {
+            const auto mu = GetObjectInCell(cellMiniUnits1);
+            const auto group = static_cast<MiniUnitsGroup *>(mu->GetGroup());
+            const Cell2D target(65,52);
+            const core::Pointd2D p0(900, 150);
+            return new StepGameSetTarget(isoMap, group, target, p0);
+        });
+    // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // WAIT ENEMY KILL
+    AddStep([this]
+        {
+            return new StepGameWaitEnemyKilled(GetObjectInCell(cellEnemy1), GetGameMap());
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this] { return new StepGameEnemyKilled(); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 

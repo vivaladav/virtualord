@@ -240,7 +240,7 @@ bool Unit::CanSpawn() const
 
 float Unit::GetTimeSpawnMiniUnit() const
 {
-    const float maxTime = 2.f;
+    const float maxTime = 1.5f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_SPAWNING));
 }
 

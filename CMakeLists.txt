@@ -391,6 +391,10 @@ add_executable(
     src/Tutorial/StepGameSetSelectionAllowed.cpp
     src/Tutorial/StepGameSetSelectionDefaultAction.h
     src/Tutorial/StepGameSetSelectionDefaultAction.cpp
+    src/Tutorial/StepGameSetTarget.h
+    src/Tutorial/StepGameSetTarget.cpp
+    src/Tutorial/StepGameSetTargetIcon.h
+    src/Tutorial/StepGameSetTargetIcon.cpp
     src/Tutorial/StepGameSetupMiniUnits.h
     src/Tutorial/StepGameSetupMiniUnits.cpp
     src/Tutorial/StepGameSetupResearch.h
