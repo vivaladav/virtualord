@@ -15,7 +15,6 @@ public:
     ~StepGameBuildUnitEnd();
 
     void OnStart() override;
-    void OnEnd() override;
 
 private:
     FocusArea * mFocusArea = nullptr;

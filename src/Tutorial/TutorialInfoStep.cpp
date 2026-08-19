@@ -26,6 +26,15 @@ TutorialInfoStep::TutorialInfoStep(Screen * screen, int infoW, int infoH)
 TutorialInfoStep::~TutorialInfoStep()
 {
     delete mInfo;
+
+    // restore selection allowed as before starting, if requested
+    if(mDisableSelection)
+    {
+        auto screen = dynamic_cast<ScreenGame *>(mScreen);
+        assert(screen);
+
+        screen->SetSelectionAllowed(mWasSelAllowed);
+    }
 }
 
 void TutorialInfoStep::SetPause(bool paused)
@@ -60,20 +69,6 @@ void TutorialInfoStep::OnStart()
     mInfo->SetVisible(true);
     mInfo->SetFocus();
     mInfo->StartInfo();
-}
-
-void TutorialInfoStep::OnEnd()
-{
-    TutorialStep::OnEnd();
-
-    // restore selection allowed as before starting, if requested
-    if(mDisableSelection)
-    {
-        auto screen = dynamic_cast<ScreenGame *>(mScreen);
-        assert(screen);
-
-        screen->SetSelectionAllowed(mWasSelAllowed);
-    }
 }
 
 } // namespace game

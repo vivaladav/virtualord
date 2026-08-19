@@ -18,7 +18,6 @@ public:
     void SetPause(bool paused) override;
 
     void OnStart() override;
-    void OnEnd() override;
 
 protected:
     PanelInfoTutorial * GetPanelInfo();

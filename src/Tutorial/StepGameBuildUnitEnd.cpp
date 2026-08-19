@@ -58,6 +58,15 @@ StepGameBuildUnitEnd::StepGameBuildUnitEnd(GameHUD * HUD)
 StepGameBuildUnitEnd::~StepGameBuildUnitEnd()
 {
     delete mFocusArea;
+
+    // remove click function
+    auto dialog = mHUD->GetDialogNewElement();
+
+    if(nullptr == dialog)
+        return ;
+
+    auto btn = dialog->GetButtonBuild();
+    btn->RemoveClickFunction(mButtonActId);
 }
 
 void StepGameBuildUnitEnd::OnStart()
@@ -69,17 +78,6 @@ void StepGameBuildUnitEnd::OnStart()
     stage->MoveChildToFront(mFocusArea);
     stage->MoveChildToFront(GetClickFilter());
     stage->MoveChildToFront(GetPanelInfo());
-}
-
-void StepGameBuildUnitEnd::OnEnd()
-{
-    auto dialog = mHUD->GetDialogNewElement();
-
-    if(nullptr == dialog)
-        return ;
-
-    auto btn = dialog->GetButtonBuild();
-    btn->RemoveClickFunction(mButtonActId);
 }
 
 } // namespace game

@@ -133,21 +133,8 @@ StepGameBuildStructure::StepGameBuildStructure(GameHUD * HUD, const char * textC
 StepGameBuildStructure::~StepGameBuildStructure()
 {
     delete mFocusArea;
-}
 
-void StepGameBuildStructure::OnStart()
-{
-    TutorialInfoStep::OnStart();
-
-    // move elements to front
-    auto stage = sgl::sgui::Stage::Instance();
-    stage->MoveChildToFront(mFocusArea);
-    stage->MoveChildToFront(GetClickFilter());
-    stage->MoveChildToFront(GetPanelInfo());
-}
-
-void StepGameBuildStructure::OnEnd()
-{
+    // remove toggle functions
     auto dialog = mHUD->GetDialogNewElement();
 
     if(nullptr == dialog)
@@ -170,6 +157,17 @@ void StepGameBuildStructure::OnEnd()
         auto btn = dialog->mBtnBuild;
         btn->RemoveClickFunction(mButtonBuildId);
     }
+}
+
+void StepGameBuildStructure::OnStart()
+{
+    TutorialInfoStep::OnStart();
+
+    // move elements to front
+    auto stage = sgl::sgui::Stage::Instance();
+    stage->MoveChildToFront(mFocusArea);
+    stage->MoveChildToFront(GetClickFilter());
+    stage->MoveChildToFront(GetPanelInfo());
 }
 
 } // namespace game

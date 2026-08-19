@@ -88,6 +88,18 @@ StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD, bool showIntro)
 StepGameUpgradeUnit::~StepGameUpgradeUnit()
 {
     delete mFocusArea;
+
+    // remove click functions
+    auto dialog = mHUD->GetDialogUpgrade();
+
+    if(nullptr == dialog)
+        return ;
+
+    auto btn = dialog->mButtonsInc[OBJ_ATT_ENERGY];
+    btn->RemoveClickFunction(mButtonIncId);
+
+    btn = dialog->mBtnUpgrade;
+    btn->RemoveClickFunction(mButtonUpgId);
 }
 
 void StepGameUpgradeUnit::OnStart()
@@ -99,20 +111,6 @@ void StepGameUpgradeUnit::OnStart()
     stage->MoveChildToFront(mFocusArea);
     stage->MoveChildToFront(GetClickFilter());
     stage->MoveChildToFront(GetPanelInfo());
-}
-
-void StepGameUpgradeUnit::OnEnd()
-{
-    auto dialog = mHUD->GetDialogUpgrade();
-
-    if(nullptr == dialog)
-        return ;
-
-    auto btn = dialog->mButtonsInc[OBJ_ATT_ENERGY];
-    btn->RemoveClickFunction(mButtonIncId);
-
-    btn = dialog->mBtnUpgrade;
-    btn->RemoveClickFunction(mButtonUpgId);
 }
 
 } // namespace game

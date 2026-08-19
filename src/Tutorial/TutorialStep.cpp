@@ -26,8 +26,6 @@ void TutorialStep::OnStart()
     mClickFilter->SetEnabled(true);
 }
 
-void TutorialStep::OnEnd() { }
-
 void TutorialStep::Update(float) { }
 
 } // namespace game

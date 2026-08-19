@@ -28,9 +28,6 @@ public:
     void SetPause(bool paused);
     bool IsPaused() const;
 
-    virtual void OnStart();
-    virtual void OnEnd();
-
     unsigned int GetNumStepsAtStart() const;
     unsigned int GetNumStepsTodo() const;
     unsigned int GetNumStepsDone() const;

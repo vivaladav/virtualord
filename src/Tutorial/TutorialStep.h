@@ -17,7 +17,6 @@ public:
     bool IsPaused() const;
 
     virtual void OnStart();
-    virtual void OnEnd();
 
     virtual void Update(float delta);
 
