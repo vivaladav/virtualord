@@ -27,6 +27,7 @@
 #include "Tutorial/StepGameCityIntro.h"
 #include "Tutorial/StepGameClearSelection.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
+#include "Tutorial/StepGameConquerCellsContinue.h"
 #include "Tutorial/StepGameConquerCellsEnd.h"
 #include "Tutorial/StepGameConquerCellsSimple.h"
 #include "Tutorial/StepGameConquerEnergyGenIntro.h"
@@ -497,7 +498,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         {
             const auto unit = local->GetUnit(indWorker2);
             const core::Pointd2D p0(1200, 150);
-            const Cell2D cellEnd(63, 65);
+            const Cell2D cellEnd(62, 64);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
     // SELECT WORKER 1
@@ -616,15 +617,22 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
     AddStep([this, isoMap, game]
         {
-            const core::Pointd2D p0(1000, 200);
+            const core::Pointd2D p0(1000, 450);
             const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
             const Cell2D target(61, 64);
             return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
         });
+    AddStep([this, isoMap, game]
+        {
+            const core::Pointd2D p0(1100, 300);
+            const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
+            const Cell2D target(58, 64);
+            return new StepGameConquerCellsContinue(game, isoMap, target, GetOverlayCellConquest(), p0);
+        });
     AddStep([this, local, isoMap, game]
         {
             const auto unit = local->GetUnit(indWorker2);
-            const core::Pointd2D p0(900, 100);
+            const core::Pointd2D p0(900, 250);
             const Cell2D cellEnd(58, 61);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
@@ -1277,7 +1285,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             {
                 const auto unit = local->GetUnit(indWorker2);
                 const core::Pointd2D p0(1100, 300);
-                const Cell2D cellEnd(58, 64);
+                const Cell2D cellEnd(57, 64);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     // SELECT WORKER 1
