@@ -388,16 +388,16 @@ void MissionGoal::SetMissionRewards()
         }
         else if(mType == TYPE_GAIN_MONEY)
         {
-            const int divBlobs = 100;
+            const int divBlobs = 200;
             mRewards[ER_BLOBS] = mQuantity / divBlobs;
 
-            const int divDiamonds = 100;
+            const int divDiamonds = 200;
             mRewards[ER_DIAMONDS] = mQuantity / divDiamonds;
 
-            const int divEnergy = 50;
+            const int divEnergy = 20;
             mRewards[ER_ENERGY] = mQuantity / divEnergy;
 
-            const int divMaterial = 10;
+            const int divMaterial = 20;
             mRewards[ER_MATERIAL] = mQuantity / divMaterial;
         }
         else if(mType == TYPE_GEN_RESEARCH)

@@ -710,10 +710,10 @@ int Game::GetResourcePriceBuy(ExtendedResource t) const
     {
         60,
         70,
-        120,
-        170,
+        125,
+        150,
         1,
-        250,
+        175,
     };
 
     static_assert(sizeof(price) / sizeof(int) == NUM_EXTENDED_RESOURCES);
