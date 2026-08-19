@@ -1710,9 +1710,6 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // CLEAR SELECTION
     AddStep([gs] { return new StepGameClearSelection(gs); });
     AddStep([] { return new StepDelay(0.5f); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // MOVE VIEW BACK TO BASE
     AddStep([panelTurn, game]
         {
