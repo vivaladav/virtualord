@@ -694,6 +694,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([] { return new StepDelay(0.5f); });
     // SELECT WORKER 1
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([local, game, isoMap]
@@ -732,9 +735,6 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const core::Pointd2D p0(1200, 200);
             return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
         });
-        // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // SELECT WORKER 2
     AddStep([local, game, isoMap]
         {
@@ -898,10 +898,6 @@ TutorialGame3::TutorialGame3(Screen * screen)
             });
     AddStep([hud] { return new StepGameUpgradeUnitFree(hud); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
-    // TODO remove this save when finished tutorial
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // SELECT WORKER 2
     AddStep([local, game, isoMap]
         {
@@ -933,6 +929,9 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // SETUP RESEARCH
     AddStep([this, game, isoMap]
@@ -1940,28 +1939,6 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
-    // BUILD DEFENSIVE TOWER WITH WORKER 2
-    AddStep([game, gs, panelActions]
-            {
-                const core::Pointd2D p0(1000, 250);
-                return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
-            });
-    AddStep([hud]
-            {
-                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4",
-                                                  TutorialConstants::catDefenses,
-                                                  TutorialConstants::structDefTower);
-            });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([this, local, isoMap]
-            {
-                const auto unit = local->GetUnit(indWorker2);
-                const core::Pointd2D p0(950, 250);
-                return new StepGameBuildTowerEnd(isoMap, unit, cellTower5, p0);
-            });
-    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
-    AddStep([] { return new StepDelay(0.5f); });
     // SELECT WORKER 1
     AddStep([hud]
         {
@@ -2023,16 +2000,38 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([this, isoMap, game]
         {
             const Cell2D & cellStart = GetOverlayWall()->GetCellStart();
-            const Cell2D target(42, 64);
+            const Cell2D target(41, 62);
             return new StepGameWallBuildStart(game, isoMap, cellStart, target);
         });
     AddStep([isoMap, local, game]
         {
             const auto unit = local->GetUnit(indWorker2);
-            const Cell2D cellEnd(41, 62);
+            const Cell2D target(42, 64);
             const core::Pointd2D p0(1000, 200);
-            return new StepGameWallBuildEnd(game, isoMap, unit, cellEnd, p0);
+            return new StepGameWallBuildEnd(game, isoMap, unit, target, p0);
         });
+    // BUILD DEFENSIVE TOWER WITH WORKER 2
+    AddStep([game, gs, panelActions]
+            {
+                const core::Pointd2D p0(1000, 250);
+                return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+            });
+    AddStep([hud]
+            {
+                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
+                                                  "TUT_GAME_BUILD_DTOWER_4",
+                                                  TutorialConstants::catDefenses,
+                                                  TutorialConstants::structDefTower);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([this, local, isoMap]
+            {
+                const auto unit = local->GetUnit(indWorker2);
+                const core::Pointd2D p0(950, 250);
+                return new StepGameBuildTowerEnd(isoMap, unit, cellTower5, p0);
+            });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
