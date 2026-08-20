@@ -46,9 +46,10 @@ StepGameUpgradeUnitFree::StepGameUpgradeUnitFree(GameHUD * HUD)
 
                             for(auto btn : dialog->mButtonsInc)
                             {
-                                btn->AddOnClickFunction([info]
+                                btn->AddOnClickFunction([info, dialog]
                                                         {
-                                                            info->Continue();
+                                                            if(dialog->mPointsToAssign == 0)
+                                                                info->Continue();
                                                         });
                             }
 
