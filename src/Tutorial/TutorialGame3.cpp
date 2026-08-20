@@ -2383,6 +2383,27 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // MOVE VIEW BACK TO BASE
+    AddStep([panelTurn]
+            {
+                const core::Pointd2D p0(300, 550);
+                return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1b", p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    // COLLECT SECONDARY MISSION GOAL
+    AddStep([localBase, game, isoMap]
+            {
+                const core::Pointd2D p0(500, 200);
+                return new StepGameSelectObject(game, isoMap, localBase, "TUT_GAME_BASE_4", p0);
+            });
+    AddStep([game, gs, panelActions] { return new StepGameMissionGoalsIcon(game, gs, panelActions, false); });
+    AddStep([hud]
+        {
+            const int goal = 1;
+            return new StepGameSecondaryMissionGoal(hud, goal);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
