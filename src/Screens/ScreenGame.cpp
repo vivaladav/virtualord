@@ -199,6 +199,13 @@ void ScreenGame::InitLoadedGame()
 
     // update quick unit buttons
     mHUD->UpdateQuickUnitButtons();
+
+    // check if there are mission goals to collect
+    if(mTrackerMG->GetNumGoalsToCollect() > 0)
+    {
+        auto base = mLocalPlayer->GetBase();
+        base->OnGoalCompleted();
+    }
 }
 
 bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
