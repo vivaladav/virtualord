@@ -708,12 +708,12 @@ int Game::GetResourcePriceBuy(ExtendedResource t) const
     // TODO make it change depending on territory/planet
     const int price[] =
     {
-        60,
-        70,
-        125,
-        150,
+        20,
+        30,
+        80,
+        90,
         1,
-        175,
+        100,
     };
 
     static_assert(sizeof(price) / sizeof(int) == NUM_EXTENDED_RESOURCES);
@@ -729,12 +729,12 @@ int Game::GetResourcePriceSell(ExtendedResource t) const
     // TODO make it change depending on territory/planet
     const int price[] =
     {
-        50,
-        60,
-        100,
-        150,
+        15,
+        20,
+        70,
+        80,
         1,
-        175,
+        90,
     };
 
     static_assert(sizeof(price) / sizeof(int) == NUM_EXTENDED_RESOURCES);

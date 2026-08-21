@@ -311,6 +311,8 @@ add_executable(
     src/Tutorial/StepGameConquerStructSimple.cpp
     src/Tutorial/StepGameDialogTrading.h
     src/Tutorial/StepGameDialogTrading.cpp
+    src/Tutorial/StepGameDialogTradingBuy.h
+    src/Tutorial/StepGameDialogTradingBuy.cpp
     src/Tutorial/StepGameDisableCamera.h
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h

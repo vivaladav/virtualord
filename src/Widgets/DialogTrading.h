@@ -77,6 +77,7 @@ private:
 
 private:
     friend class StepGameDialogTrading;
+    friend class StepGameDialogTradingBuy;
 
     std::array<int, NUM_TRADED_RES> mBuy;
     std::array<int, NUM_TRADED_RES> mSell;

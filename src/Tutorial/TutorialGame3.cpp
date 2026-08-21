@@ -23,7 +23,6 @@
 #include "Tutorial/StepGameBuildTowerEnd.h"
 #include "Tutorial/StepGameBuildUnitEnd.h"
 #include "Tutorial/StepGameBuildUnitStart.h"
-#include "Tutorial/StepGameWallBuildIntro.h"
 #include "Tutorial/StepGameCityIntro.h"
 #include "Tutorial/StepGameClearSelection.h"
 #include "Tutorial/StepGameConnectStructIntro.h"
@@ -33,6 +32,8 @@
 #include "Tutorial/StepGameConquerEnergyGenIntro.h"
 #include "Tutorial/StepGameConquerMaterialGenIntro.h"
 #include "Tutorial/StepGameConquerStructSimple.h"
+#include "Tutorial/StepGameDialogTrading.h"
+#include "Tutorial/StepGameDialogTradingBuy.h"
 #include "Tutorial/StepGameDisableCamera.h"
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameEnemyIntro.h"
@@ -58,6 +59,7 @@
 #include "Tutorial/StepGameSpawnIcon.h"
 #include "Tutorial/StepGameTechTreeDialog.h"
 #include "Tutorial/StepGameTechTreeIcon.h"
+#include "Tutorial/StepGameTradeIcon.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameUpgradeIntro.h"
@@ -68,8 +70,9 @@
 #include "Tutorial/StepGameWaitObjectIdle.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/StepGameWallBuildIcon.h"
-#include "Tutorial/StepGameWallBuildStart.h"
+#include "Tutorial/StepGameWallBuildIntro.h"
 #include "Tutorial/StepGameWallBuildEnd.h"
+#include "Tutorial/StepGameWallBuildStart.h"
 #include "Tutorial/StepSaveGame.h"
 #include "Tutorial/TutorialConstants.h"
 #include "Widgets/GameHUD.h"
@@ -114,6 +117,7 @@ const Cell2D cellBunker2(50, 37);
 const Cell2D cellBarracks(53, 47);
 const Cell2D cellEnemy1(64,53);
 const Cell2D cellMiniUnits1(71, 62);
+const Cell2D cellTradingPost(70, 58);
 
 }
 
@@ -2403,6 +2407,67 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameSecondaryMissionGoal(hud, goal);
         });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT WORKER 1
+    AddStep([hud]
+        {
+            const sgl::core::Pointd2D p0(200, 600);
+            return new StepGameQuickUnitButton(hud, indWorker1, nullptr, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE CAMERA
+    AddStep([game]
+        {
+            const int movX = 400;
+            const int movY = 0;
+            return new StepGameMoveCamera(movX, movY);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // BUILD TRADING POST
+    AddStep([game, gs, panelActions]
+        {
+            const core::Pointd2D p0(1100, 450);
+            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_TRAD_POST_1", p0);
+        });
+    AddStep([hud]
+        {
+            return new StepGameBuildStructure(hud, nullptr, "TUT_GAME_BUILD_TRAD_POST_2",
+                                              TutorialConstants::catGeneric,
+                                              TutorialConstants::structTradingPost);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([this, local, isoMap, game]
+        {
+            const auto unit = local->GetUnit(indWorker1);
+            const core::Pointd2D p0(1100, 250);
+            return new StepGameBuildTowerEnd(isoMap, unit, cellTradingPost, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+        // SELECT TRADING POST
+    AddStep([this, game, isoMap]
+        {
+            const core::Pointd2D p0(710, 250);
+            const GameObject * obj = GetObjectInCell(cellTradingPost);
+            return new StepGameSelectObject(game, isoMap, obj, "TUT_GAME_BUILD_TRAD_POST_2", p0);
+        });
+    // OPEN AND USE DIALOG TRADING
+    AddStep([game, gs, panelActions]
+        {
+            const core::Pointd2D p0(100, 650);
+            return new StepGameTradeIcon(game, gs, panelActions, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([hud]
+        {
+            return new StepGameDialogTradingBuy(hud);
+        });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    // END TURN
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
 }
 
