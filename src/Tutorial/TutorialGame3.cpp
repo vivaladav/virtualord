@@ -2469,6 +2469,34 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
+    AddStep([this]
+            {
+                const GameObject * obj = GetObjectInCell(cellResCenter);
+                const float speed = 800.f;
+                return new StepGameMoveCameraOverObject(obj, speed);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([]
+            {
+                const core::Pointd2D p0(685, 200);
+                return new StepGameSingleInfo(p0, "TUT_GAME_RES_CEN_2");
+            });
+    AddStep([this, game, isoMap]
+            {
+                const core::Pointd2D p0(710, 250);
+                const GameObject * obj = GetObjectInCell(cellResCenter);
+                return new StepGameSelectObject(game, isoMap, obj, "TUT_GAME_RES_CEN_1", p0);
+            });
+    AddStep([game, gs, panelActions]
+            {
+                const core::Pointd2D p0(1000, 650);
+                return new StepGameTechTreeIcon(game, gs, panelActions, p0);
+            });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([hud] { return new StepGameTechTreeDialog(hud, TECH_UP_STORAGE_STRUCTS, false); });
+    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
