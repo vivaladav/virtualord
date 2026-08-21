@@ -35,8 +35,7 @@ namespace
 
 using namespace game;
 
-constexpr int incBuy = 5;
-constexpr int incSell = 5;
+constexpr int limitInc = 100;
 constexpr int digitsBuy = 3;
 constexpr int digitsTot = 5;
 constexpr int digitsQuantity = 4;
@@ -907,6 +906,7 @@ void DialogTrading::IncBuyQuantity(TradedResources res, sgl::sgui::Label * label
     if(owned == capacity)
         return ;
 
+    const int incBuy = mBuy[res] < limitInc ? 5 : 10;
     const int price = mGame->GetResourcePriceBuy(extRes[res]);
     const int currSpend = GetCurrentSpend();
     const int spend = currSpend + (incBuy * price);
@@ -938,6 +938,7 @@ void DialogTrading::IncBuyQuantity(TradedResources res, sgl::sgui::Label * label
 
 void DialogTrading::DecBuyQuantity(TradedResources res, sgl::sgui::Label * label)
 {
+    const int incBuy = mBuy[res] < limitInc ? 5 : 10;
     const int mod = mBuy[res] % incBuy;
 
     if(mod == 0)
@@ -964,6 +965,8 @@ void DialogTrading::IncSellQuantity(TradedResources res, sgl::sgui::Label * labe
     if(0 == owned)
         return ;
 
+    const int incSell = mSell[res] < limitInc ? 5 : 10;
+
     if((mSell[res] + incSell) <= owned)
         mSell[res] += incSell;
     else
@@ -978,6 +981,7 @@ void DialogTrading::IncSellQuantity(TradedResources res, sgl::sgui::Label * labe
 
 void DialogTrading::DecSellQuantity(TradedResources res, sgl::sgui::Label * label)
 {
+    const int incSell = mSell[res] < limitInc ? 5 : 10;
     const int mod = mSell[res] % incSell;
 
     if(mod == 0)
