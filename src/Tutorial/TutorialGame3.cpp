@@ -2701,7 +2701,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         {
             const auto unit = local->GetUnit(indWorker1);
             const core::Pointd2D p0(1000, 200);
-            const Cell2D target(74, 50);
+            const Cell2D target(72, 50);
             return new StepGameBuildTowerEnd(isoMap, unit, target, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
