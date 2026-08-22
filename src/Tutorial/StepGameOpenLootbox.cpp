@@ -2,7 +2,6 @@
 
 #include "Game.h"
 #include "IsoMap.h"
-#include "IsoObject.h"
 #include "GameObjects/Unit.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
@@ -27,12 +26,11 @@ StepGameOpenLootbox::StepGameOpenLootbox(const Game * game, const Unit * unit,
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS AREAS
-    const auto isoObj = lootbox->GetIsoObject();
     const int padding = 5;
-    const int objX = isoObj->GetX() - padding;
-    const int objY = isoObj->GetY() - padding;
-    const int objW = isoObj->GetWidth() + (padding * 2);
-    const int objH = isoObj->GetHeight() + (padding * 2);
+    const int objX = lootbox->GetX() - padding;
+    const int objY = lootbox->GetY() - padding;
+    const int objW = lootbox->GetWidth() + (padding * 2);
+    const int objH = lootbox->GetHeight() + (padding * 2);
 
     mFocusArea->SetWorldArea(objX, objY, objW, objH, false);
     mFocusArea->SetCornersColorElement();

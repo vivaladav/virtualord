@@ -3,7 +3,6 @@
 #include "CameraMapController.h"
 #include "Game.h"
 #include "GameMap.h"
-#include "IsoObject.h"
 #include "Player.h"
 #include "AI/PlayerAI.h"
 #include "GameObjects/Base.h"
@@ -496,13 +495,12 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([this, local]
             {
                 const GameObject * tower = GetObjectInCell(cellDT1);
-                const IsoObject * obj = tower->GetIsoObject();
                 const int areaHalfW = 300;
                 const int areaHalfH = 200;
-                const int tlX = obj->GetX() - areaHalfW;
-                const int tlY = obj->GetY() - areaHalfH;
-                const int brX = obj->GetX() + areaHalfW;
-                const int brY = obj->GetY() + areaHalfH;
+                const int tlX = tower->GetX() - areaHalfW;
+                const int tlY = tower->GetY() - areaHalfH;
+                const int brX = tower->GetX() + areaHalfW;
+                const int brY = tower->GetY() + areaHalfH;
 
                 const auto cam = GetCameraMapController()->GetCamera();
 

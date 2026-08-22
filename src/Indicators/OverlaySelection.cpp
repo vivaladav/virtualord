@@ -1,7 +1,6 @@
 #include "Indicators/OverlaySelection.h"
 
 #include "IsoLayer.h"
-#include "IsoObject.h"
 #include "GameObjects/GameObject.h"
 #include "Indicators/IndicatorSelection.h"
 
@@ -85,12 +84,10 @@ void OverlaySelection::UpdateObjectPosition(GameObject * obj)
 
         const MultiIndicator & mi = it->second;
 
-        auto isoObj = obj->GetIsoObject();
-
-        const int x0 = isoObj->GetX();
-        const int y0 = isoObj->GetY();
-        const int objW = isoObj->GetWidth();
-        const int objH = isoObj->GetHeight();
+        const int x0 = obj->GetX();
+        const int y0 = obj->GetY();
+        const int objW = obj->GetWidth();
+        const int objH = obj->GetHeight();
         const int indW = mi.indTL->GetWidth();
         const int indH = mi.indTL->GetHeight();
 
@@ -126,10 +123,9 @@ void OverlaySelection::UpdateObjectPosition(GameObject * obj)
             return;
 
         auto ind = it->second;
-        auto isoObj = obj->GetIsoObject();
 
-        const int x = isoObj->GetX();
-        const int y = isoObj->GetY() + isoObj->GetHeight() - ind->GetHeight();
+        const int x = obj->GetX();
+        const int y = obj->GetY() + obj->GetHeight() - ind->GetHeight();
 
         //const int pos
         ind->SetPosition(x, y);

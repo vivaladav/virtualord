@@ -3,7 +3,6 @@
 #include "Game.h"
 #include "GameConstants.h"
 #include "IsoMap.h"
-#include "IsoObject.h"
 #include "Player.h"
 #include "GameObjects/Unit.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -27,11 +26,10 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS AREAS
-    const auto isoObj = mEnergyGen->GetIsoObject();
-    const int objX = isoObj->GetX();
-    const int objY = isoObj->GetY();
-    const int objW = isoObj->GetWidth();
-    const int objH = isoObj->GetHeight();
+    const int objX = mEnergyGen->GetX();
+    const int objY = mEnergyGen->GetY();
+    const int objW = mEnergyGen->GetWidth();
+    const int objH = mEnergyGen->GetHeight();
 
     mFocusArea->SetWorldArea(objX, objY, objW, objH, false);
     mFocusArea->SetCornersColorElement();

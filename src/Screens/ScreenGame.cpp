@@ -8,7 +8,6 @@
 #include "GameMap.h"
 #include "IsoLayer.h"
 #include "IsoMap.h"
-#include "IsoObject.h"
 #include "MapIO.h"
 #include "MissionGoalsTracker.h"
 #include "Planet.h"
@@ -499,9 +498,8 @@ void ScreenGame::CenterCameraOverObject(const GameObject * obj, float speed)
     if(nullptr == obj)
         return ;
 
-    const IsoObject * isoObj = obj->GetIsoObject();
-    const int cX = isoObj->GetX() + isoObj->GetWidth() / 2;
-    const int cY = isoObj->GetY() + isoObj->GetHeight() / 2;
+    const int cX = obj->GetX() + obj->GetWidth() / 2;
+    const int cY = obj->GetY() + obj->GetHeight() / 2;
 
     if(speed < 0.f)
         mCamController->CenterCameraToPoint(cX, cY);

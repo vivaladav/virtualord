@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameConquerGeneratorIntro.h"
 
-#include "IsoObject.h"
 #include "GameObjects/GameObject.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -21,11 +20,10 @@ StepGameConquerGeneratorIntro::StepGameConquerGeneratorIntro(const GameObject * 
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    const auto isoObj = gen->GetIsoObject();
-    const int objX = isoObj->GetX();
-    const int objY = isoObj->GetY();
-    const int objW = isoObj->GetWidth();
-    const int objH = isoObj->GetHeight();
+    const int objX = gen->GetX();
+    const int objY = gen->GetY();
+    const int objW = gen->GetWidth();
+    const int objH = gen->GetHeight();
 
     mFocusArea->SetWorldArea(objX, objY, objW, objH, false);
     mFocusArea->SetCornersColorElement();

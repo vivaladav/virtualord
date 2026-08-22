@@ -5,14 +5,11 @@
 #include "Game.h"
 #include "GameConstants.h"
 #include "GameMap.h"
-#include "GameUIData.h"
 #include "IsoMap.h"
-#include "IsoObject.h"
 #include "MissionGoalsTracker.h"
 #include "Player.h"
 #include "GameObjects/Base.h"
 #include "GameObjects/GameObject.h"
-#include "GameObjects/Structure.h"
 #include "GameObjects/Temple.h"
 #include "GameObjects/Unit.h"
 #include "GameObjectTools/Weapon.h"
@@ -364,12 +361,11 @@ void GameHUD::ShowPanelHit(const GameObject * attacker, const GameObject * targe
     const int panelW = mPanelHit->GetWidth();
     const int panelH = mPanelHit->GetHeight();
 
-    const IsoObject * isoTarget = target->GetIsoObject();
-    const int isoX = camera->GetWorldToScreenX(isoTarget->GetX());
-    const int isoY = camera->GetWorldToScreenY(isoTarget->GetY());
+    const int isoX = camera->GetWorldToScreenX(target->GetX());
+    const int isoY = camera->GetWorldToScreenY(target->GetY());
 
-    int posX = isoX + isoTarget->GetWidth();
-    int posY = isoY + (isoTarget->GetHeight() - panelH) / 2;
+    int posX = isoX + target->GetWidth();
+    int posY = isoY + (target->GetHeight() - panelH) / 2;
 
     if((posX + panelW) > rendW)
         posX = isoX - panelW;
@@ -1310,9 +1306,8 @@ void GameHUD::PositionMissionCountdown()
     const Player * p = mScreen->GetGame()->GetLocalPlayer();
     const PlayerFaction pf = p->GetFaction();
     const Base * base = p->GetBase();
-    const IsoObject * isoObj = base->GetIsoObject();
-    const int x0 = isoObj->GetX() + (isoObj->GetWidth() - mCountdownLabel->GetWidth()) / 2;
-    const int y0 = isoObj->GetY() - mCountdownLabel->GetHeight();
+    const int x0 = base->GetX() + (base->GetWidth() - mCountdownLabel->GetWidth()) / 2;
+    const int y0 = base->GetY() - mCountdownLabel->GetHeight();
 
     mCountdownLabel->SetPosition(x0, y0);
 }
