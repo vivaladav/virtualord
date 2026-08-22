@@ -1797,7 +1797,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameSpawnIcon(game, gs, panelActions, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
-    AddStep([hud] { return new StepGameSetupMiniUnits(hud, { 2, 3 }); });
+    AddStep([hud] { return new StepGameSetupMiniUnits(hud, { 2, 3 }, ObjectData::TYPE_MINI_UNIT1); });
     AddStep([local]
         {
             const auto unit = local->GetUnit(indSpawner1);
@@ -2712,6 +2712,33 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // ANNOUNCE NEW MINI UNITS
+    AddStep([]
+        {
+            const core::Pointd2D p0(685, 250);
+            return new StepGameSingleInfo(p0, "TUT_GAME_BUILD_MU");
+        });
+    // SELECT SPAWNER 1
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([hud]
+        {
+            const sgl::core::Pointd2D p0(100, 600);
+            return new StepGameQuickUnitButton(hud, indSpawner1, nullptr, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SPAWN MINI UNITS
+    AddStep([game, gs, panelActions]
+        {
+            const core::Pointd2D p0(200, 600);
+            return new StepGameSpawnIcon(game, gs, panelActions, p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([hud] { return new StepGameSetupMiniUnits(hud, { 5, 3 }, ObjectData::TYPE_MINI_UNIT2); });
+    AddStep([local]
+        {
+            const auto unit = local->GetUnit(indSpawner1);
+            return new StepGameWaitObjectIdle(unit);
+        });
 }
 
 TutorialGame3::~TutorialGame3()

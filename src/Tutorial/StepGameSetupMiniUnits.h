@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameObjects/GameObjectTypes.h"
 #include "Tutorial/TutorialInfoStep.h"
 
 #include <vector>
@@ -18,7 +19,7 @@ class FocusArea;
 class StepGameSetupMiniUnits : public TutorialInfoStep
 {
 public:
-    StepGameSetupMiniUnits(GameHUD * HUD, const std::vector<int> & values);
+    StepGameSetupMiniUnits(GameHUD * HUD, const std::vector<int> & values, GameObjectTypeId type);
     ~StepGameSetupMiniUnits();
 
     void OnStart() override;

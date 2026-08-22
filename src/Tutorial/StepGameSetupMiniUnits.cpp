@@ -14,7 +14,8 @@
 namespace game
 {
 
-StepGameSetupMiniUnits::StepGameSetupMiniUnits(GameHUD * HUD, const std::vector<int> & values)
+StepGameSetupMiniUnits::StepGameSetupMiniUnits(GameHUD * HUD, const std::vector<int> & values,
+                                               GameObjectTypeId type)
     : TutorialInfoStep(600, 150)
     , mFocusArea(new FocusArea)
 {
@@ -31,6 +32,37 @@ StepGameSetupMiniUnits::StepGameSetupMiniUnits(GameHUD * HUD, const std::vector<
     auto info = GetPanelInfo();
 
     info->SetPosition(650, 100);
+
+    // find and set type if needed
+    if(dialog->GetTypeToBuild() != type)
+    {
+        info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_MU_5"), 0.f, false, false,
+                            [this, dialog, type]
+                            {
+                                auto btn = dialog->mBtnRight;
+
+                                // NOTE no need to remove the function later as the dialog is
+                                // destroyed when the button is clicked
+                                btn->AddOnClickFunction([this, dialog, type]
+                                                    {
+                                                        if(dialog->GetTypeToBuild() == type)
+                                                            GetPanelInfo()->Continue();
+                                                    });
+
+                             const int padding = 10;
+                             const int x = btn->GetScreenX() - padding;
+                             const int y = btn->GetScreenY() - padding;
+                             const int w = btn->GetWidth() + (2 * padding);
+                             const int h = btn->GetHeight() + (2 * padding);
+
+                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+
+                             mFocusArea->SetScreenArea(x, y, w, h, true);
+                             mFocusArea->SetCornersColorAction();
+                             mFocusArea->SetBlinking(true);
+                             mFocusArea->SetVisible(true);
+                         });
+    }
 
     // set number of elements, if needed
     if(dialog->mSliderElements->GetValue() != values[0])
