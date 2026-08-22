@@ -32,7 +32,7 @@ const int TutorialConstants::structMatWarehouse = 5;
 const int TutorialConstants::structRadarStation = 1;
 const int TutorialConstants::structResearchCenter = 0;
 const int TutorialConstants::structSolarPanel = 0;
-const int TutorialConstants::structTradingPost = 3;
+const int TutorialConstants::structTradingPost = 2;
 
 // unit categories in build dialog
 const int TutorialConstants::catUnitGeneric = 0;

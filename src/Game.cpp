@@ -897,7 +897,6 @@ void Game::InitPlayerLocal(Player * p)
     p->AddAvailableStructure(ObjectData::TYPE_RESEARCH_CENTER);
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR);
     p->AddAvailableStructure(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT);
-    p->AddAvailableStructure(ObjectData::TYPE_SPAWN_TOWER);
     p->AddAvailableStructure(ObjectData::TYPE_WALL_GATE);
 
     // assign initial available units

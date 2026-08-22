@@ -123,7 +123,7 @@ void ObjectsDataRegistry::InitObjectData()
     mDataObjects.emplace(ObjectData::TYPE_MINI_UNIT2,
         ObjectData({ {OBJ_ATT_ENERGY, 3}, {OBJ_ATT_VIEW_RANGE, 6}, {OBJ_ATT_REGENERATION, 4},
                      {OBJ_ATT_RESISTANCE, 2}, {OBJ_ATT_SHIELD, 2},  {OBJ_ATT_SPEED, 9},
-                     {OBJ_ATT_HEALTH, 4} }, { 15, 15, 0, 0 },
+                     {OBJ_ATT_HEALTH, 4} }, { 17, 17, 0, 0 },
                    { SID_MUNIT_02_1X_F1, SID_MUNIT_02_1X_F2, SID_MUNIT_02_1X_F3 }, SpriteFileMiniUnits,
                    ObjectData::TYPE_MINI_UNIT2, ObjectData::CAT_MINI_UNIT,
                    OCMU_SOLDIER, OCAT_MINI_UNIT, WeaponData::TYPE_LASER1, 1, 1));
@@ -258,7 +258,7 @@ void ObjectsDataRegistry::InitObjectData()
         ObjectData({ {OBJ_ATT_ENERGY, 6}, {OBJ_ATT_VIEW_RANGE, 4}, {OBJ_ATT_REGENERATION, 3},
                      {OBJ_ATT_RESISTANCE, 4}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 6},
                      {OBJ_ATT_SPAWNING, 6} },
-                   { 750, 500, 50, 50 },
+                   { 500, 500, 25, 25 },
                    { ID_STRUCT_SPAWN_TOWER_F1, ID_STRUCT_SPAWN_TOWER_F2, ID_STRUCT_SPAWN_TOWER_F3,
                      ID_STRUCT_SPAWN_TOWER }, SpriteFileStructures,
                    ObjectData::TYPE_SPAWN_TOWER, ObjectData::CAT_STRUCTURE,
