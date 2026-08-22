@@ -31,12 +31,12 @@ StepGameSetupMiniUnits::StepGameSetupMiniUnits(GameHUD * HUD, const std::vector<
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(650, 100);
+    info->SetPosition(650, 70);
 
     // find and set type if needed
     if(dialog->GetTypeToBuild() != type)
     {
-        info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_MU_5"), 0.f, false, false,
+        info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_MU_5"), 0.f, false, true,
                             [this, dialog, type]
                             {
                                 auto btn = dialog->mBtnRight;
@@ -94,7 +94,7 @@ StepGameSetupMiniUnits::StepGameSetupMiniUnits(GameHUD * HUD, const std::vector<
                              });
     }
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_MU_3"), 0.f, false, false,
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_MU_3"), 0.f, false, true,
                          [this, dialog]
                          {
                             auto btn = dialog->mBtnBuild;
