@@ -66,14 +66,13 @@ if(faction != NO_FACTION)
 
 void DefensiveTower::PrepareShoot()
 {
-    const IsoObject * isoObj = GetIsoObject();
-    const IsoObject * isoTarget = mWeapon->GetTarget()->GetIsoObject();
+    const GameObject * target = mWeapon->GetTarget();
 
-    const float isoX = isoObj->GetX();
-    const float isoXC = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float isoY = isoObj->GetY();
-    const float isoTargetX = isoTarget->GetX();
-    const float isoTargetY = isoTarget->GetY();
+    const float isoX = GetX();
+    const float isoXC = GetX() + GetWidth() * 0.5f;
+    const float isoY = GetY();
+    const float isoTargetX = target->GetX();
+    const float isoTargetY = target->GetY();
     const float x0 = isoTargetX < isoX ? isoXC - 20.f : isoXC + 20.f;
     const float y0 = isoTargetY < isoY ? isoY + 4 : isoY + 30;
 

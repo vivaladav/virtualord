@@ -3,7 +3,6 @@
 #include "Game.h"
 #include "GameConstants.h"
 #include "GameData.h"
-#include "IsoObject.h"
 #include "GameObjects/GameObject.h"
 #include "Particles/DataParticleSingleLaser.h"
 #include "Particles/UpdaterSingleLaser.h"
@@ -46,9 +45,8 @@ void Laser::OnShoot(float x0, float y0)
 
     GameObject * owner = GetOwner();
 
-    const IsoObject * isoTarget = mTarget->GetIsoObject();
-    const float tX = isoTarget->GetX() + (isoTarget->GetWidth() - mTex->GetWidth()) * 0.5f;
-    const float tY = isoTarget->GetY() + (isoTarget->GetHeight() - mTex->GetHeight()) * 0.5f;
+    const float tX = mTarget->GetX() + (mTarget->GetWidth() - mTex->GetWidth()) * 0.5f;
+    const float tY = mTarget->GetY() + (mTarget->GetHeight() - mTex->GetHeight()) * 0.5f;
     const float speed = 400.f;
 
     const float rad2deg = 180.f / sgl::core::Math::PIf;

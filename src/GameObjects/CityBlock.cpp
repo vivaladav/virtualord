@@ -85,11 +85,9 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    IsoObject * isoObj = GetIsoObject();
-
     const int marginV = 20;
-    const float x = isoObj->GetX() + isoObj->GetWidth() / 2;
-    const float y = isoObj->GetY() - marginV;
+    const float x = GetX() + GetWidth() / 2;
+    const float y = GetY() - marginV;
 
     const DataParticleOutput pd(money, OT_MONEY, x, y);
     pu->AddParticle(pd);

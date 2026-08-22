@@ -293,6 +293,16 @@ void GameObject::SetY(int y)
     }
 }
 
+int GameObject::GetWidth() const
+{
+    return mIsoObj->GetWidth();
+}
+
+int GameObject::GetHeight() const
+{
+    return mIsoObj->GetHeight();
+}
+
 void GameObject::ShowWarning(const char * text, float time)
 {
     // show warning messages only for local player
@@ -791,9 +801,8 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     const unsigned int texInd = ID_PARTICLE_W_4x4;
     auto tex = graphic::TextureManager::Instance()->GetSprite(SpriteFileGameObjectsRelated, texInd);
 
-    IsoObject * isoObj = GetIsoObject();
-    const float objXC = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float objYC = isoObj->GetY() + isoObj->GetHeight() * 0.5f;
+    const float objXC = mIsoObj->GetX() + mIsoObj->GetWidth() * 0.5f;
+    const float objYC = mIsoObj->GetY() + mIsoObj->GetHeight() * 0.5f;
 
     // random generator of rotation angle
     const int minRot = 0;
@@ -860,13 +869,13 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
         return ;
 
     // random generator for X position
-    const int maxXDeltaHP = isoObj->GetWidth() * 0.25;
+    const int maxXDeltaHP = mIsoObj->GetWidth() * 0.25;
     const int minXDeltaHP = -maxXDeltaHP;
 
     utilities::UniformDistribution genPosHP(minXDeltaHP, maxXDeltaHP);
 
     const float posXHP = objXC + genPosHP.GetNextValue();
-    const float posYHP = objYC - (isoObj->GetHeight() * 0.25f);
+    const float posYHP = objYC - (mIsoObj->GetHeight() * 0.25f);
 
     const float speedHP = 75.f;
     const float decaySpeedHP = 40.f;
@@ -883,9 +892,8 @@ void GameObject::MissHit()
     auto partMan = GetParticlesManager();
     auto puHP = static_cast<UpdaterHitPoints *>(partMan->GetUpdater(PU_HIT_POINTS));
 
-    IsoObject * isoObj = GetIsoObject();
-    const float posX = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float posY = isoObj->GetY();
+    const float posX = mIsoObj->GetX() + mIsoObj->GetWidth() * 0.5f;
+    const float posY = mIsoObj->GetY();
 
     const float speedHP = 75.f;
     const float decaySpeedHP = 50.f;

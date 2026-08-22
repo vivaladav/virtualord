@@ -203,7 +203,6 @@ void MiniUnit::PrepareShoot()
 {
     using namespace sgl;
 
-    const IsoObject * isoObj = GetIsoObject();
     const int numElements = GetObjectVariant();
 
     core::Pointd2D delta;
@@ -245,8 +244,8 @@ void MiniUnit::PrepareShoot()
         delta = deltas[ud.GetNextValue()];
     }
 
-    const float x0 = isoObj->GetX() + delta.x;
-    const float y0 = isoObj->GetY() + delta.y;
+    const float x0 = GetX() + delta.x;
+    const float y0 = GetY() + delta.y;
 
     mWeapon->Shoot(x0, y0);
 }

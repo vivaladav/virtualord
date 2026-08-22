@@ -84,14 +84,12 @@ void Base::OnNewTurn(PlayerFaction faction)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    IsoObject * isoObj = GetIsoObject();
-
     const float margin3 = 30.f;
-    const float x1 = isoObj->GetX() + isoObj->GetWidth() * 0.25f;
-    const float x2 = isoObj->GetX() + isoObj->GetWidth() * 0.75f;
-    const float x3 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y12 = isoObj->GetY();
-    const float y3 = isoObj->GetY() - margin3;
+    const float x1 = GetX() + GetWidth() * 0.25f;
+    const float x2 = GetX() + GetWidth() * 0.75f;
+    const float x3 = GetX() + GetWidth() * 0.5f;
+    const float y12 = GetY();
+    const float y3 = GetY() - margin3;
 
     const int energy = GetResourceProduction(ER_ENERGY);
     const DataParticleOutput pd1(energy, OT_ENERGY, x1, y12);
@@ -180,11 +178,7 @@ void Base::OnPositionChanged()
 {
     Structure::OnPositionChanged();
 
-    const auto isoObj = GetIsoObject();
-    const int isoX = isoObj->GetX();
-    const int isoY = isoObj->GetY();
-
-    mHighlight->SetPosition(isoX, isoY);
+    mHighlight->SetPosition(GetX(), GetY());
 }
 
 } // namespace game

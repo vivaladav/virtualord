@@ -113,10 +113,8 @@ void LootBox::Open(Player * p)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    IsoObject * isoObj = GetIsoObject();
-
-    const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y0 = isoObj->GetY() - isoObj->GetHeight() * 0.25f;
+    const float x0 = GetX() + GetWidth() * 0.5f;
+    const float y0 = GetY() - GetHeight() * 0.25f;
 
     OutputType ot[NUM_OUTPUT_TYPES] =
     {

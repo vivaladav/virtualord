@@ -141,11 +141,9 @@ void ResearchCenter::OnNewTurn(PlayerFaction faction)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    IsoObject * isoObj = GetIsoObject();
-
     const int marginV = 20;
-    const float x = isoObj->GetX() + isoObj->GetWidth() / 2;
-    const float y = isoObj->GetY() - marginV;
+    const float x = GetX() + GetWidth() / 2;
+    const float y = GetY() - marginV;
 
     const DataParticleOutput pd(mResearchPerTurn, OT_RESEARCH, x, y);
     pu->AddParticle(pd);
@@ -188,11 +186,7 @@ void ResearchCenter::OnPositionChanged()
 {
     Structure::OnPositionChanged();
 
-    const auto isoObj = GetIsoObject();
-    const int isoX = isoObj->GetX();
-    const int isoY = isoObj->GetY();
-
-    mHighlight->SetPosition(isoX, isoY);
+    mHighlight->SetPosition(GetX(), GetY());
 }
 
 void ResearchCenter::UpdateGraphics()
@@ -313,14 +307,11 @@ void ResearchCenter::ShowIconResearch()
 
 void ResearchCenter::PositionIconResearch()
 {
-    const auto isoObj = GetIsoObject();
-
-    const int isoW = isoObj->GetWidth();
-    const int x0 = isoObj->GetX();
+    const int x0 = GetX();
     const int y0 = GetStatusIconBaseY();
 
     const int iconMarginV = 5;
-    const int iconX = x0 + (isoW - mIconResearch->GetWidth()) / 2;
+    const int iconX = x0 + (GetWidth() - mIconResearch->GetWidth()) / 2;
     const int iconY = y0 - mIconResearch->GetHeight() - iconMarginV;
 
     mIconResearch->SetPosition(iconX, iconY);

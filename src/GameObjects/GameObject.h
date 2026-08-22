@@ -97,6 +97,8 @@ public:
     void SetPosition(int x, int y);
     void SetX(int x);
     void SetY(int y);
+    int GetWidth() const;
+    int GetHeight() const;
 
     void ShowWarning(const char * text, float time);
 

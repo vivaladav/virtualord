@@ -156,9 +156,8 @@ void Temple::StartExploring(PlayerFaction explorer, const std::function<void()> 
     mProgressBar = new GameProgressBar(explorer, 0.f, mExplorationTurns);
     mProgressBar->SetValue(0.f);
 
-    IsoObject * iObj = GetIsoObject();
-    const int pbX = iObj->GetX() + (iObj->GetWidth() - mProgressBar->GetWidth()) / 2;
-    const int pbY = iObj->GetY() - mProgressBar->GetHeight();
+    const int pbX = GetX() + (GetWidth() - mProgressBar->GetWidth()) / 2;
+    const int pbY = GetY() - mProgressBar->GetHeight();
     mProgressBar->SetPosition(pbX, pbY);
 
     // START

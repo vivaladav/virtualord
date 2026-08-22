@@ -315,10 +315,9 @@ void Unit::UpdateHealing(float delta)
 
 void Unit::PrepareShoot()
 {
-    const IsoObject * isoObj = GetIsoObject();
 
-    const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y0 = isoObj->GetY();
+    const float x0 = GetX() + GetWidth() * 0.5f;
+    const float y0 = GetY();
 
     mWeapon->Shoot(x0, y0);
 
@@ -345,13 +344,10 @@ void Unit::Heal()
     const unsigned int texInd = ID_PAR_HEAL_F1 + faction;
     Texture * tex = TextureManager::Instance()->GetSprite(SpriteFileGameObjectsRelated, texInd);
 
-    IsoObject * isoObj = GetIsoObject();
-    IsoObject * isoTarget = mTargetHealing->GetIsoObject();
-
-    const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y0 = isoObj->GetY();
-    const float tX = isoTarget->GetX() + (isoTarget->GetWidth() - tex->GetWidth()) * 0.5f;
-    const float tY = isoTarget->GetY() + (isoTarget->GetHeight() - tex->GetHeight()) * 0.5f;
+    const float x0 = GetX() + GetWidth() * 0.5f;
+    const float y0 = GetY();
+    const float tX = mTargetHealing->GetX() + (mTargetHealing->GetWidth() - tex->GetWidth()) * 0.5f;
+    const float tY = mTargetHealing->GetY() + (mTargetHealing->GetHeight() - tex->GetHeight()) * 0.5f;
     const float speed = 100.f;
 
     const DataParticleHealing pd =
