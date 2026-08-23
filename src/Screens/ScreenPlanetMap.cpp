@@ -19,6 +19,7 @@
 #include "Widgets/PanelPlanetResources.h"
 #include "Widgets/PlanetMap.h"
 #include "Widgets/WidgetsConstants.h"
+#include "Widgets/Tutorial/PanelInfoTutorial.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
@@ -33,6 +34,7 @@
 #include <sgl/sgui/Label.h>
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/LoadedDie.h>
+#include <sgl/utilities/StringManager.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 namespace
@@ -476,6 +478,52 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
             }
         }
     }
+
+#ifdef DEMO_MODE
+    // HANDLE END OF DEMO
+    const unsigned int finalMap = 4;
+    const unsigned int territory = game->GetCurrentTerritory();
+
+    if(territory == finalMap)
+    {
+        const int rendW = sgl::graphic::Renderer::Instance()->GetWidth();
+
+        const PlayerFaction occupier = game->GetPlanet(PLANET_1)->GetMapOccupier(territory);
+        const PlayerFaction localFaction = game->GetLocalPlayerFaction();
+
+        auto sm = sgl::utilities::StringManager::Instance();
+
+        if(occupier == localFaction)
+        {
+            const int infoW = 750;
+            const int infoH = 200;
+            const int infoX = (rendW - infoW) / 2;
+
+            auto info = new PanelInfoTutorial(infoW, infoH);
+
+            info->AddInfoEntry(sm->GetCString("TUT_PM_END_DEMO_1"), 7.f, true, false);
+            info->AddInfoEntry(sm->GetCString("TUT_PM_END_DEMO_2"), 13.f, true, false);
+            info->SetPosition(infoX, TutorialConstants::infoPlanetMapY);
+            info->SetFunctionOnFinished([info]{ info->DeleteLater(); });
+
+            info->StartInfo();
+        }
+        else
+        {
+            const int infoW = 600;
+            const int infoH = 150;
+            const int infoX = (rendW - infoW) / 2;
+
+            auto info = new PanelInfoTutorial(infoW, infoH);
+
+            info->AddInfoEntry(sm->GetCString("TUT_PM_END_FAIL"), 15.f, true, false);
+            info->SetPosition(infoX, TutorialConstants::infoPlanetMapY);
+            info->SetFunctionOnFinished([info]{ info->DeleteLater(); });
+
+            info->StartInfo();
+        }
+    }
+#endif
 }
 
 ScreenPlanetMap::~ScreenPlanetMap()
