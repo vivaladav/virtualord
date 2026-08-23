@@ -317,6 +317,8 @@ add_executable(
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h
     src/Tutorial/StepGameEnableCamera.cpp
+    src/Tutorial/StepGameEnding.h
+    src/Tutorial/StepGameEnding.cpp
     src/Tutorial/StepGameEndTurn.h
     src/Tutorial/StepGameEndTurn.cpp
     src/Tutorial/StepGameEndTurnIntro.h

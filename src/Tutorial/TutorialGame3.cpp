@@ -38,6 +38,7 @@
 #include "Tutorial/StepGameEndTurnSimple.h"
 #include "Tutorial/StepGameEnemyIntro.h"
 #include "Tutorial/StepGameEnemyKilled.h"
+#include "Tutorial/StepGameEnding.h"
 #include "Tutorial/StepGameIntro3.h"
 #include "Tutorial/StepGameMissionGoalsIcon.h"
 #include "Tutorial/StepGameMoveCamera.h"
@@ -2739,6 +2740,17 @@ TutorialGame3::TutorialGame3(Screen * screen)
             const auto unit = local->GetUnit(indSpawner1);
             return new StepGameWaitObjectIdle(unit);
         });
+    // FINAL MESSAGE
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([]
+        {
+            const core::Pointd2D p0(635, 300);
+            return new StepGameEnding(p0);
+        });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([] { return new StepDelay(0.5f); });
 }
 
 TutorialGame3::~TutorialGame3()
