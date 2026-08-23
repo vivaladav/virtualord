@@ -1461,9 +1461,9 @@ void ResourceLoader::SetupGameTextures()
             { 56, 99, 12, 12 },
 
             // LASER
-            { 69, 99, 10, 2 },
-            { 69, 102, 10, 2 },
-            { 69, 105, 10, 2 },
+            { 69, 99, 14, 3 },
+            { 69, 103, 14, 3 },
+            { 69, 107, 14, 3 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME],
