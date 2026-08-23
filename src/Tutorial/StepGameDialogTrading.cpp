@@ -44,7 +44,7 @@ StepGameDialogTrading::StepGameDialogTrading(GameHUD * HUD)
                             HandleButton(dialog->mButtonsSellPlus[DialogTrading::TR_BLOBS]);
                          });
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_TRAD_POST_1"), 0.f, false, true,
+    info->AddActionEntry(sm->GetCString("TUT_GAME_TRAD_POST_2"), 0.f, false, true,
                          [this, dialog, info]
                          {
                             HandleButton(dialog->mButtonSell);
