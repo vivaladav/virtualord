@@ -400,12 +400,19 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
         if(tutID == TUTORIAL_UNKNOWN)
             return false;
 
-        if(tutMan->GetTutorialState(tutID) == TS_IN_PROGRESS)
+        const TutorialState state = tutMan->GetTutorialState(tutID);
+
+        if(state == TS_IN_PROGRESS)
         {
             auto tut = tutMan->GetActiveTutorial();
 
             g.SetProgress(tut->GetNumStepsDone() * 100 / tut->GetNumStepsAtStart());
 
+            return false;
+        }
+        else if (state == TS_ABORTED)
+        {
+            g.SetProgress(0);
             return false;
         }
     }

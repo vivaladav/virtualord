@@ -396,6 +396,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- End mission dialog shows correct number of casualties.\n"
                   "- Mini-units no longer shoot only once.\n"
                   "- Casualties and kills stats are updated when using exploding mini-units too.\n"
+                  "- Quitting a tutorial doesn't award the mission goal \"tutorial completed\".\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
