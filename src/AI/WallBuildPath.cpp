@@ -365,13 +365,9 @@ bool WallBuildPath::Start()
 
     mNextCell = 0;
 
-    // center camera over target destination in the meanwhile
+    // track object while moving if local
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-    {
-        const float multSpeed = 20.f;
-        const float speedCam = mUnit->GetSpeed() * multSpeed;
-        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
-    }
+        mScreen->StartCameraTracking(mUnit);
 
     return InitNextMove();
 }
@@ -385,7 +381,7 @@ void WallBuildPath::Abort()
     else
     {
         if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-            mScreen->StopCameraMove();
+            mScreen->StopCameraTracking();
 
         mState = ABORTED;
     }
@@ -410,7 +406,7 @@ void WallBuildPath::InstantAbort()
         mOverlay->ClearPath();
 
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StopCameraMove();
+        mScreen->StopCameraTracking();
 
     // set new state
     mState = ABORTED;
@@ -429,7 +425,12 @@ bool WallBuildPath::Fail()
 
     // clear action data
     if(HasStarted())
+    {
         mScreen->SetObjectActionFailed(mUnit);
+
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraTracking();
+    }
 
     mState = FAILED;
 

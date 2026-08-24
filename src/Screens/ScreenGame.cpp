@@ -511,6 +511,7 @@ void ScreenGame::StartCameraTracking(const GameObject * obj)
 void ScreenGame::StopCameraTracking()
 {
     mCamController->ClearObjectTracking();
+    mCamController->StopMovement();
 }
 
 void ScreenGame::StopCameraMove()

@@ -61,13 +61,9 @@ bool ConquerPath::Start()
 
     mNextCell = 0;
 
-    // center camera over target destination in the meanwhile
+    // track object while moving if local
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-    {
-        const float multSpeed = 25.f;
-        const float speedCam = mUnit->GetSpeed() * multSpeed;
-        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
-    }
+        mScreen->StartCameraTracking(mUnit);
 
     // stat conquering first cell
     return InitNextConquest();
@@ -82,7 +78,7 @@ void ConquerPath::Abort()
     else
     {
         if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-            mScreen->StopCameraMove();
+            mScreen->StopCameraTracking();
 
         mState = ABORTED;
     }
@@ -104,7 +100,7 @@ void ConquerPath::InstantAbort()
         mOverlay->ClearPath();
 
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StopCameraMove();
+        mScreen->StopCameraTracking();
 
     // set new state
     mState = ABORTED;
@@ -384,7 +380,7 @@ bool ConquerPath::Fail()
         mScreen->SetObjectActionFailed(mUnit);
 
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StopCameraMove();
+        mScreen->StopCameraTracking();
 
     mState = FAILED;
 
@@ -395,7 +391,12 @@ bool ConquerPath::Finish()
 {
     // clear action data once the action is completed
     if(HasStarted())
+    {
         mScreen->SetObjectActionCompleted(mUnit);
+
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraTracking();
+    }
 
     mState = COMPLETED;
 

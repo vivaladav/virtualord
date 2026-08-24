@@ -66,10 +66,6 @@
 namespace
 {
 constexpr float timeAutoAttackDelay = 0.50f;
-
-constexpr float speedCameraMiniUnit = 1000.f;
-constexpr float speedCameraTower = 1500.f;
-
 }
 
 namespace game
@@ -4399,13 +4395,7 @@ bool GameMap::StartMiniUnitGroupMove()
         return false;
     }
     else
-    {
-        // move over first unit when starting moving of the group
-        if(obj->GetFaction() == mGame->GetLocalPlayerFaction())
-            mScreenGame->CenterCameraOverObject(obj, speedCameraMiniUnit);
-
         return true;
-    }
 }
 
 void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
@@ -4505,13 +4495,6 @@ void GameMap::ContinueMiniUnitGroupMove(const ObjectPath * prevOP)
         SetNextMiniUnitsGroupToMove();
 
         return ;
-    }
-    // about to move last object when there's more than 1
-    else if(numObjects > 1 && moved == (numObjects - 1) && lastObjMoved != nullptr)
-    {
-        // start to center camera on first moved object
-        if(lastObjMoved->GetFaction() == mGame->GetLocalPlayerFaction())
-            mScreenGame->CenterCameraOverObject(lastObjMoved, speedCameraMiniUnit);
     }
 
     // can't find a valid path to target -> failed
@@ -4728,7 +4711,10 @@ void GameMap::UpdateStructuresAttacking(float delta)
 
         // move over first unit when starting to attack
         if(obj->GetFaction() == mGame->GetLocalPlayerFaction())
+        {
+            const float speedCameraTower = 1500.f;
             mScreenGame->CenterCameraOverObject(obj, speedCameraTower);
+        }
 
         return ;
     }
