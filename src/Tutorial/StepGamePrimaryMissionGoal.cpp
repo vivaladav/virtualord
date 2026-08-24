@@ -42,12 +42,12 @@ StepGamePrimaryMissionGoal::StepGamePrimaryMissionGoal(GameHUD * HUD)
                             auto dialog = mHUD->GetDialogMissionGoals();
                             auto btn = dialog->mPrimaryCollectButtons[0];
 
-                            // NOTE no need to remove the function later as the dialog is
-                            // destroyed at the end
-                            btn->AddOnClickFunction([info]
+                            const auto cid = btn->AddOnClickFunction([info]
                                                     {
                                                         info->Continue();
                                                     });
+
+                            mCallbacks.emplace(btn, cid);
 
                             const int x = btn->GetScreenX() - padding;
                             const int y = btn->GetScreenY() - padding;
@@ -66,12 +66,12 @@ StepGamePrimaryMissionGoal::StepGamePrimaryMissionGoal(GameHUD * HUD)
                             auto dialog = mHUD->GetDialogMissionGoals();
                             auto btn = dialog->GetButtonEnd();
 
-                            // NOTE no need to remove the function later as the dialog is
-                            // destroyed when the button is clicked
-                            dialog->AddFunctionOnEnd([this]
+                            const auto cid = dialog->AddFunctionOnEnd([this]
                                                      {
                                                          SetDone();
                                                      });
+
+                            mCallbacks.emplace(btn, cid);
 
                             const int x = btn->GetScreenX() - padding;
                             const int y = btn->GetScreenY() - padding;
@@ -89,6 +89,10 @@ StepGamePrimaryMissionGoal::StepGamePrimaryMissionGoal(GameHUD * HUD)
 StepGamePrimaryMissionGoal::~StepGamePrimaryMissionGoal()
 {
     delete mFocusArea;
+
+    // clear callbacks
+    for(auto it : mCallbacks)
+        (it.first)->RemoveClickFunction(it.second);
 }
 
 void StepGamePrimaryMissionGoal::OnStart()

@@ -41,26 +41,26 @@ StepGameSetupMiniUnits::StepGameSetupMiniUnits(GameHUD * HUD, const std::vector<
                             {
                                 auto btn = dialog->mBtnRight;
 
-                                // NOTE no need to remove the function later as the dialog is
-                                // destroyed when the button is clicked
-                                btn->AddOnClickFunction([this, dialog, type]
-                                                    {
-                                                        if(dialog->GetTypeToBuild() == type)
-                                                            GetPanelInfo()->Continue();
-                                                    });
+                                const auto cid = btn->AddOnClickFunction([this, dialog, type]
+                                                        {
+                                                            if(dialog->GetTypeToBuild() == type)
+                                                                GetPanelInfo()->Continue();
+                                                        });
 
-                             const int padding = 10;
-                             const int x = btn->GetScreenX() - padding;
-                             const int y = btn->GetScreenY() - padding;
-                             const int w = btn->GetWidth() + (2 * padding);
-                             const int h = btn->GetHeight() + (2 * padding);
+                                mCallbacksBtn.emplace(btn, cid);
 
-                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+                                const int padding = 10;
+                                const int x = btn->GetScreenX() - padding;
+                                const int y = btn->GetScreenY() - padding;
+                                const int w = btn->GetWidth() + (2 * padding);
+                                const int h = btn->GetHeight() + (2 * padding);
 
-                             mFocusArea->SetScreenArea(x, y, w, h, true);
-                             mFocusArea->SetCornersColorAction();
-                             mFocusArea->SetBlinking(true);
-                             mFocusArea->SetVisible(true);
+                                GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+
+                                mFocusArea->SetScreenArea(x, y, w, h, true);
+                                mFocusArea->SetCornersColorAction();
+                                mFocusArea->SetBlinking(true);
+                                mFocusArea->SetVisible(true);
                          });
     }
 
@@ -99,31 +99,38 @@ StepGameSetupMiniUnits::StepGameSetupMiniUnits(GameHUD * HUD, const std::vector<
                          {
                             auto btn = dialog->mBtnBuild;
 
-                             // NOTE no need to remove the function later as the dialog is
-                             // destroyed when the button is clicked
-                             btn->AddOnClickFunction([this]
+                            const auto cid = btn->AddOnClickFunction([this]
                                                     {
                                                         SetDone();
                                                     });
 
-                             const int padding = 10;
-                             const int x = btn->GetScreenX() - padding;
-                             const int y = btn->GetScreenY() - padding;
-                             const int w = btn->GetWidth() + (2 * padding);
-                             const int h = btn->GetHeight() + (2 * padding);
+                            mCallbacksBtn.emplace(btn, cid);
 
-                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+                            const int padding = 10;
+                            const int x = btn->GetScreenX() - padding;
+                            const int y = btn->GetScreenY() - padding;
+                            const int w = btn->GetWidth() + (2 * padding);
+                            const int h = btn->GetHeight() + (2 * padding);
 
-                             mFocusArea->SetScreenArea(x, y, w, h, true);
-                             mFocusArea->SetCornersColorAction();
-                             mFocusArea->SetBlinking(true);
-                             mFocusArea->SetVisible(true);
+                            GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
                          });
 }
 
 StepGameSetupMiniUnits::~StepGameSetupMiniUnits()
 {
     delete mFocusArea;
+
+    // clear callbacks
+    for(auto it : mCallbacksBtn)
+        (it.first)->RemoveClickFunction(it.second);
+
+    for(auto it : mCallbacksSli)
+        (it.first)->RemoveOnValueFinalized(it.second);
 }
 
 void StepGameSetupMiniUnits::OnStart()
@@ -139,11 +146,13 @@ void StepGameSetupMiniUnits::OnStart()
 
 void StepGameSetupMiniUnits::HandleSlider(sgl::sgui::Slider * slider, int target)
 {
-    slider->AddOnValueFinalized([this, target, slider](int val)
+    const auto cid = slider->AddOnValueFinalized([this, target, slider](int val)
                                 {
                                     if(val == target)
                                         GetPanelInfo()->Continue();
                                 });
+
+    mCallbacksSli.emplace(slider, cid);
 
     // FOCUS
     const int paddingX = 20;

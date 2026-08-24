@@ -26,8 +26,8 @@ class DialogMissionGoals : public sgl::sgui::Widget
 public:
     DialogMissionGoals(MissionGoalsTracker * mgt);
 
-    const sgl::sgui::AbstractButton * GetButtonClose() const;
-    const sgl::sgui::AbstractButton * GetButtonEnd() const;
+    sgl::sgui::AbstractButton * GetButtonClose() const;
+    sgl::sgui::AbstractButton * GetButtonEnd() const;
 
     unsigned int AddFunctionOnClose(const std::function<void()> & f);
     void RemoveFunctionOnClose(unsigned int funId);
@@ -62,12 +62,12 @@ private:
     MissionGoalsTracker * mTrackerMG = nullptr;
 };
 
-inline const sgl::sgui::AbstractButton * DialogMissionGoals::GetButtonClose() const
+inline sgl::sgui::AbstractButton * DialogMissionGoals::GetButtonClose() const
 {
     return mBtnClose;
 }
 
-inline const sgl::sgui::AbstractButton * DialogMissionGoals::GetButtonEnd() const
+inline sgl::sgui::AbstractButton * DialogMissionGoals::GetButtonEnd() const
 {
     return mBtnEnd;
 }

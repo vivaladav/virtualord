@@ -399,6 +399,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Quitting a tutorial doesn't award the mission goal \"tutorial completed\".\n"
                   "- Cancelling an object action now works (reset to default action) for all"
                   " actions.\n"
+                  "- Fixed random crashes when aborting the tutorial while a dialog is open.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

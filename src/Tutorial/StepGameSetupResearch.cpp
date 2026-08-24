@@ -70,33 +70,37 @@ StepGameSetupResearch::StepGameSetupResearch(GameHUD * HUD, const std::vector<in
     info->AddActionEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_5"), 0.f, false, false,
                          [this, dialog]
                          {
-                            auto btn = dialog->mBtnClose;
+                            mBtn = dialog->mBtnClose;
 
-                             // NOTE no need to remove the function later as the dialog is
-                             // destroyed when the button is clicked
-                             btn->AddOnClickFunction([this]
+                            mCallbackBtn = mBtn->AddOnClickFunction([this]
                                                     {
                                                         SetDone();
                                                     });
 
-                             const int padding = 10;
-                             const int x = btn->GetScreenX() - padding;
-                             const int y = btn->GetScreenY() - padding;
-                             const int w = btn->GetWidth() + (2 * padding);
-                             const int h = btn->GetHeight() + (2 * padding);
+                            const int padding = 10;
+                            const int x = mBtn->GetScreenX() - padding;
+                            const int y = mBtn->GetScreenY() - padding;
+                            const int w = mBtn->GetWidth() + (2 * padding);
+                            const int h = mBtn->GetHeight() + (2 * padding);
 
-                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+                            GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                             mFocusArea->SetScreenArea(x, y, w, h, true);
-                             mFocusArea->SetCornersColorAction();
-                             mFocusArea->SetBlinking(true);
-                             mFocusArea->SetVisible(true);
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
                          });
 }
 
 StepGameSetupResearch::~StepGameSetupResearch()
 {
     delete mFocusArea;
+
+    // clear callbacks
+    mBtn->RemoveClickFunction(mCallbackBtn);
+
+    for(auto it : mCallbacksSli)
+        (it.first)->RemoveOnValueFinalized(it.second);
 }
 
 void StepGameSetupResearch::OnStart()
@@ -112,11 +116,13 @@ void StepGameSetupResearch::OnStart()
 
 void StepGameSetupResearch::HandleSlider(sgl::sgui::Slider * slider, int target)
 {
-    slider->AddOnValueFinalized([this, target, slider](int val)
+    const auto cid = slider->AddOnValueFinalized([this, target, slider](int val)
                                 {
                                     if(val == target)
                                         GetPanelInfo()->Continue();
                                 });
+
+    mCallbacksSli.emplace(slider, cid);
 
     // FOCUS
     const int paddingX = 20;

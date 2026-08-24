@@ -66,10 +66,12 @@ StepGameDialogTradingBuy::StepGameDialogTradingBuy(GameHUD * HUD)
                          [this, info]
                          {
                             auto btn = mDialog->mButtonBuy;
-                            btn->AddOnClickFunction([this]
-                            {
-                                GetPanelInfo()->Continue();
-                            });
+                            const auto cid = btn->AddOnClickFunction([this]
+                                                    {
+                                                        GetPanelInfo()->Continue();
+                                                    });
+
+                            mCallbacks.emplace(btn, cid);
 
                             // FOCUS
                             const int padding = 10;
@@ -94,31 +96,35 @@ StepGameDialogTradingBuy::StepGameDialogTradingBuy(GameHUD * HUD)
                          {
                             auto btn = mDialog->mButtonClose;
 
-                             // NOTE no need to remove the function later as the dialog is
-                             // destroyed when the button is clicked
-                             btn->AddOnClickFunction([this]
+                            const auto cid = btn->AddOnClickFunction([this]
                                                     {
                                                         SetDone();
                                                     });
 
-                             const int padding = 10;
-                             const int x = btn->GetScreenX() - padding;
-                             const int y = btn->GetScreenY() - padding;
-                             const int w = btn->GetWidth() + (2 * padding);
-                             const int h = btn->GetHeight() + (2 * padding);
+                            mCallbacks.emplace(btn, cid);
 
-                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+                            const int padding = 10;
+                            const int x = btn->GetScreenX() - padding;
+                            const int y = btn->GetScreenY() - padding;
+                            const int w = btn->GetWidth() + (2 * padding);
+                            const int h = btn->GetHeight() + (2 * padding);
 
-                             mFocusArea->SetScreenArea(x, y, w, h, true);
-                             mFocusArea->SetCornersColorAction();
-                             mFocusArea->SetBlinking(true);
-                             mFocusArea->SetVisible(true);
+                            GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
+                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
                          });
 }
 
 StepGameDialogTradingBuy::~StepGameDialogTradingBuy()
 {
     delete mFocusArea;
+
+    // clear callbacks
+    for(auto it : mCallbacks)
+        (it.first)->RemoveClickFunction(it.second);
 }
 
 void StepGameDialogTradingBuy::OnStart()
@@ -135,13 +141,13 @@ void StepGameDialogTradingBuy::OnStart()
 void StepGameDialogTradingBuy::HandleButton(unsigned int res, unsigned int value)
 {
     auto btn = mDialog->mButtonsBuyPlus[res];
-    btn->AddOnClickFunction([this, res, value]
-                            {
-                                if(mDialog->mBuy[res] == value)
+    const auto cid = btn->AddOnClickFunction([this, res, value]
                                 {
-                                    GetPanelInfo()->Continue();
-                                }
-                            });
+                                    if(mDialog->mBuy[res] == value)
+                                        GetPanelInfo()->Continue();
+                                });
+
+    mCallbacks.emplace(btn, cid);
 
     // FOCUS
     const int padding = 10;

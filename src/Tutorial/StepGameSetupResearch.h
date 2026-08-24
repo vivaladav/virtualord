@@ -3,10 +3,15 @@
 #include "Tutorial/TutorialInfoStep.h"
 
 #include <vector>
+#include <unordered_map>
 
 namespace sgl
 {
-    namespace sgui { class Slider; }
+    namespace sgui
+    {
+        class AbstractButton;
+        class Slider;
+    }
 }
 
 namespace game
@@ -28,6 +33,11 @@ private:
 
 private:
     FocusArea * mFocusArea = nullptr;
+
+    std::unordered_map<sgl::sgui::Slider *, unsigned int> mCallbacksSli;
+
+    sgl::sgui::AbstractButton * mBtn = nullptr;
+    unsigned int mCallbackBtn = 0;
 };
 
 } // namespace game

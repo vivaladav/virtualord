@@ -2,6 +2,12 @@
 
 #include "Tutorial/TutorialInfoStep.h"
 
+#include <unordered_map>
+
+namespace sgl
+{
+    namespace sgui { class AbstractButton; }
+}
 
 namespace game
 {
@@ -21,6 +27,11 @@ public:
 
 private:
     FocusArea * mFocusArea = nullptr;
+
+    std::unordered_map<sgl::sgui::AbstractButton *, unsigned int> mCallbacks;
+
+    sgl::sgui::AbstractButton * mBtn = nullptr;
+    unsigned int mCallbackBtn = 0;
 
     GameHUD * mHUD = nullptr;
 };
