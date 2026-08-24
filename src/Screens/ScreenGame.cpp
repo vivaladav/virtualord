@@ -241,10 +241,6 @@ bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
     mAllowSelection = bf.ReadBool();
     mLocalTurnInitDone = bf.ReadBool();
 
-    // camera controller
-    const bool cameraEnabled = bf.ReadBool();
-    mCamController->SetEnabled(cameraEnabled);
-
     // camera position
     mCameraInitPos.x = bf.ReadInt();
     mCameraInitPos.y = bf.ReadInt();
@@ -276,9 +272,6 @@ bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
 
     bf.WriteBool(mAllowSelection);
     bf.WriteBool(mLocalTurnInitDone);
-
-    // camera controller
-    bf.WriteBool(mCamController->IsEnabled());
 
     // save camera position
     auto cam = mCamController->GetCamera();
