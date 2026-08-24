@@ -252,14 +252,14 @@ bool ObjectPath::Fail()
     {
         mState = FAILED;
 
-        // clear action data once the action is completed - only for units
-        if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
-            mScreen->SetObjectActionFailed(mObj);
-
         // stop tracking object
         if(mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
            mScreen->GetGame()->IsAutoUnitCameraEnabled()))
             mScreen->StopCameraMove();
+
+        // clear action data once the action is completed - only for units
+        if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
+            mScreen->SetObjectActionFailed(mObj);
     }
     else
         mState = FAILED;
@@ -273,14 +273,14 @@ bool ObjectPath::Finish()
     {
         mState = COMPLETED;
 
-        // clear action data once the action is completed - only for units
-        if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
-            mScreen->SetObjectActionCompleted(mObj);
-
         // stop tracking object
         if(mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
            mScreen->GetGame()->IsAutoUnitCameraEnabled()))
                 mScreen->StopCameraTracking();
+
+        // clear action data once the action is completed - only for units
+        if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
+            mScreen->SetObjectActionCompleted(mObj);
     }
     else
         mState = COMPLETED;

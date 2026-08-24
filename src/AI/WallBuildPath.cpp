@@ -426,10 +426,11 @@ bool WallBuildPath::Fail()
     // clear action data
     if(HasStarted())
     {
-        mScreen->SetObjectActionFailed(mUnit);
-
+        // stop tracking object
         if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
             mScreen->StopCameraTracking();
+
+        mScreen->SetObjectActionFailed(mUnit);
     }
 
     mState = FAILED;
@@ -442,6 +443,10 @@ bool WallBuildPath::Finish()
     if(HasStarted())
     {
         mState = COMPLETED;
+
+        // stop tracking object
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraTracking();
 
         // clear action data once the action is completed
         mScreen->SetObjectActionCompleted(mUnit);

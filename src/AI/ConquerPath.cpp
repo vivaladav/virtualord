@@ -77,6 +77,7 @@ void ConquerPath::Abort()
         mState = ABORTING;
     else
     {
+        // stop tracking object
         if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
             mScreen->StopCameraTracking();
 
@@ -99,6 +100,7 @@ void ConquerPath::InstantAbort()
     if(mOverlay)
         mOverlay->ClearPath();
 
+    // stop tracking object
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
         mScreen->StopCameraTracking();
 
@@ -377,10 +379,13 @@ bool ConquerPath::Fail()
 
     // clear action data once the action is completed
     if(HasStarted())
-        mScreen->SetObjectActionFailed(mUnit);
+    {
+        // stop tracking object
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraTracking();
 
-    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StopCameraTracking();
+        mScreen->SetObjectActionFailed(mUnit);
+    }
 
     mState = FAILED;
 
@@ -392,10 +397,11 @@ bool ConquerPath::Finish()
     // clear action data once the action is completed
     if(HasStarted())
     {
-        mScreen->SetObjectActionCompleted(mUnit);
-
+        // stop tracking object
         if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
             mScreen->StopCameraTracking();
+
+        mScreen->SetObjectActionCompleted(mUnit);
     }
 
     mState = COMPLETED;
