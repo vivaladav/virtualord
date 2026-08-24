@@ -13,9 +13,9 @@
 
 namespace
 {
-constexpr unsigned int valEnergy = 140;
+constexpr unsigned int valEnergy = 130;
 constexpr unsigned int valMaterial = 100;
-constexpr unsigned int valResearch = 130;
+constexpr unsigned int valResearch = 120;
 }
 
 namespace game
@@ -51,7 +51,7 @@ StepGameDialogTradingBuy::StepGameDialogTradingBuy(GameHUD * HUD)
     info->AddActionEntry(strMaterial.c_str(), 0.f, false, true,
                          [this, info]
                          {
-                            HandleButton(DialogTrading::TR_MATERIAL, 100);
+                            HandleButton(DialogTrading::TR_MATERIAL, valMaterial);
                          });
 
     const std::string strResearch = sm->GetParametricString("TUT_GAME_TRAD_POST_4c",
@@ -59,7 +59,7 @@ StepGameDialogTradingBuy::StepGameDialogTradingBuy(GameHUD * HUD)
     info->AddActionEntry(strResearch.c_str(), 0.f, false, true,
                          [this, info]
                          {
-                            HandleButton(DialogTrading::TR_RESEARCH, 130);
+                            HandleButton(DialogTrading::TR_RESEARCH, valResearch);
                          });
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_TRAD_POST_3"), 0.f, false, true,
