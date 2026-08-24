@@ -861,9 +861,12 @@ void GameHUD::ShowDialogNewMiniUnitsSquad(GameObject * spawner)
         HideDialogNewMiniUnitsSquad();
     });
 
-    mDialogNewMiniUnits->AddFunctionOnClose([this]
+    mDialogNewMiniUnits->AddFunctionOnClose([this, spawner]
     {
         HideDialogNewMiniUnitsSquad();
+
+        // reset object action to default
+        mScreen->ResetSelectedObjectAction();
     });
 
     TemporaryClosePanels();

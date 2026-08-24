@@ -153,6 +153,7 @@ private:
     int CellToIndex(const Cell2D & cell) const;
 
     void ResetObjectAction(GameObject * obj);
+    void ResetSelectedObjectAction();
 
     bool SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, GameObjectsGroup * group, Player * player,
                            int squads, int elements, const std::function<void(bool)> & onDone = [](bool){});

@@ -1018,27 +1018,19 @@ void ScreenGame::CreateUI()
         // always hide panel self destruction
         mHUD->HidePanelSelfDestruction();
 
-        const GameObjectActionType action = selObj->GetActiveAction();
+        const GameObjectActionType activeAct = selObj->GetActiveAction();
 
         // special case MiniUnits
         if(selObj->GetObjectCategory() == ObjectData::CAT_MINI_UNIT)
             CancelMiniUnitsGroupPath(selObj->GetGroup());
 
-        if(action == CONQUER_CELL || action == BUILD_WALL)
+        if(activeAct == CONQUER_CELL || activeAct == BUILD_WALL || activeAct == BUILD_STRUCTURE ||
+           activeAct == SPAWN || activeAct == SELF_DESTRUCTION)
         {
-            // clear overlays
-            ClearCellOverlays();
-
-            // reset object action
-            ResetObjectAction(selObj);
-
-            // show current indicator
-            ShowActiveUnitIndicators(static_cast<Unit *>(selObj), mCurrCell);
+            ResetSelectedObjectAction();
 
             return ;
         }
-        else if(action == SELF_DESTRUCTION)
-            ResetObjectAction(selObj);
 
         CancelObjectAction(selObj);
     });
@@ -2100,6 +2092,23 @@ void ScreenGame::ResetObjectAction(GameObject * obj)
 {
     obj->SetActiveActionToDefault();
     obj->SetCurrentAction(IDLE);
+}
+
+void ScreenGame::ResetSelectedObjectAction()
+{
+    GameObject * selObj = mLocalPlayer->GetSelectedObject();
+
+    if(nullptr == selObj)
+        return ;
+
+    // clear overlays
+    ClearCellOverlays();
+
+    // reset object action
+    ResetObjectAction(selObj);
+
+    // show current indicator
+    ShowActiveUnitIndicators(static_cast<Unit *>(selObj), mCurrCell);
 }
 
 bool ScreenGame::SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, GameObjectsGroup * group,

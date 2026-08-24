@@ -397,6 +397,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- Mini-units no longer shoot only once.\n"
                   "- Casualties and kills stats are updated when using exploding mini-units too.\n"
                   "- Quitting a tutorial doesn't award the mission goal \"tutorial completed\".\n"
+                  "- Cancelling an object action now works (reset to default action) for all"
+                  " actions.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
