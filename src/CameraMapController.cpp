@@ -1,6 +1,7 @@
 #include "CameraMapController.h"
 
 #include "Game.h"
+#include "GameObjects/GameObject.h"
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/core/event/MouseButtonEvent.h>
 #include <sgl/core/event/MouseMotionEvent.h>
@@ -382,6 +383,42 @@ void CameraMapController::InitScrollingVelocity()
 
 void CameraMapController::Update(float delta)
 {
+    // ===== OBJECT TRACKING MOVEMENT =====
+    if(mObjTracked != nullptr)
+    {
+        const int cX = mObjTracked->GetX() + mObjTracked->GetWidth() / 2;
+        const int cY = mObjTracked->GetY() + mObjTracked->GetHeight() / 2;
+
+        const int maxDiff = 10;
+        const int diffX = std::abs(cX - mCamera->GetCenterX());
+        const int diffY = std::abs(cY - mCamera->GetCenterY());
+
+        // camera center is already very close to object -> set position to its center
+        if(diffX < maxDiff && diffY < maxDiff)
+        {
+            CenterCameraToPoint(cX, cY);
+
+            return ;
+        }
+        // camera center is far from object -> quickly move over it
+        else
+        {
+            const float minSpeed = 200.f;
+            const float maxSpeed = 2000.f;
+            const float diff = diffX > diffY ? diffX : diffY;
+            const float multDiff = 10.f;
+
+            float speed = multDiff * diff;
+
+            if(speed > maxSpeed)
+                speed = maxSpeed;
+            else if(speed < minSpeed)
+                speed = minSpeed;
+
+            MoveCenterCameraToPoint(cX, cY, speed);
+        }
+    }
+
     // ===== PROCEDURAL MOVEMENT =====
     if(mMoving)
     {

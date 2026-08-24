@@ -18,6 +18,7 @@ namespace game
 {
 
 class Game;
+class GameObject;
 
 class CameraMapController
 {
@@ -37,6 +38,8 @@ public:
 
     void CenterCameraToPoint(int x, int y);
     void MoveCenterCameraToPoint(int x, int y, float speed = 0.f);
+    void TrackObject(const GameObject * obj);
+    void ClearObjectTracking();
     void StopMovement();
     void ResetPosition();
 
@@ -72,6 +75,8 @@ private:
     sgl::graphic::Camera * mCamera = nullptr;
 
     Game * mGame = nullptr;
+
+    const GameObject * mObjTracked = nullptr;
 
     sgl::core::Pointd2D mMapT;
     sgl::core::Pointd2D mMapR;
@@ -131,6 +136,9 @@ inline void CameraMapController::SetScrollingSpeed(int val)
     // add 1 so min is guaranteed and 5 is the old 6
     mSpeedScrolling = mMinSpeedScrolling * (val + 1);
 }
+
+inline void CameraMapController::TrackObject(const GameObject * obj) { mObjTracked = obj; }
+inline void CameraMapController::ClearObjectTracking() { mObjTracked = nullptr; }
 
 inline bool CameraMapController::IsDragging() const { return mDragging; }
 

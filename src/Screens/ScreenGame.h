@@ -95,6 +95,8 @@ public:
     void CenterCameraOverCell(const Cell2D & cell, float speed = -1.f);
     void CenterCameraOverCell(unsigned int cellIndex, float speed = -1.f);
     void CenterCameraOverObject(const GameObject * obj, float speed = -1.f);
+    void StartCameraTracking(const GameObject * obj);
+    void StopCameraTracking();
     void StopCameraMove();
 
     Player * GetActivePlayer() const;

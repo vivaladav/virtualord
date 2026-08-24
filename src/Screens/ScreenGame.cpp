@@ -510,6 +510,16 @@ void ScreenGame::CenterCameraOverObject(const GameObject * obj, float speed)
     UpdateCurrentCell();
 }
 
+void ScreenGame::StartCameraTracking(const GameObject * obj)
+{
+    mCamController->TrackObject(obj);
+}
+
+void ScreenGame::StopCameraTracking()
+{
+    mCamController->ClearObjectTracking();
+}
+
 void ScreenGame::StopCameraMove()
 {
     mCamController->StopMovement();
