@@ -158,9 +158,6 @@ TutorialGame2::TutorialGame2(Screen * screen)
     auto panelTurn = hud->GetPanelTurnControl();
 
     // ===== SETUP =====
-    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
-    // make AI idle for now
-    AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), false); });
     // set all generators of diamonds and blobs to create them within 1 turn
     AddStep([gameMap]
         {

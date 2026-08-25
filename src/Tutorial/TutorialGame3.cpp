@@ -145,9 +145,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     auto localBase = local->GetBase();
 
     // ===== SETUP =====
-    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
-    // make AI idle for now
-    AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), false); });
+    // pause before start
     AddStep([] { return new StepDelay(0.5f); });
 
     // ===== PART 1 =====

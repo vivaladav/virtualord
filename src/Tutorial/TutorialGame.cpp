@@ -29,6 +29,15 @@ TutorialGame::TutorialGame(Screen * screen, TutorialId tutId)
     mSettingsAutoUnitCam = game->IsAutoUnitCameraEnabled();
 
     game->SetAutoUnitCamera(true);
+
+    // always disable camera controller when starting
+    mScreen->mCamController->SetEnabled(false);
+
+    // disable AI when starting
+    Player * playerAI = game->GetActivePlayerByIndex(1);
+    assert(playerAI != nullptr);
+    assert(playerAI->GetAI() != nullptr);
+    playerAI->GetAI()->SetActive(false);
 }
 
 TutorialGame::~TutorialGame()

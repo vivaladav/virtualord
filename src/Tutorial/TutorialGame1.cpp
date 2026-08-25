@@ -12,7 +12,6 @@
 #include "Indicators/OverlayWall.h"
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepDelay.h"
-#include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepGameAddEnemy.h"
 #include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBase.h"
@@ -116,9 +115,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     auto localBase = local->GetBase();
 
     // ===== SETUP =====
-    AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
-    // make AI idle for now
-    AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), false); });
+    // pause before start
     AddStep([] { return new StepDelay(0.5f); });
 
     // ===== PART 1 =====
