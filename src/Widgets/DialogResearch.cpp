@@ -85,7 +85,6 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     const int topRes2 = 10;
     const int stepRes = 10;
     const int stepSingle = 1;
-    const int stepTreshold = stepRes * 2;
 
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, 20, graphic::Font::NORMAL);
     auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
@@ -94,9 +93,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     auto texSliderBar = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BAR);
     auto texSliderBtn = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BTN);
 
-    int maxRes = 0;
     int valRes = 0;
-    int step = 0;
 
     // TITLE
     auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
@@ -126,26 +123,20 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
 
     x += icon->GetWidth() + marginIconR;
 
-    maxRes = mPlayer->GetStat(Player::MONEY).GetValue() / 2;
+    valRes = mResCenter->GetWantedResourceUsage(ER_MONEY);
 
-    if(maxRes > topRes)
-        maxRes = topRes;
-
-    valRes = mResCenter->GetResourceUsage(ER_MONEY);
-
-    if(valRes > maxRes)
-        valRes = maxRes;
+    if(valRes > topRes)
+        valRes = topRes;
 
     mSliderMoney = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
     y += (icon->GetHeight() - mSliderMoney->GetHeight()) / 2;
 
-    mSliderMoney->SetMinMax(minRes, maxRes);
+    mSliderMoney->SetMinMax(minRes, topRes);
     mSliderMoney->SetValue(valRes);
     mSliderMoney->SetPosition(x, y);
 
-    step = maxRes > stepTreshold ? stepRes : stepSingle;
-    mSliderMoney->SetStep(step);
+    mSliderMoney->SetStep(stepRes);
 
     x += mSliderMoney->GetWidth() + marginSliderR;
 
@@ -160,7 +151,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     {
         label->SetText(std::to_string(val).c_str());
 
-        mResCenter->SetResourceUsage(ER_MONEY, val);
+        mResCenter->SetWantedResourceUsage(ER_MONEY, val);
         UpdateOutput();
     });
 
@@ -174,26 +165,20 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
 
     x += icon->GetWidth() + marginIconR;
 
-    maxRes = mPlayer->GetStat(Player::ENERGY).GetValue() / 2;
+    valRes = mResCenter->GetWantedResourceUsage(ER_ENERGY);
 
-    if(maxRes > topRes)
-        maxRes = topRes;
-
-    valRes = mResCenter->GetResourceUsage(ER_ENERGY);
-
-    if(valRes > maxRes)
-        valRes = maxRes;
+    if(valRes > topRes)
+        valRes = topRes;
 
     mSliderEnergy = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
     y += (icon->GetHeight() - mSliderEnergy->GetHeight()) / 2;
 
-    mSliderEnergy->SetMinMax(minRes, maxRes);
+    mSliderEnergy->SetMinMax(minRes, topRes);
     mSliderEnergy->SetValue(valRes);
     mSliderEnergy->SetPosition(x, y);
 
-    step = maxRes > stepTreshold ? stepRes : stepSingle;
-    mSliderEnergy->SetStep(step);
+    mSliderEnergy->SetStep(stepRes);
 
     x += mSliderEnergy->GetWidth() + marginSliderR;
 
@@ -208,7 +193,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     {
         label->SetText(std::to_string(val).c_str());
 
-        mResCenter->SetResourceUsage(ER_ENERGY, val);
+        mResCenter->SetWantedResourceUsage(ER_ENERGY, val);
         UpdateOutput();
     });
 
@@ -222,26 +207,20 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
 
     x += icon->GetWidth() + marginIconR;
 
-    maxRes = mPlayer->GetStat(Player::MATERIAL).GetValue() / 2;
+    valRes = mResCenter->GetWantedResourceUsage(ER_MATERIAL);
 
-    if(maxRes > topRes)
-        maxRes = topRes;
-
-    valRes = mResCenter->GetResourceUsage(ER_MATERIAL);
-
-    if(valRes > maxRes)
-        valRes = maxRes;
+    if(valRes > topRes)
+        valRes = topRes;
 
     mSliderMaterial = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
     y += (icon->GetHeight() - mSliderMaterial->GetHeight()) / 2;
 
-    mSliderMaterial->SetMinMax(minRes, maxRes);
+    mSliderMaterial->SetMinMax(minRes, topRes);
     mSliderMaterial->SetValue(valRes);
     mSliderMaterial->SetPosition(x, y);
 
-    step = maxRes > stepTreshold ? stepRes : stepSingle;
-    mSliderMaterial->SetStep(step);
+    mSliderMaterial->SetStep(stepRes);
 
     x += mSliderMaterial->GetWidth() + marginSliderR;
 
@@ -256,7 +235,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     {
         label->SetText(std::to_string(val).c_str());
 
-        mResCenter->SetResourceUsage(ER_MATERIAL, val);
+        mResCenter->SetWantedResourceUsage(ER_MATERIAL, val);
         UpdateOutput();
     });
 
@@ -270,21 +249,16 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
 
     x += icon->GetWidth() + marginIconR;
 
-    maxRes = mPlayer->GetStat(Player::DIAMONDS).GetValue() / 2;
+    valRes = mResCenter->GetWantedResourceUsage(ER_DIAMONDS);
 
-    if(maxRes > topRes2)
-        maxRes = topRes2;
-
-    valRes = mResCenter->GetResourceUsage(ER_DIAMONDS);
-
-    if(valRes > maxRes)
-        valRes = maxRes;
+    if(valRes > topRes2)
+        valRes = topRes2;
 
     mSliderDiamonds = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
     y += (icon->GetHeight() - mSliderDiamonds->GetHeight()) / 2;
 
-    mSliderDiamonds->SetMinMax(minRes, maxRes);
+    mSliderDiamonds->SetMinMax(minRes, topRes2);
     mSliderDiamonds->SetValue(valRes);
     mSliderDiamonds->SetPosition(x, y);
     mSliderDiamonds->SetStep(stepSingle);
@@ -302,7 +276,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     {
         label->SetText(std::to_string(val).c_str());
 
-        mResCenter->SetResourceUsage(ER_DIAMONDS, val);
+        mResCenter->SetWantedResourceUsage(ER_DIAMONDS, val);
         UpdateOutput();
     });
 
@@ -316,21 +290,16 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
 
     x += icon->GetWidth() + marginIconR;
 
-    maxRes = mPlayer->GetStat(Player::BLOBS).GetValue() / 2;
+    valRes = mResCenter->GetWantedResourceUsage(ER_BLOBS);
 
-    if(maxRes > topRes2)
-        maxRes = topRes2;
-
-    valRes = mResCenter->GetResourceUsage(ER_BLOBS);
-
-    if(valRes > maxRes)
-        valRes = maxRes;
+    if(valRes > topRes2)
+        valRes = topRes2;
 
     mSliderBlobs = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
 
     y += (icon->GetHeight() - mSliderBlobs->GetHeight()) / 2;
 
-    mSliderBlobs->SetMinMax(minRes, maxRes);
+    mSliderBlobs->SetMinMax(minRes, topRes2);
     mSliderBlobs->SetValue(valRes);
     mSliderBlobs->SetPosition(x, y);
     mSliderBlobs->SetStep(stepSingle);
@@ -348,7 +317,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     {
         label->SetText(std::to_string(val).c_str());
 
-        mResCenter->SetResourceUsage(ER_BLOBS, val);
+        mResCenter->SetWantedResourceUsage(ER_BLOBS, val);
         UpdateOutput();
     });
 

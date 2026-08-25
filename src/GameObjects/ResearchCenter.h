@@ -24,7 +24,8 @@ public:
     int GetResourceProduction(ExtendedResource res) const override;
     int GetResourceUsage(ExtendedResource res) const override;
 
-    void SetResourceUsage(ExtendedResource res, int val);
+    void SetWantedResourceUsage(ExtendedResource res, int val);
+    int GetWantedResourceUsage(ExtendedResource res) const;
 
     void OnPositionChanged() override;
 
@@ -49,6 +50,7 @@ private:
 
 private:
     std::vector<int> mResUsage;
+    std::vector<int> mWantedResUsage;
 
     BlinkingHighlight * mHighlight = nullptr;
     BlinkingIconResearch * mIconResearch = nullptr;

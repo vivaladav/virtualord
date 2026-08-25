@@ -31,13 +31,14 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
 
     // init resource usage
     mResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
+    mWantedResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
 
     // set default usage wanted (will be updated in UpdateProduction)
     const int defUsage = 10;
 
-    mResUsage[ER_ENERGY] = defUsage;
-    mResUsage[ER_MATERIAL] = defUsage;
-    mResUsage[ER_MONEY] = defUsage;
+    mWantedResUsage[ER_ENERGY] = defUsage;
+    mWantedResUsage[ER_MATERIAL] = defUsage;
+    mWantedResUsage[ER_MONEY] = defUsage;
 
     UpdateProduction();
 
@@ -85,11 +86,13 @@ bool ResearchCenter::Load(sgl::utilities::BinaryFile & bf)
     const unsigned int numRes = bf.ReadUint();
 
     for(unsigned int i = 0; i < numRes; ++i)
-        mResUsage[i] = bf.ReadInt();
+        mWantedResUsage[i] = bf.ReadInt();
 
     // values
-    mResearchPerTurn = bf.ReadInt();
     mAlphaAnim = bf.ReadFloat();
+
+    // update production
+    UpdateProduction();
 
     return true;
 }
@@ -102,14 +105,13 @@ bool ResearchCenter::Save(sgl::utilities::BinaryFile & bf) const
         return false;
 
     // resource usage
-    const unsigned int numRes = mResUsage.size();
+    const unsigned int numRes = mWantedResUsage.size();
     bf.WriteUint(numRes);
 
-    for(int val : mResUsage)
+    for(int val : mWantedResUsage)
         bf.WriteInt(val);
 
     // values
-    bf.WriteInt(mResearchPerTurn);
     bf.WriteFloat(mAlphaAnim);
 
     return true;
@@ -169,17 +171,25 @@ int ResearchCenter::GetResourceUsage(ExtendedResource res) const
         return 0;
 }
 
-void ResearchCenter::SetResourceUsage(ExtendedResource res, int val)
+void ResearchCenter::SetWantedResourceUsage(ExtendedResource res, int val)
 {
     if(res >= NUM_EXTENDED_RESOURCES)
         return ;
 
-    if(mResUsage[res] == val)
+    if(mWantedResUsage[res] == val)
         return ;
 
-    mResUsage[res] = val;
+    mWantedResUsage[res] = val;
 
     UpdateProduction();
+}
+
+int ResearchCenter::GetWantedResourceUsage(ExtendedResource res) const
+{
+    if(res < NUM_EXTENDED_RESOURCES)
+        return mWantedResUsage[res];
+    else
+        return 0;
 }
 
 void ResearchCenter::OnPositionChanged()
@@ -224,6 +234,9 @@ void ResearchCenter::SetImage()
 
 void ResearchCenter::UpdateProduction()
 {
+    // reset usage
+    mResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
+
     // check owner
     auto p = GetOwner();
 
@@ -236,22 +249,37 @@ void ResearchCenter::UpdateProduction()
 
     // -- clamp usage to what's available --
     // ENERGY
-    const int energy = p->GetStat(Player::ENERGY).GetValue();
+    const int availEnergy = p->GetStat(Player::ENERGY).GetValue() -
+                            p->GetResourceConsumption(ER_ENERGY);
 
-    if(mResUsage[ER_ENERGY] > energy)
-        mResUsage[ER_ENERGY] = energy;
+    if(availEnergy < 0)
+        mResUsage[ER_ENERGY] = 0;
+    else if(mWantedResUsage[ER_ENERGY] > availEnergy)
+        mResUsage[ER_ENERGY] = availEnergy;
+    else
+        mResUsage[ER_ENERGY] = mWantedResUsage[ER_ENERGY];
 
     // MATERIAL
-    const int material = p->GetStat(Player::MATERIAL).GetValue();
+    const int availMaterial = p->GetStat(Player::MATERIAL).GetValue() -
+                              p->GetResourceConsumption(ER_MATERIAL);
 
-    if(mResUsage[ER_MATERIAL] > material)
-        mResUsage[ER_MATERIAL] = material;
+    if(availMaterial < 0)
+        mResUsage[ER_MATERIAL] = 0;
+    else if(mWantedResUsage[ER_MATERIAL] > availMaterial)
+        mResUsage[ER_MATERIAL] = availMaterial;
+    else
+        mResUsage[ER_MATERIAL] = mWantedResUsage[ER_MATERIAL];
 
     // MONEY
-    const int money = p->GetStat(Player::MONEY).GetValue();
+    const int availMoney = p->GetStat(Player::MONEY).GetValue() -
+                            p->GetResourceConsumption(ER_MONEY);
 
-    if(mResUsage[ER_MONEY] > money)
-        mResUsage[ER_MONEY] = money;
+    if(availMoney < 0)
+        mResUsage[ER_MONEY] = 0;
+    else if(mWantedResUsage[ER_MONEY] > availMoney)
+        mResUsage[ER_MONEY] = availMoney;
+    else
+        mResUsage[ER_MONEY] = mWantedResUsage[ER_MONEY];
 
     // no production if required resource is not used
     if(mResUsage[ER_ENERGY] == 0 || mResUsage[ER_MATERIAL] == 0 || mResUsage[ER_MONEY] == 0)
@@ -262,16 +290,26 @@ void ResearchCenter::UpdateProduction()
     }
 
     // BLOBS
-    const int blobs = p->GetStat(Player::BLOBS).GetValue();
+    const int availBlobs = p->GetStat(Player::BLOBS).GetValue() -
+                              p->GetResourceConsumption(ER_BLOBS);
 
-    if(mResUsage[ER_BLOBS] > blobs)
-        mResUsage[ER_BLOBS] = blobs;
+    if(availBlobs < 0)
+        mResUsage[ER_BLOBS] = 0;
+    else if(mWantedResUsage[ER_BLOBS] > availBlobs)
+        mResUsage[ER_BLOBS] = availBlobs;
+    else
+        mResUsage[ER_BLOBS] = mWantedResUsage[ER_BLOBS];
 
     // DIAMONDS
-    const int diamonds = p->GetStat(Player::DIAMONDS).GetValue();
+    const int availDiamonds = p->GetStat(Player::DIAMONDS).GetValue() -
+                              p->GetResourceConsumption(ER_DIAMONDS);
 
-    if(mResUsage[ER_DIAMONDS] > diamonds)
-        mResUsage[ER_DIAMONDS] = diamonds;
+    if(availDiamonds < 0)
+        mResUsage[ER_DIAMONDS] = 0;
+    else if(mWantedResUsage[ER_DIAMONDS] > availDiamonds)
+        mResUsage[ER_DIAMONDS] = availDiamonds;
+    else
+        mResUsage[ER_DIAMONDS] = mWantedResUsage[ER_DIAMONDS];
 
     // -- define research points production --
     const int maxProdElem = 40;
