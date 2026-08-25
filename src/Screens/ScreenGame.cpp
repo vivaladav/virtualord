@@ -147,8 +147,8 @@ ScreenGame::~ScreenGame()
 
     delete mTrackerMG;
 
-    delete mIsoMap;
     delete mGameMap;
+    delete mIsoMap;
 
     // NOTE delete overlays after GameMap because they're still used by its destructors
     delete mOverlayAttack;

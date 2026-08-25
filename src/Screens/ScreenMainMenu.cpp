@@ -403,6 +403,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Cancelling an object action now works (reset to default action) for all"
                   " actions.\n"
                   "- Fixed random crashes when aborting the tutorial while a dialog is open.\n"
+                  "- Fixed crash when leaving game while conquering cells.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
