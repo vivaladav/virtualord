@@ -181,8 +181,13 @@ void Trees::SpawnTree(int r0, int c0)
 
     gm->CreateObject(GetObjectType(), variant, NO_FACTION, r0, c0, false);
 
+    const GameObjectTypeId type = GetObjectType();
+
     // set cell type of new tree
-    gm->SetCellType(r0, c0, CT_TREES1);
+    if(type == ObjectData::TYPE_CACTUS1)
+        gm->SetCellType(r0, c0, CT_SAND);
+    else
+        gm->SetCellType(r0, c0, CT_TREES1);
 
     // set cell type of surrounding cells
     const int rows = gm->GetNumRows();
