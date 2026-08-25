@@ -656,12 +656,40 @@ enum SpriteIdTrees : unsigned int
     TREE3_3T_6,
     TREE3_3T_7,
 
+    // CACTUS TYPE 1
+    // 1 cactus
+    CACTUS1_1T_1,
+    CACTUS1_1T_2,
+    CACTUS1_1T_3,
+    CACTUS1_1T_4,
+    CACTUS1_1T_5,
+    CACTUS1_1T_6,
+    CACTUS1_1T_7,
+    // 2 cactuses
+    CACTUS1_2T_1,
+    CACTUS1_2T_2,
+    CACTUS1_2T_3,
+    CACTUS1_2T_4,
+    CACTUS1_2T_5,
+    CACTUS1_2T_6,
+    CACTUS1_2T_7,
+    // 3 cactuses
+    CACTUS1_3T_1,
+    CACTUS1_3T_2,
+    CACTUS1_3T_3,
+    CACTUS1_3T_4,
+    CACTUS1_3T_5,
+    CACTUS1_3T_6,
+    CACTUS1_3T_7,
+
     NUM_TREE1_VARIANTS = 8,
     MAX_TREE1_TREES = 4,
     NUM_TREE2_VARIANTS = 7,
     MAX_TREE2_TREES = 4,
     NUM_TREE3_VARIANTS = 7,
     MAX_TREE3_TREES = 3,
+    NUM_CACTUS1_VARIANTS = 7,
+    MAX_CACTUS1_TREES = 3,
 };
 
 // UNITS

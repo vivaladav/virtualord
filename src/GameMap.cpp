@@ -721,7 +721,7 @@ GameObject * GameMap::CreateObject(GameObjectTypeId type, GameObjectVariantId va
     else if(ObjectData::TYPE_BLOBS == type)
         o2a.obj  = new Blobs(data, initData);
     else if(ObjectData::TYPE_TREES1 == type || ObjectData::TYPE_TREES2 == type ||
-            ObjectData::TYPE_TREES3 == type)
+            ObjectData::TYPE_TREES3 == type || ObjectData::TYPE_CACTUS1 == type)
         o2a.obj  = new Trees(data, initData, variant);
     else if(ObjectData::TYPE_RADAR_STATION == type)
         o2a.obj = new RadarStation(data, initData);

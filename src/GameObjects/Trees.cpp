@@ -34,6 +34,11 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
         mNumVariants = NUM_TREE3_VARIANTS;
         mMaxNum = MAX_TREE3_TREES;
     }
+    else if(type == ObjectData::TYPE_CACTUS1)
+    {
+        mNumVariants = NUM_CACTUS1_VARIANTS;
+        mMaxNum = MAX_CACTUS1_TREES;
+    }
     else
     {
         mNumVariants = NUM_TREE1_VARIANTS;
@@ -233,6 +238,8 @@ void Trees::SetImage()
         spriteId0 = TREE2_1T_1;
     else if(type == ObjectData::TYPE_TREES3)
         spriteId0 = TREE3_1T_1;
+    else if(type == ObjectData::TYPE_CACTUS1)
+        spriteId0 = CACTUS1_1T_1;
 
     const unsigned int baseSpriteId = spriteId0 + (mNumVariants * (mNumTrees - 1));
     const unsigned int spriteId = baseSpriteId + mVariant;
@@ -265,6 +272,13 @@ void Trees::SetObjColors()
         mObjColors.push_back(0x37392dff);
         mObjColors.push_back(0x727255ff);
         mObjColors.push_back(0x464a36ff);
+    }
+    else if(type == ObjectData::TYPE_CACTUS1)
+    {
+        mObjColors.push_back(0xb3c270ff);
+        mObjColors.push_back(0x869056ff);
+        mObjColors.push_back(0x697043ff);
+        mObjColors.push_back(0x383b2bff);
     }
     else
     {

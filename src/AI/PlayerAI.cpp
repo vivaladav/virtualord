@@ -142,7 +142,7 @@ void PlayerAI::PrepareData()
                 mCollectables.push_back(obj);
             // store all trees
             else if(objType == ObjectData::TYPE_TREES1 || objType == ObjectData::TYPE_TREES2 ||
-                    objType == ObjectData::TYPE_TREES3)
+                    objType == ObjectData::TYPE_TREES3 || objType == ObjectData::TYPE_CACTUS1)
                 mTrees.push_back(obj);
         }
     }

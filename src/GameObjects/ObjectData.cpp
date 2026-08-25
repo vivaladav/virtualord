@@ -15,6 +15,7 @@ const GameObjectTypeId ObjectData::TYPE_BASE = 9094196730522238043u;
 const GameObjectTypeId ObjectData::TYPE_BASE_SPOT = 14134897545835206898u;
 const GameObjectTypeId ObjectData::TYPE_BLOBS = 1941259080517359621u;
 const GameObjectTypeId ObjectData::TYPE_BUNKER = 499816459377098859u;
+const GameObjectTypeId ObjectData::TYPE_CACTUS1 = 16490575835148238414u;
 const GameObjectTypeId ObjectData::TYPE_CITY_BLOCK = 17708476866137851777u;
 const GameObjectTypeId ObjectData::TYPE_DEFENSIVE_TOWER = 15727419491481753576u;
 const GameObjectTypeId ObjectData::TYPE_DIAMONDS = 4977511725422730637u;
@@ -60,6 +61,7 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::TITLES =
     { ObjectData::TYPE_BASE, "BASE"},
     { ObjectData::TYPE_BASE_SPOT, "BASE_SPOT"},
     { ObjectData::TYPE_BUNKER, "BUNKER"},
+    { ObjectData::TYPE_CACTUS1, "PLANTS"},
     { ObjectData::TYPE_CITY_BLOCK, "CITY_BLOCK"},
     { ObjectData::TYPE_DEFENSIVE_TOWER, "DEF_TOWER"},
     { ObjectData::TYPE_HOSPITAL, "HOSPITAL"},
@@ -105,6 +107,7 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::DESCRIPTIONS
     { ObjectData::TYPE_BASE, "DESC_BASE"},
     { ObjectData::TYPE_BASE_SPOT, "DESC_BASE_SPOT"},
     { ObjectData::TYPE_BUNKER, "DESC_BUNKER"},
+    { ObjectData::TYPE_CACTUS1, "DESC_PLANTS"},
     { ObjectData::TYPE_CITY_BLOCK, "DESC_CITY_BLOCK"},
     { ObjectData::TYPE_DEFENSIVE_TOWER, "DESC_DEF_TOWER"},
     { ObjectData::TYPE_HOSPITAL, "DESC_HOSPITAL"},
