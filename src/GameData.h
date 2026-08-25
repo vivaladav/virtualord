@@ -31,6 +31,8 @@ enum SpriteIdCells : unsigned int
     ID_TILE_NO_FACTION_OBJ_SURR,            // 20
     ID_TILE_ROCKS,
     ID_TILE_ROCKS_SURR,
+    ID_TILE_SAND,
+    ID_TILE_SAND_SURR,
 
     NUM_TILE_CELL_IDS
 };

@@ -3272,7 +3272,7 @@ int GameMap::DefineCellType(unsigned int ind, const GameMapCell & cell)
     // scene cell
     const bool sceneCell = CT_MOUNTAINS == cell.currType || CT_DIAMONDS_SOURCE == cell.currType ||
                            CT_BLOBS_SOURCE == cell.currType || CT_TREES1 == cell.currType ||
-                           CT_ROCKS == cell.currType;
+                           CT_ROCKS == cell.currType || CT_SAND == cell.currType ;
 
     if(sceneCell)
         return cell.currType;
