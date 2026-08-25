@@ -571,27 +571,6 @@ void DialogSettings::CreatePanelGame()
                                 mGame->SetAutoUnitCamera(checked);
                             });
 
-    // AUTO UNIT CAMERA
-    x = contX0;
-    y += blockSettingH;
-
-    label = new sgui::Label(mSM->GetCString("AUTO_SAVE"), font, panel);
-    mHeadersGame.emplace_back(label);
-    label->SetColor(colorTxt);
-    label->SetPosition(x, y);
-
-    cb = new SettingsCheckbox(panel);
-    cb->SetChecked(mGame->IsAutosaveEnabled());
-
-    x = panelContentW - cb->GetWidth() - marginPanelH;
-    y += (label->GetHeight() - cb->GetHeight()) * 0.5;
-    cb->SetPosition(x, y);
-
-    cb->AddOnToggleFunction([this](bool checked)
-                            {
-                                mGame->SetAutosaveEnabled(checked);
-                            });
-
     // TUTORIAL
     x = contX0;
     y += blockSettingH;
@@ -1197,7 +1176,6 @@ void DialogSettings::OnStringsChanged()
         "LANGUAGE",
         "AUTO_END_TURN",
         "AUTO_UNIT_CAM",
-        "AUTO_SAVE",
         "TUTORIAL",
     };
 
