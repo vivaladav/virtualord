@@ -959,7 +959,7 @@ void Game::CreatePlanets()
 #endif
     planet->AddMap("data/maps/01-e1.map", NO_FACTION, TER_ST_UNEXPLORED);
     planet->AddMap("data/maps/01-02.map", NO_FACTION, TER_ST_UNREACHABLE);
-    planet->AddMap("data/maps/80x80-01.map", NO_FACTION, TER_ST_UNREACHABLE);
+    planet->AddMap("data/maps/01-e2.map", NO_FACTION, TER_ST_UNREACHABLE);
     planet->AddMap("data/maps/01-03.map", NO_FACTION, TER_ST_UNREACHABLE);
 
     mPlanets.emplace(PLANET_1, planet);

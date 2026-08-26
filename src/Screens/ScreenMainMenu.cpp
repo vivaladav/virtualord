@@ -368,6 +368,7 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
+                  "- Third tutorial mission.\n"
                   "- Structure indicator turns green when it's possible to build and red when not.\n"
                   "- Add missing sound to UI sliders.\n"
                   "- Focus areas in tutorial are animated on show.\n"
@@ -379,6 +380,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New mountains version.\n"
                   "- New camera tracking objects when moving.\n"
                   "- New plant type: cactus.\n"
+                  "- 2 new maps (planet 1 completed).\n"
                   "\nCHANGES\n"
                   "- In tutorial 1, text explaining to move to tower stays on screen until you"
                   " center the view on it.\n"
