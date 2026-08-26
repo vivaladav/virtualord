@@ -160,8 +160,8 @@ bool WallBuildPath::InitNextBuild()
 
         const sgl::core::Pointd2D p = mIsoMap->GetCellPosition(mCells[mNextCell]);
         const float tileW = mIsoMap->GetTileWidth();
-        const float x1 = p.x + tileW * 0.2f;
-        const float x2 = p.x + tileW * 0.8f;
+        const float x1 = p.x + tileW * 0.15f;
+        const float x2 = p.x + tileW * 0.85f;
         const float y12 = p.y;
         const float speed = 80.f;
         const float decaySpeed = 10.f;
