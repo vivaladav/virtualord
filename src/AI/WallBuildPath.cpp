@@ -13,10 +13,13 @@
 #include "GameObjects/Wall.h"
 #include "Indicators/OverlayWall.h"
 #include "Indicators/WallIndicator.h"
+#include "Particles/DataParticleOutput.h"
+#include "Particles/UpdaterOutput.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/GameMapProgressBar.h"
 
+#include <sgl/graphic/ParticlesManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
@@ -150,6 +153,27 @@ bool WallBuildPath::InitNextBuild()
         mGameMap->BuildWall(nextCell, player, mBlockTypes[mNextCell]);
 
         mUnit->ActionStepCompleted(BUILD_WALL);
+
+                // emit notification
+        auto partMan = mScreen->GetParticlesManager();
+        auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
+
+        const sgl::core::Pointd2D p = mIsoMap->GetCellPosition(mCells[mNextCell]);
+        const float tileW = mIsoMap->GetTileWidth();
+        const float x1 = p.x + tileW * 0.2f;
+        const float x2 = p.x + tileW * 0.8f;
+        const float y12 = p.y;
+        const float speed = 80.f;
+        const float decaySpeed = 10.f;
+        const float timeLife = 0.75f;
+
+        const int costEne = Wall::GetCostEnergy(mLevel);
+        const DataParticleOutput pd1(-costEne, OT_ENERGY, x1, y12, speed, decaySpeed, timeLife);
+        pu->AddParticle(pd1);
+
+        const int costMat = Wall::GetCostMaterial(mLevel);
+        const DataParticleOutput pd2(-costMat, OT_MATERIAL, x2, y12, speed, decaySpeed, timeLife);
+        pu->AddParticle(pd2);
 
         ++mNextCell;
 
