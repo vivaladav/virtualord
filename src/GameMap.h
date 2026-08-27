@@ -140,7 +140,7 @@ public:
     // structure building
     bool CanBuildStructure(Unit * unit, const Cell2D & cell, Player * player, GameObjectTypeId st);
     void StartBuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st);
-    void BuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st);
+    GameObject * BuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st);
 
     // wall building
     bool HasResourcesToBuildWall(Unit * unit, unsigned int level);

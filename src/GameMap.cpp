@@ -1273,7 +1273,7 @@ void GameMap::StartBuildStructure(const Cell2D & cell, Player * player, GameObje
         player->SumResource(Player::BLOBS, -costs[RES_BLOBS]);
 }
 
-void GameMap::BuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st)
+GameObject * GameMap::BuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st)
 {
     // check if cell was of another faction
     const int ind = cell.row * mCols + cell.col;
@@ -1318,6 +1318,8 @@ void GameMap::BuildStructure(const Cell2D & cell, Player * player, GameObjectTyp
         DelPlayerCellVisibility(gcell, prevOwner);
 
     ApplyLocalVisibility();
+
+    return obj;
 }
 
 bool GameMap::HasResourcesToBuildWall(Unit * unit, unsigned int level)

@@ -36,6 +36,7 @@
 #include "Indicators/OverlaySelection.h"
 #include "Indicators/OverlayStructure.h"
 #include "Indicators/OverlayWall.h"
+#include "Particles/DataParticleOutput.h"
 #include "Particles/UpdaterDamage.h"
 #include "Particles/UpdaterHealing.h"
 #include "Particles/UpdaterHitPoints.h"
@@ -2444,7 +2445,7 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
 
     pb->AddFunctionOnCompleted([this, unit, cellTarget, player, st]
     {
-        mGameMap->BuildStructure(cellTarget, player, st);
+        auto obj = mGameMap->BuildStructure(cellTarget, player, st);
 
         unit->ActionStepCompleted(BUILD_STRUCTURE);
 
@@ -2466,7 +2467,48 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
         SetObjectActionCompleted(unit);
 
         if(player->IsLocal())
+        {
             mTrackerMG->AddStructureBuilt(st);
+
+            // show resources consumed
+            auto pu = static_cast<UpdaterOutput *>(mPartMan->GetUpdater(PU_OUTPUT));
+
+            const std::array<int, NUM_OBJ_COSTS> & costs = data.GetCosts();
+            const float mult1 = data.GetRows() == 1 ? 0.f : 0.25f;
+            const float mult2 = data.GetRows() == 1 ? 1.f : 0.75f;
+            const float x1 = obj->GetX() + obj->GetWidth() * mult1;
+            const float x2 = obj->GetX() + obj->GetWidth() * mult2;
+            const float marginV0 = 10.f;
+            const float y12 = obj->GetY() - marginV0;
+            const float marginV = 40.f;
+            const float y34 = y12 - marginV;
+            const float speed = 70.f;
+            const float decaySpeed = 10.f;
+            const bool allIcons = costs[OBJ_COST_BLOBS] > 0 || costs[OBJ_COST_DIAMONDS] > 0;
+            const float timeLife = allIcons ? 1.25f : 1.f;
+
+            const DataParticleOutput pd1(-costs[OBJ_COST_ENERGY], OT_ENERGY, x1, y12,
+                                         speed, decaySpeed, timeLife);
+            pu->AddParticle(pd1);
+
+            const DataParticleOutput pd2(-costs[OBJ_COST_MATERIAL], OT_MATERIAL, x2, y12,
+                                         speed, decaySpeed, timeLife);
+            pu->AddParticle(pd2);
+
+            if(costs[OBJ_COST_BLOBS] > 0)
+            {
+                const DataParticleOutput pd1(-costs[OBJ_COST_BLOBS], OT_BLOBS, x1, y34,
+                                         speed, decaySpeed, timeLife);
+                pu->AddParticle(pd1);
+            }
+
+            if(costs[OBJ_COST_DIAMONDS] > 0)
+            {
+                const DataParticleOutput pd1(-costs[OBJ_COST_DIAMONDS], OT_DIAMONDS, x2, y34,
+                                         speed, decaySpeed, timeLife);
+                pu->AddParticle(pd1);
+            }
+        }
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/build-01.ogg", 250);

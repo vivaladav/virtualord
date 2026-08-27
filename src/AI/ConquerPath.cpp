@@ -191,7 +191,8 @@ bool ConquerPath::InitNextConquest()
 
             const float x1 = mUnit->GetX() + mUnit->GetWidth() * 0.2f;
             const float x2 = mUnit->GetX() + mUnit->GetWidth() * 0.8f;
-            const float y12 = mUnit->GetY();
+            const float marginV0 = 10.f;
+            const float y12 = mUnit->GetY() - marginV0;
             const float speed = 80.f;
             const float decaySpeed = 10.f;
             const float timeLife = 0.75f;
