@@ -184,21 +184,24 @@ bool ConquerPath::InitNextConquest()
         ap->FadeOutSound("game/conquer-01.ogg", 200);
 
         // emit notification
-        auto partMan = mScreen->GetParticlesManager();
-        auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
+        if(mLocal)
+        {
+            auto partMan = mScreen->GetParticlesManager();
+            auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-        const float x1 = mUnit->GetX() + mUnit->GetWidth() * 0.2f;
-        const float x2 = mUnit->GetX() + mUnit->GetWidth() * 0.8f;
-        const float y12 = mUnit->GetY();
-        const float speed = 80.f;
-        const float decaySpeed = 10.f;
-        const float timeLife = 0.75f;
+            const float x1 = mUnit->GetX() + mUnit->GetWidth() * 0.2f;
+            const float x2 = mUnit->GetX() + mUnit->GetWidth() * 0.8f;
+            const float y12 = mUnit->GetY();
+            const float speed = 80.f;
+            const float decaySpeed = 10.f;
+            const float timeLife = 0.75f;
 
-        const DataParticleOutput pd1(-COST_ENERGY, OT_ENERGY, x1, y12, speed, decaySpeed, timeLife);
-        pu->AddParticle(pd1);
+            const DataParticleOutput pd1(-COST_ENERGY, OT_ENERGY, x1, y12, speed, decaySpeed, timeLife);
+            pu->AddParticle(pd1);
 
-        const DataParticleOutput pd2(-COST_MATERIAL, OT_MATERIAL, x2, y12, speed, decaySpeed, timeLife);
-        pu->AddParticle(pd2);
+            const DataParticleOutput pd2(-COST_MATERIAL, OT_MATERIAL, x2, y12, speed, decaySpeed, timeLife);
+            pu->AddParticle(pd2);
+        }
 
         ++mNextCell;
 
