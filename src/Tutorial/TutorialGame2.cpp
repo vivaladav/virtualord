@@ -659,7 +659,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const auto unit = local->GetUnit(indWorker1);
                 const core::Pointd2D p0(1200, 150);
-                const Cell2D cellEnd(18, 10);
+                const Cell2D cellEnd(18, 9);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
@@ -675,7 +675,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const core::Pointd2D p0(1000, 200);
                 const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
-                const Cell2D target(18, 9);
+                const Cell2D target(18, 8);
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
             });
     AddStep([this, local, isoMap, game]
@@ -2180,6 +2180,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 return new StepGameDialogTrading(hud);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    AddStep([] { return new StepDelay(0.5f); });
     // BUILD SOLDIER 2
     AddStep([]
             {
@@ -2276,6 +2277,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const int movY = 300;
                 return new StepGameMoveCamera(movX, movY);
             });
+    AddStep([] { return new StepDelay(0.5f); });
     // MOVE SOLDIER 2 NEAR WALL
     AddStep([this, local, isoMap, game]
             {
@@ -2284,6 +2286,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                 const core::Pointd2D p0(200, 600);
                 return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
+    AddStep([] { return new StepDelay(0.5f); });
     // ANNOUNCE FIGHT
     AddStep([]
             {
