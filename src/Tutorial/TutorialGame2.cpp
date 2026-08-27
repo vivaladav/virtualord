@@ -1678,7 +1678,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indSoldier1);
-                const Cell2D target(26, 27);
+                const Cell2D target(28, 25);
                 const core::Pointd2D p0(300, 300);
                 return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
