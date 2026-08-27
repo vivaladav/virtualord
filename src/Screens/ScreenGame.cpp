@@ -2161,7 +2161,20 @@ bool ScreenGame::SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, Game
         assert(mu != nullptr);
 
         if(player->IsLocal())
+        {
             mTrackerMG->AddMiniUnitCreated();
+
+            // show resources consumed
+            const ObjectData & data = GetGame()->GetObjectsRegistry()->GetObjectData(type);
+            const std::array<int, NUM_OBJ_COSTS> & costs = data.GetCosts();
+
+            std::vector<int> vc(costs.begin(), costs.end());
+
+            for(int & it : vc)
+                it *= elements;
+
+            ShowParticlesCost(vc, mu);
+        }
 
         mu->SetGroup(group);
 
