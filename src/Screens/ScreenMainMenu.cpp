@@ -381,6 +381,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New camera tracking objects when moving.\n"
                   "- New plant type: cactus.\n"
                   "- 2 new maps (planet 1 completed).\n"
+                  "- Units and structures show resources spent when doing something.\n"
                   "\nCHANGES\n"
                   "- In tutorial 1, text explaining to move to tower stays on screen until you"
                   " center the view on it.\n"

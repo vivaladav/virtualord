@@ -2228,10 +2228,18 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
         gen->ActionStepCompleted(BUILD_UNIT);
         gen->SetCurrentAction(GameObjectActionType::IDLE);
 
-        mGameMap->CreateUnit(type, cell, player);
+        auto unit = mGameMap->CreateUnit(type, cell, player);
 
         if(player->IsLocal())
+        {
             mTrackerMG->AddUnitCreated();
+
+            // show resources consumed
+            const ObjectData & data = GetGame()->GetObjectsRegistry()->GetObjectData(type);
+            const std::array<int, NUM_OBJ_COSTS> & costs = data.GetCosts();
+            const std::vector<int> vc(costs.begin(), costs.end());
+            ShowParticlesCost(vc, unit);
+        }
 
         // add unit to map if cell is visible to local player
         if(mGameMap->IsCellVisibleToLocalPlayer(cell.row, cell.col))
@@ -2408,26 +2416,10 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
             ap->PlaySound("game/conquer-05.ogg");
 
             // show resources spent
-            auto pu = static_cast<UpdaterOutput *>(mPartMan->GetUpdater(PU_OUTPUT));
-
             const int size = target->GetRows() * target->GetCols();
-            const float mult1 = size == 1 ? 0.f : 0.25f;
-            const float mult2 = size == 1 ? 1.f : 0.75f;
-            const float x1 = target->GetX() + target->GetWidth() * mult1;
-            const float x2 = target->GetX() + target->GetWidth() * mult2;
-            const float marginV0 = 10.f;
-            const float y12 = target->GetY() - marginV0;
-            const float speed = 70.f;
-            const float decaySpeed = 10.f;
-            const float timeLife = 1.f;
-
-            const DataParticleOutput pd1(-COST_CELL_CONQ_ENERGY * size, OT_ENERGY, x1, y12,
-                                         speed, decaySpeed, timeLife);
-            pu->AddParticle(pd1);
-
-            const DataParticleOutput pd2(-COST_CELL_CONQ_MATERIAL * size, OT_MATERIAL, x2, y12,
-                                         speed, decaySpeed, timeLife);
-            pu->AddParticle(pd2);
+            const std::vector<int> vc({ COST_CELL_CONQ_ENERGY * size,
+                                        COST_CELL_CONQ_MATERIAL * size, 0, 0});
+            ShowParticlesCost(vc, target);
         }
     });
 
@@ -2493,43 +2485,9 @@ bool ScreenGame::SetupStructureBuilding(Unit * unit, const Cell2D & cellTarget, 
             mTrackerMG->AddStructureBuilt(st);
 
             // show resources consumed
-            auto pu = static_cast<UpdaterOutput *>(mPartMan->GetUpdater(PU_OUTPUT));
-
             const std::array<int, NUM_OBJ_COSTS> & costs = data.GetCosts();
-            const float mult1 = data.GetRows() == 1 ? 0.f : 0.25f;
-            const float mult2 = data.GetRows() == 1 ? 1.f : 0.75f;
-            const float x1 = obj->GetX() + obj->GetWidth() * mult1;
-            const float x2 = obj->GetX() + obj->GetWidth() * mult2;
-            const float marginV0 = 10.f;
-            const float y12 = obj->GetY() - marginV0;
-            const float marginV = 40.f;
-            const float y34 = y12 - marginV;
-            const float speed = 70.f;
-            const float decaySpeed = 10.f;
-            const bool allIcons = costs[OBJ_COST_BLOBS] > 0 || costs[OBJ_COST_DIAMONDS] > 0;
-            const float timeLife = allIcons ? 1.25f : 1.f;
-
-            const DataParticleOutput pd1(-costs[OBJ_COST_ENERGY], OT_ENERGY, x1, y12,
-                                         speed, decaySpeed, timeLife);
-            pu->AddParticle(pd1);
-
-            const DataParticleOutput pd2(-costs[OBJ_COST_MATERIAL], OT_MATERIAL, x2, y12,
-                                         speed, decaySpeed, timeLife);
-            pu->AddParticle(pd2);
-
-            if(costs[OBJ_COST_BLOBS] > 0)
-            {
-                const DataParticleOutput pd1(-costs[OBJ_COST_BLOBS], OT_BLOBS, x1, y34,
-                                         speed, decaySpeed, timeLife);
-                pu->AddParticle(pd1);
-            }
-
-            if(costs[OBJ_COST_DIAMONDS] > 0)
-            {
-                const DataParticleOutput pd1(-costs[OBJ_COST_DIAMONDS], OT_DIAMONDS, x2, y34,
-                                         speed, decaySpeed, timeLife);
-                pu->AddParticle(pd1);
-            }
+            const std::vector<int> vc(costs.begin(), costs.end());
+            ShowParticlesCost(vc, obj);
         }
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
@@ -3904,6 +3862,46 @@ void ScreenGame::ClearCellOverlays()
 
     mOverlayWall->ClearPath();
     mOverlayWall->HideTarget();
+}
+
+void ScreenGame::ShowParticlesCost(const std::vector<int> & cost, const GameObject * obj)
+{
+    auto pu = static_cast<UpdaterOutput *>(mPartMan->GetUpdater(PU_OUTPUT));
+
+    const float mult1 = obj->GetRows() == 1 ? 0.f : 0.25f;
+    const float mult2 = obj->GetRows() == 1 ? 1.f : 0.75f;
+    const float x1 = obj->GetX() + obj->GetWidth() * mult1;
+    const float x2 = obj->GetX() + obj->GetWidth() * mult2;
+    const float marginV0 = 10.f;
+    const float y12 = obj->GetY() - marginV0;
+    const float marginV = 40.f;
+    const float y34 = y12 - marginV;
+    const float speed = 70.f;
+    const float decaySpeed = 10.f;
+    const bool allIcons = cost[OBJ_COST_BLOBS] > 0 || cost[OBJ_COST_DIAMONDS] > 0;
+    const float timeLife = allIcons ? 1.25f : 1.f;
+
+    const DataParticleOutput pd1(-cost[OBJ_COST_ENERGY], OT_ENERGY, x1, y12,
+                                 speed, decaySpeed, timeLife);
+    pu->AddParticle(pd1);
+
+    const DataParticleOutput pd2(-cost[OBJ_COST_MATERIAL], OT_MATERIAL, x2, y12,
+                                 speed, decaySpeed, timeLife);
+    pu->AddParticle(pd2);
+
+    if(cost[OBJ_COST_BLOBS] > 0)
+    {
+        const DataParticleOutput pd1(-cost[OBJ_COST_BLOBS], OT_BLOBS, x1, y34,
+                                     speed, decaySpeed, timeLife);
+        pu->AddParticle(pd1);
+    }
+
+    if(cost[OBJ_COST_DIAMONDS] > 0)
+    {
+        const DataParticleOutput pd1(-cost[OBJ_COST_DIAMONDS], OT_DIAMONDS, x2, y34,
+                                     speed, decaySpeed, timeLife);
+        pu->AddParticle(pd1);
+    }
 }
 
 int ScreenGame::CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool building)
