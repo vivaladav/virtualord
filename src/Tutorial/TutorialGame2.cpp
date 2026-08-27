@@ -761,7 +761,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indSoldier1);
-                const Cell2D target(14, 19);
+                const Cell2D target(15, 20);
                 const core::Pointd2D p0(1150, 500);
                 return new StepGameMoveUnitSimple(game, unit, isoMap, target, p0);
             });
@@ -949,7 +949,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([this]
             {
                 const GameObject * obj = GetObjectInCell(cellResCenter);
-                const float speed = 800.f;
+                const float speed = 1000.f;
                 return new StepGameMoveCameraOverObject(obj, speed);
             });
     AddStep([] { return new StepDelay(0.5f); });
