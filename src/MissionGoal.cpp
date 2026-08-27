@@ -114,7 +114,10 @@ const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORI
     { TYPE_TERRITORY_CONTROL_TURNS, MC_CONQUEST },
 };
 
-MissionGoal::MissionGoal() { }
+MissionGoal::MissionGoal()
+{
+    mRewards.assign(NUM_EXTENDED_RESOURCES, 0);
+}
 
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
                          unsigned int extraVal, bool primary, bool hidden)
@@ -137,17 +140,9 @@ bool MissionGoal::Load(sgl::utilities::BinaryFile & bf)
     // data
     mId = bf.ReadUint();
     mType = bf.ReadSizeT();
-    mCategory = static_cast<MissionCategory>(bf.ReadUint());
     mQuantity = bf.ReadUint();
     mExtraValue = bf.ReadUint();
     mProgress = bf.ReadUint();
-
-    // rewards
-    const unsigned int numRewards = bf.ReadUint();
-    mRewards.resize(numRewards);
-
-    for(unsigned int i = 0; i < numRewards; ++i)
-        mRewards[i] = bf.ReadInt();
 
     // flags
     mCompleted = bf.ReadBool();
@@ -155,6 +150,10 @@ bool MissionGoal::Load(sgl::utilities::BinaryFile & bf)
     mRewardCollected = bf.ReadBool();
     mPrimary = bf.ReadBool();
     mHidden = bf.ReadBool();
+
+    // update data
+    SetCategory();
+    SetMissionRewards();
 
     return true;
 }
@@ -164,16 +163,9 @@ bool MissionGoal::Save(sgl::utilities::BinaryFile & bf) const
     // data
     bf.WriteUint(mId);
     bf.WriteSizeT(mType);
-    bf.WriteUint(mCategory);
     bf.WriteUint(mQuantity);
     bf.WriteUint(mExtraValue);
     bf.WriteInt(mProgress);
-
-    // rewards
-    bf.WriteUint(mRewards.size());
-
-    for(const int r : mRewards)
-        bf.WriteInt(r);
 
     // flags
     bf.WriteBool(mCompleted);
@@ -361,8 +353,14 @@ void MissionGoal::SetMissionRewards()
         }
         else if(mType == TYPE_DESTROY_ENEMY_UNITS)
         {
-            const int multMoney = 200;
+            const int multMoney = 150;
             mRewards[ER_MONEY] = mQuantity * multMoney;
+
+            const int multEnergy = 60;
+            mRewards[ER_ENERGY] = mQuantity * multEnergy;
+
+            const int multMaterial = 60;
+            mRewards[ER_MATERIAL] = mQuantity * multMaterial;
         }
         else if(mType == TYPE_CONQUER_GEN_ENERGY || mType == TYPE_CONQUER_GEN_MATERIAL)
         {
