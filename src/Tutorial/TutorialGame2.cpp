@@ -659,7 +659,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const auto unit = local->GetUnit(indWorker1);
                 const core::Pointd2D p0(1200, 150);
-                const Cell2D cellEnd(18, 9);
+                const Cell2D cellEnd(18, 10);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });
@@ -675,14 +675,14 @@ TutorialGame2::TutorialGame2(Screen * screen)
             {
                 const core::Pointd2D p0(1000, 200);
                 const Cell2D & cellStart = GetOverlayCellConquest()->GetCellStart();
-                const Cell2D target(18, 8);
+                const Cell2D target(15, 8);
                 return new StepGameConquerCellsSimple(game, isoMap, cellStart, target, p0);
             });
     AddStep([this, local, isoMap, game]
             {
                 const auto unit = local->GetUnit(indSoldier1);
                 const core::Pointd2D p0(1200, 150);
-                const Cell2D cellEnd(15, 8);
+                const Cell2D cellEnd(18, 9);
                 return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
             });
     AddStep([] { return new StepDelay(0.5f); });

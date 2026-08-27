@@ -130,7 +130,7 @@ void LootBox::Open(Player * p)
                   static_cast<unsigned int>(NUM_LB_PRIZES));
 
     const float speed = 40.f;
-    const float decaySpeed = 100.f;
+    const float decaySpeed = 80.f;
     const float timeLife = 1.f;
     DataParticleOutput pd(mPrizeQuantity, ot[mPrizeType], x0, y0, speed, decaySpeed, timeLife);
 
