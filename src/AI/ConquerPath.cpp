@@ -1,6 +1,7 @@
 #include "AI/ConquerPath.h"
 
 #include "Game.h"
+#include "GameConstants.h"
 #include "GameMap.h"
 #include "IsoLayer.h"
 #include "IsoObject.h"
@@ -20,12 +21,6 @@
 
 #include <cassert>
 #include <cmath>
-
-namespace
-{
-constexpr int COST_ENERGY = 5;
-constexpr int COST_MATERIAL = 5;
-}
 
 namespace game
 {
@@ -124,8 +119,8 @@ bool ConquerPath::HasResourcesToConquerCell()
         return false;
 
     // check if player has enough resources
-    return mPlayer->HasEnough(Player::Stat::ENERGY, COST_ENERGY) &&
-           mPlayer->HasEnough(Player::Stat::MATERIAL, COST_MATERIAL);
+    return mPlayer->HasEnough(Player::Stat::ENERGY, COST_CELL_CONQ_ENERGY) &&
+           mPlayer->HasEnough(Player::Stat::MATERIAL, COST_CELL_CONQ_MATERIAL);
 }
 
 bool ConquerPath::InitNextConquest()
@@ -164,8 +159,8 @@ bool ConquerPath::InitNextConquest()
         mOverlay->PopFrontPath();
 
     // take resource from player
-    mPlayer->SumResource(Player::Stat::ENERGY, -COST_ENERGY);
-    mPlayer->SumResource(Player::Stat::MATERIAL, -COST_MATERIAL);
+    mPlayer->SumResource(Player::Stat::ENERGY, -COST_CELL_CONQ_ENERGY);
+    mPlayer->SumResource(Player::Stat::MATERIAL, -COST_CELL_CONQ_MATERIAL);
 
     // create progress bar
     GameHUD * HUD = mScreen->GetHUD();
@@ -197,10 +192,12 @@ bool ConquerPath::InitNextConquest()
             const float decaySpeed = 10.f;
             const float timeLife = 0.75f;
 
-            const DataParticleOutput pd1(-COST_ENERGY, OT_ENERGY, x1, y12, speed, decaySpeed, timeLife);
+            const DataParticleOutput pd1(-COST_CELL_CONQ_ENERGY, OT_ENERGY, x1, y12,
+                                         speed, decaySpeed, timeLife);
             pu->AddParticle(pd1);
 
-            const DataParticleOutput pd2(-COST_MATERIAL, OT_MATERIAL, x2, y12, speed, decaySpeed, timeLife);
+            const DataParticleOutput pd2(-COST_CELL_CONQ_MATERIAL, OT_MATERIAL, x2, y12,
+                                         speed, decaySpeed, timeLife);
             pu->AddParticle(pd2);
         }
 
@@ -391,8 +388,8 @@ void ConquerPath::UpdatePathCost()
         const bool notConquered = owner == nullptr || owner->GetFaction() != f;
 
         mCostUnitEnergy += notConquered * mUnit->GetEnergyForActionStep(CONQUER_CELL);
-        mCostResEnergy += notConquered * COST_ENERGY;
-        mCostResMaterial += notConquered * COST_MATERIAL;
+        mCostResEnergy += notConquered * COST_CELL_CONQ_ENERGY;
+        mCostResMaterial += notConquered * COST_CELL_CONQ_MATERIAL;
     }
 }
 

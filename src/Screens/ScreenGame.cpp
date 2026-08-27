@@ -2370,14 +2370,14 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
     }
 
     // start conquest
-    mGameMap->StartConquerStructure(end, player);
+    mGameMap->StartConquerStructure(target, player);
 
     // create and init progress bar
     const Cell2D targetCell0(target->GetRow0(), target->GetCol0());
 
     auto pb = mHUD->CreateProgressBarInCell(targetCell0, unit->GetTimeConquestStructure(), player->GetFaction());
 
-    pb->AddFunctionOnCompleted([this, end, player, unit]
+    pb->AddFunctionOnCompleted([this, end, player, unit, target]
     {
         mGameMap->ConquerStructure(end, player);
 
@@ -2406,6 +2406,28 @@ bool ScreenGame::SetupStructureConquest(Unit * unit, const Cell2D & start, const
 
             // play sound after conquering structure
             ap->PlaySound("game/conquer-05.ogg");
+
+            // show resources spent
+            auto pu = static_cast<UpdaterOutput *>(mPartMan->GetUpdater(PU_OUTPUT));
+
+            const int size = target->GetRows() * target->GetCols();
+            const float mult1 = size == 1 ? 0.f : 0.25f;
+            const float mult2 = size == 1 ? 1.f : 0.75f;
+            const float x1 = target->GetX() + target->GetWidth() * mult1;
+            const float x2 = target->GetX() + target->GetWidth() * mult2;
+            const float marginV0 = 10.f;
+            const float y12 = target->GetY() - marginV0;
+            const float speed = 70.f;
+            const float decaySpeed = 10.f;
+            const float timeLife = 1.f;
+
+            const DataParticleOutput pd1(-COST_CELL_CONQ_ENERGY * size, OT_ENERGY, x1, y12,
+                                         speed, decaySpeed, timeLife);
+            pu->AddParticle(pd1);
+
+            const DataParticleOutput pd2(-COST_CELL_CONQ_MATERIAL * size, OT_MATERIAL, x2, y12,
+                                         speed, decaySpeed, timeLife);
+            pu->AddParticle(pd2);
         }
     });
 

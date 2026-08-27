@@ -71,9 +71,6 @@ constexpr float timeAutoAttackDelay = 0.50f;
 namespace game
 {
 
-// NOTE these will be replaced by dynamic values soon
-constexpr int COST_CONQUEST_RES_GEN = 4;
-
 // ==================== PUBLIC METHODS ====================
 
 GameMap::GameMap(Game * game, ScreenGame * sg, IsoMap * isoMap)
@@ -1462,30 +1459,46 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
     }
 
     const int ind1 = r1 * mCols + c1;
-    GameMapCell & gcell1 = mCells[ind1];
+    GameMapCell & gcell = mCells[ind1];
 
     // end is empty
-    if(nullptr == gcell1.objTop)
+    const GameObject * target = gcell.objTop;
+
+    if(nullptr == target)
         return false;
 
     // target object can't be conquered
-    if(!gcell1.objTop->CanBeConquered())
+    if(!target->CanBeConquered())
     {
        unit->ShowWarning(mSM->GetCString("WARN_CANT_BE_CONQUERED"), 3.f);
         return false;
     }
 
     // player already owns the structure
-    if(gcell1.objTop->GetFaction() == player->GetFaction())
+    if(target->GetFaction() == player->GetFaction())
         return false;
+
+    // check costs
+    const int size = target->GetRows() * target->GetCols();
+    const bool costOk = player->HasEnough(Player::ENERGY, COST_CELL_CONQ_ENERGY * size) &&
+                        player->HasEnough(Player::MATERIAL, COST_CELL_CONQ_MATERIAL * size);
+
+    if(!costOk)
+    {
+        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        return false;
+    }
 
     return true;
 }
 
-void GameMap::StartConquerStructure(const Cell2D & end, Player * player)
+void GameMap::StartConquerStructure(const GameObject * target, Player * player)
 {
-    // take player's energy
-    player->SumResource(Player::Stat::ENERGY, -COST_CONQUEST_RES_GEN);
+    const int size = target->GetRows() * target->GetCols();
+
+    // take player's resources
+    player->SumResource(Player::Stat::ENERGY, -COST_CELL_CONQ_ENERGY * size);
+    player->SumResource(Player::Stat::MATERIAL, -COST_CELL_CONQ_MATERIAL * size);
 }
 
 void GameMap::ConquerStructure(const Cell2D & end, Player * player)

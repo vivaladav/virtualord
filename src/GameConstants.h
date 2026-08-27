@@ -16,6 +16,9 @@ constexpr float TIME_AUTO_END_TURN = 2.f;
 constexpr float MAX_STAT_FVAL = 10.f;
 constexpr int MAX_STAT_IVAL = 10;
 
+constexpr int COST_CELL_CONQ_ENERGY = 5;
+constexpr int COST_CELL_CONQ_MATERIAL = 5;
+
 constexpr unsigned int PLAYER_COLOR[] =
 {
     0xdb5757ff,

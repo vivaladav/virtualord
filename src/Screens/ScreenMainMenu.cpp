@@ -406,6 +406,7 @@ void ScreenMainMenu::CreateChangelog()
                   " actions.\n"
                   "- Fixed random crashes when aborting the tutorial while a dialog is open.\n"
                   "- Fixed crash when leaving game while conquering cells.\n"
+                  "- Resources spent when conquering structure are properly handled now.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
