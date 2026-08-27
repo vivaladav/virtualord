@@ -601,6 +601,12 @@ TutorialGame3::TutorialGame3(Screen * screen)
                 return new StepGameBuildTowerEnd(isoMap, unit, cellTower1, p0);
             });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
+    // END TURN
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
+    AddStep([gs] { return new StepGameWaitTurn(gs); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // START TO CONNECT DEFENSIVE TOWER WITH WORKER 1
     AddStep([]
@@ -620,7 +626,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         {
             const auto unit = local->GetUnit(indWorker1);
             const core::Pointd2D p0(900, 100);
-            const Cell2D cellEnd(58, 60);
+            const Cell2D cellEnd(58, 61);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
     // SELECT WORKER 2
@@ -652,7 +658,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         {
             const auto unit = local->GetUnit(indWorker2);
             const core::Pointd2D p0(900, 250);
-            const Cell2D cellEnd(58, 61);
+            const Cell2D cellEnd(58, 62);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
     // END TURN
@@ -1154,7 +1160,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([game]
         {
             const int movX = 0;
-            const int movY = 350;
+            const int movY = 400;
             return new StepGameMoveCamera(movX, movY);
         });
     // MOVE WORKER 2 TO MATERIAL GENERATOR
@@ -2608,6 +2614,8 @@ TutorialGame3::TutorialGame3(Screen * screen)
             return new StepGameConquerStructSimple(game, unit, gen, isoMap, p0);
         });
     AddStep([] { return new StepDelay(0.5f); });
+    // ENABLE AI
+    AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), true); });
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });

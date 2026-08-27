@@ -2136,7 +2136,7 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject 
     {
         // define damage
         const int maxDamage1 = std::roundf(maxDamage / rad);
-        const int maxDamage0 = maxDamage1 / 2;
+        const int maxDamage0 = maxDamage1 / 3;
         auto distDamage = sgl::utilities::UniformDistribution(maxDamage0, maxDamage1);
 
         // ALONG COLS FROM LEFT TO RIGHT
