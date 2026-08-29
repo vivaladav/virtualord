@@ -30,7 +30,7 @@ StepGameBuildTowerEnd::StepGameBuildTowerEnd(const IsoMap * isoMap, const Unit *
     info->SetPosition(p0.x, p0.y);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_DTOWER_5"), 0.f, false, false,
-                         [this, isoMap, unit]
+                         [this, isoMap]
                         {
                             // FOCUS
                             mFocusArea->SetCell(mTarget.row, mTarget.col);

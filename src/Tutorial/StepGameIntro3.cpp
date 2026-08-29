@@ -1,4 +1,4 @@
-#include "Tutorial/StepGameMoveToTower.h"
+#include "Tutorial/StepGameIntro3.h"
 
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
 
@@ -7,17 +7,18 @@
 namespace game
 {
 
-StepGameMoveToTower::StepGameMoveToTower()
-    : TutorialInfoStep(550, 150)
+StepGameIntro3::StepGameIntro3()
+    : TutorialInfoStep(550, 200)
 {
     auto sm = sgl::utilities::StringManager::Instance();
 
     // INFO
     auto info = GetPanelInfo();
 
-    info->SetPosition(1000, 250);
+    info->SetPosition(175, 200);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_MAP_NAVIGATION_5"), 10.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_INTRO_5"), 7.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_INTRO_4"), 7.f, true, false);
 
     info->SetFunctionOnFinished([this]
     {

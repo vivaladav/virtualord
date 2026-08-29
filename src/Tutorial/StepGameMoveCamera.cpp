@@ -1,7 +1,5 @@
 #include "Tutorial/StepGameMoveCamera.h"
 
-#include "Widgets/Tutorial/PanelClickFilter.h"
-
 #include <sgl/graphic/Camera.h>
 
 #include <cmath>
@@ -16,22 +14,9 @@ StepGameMoveCamera::StepGameMoveCamera(int deltaX, int deltaY, float speed)
 }
 
 StepGameMoveCamera::StepGameMoveCamera(float speed)
-    : mClickFilter(new PanelClickFilter)
-    , mCamera(sgl::graphic::Camera::GetDefaultCamera())
+    : mCamera(sgl::graphic::Camera::GetDefaultCamera())
     , mSpeed(speed)
 {
-    mClickFilter->SetEnabled(false);
-}
-
-StepGameMoveCamera::~StepGameMoveCamera()
-{
-    delete mClickFilter;
-}
-
-void StepGameMoveCamera::OnStart()
-{
-    // CLICK FILTER
-    mClickFilter->SetEnabled(true);
 }
 
 void StepGameMoveCamera::Update(float delta)

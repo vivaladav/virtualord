@@ -13,6 +13,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/utilities/BinaryFile.h>
 
 #include <cmath>
 
@@ -35,6 +36,34 @@ Base::~Base()
     delete mHighlight;
 }
 
+bool Base::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mOutputEnergy = bf.ReadFloat();
+    mOutputMaterial = bf.ReadFloat();
+
+    return true;
+}
+
+bool Base::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteFloat(mOutputEnergy);
+    bf.WriteFloat(mOutputMaterial);
+
+    return true;
+}
+
 void Base::OnNewTurn(PlayerFaction faction)
 {
     Structure::OnNewTurn(faction);
@@ -55,14 +84,12 @@ void Base::OnNewTurn(PlayerFaction faction)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    IsoObject * isoObj = GetIsoObject();
-
     const float margin3 = 30.f;
-    const float x1 = isoObj->GetX() + isoObj->GetWidth() * 0.25f;
-    const float x2 = isoObj->GetX() + isoObj->GetWidth() * 0.75f;
-    const float x3 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y12 = isoObj->GetY();
-    const float y3 = isoObj->GetY() - margin3;
+    const float x1 = GetX() + GetWidth() * 0.25f;
+    const float x2 = GetX() + GetWidth() * 0.75f;
+    const float x3 = GetX() + GetWidth() * 0.5f;
+    const float y12 = GetY();
+    const float y3 = GetY() - margin3;
 
     const int energy = GetResourceProduction(ER_ENERGY);
     const DataParticleOutput pd1(energy, OT_ENERGY, x1, y12);
@@ -121,14 +148,13 @@ void Base::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texInd = ID_STRUCT_BASE_L1;
 
     if(NO_FACTION == faction)
-        texInd = ID_STRUCT_BASE_L1 + sel;
+        texInd = ID_STRUCT_BASE_L1;
     else
-        texInd = ID_STRUCT_BASE_L1_F1 + (faction * NUM_BASE_SPRITES_PER_FAC) + sel;
+        texInd = ID_STRUCT_BASE_L1_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
@@ -152,11 +178,7 @@ void Base::OnPositionChanged()
 {
     Structure::OnPositionChanged();
 
-    const auto isoObj = GetIsoObject();
-    const int isoX = isoObj->GetX();
-    const int isoY = isoObj->GetY();
-
-    mHighlight->SetPosition(isoX, isoY);
+    mHighlight->SetPosition(GetX(), GetY());
 }
 
 } // namespace game

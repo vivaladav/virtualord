@@ -75,7 +75,7 @@ ButtonQuickUnitSelection::ButtonQuickUnitSelection(int index, ScreenGame * sg, s
         if(mUnit->IsSelected())
             return;
 
-        Player * p = mScreenGame->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+        Player * p = mScreenGame->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
         mScreenGame->ClearSelection(p);
         mScreenGame->SelectObject(mUnit, p);
     });

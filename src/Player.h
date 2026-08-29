@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace sgl { namespace utilities { class BinaryFile; } }
+
 namespace game
 {
 
@@ -41,8 +43,12 @@ public:
     };
 
 public:
-    Player(const char * name, int pid);
+    Player();
+    Player(int pid);
     ~Player();
+
+    bool Load(sgl::utilities::BinaryFile & bf);
+    bool Save(sgl::utilities::BinaryFile & bf) const;
 
     PlayerFaction GetFaction() const;
     void SetFaction(PlayerFaction faction);
@@ -64,8 +70,6 @@ public:
     std::vector<Structure *> GetStructuresByType(GameObjectTypeId type) const;
     const std::vector<Structure *> & GetStructures() const;
 
-    const std::vector<ResourceGenerator *> & GetResourceGenerators() const;
-
     void ClearMissionObjects();
 
     unsigned int GetNumObjects() const;
@@ -86,6 +90,7 @@ public:
     void SetCellWalkable(unsigned int ind, bool walkable);
     void SetCellWalkable(unsigned int row, unsigned int col, bool walkable);
 
+    void SetName(const std::string & name);
     const std::string & GetName() const;
 
     int GetPlayerId() const;
@@ -108,9 +113,16 @@ public:
     void RemoveOnResourceChanged(Stat sid, unsigned int funId);
     void RemoveOnResourceRangeChanged(Stat sid, unsigned int funId);
 
-    int GetNumCells() const;
+    // kills
+    unsigned int GetEnemiesKilled() const;
+    void RegisterEnemyKill();
+    unsigned int GetCasualties() const;
+    void RegisterCasualty();
+
+    unsigned int GetNumCells() const;
     void SumCells(int val);
-    void ResetNumCells();
+
+    void ResetMissionData();
 
     unsigned int GetNumLinkedCells() const;
     void SetNumLinkedCells(unsigned int val);
@@ -194,7 +206,6 @@ private:
 
     std::vector<Unit *> mUnits;
     std::vector<Structure *> mStructures;
-    std::vector<ResourceGenerator *> mResGenerators;
 
     std::vector<int> mVisMap;
 
@@ -233,9 +244,12 @@ private:
 
     unsigned int mTurnsPlayed = 0;
 
-    int mNumCells = 0;
+    unsigned int mNumCells = 0;
     unsigned int mNumLinkedCells = 0;
     unsigned int mMaxUnits = 0;
+
+    unsigned int mEnemiesKilled = 0;
+    unsigned int mCasualties = 0;
 
     // -- upgrades --
     float mBaseProdMult = 1.f;
@@ -255,13 +269,11 @@ inline unsigned int Player::GetNumUnits() const { return mUnits.size(); }
 inline unsigned int Player::GetNumStructures() const { return mStructures.size(); }
 
 inline const std::vector<Structure *> & Player::GetStructures() const { return mStructures; }
-inline const std::vector<ResourceGenerator *> & Player::GetResourceGenerators() const { return mResGenerators; }
 
 inline void Player::ClearMissionObjects()
 {
     mUnits.clear();
     mStructures.clear();
-    mResGenerators.clear();
 }
 
 inline unsigned int Player::GetNumObjects() const
@@ -292,6 +304,7 @@ inline void Player::SetCellWalkable(unsigned int row, unsigned int col, bool wal
     mWalkableOverrideMap[ind] = walkable;
 }
 
+inline void Player::SetName(const std::string & name) { mName = name; }
 inline const std::string & Player::GetName() const { return mName; }
 
 inline int Player::GetPlayerId() const { return mPlayerId; }
@@ -315,9 +328,13 @@ inline bool Player::HasEnough(Stat sid, int val)
         return false;
 }
 
-inline int Player::GetNumCells() const { return mNumCells; }
+inline unsigned int Player::GetEnemiesKilled() const { return mEnemiesKilled;  }
+inline void Player::RegisterEnemyKill() { ++mEnemiesKilled; }
+inline unsigned int Player::GetCasualties() const { return mCasualties; }
+inline void Player::RegisterCasualty() { ++mCasualties; }
+
+inline unsigned int Player::GetNumCells() const { return mNumCells; }
 inline void Player::SumCells(int val) { mNumCells += val; }
-inline void Player::ResetNumCells() { mNumCells = 0; }
 
 inline unsigned int Player::GetNumLinkedCells() const { return mNumLinkedCells; }
 inline void Player::SetNumLinkedCells(unsigned int val) { mNumLinkedCells = val; }

@@ -5,7 +5,6 @@
 namespace game
 {
 
-class GameMap;
 class Player;
 
 class CityGroup : public GameObjectsGroup
@@ -13,17 +12,19 @@ class CityGroup : public GameObjectsGroup
 public:
     CityGroup(GameMap * gm);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     bool IsCityConquered() const;
 
     void UpdateCityConquered(Player * conqueror);
 
 private:
-    GameMap * mGameMap = nullptr;
     bool mConquered = false;
 
 };
 
-inline CityGroup::CityGroup(GameMap * gm) : mGameMap(gm) {}
+inline CityGroup::CityGroup(GameMap * gm) : GameObjectsGroup(gm) {}
 
 inline bool CityGroup::IsCityConquered() const { return mConquered; }
 

@@ -13,8 +13,6 @@ public:
 private:
     void OnActive() override;
     void OnInactive() override;
-
-    void DestroyTextures();
 };
 
 } // namespace game

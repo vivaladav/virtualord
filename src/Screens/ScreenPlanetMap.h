@@ -27,6 +27,8 @@ public:
     ScreenPlanetMap(Game * game);
     ~ScreenPlanetMap();
 
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     void OnKeyUp(sgl::core::KeyboardEvent & event) override;
 
     void Update(float delta) override;
@@ -62,7 +64,7 @@ private:
     sgl::sgui::Label * mLabelName = nullptr;
     sgl::sgui::Label * mLabelDate = nullptr;
 
-    PlanetMap * mPlanet = nullptr;
+    PlanetMap * mPlanetMap = nullptr;
 
     DialogExit * mDialogExit = nullptr;
 

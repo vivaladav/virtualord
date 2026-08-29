@@ -52,6 +52,7 @@ public:
     bool FindWhereToBuildStructure(Unit * unit, Cell2D & target) const;
     bool FindWhereToBuildTower(Unit * unit, Cell2D & target) const;
 
+    bool IsActive() const;
     void SetActive(bool val);
 
     void StartIdleTurn(float sec);
@@ -174,6 +175,7 @@ inline void PlayerAI::RegisterActionInProgress(const ActionAI * action)
     mActionsDoing.push_back(action);
 }
 
+inline bool PlayerAI::IsActive() const  { return mActive; }
 inline void PlayerAI::SetActive(bool val) { mActive = val; }
 
 inline void PlayerAI::StartIdleTurn(float sec)

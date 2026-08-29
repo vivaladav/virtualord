@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameWallBuildIcon.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,12 +12,16 @@
 namespace game
 {
 
-StepGameWallBuildIcon::StepGameWallBuildIcon(PanelObjectActions * panel)
-    : TutorialInfoStep(600, 150)
+StepGameWallBuildIcon::StepGameWallBuildIcon(const Game * game, Screen * screen,
+                                             PanelObjectActions * panel)
+    : TutorialInfoStep(screen, 600, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
+
+    // do not allow object selection during this step
+    DisableObjectSelection();
 
     // FOCUS
     mFocusArea->SetCornersColorAction();
@@ -28,7 +33,7 @@ StepGameWallBuildIcon::StepGameWallBuildIcon(PanelObjectActions * panel)
 
     info->SetPosition(1100, 650);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_WALL_2"), 0.f, false, false, [this, panel]
+    info->AddActionEntry(sm->GetCString("TUT_GAME_BUILD_WALL_2"), 0.f, false, false, [this, panel, game]
                         {
                             auto btn = panel->GetButton(PanelObjectActions::BTN_BUILD_WALL);
 
@@ -38,7 +43,9 @@ StepGameWallBuildIcon::StepGameWallBuildIcon(PanelObjectActions * panel)
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;
@@ -47,7 +54,7 @@ StepGameWallBuildIcon::StepGameWallBuildIcon(PanelObjectActions * panel)
                             const int f2W = fW + (padding * 2);
                             const int f2H = fH + (padding * 2);
 
-                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
+                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H, true);
                             mFocusArea->SetVisible(true);
                         });
 

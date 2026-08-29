@@ -7,6 +7,8 @@
 #include "Tutorial/TutorialPlanetMap1.h"
 #include "Tutorial/TutorialPlanetMap2.h"
 
+#include <sgl/utilities/BinaryFile.h>
+
 namespace game
 {
 
@@ -20,6 +22,52 @@ TutorialManager::~TutorialManager()
 {
     delete mActiveTutorial;
     mActiveTutorial = nullptr;
+}
+
+bool TutorialManager::Load(sgl::utilities::BinaryFile & bf)
+{
+    // tutorials state
+    const unsigned int numTuts = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numTuts; ++i)
+        mTutorialsState[i] = static_cast<TutorialState>(bf.ReadUint());
+
+    // current step of active tutorial
+    mStartStep = bf.ReadUint();
+
+    // last tutorial
+    mLastStartedTutorialId = static_cast<TutorialId>(bf.ReadUint());
+
+    return true;
+}
+
+bool TutorialManager::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // tutorials state
+    bf.WriteUint(mTutorialsState.size());
+
+    for(const TutorialState state : mTutorialsState)
+        bf.WriteUint(state);
+
+    // active tutorial
+    // NOTE saving steps + 1 to skip the one that's actually saving the game
+    // as only the StepSaveGame can trigger a save during the tutorial
+    if(mActiveTutorial != nullptr && mActiveTutorial->GetNumStepsDone() > 0)
+        bf.WriteUint(mActiveTutorial->GetNumStepsDone() + 1);
+    else
+        bf.WriteUint(0);
+
+    // last tutorial
+    bf.WriteUint(mLastStartedTutorialId);
+
+    return true;
+}
+
+void TutorialManager::ResetTutorialState()
+{
+    mTutorialsState.assign(NUM_TUTORIALS, TS_TODO);
+
+    mLastStartedTutorialId = TUTORIAL_UNKNOWN;
 }
 
 TutorialState TutorialManager::GetTutorialState(TutorialId tut)
@@ -92,6 +140,14 @@ void TutorialManager::StartTutorial()
     SetTutorialState(mLastStartedTutorialId, TS_IN_PROGRESS);
 
     mActiveTutorial->Start();
+}
+
+void TutorialManager::ContinueTutorial()
+{
+    if(nullptr == mActiveTutorial)
+        return ;
+
+    mActiveTutorial->Continue(mStartStep);
 }
 
 void TutorialManager::AbortTutorial()

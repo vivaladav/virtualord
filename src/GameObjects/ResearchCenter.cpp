@@ -13,6 +13,7 @@
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/sgui/Image.h>
+#include <sgl/utilities/BinaryFile.h>
 
 namespace game
 {
@@ -30,13 +31,14 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
 
     // init resource usage
     mResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
+    mWantedResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
 
     // set default usage wanted (will be updated in UpdateProduction)
     const int defUsage = 10;
 
-    mResUsage[ER_ENERGY] = defUsage;
-    mResUsage[ER_MATERIAL] = defUsage;
-    mResUsage[ER_MONEY] = defUsage;
+    mWantedResUsage[ER_ENERGY] = defUsage;
+    mWantedResUsage[ER_MATERIAL] = defUsage;
+    mWantedResUsage[ER_MONEY] = defUsage;
 
     UpdateProduction();
 
@@ -60,6 +62,8 @@ ResearchCenter::ResearchCenter(const ObjectData & data, const ObjectInitData & i
 
 ResearchCenter::~ResearchCenter()
 {
+    delete mIconResearch;
+
     delete mHighlight;
 
     auto p = GetOwner();
@@ -70,6 +74,49 @@ ResearchCenter::~ResearchCenter()
         p->RemoveOnResourceChanged(Player::RESEARCH, mResearchTrackerId);
     }
 }
+
+bool ResearchCenter::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // resource usage
+    const unsigned int numRes = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numRes; ++i)
+        mWantedResUsage[i] = bf.ReadInt();
+
+    // values
+    mAlphaAnim = bf.ReadFloat();
+
+    // update production
+    UpdateProduction();
+
+    return true;
+}
+
+bool ResearchCenter::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // resource usage
+    const unsigned int numRes = mWantedResUsage.size();
+    bf.WriteUint(numRes);
+
+    for(int val : mWantedResUsage)
+        bf.WriteInt(val);
+
+    // values
+    bf.WriteFloat(mAlphaAnim);
+
+    return true;
+}
+
 
 void ResearchCenter::OnNewTurn(PlayerFaction faction)
 {
@@ -96,11 +143,9 @@ void ResearchCenter::OnNewTurn(PlayerFaction faction)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    IsoObject * isoObj = GetIsoObject();
-
     const int marginV = 20;
-    const float x = isoObj->GetX() + isoObj->GetWidth() / 2;
-    const float y = isoObj->GetY() - marginV;
+    const float x = GetX() + GetWidth() / 2;
+    const float y = GetY() - marginV;
 
     const DataParticleOutput pd(mResearchPerTurn, OT_RESEARCH, x, y);
     pu->AddParticle(pd);
@@ -126,33 +171,41 @@ int ResearchCenter::GetResourceUsage(ExtendedResource res) const
         return 0;
 }
 
-void ResearchCenter::SetResourceUsage(ExtendedResource res, int val)
+void ResearchCenter::SetWantedResourceUsage(ExtendedResource res, int val)
 {
     if(res >= NUM_EXTENDED_RESOURCES)
         return ;
 
-    if(mResUsage[res] == val)
+    if(mWantedResUsage[res] == val)
         return ;
 
-    mResUsage[res] = val;
+    mWantedResUsage[res] = val;
 
     UpdateProduction();
+}
+
+int ResearchCenter::GetWantedResourceUsage(ExtendedResource res) const
+{
+    if(res < NUM_EXTENDED_RESOURCES)
+        return mWantedResUsage[res];
+    else
+        return 0;
 }
 
 void ResearchCenter::OnPositionChanged()
 {
     Structure::OnPositionChanged();
 
-    const auto isoObj = GetIsoObject();
-    const int isoX = isoObj->GetX();
-    const int isoY = isoObj->GetY();
-
-    mHighlight->SetPosition(isoX, isoY);
+    mHighlight->SetPosition(GetX(), GetY());
 }
 
 void ResearchCenter::UpdateGraphics()
 {
+    Structure::UpdateGraphics();
+
     SetImage();
+
+    PositionIconResearch();
 }
 
 void ResearchCenter::SetImage()
@@ -165,14 +218,13 @@ void ResearchCenter::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texInd = ID_STRUCT_RESEARCH_CENTER;
 
     if(NO_FACTION == faction)
-        texInd = ID_STRUCT_RESEARCH_CENTER + sel;
+        texInd = ID_STRUCT_RESEARCH_CENTER;
     else
-        texInd = ID_STRUCT_RESEARCH_CENTER_F1 + (faction * NUM_RESEARCH_CENTER_SPRITES_PER_FAC) + sel;
+        texInd = ID_STRUCT_RESEARCH_CENTER_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
@@ -182,6 +234,9 @@ void ResearchCenter::SetImage()
 
 void ResearchCenter::UpdateProduction()
 {
+    // reset usage
+    mResUsage.assign(NUM_EXTENDED_RESOURCES, 0);
+
     // check owner
     auto p = GetOwner();
 
@@ -194,22 +249,37 @@ void ResearchCenter::UpdateProduction()
 
     // -- clamp usage to what's available --
     // ENERGY
-    const int energy = p->GetStat(Player::ENERGY).GetValue();
+    const int availEnergy = p->GetStat(Player::ENERGY).GetValue() -
+                            p->GetResourceConsumption(ER_ENERGY);
 
-    if(mResUsage[ER_ENERGY] > energy)
-        mResUsage[ER_ENERGY] = energy;
+    if(availEnergy < 0)
+        mResUsage[ER_ENERGY] = 0;
+    else if(mWantedResUsage[ER_ENERGY] > availEnergy)
+        mResUsage[ER_ENERGY] = availEnergy;
+    else
+        mResUsage[ER_ENERGY] = mWantedResUsage[ER_ENERGY];
 
     // MATERIAL
-    const int material = p->GetStat(Player::MATERIAL).GetValue();
+    const int availMaterial = p->GetStat(Player::MATERIAL).GetValue() -
+                              p->GetResourceConsumption(ER_MATERIAL);
 
-    if(mResUsage[ER_MATERIAL] > material)
-        mResUsage[ER_MATERIAL] = material;
+    if(availMaterial < 0)
+        mResUsage[ER_MATERIAL] = 0;
+    else if(mWantedResUsage[ER_MATERIAL] > availMaterial)
+        mResUsage[ER_MATERIAL] = availMaterial;
+    else
+        mResUsage[ER_MATERIAL] = mWantedResUsage[ER_MATERIAL];
 
     // MONEY
-    const int money = p->GetStat(Player::MONEY).GetValue();
+    const int availMoney = p->GetStat(Player::MONEY).GetValue() -
+                            p->GetResourceConsumption(ER_MONEY);
 
-    if(mResUsage[ER_MONEY] > money)
-        mResUsage[ER_MONEY] = money;
+    if(availMoney < 0)
+        mResUsage[ER_MONEY] = 0;
+    else if(mWantedResUsage[ER_MONEY] > availMoney)
+        mResUsage[ER_MONEY] = availMoney;
+    else
+        mResUsage[ER_MONEY] = mWantedResUsage[ER_MONEY];
 
     // no production if required resource is not used
     if(mResUsage[ER_ENERGY] == 0 || mResUsage[ER_MATERIAL] == 0 || mResUsage[ER_MONEY] == 0)
@@ -220,16 +290,26 @@ void ResearchCenter::UpdateProduction()
     }
 
     // BLOBS
-    const int blobs = p->GetStat(Player::BLOBS).GetValue();
+    const int availBlobs = p->GetStat(Player::BLOBS).GetValue() -
+                              p->GetResourceConsumption(ER_BLOBS);
 
-    if(mResUsage[ER_BLOBS] > blobs)
-        mResUsage[ER_BLOBS] = blobs;
+    if(availBlobs < 0)
+        mResUsage[ER_BLOBS] = 0;
+    else if(mWantedResUsage[ER_BLOBS] > availBlobs)
+        mResUsage[ER_BLOBS] = availBlobs;
+    else
+        mResUsage[ER_BLOBS] = mWantedResUsage[ER_BLOBS];
 
     // DIAMONDS
-    const int diamonds = p->GetStat(Player::DIAMONDS).GetValue();
+    const int availDiamonds = p->GetStat(Player::DIAMONDS).GetValue() -
+                              p->GetResourceConsumption(ER_DIAMONDS);
 
-    if(mResUsage[ER_DIAMONDS] > diamonds)
-        mResUsage[ER_DIAMONDS] = diamonds;
+    if(availDiamonds < 0)
+        mResUsage[ER_DIAMONDS] = 0;
+    else if(mWantedResUsage[ER_DIAMONDS] > availDiamonds)
+        mResUsage[ER_DIAMONDS] = availDiamonds;
+    else
+        mResUsage[ER_DIAMONDS] = mWantedResUsage[ER_DIAMONDS];
 
     // -- define research points production --
     const int maxProdElem = 40;
@@ -265,14 +345,12 @@ void ResearchCenter::ShowIconResearch()
 
 void ResearchCenter::PositionIconResearch()
 {
-    const auto isoObj = GetIsoObject();
-    const int isoX = isoObj->GetX();
-    const int isoY = isoObj->GetY();
-    const int isoW = isoObj->GetWidth();
+    const int x0 = GetX();
+    const int y0 = GetStatusIconBaseY();
 
     const int iconMarginV = 5;
-    const int iconX = isoX + (isoW - mIconResearch->GetWidth()) / 2;
-    const int iconY = isoY - mIconResearch->GetHeight() - iconMarginV;
+    const int iconX = x0 + (GetWidth() - mIconResearch->GetWidth()) / 2;
+    const int iconY = y0 - mIconResearch->GetHeight() - iconMarginV;
 
     mIconResearch->SetPosition(iconX, iconY);
 }

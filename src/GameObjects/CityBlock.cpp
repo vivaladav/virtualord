@@ -9,6 +9,7 @@
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 namespace game
 {
@@ -26,6 +27,32 @@ CityBlock::CityBlock(const ObjectData & data, const ObjectInitData & initData,
     SetMaxHealth(maxHealthValue);
 
     SetImage();
+}
+
+bool CityBlock::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mBorder = bf.ReadBool();
+
+    return true;
+}
+
+bool CityBlock::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    bf.WriteBool(mBorder);
+
+    return true;
 }
 
 void CityBlock::OnNewTurn(PlayerFaction faction)
@@ -58,11 +85,9 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    IsoObject * isoObj = GetIsoObject();
-
     const int marginV = 20;
-    const float x = isoObj->GetX() + isoObj->GetWidth() / 2;
-    const float y = isoObj->GetY() - marginV;
+    const float x = GetX() + GetWidth() / 2;
+    const float y = GetY() - marginV;
 
     const DataParticleOutput pd(money, OT_MONEY, x, y);
     pu->AddParticle(pd);
@@ -108,7 +133,6 @@ void CityBlock::SetImage()
 
     sgl::graphic::Texture * tex = nullptr;
 
-    const int sel = static_cast<int>(IsSelected());
     const PlayerFaction f = GetFaction();
 
     const unsigned int factionSpriteIds[] =
@@ -121,7 +145,7 @@ void CityBlock::SetImage()
     static_assert((sizeof(factionSpriteIds) / sizeof(unsigned int)) == NUM_FACTIONS);
 
     const unsigned int spriteId0 = f != NO_FACTION ? factionSpriteIds[f] : ID_CITY_TL1_NF;
-    const unsigned int spriteId = spriteId0 + mVariant + (sel * NUM_CITY_SPRITES);
+    const unsigned int spriteId = spriteId0 + mVariant;
     tex = tm->GetSprite(SpriteFileCity, spriteId);
 
     isoObj->SetTexture(tex);

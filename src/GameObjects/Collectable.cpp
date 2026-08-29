@@ -2,6 +2,7 @@
 
 #include "Game.h"
 
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 namespace game
@@ -13,8 +14,38 @@ Collectable::Collectable(const ObjectData & data, const ObjectInitData & initDat
     , mMin(min)
     , mMax(max)
 {
-    sgl::utilities::UniformDistribution ran(mMin, mMax, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution ran(mMin, mMax);
     mNum = ran.GetNextValue();
+}
+
+bool Collectable::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mMin = bf.ReadUint();
+    mMax = bf.ReadUint();
+    mNum = bf.ReadUint();
+
+    return true;
+}
+
+bool Collectable::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObject::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteUint(mMin);
+    bf.WriteUint(mMax);
+    bf.WriteUint(mNum);
+
+    return true;
 }
 
 void Collectable::RandomizeNumUnits(unsigned int min, unsigned int max)
@@ -26,7 +57,7 @@ void Collectable::RandomizeNumUnits(unsigned int min, unsigned int max)
         max = mMax;
 
     // randomize num
-    sgl::utilities::UniformDistribution ran(min, max, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution ran(min, max);
     mNum = ran.GetNextValue();
 
     UpdateGraphics();

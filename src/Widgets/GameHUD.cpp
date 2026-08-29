@@ -5,14 +5,11 @@
 #include "Game.h"
 #include "GameConstants.h"
 #include "GameMap.h"
-#include "GameUIData.h"
 #include "IsoMap.h"
-#include "IsoObject.h"
 #include "MissionGoalsTracker.h"
 #include "Player.h"
 #include "GameObjects/Base.h"
 #include "GameObjects/GameObject.h"
-#include "GameObjects/Structure.h"
 #include "GameObjects/Temple.h"
 #include "GameObjects/Unit.h"
 #include "GameObjectTools/Weapon.h"
@@ -30,6 +27,7 @@
 #include "Widgets/DialogNewMiniUnitsSquad.h"
 #include "Widgets/DialogObject.h"
 #include "Widgets/DialogResearch.h"
+#include "Widgets/DialogSave.h"
 #include "Widgets/DialogTechTree.h"
 #include "Widgets/DialogTrading.h"
 #include "Widgets/DialogUpgrade.h"
@@ -123,22 +121,9 @@ GameHUD::GameHUD(ScreenGame * screen)
 
     PositionQuickUnitButtons();
 
-    local->SetOnNumUnitsChanged([this, local]
+    local->SetOnNumUnitsChanged([this]
     {
-        const int numUnits = local->GetNumUnits();
-        const int maxUnits = local->GetMaxUnits();
-
-        for(int i = 0; i < numUnits; ++i)
-        {
-            auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
-            b->SetUnit(local->GetUnit(i));
-        }
-
-        for(int i = numUnits; i < maxUnits; ++i)
-        {
-            auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
-            b->ClearUnit();
-        }
+        UpdateQuickUnitButtons();
     });
 
     // OBJECT ACTIONS
@@ -206,7 +191,7 @@ GameHUD::~GameHUD()
 
 void GameHUD::SetMiniMapEnabled(bool val)
 {
-    if(mMiniMap->IsEnabled() == val)
+    if(mMiniMap == nullptr || mMiniMap->IsEnabled() == val)
         return ;
 
     mMiniMap->SetEnabled(val);
@@ -376,12 +361,11 @@ void GameHUD::ShowPanelHit(const GameObject * attacker, const GameObject * targe
     const int panelW = mPanelHit->GetWidth();
     const int panelH = mPanelHit->GetHeight();
 
-    const IsoObject * isoTarget = target->GetIsoObject();
-    const int isoX = camera->GetWorldToScreenX(isoTarget->GetX());
-    const int isoY = camera->GetWorldToScreenY(isoTarget->GetY());
+    const int isoX = camera->GetWorldToScreenX(target->GetX());
+    const int isoY = camera->GetWorldToScreenY(target->GetY());
 
-    int posX = isoX + isoTarget->GetWidth();
-    int posY = isoY + (isoTarget->GetHeight() - panelH) / 2;
+    int posX = isoX + target->GetWidth();
+    int posY = isoY + (target->GetHeight() - panelH) / 2;
 
     if((posX + panelW) > rendW)
         posX = isoX - panelW;
@@ -431,6 +415,29 @@ void GameHUD::AddQuickUnitButton()
     mGroupUnitSel->AddButton(b);
 
     PositionQuickUnitButtons();
+}
+
+void GameHUD::UpdateQuickUnitButtons()
+{
+    Player * local = mScreen->GetGame()->GetLocalPlayer();
+
+    const int numUnits = local->GetNumUnits();
+    const int maxUnits = local->GetMaxUnits();
+
+    for(int i = 0; i < numUnits; ++i)
+    {
+        auto unit = local->GetUnit(i);
+
+        auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
+        b->SetUnit(unit);
+        b->SetChecked(unit->IsSelected());
+    }
+
+    for(int i = numUnits; i < maxUnits; ++i)
+    {
+        auto b = static_cast<ButtonQuickUnitSelection *>(mGroupUnitSel->GetButton(i));
+        b->ClearUnit();
+    }
 }
 
 void GameHUD::ShowDialogMissionGoals()
@@ -501,12 +508,12 @@ void GameHUD::ShowDialogEndMission(bool won)
     const PlayerFaction pf = p->GetFaction();
     const unsigned int turns = p->GetTurnsPlayed();
     const unsigned int territory = gm->GetControlMap()->GetPercentageControlledByFaction(pf);
-    const unsigned int killed = gm->GetEnemiesKilled(pf);
-    const unsigned int casualties = gm->GetCasualties(pf);
+    const unsigned int killed = p->GetEnemiesKilled();
+    const unsigned int casualties = p->GetCasualties();
     const unsigned int played = mScreen->GetPlayTimeInSec();
 
     // create dialog
-    mDialogEnd = new DialogEndMission(played, territory, killed, pf, turns, won);
+    mDialogEnd = new DialogEndMission(played, territory, killed, casualties, turns, won);
     mDialogEnd->SetFocus();
 
     mDialogEnd->SetFunctionOnClose([this, won]
@@ -854,9 +861,12 @@ void GameHUD::ShowDialogNewMiniUnitsSquad(GameObject * spawner)
         HideDialogNewMiniUnitsSquad();
     });
 
-    mDialogNewMiniUnits->AddFunctionOnClose([this]
+    mDialogNewMiniUnits->AddFunctionOnClose([this, spawner]
     {
         HideDialogNewMiniUnitsSquad();
+
+        // reset object action to default
+        mScreen->ResetSelectedObjectAction();
     });
 
     TemporaryClosePanels();
@@ -918,6 +928,48 @@ void GameHUD::HideDialogResearch()
     // schedule dialog deletion
     mDialogResearch->DeleteLater();
     mDialogResearch = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
+}
+
+void GameHUD::ShowDialogSave()
+{
+    if(mDialogSave != nullptr)
+        return ;
+
+    mScreen->ShowScreenOverlay();
+
+    ++mVisibleDialogs;
+
+    mScreen->SetPause(true);
+
+    Game * game = mScreen->GetGame();
+    mDialogSave = new DialogSave(game, mScreen);
+    mDialogSave->SetFocus();
+
+    mDialogSave->SetFunctionOnClose([this]
+    {
+        HideDialogSave();
+    });
+
+    TemporaryClosePanels();
+
+    // position dialog
+    CenterWidget(mDialogSave);
+}
+
+void GameHUD::HideDialogSave()
+{
+    --mVisibleDialogs;
+
+    mScreen->HideScreenOverlay();
+
+    ReopenPanels();
+
+    // schedule dialog deletion
+    mDialogSave->DeleteLater();
+    mDialogSave = nullptr;
 
     // un-pause game
     mScreen->SetPause(false);
@@ -1257,9 +1309,8 @@ void GameHUD::PositionMissionCountdown()
     const Player * p = mScreen->GetGame()->GetLocalPlayer();
     const PlayerFaction pf = p->GetFaction();
     const Base * base = p->GetBase();
-    const IsoObject * isoObj = base->GetIsoObject();
-    const int x0 = isoObj->GetX() + (isoObj->GetWidth() - mCountdownLabel->GetWidth()) / 2;
-    const int y0 = isoObj->GetY() - mCountdownLabel->GetHeight();
+    const int x0 = base->GetX() + (base->GetWidth() - mCountdownLabel->GetWidth()) / 2;
+    const int y0 = base->GetY() - mCountdownLabel->GetHeight();
 
     mCountdownLabel->SetPosition(x0, y0);
 }

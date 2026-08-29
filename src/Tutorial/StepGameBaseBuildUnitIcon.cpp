@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameBaseBuildUnitIcon.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,12 +12,16 @@
 namespace game
 {
 
-StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
-    : TutorialInfoStep(550, 200)
+StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(const Game * game, Screen * screen,
+                                                     PanelObjectActions * panel)
+    : TutorialInfoStep(screen, 550, 200)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
+
+    // do not allow object selection during this step
+    DisableObjectSelection();
 
     // FOCUS
     mFocusArea->SetCornersColorAction();
@@ -30,7 +35,7 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
 
     info->AddInfoEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_ICON_1"), 5.f, true, false);
     info->AddActionEntry(sm->GetCString("TUT_GAME_BASE_BUILD_UNIT_ICON_2"), 0.f, false, false,
-                         [this, panel]
+                         [this, panel, game]
                         {
                             auto btn = panel->GetButton(PanelObjectActions::BTN_BUILD_UNIT_BASE);
 
@@ -39,7 +44,10 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
                             const int fY = btn->GetScreenY();
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;
@@ -48,7 +56,7 @@ StepGameBaseBuildUnitIcon::StepGameBaseBuildUnitIcon(PanelObjectActions * panel)
                             const int f2W = fW + (padding * 2);
                             const int f2H = fH + (padding * 2);
 
-                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
+                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H, true);
                             mFocusArea->SetVisible(true);
                         });
 

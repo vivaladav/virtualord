@@ -25,6 +25,9 @@ public:
 public:
     LootBox(const ObjectData & data, const ObjectInitData & initData);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     bool IsExploding() const;
 
     void Open(Player * p);
@@ -38,6 +41,8 @@ private:
     void SetObjColors();
 
 private:
+    friend class StepGameSetLootboxPrize;
+
     int mPrizeQuantity = 0;
     Prize mPrizeType = LB_NULL;
 };

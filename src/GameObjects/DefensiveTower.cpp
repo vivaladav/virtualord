@@ -25,6 +25,8 @@ DefensiveTower::DefensiveTower(const ObjectData & data, const ObjectInitData & i
 
 void DefensiveTower::Update(float delta)
 {
+    GameObject::Update(delta);
+
     // do nothing if not linked
     if(!IsLinked())
         return ;
@@ -52,14 +54,11 @@ void DefensiveTower::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texInd = ID_STRUCT_DTOWER_L1;
 
-    if(NO_FACTION == faction)
-        texInd += sel;
-    else
-        texInd = ID_STRUCT_DTOWER_L1_F1 + (faction * NUM_DTOWER_SPRITES_PER_FAC) + sel;
+if(faction != NO_FACTION)
+        texInd = ID_STRUCT_DTOWER_L1_F1 + faction;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
     isoObj->SetTexture(tex);
@@ -67,14 +66,13 @@ void DefensiveTower::SetImage()
 
 void DefensiveTower::PrepareShoot()
 {
-    const IsoObject * isoObj = GetIsoObject();
-    const IsoObject * isoTarget = mWeapon->GetTarget()->GetIsoObject();
+    const GameObject * target = mWeapon->GetTarget();
 
-    const float isoX = isoObj->GetX();
-    const float isoXC = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float isoY = isoObj->GetY();
-    const float isoTargetX = isoTarget->GetX();
-    const float isoTargetY = isoTarget->GetY();
+    const float isoX = GetX();
+    const float isoXC = GetX() + GetWidth() * 0.5f;
+    const float isoY = GetY();
+    const float isoTargetX = target->GetX();
+    const float isoTargetY = target->GetY();
     const float x0 = isoTargetX < isoX ? isoXC - 20.f : isoXC + 20.f;
     const float y0 = isoTargetY < isoY ? isoY + 4 : isoY + 30;
 

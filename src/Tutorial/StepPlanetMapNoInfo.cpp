@@ -26,8 +26,8 @@ StepPlanetMapNoInfo::StepPlanetMapNoInfo(const PanelPlanetInfo * panelInfo,
     const int fW1 = panelInfo->GetWidth() - (padding * 2);
     const int fH1 = panelInfo->GetHeight() - (padding * 2);
 
-    mFocusInfo->SetScreenArea(fX1, fY1, fW1, fH1);
-    mFocusInfo->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusInfo->SetScreenArea(fX1, fY1, fW1, fH1, false);
+    mFocusInfo->SetCornersColorElement();
     mFocusInfo->SetVisible(false);
     mFocusInfo->SetBlinking(true);
 
@@ -36,8 +36,8 @@ StepPlanetMapNoInfo::StepPlanetMapNoInfo(const PanelPlanetInfo * panelInfo,
     const int fW2 = panelResources->GetWidth() - (padding * 2);
     const int fH2 = panelResources->GetHeight() - (padding * 2);
 
-    mFocusResources->SetScreenArea(fX2, fY2, fW2, fH2);
-    mFocusResources->SetCornersColor(TutorialConstants::colorFocusElement);
+    mFocusResources->SetScreenArea(fX2, fY2, fW2, fH2, false);
+    mFocusResources->SetCornersColorElement();
     mFocusResources->SetVisible(false);
     mFocusResources->SetBlinking(true);
 

@@ -14,6 +14,7 @@
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 #include <unordered_map>
 #include <cmath>
@@ -38,6 +39,63 @@ Unit::Unit(const ObjectData & data, const ObjectInitData & initData)
 
     // init graphics
     SetImage();
+}
+
+bool Unit::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mTimeHealing = bf.ReadFloat();
+    mTimerHealing = bf.ReadFloat();
+
+    // target healing
+    const unsigned int targetID = bf.ReadUint();
+
+    if(targetID != 0)
+    {
+        const std::vector<GameObject *> &  objs = GetGameMap()->GetObjects();
+
+        for(GameObject * obj : objs)
+        {
+            if(obj->GetObjectId() == targetID)
+            {
+                mTargetHealing = obj;
+                break;
+            }
+        }
+    }
+
+    // structure to build
+    mStructToBuild = bf.ReadSizeT();
+
+    return true;
+}
+
+bool Unit::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObject::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteFloat(mTimeHealing);
+    bf.WriteFloat(mTimerHealing);
+
+    // target healing
+    if(mTargetHealing != nullptr)
+        bf.WriteUint(mTargetHealing->GetObjectId());
+    else
+        bf.WriteUint(0);
+
+    // structure to build
+    bf.WriteSizeT(mStructToBuild);
+
+    return true;
 }
 
 bool Unit::CanAttack() const
@@ -116,6 +174,8 @@ bool Unit::SetTargetHealing(GameObject * obj)
 
 void Unit::Update(float delta)
 {
+    GameObject::Update(delta);
+
     // ATTACKING OTHER OBJECTS
     if(mWeapon != nullptr)
     {
@@ -180,7 +240,7 @@ bool Unit::CanSpawn() const
 
 float Unit::GetTimeSpawnMiniUnit() const
 {
-    const float maxTime = 2.f;
+    const float maxTime = 1.5f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_SPAWNING));
 }
 
@@ -200,9 +260,7 @@ void Unit::SetImage()
     const GameObjectTypeId type = GetObjectType();
     const unsigned int ind = TypeToIndex(type);
 
-    const unsigned int texInd = (NUM_UNIT_SPRITES_PER_FACTION * faction) +
-                                (NUM_UNIT_SPRITES_PER_TYPE * ind) +
-                                 static_cast<unsigned int>(IsSelected());
+    const unsigned int texInd = faction + (NUM_UNIT_SPRITES_PER_TYPE * ind);
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex =tm->GetSprite(SpriteFileUnits, texInd);
 
@@ -257,10 +315,9 @@ void Unit::UpdateHealing(float delta)
 
 void Unit::PrepareShoot()
 {
-    const IsoObject * isoObj = GetIsoObject();
 
-    const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y0 = isoObj->GetY();
+    const float x0 = GetX() + GetWidth() * 0.5f;
+    const float y0 = GetY();
 
     mWeapon->Shoot(x0, y0);
 
@@ -284,16 +341,13 @@ void Unit::Heal()
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterHealing *>(partMan->GetUpdater(PU_HEALING));
 
-    const unsigned int texInd = SpriteIdUnitsParticles::IND_UPAR_HEAL_F1 + faction;
-    Texture * tex = TextureManager::Instance()->GetSprite(SpriteFileUnitsParticles, texInd);
+    const unsigned int texInd = ID_PAR_HEAL_F1 + faction;
+    Texture * tex = TextureManager::Instance()->GetSprite(SpriteFileGameObjectsRelated, texInd);
 
-    IsoObject * isoObj = GetIsoObject();
-    IsoObject * isoTarget = mTargetHealing->GetIsoObject();
-
-    const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y0 = isoObj->GetY();
-    const float tX = isoTarget->GetX() + (isoTarget->GetWidth() - tex->GetWidth()) * 0.5f;
-    const float tY = isoTarget->GetY() + (isoTarget->GetHeight() - tex->GetHeight()) * 0.5f;
+    const float x0 = GetX() + GetWidth() * 0.5f;
+    const float y0 = GetY();
+    const float tX = mTargetHealing->GetX() + (mTargetHealing->GetWidth() - tex->GetWidth()) * 0.5f;
+    const float tY = mTargetHealing->GetY() + (mTargetHealing->GetHeight() - tex->GetHeight()) * 0.5f;
     const float speed = 100.f;
 
     const DataParticleHealing pd =

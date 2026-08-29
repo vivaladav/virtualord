@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameMaterialGenerator.h"
 
-#include "IsoObject.h"
 #include "GameObjects/GameObject.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -20,13 +19,12 @@ StepGameMaterialGenerator::StepGameMaterialGenerator(const GameObject * material
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    const auto isoObj = materialGen->GetIsoObject();
-    const int objX = isoObj->GetX();
-    const int objY = isoObj->GetY();
-    const int objW = isoObj->GetWidth();
-    const int objH = isoObj->GetHeight();
+    const int objX = materialGen->GetX();
+    const int objY = materialGen->GetY();
+    const int objW = materialGen->GetWidth();
+    const int objH = materialGen->GetHeight();
 
-    mFocusArea->SetWorldArea(objX, objY, objW, objH);
+    mFocusArea->SetWorldArea(objX, objY, objW, objH, false);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 

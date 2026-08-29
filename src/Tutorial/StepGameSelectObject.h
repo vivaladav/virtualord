@@ -16,7 +16,7 @@ class StepGameSelectObject : public TutorialInfoStep
 {
 public:
     StepGameSelectObject(const Game * game, const IsoMap * im, const GameObject * obj,
-                       const char * text, const sgl::core::Pointd2D & p0);
+                         const char * text, const sgl::core::Pointd2D & p0);
     ~StepGameSelectObject();
 
     void Update(float delta) override;

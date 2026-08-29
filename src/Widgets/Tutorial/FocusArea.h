@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sgl/core/Point.h>
 #include <sgl/sgui/Widget.h>
 
 namespace sgl
@@ -17,15 +18,15 @@ public:
 
     void SetBlinking(bool enabled);
 
-    void SetScreenArea(int x0, int y0, int w, int h);
-    void SetWorldArea(int x0, int y0, int w, int h);
+    void SetScreenArea(int x0, int y0, int w, int h, bool anim, float delayAnim = 0.5f);
+    void SetWorldArea(int x0, int y0, int w, int h, bool anim, float delayAnim = 0.5f);
 
     void SetCornersColor(unsigned int color);
     void SetCornersColorElement();
     void SetCornersColorAction();
 
 private:
-    void SetArea(int x0, int y0, int w, int h);
+    void SetArea(int x0, int y0, int w, int h, bool anim, float delayAnim);
 
     void OnRender() override;
     void OnUpdate(float delta) override;
@@ -36,10 +37,22 @@ private:
     sgl::graphic::Image * mCornerBL = nullptr;
     sgl::graphic::Image * mCornerBR = nullptr;
 
-    float mTimerBlinking = 0.f;
-    bool mBlinking = false;
-    bool mBlinkOn = true;
+    sgl::core::Pointf2D mCornerPosTL;
+    sgl::core::Pointf2D mCornerPosTR;
+    sgl::core::Pointf2D mCornerPosBL;
+    sgl::core::Pointf2D mCornerPosBR;
+    sgl::core::Pointd2D mTargetCornerPosTL;
+    sgl::core::Pointd2D mTargetCornerPosTR;
+    sgl::core::Pointd2D mTargetCornerPosBL;
+    sgl::core::Pointd2D mTargetCornerPosBR;
 
+    float mTimerBlinking = 0.f;
+    float mAnimationMove = 0.f;
+    float mAnimationDelay = 0.f;
+
+    bool mBlinking = false;
+    bool mRendering = true;
+    bool mAnimating = false;
 };
 
 } // namespace game

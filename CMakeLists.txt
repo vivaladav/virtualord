@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-project(virtualord LANGUAGES CXX VERSION 0.6.7)
+project(virtualord LANGUAGES CXX VERSION 0.6.9)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,6 +12,7 @@ add_compile_definitions($<$<PLATFORM_ID:Linux>:LINUX=1>
                         $<$<CONFIG:Release>:RELEASE=1>
                         $<$<CONFIG:RelWithDebInfo>:RELEASE=1>
                         $<$<BOOL:${DEV_MODE}>:DEV_MODE=1>
+                        $<$<BOOL:${DEMO_MODE}>:DEMO_MODE=1>
                         )
 
 # include internal libraries
@@ -54,6 +55,8 @@ add_executable(
     src/Planet.cpp
     src/Player.h
     src/Player.cpp
+    src/ResourceLoader.h
+    src/ResourceLoader.cpp
     src/StatValue.h
     src/StatValue.cpp
     src/Version.h
@@ -153,6 +156,8 @@ add_executable(
     src/Indicators/ConquestIndicator.cpp
     src/Indicators/HealingRangeIndicator.h
     src/Indicators/HealingRangeIndicator.cpp
+    src/Indicators/IndicatorSelection.h
+    src/Indicators/IndicatorSelection.cpp
     src/Indicators/OverlayAttackRange.h
     src/Indicators/OverlayAttackRange.cpp
     src/Indicators/OverlayCellConquest.h
@@ -161,6 +166,8 @@ add_executable(
     src/Indicators/OverlayHealRange.cpp
     src/Indicators/OverlayPath.h
     src/Indicators/OverlayPath.cpp
+    src/Indicators/OverlaySelection.h
+    src/Indicators/OverlaySelection.cpp
     src/Indicators/OverlayStructure.h
     src/Indicators/OverlayStructure.cpp
     src/Indicators/OverlayWall.h
@@ -208,6 +215,8 @@ add_executable(
     src/Screens/ScreenInit.cpp
     src/Screens/ScreenInitGame.h
     src/Screens/ScreenInitGame.cpp
+    src/Screens/ScreenLoadGame.h
+    src/Screens/ScreenLoadGame.cpp
     src/Screens/ScreenMainMenu.h
     src/Screens/ScreenMainMenu.cpp
     src/Screens/ScreenNewGame.h
@@ -234,6 +243,8 @@ add_executable(
     src/States/StateLeaveGame.cpp
     src/States/StateLeavePregame.h
     src/States/StateLeavePregame.cpp
+    src/States/StateLoadGame.h
+    src/States/StateLoadGame.cpp
     src/States/StateMainMenu.h
     src/States/StateMainMenu.cpp
     src/States/StateNewGame.h
@@ -271,6 +282,8 @@ add_executable(
     src/Tutorial/StepGameBuildStructIntro.cpp
     src/Tutorial/StepGameBuildTowerEnd.h
     src/Tutorial/StepGameBuildTowerEnd.cpp
+    src/Tutorial/StepGameCityIntro.h
+    src/Tutorial/StepGameCityIntro.cpp
     src/Tutorial/StepGameClearSelection.h
     src/Tutorial/StepGameClearSelection.cpp
     src/Tutorial/StepGameCollectObjects.h
@@ -279,6 +292,8 @@ add_executable(
     src/Tutorial/StepGameConnectStructIntro.cpp
     src/Tutorial/StepGameConquerCells.h
     src/Tutorial/StepGameConquerCells.cpp
+    src/Tutorial/StepGameConquerCellsContinue.h
+    src/Tutorial/StepGameConquerCellsContinue.cpp
     src/Tutorial/StepGameConquerCellsEnd.h
     src/Tutorial/StepGameConquerCellsEnd.cpp
     src/Tutorial/StepGameConquerCellsSimple.h
@@ -297,10 +312,14 @@ add_executable(
     src/Tutorial/StepGameConquerStructSimple.cpp
     src/Tutorial/StepGameDialogTrading.h
     src/Tutorial/StepGameDialogTrading.cpp
+    src/Tutorial/StepGameDialogTradingBuy.h
+    src/Tutorial/StepGameDialogTradingBuy.cpp
     src/Tutorial/StepGameDisableCamera.h
     src/Tutorial/StepGameDisableCamera.cpp
     src/Tutorial/StepGameEnableCamera.h
     src/Tutorial/StepGameEnableCamera.cpp
+    src/Tutorial/StepGameEnding.h
+    src/Tutorial/StepGameEnding.cpp
     src/Tutorial/StepGameEndTurn.h
     src/Tutorial/StepGameEndTurn.cpp
     src/Tutorial/StepGameEndTurnIntro.h
@@ -317,6 +336,8 @@ add_executable(
     src/Tutorial/StepGameIntro.cpp
     src/Tutorial/StepGameIntro2.h
     src/Tutorial/StepGameIntro2.cpp
+    src/Tutorial/StepGameIntro3.h
+    src/Tutorial/StepGameIntro3.cpp
     src/Tutorial/StepGameMakeEnemyAttack.h
     src/Tutorial/StepGameMakeEnemyAttack.cpp
     src/Tutorial/StepGameMapNavigation.h
@@ -333,8 +354,6 @@ add_executable(
     src/Tutorial/StepGameMoveCameraOverCell.cpp
     src/Tutorial/StepGameMoveCameraOverObject.h
     src/Tutorial/StepGameMoveCameraOverObject.cpp
-    src/Tutorial/StepGameMoveToTower.h
-    src/Tutorial/StepGameMoveToTower.cpp
     src/Tutorial/StepGameMoveUnit.h
     src/Tutorial/StepGameMoveUnit.cpp
     src/Tutorial/StepGameMoveUnitSimple.h
@@ -343,6 +362,8 @@ add_executable(
     src/Tutorial/StepGameMoveUnitToArea.cpp
     src/Tutorial/StepGameMoveUnitToCorner.h
     src/Tutorial/StepGameMoveUnitToCorner.cpp
+    src/Tutorial/StepGameOpenLootbox.h
+    src/Tutorial/StepGameOpenLootbox.cpp
     src/Tutorial/StepGamePanelHit.h
     src/Tutorial/StepGamePanelHit.cpp
     src/Tutorial/StepGamePrimaryMissionGoal.h
@@ -357,6 +378,8 @@ add_executable(
     src/Tutorial/StepGameSetCollectableGeneratorTurns.cpp
     src/Tutorial/StepGameSetCollectableUnits.h
     src/Tutorial/StepGameSetCollectableUnits.cpp
+    src/Tutorial/StepGameSetLootboxPrize.h
+    src/Tutorial/StepGameSetLootboxPrize.cpp
     src/Tutorial/StepGameSetObjectAttackMode.h
     src/Tutorial/StepGameSetObjectAttackMode.cpp
     src/Tutorial/StepGameSetObjectEnergy.h
@@ -371,12 +394,22 @@ add_executable(
     src/Tutorial/StepGameSetObjectPerfectShot.cpp
     src/Tutorial/StepGameSetSelectionActiveAction.h
     src/Tutorial/StepGameSetSelectionActiveAction.cpp
+    src/Tutorial/StepGameSetSelectionAllowed.h
+    src/Tutorial/StepGameSetSelectionAllowed.cpp
     src/Tutorial/StepGameSetSelectionDefaultAction.h
     src/Tutorial/StepGameSetSelectionDefaultAction.cpp
+    src/Tutorial/StepGameSetTarget.h
+    src/Tutorial/StepGameSetTarget.cpp
+    src/Tutorial/StepGameSetTargetIcon.h
+    src/Tutorial/StepGameSetTargetIcon.cpp
+    src/Tutorial/StepGameSetupMiniUnits.h
+    src/Tutorial/StepGameSetupMiniUnits.cpp
     src/Tutorial/StepGameSetupResearch.h
     src/Tutorial/StepGameSetupResearch.cpp
     src/Tutorial/StepGameSetupResearchIcon.h
     src/Tutorial/StepGameSetupResearchIcon.cpp
+    src/Tutorial/StepGameSpawnIcon.h
+    src/Tutorial/StepGameSpawnIcon.cpp
     src/Tutorial/StepGameResourcesBar.h
     src/Tutorial/StepGameResourcesBar.cpp
     src/Tutorial/StepGameSingleInfo.h
@@ -419,6 +452,10 @@ add_executable(
     src/Tutorial/StepGameWaitEnemiesKilled.cpp
     src/Tutorial/StepGameWaitEnemyKilled.h
     src/Tutorial/StepGameWaitEnemyKilled.cpp
+    src/Tutorial/StepGameWaitLootboxOpen.h
+    src/Tutorial/StepGameWaitLootboxOpen.cpp
+    src/Tutorial/StepGameWaitObjectIdle.h
+    src/Tutorial/StepGameWaitObjectIdle.cpp
     src/Tutorial/StepGameWaitTurn.h
     src/Tutorial/StepGameWaitTurn.cpp
     src/Tutorial/StepGameWallBuildEnd.h
@@ -449,6 +486,8 @@ add_executable(
     src/Tutorial/StepPlanetMapSelectTerritory.cpp
     src/Tutorial/StepPlanetMapSendAI.h
     src/Tutorial/StepPlanetMapSendAI.cpp
+    src/Tutorial/StepSaveGame.h
+    src/Tutorial/StepSaveGame.cpp
     src/Tutorial/Tutorial.h
     src/Tutorial/Tutorial.cpp
     src/Tutorial/TutorialConstants.h
@@ -531,6 +570,8 @@ add_executable(
     src/Widgets/DialogObject.cpp
     src/Widgets/DialogResearch.h
     src/Widgets/DialogResearch.cpp
+    src/Widgets/DialogSave.h
+    src/Widgets/DialogSave.cpp
     src/Widgets/DialogSettings.h
     src/Widgets/DialogSettings.cpp
     src/Widgets/DialogTechTree.h
@@ -541,6 +582,8 @@ add_executable(
     src/Widgets/DialogUpgrade.cpp
     src/Widgets/DigitsDisplay.h
     src/Widgets/DigitsDisplay.cpp
+    src/Widgets/DisappearingLabel.h
+    src/Widgets/DisappearingLabel.cpp
     src/Widgets/GameButton.h
     src/Widgets/GameButton.cpp
     src/Widgets/GameHUD.h
@@ -561,6 +604,10 @@ add_executable(
     src/Widgets/MiniMap.cpp
     src/Widgets/ObjectActionButton.h
     src/Widgets/ObjectActionButton.cpp
+    src/Widgets/ObjectEnergyBar.h
+    src/Widgets/ObjectEnergyBar.cpp
+    src/Widgets/ObjectHealthBar.h
+    src/Widgets/ObjectHealthBar.cpp
     src/Widgets/ObjectVisualAttribute.h
     src/Widgets/ObjectVisualAttribute.cpp
     src/Widgets/PanelHit.h

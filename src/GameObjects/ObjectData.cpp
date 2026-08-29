@@ -15,6 +15,7 @@ const GameObjectTypeId ObjectData::TYPE_BASE = 9094196730522238043u;
 const GameObjectTypeId ObjectData::TYPE_BASE_SPOT = 14134897545835206898u;
 const GameObjectTypeId ObjectData::TYPE_BLOBS = 1941259080517359621u;
 const GameObjectTypeId ObjectData::TYPE_BUNKER = 499816459377098859u;
+const GameObjectTypeId ObjectData::TYPE_CACTUS1 = 16490575835148238414u;
 const GameObjectTypeId ObjectData::TYPE_CITY_BLOCK = 17708476866137851777u;
 const GameObjectTypeId ObjectData::TYPE_DEFENSIVE_TOWER = 15727419491481753576u;
 const GameObjectTypeId ObjectData::TYPE_DIAMONDS = 4977511725422730637u;
@@ -23,7 +24,8 @@ const GameObjectTypeId ObjectData::TYPE_LOOTBOX = 11950838591583399786u;
 const GameObjectTypeId ObjectData::TYPE_LOOTBOX2 = 10560136022578840531u;
 const GameObjectTypeId ObjectData::TYPE_MINI_UNIT1 = 11607141519420994464u;
 const GameObjectTypeId ObjectData::TYPE_MINI_UNIT2 = 548432711892482871u;
-const GameObjectTypeId ObjectData::TYPE_MOUNTAINS = 5129307706687418303u;
+const GameObjectTypeId ObjectData::TYPE_MOUNTAINS1 = 5129307706687418303u;
+const GameObjectTypeId ObjectData::TYPE_MOUNTAINS2 = 14028903865635517329u;
 const GameObjectTypeId ObjectData::TYPE_PRACTICE_TARGET = 17051503364827447577u;
 const GameObjectTypeId ObjectData::TYPE_RADAR_STATION = 5616405813767426356u;
 const GameObjectTypeId ObjectData::TYPE_RADAR_TOWER = 8134168089495879870u;
@@ -59,6 +61,7 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::TITLES =
     { ObjectData::TYPE_BASE, "BASE"},
     { ObjectData::TYPE_BASE_SPOT, "BASE_SPOT"},
     { ObjectData::TYPE_BUNKER, "BUNKER"},
+    { ObjectData::TYPE_CACTUS1, "PLANTS"},
     { ObjectData::TYPE_CITY_BLOCK, "CITY_BLOCK"},
     { ObjectData::TYPE_DEFENSIVE_TOWER, "DEF_TOWER"},
     { ObjectData::TYPE_HOSPITAL, "HOSPITAL"},
@@ -66,7 +69,8 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::TITLES =
     { ObjectData::TYPE_LOOTBOX2, "LOOTBOX2"},
     { ObjectData::TYPE_MINI_UNIT1, "MINI_UNIT1"},
     { ObjectData::TYPE_MINI_UNIT2, "MINI_UNIT2"},
-    { ObjectData::TYPE_MOUNTAINS, "MOUNTAINS"},
+    { ObjectData::TYPE_MOUNTAINS1, "MOUNTAINS"},
+    { ObjectData::TYPE_MOUNTAINS2, "MOUNTAINS"},
     { ObjectData::TYPE_PRACTICE_TARGET, "PRACTICE_TARGET"},
     { ObjectData::TYPE_RADAR_STATION, "RADAR_STATION"},
     { ObjectData::TYPE_RADAR_TOWER, "RADAR_TOWER"},
@@ -103,6 +107,7 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::DESCRIPTIONS
     { ObjectData::TYPE_BASE, "DESC_BASE"},
     { ObjectData::TYPE_BASE_SPOT, "DESC_BASE_SPOT"},
     { ObjectData::TYPE_BUNKER, "DESC_BUNKER"},
+    { ObjectData::TYPE_CACTUS1, "DESC_PLANTS"},
     { ObjectData::TYPE_CITY_BLOCK, "DESC_CITY_BLOCK"},
     { ObjectData::TYPE_DEFENSIVE_TOWER, "DESC_DEF_TOWER"},
     { ObjectData::TYPE_HOSPITAL, "DESC_HOSPITAL"},
@@ -110,7 +115,8 @@ const std::unordered_map<GameObjectTypeId, std::string> ObjectData::DESCRIPTIONS
     { ObjectData::TYPE_LOOTBOX2, "DESC_LOOTBOX2"},
     { ObjectData::TYPE_MINI_UNIT1, "DESC_MINI_UNIT1"},
     { ObjectData::TYPE_MINI_UNIT2, "DESC_MINI_UNIT2"},
-    { ObjectData::TYPE_MOUNTAINS, "DESC_MOUNTAINS"},
+    { ObjectData::TYPE_MOUNTAINS1, "DESC_MOUNTAINS"},
+    { ObjectData::TYPE_MOUNTAINS2, "DESC_MOUNTAINS"},
     { ObjectData::TYPE_PRACTICE_TARGET, "DESC_PRACTICE_TARGET"},
     { ObjectData::TYPE_RADAR_STATION, "DESC_RADAR_STATION"},
     { ObjectData::TYPE_RADAR_TOWER, "DESC_RADAR_TOWER"},
@@ -246,7 +252,7 @@ unsigned int ObjectData::GetIconTexId(PlayerFaction f, const GameObject * obj) c
     {
         const auto mu = static_cast<const MiniUnit *>(obj);
         const unsigned int texInd0 = mIconTexIds[f];
-        return  texInd0 + NUM_MUNIT_SPRITES_PER_SQUAD * (mu->GetNumElements() - 1);
+        return  texInd0 + (mu->GetNumElements() - 1);
     }
     else
         return mIconTexIds[f];

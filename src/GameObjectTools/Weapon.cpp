@@ -5,6 +5,8 @@
 #include "GameObjects/GameObject.h"
 #include "GameObjectTools/WeaponData.h"
 
+#include <sgl/utilities/BinaryFile.h>
+
 #include <cstdlib>
 
 namespace
@@ -24,6 +26,7 @@ Weapon::Weapon(const WeaponData & data, GameObject * owner, const Game * g,
     , mGame(g)
     , mGameMap(gm)
     , mPartMan(partMan)
+    , mType(data.GetType())
     , mAttackMode(ATT_QUICK_SHOT)
     , mBurstShots(data.GetBurstShots())
     , mBurstToShoot(data.GetBurstShots())
@@ -32,6 +35,84 @@ Weapon::Weapon(const WeaponData & data, GameObject * owner, const Game * g,
     // set attack range converting attribute
     const int attRanges[] = { 0, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13 };
     mRange = attRanges[mAttributes[OBJ_ATT_ATTACK_RANGE]];
+}
+
+bool Weapon::Load(sgl::utilities::BinaryFile & bf)
+{
+    // attributes
+    const unsigned int numAttr = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numAttr; ++i)
+    {
+        const auto att = static_cast<ObjAttId>(bf.ReadUint());
+        const int val = bf.ReadInt();
+
+        mAttributes[att] = val;
+    }
+
+    // attack energy costs
+    const unsigned int numCosts = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numCosts; ++i)
+    {
+        const auto am = static_cast<AttackMode>(bf.ReadUint());
+        const int val = bf.ReadInt();
+
+        mEnergyCosts[am] = val;
+    }
+
+    // values
+    mAttackMode = static_cast<AttackMode>(bf.ReadUint());
+    mTimerAttack = bf.ReadFloat();
+    mRange = bf.ReadInt();
+    mBurstShots = bf.ReadInt();
+    mBurstToShoot = bf.ReadInt();
+    mTimeCooldown = bf.ReadFloat();
+    mMaxProbabilityFatal = bf.ReadFloat();
+
+    // flags
+    mReadyToShoot = bf.ReadBool();
+    mPerfectShot = bf.ReadBool();
+    mFatalHit = bf.ReadBool();
+
+    return true;
+}
+
+bool Weapon::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // attributes
+    bf.WriteUint(mAttributes.size());
+
+    for(const auto it : mAttributes)
+    {
+        bf.WriteUint(it.first);
+        bf.WriteInt(it.second);
+    }
+
+    // attack energy costs
+    bf.WriteUint(mEnergyCosts.size());
+
+    for(const auto it : mEnergyCosts)
+    {
+        bf.WriteUint(it.first);
+        bf.WriteInt(it.second);
+    }
+
+    // values
+    bf.WriteUint(mAttackMode);
+    bf.WriteFloat(mTimerAttack);
+    bf.WriteInt(mRange);
+    bf.WriteInt(mBurstShots);
+    bf.WriteInt(mBurstToShoot);
+    bf.WriteFloat(mTimeCooldown);
+    bf.WriteFloat(mMaxProbabilityFatal);
+
+    // flags
+    bf.WriteBool(mReadyToShoot);
+    bf.WriteBool(mPerfectShot);
+    bf.WriteBool(mFatalHit);
+
+    return true;
 }
 
 int Weapon::GetCostEnergy() const

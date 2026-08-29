@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace sgl { namespace utilities { class BinaryFile; } }
+
 namespace game
 {
 
@@ -51,8 +53,12 @@ public:
     static const MissionGoalType TYPE_TERRITORY_CONTROL_TURNS;
 
 public:
+    MissionGoal();
     MissionGoal(MissionGoalType type, unsigned int quantity, unsigned int extraVal,
                 bool primary, bool hidden);
+
+    bool Load(sgl::utilities::BinaryFile & bf);
+    bool Save(sgl::utilities::BinaryFile & bf) const;
 
     // ATTRIBUTES
     unsigned int GetId() const;

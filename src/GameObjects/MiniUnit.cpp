@@ -10,12 +10,13 @@
 #include <sgl/core/Point.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 namespace
 {
     const float maxSingleHealthValue = 50.f;
-    const float maxSingleEnergyValue = 200.f;
+    const float maxSingleEnergyValue = 120.f;
 
     const int MAX_ELEMENTS = 5;
 }
@@ -25,22 +26,51 @@ namespace game
 
 MiniUnit::MiniUnit(const ObjectData & data, const ObjectInitData & initData, int elements)
     : GameObject(data, initData)
-    , mElements(elements)
 {
+    SetObjectVariant(elements);
+
     // set actual speed
     const float maxSpeed = 10.f;
     SetMaxSpeed(maxSpeed);
 
     // health
-    const float maxHealthValue = maxSingleHealthValue * mElements;
+    const float maxHealthValue = maxSingleHealthValue * elements;
     SetMaxHealth(maxHealthValue);
 
     // energy
-    const float maxEnergy = maxSingleEnergyValue * mElements;
+    const float maxEnergy = maxSingleEnergyValue * elements;
     SetMaxEnergy(maxEnergy);
 
     // INIT GRAPHICS
     SetImage();
+}
+
+bool MiniUnit::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    mMoving = bf.ReadBool();
+    mTargetReached = bf.ReadBool();
+
+    return true;
+}
+
+bool MiniUnit::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObject::Save(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    bf.WriteBool(mMoving);
+    bf.WriteBool(mTargetReached);
+
+    return true;
 }
 
 void MiniUnit::SetNumElements(int num)
@@ -50,30 +80,37 @@ void MiniUnit::SetNumElements(int num)
         num = MAX_ELEMENTS;
 
     // nothing has changed
-    if(num == mElements)
+    if(num == GetObjectVariant())
         return ;
 
-    mElements = num;
+    SetObjectVariant(num);
 
     // health
-    const float maxHealthValue = maxSingleHealthValue * mElements;
+    const float maxHealthValue = maxSingleHealthValue * num;
     SetMaxHealth(maxHealthValue);
 
     // energy
-    const float maxEnergy = maxSingleEnergyValue * mElements;
+    const float maxEnergy = maxSingleEnergyValue * num;
     SetMaxEnergy(maxEnergy);
 
     UpdateGraphics();
 }
 
+void MiniUnit::OnMoveTerminated()
+{
+    const GameObjectTypeId type = GetObjectType();
+
+    if(type == ObjectData::TYPE_MINI_UNIT1)
+        ExplodeNearEnemy();
+}
+
 void MiniUnit::Update(float delta)
 {
+    GameObject::Update(delta);
+
     if(mTargetReached)
     {
-        const GameObjectTypeId type = GetObjectType();
-
-        if(type == ObjectData::TYPE_MINI_UNIT1)
-            ExplodeNearEnemy();
+        // NOTE not used at the moment, but leaving this block here for future usage if needed
 
         // reset flag
         mTargetReached = false;
@@ -87,6 +124,10 @@ void MiniUnit::Update(float delta)
         if(mWeapon->IsReadyToShoot())
             PrepareShoot();
     }
+
+    // handle exploding mini-units
+    if(mExplode)
+        SelfDestroy();
 }
 
 void MiniUnit::UpdateGraphics()
@@ -107,10 +148,8 @@ void MiniUnit::SetImage()
     if(GetObjectType() == ObjectData::TYPE_MINI_UNIT2)
         texInd0 = SID_MUNIT_02_1X_F1;
 
-    const unsigned int texInd = texInd0 +
-                                (NUM_MUNIT_SPRITES_PER_FACTION * faction) +
-                                (NUM_MUNIT_SPRITES_PER_SQUAD * (mElements - 1)) +
-                                static_cast<unsigned int>(IsSelected());
+    const unsigned int texInd = texInd0 + (NUM_MUNIT_SPRITES_PER_FACTION * faction) +
+                                (GetObjectVariant() - 1);
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex =tm->GetSprite(SpriteFileMiniUnits, texInd);
@@ -131,9 +170,9 @@ void MiniUnit::ExplodeNearEnemy()
     const int cc = GetCol0();
 
     const int rad = 1;
-    const int r0 = cr >= rad ? cr - rad : 0;
+    const int r0 = cr > rad ? cr - rad : 0;
     const int r1 = cr + rad < mapRows ? cr + rad + 1 : mapRows;
-    const int c0 = cc >= rad ? cc - rad : 0;
+    const int c0 = cc > rad ? cc - rad : 0;
     const int c1 = cc + rad < mapCols ? cc + rad + 1 : mapCols;
 
     const PlayerFaction ownFaction = GetFaction();
@@ -153,7 +192,7 @@ void MiniUnit::ExplodeNearEnemy()
                 (cell.objBottom != nullptr && cell.objBottom->GetFaction() != ownFaction &&
                  cell.objBottom->GetFaction() != NO_FACTION))
             {
-                SelfDestroy();
+                mExplode = true;
                 return ;
             }
         }
@@ -164,28 +203,28 @@ void MiniUnit::PrepareShoot()
 {
     using namespace sgl;
 
-    const IsoObject * isoObj = GetIsoObject();
+    const int numElements = GetObjectVariant();
 
     core::Pointd2D delta;
 
-    if(1 == mElements)
+    if(1 == numElements)
         delta = {48, 9};
     else
     {
         std::vector<core::Pointd2D> deltas;
 
-        if(2 == mElements)
+        if(2 == numElements)
         {
             deltas.emplace_back(24, 9);
             deltas.emplace_back(72, 9);
         }
-        else if(3 == mElements)
+        else if(3 == numElements)
         {
             deltas.emplace_back(16, 15);
             deltas.emplace_back(48, 15);
             deltas.emplace_back(80, 15);
         }
-        else if(4 == mElements)
+        else if(4 == numElements)
         {
             deltas.emplace_back(48, 0);
             deltas.emplace_back(16, 15);
@@ -201,12 +240,12 @@ void MiniUnit::PrepareShoot()
             deltas.emplace_back(48, 30);
         }
 
-        utilities::UniformDistribution ud(0, deltas.size() - 1, GetGame()->GetRandSeed());
+        utilities::UniformDistribution ud(0, deltas.size() - 1);
         delta = deltas[ud.GetNextValue()];
     }
 
-    const float x0 = isoObj->GetX() + delta.x;
-    const float y0 = isoObj->GetY() + delta.y;
+    const float x0 = GetX() + delta.x;
+    const float y0 = GetY() + delta.y;
 
     mWeapon->Shoot(x0, y0);
 }

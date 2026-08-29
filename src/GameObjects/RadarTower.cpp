@@ -34,14 +34,13 @@ void RadarTower::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const PlayerFaction faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texInd = ID_STRUCT_RADAR_TOWER;
 
     if(NO_FACTION == faction)
-        texInd = ID_STRUCT_RADAR_TOWER + sel;
+        texInd = ID_STRUCT_RADAR_TOWER;
     else
-        texInd = ID_STRUCT_RADAR_TOWER_F1 + (faction * NUM_RADAR_TOWER_SPRITES_PER_FAC) + sel;
+        texInd = ID_STRUCT_RADAR_TOWER_F1 + faction;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
     isoObj->SetTexture(tex);

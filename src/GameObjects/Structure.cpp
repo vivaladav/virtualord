@@ -1,7 +1,6 @@
 #include "Structure.h"
 
 #include "GameConstants.h"
-#include "IsoObject.h"
 #include "Player.h"
 #include "Widgets/BlinkingIcon.h"
 
@@ -58,6 +57,11 @@ void Structure::OnLinkedChanged()
     UpdateIconEnergy();
 }
 
+void Structure::UpdateGraphics()
+{
+    UpdateIconEnergy();
+}
+
 void Structure::HideIconEnergy()
 {
     mIconEnergy->SetVisible(false);
@@ -77,14 +81,12 @@ void Structure::ShowIconEnergy()
 
 void Structure::PositionIconEnergy()
 {
-    const auto isoObj = GetIsoObject();
-    const int isoX = isoObj->GetX();
-    const int isoY = isoObj->GetY();
-    const int isoW = isoObj->GetWidth();
+    const int x0 = GetX();
+    const int y0 = GetStatusIconBaseY();
 
     const int iconMarginV = 5;
-    const int iconX = isoX + (isoW - mIconEnergy->GetWidth()) / 2;
-    const int iconY = isoY - mIconEnergy->GetHeight() - iconMarginV;
+    const int iconX = x0 + (GetWidth() - mIconEnergy->GetWidth()) / 2;
+    const int iconY = y0 - mIconEnergy->GetHeight() - iconMarginV;
 
     mIconEnergy->SetPosition(iconX, iconY);
 }

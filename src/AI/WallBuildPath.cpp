@@ -13,10 +13,13 @@
 #include "GameObjects/Wall.h"
 #include "Indicators/OverlayWall.h"
 #include "Indicators/WallIndicator.h"
+#include "Particles/DataParticleOutput.h"
+#include "Particles/UpdaterOutput.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/GameMapProgressBar.h"
 
+#include <sgl/graphic/ParticlesManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
@@ -117,7 +120,7 @@ bool WallBuildPath::InitNextBuild()
     const unsigned int nextInd = mCells[mNextCell];
     const Cell2D nextCell(IndToRow(nextInd), IndToCol(nextInd));
 
-    Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+    Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
 
     // remove current cell from overlay
     if(mOverlay)
@@ -150,6 +153,31 @@ bool WallBuildPath::InitNextBuild()
         mGameMap->BuildWall(nextCell, player, mBlockTypes[mNextCell]);
 
         mUnit->ActionStepCompleted(BUILD_WALL);
+
+        // emit notification
+        if(mLocal)
+        {
+            auto partMan = mScreen->GetParticlesManager();
+            auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
+
+            const sgl::core::Pointd2D p = mIsoMap->GetCellPosition(mCells[mNextCell]);
+            const float tileW = mIsoMap->GetTileWidth();
+            const float x1 = p.x + tileW * 0.15f;
+            const float x2 = p.x + tileW * 0.85f;
+            const float marginV0 = 10.f;
+            const float y12 = p.y - marginV0;
+            const float speed = 80.f;
+            const float decaySpeed = 10.f;
+            const float timeLife = 0.75f;
+
+            const int costEne = Wall::GetCostEnergy(mLevel);
+            const DataParticleOutput pd1(-costEne, OT_ENERGY, x1, y12, speed, decaySpeed, timeLife);
+            pu->AddParticle(pd1);
+
+            const int costMat = Wall::GetCostMaterial(mLevel);
+            const DataParticleOutput pd2(-costMat, OT_MATERIAL, x2, y12, speed, decaySpeed, timeLife);
+            pu->AddParticle(pd2);
+        }
 
         ++mNextCell;
 
@@ -297,7 +325,7 @@ void WallBuildPath::UpdateMove(float delta)
     // handle reached target
     if(0 == todo)
     {
-        Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+        Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
 
         mGameMap->DelPlayerObjVisibility(mUnit, player);
 
@@ -365,13 +393,9 @@ bool WallBuildPath::Start()
 
     mNextCell = 0;
 
-    // center camera over target destination in the meanwhile
+    // track object while moving if local
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-    {
-        const float multSpeed = 20.f;
-        const float speedCam = mUnit->GetSpeed() * multSpeed;
-        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
-    }
+        mScreen->StartCameraTracking(mUnit);
 
     return InitNextMove();
 }
@@ -385,7 +409,7 @@ void WallBuildPath::Abort()
     else
     {
         if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-            mScreen->StopCameraMove();
+            mScreen->StopCameraTracking();
 
         mState = ABORTED;
     }
@@ -410,7 +434,7 @@ void WallBuildPath::InstantAbort()
         mOverlay->ClearPath();
 
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StopCameraMove();
+        mScreen->StopCameraTracking();
 
     // set new state
     mState = ABORTED;
@@ -429,7 +453,13 @@ bool WallBuildPath::Fail()
 
     // clear action data
     if(HasStarted())
+    {
+        // stop tracking object
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraTracking();
+
         mScreen->SetObjectActionFailed(mUnit);
+    }
 
     mState = FAILED;
 
@@ -441,6 +471,10 @@ bool WallBuildPath::Finish()
     if(HasStarted())
     {
         mState = COMPLETED;
+
+        // stop tracking object
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraTracking();
 
         // clear action data once the action is completed
         mScreen->SetObjectActionCompleted(mUnit);

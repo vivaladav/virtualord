@@ -14,7 +14,11 @@ namespace sgl
 {
     namespace ai { class Pathfinder; }
     namespace graphic { class ParticlesManager; }
-    namespace utilities { class StringManager; }
+    namespace utilities
+    {
+        class BinaryFile;
+        class StringManager;
+    }
 }
 
 namespace game
@@ -35,6 +39,7 @@ class OverlayAttackRange;
 class OverlayCellConquest;
 class OverlayHealRange;
 class OverlayPath;
+class OverlaySelection;
 class OverlayStructure;
 class OverlayWall;
 class Player;
@@ -50,6 +55,12 @@ class ScreenGame : public Screen
 public:
     ScreenGame(Game * game);
     ~ScreenGame();
+
+    void InitNewGame();
+    void InitLoadedGame();
+
+    bool Load(sgl::utilities::BinaryFile & bf);
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
 
     unsigned int GetPlayTimeInSec() const;
 
@@ -74,6 +85,8 @@ public:
 
     const sgl::graphic::ParticlesManager * GetParticlesManager() const;
 
+    void SetSelectionAllowed(bool allowed);
+    bool IsSelectionAllowed() const;
     void ClearSelection(Player * player);
     void SelectObject(GameObject * obj, Player * player);
 
@@ -82,6 +95,8 @@ public:
     void CenterCameraOverCell(const Cell2D & cell, float speed = -1.f);
     void CenterCameraOverCell(unsigned int cellIndex, float speed = -1.f);
     void CenterCameraOverObject(const GameObject * obj, float speed = -1.f);
+    void StartCameraTracking(const GameObject * obj);
+    void StopCameraTracking();
     void StopCameraMove();
 
     Player * GetActivePlayer() const;
@@ -105,7 +120,7 @@ public:
 private:
     void OnApplicationQuit(sgl::core::ApplicationEvent & event) override;
 
-    void AssignStartResources(Player * p);
+    void InitGame();
 
     void InitPlayers();
     void InitMusic();
@@ -116,6 +131,7 @@ private:
     void CreateLayers();
 
     void CreateUI();
+    void CreateOverlays();
     void HideActionPanels();
 
     void LoadMapFile();
@@ -139,6 +155,7 @@ private:
     int CellToIndex(const Cell2D & cell) const;
 
     void ResetObjectAction(GameObject * obj);
+    void ResetSelectedObjectAction();
 
     bool SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, GameObjectsGroup * group, Player * player,
                            int squads, int elements, const std::function<void(bool)> & onDone = [](bool){});
@@ -181,6 +198,8 @@ private:
     void ShowMoveIndicator(GameObject * obj, const Cell2D & dest);
     void ClearCellOverlays();
 
+    void ShowParticlesCost(const std::vector<int> & cost, const GameObject * obj);
+
     int CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool building);
 
     void UpdatePanelHit(const GameObject * attacker);
@@ -214,6 +233,7 @@ private:
     MissionGoalsTracker * mTrackerMG = nullptr;
 
     CameraMapController * mCamController = nullptr;
+    sgl::core::Pointd2D mCameraInitPos;
 
     unsigned int mIdOnSettingsChanged = 0;
     unsigned int mIdOnUnlockUpgraded = 0;
@@ -238,6 +258,7 @@ private:
     OverlayCellConquest * mOverlayCellConquest = nullptr;
     OverlayHealRange * mOverlayHeal = nullptr;
     OverlayPath * mOverlayPath = nullptr;
+    OverlaySelection * mOverlaySelection = nullptr;
     OverlayStructure * mOverlayStruct = nullptr;
     OverlayWall * mOverlayWall = nullptr;
 
@@ -255,7 +276,7 @@ private:
     float mTimePlayed = 0.f;
 
     bool mPaused = false;
-
+    bool mAllowSelection = true;
     bool mLocalTurnInitDone = false;
 };
 
@@ -272,6 +293,9 @@ inline const sgl::graphic::ParticlesManager * ScreenGame::GetParticlesManager() 
 {
     return mPartMan;
 }
+
+inline void ScreenGame::SetSelectionAllowed(bool allowed) { mAllowSelection = allowed; }
+inline bool ScreenGame::IsSelectionAllowed() const { return mAllowSelection; }
 
 inline Player * ScreenGame::GetActivePlayer() const { return mActiveplayer; }
 

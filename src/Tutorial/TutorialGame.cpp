@@ -29,6 +29,15 @@ TutorialGame::TutorialGame(Screen * screen, TutorialId tutId)
     mSettingsAutoUnitCam = game->IsAutoUnitCameraEnabled();
 
     game->SetAutoUnitCamera(true);
+
+    // always disable camera controller when starting
+    mScreen->mCamController->SetEnabled(false);
+
+    // disable AI when starting
+    Player * playerAI = game->GetActivePlayerByIndex(1);
+    assert(playerAI != nullptr);
+    assert(playerAI->GetAI() != nullptr);
+    playerAI->GetAI()->SetActive(false);
 }
 
 TutorialGame::~TutorialGame()
@@ -47,7 +56,7 @@ TutorialGame::~TutorialGame()
     game->SetAutoUnitCamera(mSettingsAutoUnitCam);
 
     // reset default action for units that have it set to IDLE
-    const auto local = game->GetPlayerByIndex(0);
+    const auto local = game->GetActivePlayerByIndex(0);
     const unsigned int numUnits = local->GetNumUnits();
 
     for(unsigned int i = 0; i < numUnits; ++i)
@@ -65,7 +74,7 @@ TutorialGame::~TutorialGame()
     }
 
     // re-enable AI
-    Player * playerAI = game->GetPlayerByIndex(1);
+    Player * playerAI = game->GetActivePlayerByIndex(1);
 
     assert(playerAI != nullptr);
     assert(playerAI->GetAI() != nullptr);

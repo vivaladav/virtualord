@@ -3,7 +3,7 @@
 namespace game
 {
 
-enum StateId : int
+enum StateId : unsigned int
 {
     INIT,
     INIT_GAME,
@@ -13,6 +13,7 @@ enum StateId : int
     LEAVE_GAME,
     LEAVE_PREGAME,
     NEW_GAME,
+    LOAD_GAME,
     PLANET_MAP,
     SETTINGS,
     TEST,

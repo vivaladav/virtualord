@@ -23,12 +23,10 @@ public:
     bool IsDone() const;
 
     void Start();
+    void Continue(unsigned int firstStep);
 
     void SetPause(bool paused);
     bool IsPaused() const;
-
-    virtual void OnStart();
-    virtual void OnEnd();
 
     unsigned int GetNumStepsAtStart() const;
     unsigned int GetNumStepsTodo() const;

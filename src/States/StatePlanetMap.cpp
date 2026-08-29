@@ -12,9 +12,32 @@ StatePlanetMap::StatePlanetMap(Game * game)
 {
 }
 
+bool StatePlanetMap::Save(sgl::utilities::BinaryFile & bf) const
+{
+    BaseGameState::Save(bf);
+
+    mScreen->Save(bf);
+
+    return true;
+}
+
 void StatePlanetMap::OnActive()
 {
     mScreen = new ScreenPlanetMap(mGame);
+
+    // close binary file used to load
+    if(mGame->GetSaveFileForReading() != nullptr)
+        mGame->CloseSaveFileForReading();
+    // not loading, opening the screen in game
+    else
+    {
+        // auto save, if enabled
+        if(mGame->IsAutosaveEnabled())
+        {
+            mGame->SaveGame();
+            mScreen->ShowLabelGameSaved();
+        }
+    }
 
     mGame->AddKeyboardListener(mScreen);
 }

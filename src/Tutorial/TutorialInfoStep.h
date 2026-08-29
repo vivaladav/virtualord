@@ -5,13 +5,14 @@
 namespace game
 {
 
-class PanelClickFilter;
 class PanelInfoTutorial;
+class Screen;
 
 class TutorialInfoStep : public TutorialStep
 {
 public:
     TutorialInfoStep(int infoW, int infoH);
+    TutorialInfoStep(Screen * screen, int infoW, int infoH);
     ~TutorialInfoStep();
 
     void SetPause(bool paused) override;
@@ -19,16 +20,21 @@ public:
     void OnStart() override;
 
 protected:
-    PanelClickFilter * GetClickFilter();
     PanelInfoTutorial * GetPanelInfo();
 
+    void DisableObjectSelection();
+
 private:
-    PanelClickFilter * mClickFilter = nullptr;
+    Screen * mScreen = nullptr;
+
     PanelInfoTutorial * mInfo = nullptr;
+
+    bool mDisableSelection = false;
+    bool mWasSelAllowed = true;
 };
 
-inline PanelClickFilter * TutorialInfoStep::GetClickFilter() { return mClickFilter; }
-
 inline PanelInfoTutorial * TutorialInfoStep::GetPanelInfo() { return mInfo; }
+
+inline void TutorialInfoStep::DisableObjectSelection() { mDisableSelection = true; }
 
 } // namespace game

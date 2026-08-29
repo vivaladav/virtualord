@@ -27,7 +27,7 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgr
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColorElement();
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -42,25 +42,22 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgr
                          [this, info, upgradeID]
                         {
                             auto dialog = mHUD->GetDialogTechTree();
-                            auto btn = dialog->mVisibleButtonsUpgrade.at(upgradeID);
+                            mBtn = dialog->mVisibleButtonsUpgrade.at(upgradeID);
 
-                            // NOTE no need to remove the function later as the dialog is
-                            // destroyed at the end
-                            btn->AddOnToggleFunction([info](bool checked)
+                            mCallbackBtn = mBtn->AddOnToggleFunction([info](bool checked)
                                 {
                                     if(checked)
                                         info->Continue();
                                 });
 
-                            const int x = btn->GetScreenX() - padding;
-                            const int y = btn->GetScreenY() - padding;
-                            const int w = btn->GetWidth() + (2 * padding);
-                            const int h = btn->GetHeight() + (2 * padding);
+                            const int x = mBtn->GetScreenX() - padding;
+                            const int y = mBtn->GetScreenY() - padding;
+                            const int w = mBtn->GetWidth() + (2 * padding);
+                            const int h = mBtn->GetHeight() + (2 * padding);
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
-                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
                         });
@@ -73,24 +70,23 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgr
                             auto dialog = mHUD->GetDialogTechTree();
                             auto btn = dialog->mBtnUnlock;
 
-                             // NOTE no need to remove the function later as the dialog is
-                             // destroyed at the end
-                             btn->AddOnClickFunction([info]
+                            const auto cid = btn->AddOnClickFunction([info]
                                 {
                                     info->Continue();
                                 });
 
-                             const int x = btn->GetScreenX() - padding;
-                             const int y = btn->GetScreenY() - padding;
-                             const int w = btn->GetWidth() + (2 * padding);
-                             const int h = btn->GetHeight() + (2 * padding);
+                            mCallbacks.emplace(btn, cid);
 
-                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+                            const int x = btn->GetScreenX() - padding;
+                            const int y = btn->GetScreenY() - padding;
+                            const int w = btn->GetWidth() + (2 * padding);
+                            const int h = btn->GetHeight() + (2 * padding);
 
-                             mFocusArea->SetScreenArea(x, y, w, h);
-                             mFocusArea->SetCornersColorAction();
-                             mFocusArea->SetBlinking(true);
-                             mFocusArea->SetVisible(true);
+                            GetClickFilter()->SetScreenClickableArea(x, y, w, h);
+
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
+                            mFocusArea->SetBlinking(true);
+                            mFocusArea->SetVisible(true);
                          });
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_DIALOG_5"), 0.f, false, false,
@@ -101,12 +97,12 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgr
                             auto dialog = mHUD->GetDialogTechTree();
                             auto btn = dialog->mBtnClose;
 
-                            // NOTE no need to remove the function later as the dialog is
-                            // destroyed when the button is clicked
-                            btn->AddOnClickFunction([this]
+                            const auto cid = btn->AddOnClickFunction([this]
                                                     {
                                                         SetDone();
                                                     });
+
+                            mCallbacks.emplace(btn, cid);
 
                             const int x = btn->GetScreenX() - padding;
                             const int y = btn->GetScreenY() - padding;
@@ -115,8 +111,7 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgr
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
-                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
                         });
@@ -125,6 +120,12 @@ StepGameTechTreeDialog::StepGameTechTreeDialog(GameHUD * HUD, TechUpgradeId upgr
 StepGameTechTreeDialog::~StepGameTechTreeDialog()
 {
     delete mFocusArea;
+
+    // clear callbacks
+    for(auto it : mCallbacks)
+        (it.first)->RemoveClickFunction(it.second);
+
+    mBtn->RemoveToggleFunction(mCallbackBtn);
 }
 
 void StepGameTechTreeDialog::OnStart()

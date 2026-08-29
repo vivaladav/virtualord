@@ -18,6 +18,8 @@ StepGameAddEnemy::StepGameAddEnemy(GameMap * gm, Player * owner, GameObjectTypeI
 
 void StepGameAddEnemy::OnStart()
 {
+    TutorialStep::OnStart();
+
     const GameMapCell & gmCell = mGameMap->GetCell(mTarget.row, mTarget.col);
 
     if(gmCell.objTop == nullptr && gmCell.objBottom == nullptr)

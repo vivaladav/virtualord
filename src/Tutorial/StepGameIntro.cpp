@@ -17,7 +17,7 @@ StepGameIntro::StepGameIntro()
 
     info->SetPosition(200, 100);
 
-    info->AddInfoEntry(sm->GetCString("TUT_GAME_INTRO_1"), 5.f, true, false);
+    info->AddInfoEntry(sm->GetCString("TUT_GAME_INTRO_1"), 6.f, true, false);
     info->AddInfoEntry(sm->GetCString("TUT_GAME_INTRO_2"), 7.f, true, false);
 
     info->SetFunctionOnFinished([this]

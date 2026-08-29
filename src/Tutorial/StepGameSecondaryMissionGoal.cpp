@@ -26,7 +26,7 @@ StepGameSecondaryMissionGoal::StepGameSecondaryMissionGoal(GameHUD * HUD, int go
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColorElement();
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -42,12 +42,12 @@ StepGameSecondaryMissionGoal::StepGameSecondaryMissionGoal(GameHUD * HUD, int go
                             auto dialog = mHUD->GetDialogMissionGoals();
                             auto btn = dialog->mSecondCollectButtons[goal];
 
-                            // NOTE no need to remove the function later as the dialog is
-                            // destroyed at the end
-                            btn->AddOnClickFunction([info]
+                            const auto cid = btn->AddOnClickFunction([info]
                                                     {
                                                         info->Continue();
                                                     });
+
+                            mCallbacks.emplace(btn, cid);
 
                             const int x = btn->GetScreenX() - padding;
                             const int y = btn->GetScreenY() - padding;
@@ -56,8 +56,7 @@ StepGameSecondaryMissionGoal::StepGameSecondaryMissionGoal(GameHUD * HUD, int go
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
-                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
                         });
@@ -67,12 +66,12 @@ StepGameSecondaryMissionGoal::StepGameSecondaryMissionGoal(GameHUD * HUD, int go
                             auto dialog = mHUD->GetDialogMissionGoals();
                             auto btn = dialog->GetButtonClose();
 
-                            // NOTE no need to remove the function later as the dialog is
-                            // destroyed when the button is clicked
-                            dialog->AddFunctionOnClose([this]
+                            const auto cid = dialog->AddFunctionOnClose([this]
                                                        {
                                                            SetDone();
                                                        });
+
+                            mCallbacks.emplace(btn, cid);
 
                             const int x = btn->GetScreenX() - padding;
                             const int y = btn->GetScreenY() - padding;
@@ -81,8 +80,7 @@ StepGameSecondaryMissionGoal::StepGameSecondaryMissionGoal(GameHUD * HUD, int go
 
                             GetClickFilter()->SetScreenClickableArea(x, y, w, h);
 
-                            mFocusArea->SetScreenArea(x, y, w, h);
-                            mFocusArea->SetCornersColorAction();
+                            mFocusArea->SetScreenArea(x, y, w, h, true);
                             mFocusArea->SetBlinking(true);
                             mFocusArea->SetVisible(true);
                         });
@@ -91,6 +89,10 @@ StepGameSecondaryMissionGoal::StepGameSecondaryMissionGoal(GameHUD * HUD, int go
 StepGameSecondaryMissionGoal::~StepGameSecondaryMissionGoal()
 {
     delete mFocusArea;
+
+    // clear callbacks
+    for(auto it : mCallbacks)
+        (it.first)->RemoveClickFunction(it.second);
 }
 
 void StepGameSecondaryMissionGoal::OnStart()

@@ -12,6 +12,9 @@ class ResourceGenerator : public Structure
 public:
     ResourceGenerator(const ObjectData & data, const ObjectInitData & initData);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     void ScaleOutput(float mult);
 
     ResourceType GetResourceType() const;
@@ -20,10 +23,9 @@ public:
 
     void OnNewTurn(PlayerFaction faction) override;
 
-protected:
+private:
     void UpdateGraphics() override;
 
-private:
     void SetImage();
 
     void UpdateOutput();

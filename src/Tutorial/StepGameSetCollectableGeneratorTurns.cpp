@@ -22,6 +22,8 @@ StepGameSetCollectableGeneratorTurns::StepGameSetCollectableGeneratorTurns(const
 
 void StepGameSetCollectableGeneratorTurns::OnStart()
 {
+    TutorialStep::OnStart();
+
     const std::vector<CollectableGenerator *> & gens = mGameMap->GetCollectableGenerators();
 
     for(CollectableGenerator * gen : gens)

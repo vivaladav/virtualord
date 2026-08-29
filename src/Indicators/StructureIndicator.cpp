@@ -12,10 +12,26 @@ StructureIndicator::StructureIndicator(const ObjectData & data, PlayerFaction fa
 {
     auto tm = sgl::graphic::TextureManager::Instance();
 
-    SetTexture(tm->GetSprite(data.GetIconTexFile(), data.GetIconTexId(faction)));
+    SetTexture(tm->GetSprite(data.GetIconTexFile(), data.GetIconTexId(NO_FACTION)));
 
-    const int alpha = 125;
-    SetAlpha(alpha);
+    SetDoable(true);
+}
+
+void StructureIndicator::SetDoable(bool doable)
+{
+    // nothing changed
+    if(doable == mDoable)
+        return ;
+
+    mDoable = doable;
+
+    const unsigned int colors[] =
+    {
+        0xff5533b2,
+        0x33ff77b2
+    };
+
+    SetColor(colors[doable]);
 }
 
 

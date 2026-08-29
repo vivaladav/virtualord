@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameMissionGoalsIcon.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,12 +12,16 @@
 namespace game
 {
 
-StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel, bool showIntro)
-    : TutorialInfoStep(600, showIntro ? 200 : 150)
+StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(const Game * game, Screen * screen,
+                                                   PanelObjectActions * panel, bool showIntro)
+    : TutorialInfoStep(screen, 600, showIntro ? 200 : 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
+
+    // do not allow object selection during this step
+    DisableObjectSelection();
 
     // FOCUS
     mFocusArea->SetCornersColorAction();
@@ -32,7 +37,7 @@ StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel, b
         info->AddInfoEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_1"), 10.f, true, false);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_MISSION_GOALS_ICON_2"), 0.f, false, false,
-                         [this, panel]
+                         [this, panel, game]
                         {
                             auto btn = panel->GetButton(PanelObjectActions::BTN_MISSION_GOALS);
 
@@ -42,7 +47,9 @@ StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel, b
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;
@@ -51,7 +58,7 @@ StepGameMissionGoalsIcon::StepGameMissionGoalsIcon(PanelObjectActions * panel, b
                             const int f2W = fW + (padding * 2);
                             const int f2H = fH + (padding * 2);
 
-                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
+                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H, true);
                             mFocusArea->SetVisible(true);
                         });
 

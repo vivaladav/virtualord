@@ -13,6 +13,7 @@
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 namespace game
 {
@@ -33,6 +34,60 @@ Hospital::Hospital(const ObjectData & data, const ObjectInitData & initData)
     mHealingPower = HealPowers[data.GetAttribute(OBJ_ATT_HEALING_POWER)];
 
     SetImage();
+}
+
+bool Hospital::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // healing
+    mTimeHealing = bf.ReadFloat();
+    mTimerHealing = bf.ReadFloat();
+    mHealingPower = bf.ReadFloat();
+    mRangeHealing = bf.ReadInt();
+
+    // target healing
+    const unsigned int targetID = bf.ReadUint();
+
+    if(targetID != 0)
+    {
+        const std::vector<GameObject *> &  objs = GetGameMap()->GetObjects();
+
+        for(GameObject * obj : objs)
+        {
+            if(obj->GetObjectId() == targetID)
+            {
+                mTargetHealing = obj;
+                break;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool Hospital::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // healing
+    bf.WriteFloat(mTimeHealing);
+    bf.WriteFloat(mTimerHealing);
+    bf.WriteFloat(mHealingPower);
+    bf.WriteInt(mRangeHealing);
+
+    if(mTargetHealing != nullptr)
+        bf.WriteUint(mTargetHealing->GetObjectId());
+    else
+        bf.WriteUint(0);
+
+    return true;
 }
 
 bool Hospital::IsTargetHealingInRange(GameObject * obj) const
@@ -64,6 +119,8 @@ bool Hospital::SetTargetHealing(GameObject * obj)
 
 void Hospital::Update(float delta)
 {
+    GameObject::Update(delta);
+
     // HEALING OTHER OBJECTS
     if(mTargetHealing)
         UpdateHealing(delta);
@@ -84,14 +141,13 @@ void Hospital::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texInd = ID_STRUCT_HOSPITAL;
 
     if(NO_FACTION == faction)
-        texInd = ID_STRUCT_HOSPITAL + sel;
+        texInd = ID_STRUCT_HOSPITAL;
     else
-        texInd = ID_STRUCT_HOSPITAL_F1 + (faction * NUM_HOSPITAL_SPRITES_PER_FAC) + sel;
+        texInd = ID_STRUCT_HOSPITAL_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);
@@ -162,16 +218,13 @@ void Hospital::Heal()
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterHealing *>(partMan->GetUpdater(PU_HEALING));
 
-    const unsigned int texInd = SpriteIdUnitsParticles::IND_UPAR_HEAL_F1 + faction;
-    Texture * tex = TextureManager::Instance()->GetSprite(SpriteFileUnitsParticles, texInd);
+    const unsigned int texInd = ID_PAR_HEAL_F1 + faction;
+    Texture * tex = TextureManager::Instance()->GetSprite(SpriteFileGameObjectsRelated, texInd);
 
-    IsoObject * isoObj = GetIsoObject();
-    IsoObject * isoTarget = mTargetHealing->GetIsoObject();
-
-    const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y0 = isoObj->GetY() + isoObj->GetHeight() * 0.3f;
-    const float tX = isoTarget->GetX() + (isoTarget->GetWidth() - tex->GetWidth()) * 0.5f;
-    const float tY = isoTarget->GetY() + (isoTarget->GetHeight() - tex->GetHeight()) * 0.5f;
+    const float x0 = GetX() + GetWidth() * 0.5f;
+    const float y0 = GetY() + GetHeight() * 0.3f;
+    const float tX = mTargetHealing->GetX() + (mTargetHealing->GetWidth() - tex->GetWidth()) * 0.5f;
+    const float tY = mTargetHealing->GetY() + (mTargetHealing->GetHeight() - tex->GetHeight()) * 0.5f;
     const float speed = 100.f;
 
     const DataParticleHealing pd =

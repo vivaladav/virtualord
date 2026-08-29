@@ -1,6 +1,7 @@
 #include "CameraMapController.h"
 
 #include "Game.h"
+#include "GameObjects/GameObject.h"
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/core/event/MouseButtonEvent.h>
 #include <sgl/core/event/MouseMotionEvent.h>
@@ -56,21 +57,21 @@ void CameraMapController::CenterCameraToPoint(int x, int y)
     // to add a SetInputEnabled to disable all mouse/keyboard interaction while leaving on
     // programatically moves like this one
 
-    const auto p = ClampPointInside(x, y);
+    // stop any active movement
+    ClearMovement();
 
-    mCamera->CenterToPoint(p.x, p.y);
+    // set camera position
+    mCamera->CenterToPoint(x, y);
 }
 
 void CameraMapController::MoveCenterCameraToPoint(int x, int y, float speed)
 {
-    const auto center = ClampPointInside(x, y);
-
     // define move target
+    mTargetMove.x = x - (mCamera->GetWidth() / 2);
+    mTargetMove.y = y - (mCamera->GetHeight() / 2);
+
     const int cameraX = mCamera->GetX();
     const int cameraY = mCamera->GetY();
-    mTargetMove.x = center.x - (mCamera->GetWidth() / 2);
-    mTargetMove.y = center.y - (mCamera->GetHeight() / 2);
-
     const int deltaX = mTargetMove.x - cameraX;
     const int deltaY = mTargetMove.y - cameraY;
 
@@ -382,6 +383,42 @@ void CameraMapController::InitScrollingVelocity()
 
 void CameraMapController::Update(float delta)
 {
+    // ===== OBJECT TRACKING MOVEMENT =====
+    if(mObjTracked != nullptr)
+    {
+        const int cX = mObjTracked->GetX() + mObjTracked->GetWidth() / 2;
+        const int cY = mObjTracked->GetY() + mObjTracked->GetHeight() / 2;
+
+        const int maxDiff = 10;
+        const int diffX = std::abs(cX - mCamera->GetCenterX());
+        const int diffY = std::abs(cY - mCamera->GetCenterY());
+
+        // camera center is already very close to object -> set position to its center
+        if(diffX < maxDiff && diffY < maxDiff)
+        {
+            CenterCameraToPoint(cX, cY);
+
+            return ;
+        }
+        // camera center is far from object -> quickly move over it
+        else
+        {
+            const float minSpeed = 200.f;
+            const float maxSpeed = 2000.f;
+            const float diff = diffX > diffY ? diffX : diffY;
+            const float multDiff = 10.f;
+
+            float speed = multDiff * diff;
+
+            if(speed > maxSpeed)
+                speed = maxSpeed;
+            else if(speed < minSpeed)
+                speed = minSpeed;
+
+            MoveCenterCameraToPoint(cX, cY, speed);
+        }
+    }
+
     // ===== PROCEDURAL MOVEMENT =====
     if(mMoving)
     {

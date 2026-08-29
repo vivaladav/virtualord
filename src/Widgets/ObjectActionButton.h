@@ -39,6 +39,7 @@ public:
         SET_TARGET,
         RESEARCH,
         TECH_TREE,
+        SAVE_GAME,
 
         NUM_ACTION_ICONS
     };

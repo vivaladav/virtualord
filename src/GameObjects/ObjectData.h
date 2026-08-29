@@ -89,6 +89,7 @@ public:
     static const GameObjectTypeId TYPE_BASE_SPOT;
     static const GameObjectTypeId TYPE_BLOBS;
     static const GameObjectTypeId TYPE_BUNKER;
+    static const GameObjectTypeId TYPE_CACTUS1;
     static const GameObjectTypeId TYPE_CITY_BLOCK;
     static const GameObjectTypeId TYPE_DEFENSIVE_TOWER;
     static const GameObjectTypeId TYPE_DIAMONDS;
@@ -97,7 +98,8 @@ public:
     static const GameObjectTypeId TYPE_LOOTBOX2;
     static const GameObjectTypeId TYPE_MINI_UNIT1;
     static const GameObjectTypeId TYPE_MINI_UNIT2;
-    static const GameObjectTypeId TYPE_MOUNTAINS;
+    static const GameObjectTypeId TYPE_MOUNTAINS1;
+    static const GameObjectTypeId TYPE_MOUNTAINS2;
     static const GameObjectTypeId TYPE_PRACTICE_TARGET;
     static const GameObjectTypeId TYPE_RADAR_STATION;
     static const GameObjectTypeId TYPE_RADAR_TOWER;

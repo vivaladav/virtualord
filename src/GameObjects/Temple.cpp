@@ -7,6 +7,7 @@
 #include "Widgets/GameProgressBar.h"
 
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/LoadedDie.h>
 #include <sgl/utilities/StringManager.h>
 #include <sgl/utilities/UniformDistribution.h>
@@ -28,6 +29,62 @@ Temple::Temple(const ObjectData & data, const ObjectInitData & initData)
 
     SetImage();
     SetObjColors();
+}
+
+bool Temple::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mMaxMoney = bf.ReadInt();
+    mMaxMaterial = bf.ReadInt();
+    mMaxBlobs = bf.ReadInt();
+    mMaxDiamonds = bf.ReadInt();
+    mInvestedMoney = bf.ReadInt();
+    mInvestedMaterial = bf.ReadInt();
+    mInvestedBlobs = bf.ReadInt();
+    mInvestedDiamonds = bf.ReadInt();
+    mExplorationTurns = bf.ReadInt();
+    mExplorationSuccess = bf.ReadInt();
+
+    mOutcomeCat = static_cast<ExplorationOutcomeCategory>(bf.ReadUint());
+    mOutcome1 = static_cast<ExplorationOutcome>(bf.ReadUint());
+    mOutcome2 = static_cast<ExplorationOutcome>(bf.ReadUint());
+
+    mExplorer = static_cast<PlayerFaction>(bf.ReadUint());
+
+    return true;
+}
+
+bool Temple::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteInt(mMaxMoney);
+    bf.WriteInt(mMaxMaterial);
+    bf.WriteInt(mMaxBlobs);
+    bf.WriteInt(mMaxDiamonds);
+    bf.WriteInt(mInvestedMoney);
+    bf.WriteInt(mInvestedMaterial);
+    bf.WriteInt(mInvestedBlobs);
+    bf.WriteInt(mInvestedDiamonds);
+    bf.WriteInt(mExplorationTurns);
+    bf.WriteInt(mExplorationSuccess);
+
+    bf.WriteUint(mOutcomeCat);
+    bf.WriteUint(mOutcome1);
+    bf.WriteUint(mOutcome2);
+
+    bf.WriteUint(mExplorer);
+
+    return true;
 }
 
 void Temple::SetInvestedResources(int money, int material, int blobs, int diamonds)
@@ -99,9 +156,8 @@ void Temple::StartExploring(PlayerFaction explorer, const std::function<void()> 
     mProgressBar = new GameProgressBar(explorer, 0.f, mExplorationTurns);
     mProgressBar->SetValue(0.f);
 
-    IsoObject * iObj = GetIsoObject();
-    const int pbX = iObj->GetX() + (iObj->GetWidth() - mProgressBar->GetWidth()) / 2;
-    const int pbY = iObj->GetY() - mProgressBar->GetHeight();
+    const int pbX = GetX() + (GetWidth() - mProgressBar->GetWidth()) / 2;
+    const int pbY = GetY() - mProgressBar->GetHeight();
     mProgressBar->SetPosition(pbX, pbY);
 
     // START
@@ -230,7 +286,7 @@ void Temple::DefineMaxValues()
 
 void Temple::DecideRewards()
 {
-    sgl::utilities::UniformDistribution dist(FIRST_EXP_REW, LAST_EXP_REW, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution dist(FIRST_EXP_REW, LAST_EXP_REW);
 
     mOutcome1 = static_cast<ExplorationOutcome>(dist.GetNextValue());
     mOutcome2 = static_cast<ExplorationOutcome>(dist.GetNextValue());
@@ -248,7 +304,7 @@ void Temple::DecideRewards()
 
 void Temple::DecidePunishments()
 {
-    sgl::utilities::UniformDistribution dist(FIRST_EXP_PUN, LAST_EXP_PUN, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution dist(FIRST_EXP_PUN, LAST_EXP_PUN);
 
     mOutcome1 = static_cast<ExplorationOutcome>(dist.GetNextValue());
     mOutcome2 = static_cast<ExplorationOutcome>(dist.GetNextValue());
@@ -281,14 +337,13 @@ void Temple::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texInd = ID_STRUCT_TEMPLE;
 
     if(NO_FACTION == faction)
-        texInd = ID_STRUCT_TEMPLE + sel;
+        texInd = ID_STRUCT_TEMPLE;
     else
-        texInd = ID_STRUCT_TEMPLE_F1 + (faction * NUM_TEMPLE_SPRITES_PER_FAC) + sel;
+        texInd = ID_STRUCT_TEMPLE_F1 + faction;
 
     auto * tm = sgl::graphic::TextureManager::Instance();
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

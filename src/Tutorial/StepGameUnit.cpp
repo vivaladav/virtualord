@@ -1,7 +1,6 @@
 #include "Tutorial/StepGameUnit.h"
 
 #include "Game.h"
-#include "IsoObject.h"
 #include "GameObjects/Unit.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -37,11 +36,10 @@ StepGameUnit::StepGameUnit(const Game * game, const IsoMap * im, const Unit * un
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER
-                            const auto isoObj = mUnit->GetIsoObject();
-                            const int objX = isoObj->GetX();
-                            const int objY = isoObj->GetY();
-                            const int objW = isoObj->GetWidth();
-                            const int objH = isoObj->GetHeight();
+                            const int objX = mUnit->GetX();
+                            const int objY = mUnit->GetY();
+                            const int objW = mUnit->GetWidth();
+                            const int objH = mUnit->GetHeight();
 
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);

@@ -13,6 +13,11 @@ class StructureIndicator : public IsoObject
 {
 public:
     StructureIndicator(const ObjectData & objData, PlayerFaction faction);
+
+    void SetDoable(bool doable);
+
+private:
+    bool mDoable = false;
 };
 
 } // namespace game

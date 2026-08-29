@@ -26,6 +26,8 @@ protected:
     void OnFactionChanged() override;
     void OnLinkedChanged() override;
 
+    void UpdateGraphics() override;
+
 private:
     void HideIconEnergy();
     void ShowIconEnergy();

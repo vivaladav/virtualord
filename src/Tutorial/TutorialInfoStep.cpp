@@ -1,18 +1,23 @@
 #include "Tutorial/TutorialInfoStep.h"
 
-#include "Widgets/Tutorial/PanelClickFilter.h"
+#include "Screens/ScreenGame.h"
+
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
+
+#include <cassert>
 
 namespace game
 {
 
 TutorialInfoStep::TutorialInfoStep(int infoW, int infoH)
-    : mClickFilter(new PanelClickFilter)
-    , mInfo(new PanelInfoTutorial(infoW, infoH))
+: TutorialInfoStep(nullptr, infoW, infoH)
 {
-    // CLICK FILTER
-    mClickFilter->SetEnabled(false);
+}
 
+TutorialInfoStep::TutorialInfoStep(Screen * screen, int infoW, int infoH)
+    : mInfo(new PanelInfoTutorial(infoW, infoH))
+    , mScreen(screen)
+{
     // INFO
     mInfo->SetEnabled(false);
     mInfo->SetVisible(false);
@@ -20,8 +25,16 @@ TutorialInfoStep::TutorialInfoStep(int infoW, int infoH)
 
 TutorialInfoStep::~TutorialInfoStep()
 {
-    delete mClickFilter;
     delete mInfo;
+
+    // restore selection allowed as before starting, if requested
+    if(mDisableSelection)
+    {
+        auto screen = dynamic_cast<ScreenGame *>(mScreen);
+        assert(screen);
+
+        screen->SetSelectionAllowed(mWasSelAllowed);
+    }
 }
 
 void TutorialInfoStep::SetPause(bool paused)
@@ -39,14 +52,22 @@ void TutorialInfoStep::OnStart()
 {
     TutorialStep::OnStart();
 
-    // CLICK FILTER
-    mClickFilter->SetEnabled(true);
+    // disable selection in ScreenGame, if requested
+    if(mDisableSelection)
+    {
+        auto screen = dynamic_cast<ScreenGame *>(mScreen);
+        assert(screen);
+
+        // store selection allowed in screen
+        mWasSelAllowed = screen->IsSelectionAllowed();
+        // disable selection allowed in screen to avoid to select random objects
+        screen->SetSelectionAllowed(false);
+    }
 
     // INFO
     mInfo->SetEnabled(true);
     mInfo->SetVisible(true);
     mInfo->SetFocus();
-
     mInfo->StartInfo();
 }
 

@@ -6,12 +6,13 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class PanelObjectActions;
 
 class StepGameBaseBuildUnitIcon : public TutorialInfoStep
 {
 public:
-    StepGameBaseBuildUnitIcon(PanelObjectActions * panel);
+    StepGameBaseBuildUnitIcon(const Game * game, Screen * screen, PanelObjectActions * panel);
     ~StepGameBaseBuildUnitIcon();
 
 private:

@@ -13,6 +13,9 @@ class Hospital : public Structure
 public:
     Hospital(const ObjectData & data, const ObjectInitData & initData);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     // heal
     int GetRangeHealing() const;
     void ClearTargetHealing();

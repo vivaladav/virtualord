@@ -31,7 +31,7 @@ StepGamePanelHit::StepGamePanelHit(const IsoMap * isoMap, const Cell2D & targetB
                         {
                             // FOCUS
                             mFocusArea->SetCellArea(mTargetBR.row, mTargetBR.col,
-                                                    mTargetTL.row, mTargetTL.col);
+                                                    mTargetTL.row, mTargetTL.col, false);
                             mFocusArea->SetCornersColorElement();
                             mFocusArea->SetVisible(true);
                         });

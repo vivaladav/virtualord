@@ -19,7 +19,6 @@ StepGameEndTurnSimple::StepGameEndTurnSimple(const PanelTurnControl * panel)
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -40,7 +39,7 @@ StepGameEndTurnSimple::StepGameEndTurnSimple(const PanelTurnControl * panel)
 
                             mFocusArea->SetCornersColorAction();
                             mFocusArea->SetBlinking(true);
-                            mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                            mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER

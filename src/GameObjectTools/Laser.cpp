@@ -3,7 +3,6 @@
 #include "Game.h"
 #include "GameConstants.h"
 #include "GameData.h"
-#include "IsoObject.h"
 #include "GameObjects/GameObject.h"
 #include "Particles/DataParticleSingleLaser.h"
 #include "Particles/UpdaterSingleLaser.h"
@@ -22,7 +21,7 @@ namespace game
 {
 
 Laser::Laser(const WeaponData & data, GameObject * owner, const Game * g,
-             GameMap * gm, const sgl::graphic::ParticlesManager *partMan)
+             GameMap * gm, const sgl::graphic::ParticlesManager * partMan)
     : Weapon(data, owner, g, gm, partMan)
     , mPartUpdater(static_cast<UpdaterSingleLaser *>(partMan->GetUpdater(PU_SINGLE_LASER)))
 {
@@ -31,8 +30,8 @@ Laser::Laser(const WeaponData & data, GameObject * owner, const Game * g,
     auto tm = graphic::TextureManager::Instance();
 
     const PlayerFaction faction = owner->GetFaction();
-    const unsigned int texInd = SpriteIdUnitsParticles::IND_UPAR_LASER_F1 + faction;
-    mTex = tm->GetSprite(SpriteFileUnitsParticles, texInd);
+    const unsigned int texInd = ID_PAR_LASER_F1 + faction;
+    mTex = tm->GetSprite(SpriteFileGameObjectsRelated, texInd);
 }
 
 void Laser::OnShoot(float x0, float y0)
@@ -46,9 +45,8 @@ void Laser::OnShoot(float x0, float y0)
 
     GameObject * owner = GetOwner();
 
-    const IsoObject * isoTarget = mTarget->GetIsoObject();
-    const float tX = isoTarget->GetX() + (isoTarget->GetWidth() - mTex->GetWidth()) * 0.5f;
-    const float tY = isoTarget->GetY() + (isoTarget->GetHeight() - mTex->GetHeight()) * 0.5f;
+    const float tX = mTarget->GetX() + (mTarget->GetWidth() - mTex->GetWidth()) * 0.5f;
+    const float tY = mTarget->GetY() + (mTarget->GetHeight() - mTex->GetHeight()) * 0.5f;
     const float speed = 400.f;
 
     const float rad2deg = 180.f / sgl::core::Math::PIf;
@@ -83,7 +81,7 @@ void Laser::OnShoot(float x0, float y0)
     const float maxProb = 100.f;
     const float probHit = GetProbabilityHit(mTarget);
 
-    auto dist = sgl::utilities::UniformRealDistribution(0.f, maxProb, GetGame()->GetRandSeed());
+    auto dist = sgl::utilities::UniformRealDistribution(0.f, maxProb);
     const float valHit = dist.GetNextValue();
 
     // 0 damage is miss

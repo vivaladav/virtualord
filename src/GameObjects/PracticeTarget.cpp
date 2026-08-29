@@ -35,7 +35,7 @@ void PracticeTarget::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     // set texture
-    const unsigned int spriteId = ID_PRACTICE_TARGET + static_cast<unsigned int>(IsSelected());
+    const unsigned int spriteId = ID_PRACTICE_TARGET;
     auto tm = sgl::graphic::TextureManager::Instance();
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, spriteId);

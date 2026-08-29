@@ -1,6 +1,5 @@
 #include "States/StateNewGame.h"
 
-#include "Game.h"
 #include "Screens/ScreenNewGame.h"
 #include "States/StatesIds.h"
 
@@ -14,8 +13,6 @@ StateNewGame::StateNewGame(Game * game)
 
 void StateNewGame::OnActive()
 {
-    mGame->InitGameData();
-
     mScreen = new ScreenNewGame(mGame);
 }
 

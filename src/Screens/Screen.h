@@ -8,6 +8,8 @@
 namespace sgl
 {
     namespace sgui { class Widget; }
+
+    namespace utilities { class BinaryFile; }
 }
 
 namespace game
@@ -24,9 +26,14 @@ public:
     Screen(Game * game);
     ~Screen();
 
+    virtual bool Save(sgl::utilities::BinaryFile & bf) const;
+
     Game * GetGame() const;
 
+    // UI
     DialogSettings * ShowDialogSettings();
+
+    void ShowLabelGameSaved();
 
     virtual void Update(float delta) = 0;
 

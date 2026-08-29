@@ -34,6 +34,9 @@ public:
     CityBlock(const ObjectData & data, const ObjectInitData & initData,
               GameObjectVariantId part);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     bool IsBorder() const;
     void SetBorder(bool val);
 

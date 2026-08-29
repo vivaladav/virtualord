@@ -3,6 +3,8 @@
 #include "GameConstants.h"
 #include "MapIO.h"
 
+#include <sgl/utilities/BinaryFile.h>
+
 namespace game
 {
 
@@ -30,6 +32,8 @@ Planet::MapData::MapData(const std::string & file, int energy, int material, int
 }
 
 // == PLANET ==
+Planet::Planet() { }
+
 Planet::Planet(PlanetId pid, PlanetSize size)
     : mId(pid)
     , mSize(size)
@@ -38,6 +42,62 @@ Planet::Planet(PlanetId pid, PlanetSize size)
     mMaps.reserve(numMissions[size]);
 }
 
+bool Planet::Load(sgl::utilities::BinaryFile & bf)
+{
+    // planet data
+    mId = static_cast<PlanetId>(bf.ReadUint());
+    mSize = static_cast<PlanetSize>(bf.ReadUint());
+
+    const unsigned int numMaps = bf.ReadUint();
+    mMaps.resize(numMaps);
+
+    for(unsigned int i = 0 ; i < numMaps; ++i)
+    {
+        MapData & map = mMaps[i];
+
+        bf.ReadString(map.mFile);
+        map.mEnergy = bf.ReadInt();
+        map.mMaterial = bf.ReadInt();
+        map.mDiamonds = bf.ReadInt();
+        map.mBlobs = bf.ReadInt();
+        map.mRows = bf.ReadUint();
+        map.mCols = bf.ReadUint();
+        map.mValue = bf.ReadInt();
+        map.mOccupier = static_cast<PlayerFaction>(bf.ReadUint());
+        map.mStatus = static_cast<TerritoryStatus>(bf.ReadUint());
+        map.mMission = static_cast<MissionCategory>(bf.ReadUint());
+    }
+
+    return true;
+}
+
+bool Planet::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // planet data
+    bf.WriteUint(mId);
+    bf.WriteUint(mSize);
+
+    // maps
+    const unsigned int numMaps = mMaps.size();
+    bf.WriteUint(numMaps);
+
+    for(const MapData & map : mMaps)
+    {
+        bf.WriteString(map.mFile);
+        bf.WriteInt(map.mEnergy);
+        bf.WriteInt(map.mMaterial);
+        bf.WriteInt(map.mDiamonds);
+        bf.WriteInt(map.mBlobs);
+        bf.WriteUint(map.mRows);
+        bf.WriteUint(map.mCols);
+        bf.WriteInt(map.mValue);
+        bf.WriteUint(map.mOccupier);
+        bf.WriteUint(map.mStatus);
+        bf.WriteUint(map.mMission);
+    }
+
+    return true;
+}
 
 bool Planet::AddMap(const std::string & file,
                           PlayerFaction occupier, TerritoryStatus status)

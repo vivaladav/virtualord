@@ -11,6 +11,7 @@
 namespace sgl
 {
     namespace graphic { class ParticlesManager; }
+    namespace utilities { class BinaryFile; }
 }
 
 namespace game
@@ -51,7 +52,10 @@ class GameMap;
 class GameObjectsGroup;
 class IconUpgrade;
 class IsoObject;
+class ObjectEnergyBar;
+class ObjectHealthBar;
 class ObjectInitData;
+class OverlaySelection;
 class Player;
 class WarningMessage;
 class Weapon;
@@ -72,6 +76,9 @@ public:
     GameObject(const ObjectData & data, const ObjectInitData & initData);
     virtual ~GameObject();
 
+    virtual bool Load(sgl::utilities::BinaryFile & bf);
+    virtual bool Save(sgl::utilities::BinaryFile & bf) const;
+
     // GROUP
     bool IsInGroup() const;
     GameObjectsGroup * GetGroup() const;
@@ -90,6 +97,8 @@ public:
     void SetPosition(int x, int y);
     void SetX(int x);
     void SetY(int y);
+    int GetWidth() const;
+    int GetHeight() const;
 
     void ShowWarning(const char * text, float time);
 
@@ -99,7 +108,7 @@ public:
     bool CanBeCollected() const;
 
     bool IsSelected() const;
-    void SetSelected(bool val);
+    void SetSelected(bool val, OverlaySelection * overlay);
 
     bool IsBusy() const;
 
@@ -147,6 +156,8 @@ public:
     float GetEnergy() const;
     void SumEnergy(float val);
     float GetMaxEnergy() const;
+
+    float GetExplosionDamage() const;
 
     float GetEnergyForActionStep(GameObjectActionType action) const;
     bool HasEnergyForActionStep(GameObjectActionType action) const;
@@ -208,6 +219,8 @@ protected:
     const sgl::graphic::ParticlesManager * GetParticlesManager() const;
     Player * GetOwner() const;
 
+    int GetStatusIconBaseY() const;
+
     void SetStructure(bool val);
     void SetCanBeConquered(bool val);
     void SetStatic(bool val);
@@ -245,6 +258,16 @@ private:
     void HideIconUpgrade();
     void PositionIconUpgrade();
 
+    void ShowEnergyBar();
+    void HideEnergyBar();
+    void PositionEnergyBar();
+    void UpdateEnergyBar();
+
+    void ShowHealthBar();
+    void HideHealthBar();
+    void PositionHealthBar();
+    void UpdateHealthBar();
+
     void SetEnergy(float val);
     void SetExperience(int val);
 
@@ -268,6 +291,8 @@ private:
 
     IsoObject * mIsoObj = nullptr;
 
+    OverlaySelection * mOverlaySel = nullptr;
+
     unsigned int mObjId;
 
     const Game * mGame = nullptr;
@@ -280,6 +305,8 @@ private:
     WarningMessage * mWarnMessage = nullptr;
 
     IconUpgrade * mIconUpgrade = nullptr;
+    ObjectEnergyBar * mBarEnergy = nullptr;
+    ObjectHealthBar * mBarHealth = nullptr;
 
     GameObjectTypeId mType = ObjectData::TYPE_NULL;
     GameObjectCategoryId mCategory = ObjectData::CAT_NULL;

@@ -6,14 +6,17 @@
 #include <sgl/ai/IPathMap.h>
 
 #include <functional>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace sgl
 {
     namespace ai { class Pathfinder; }
-    namespace utilities { class StringManager; }
+    namespace utilities
+    {
+        class BinaryFile;
+        class StringManager;
+    }
 }
 
 namespace game
@@ -37,6 +40,7 @@ class Temple;
 class Unit;
 class WallBuildPath;
 class WallGate;
+class Weapon;
 class WeaponData;
 
 struct Cell2D;
@@ -51,6 +55,11 @@ public:
     GameMap(Game * game, ScreenGame * sg, IsoMap * isoMap);
     ~GameMap();
 
+    bool Load(sgl::utilities::BinaryFile & bf);
+    bool Save(sgl::utilities::BinaryFile & bf) const;
+
+    void InitAfterLoad();
+
     const ControlMap * GetControlMap() const;
 
     bool HasObject(unsigned int ind) const;
@@ -59,6 +68,8 @@ public:
     bool HasObjectType(GameObjectTypeId type, unsigned int r, unsigned int c) const;
     bool HasObject(const GameObject * obj) const;
     bool IsObjectVisibleToLocalPlayer(const GameObject * obj) const;
+    GameObject * GetObject(unsigned int ind) const;
+    GameObject * GetObject(unsigned int r, unsigned int c) const;
 
     const std::vector<GameMapCell> & GetCells() const;
     const std::vector<GameObject *> & GetObjects() const;
@@ -84,7 +95,8 @@ public:
 
     void SetSize(unsigned int rows, unsigned int cols);
 
-    void CreateCollectableGenerator(unsigned int r, unsigned int c, ResourceType type);
+    CollectableGenerator * CreateCollectableGenerator(unsigned int r, unsigned int c,
+                                                      GameObjectTypeId type);
 
     void ApplyLocalVisibility();
     void ApplyVisibility(Player * player);
@@ -97,23 +109,21 @@ public:
 
     Player * GetCellOwner(unsigned int r, unsigned int c) const;
 
-    void CreateObjectFromFile(unsigned int layerId, GameObjectTypeId type,
-                              GameObjectVariantId variant, unsigned int faction,
-                              unsigned int r0, unsigned int c0);
+    GameObject * CreateObjectFromFile(GameObjectTypeId type, GameObjectVariantId variant,
+                                      unsigned int faction, unsigned int r0, unsigned int c0,
+                                      bool assignWeapon = true);
 
-    GameObject * CreateObject(unsigned int layerId, GameObjectTypeId type,
-                              GameObjectVariantId variant, PlayerFaction faction,
-                              unsigned int r0, unsigned int c0, bool instantAdd);
+    GameObject * CreateObject(GameObjectTypeId type, GameObjectVariantId variant,
+                              PlayerFaction faction, unsigned int r0, unsigned int c0,
+                              bool instantAdd, bool assignWeapon = true);
 
     bool RemoveAndDestroyObject(GameObject * obj);
 
     void InitCities();
 
-    // player stats
+    // kills
     void RegisterEnemyKill(GameObject * killer, GameObject * victim);
     void RegisterCasualty(PlayerFaction killed);
-    unsigned int GetEnemiesKilled(PlayerFaction killer) const;
-    unsigned int GetCasualties(PlayerFaction faction) const;
 
     bool AreObjectsAdjacent(const GameObject * obj1, const GameObject * obj2) const;
     bool AreCellsAdjacent(const Cell2D & cell1, const Cell2D & cell2) const;
@@ -130,7 +140,7 @@ public:
     // structure building
     bool CanBuildStructure(Unit * unit, const Cell2D & cell, Player * player, GameObjectTypeId st);
     void StartBuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st);
-    void BuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st);
+    GameObject * BuildStructure(const Cell2D & cell, Player * player, GameObjectTypeId st);
 
     // wall building
     bool HasResourcesToBuildWall(Unit * unit, unsigned int level);
@@ -142,7 +152,7 @@ public:
 
     // structure conquest
     bool CanConquerStructure(Unit * unit, const Cell2D & end, Player * player);
-    void StartConquerStructure(const Cell2D & end, Player * player);
+    void StartConquerStructure(const GameObject * target, Player * player);
     void ConquerStructure(const Cell2D & end, Player * player);
 
     void HandleTempleExplorationOutcome(unsigned int outcome, Player * p, Temple * temple);
@@ -150,21 +160,22 @@ public:
     // unit create
     bool CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * player);
     Cell2D GetNewUnitDestination(GameObject * gen) const;
-    void StartCreateUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & dest, Player * player);
-    Unit * CreateUnit(GameObjectTypeId ut, const Cell2D & dest, Player * player);
+    void StartCreateUnit(GameObjectTypeId ut, Player * player);
+    Unit * CreateUnit(GameObjectTypeId ut, const Cell2D & dest, Player * player, bool assignWeapon = true);
 
     // mini units
     bool CanCreateMiniUnit(GameObjectTypeId ut, GameObject * gen, int elements, Player * player);
+    void StartCreateMiniUnit(GameObjectTypeId ut, Player * player, int elements);
     GameObject * CreateMiniUnit(GameObjectTypeId ut, GameObject * gen, const Cell2D & dest,
-                                int elements, Player * player);
-    Cell2D GetNewMiniUnitDestination(const Cell2D & genCell) const;
+                                int elements, Player * player, bool assignWeapon = true);
+    Cell2D GetNewMiniUnitDestination(const GameObject * gen) const;
 
-    MiniUnitsGroup * CreateMiniUnitsGroup(PlayerFaction faction);
+    MiniUnitsGroup * CreateMiniUnitsGroup();
 
     bool IsDoingAutomaticMoves() const;
 
     // damage
-    void DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, int radius, float maxDamage);
+    void DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject * attacker, int radius, float maxDamage);
 
     // move units
     bool CanUnitMove(const Cell2D & start, const Cell2D & end, Player * player) const;
@@ -255,7 +266,7 @@ private:
     const ObjectData & GetObjectData(GameObjectTypeId t) const;
     const WeaponData & GetWeaponData(WeaponType t) const;
 
-    void AssignWeaponToObject(WeaponType wt, GameObject * obj);
+    Weapon * AssignWeaponToObject(WeaponType wt, GameObject * obj);
 
     // mini units
     void DeleteEmptyMiniUnitsGroups();
@@ -283,7 +294,6 @@ private:
         unsigned int r1;
         unsigned int c1;
         Player * owner;
-        unsigned int layer;
     };
 
     // to access visibility functions
@@ -324,10 +334,6 @@ private:
 
     unsigned int mRows = 0;
     unsigned int mCols = 0;
-
-    // Player stats
-    std::unordered_map<PlayerFaction, unsigned int> mEnemiesKilled;
-    std::unordered_map<PlayerFaction, unsigned int> mCasualties;
 };
 
 // ==================== INLINE METHODS ====================
@@ -336,18 +342,29 @@ inline const ControlMap * GameMap::GetControlMap() const { return mControlMap; }
 
 inline bool GameMap::HasObject(unsigned int ind) const
 {
-    return mCells[ind].objTop != nullptr;
+    return ind < mCells.size() && mCells[ind].objTop != nullptr;
 }
 
 inline bool GameMap::HasObject(unsigned int r, unsigned int c) const
 {
     const unsigned int ind = r * mCols + c;
-    return ind < mCells.size() && mCells[ind].objTop != nullptr;
+    return HasObject(ind);
 }
 
 inline bool GameMap::HasObject(const GameObject * obj) const
 {
     return mObjectsSet.find(obj) != mObjectsSet.end();
+}
+
+inline GameObject * GameMap::GetObject(unsigned int ind) const
+{
+    return ind < mCells.size() ? mCells[ind].objTop : nullptr;
+}
+
+inline GameObject * GameMap::GetObject(unsigned int r, unsigned int c) const
+{
+    const unsigned int ind = r * mCols + c;
+    return GetObject(ind);
 }
 
 inline bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int r, unsigned int c) const
@@ -415,10 +432,6 @@ inline Player * GameMap::GetCellOwner(unsigned int r, unsigned int c) const
     else
         return nullptr;
 }
-
-inline void GameMap::RegisterCasualty(PlayerFaction killed) { ++mCasualties[killed]; }
-inline unsigned int GameMap::GetEnemiesKilled(PlayerFaction killer) const { return mEnemiesKilled.at(killer); }
-inline unsigned int GameMap::GetCasualties(PlayerFaction faction) const { return mCasualties.at(faction); }
 
 inline bool GameMap::IsDoingAutomaticMoves() const
 {

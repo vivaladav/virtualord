@@ -7,6 +7,7 @@
 #include "Player.h"
 
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 #include <cmath>
 
@@ -35,6 +36,32 @@ ResourceStorage::ResourceStorage(const ObjectData & data, const ObjectInitData &
     UpdateCapacity();
 
     SetImage();
+}
+
+bool ResourceStorage::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    mCapacity = bf.ReadInt();
+
+    return true;
+}
+
+bool ResourceStorage::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    bf.WriteInt(mCapacity);
+
+    return true;
 }
 
 void ResourceStorage::UpdateGraphics()
@@ -131,37 +158,36 @@ void ResourceStorage::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texId = 0;
 
     if(RES_ENERGY == mResource)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_STORAGE_ENERGY_F1 + (faction * NUM_ENE_STO_SPRITES_PER_FAC) + sel;
+            texId = ID_STRUCT_STORAGE_ENERGY_F1 + faction;
         else
-            texId = ID_STRUCT_STORAGE_ENERGY + sel;
+            texId = ID_STRUCT_STORAGE_ENERGY;
     }
     else if(RES_MATERIAL1 == mResource)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_STORAGE_MATERIAL_F1 + (faction * NUM_ENE_STO_SPRITES_PER_FAC) + sel;
+            texId = ID_STRUCT_STORAGE_MATERIAL_F1 + faction ;
         else
-            texId = ID_STRUCT_STORAGE_MATERIAL + sel;
+            texId = ID_STRUCT_STORAGE_MATERIAL;
     }
     else if(RES_DIAMONDS == mResource)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_STORAGE_DIAMONDS_F1 + (faction * NUM_ENE_STO_SPRITES_PER_FAC) + sel;
+            texId = ID_STRUCT_STORAGE_DIAMONDS_F1 + faction;
         else
-            texId = ID_STRUCT_STORAGE_DIAMONDS + sel;
+            texId = ID_STRUCT_STORAGE_DIAMONDS;
     }
     else if(RES_BLOBS == mResource)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_STORAGE_BLOBS_F1 + (faction * NUM_ENE_STO_SPRITES_PER_FAC) + sel;
+            texId = ID_STRUCT_STORAGE_BLOBS_F1 + faction;
         else
-            texId = ID_STRUCT_STORAGE_BLOBS + sel;
+            texId = ID_STRUCT_STORAGE_BLOBS;
     }
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texId);

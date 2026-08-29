@@ -14,10 +14,45 @@ StateGame::StateGame(Game * game)
 {
 }
 
+bool StateGame::Save(sgl::utilities::BinaryFile & bf) const
+{
+    BaseGameState::Save(bf);
+
+    mScreen->Save(bf);
+
+    return true;
+}
+
 void StateGame::OnActive()
 {
-    mScreen = new ScreenGame(mGame);
+    // create and init game screen
+    auto screen = new ScreenGame(mGame);
+    mScreen = screen;
 
+    auto bf = mGame->GetSaveFileForReading();
+
+    // start a new game
+    if(bf == nullptr)
+    {
+        screen->InitNewGame();
+
+        // auto save, if enabled
+        if(mGame->IsAutosaveEnabled())
+        {
+            mGame->SaveGame();
+            screen->ShowLabelGameSaved();
+        }
+    }
+    else
+    {
+        // load saved game
+        screen->Load(*bf);
+        screen->InitLoadedGame();
+
+        mGame->CloseSaveFileForReading();
+    }
+
+    // setup listeners
     mGame->AddApplicationListener(mScreen);
     mGame->AddKeyboardListener(mScreen);
     mGame->AddMouseListener(mScreen);

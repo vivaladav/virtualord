@@ -38,6 +38,8 @@ enum CellTypes : int
     CT_NO_FACTION_OBJ_SURR,
     CT_ROCKS,
     CT_ROCKS_SURR,
+    CT_SAND,
+    CT_SAND_SURR,
 
     NUM_CELL_TYPES
 };

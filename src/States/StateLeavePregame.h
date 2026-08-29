@@ -5,7 +5,7 @@
 namespace game
 {
 
-enum StateId : int;
+enum StateId : unsigned int;
 
 // -- STATE DATA --
 class StateDataLeavePregame : public sgl::utilities::StateData
@@ -37,8 +37,6 @@ public:
 private:
     void OnActive() override;
     void OnInactive() override;
-
-    void DestroyPregameTextures();
 
 private:
     StateId mNextState;

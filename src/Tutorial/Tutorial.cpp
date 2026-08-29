@@ -21,9 +21,18 @@ void Tutorial::Start()
     if(mStepsAtStart > 0)
         return ;
 
-    OnStart();
-
     mStepsAtStart = mSteps.size();
+
+    StartNextStep();
+}
+
+void Tutorial::Continue(unsigned int firstStep)
+{
+    mStepsAtStart = mSteps.size();
+
+    // remove steps that are already done
+    mSteps.erase(mSteps.begin(), mSteps.begin() + firstStep);
+    mStepsDone = firstStep;
 
     StartNextStep();
 }
@@ -35,9 +44,6 @@ void Tutorial::SetPause(bool paused)
     if(mCurrStep != nullptr)
         mCurrStep->SetPause(paused);
 }
-
-void Tutorial::OnStart() { }
-void Tutorial::OnEnd() { }
 
 void Tutorial::Update(float delta)
 {
@@ -53,17 +59,11 @@ void Tutorial::Update(float delta)
     }
 
     if(AreAllStepsDone())
-    {
         mDone = true;
-
-        OnEnd();
-    }
 }
 
 void Tutorial::FinalizeStep()
 {
-    mCurrStep->OnEnd();
-
     delete mCurrStep;
     mCurrStep = nullptr;
 

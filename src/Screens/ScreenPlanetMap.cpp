@@ -19,6 +19,7 @@
 #include "Widgets/PanelPlanetResources.h"
 #include "Widgets/PlanetMap.h"
 #include "Widgets/WidgetsConstants.h"
+#include "Widgets/Tutorial/PanelInfoTutorial.h"
 
 #include <sgl/core/event/KeyboardEvent.h>
 #include <sgl/graphic/Font.h>
@@ -33,6 +34,7 @@
 #include <sgl/sgui/Label.h>
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/LoadedDie.h>
+#include <sgl/utilities/StringManager.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 namespace
@@ -97,15 +99,15 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     // -- PLANET --
     const Planet * planet = game->GetCurrentPlanet();
 
-    mPlanet = new PlanetMap(planet->GetSize());
+    mPlanetMap = new PlanetMap(planet->GetSize());
 
-    const int planetX = (mBg->GetWidth() - mPlanet->GetWidth()) * 0.5f;
+    const int planetX = (mBg->GetWidth() - mPlanetMap->GetWidth()) * 0.5f;
     const int planetY = 190;
-    mPlanet->SetPosition(planetX, planetY);
+    mPlanetMap->SetPosition(planetX, planetY);
 
     UpdatePlanetButtons();
 
-    mPlanet->SetFunctionOnToggle([this](unsigned int ind, bool enabled)
+    mPlanetMap->SetFunctionOnToggle([this](unsigned int ind, bool enabled)
         {
             if(!enabled)
                 return;
@@ -207,7 +209,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
         // handle the result
         Planet * planet = game->GetCurrentPlanet();
-        const int territory = mPlanet->GetSelectedTerritoryId();
+        const int territory = mPlanetMap->GetSelectedTerritoryId();
 
         const PlayerFaction occupier = planet->GetMapOccupier(territory);
 
@@ -256,7 +258,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
         mPanelActions->UpdateButtons(status, playerOccupier);
 
-        mPlanet->SetButtonState(territory, occupier, status);
+        mPlanetMap->SetButtonState(territory, occupier, status);
     });
 
     mPanelExplore->AddOnButtonCancelClickFunction([this]
@@ -274,8 +276,20 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
     {
         Game * game = GetGame();
 
-        const int territory = mPlanet->GetSelectedTerritoryId();
+        // set map id for next mission
+        const int territory = mPlanetMap->GetSelectedTerritoryId();
         game->SetCurrentTerritory(territory);
+
+        // add enemy
+        const Planet * planet = game->GetCurrentPlanet();
+        const PlayerFaction occupier = planet->GetMapOccupier(territory);
+
+        if(occupier != NO_FACTION)
+            game->AddToActivePlayersAI(occupier);
+        else
+            game->AddToActivePlayersRandomAI();
+
+        // move to GAME
         game->RequestNextActiveState(StateId::GAME);
     });
 
@@ -303,7 +317,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         player->SumResource(Player::Stat::DIAMONDS, -costConquestDiamonds);
 
         // attempt the conquest
-        const int territory = mPlanet->GetSelectedTerritoryId();
+        const int territory = mPlanetMap->GetSelectedTerritoryId();
         const bool res = TryToConquerTerritory(territory);
 
         const PlayerFaction pf = game->GetLocalPlayerFaction();
@@ -333,7 +347,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
             player->SumResource(Player::Stat::DIAMONDS, multRes2 * planet->GetMapDiamonds(territory));
 
             // update UI
-            mPlanet->SetButtonState(territory, pf, status);
+            mPlanetMap->SetButtonState(territory, pf, status);
             mPanelActions->UpdateButtons(status, true);
 
             ShowInfo(territory);
@@ -346,8 +360,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
 
             if(NO_FACTION == faction)
             {
-                utilities::UniformDistribution dist(FACTION_1, FACTION_3,
-                                                    game->GetRandSeed());
+                utilities::UniformDistribution dist(FACTION_1, FACTION_3);
 
                 int f = dist.GetNextValue();
 
@@ -367,7 +380,7 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
             planet->SetMapStatus(territory, status);
 
             // update UI
-            mPlanet->SetButtonState(territory, faction, status);
+            mPlanetMap->SetButtonState(territory, faction, status);
 
             // PANEL INFO
             if(status == TER_ST_OCCUPIED_UNEXPLORED)
@@ -427,20 +440,90 @@ ScreenPlanetMap::ScreenPlanetMap(Game * game)
         auto tutMan = game->GetTutorialManager();
 
         PlayerFaction localFaction = game->GetLocalPlayerFaction();
-        const PlayerFaction occupier0 = planet->GetMapOccupier(0);
-        const PlayerFaction occupier2 = planet->GetMapOccupier(2);
 
-        if(tutMan->GetTutorialState(TUTORIAL_PLANET_MAP_1) == TS_TODO && occupier0 == localFaction)
+        if(planet->GetMapOccupier(2) == localFaction)
         {
-            tutMan->CreateTutorial(TUTORIAL_PLANET_MAP_1, this);
-            tutMan->StartTutorial();
+            const TutorialId tutorialId = TUTORIAL_PLANET_MAP_2;
+            const TutorialState state = tutMan->GetTutorialState(tutorialId);
+
+            // start tutorial if still TODO
+            if(state == TS_TODO)
+            {
+                tutMan->CreateTutorial(tutorialId, this);
+                tutMan->StartTutorial();
+            }
+            // continue if in progress (loaded)
+            else if(state == TS_IN_PROGRESS)
+            {
+                tutMan->CreateTutorial(tutorialId, this);
+                tutMan->ContinueTutorial();
+            }
         }
-        else if(tutMan->GetTutorialState(TUTORIAL_PLANET_MAP_2) == TS_TODO && occupier2 == localFaction)
+        else if(planet->GetMapOccupier(0) == localFaction)
         {
-            tutMan->CreateTutorial(TUTORIAL_PLANET_MAP_2, this);
-            tutMan->StartTutorial();
+            const TutorialId tutorialId = TUTORIAL_PLANET_MAP_1;
+            const TutorialState state = tutMan->GetTutorialState(tutorialId);
+
+            // start tutorial if still TODO
+            if(state == TS_TODO)
+            {
+                tutMan->CreateTutorial(tutorialId, this);
+                tutMan->StartTutorial();
+            }
+            // continue if in progress (loaded)
+            else if(state == TS_IN_PROGRESS)
+            {
+                tutMan->CreateTutorial(tutorialId, this);
+                tutMan->ContinueTutorial();
+            }
         }
     }
+
+#ifdef DEMO_MODE
+    // HANDLE END OF DEMO
+    const unsigned int finalMap = 4;
+    const unsigned int territory = game->GetCurrentTerritory();
+
+    if(territory == finalMap)
+    {
+        const int rendW = sgl::graphic::Renderer::Instance()->GetWidth();
+
+        const PlayerFaction occupier = game->GetPlanet(PLANET_1)->GetMapOccupier(territory);
+        const PlayerFaction localFaction = game->GetLocalPlayerFaction();
+
+        auto sm = sgl::utilities::StringManager::Instance();
+
+        if(occupier == localFaction)
+        {
+            const int infoW = 750;
+            const int infoH = 200;
+            const int infoX = (rendW - infoW) / 2;
+
+            auto info = new PanelInfoTutorial(infoW, infoH);
+
+            info->AddInfoEntry(sm->GetCString("TUT_PM_END_DEMO_1"), 7.f, true, false);
+            info->AddInfoEntry(sm->GetCString("TUT_PM_END_DEMO_2"), 13.f, true, false);
+            info->SetPosition(infoX, TutorialConstants::infoPlanetMapY);
+            info->SetFunctionOnFinished([info]{ info->DeleteLater(); });
+
+            info->StartInfo();
+        }
+        else
+        {
+            const int infoW = 600;
+            const int infoH = 150;
+            const int infoX = (rendW - infoW) / 2;
+
+            auto info = new PanelInfoTutorial(infoW, infoH);
+
+            info->AddInfoEntry(sm->GetCString("TUT_PM_END_FAIL"), 15.f, true, false);
+            info->SetPosition(infoX, TutorialConstants::infoPlanetMapY);
+            info->SetFunctionOnFinished([info]{ info->DeleteLater(); });
+
+            info->StartInfo();
+        }
+    }
+#endif
 }
 
 ScreenPlanetMap::~ScreenPlanetMap()
@@ -448,6 +531,14 @@ ScreenPlanetMap::~ScreenPlanetMap()
     delete mBg;
 
     sgl::sgui::Stage::Instance()->ClearWidgets();
+}
+
+
+bool ScreenPlanetMap::Save(sgl::utilities::BinaryFile & bf) const
+{
+    Screen::Save(bf);
+
+    return false;
 }
 
 void ScreenPlanetMap::OnKeyUp(sgl::core::KeyboardEvent & event)
@@ -556,7 +647,7 @@ void ScreenPlanetMap::UpdatePlanetButtons()
         const PlayerFaction occupier = planet->GetMapOccupier(i);
         const TerritoryStatus ts = planet->GetMapStatus(i);
 
-        mPlanet->SetButtonState(i, occupier, ts);
+        mPlanetMap->SetButtonState(i, occupier, ts);
     }
 }
 

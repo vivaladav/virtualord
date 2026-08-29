@@ -11,12 +11,15 @@
 #include "GameObjects/ObjectInitData.h"
 #include "GameObjectTools/Weapon.h"
 #include "GameObjectTools/WeaponData.h"
+#include "Indicators/OverlaySelection.h"
 #include "Particles/DataParticleDamage.h"
 #include "Particles/DataParticleHitPoints.h"
 #include "Particles/UpdaterDamage.h"
 #include "Particles/UpdaterHitPoints.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/IconUpgrade.h"
+#include "Widgets/ObjectEnergyBar.h"
+#include "Widgets/ObjectHealthBar.h"
 #include "Widgets/WarningMessage.h"
 
 #include <sgl/core/Math.h>
@@ -25,6 +28,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 #include <cstdlib>
@@ -101,6 +105,91 @@ GameObject::~GameObject()
     delete mIconUpgrade;
 
     ClearGroup();
+
+    mOnValueChanged.clear();
+}
+
+bool GameObject::Load(sgl::utilities::BinaryFile & bf)
+{
+    // ID
+    mObjId = bf.ReadUint();
+
+    if(mObjId > counter)
+        counter = mObjId + 1;
+
+    // actions
+    mActiveAction = static_cast<GameObjectActionType>(bf.ReadUint());
+    mCurrAction = static_cast<GameObjectActionType>(bf.ReadUint());
+    mDefaultAction = static_cast<GameObjectActionType>(bf.ReadUint());
+
+    // attributes
+    const unsigned int numAttr = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numAttr; ++i)
+    {
+        const auto attID = static_cast<ObjAttId>(bf.ReadUint());
+        const int val = bf.ReadInt();
+
+        mAttributes[attID] = val;
+    }
+
+    // stats
+    mMaxVisLevel = bf.ReadInt();
+    mExpLevel = bf.ReadInt();
+    mExp = bf.ReadInt();
+    mMaxEnergy = bf.ReadFloat();
+    mEnergy = bf.ReadFloat();
+    mMaxHealth = bf.ReadFloat();
+    mHealth = bf.ReadFloat();
+    mMaxSpeed = bf.ReadFloat();
+
+    // flags
+    mStructure = bf.ReadBool();
+    mStatic = bf.ReadBool();
+    mCanBeConq = bf.ReadBool();
+    mVisible = bf.ReadBool();
+    mVisited = bf.ReadBool();
+
+    return true;
+}
+
+bool GameObject::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // ID
+    bf.WriteUint(mObjId);
+
+    // actions
+    bf.WriteUint(mActiveAction);
+    bf.WriteUint(mCurrAction);
+    bf.WriteUint(mDefaultAction);
+
+    // attributes
+    bf.WriteUint(mAttributes.size());
+
+    for(const auto it : mAttributes)
+    {
+        bf.WriteUint(it.first);
+        bf.WriteInt(it.second);
+    }
+
+    // stats
+    bf.WriteInt(mMaxVisLevel);
+    bf.WriteInt(mExpLevel);
+    bf.WriteInt(mExp);
+    bf.WriteFloat(mMaxEnergy);
+    bf.WriteFloat(mEnergy);
+    bf.WriteFloat(mMaxHealth);
+    bf.WriteFloat(mHealth);
+    bf.WriteFloat(mMaxSpeed);
+
+    // flags
+    bf.WriteBool(mStructure);
+    bf.WriteBool(mStatic);
+    bf.WriteBool(mCanBeConq);
+    bf.WriteBool(mVisible);
+    bf.WriteBool(mVisited);
+
+    return true;
 }
 
 // GROUP
@@ -155,8 +244,12 @@ void GameObject::SetPosition(int x, int y)
 {
     mIsoObj->SetPosition(x, y);
 
-    if(mIconUpgrade != nullptr)
-        PositionIconUpgrade();
+    PositionIconUpgrade();
+    PositionEnergyBar();
+    PositionHealthBar();
+
+    if(mOverlaySel)
+        mOverlaySel->UpdateObjectPosition(this);
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -169,8 +262,12 @@ void GameObject::SetX(int x)
 {
     mIsoObj->SetX(x);
 
-    if(mIconUpgrade != nullptr)
-        PositionIconUpgrade();
+    PositionIconUpgrade();
+    PositionEnergyBar();
+    PositionHealthBar();
+
+    if(mOverlaySel)
+        mOverlaySel->UpdateObjectPosition(this);
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
@@ -182,14 +279,28 @@ void GameObject::SetY(int y)
 {
     mIsoObj->SetY(y);
 
-    if(mIconUpgrade != nullptr)
-        PositionIconUpgrade();
+    PositionIconUpgrade();
+    PositionEnergyBar();
+    PositionHealthBar();
+
+    if(mOverlaySel)
+        mOverlaySel->UpdateObjectPosition(this);
 
     if(mWarnMessage != nullptr && mWarnMessage->IsVisible())
     {
         mWarnMessage->FadeOut();
         PositionWarningMessage();
     }
+}
+
+int GameObject::GetWidth() const
+{
+    return mIsoObj->GetWidth();
+}
+
+int GameObject::GetHeight() const
+{
+    return mIsoObj->GetHeight();
 }
 
 void GameObject::ShowWarning(const char * text, float time)
@@ -211,13 +322,28 @@ void GameObject::ShowWarning(const char * text, float time)
     player->PlaySound("game/error_action_01.ogg");
 }
 
-void GameObject::SetSelected(bool val)
+void GameObject::SetSelected(bool val, OverlaySelection * overlay)
 {
     // same value -> nothing to do
     if(val == mSelected)
         return ;
 
     mSelected = val;
+
+    if(mSelected)
+    {
+        ShowEnergyBar();
+        ShowHealthBar();
+    }
+    else
+    {
+        HideEnergyBar();
+        HideHealthBar();
+    }
+
+    mOverlaySel = overlay;
+
+    PositionIconUpgrade();
 
     UpdateGraphics();
 }
@@ -245,6 +371,9 @@ void GameObject::SetCell(const GameMapCell * cell)
 
     mIsoObj->SetRow(cell->row);
     mIsoObj->SetCol(cell->col);
+
+    if(mOverlaySel != nullptr)
+        mOverlaySel->UpdateObjectCell(this);
 }
 
 int GameObject::GetVisibilityLevel() const
@@ -324,6 +453,11 @@ void GameObject::SumEnergy(float val)
 float GameObject::GetMaxEnergy() const
 {
     return std::roundf(mMaxEnergy * GetAttribute(OBJ_ATT_ENERGY) / MAX_STAT_FVAL);
+}
+
+float GameObject::GetExplosionDamage() const
+{
+    return GetMaxEnergy();
 }
 
 bool GameObject::HasEnergyForActionStep(GameObjectActionType action) const
@@ -592,6 +726,8 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     if(IsDestroyed())
         return ;
 
+    const bool selfDestruct = damage < 0.f;
+
     // fatal hit
     if(fatal)
         damage = GetMaxHealth();
@@ -627,7 +763,7 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     if(mHealth > 0.f)
     {
         const int quad0 = 0;
-        utilities::UniformDistribution genQuad(quad0, maxQuad - 1, mGame->GetRandSeed());
+        utilities::UniformDistribution genQuad(quad0, maxQuad - 1);
 
         ang0 += angInc * genQuad.GetNextValue();
 
@@ -649,7 +785,9 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
             if(attacker != nullptr)
                 mGameMap->RegisterEnemyKill(attacker, this);
 
-            mGameMap->RegisterCasualty(GetFaction());
+            // do not register casualty when exploding mini-units explode near enemies
+            if(mType != ObjectData::TYPE_MINI_UNIT1 || !selfDestruct)
+                mGameMap->RegisterCasualty(GetFaction());
         }
     }
 
@@ -660,44 +798,42 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterDamage *>(partMan->GetUpdater(PU_DAMAGE));
 
-    const unsigned int texInd = SpriteIdParticles::ID_PART_RECT_4x4;
-    auto tex = graphic::TextureManager::Instance()->GetSprite(SpriteFileParticles, texInd);
+    const unsigned int texInd = ID_PARTICLE_W_4x4;
+    auto tex = graphic::TextureManager::Instance()->GetSprite(SpriteFileGameObjectsRelated, texInd);
 
-    IsoObject * isoObj = GetIsoObject();
-    const float objXC = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float objYC = isoObj->GetY() + isoObj->GetHeight() * 0.5f;
+    const float objXC = mIsoObj->GetX() + mIsoObj->GetWidth() * 0.5f;
+    const float objYC = mIsoObj->GetY() + mIsoObj->GetHeight() * 0.5f;
 
     // random generator of rotation angle
     const int minRot = 0;
     const int maxRot = 360;
-    utilities::UniformDistribution genRot(minRot, maxRot, mGame->GetRandSeed());
+    utilities::UniformDistribution genRot(minRot, maxRot);
 
     // random generator for velocity direction
-    utilities::UniformDistribution genVel(static_cast<int>(ang0), static_cast<int>(ang1),
-                                          mGame->GetRandSeed());
+    utilities::UniformDistribution genVel(static_cast<int>(ang0), static_cast<int>(ang1));
 
     const float deg2rad = sgl::core::Math::PIf / 180.f;
 
     // random generator for speed
     const int minSpeed = 100;
     const int maxSpeed = 300;
-    utilities::UniformDistribution genSpeed(minSpeed, maxSpeed, mGame->GetRandSeed());
+    utilities::UniformDistribution genSpeed(minSpeed, maxSpeed);
 
     // random generator for decay speed
     const int minDecSpeed = 200;
     const int maxDecSpeed = 400;
-    utilities::UniformDistribution genDecSpeed(minDecSpeed, maxDecSpeed, mGame->GetRandSeed());
+    utilities::UniformDistribution genDecSpeed(minDecSpeed, maxDecSpeed);
 
     // random generator for scale
     const int minScale = 1;
     const int maxScale = 2;
-    utilities::UniformDistribution genScale(minScale, maxScale, mGame->GetRandSeed());
+    utilities::UniformDistribution genScale(minScale, maxScale);
 
     // random generator for color
     const int color0 = 0;
     const int colorN = mObjColors.size() - 1;
 
-    utilities::UniformDistribution genColor(color0, colorN, mGame->GetRandSeed());
+    utilities::UniformDistribution genColor(color0, colorN);
 
     for(int q = 0; q < numQuad; ++q)
     {
@@ -733,17 +869,17 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
         return ;
 
     // random generator for X position
-    const int maxXDeltaHP = isoObj->GetWidth() * 0.25;
+    const int maxXDeltaHP = mIsoObj->GetWidth() * 0.25;
     const int minXDeltaHP = -maxXDeltaHP;
 
-    utilities::UniformDistribution genPosHP(minXDeltaHP, maxXDeltaHP, mGame->GetRandSeed());
+    utilities::UniformDistribution genPosHP(minXDeltaHP, maxXDeltaHP);
 
     const float posXHP = objXC + genPosHP.GetNextValue();
-    const float posYHP = objYC - (isoObj->GetHeight() * 0.25f);
+    const float posYHP = objYC - (mIsoObj->GetHeight() * 0.25f);
 
     const float speedHP = 75.f;
-    const float decaySpeedHP = 50.f;
-    const float maxDistHP = 50.f;
+    const float decaySpeedHP = 40.f;
+    const float maxDistHP = 60.f;
 
     auto puHP = static_cast<UpdaterHitPoints *>(partMan->GetUpdater(PU_HIT_POINTS));
 
@@ -756,9 +892,8 @@ void GameObject::MissHit()
     auto partMan = GetParticlesManager();
     auto puHP = static_cast<UpdaterHitPoints *>(partMan->GetUpdater(PU_HIT_POINTS));
 
-    IsoObject * isoObj = GetIsoObject();
-    const float posX = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float posY = isoObj->GetY();
+    const float posX = mIsoObj->GetX() + mIsoObj->GetWidth() * 0.5f;
+    const float posY = mIsoObj->GetY();
 
     const float speedHP = 75.f;
     const float decaySpeedHP = 50.f;
@@ -768,7 +903,7 @@ void GameObject::MissHit()
     puHP->AddParticle(dataHP);
 }
 
-void GameObject::SelfDestroy() { Hit(0.f, nullptr, true, false); }
+void GameObject::SelfDestroy() { Hit(-1.f, nullptr, true, false); }
 
 void GameObject::SetActiveActionToDefault() { mActiveAction = mDefaultAction; }
 
@@ -778,7 +913,25 @@ void GameObject::OnNewTurn(PlayerFaction faction)
         RestoreTurnEnergy();
 }
 
-void GameObject::Update(float) { }
+void GameObject::Update(float)
+{
+    // check if selected object has anything on top below energy and health bars
+    if(mSelected && mBarEnergy != nullptr && mBarHealth != nullptr)
+    {
+        const int row1 = GetRow1();
+        const int col1 = GetCol1();
+
+        const bool hideBars = row1 > 0 && col1 > 0 && mGameMap->HasObject(row1 - 1, col1 - 1);
+
+        const int alphaOn = 255;
+        const int alphaOff = 102;
+        const int diff = alphaOn - alphaOff;
+        const int alpha = alphaOn - (hideBars * diff);
+
+        mBarEnergy->SetAlpha(alpha);
+        mBarHealth->SetAlpha(alpha);
+    }
+}
 
 void GameObject::OnFactionChanged()
 {
@@ -793,6 +946,11 @@ void GameObject::OnLinkedChanged()
 
 void GameObject::OnAttributeChanged()
 {
+}
+
+int GameObject::GetStatusIconBaseY() const
+{
+    return (mBarHealth != nullptr) ? mBarHealth->GetY() : mIsoObj->GetY();
 }
 
 void GameObject::NotifyValueChanged()
@@ -924,15 +1082,120 @@ void GameObject::HideIconUpgrade()
 
 void GameObject::PositionIconUpgrade()
 {
+    if(mIconUpgrade == nullptr)
+        return ;
+
+    const int isoW = mIsoObj->GetWidth();
+    const int x0 = mIsoObj->GetX();
+    const int y0 = GetStatusIconBaseY();
+
+    const int iconMarginV = 5;
+    const int iconX = x0 + (isoW - mIconUpgrade->GetWidth()) / 2;
+    const int iconY = y0 - mIconUpgrade->GetHeight() - iconMarginV;
+
+    mIconUpgrade->SetPosition(iconX, iconY);
+}
+
+void GameObject::ShowEnergyBar()
+{
+    // already showing it
+    if(mBarEnergy != nullptr)
+        return ;
+
+    // only show for local player
+    if(!IsFactionLocal())
+        return;
+
+    // do not show on top of mini-units
+    if(ObjectData::CAT_MINI_UNIT == mCategory)
+        return;
+
+    const unsigned int val = std::roundf(ObjectEnergyBar::MAX_VAL * GetEnergy() / GetMaxEnergy());
+    mBarEnergy = new ObjectEnergyBar(val);
+
+    PositionEnergyBar();
+}
+
+void GameObject::HideEnergyBar()
+{
+    delete mBarEnergy;
+    mBarEnergy = nullptr;
+}
+
+void GameObject::PositionEnergyBar()
+{
+    if(mBarEnergy == nullptr)
+        return ;
+
     const int isoX = mIsoObj->GetX();
     const int isoY = mIsoObj->GetY();
     const int isoW = mIsoObj->GetWidth();
 
     const int iconMarginV = 5;
-    const int iconX = isoX + (isoW - mIconUpgrade->GetWidth()) / 2;
-    const int iconY = isoY - mIconUpgrade->GetHeight() - iconMarginV;
+    const int iconX = isoX + (isoW - mBarEnergy->GetWidth()) / 2;
+    const int iconY = isoY - mBarEnergy->GetHeight() - iconMarginV;
 
-    mIconUpgrade->SetPosition(iconX, iconY);
+    mBarEnergy->SetPosition(iconX, iconY);
+}
+
+void GameObject::UpdateEnergyBar()
+{
+    if(mBarEnergy == nullptr)
+        return ;
+
+    const unsigned int val = std::roundf(ObjectEnergyBar::MAX_VAL * GetEnergy() / GetMaxEnergy());
+    mBarEnergy->SetValue(val);
+}
+
+void GameObject::ShowHealthBar()
+{
+    // already showing it
+    if(mBarHealth != nullptr)
+        return ;
+
+    // only show for local player
+    if(!IsFactionLocal())
+        return;
+
+    // do not show on top of mini-units
+    if(ObjectData::CAT_MINI_UNIT == mCategory)
+        return;
+
+    const unsigned int val = std::roundf(ObjectHealthBar::MAX_VAL * GetHealth() / GetMaxHealth());
+    mBarHealth = new ObjectHealthBar(val);
+
+    PositionHealthBar();
+}
+
+void GameObject::HideHealthBar()
+{
+    delete mBarHealth;
+    mBarHealth = nullptr;
+}
+
+void GameObject::PositionHealthBar()
+{
+    if(mBarHealth == nullptr)
+        return ;
+
+    const int isoX = mIsoObj->GetX();
+    const int isoY = mIsoObj->GetY();
+    const int isoW = mIsoObj->GetWidth();
+
+    const int iconMarginV = 18;
+    const int iconX = isoX + (isoW - mBarHealth->GetWidth()) / 2;
+    const int iconY = isoY - mBarHealth->GetHeight() - iconMarginV;
+
+    mBarHealth->SetPosition(iconX, iconY);
+}
+
+void GameObject::UpdateHealthBar()
+{
+    if(mBarHealth == nullptr)
+        return ;
+
+    const unsigned int val = std::roundf(ObjectHealthBar::MAX_VAL * GetHealth() / GetMaxHealth());
+    mBarHealth->SetValue(val);
 }
 
 void GameObject::SetEnergy(float val)
@@ -953,10 +1216,15 @@ void GameObject::SetEnergy(float val)
         mEnergy = val;
 #endif
 
+    // check if value changed
     const float diff = std::fabs(mEnergy - oldEn);
 
     if(diff > minDelta)
+    {
+        UpdateEnergyBar();
+
         NotifyValueChanged();
+    }
 }
 
 void GameObject::SetExperience(int val)
@@ -987,10 +1255,15 @@ void GameObject::SetHealth(float val)
     else if(mHealth < 0.f)
         mHealth = 0.f;
 
+    // check if value changed
     const float diff = std::fabs(mHealth - oldH);
 
     if(diff > minDelta)
+    {
+        UpdateHealthBar();
+
         NotifyValueChanged();
+    }
 }
 
 void GameObject::RestoreTurnEnergy()

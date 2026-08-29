@@ -1,5 +1,6 @@
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 
+#include "Game.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -11,12 +12,16 @@
 namespace game
 {
 
-StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * panel)
-    : TutorialInfoStep(550, 150)
+StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(const Game * game, Screen * screen,
+                                                           PanelObjectActions * panel)
+    : TutorialInfoStep(screen, 550, 150)
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
     auto sm = sgl::utilities::StringManager::Instance();
+
+    // do not allow object selection during this step
+    DisableObjectSelection();
 
     // FOCUS
     mFocusArea->SetCornersColorAction();
@@ -29,9 +34,8 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
     info->SetPosition(1100, 650);
 
     info->AddActionEntry(sm->GetCString("TUT_GAME_UNIT_CONQUE_CELLS_ICON_1"), 0.f, false, false,
-                         [this, panel]
+                         [this, panel, game]
                         {
-
                             auto btn = panel->GetButton(PanelObjectActions::BTN_CONQUER_CELL);
 
                             // CLICK FILTER
@@ -40,7 +44,9 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
                             const int fW = btn->GetWidth();
                             const int fH = btn->GetHeight();
 
-                            GetClickFilter()->SetScreenClickableArea(fX, fY, fW, fH);
+                            auto cf = GetClickFilter();
+                            cf->SetButtonToAllow(game->GetButtonSelect());
+                            cf->SetScreenClickableArea(fX, fY, fW, fH);
 
                             // FOCUS
                             const int padding = 10;
@@ -49,7 +55,7 @@ StepGameUnitConquerCellsIcon::StepGameUnitConquerCellsIcon(PanelObjectActions * 
                             const int f2W = fW + (padding * 2);
                             const int f2H = fH + (padding * 2);
 
-                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H);
+                            mFocusArea->SetScreenArea(f2X, f2Y, f2W, f2H, true);
                             mFocusArea->SetVisible(true);
                         });
 

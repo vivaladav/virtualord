@@ -16,12 +16,8 @@ constexpr float TIME_AUTO_END_TURN = 2.f;
 constexpr float MAX_STAT_FVAL = 10.f;
 constexpr int MAX_STAT_IVAL = 10;
 
-// minimum resources when starting a new mission
-constexpr int START_ENERGY = 1000;
-constexpr int START_MATERIAL = 1000;
-constexpr int START_MONEY = 1000;
-constexpr int START_DIAMONDS = 10;
-constexpr int START_BLOBS = 10;
+constexpr int COST_CELL_CONQ_ENERGY = 5;
+constexpr int COST_CELL_CONQ_MATERIAL = 5;
 
 constexpr unsigned int PLAYER_COLOR[] =
 {
@@ -64,15 +60,14 @@ enum LanguageId : unsigned int
 
 enum MapLayers : unsigned int
 {
+    CELL_OVERLAYS0,
     CELL_OVERLAYS1,
-    CELL_OVERLAYS2,
-    CELL_OVERLAYS3,
     FACTION_INFLUENCE,
     // used for objects below the regular ones, like Gate when closed
     GROUND_OBJECTS,
     // normal objects
     REGULAR_OBJECTS,
-    CELL_OVERLAYS4,
+    CELL_OVERLAYS_TOP,
 
     NUM_LAYERS,
 };

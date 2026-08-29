@@ -96,7 +96,7 @@ void ObjectsDataRegistry::InitObjectData()
         ObjectData({ {OBJ_ATT_ENERGY, 5}, {OBJ_ATT_VIEW_RANGE, 4}, {OBJ_ATT_REGENERATION, 5},
                      {OBJ_ATT_RESISTANCE, 3}, {OBJ_ATT_SHIELD, 2}, {OBJ_ATT_HEALING_RANGE, 5},
                      {OBJ_ATT_HEALING_POWER, 6}, {OBJ_ATT_CONSTRUCTION, 4}, {OBJ_ATT_HEALTH, 5} },
-                   { 1000, 500, 0, 0 },
+                   { 900, 500, 0, 0 },
                    { ID_STRUCT_HOSPITAL_F1, ID_STRUCT_HOSPITAL_F2,
                      ID_STRUCT_HOSPITAL_F3, ID_STRUCT_HOSPITAL}, SpriteFileStructures,
                    ObjectData::TYPE_HOSPITAL, ObjectData::CAT_STRUCTURE,
@@ -121,16 +121,21 @@ void ObjectsDataRegistry::InitObjectData()
                    OCMU_SOLDIER, OCAT_MINI_UNIT, WeaponData::TYPE_NULL, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_MINI_UNIT2,
-        ObjectData({ {OBJ_ATT_ENERGY, 2}, {OBJ_ATT_VIEW_RANGE, 6}, {OBJ_ATT_REGENERATION, 4},
+        ObjectData({ {OBJ_ATT_ENERGY, 3}, {OBJ_ATT_VIEW_RANGE, 6}, {OBJ_ATT_REGENERATION, 4},
                      {OBJ_ATT_RESISTANCE, 2}, {OBJ_ATT_SHIELD, 2},  {OBJ_ATT_SPEED, 9},
-                     {OBJ_ATT_HEALTH, 4} }, { 15, 15, 0, 0 },
+                     {OBJ_ATT_HEALTH, 4} }, { 17, 17, 0, 0 },
                    { SID_MUNIT_02_1X_F1, SID_MUNIT_02_1X_F2, SID_MUNIT_02_1X_F3 }, SpriteFileMiniUnits,
                    ObjectData::TYPE_MINI_UNIT2, ObjectData::CAT_MINI_UNIT,
-                   OCMU_SOLDIER, OCAT_MINI_UNIT, WeaponData::TYPE_LASER2, 1, 1));
+                   OCMU_SOLDIER, OCAT_MINI_UNIT, WeaponData::TYPE_LASER1, 1, 1));
 
-    mDataObjects.emplace(ObjectData::TYPE_MOUNTAINS,
+    mDataObjects.emplace(ObjectData::TYPE_MOUNTAINS1,
         ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 9}, {OBJ_ATT_RESISTANCE, 7} }, {},
-                   { ID_MOUNTAIN1_1 }, SpriteFileSceneObjects, ObjectData::TYPE_MOUNTAINS,
+                   { ID_MOUNTAIN1_1 }, SpriteFileSceneObjects, ObjectData::TYPE_MOUNTAINS1,
+                   ObjectData::CAT_SCENE_OBJ, OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 2, 2));
+
+    mDataObjects.emplace(ObjectData::TYPE_MOUNTAINS2,
+        ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 9}, {OBJ_ATT_RESISTANCE, 7} }, {},
+                   { ID_MOUNTAIN2_1 }, SpriteFileSceneObjects, ObjectData::TYPE_MOUNTAINS2,
                    ObjectData::CAT_SCENE_OBJ, OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 2, 2));
 
     mDataObjects.emplace(ObjectData::TYPE_PRACTICE_TARGET,
@@ -144,7 +149,7 @@ void ObjectsDataRegistry::InitObjectData()
     mDataObjects.emplace(ObjectData::TYPE_RADAR_STATION,
         ObjectData({ {OBJ_ATT_ENERGY, 5}, {OBJ_ATT_VIEW_RANGE, 8}, {OBJ_ATT_REGENERATION, 4},
                      {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 3}, {OBJ_ATT_HEALTH, 4} },
-                   { 250, 200, 0, 0 },
+                   { 450, 300, 0, 0 },
                    { ID_STRUCT_RADAR_F1, ID_STRUCT_RADAR_F2, ID_STRUCT_RADAR_F3,
                      ID_STRUCT_RADAR }, SpriteFileStructures,
                    ObjectData::TYPE_RADAR_STATION, ObjectData::CAT_STRUCTURE,
@@ -162,7 +167,7 @@ void ObjectsDataRegistry::InitObjectData()
     mDataObjects.emplace(ObjectData::TYPE_RESEARCH_CENTER,
         ObjectData({ {OBJ_ATT_ENERGY, 5}, {OBJ_ATT_VIEW_RANGE, 4}, {OBJ_ATT_REGENERATION, 4},
                      {OBJ_ATT_RESISTANCE, 3}, {OBJ_ATT_SHIELD, 2}, {OBJ_ATT_HEALTH, 4} },
-                   { 1000, 1000, 25, 25 },
+                   { 950, 950, 25, 25 },
                    { ID_STRUCT_RESEARCH_CENTER_F1, ID_STRUCT_RESEARCH_CENTER_F2,
                      ID_STRUCT_RESEARCH_CENTER_F3, ID_STRUCT_RESEARCH_CENTER }, SpriteFileStructures,
                    ObjectData::TYPE_RESEARCH_CENTER, ObjectData::CAT_STRUCTURE,
@@ -198,7 +203,7 @@ void ObjectsDataRegistry::InitObjectData()
     mDataObjects.emplace(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT,
         ObjectData({ {OBJ_ATT_ENERGY, 4}, {OBJ_ATT_VIEW_RANGE, 2}, {OBJ_ATT_REGENERATION, 2},
                      {OBJ_ATT_RESISTANCE, 2}, {OBJ_ATT_SHIELD, 2}, {OBJ_ATT_HEALTH, 4} },
-                   { 250, 250, 10, 10 },
+                   { 250, 250, 5, 5 },
                    { ID_MATERIAL_EXTRACTOR_F1, ID_MATERIAL_EXTRACTOR_F2,
                      ID_MATERIAL_EXTRACTOR_F3, ID_MATERIAL_EXTRACTOR }, SpriteFileStructures,
                    ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT, ObjectData::CAT_RES_GENERATOR,
@@ -253,7 +258,7 @@ void ObjectsDataRegistry::InitObjectData()
         ObjectData({ {OBJ_ATT_ENERGY, 6}, {OBJ_ATT_VIEW_RANGE, 4}, {OBJ_ATT_REGENERATION, 3},
                      {OBJ_ATT_RESISTANCE, 4}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 6},
                      {OBJ_ATT_SPAWNING, 6} },
-                   { 750, 500, 50, 50 },
+                   { 500, 500, 25, 25 },
                    { ID_STRUCT_SPAWN_TOWER_F1, ID_STRUCT_SPAWN_TOWER_F2, ID_STRUCT_SPAWN_TOWER_F3,
                      ID_STRUCT_SPAWN_TOWER }, SpriteFileStructures,
                    ObjectData::TYPE_SPAWN_TOWER, ObjectData::CAT_STRUCTURE,
@@ -290,6 +295,11 @@ void ObjectsDataRegistry::InitObjectData()
     mDataObjects.emplace(ObjectData::TYPE_TREES3,
         ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 1}, {OBJ_ATT_RESISTANCE, 1} }, {},
                    { TREE3_1T_1 }, SpriteFileTrees, ObjectData::TYPE_TREES3, ObjectData::CAT_SCENE_OBJ,
+                   OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
+
+    mDataObjects.emplace(ObjectData::TYPE_CACTUS1,
+        ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_HEALTH, 1}, {OBJ_ATT_RESISTANCE, 1} }, {},
+                   { CACTUS1_1T_1 }, SpriteFileTrees, ObjectData::TYPE_CACTUS1, ObjectData::CAT_SCENE_OBJ,
                    OCO_SCENE, OCAT_UNDEFINED, WeaponData::TYPE_NULL, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_UNIT_MEDIC1,
@@ -367,7 +377,7 @@ void ObjectsDataRegistry::InitObjectData()
                      {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 7} },
                    { 150, 150, 0, 0 },
                    { WALL_GATE_L1_F1_HORIZ_CLOSED, WALL_GATE_L1_F2_HORIZ_CLOSED,
-                     WALL_GATE_L1_F3_HORIZ_CLOSED }, SpriteFileWalls,
+                     WALL_GATE_L1_F3_HORIZ_CLOSED }, SpriteFileStructures,
                    ObjectData::TYPE_WALL_GATE, ObjectData::CAT_STRUCTURE,
                    OCS_WALL, OCAT_DEFENSE, WeaponData::TYPE_NULL, 1, 1));
 

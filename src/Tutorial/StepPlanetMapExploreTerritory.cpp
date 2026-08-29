@@ -28,7 +28,7 @@ StepPlanetMapExploreTerritory::StepPlanetMapExploreTerritory(PanelPlanetActions 
     const int fW = mButton->GetWidth() + (padding * 2);
     const int fH = mButton->GetHeight() + (padding * 2);
 
-    mFocusArea->SetScreenArea(fX, fY, fW, fH);
+    mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
     mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);

@@ -28,8 +28,8 @@ StepGameCollectObjects::StepGameCollectObjects(const Unit * unit, GameObjectType
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS
-    mFocusArea->SetCellArea(areaBR.row, areaBR.col, areaTL.row, areaTL.col);
-    mFocusArea->SetCornersColorElement();
+    mFocusArea->SetCellArea(areaBR.row, areaBR.col, areaTL.row, areaTL.col, true);
+    mFocusArea->SetCornersColorAction();
     mFocusArea->SetVisible(false);
 
     // INFO
@@ -37,7 +37,7 @@ StepGameCollectObjects::StepGameCollectObjects(const Unit * unit, GameObjectType
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddInfoEntry(sm->GetCString(intro), 0.f, false, false, [this, im, game]
+    info->AddActionEntry(sm->GetCString(intro), 0.f, false, false, [this, im, game]
                         {
                             mFocusArea->SetVisible(true);
 

@@ -9,6 +9,8 @@
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/GameHUD.h"
 
+#include <sgl/utilities/BinaryFile.h>
+
 #ifdef DEV_MODE
 #include <iostream>
 #endif
@@ -54,11 +56,11 @@ MissionGoalsTracker::MissionGoalsTracker(Game * g, Player * p)
     }
 
     // -- PLAYERS --
-    const unsigned int numPlayers = mGame->GetNumPlayers();
+    const unsigned int numPlayers = mGame->GetNumActivePlayers();
 
     for(int i = 0; i < numPlayers; ++i)
     {
-        Player * p = mGame->GetPlayerByIndex(i);
+        Player * p = mGame->GetActivePlayerByIndex(i);
 
         if(p->IsAI())
             mAiPlayers.emplace_back(p);
@@ -74,6 +76,125 @@ MissionGoalsTracker::~MissionGoalsTracker()
 
         mPlayer->RemoveOnResourceChanged(resId, funId);
     }
+}
+
+bool MissionGoalsTracker::Load(sgl::utilities::BinaryFile & bf)
+{
+    // mission goals
+    const unsigned int numGoals = bf.ReadUint();
+    mMissionGoals.resize(numGoals);
+
+    for(unsigned int i = 0; i < numGoals; ++i)
+        mMissionGoals[i].Load(bf);
+
+    // resources gained
+    const unsigned int numResGained = bf.ReadUint();
+    mResourcesGained.resize(numResGained);
+
+    for(unsigned int i = 0; i < numResGained; ++i)
+        mResourcesGained[i] = bf.ReadInt();
+
+    // structures built
+    const unsigned int numStructBuilt = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numStructBuilt; ++i)
+    {
+        const GameObjectTypeId type = bf.ReadSizeT();
+        const unsigned int val = bf.ReadUint();
+        mStructuresBuilt.emplace(type, val);
+    }
+
+    // structures conquered
+    const unsigned int numStructConquered = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numStructConquered; ++i)
+    {
+        const GameObjectTypeId type = bf.ReadSizeT();
+        const unsigned int val = bf.ReadUint();
+        mStructuresConquered.emplace(type, val);
+    }
+
+    // categories destroyed
+    const unsigned int numCatDestroyed = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numCatDestroyed; ++i)
+    {
+        const GameObjectTypeId type = bf.ReadSizeT();
+        const unsigned int val = bf.ReadUint();
+        mCategoriesDestroyed.emplace(type, val);
+    }
+
+    // data tracking
+    mCompletedGoals = bf.ReadUint();
+    mGoalsToCollect = bf.ReadUint();
+    mMiniUnitsCreated = bf.ReadUint();
+    mUnitsCreated = bf.ReadUint();
+    mTotStructuresBuilt = bf.ReadUint();
+    mTotStructuresConquered = bf.ReadUint();
+    mWallBuilt = bf.ReadUint();
+    mPlayedTime = bf.ReadUint();
+    mPlayedTurns = bf.ReadUint();
+    mSelfDestructed = bf.ReadUint();
+    mMapCompleted = bf.ReadBool();
+
+    return true;
+}
+
+bool MissionGoalsTracker::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // mission goals
+    bf.WriteUint(mMissionGoals.size());
+
+    for(const MissionGoal & mg : mMissionGoals)
+        mg.Save(bf);
+
+    // resources gained
+    bf.WriteUint(mResourcesGained.size());
+
+    for(const int r : mResourcesGained)
+        bf.WriteInt(r);
+
+    // structures built
+    bf.WriteUint(mStructuresBuilt.size());
+
+    for(const auto it : mStructuresBuilt)
+    {
+        bf.WriteSizeT(it.first);
+        bf.WriteUint(it.second);
+    }
+
+    // structures conquered
+    bf.WriteUint(mStructuresConquered.size());
+
+    for(const auto it : mStructuresConquered)
+    {
+        bf.WriteSizeT(it.first);
+        bf.WriteUint(it.second);
+    }
+
+    // categories destroyed
+    bf.WriteUint(mCategoriesDestroyed.size());
+
+    for(const auto it : mCategoriesDestroyed)
+    {
+        bf.WriteSizeT(it.first);
+        bf.WriteUint(it.second);
+    }
+
+    // data tracking
+    bf.WriteUint(mCompletedGoals);
+    bf.WriteUint(mGoalsToCollect);
+    bf.WriteUint(mMiniUnitsCreated);
+    bf.WriteUint(mUnitsCreated);
+    bf.WriteUint(mTotStructuresBuilt);
+    bf.WriteUint(mTotStructuresConquered);
+    bf.WriteUint(mWallBuilt);
+    bf.WriteUint(mPlayedTime);
+    bf.WriteUint(mPlayedTurns);
+    bf.WriteUint(mSelfDestructed);
+    bf.WriteBool(mMapCompleted);
+
+    return true;
 }
 
 void MissionGoalsTracker::SetGoals(const std::vector<MissionGoal> & goals)
@@ -279,12 +400,19 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
         if(tutID == TUTORIAL_UNKNOWN)
             return false;
 
-        if(tutMan->GetTutorialState(tutID) == TS_IN_PROGRESS)
+        const TutorialState state = tutMan->GetTutorialState(tutID);
+
+        if(state == TS_IN_PROGRESS)
         {
             auto tut = tutMan->GetActiveTutorial();
 
             g.SetProgress(tut->GetNumStepsDone() * 100 / tut->GetNumStepsAtStart());
 
+            return false;
+        }
+        else if (state == TS_ABORTED)
+        {
+            g.SetProgress(0);
             return false;
         }
     }

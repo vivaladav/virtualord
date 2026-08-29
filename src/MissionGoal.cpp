@@ -3,6 +3,7 @@
 #include "GameConstants.h"
 #include "Player.h"
 
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/StringManager.h>
 
 #include <cstddef>
@@ -113,6 +114,11 @@ const std::unordered_map<MissionGoalType, MissionCategory> MissionGoal::CATEGORI
     { TYPE_TERRITORY_CONTROL_TURNS, MC_CONQUEST },
 };
 
+MissionGoal::MissionGoal()
+{
+    mRewards.assign(NUM_EXTENDED_RESOURCES, 0);
+}
+
 MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
                          unsigned int extraVal, bool primary, bool hidden)
     : mId(++num)
@@ -127,6 +133,48 @@ MissionGoal::MissionGoal(MissionGoalType type, unsigned int quantity,
     SetCategory();
 
     SetMissionRewards();
+}
+
+bool MissionGoal::Load(sgl::utilities::BinaryFile & bf)
+{
+    // data
+    mId = bf.ReadUint();
+    mType = bf.ReadSizeT();
+    mQuantity = bf.ReadUint();
+    mExtraValue = bf.ReadUint();
+    mProgress = bf.ReadUint();
+
+    // flags
+    mCompleted = bf.ReadBool();
+    mFailed = bf.ReadBool();
+    mRewardCollected = bf.ReadBool();
+    mPrimary = bf.ReadBool();
+    mHidden = bf.ReadBool();
+
+    // update data
+    SetCategory();
+    SetMissionRewards();
+
+    return true;
+}
+
+bool MissionGoal::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // data
+    bf.WriteUint(mId);
+    bf.WriteSizeT(mType);
+    bf.WriteUint(mQuantity);
+    bf.WriteUint(mExtraValue);
+    bf.WriteInt(mProgress);
+
+    // flags
+    bf.WriteBool(mCompleted);
+    bf.WriteBool(mFailed);
+    bf.WriteBool(mRewardCollected);
+    bf.WriteBool(mPrimary);
+    bf.WriteBool(mHidden);
+
+    return true;
 }
 
 void MissionGoal::AssignReward(Player * p)
@@ -305,8 +353,14 @@ void MissionGoal::SetMissionRewards()
         }
         else if(mType == TYPE_DESTROY_ENEMY_UNITS)
         {
-            const int multMoney = 200;
+            const int multMoney = 150;
             mRewards[ER_MONEY] = mQuantity * multMoney;
+
+            const int multEnergy = 60;
+            mRewards[ER_ENERGY] = mQuantity * multEnergy;
+
+            const int multMaterial = 60;
+            mRewards[ER_MATERIAL] = mQuantity * multMaterial;
         }
         else if(mType == TYPE_CONQUER_GEN_ENERGY || mType == TYPE_CONQUER_GEN_MATERIAL)
         {
@@ -332,16 +386,16 @@ void MissionGoal::SetMissionRewards()
         }
         else if(mType == TYPE_GAIN_MONEY)
         {
-            const int divBlobs = 100;
+            const int divBlobs = 300;
             mRewards[ER_BLOBS] = mQuantity / divBlobs;
 
-            const int divDiamonds = 100;
+            const int divDiamonds = 300;
             mRewards[ER_DIAMONDS] = mQuantity / divDiamonds;
 
-            const int divEnergy = 50;
+            const int divEnergy = 20;
             mRewards[ER_ENERGY] = mQuantity / divEnergy;
 
-            const int divMaterial = 10;
+            const int divMaterial = 20;
             mRewards[ER_MATERIAL] = mQuantity / divMaterial;
         }
         else if(mType == TYPE_GEN_RESEARCH)
@@ -385,11 +439,8 @@ void MissionGoal::SetMissionRewards()
             const int diamonds = 25;
             mRewards[ER_DIAMONDS] = diamonds;
 
-            const int energy = 100;
-            mRewards[ER_ENERGY] = energy;
-
-            const int material = 100;
-            mRewards[ER_MATERIAL] = material;
+            const int research = 250;
+            mRewards[ER_RESEARCH] = research;
         }
         else if(mType == TYPE_SELF_DESTRUCT)
         {

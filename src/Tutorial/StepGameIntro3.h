@@ -5,10 +5,10 @@
 namespace game
 {
 
-class StepGameMoveToTower : public TutorialInfoStep
+class StepGameIntro3 : public TutorialInfoStep
 {
 public:
-    StepGameMoveToTower();
+    StepGameIntro3();
 };
 
 } // namespace game

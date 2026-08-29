@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Tutorial/TutorialStep.h"
+#include "Tutorial/TutorialInfoStep.h"
 
 namespace sgl
 {
@@ -12,10 +12,11 @@ namespace game
 
 class CameraMapController;
 
-class StepGameTestCameraFocus : public TutorialStep
+class StepGameTestCameraFocus : public TutorialInfoStep
 {
 public:
-    StepGameTestCameraFocus(const sgl::graphic::Camera * c, int tlX, int tlY, int brX, int brY);
+    StepGameTestCameraFocus(const char * text, const sgl::graphic::Camera * c,
+                            int tlX, int tlY, int brX, int brY);
 
     void Update(float delta) override;
 

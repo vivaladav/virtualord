@@ -1,6 +1,7 @@
 #include "Tutorial/StepGameWaitEnemiesKilled.h"
 
 #include "GameMap.h"
+#include "Widgets/Tutorial/PanelClickFilter.h"
 
 namespace game
 {
@@ -10,6 +11,14 @@ StepGameWaitEnemiesKilled::StepGameWaitEnemiesKilled(const std::vector<const Gam
     : mObjs(objs)
     , mGameMap(gm)
 {
+}
+
+void StepGameWaitEnemiesKilled::OnStart()
+{
+    TutorialStep::OnStart();
+
+    // disable click filter as interaction is needed while updating this Step
+    GetClickFilter()->SetEnabled(false);
 }
 
 void StepGameWaitEnemiesKilled::Update(float)

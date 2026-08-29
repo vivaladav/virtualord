@@ -16,6 +16,11 @@ BaseGameState::~BaseGameState()
     delete mScreen;
 }
 
+bool BaseGameState::Save(sgl::utilities::BinaryFile &) const
+{
+    return true;
+}
+
 void BaseGameState::Update(float delta)
 {
     sgl::utilities::State::Update(delta);

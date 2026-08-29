@@ -21,6 +21,9 @@ public:
              GameObjectVariantId orientation);
     ~WallGate();
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
     bool IsOpen() const;
     bool Toggle();
 

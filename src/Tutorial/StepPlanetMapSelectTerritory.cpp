@@ -28,7 +28,7 @@ StepPlanetMapSelectTerritory::StepPlanetMapSelectTerritory(PlanetMap * planet, u
     const int fW = mTerritory->GetWidth() + (padding * 2);
     const int fH = mTerritory->GetHeight() + (padding * 2);
 
-    mFocusArea->SetScreenArea(fX, fY, fW, fH);
+    mFocusArea->SetScreenArea(fX, fY, fW, fH, false);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 

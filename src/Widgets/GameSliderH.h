@@ -22,6 +22,8 @@ public:
                 sgl::graphic::Texture * texButton, sgl::sgui::Widget * parent);
 
 private:
+    void InitSound();
+
     void OnStateChanged(sgl::sgui::AbstractSlider::VisualState state) override;
 
     void HandlePositionChanged() override;

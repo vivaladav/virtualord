@@ -113,14 +113,10 @@ bool ObjectPath::Start()
        currCell.objBottom->GetFaction() == mObj->GetFaction())
         mOpenGate = static_cast<WallGate *>(currCell.objBottom);
 
-    // center camera over target destination in the meanwhile
-    if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
-       mScreen->GetGame()->IsAutoUnitCameraEnabled())
-    {
-        const float multSpeed = 70.f;
-        const float speedCam = mObj->GetSpeed() * multSpeed;
-        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
-    }
+    // track object while moving if local
+    if(mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
+       mScreen->GetGame()->IsAutoUnitCameraEnabled()))
+        mScreen->StartCameraTracking(mObj);
 
     mNextCell = 1;
 
@@ -129,9 +125,10 @@ bool ObjectPath::Start()
 
 void ObjectPath::InstantAbort()
 {
-    if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
-       mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StopCameraMove();
+    // stop tracking object
+    if(mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
+       mScreen->GetGame()->IsAutoUnitCameraEnabled()))
+        mScreen->StopCameraTracking();
 
     mState = ABORTED;
 }
@@ -191,7 +188,7 @@ void ObjectPath::Update(float delta)
     // handle reached target
     if(0 == todo)
     {
-        Player * player = mScreen->GetGame()->GetPlayerByFaction(mObj->GetFaction());
+        Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mObj->GetFaction());
 
         mGameMap->DelPlayerObjVisibility(mObj, player);
 
@@ -255,16 +252,17 @@ bool ObjectPath::Fail()
     {
         mState = FAILED;
 
+        // stop tracking object
+        if(mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
+           mScreen->GetGame()->IsAutoUnitCameraEnabled()))
+            mScreen->StopCameraMove();
+
         // clear action data once the action is completed - only for units
         if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)
             mScreen->SetObjectActionFailed(mObj);
     }
     else
         mState = FAILED;
-
-    if(mLocal && mObj->GetObjectCategory() == ObjectData::CAT_UNIT &&
-       mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StopCameraMove();
 
     return false;
 }
@@ -274,6 +272,11 @@ bool ObjectPath::Finish()
     if(HasStarted())
     {
         mState = COMPLETED;
+
+        // stop tracking object
+        if(mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
+           mScreen->GetGame()->IsAutoUnitCameraEnabled()))
+                mScreen->StopCameraTracking();
 
         // clear action data once the action is completed - only for units
         if(mObj->GetObjectCategory() == ObjectData::CAT_UNIT)

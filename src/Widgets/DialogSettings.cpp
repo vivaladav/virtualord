@@ -389,6 +389,11 @@ DialogSettings::DialogSettings(Game * game)
     mButtonClose = new ButtonDialogClose(this);
     mButtonClose->SetX(w - mButtonClose->GetWidth());
 
+    mButtonClose->AddOnClickFunction([this]
+        {
+            mGame->SaveSettings();
+        });
+
     // TITLE
     auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
                                  WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);

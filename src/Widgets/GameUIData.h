@@ -116,7 +116,6 @@ enum SpriteIdDialogMissionGoalsExp : unsigned int
     ID_DLG_MGOALS_BG_ROW2,
     // SECTION HORIZONTAL LINE
     ID_DLG_MGOALS_SECTION_LINE,
-
 };
 
 // NEW ELEMENT DIALOG
@@ -210,6 +209,18 @@ enum SpriteIdDialogResearch : unsigned int
 };
 
 extern const char SpriteFileDialogResearchExp[];
+
+// DIALOG SAVE
+extern const char SpriteFileDialogSave[];
+
+enum SpriteIdDialogSave : unsigned int
+{
+    // BACKGROUND
+    ID_DLG_SAVE_BG_TOP,
+    ID_DLG_SAVE_BG_BOT,
+};
+
+extern const char SpriteFileDialogSaveExp[];
 
 // DIALOG TECH TREE
 extern const char SpriteFileDialogTechTree[];
@@ -338,16 +349,6 @@ enum SpriteIdDialogUpgrade : unsigned int
 extern const char SpriteFileDialogUpgradeExp[];
 
 // GENERIC GAME UI
-extern const char SpriteFileGameUI[];
-
-enum SpriteIdGameUI : unsigned int
-{
-    // GOAL COMPLETED
-    ID_GAMEUI_GOAL_F1,
-    ID_GAMEUI_GOAL_F2,
-    ID_GAMEUI_GOAL_F3,
-};
-
 extern const char SpriteFileGameUIExp[];
 
 enum SpriteIdGameUIExp : unsigned int
@@ -411,6 +412,7 @@ enum SpriteIdObjActionButton : unsigned int
     IND_BUTTON_ICON_SET_TARGET,
     IND_BUTTON_ICON_RESEARCH,
     IND_BUTTON_ICON_TECH_TREE,
+    IND_BUTTON_ICON_SAVE,
 
     // ACTION OPTION BUTTON
     ID_BTN_ACT_OPT_NORMAL,

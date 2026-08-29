@@ -1,6 +1,7 @@
 #include "AI/ConquerPath.h"
 
 #include "Game.h"
+#include "GameConstants.h"
 #include "GameMap.h"
 #include "IsoLayer.h"
 #include "IsoObject.h"
@@ -8,21 +9,18 @@
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Unit.h"
 #include "Indicators/OverlayCellConquest.h"
+#include "Particles/DataParticleOutput.h"
+#include "Particles/UpdaterOutput.h"
 #include "Screens/ScreenGame.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/GameMapProgressBar.h"
 
+#include <sgl/graphic/ParticlesManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 
 #include <cassert>
 #include <cmath>
-
-namespace
-{
-constexpr int COST_ENERGY = 5;
-constexpr int COST_MATERIAL = 5;
-}
 
 namespace game
 {
@@ -38,7 +36,7 @@ ConquerPath::ConquerPath(Unit * unit, GameMap * gm, ScreenGame * sg, OverlayCell
 
     if(sg != nullptr)
     {
-        mPlayer = sg->GetGame()->GetPlayerByFaction(unit->GetFaction());
+        mPlayer = sg->GetGame()->GetActivePlayerByFaction(unit->GetFaction());
         mLocal = mPlayer->IsLocal();
     }
 }
@@ -61,13 +59,9 @@ bool ConquerPath::Start()
 
     mNextCell = 0;
 
-    // center camera over target destination in the meanwhile
+    // track object while moving if local
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-    {
-        const float multSpeed = 25.f;
-        const float speedCam = mUnit->GetSpeed() * multSpeed;
-        mScreen->CenterCameraOverCell(mCells[mCells.size() - 1], speedCam);
-    }
+        mScreen->StartCameraTracking(mUnit);
 
     // stat conquering first cell
     return InitNextConquest();
@@ -81,8 +75,9 @@ void ConquerPath::Abort()
         mState = ABORTING;
     else
     {
+        // stop tracking object
         if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-            mScreen->StopCameraMove();
+            mScreen->StopCameraTracking();
 
         mState = ABORTED;
     }
@@ -103,8 +98,9 @@ void ConquerPath::InstantAbort()
     if(mOverlay)
         mOverlay->ClearPath();
 
+    // stop tracking object
     if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StopCameraMove();
+        mScreen->StopCameraTracking();
 
     // set new state
     mState = ABORTED;
@@ -123,8 +119,8 @@ bool ConquerPath::HasResourcesToConquerCell()
         return false;
 
     // check if player has enough resources
-    return mPlayer->HasEnough(Player::Stat::ENERGY, COST_ENERGY) &&
-           mPlayer->HasEnough(Player::Stat::MATERIAL, COST_MATERIAL);
+    return mPlayer->HasEnough(Player::Stat::ENERGY, COST_CELL_CONQ_ENERGY) &&
+           mPlayer->HasEnough(Player::Stat::MATERIAL, COST_CELL_CONQ_MATERIAL);
 }
 
 bool ConquerPath::InitNextConquest()
@@ -138,7 +134,7 @@ bool ConquerPath::InitNextConquest()
     const unsigned int nextCol = nextInd % mGameMap->GetNumCols();
     const Cell2D nextCell(nextRow, nextCol);
 
-    Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+    Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
 
     // can't conquer current cell -> try to move to next one
     if(!mGameMap->CanConquerCell(mUnit, nextCell, player))
@@ -163,8 +159,8 @@ bool ConquerPath::InitNextConquest()
         mOverlay->PopFrontPath();
 
     // take resource from player
-    mPlayer->SumResource(Player::Stat::ENERGY, -COST_ENERGY);
-    mPlayer->SumResource(Player::Stat::MATERIAL, -COST_MATERIAL);
+    mPlayer->SumResource(Player::Stat::ENERGY, -COST_CELL_CONQ_ENERGY);
+    mPlayer->SumResource(Player::Stat::MATERIAL, -COST_CELL_CONQ_MATERIAL);
 
     // create progress bar
     GameHUD * HUD = mScreen->GetHUD();
@@ -181,6 +177,29 @@ bool ConquerPath::InitNextConquest()
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/conquer-01.ogg", 200);
+
+        // emit notification
+        if(mLocal)
+        {
+            auto partMan = mScreen->GetParticlesManager();
+            auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
+
+            const float x1 = mUnit->GetX() + mUnit->GetWidth() * 0.2f;
+            const float x2 = mUnit->GetX() + mUnit->GetWidth() * 0.8f;
+            const float marginV0 = 10.f;
+            const float y12 = mUnit->GetY() - marginV0;
+            const float speed = 80.f;
+            const float decaySpeed = 10.f;
+            const float timeLife = 0.75f;
+
+            const DataParticleOutput pd1(-COST_CELL_CONQ_ENERGY, OT_ENERGY, x1, y12,
+                                         speed, decaySpeed, timeLife);
+            pu->AddParticle(pd1);
+
+            const DataParticleOutput pd2(-COST_CELL_CONQ_MATERIAL, OT_MATERIAL, x2, y12,
+                                         speed, decaySpeed, timeLife);
+            pu->AddParticle(pd2);
+        }
 
         ++mNextCell;
 
@@ -307,7 +326,7 @@ void ConquerPath::UpdateMove(float delta)
     // handle reached target
     if(0 == todo)
     {
-        Player * player = mScreen->GetGame()->GetPlayerByFaction(mUnit->GetFaction());
+        Player * player = mScreen->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
 
         mGameMap->DelPlayerObjVisibility(mUnit, player);
 
@@ -369,8 +388,8 @@ void ConquerPath::UpdatePathCost()
         const bool notConquered = owner == nullptr || owner->GetFaction() != f;
 
         mCostUnitEnergy += notConquered * mUnit->GetEnergyForActionStep(CONQUER_CELL);
-        mCostResEnergy += notConquered * COST_ENERGY;
-        mCostResMaterial += notConquered * COST_MATERIAL;
+        mCostResEnergy += notConquered * COST_CELL_CONQ_ENERGY;
+        mCostResMaterial += notConquered * COST_CELL_CONQ_MATERIAL;
     }
 }
 
@@ -381,10 +400,13 @@ bool ConquerPath::Fail()
 
     // clear action data once the action is completed
     if(HasStarted())
-        mScreen->SetObjectActionFailed(mUnit);
+    {
+        // stop tracking object
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraTracking();
 
-    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StopCameraMove();
+        mScreen->SetObjectActionFailed(mUnit);
+    }
 
     mState = FAILED;
 
@@ -395,7 +417,13 @@ bool ConquerPath::Finish()
 {
     // clear action data once the action is completed
     if(HasStarted())
+    {
+        // stop tracking object
+        if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+            mScreen->StopCameraTracking();
+
         mScreen->SetObjectActionCompleted(mUnit);
+    }
 
     mState = COMPLETED;
 

@@ -7,6 +7,7 @@
 
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/utilities/BinaryFile.h>
 
 namespace game
 {
@@ -45,9 +46,37 @@ void CityGroup::UpdateCityConquered(Player * conqueror)
         {
             const Cell2D c(o->GetRow0(), o->GetCol0());
 
-            mGameMap->ConquerStructure(c, conqueror);
+            GetGameMap()->ConquerStructure(c, conqueror);
         }
     }
+}
+
+bool CityGroup::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObjectsGroup::Load(bf);
+
+    if(!res)
+        return false;
+
+    mConquered = bf.ReadBool();
+
+    return true;
+}
+
+bool CityGroup::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObjectsGroup::Save(bf);
+
+    if(!res)
+        return false;
+
+    if(IsEmpty())
+        return true;
+
+    // flags
+    bf.WriteBool(mConquered);
+
+    return true;
 }
 
 } // namespace game

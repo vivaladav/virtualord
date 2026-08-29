@@ -20,6 +20,8 @@ StepGameSetCollectableUnits::StepGameSetCollectableUnits(const Cell2D & tl, cons
 
 void StepGameSetCollectableUnits::OnStart()
 {
+    TutorialStep::OnStart();
+
     const std::vector<GameObject *> & objs = mGameMap->GetObjects();
 
     for(GameObject * obj : objs)

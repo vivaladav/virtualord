@@ -17,7 +17,7 @@ IconUpgrade::IconUpgrade(PlayerFaction f)
     SetCamera(graphic::Camera::GetDefaultCamera());
 
     auto tm = graphic::TextureManager::Instance();
-    auto tex = tm->GetSprite(SpriteFileParticles, ID_PART_ICON_UPGRADE);
+    auto tex = tm->GetSprite(SpriteFileGameObjectsRelated, ID_GO_UPGRADE_ICON);
     SetTexture(tex);
 
     if(f != NO_FACTION)

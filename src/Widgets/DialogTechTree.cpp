@@ -368,10 +368,28 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         btnUpgrade01->SetPosition(btnX, btnY);
 
-        //AddLinkToUpgrade(btnUpgrade01, LINK_VERT, LS_NORTH);
+        AddLinkToUpgrade(btnUpgrade01, LINK_VERT, LS_NORTH);
         AddLinkToUpgrade(btnUpgrade01, LINK_HORIZ, LS_WEST);
 
         btnY -= btnUpgrade01->GetHeight() + buttonsMarginV;
+
+        // [1, 1]
+        auto btnUpgrade11 = GetNewButtonUpgrade(TECH_UP_RADAR_STATION, 0,
+                                                { btnUpgrade01 }, false);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_RADAR_STATION, btnUpgrade11);
+
+        btnUpgrade11->SetPosition(btnX, btnY);
+
+        AddLinkToUpgrade(btnUpgrade11, LINK_VERT, LS_NORTH);
+
+        btnY -= btnUpgrade11->GetHeight() + buttonsMarginV;
+
+        // [2, 1]
+        auto btnUpgrade21 = GetNewButtonUpgrade(TECH_UP_RADAR_TOWER, 0,
+                                                { btnUpgrade11 }, false);
+        mVisibleButtonsUpgrade.emplace(TECH_UP_RADAR_TOWER, btnUpgrade21);
+
+        btnUpgrade21->SetPosition(btnX, btnY);
 
         // -- COL 2 --
         btnX += btnUpgrade01->GetWidth() + buttonsMarginH;
@@ -443,7 +461,7 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         btnUpgrade03->SetPosition(btnX, btnY);
 
-        AddLinkToUpgrade(btnUpgrade03, LINK_HORIZ, LS_WEST);
+        //AddLinkToUpgrade(btnUpgrade03, LINK_HORIZ, LS_WEST);
 
         btnY -= btnUpgrade03->GetHeight() + buttonsMarginV;
 
@@ -480,29 +498,6 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
         mVisibleButtonsUpgrade.emplace(TECH_UP_STORAGE_BLOBS_2, btnUpgrade43);
 
         btnUpgrade43->SetPosition(btnX, btnY);
-
-        // -- COL 4 --
-        // [0, 4]
-        btnX += btnUpgrade03->GetWidth() + buttonsMarginH;
-        btnY = upgradesY0;
-
-        auto btnUpgrade04 = GetNewButtonUpgrade(TECH_UP_RADAR_STATION, 0,
-                                                { btnUpgrade03 }, false);
-        mVisibleButtonsUpgrade.emplace(TECH_UP_RADAR_STATION, btnUpgrade04);
-
-        btnUpgrade04->SetPosition(btnX, btnY);
-
-        AddLinkToUpgrade(btnUpgrade04, LINK_VERT, LS_NORTH);
-        //AddLinkToUpgrade(btnUpgrade04, LINK_HORIZ, LS_WEST);
-
-        btnY -= btnUpgrade04->GetHeight() + buttonsMarginV;
-
-        // [1, 4]
-        auto btnUpgrade14 = GetNewButtonUpgrade(TECH_UP_RADAR_TOWER, 0,
-                                                { btnUpgrade04 }, false);
-        mVisibleButtonsUpgrade.emplace(TECH_UP_RADAR_TOWER, btnUpgrade14);
-
-        btnUpgrade14->SetPosition(btnX, btnY);
     }
     if(section == SEC_UNITS)
     {

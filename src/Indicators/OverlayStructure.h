@@ -26,7 +26,7 @@ public:
                        int unitCost = -1, bool doable = true);
 
 private:
-    StructureIndicator * GetNewIndicator(GameObjectTypeId type);
+    StructureIndicator * GetNewIndicator(GameObjectTypeId type, bool doable);
 
 private:
     std::unordered_map<GameObjectTypeId, StructureIndicator *> mIndicators;

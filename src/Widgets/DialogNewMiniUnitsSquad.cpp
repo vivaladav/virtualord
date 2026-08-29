@@ -635,7 +635,7 @@ void DialogNewMiniUnitsSquad::UpdatePreview()
 
     const PlayerFaction faction = mPlayer->GetFaction();
     const unsigned int texInd0 = data.GetIconTexId(faction);
-    const unsigned int texInd = texInd0 + NUM_MUNIT_SPRITES_PER_SQUAD * (GetNumElements() - 1);
+    const unsigned int texInd = texInd0 + (GetNumElements() - 1);
 
     auto tex = tm->GetSprite(data.GetIconTexFile(), texInd);
     mImgPreview->SetTexture(tex);

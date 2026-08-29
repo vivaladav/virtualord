@@ -5,6 +5,7 @@
 #include "States/StatesIds.h"
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonDialogClose.h"
+#include "Widgets/DialogSave.h"
 #include "Widgets/DialogSettings.h"
 #include "Widgets/GameButton.h"
 #include "Widgets/GameHUD.h"
@@ -246,25 +247,27 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
 
     GameButton * btn = nullptr;
 
+#ifdef DEV_MODE
     // BUTTON SAVE
-/*
     if(buttons & BTN_SAVE)
     {
         btn = new ButtonDialogExit(this);
         btn->SetLabel(sm->GetCString("SAVE_GAME"));
+        btn->SetEnabled(!game->GetTutorialManager()->HasActiveTutorial());
 
         btnX = (w - btn->GetWidth()) / 2;
         btn->SetPosition(btnX, btnY);
 
-        btn->AddOnClickFunction([this, screen]
+        btn->AddOnClickFunction([game, screen]
                                 {
-
+                                    game->SaveGame();
+                                    screen->ShowLabelGameSaved();
                                 });
 
         btnY += btn->GetHeight() + marginBtnV;
         contentH += btn->GetHeight() + marginBtnV;
     }
-*/
+#endif
 
     // BUTTON SETTINGS
     if(buttons & BTN_SETTINGS)

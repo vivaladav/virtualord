@@ -1,6 +1,5 @@
 #include "Tutorial/StepGameMoveCameraOverObject.h"
 
-#include "IsoObject.h"
 #include "GameObjects/GameObject.h"
 
 #include <sgl/graphic/Camera.h>
@@ -14,9 +13,8 @@ StepGameMoveCameraOverObject::StepGameMoveCameraOverObject(const GameObject * ob
     : StepGameMoveCamera(speed)
 {
     // DEFINE MOVE
-    const IsoObject * isoObj = obj->GetIsoObject();
-    const int cX = isoObj->GetX() + isoObj->GetWidth() / 2;
-    const int cY = isoObj->GetY() + isoObj->GetHeight() / 2;
+    const int cX = obj->GetX() + obj->GetWidth() / 2;
+    const int cY = obj->GetY() + obj->GetHeight() / 2;
 
     const auto camera = GetCamera();
     const int deltaX = cX - (camera->GetWidth() / 2) - camera->GetX();

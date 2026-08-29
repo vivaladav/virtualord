@@ -1,7 +1,6 @@
 #include "Tutorial/StepGameBase.h"
 
 #include "Game.h"
-#include "IsoObject.h"
 #include "GameObjects/Base.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
@@ -22,13 +21,12 @@ StepGameBase::StepGameBase(const Game * game, const IsoMap * im, const Base * b)
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS AREAS
-    const auto isoObj = mBase->GetIsoObject();
-    const int objX = isoObj->GetX();
-    const int objY = isoObj->GetY();
-    const int objW = isoObj->GetWidth();
-    const int objH = isoObj->GetHeight();
+    const int objX = mBase->GetX();
+    const int objY = mBase->GetY();
+    const int objW = mBase->GetWidth();
+    const int objH = mBase->GetHeight();
 
-    mFocusArea->SetWorldArea(objX, objY, objW, objH);
+    mFocusArea->SetWorldArea(objX, objY, objW, objH, false);
     mFocusArea->SetCornersColorElement();
     mFocusArea->SetVisible(false);
 
@@ -65,11 +63,10 @@ StepGameBase::StepGameBase(const Game * game, const IsoMap * im, const Base * b)
         mIsoFocusArea->SetVisible(true);
 
         // CLICK FILTER
-        const auto isoObj = mBase->GetIsoObject();
-        const int objX = isoObj->GetX();
-        const int objY = isoObj->GetY();
-        const int objW = isoObj->GetWidth();
-        const int objH = isoObj->GetHeight();
+        const int objX = mBase->GetX();
+        const int objY = mBase->GetY();
+        const int objW = mBase->GetWidth();
+        const int objH = mBase->GetHeight();
 
         auto cf = GetClickFilter();
         cf->SetWorldClickableArea(objX, objY, objW, objH);

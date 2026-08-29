@@ -8,13 +8,14 @@ namespace game
 {
 
 class FocusArea;
+class Game;
 class PanelObjectActions;
 
 class StepGameBuildStructIntro : public TutorialInfoStep
 {
 public:
-    StepGameBuildStructIntro(PanelObjectActions * panel, const char * textIntro,
-                             const sgl::core::Pointd2D & p0);
+    StepGameBuildStructIntro(const Game * game, Screen * screen, PanelObjectActions * panel,
+                             const char * textIntro, const sgl::core::Pointd2D & p0);
     ~StepGameBuildStructIntro();
 
 private:

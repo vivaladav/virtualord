@@ -1,0 +1,2409 @@
+#include "ResourceLoader.h"
+
+#include "Game.h"
+#include "GameData.h"
+#include "GameConstants.h"
+#include "Widgets/GameUIData.h"
+
+#ifdef DEV_MODE
+#include "GameTestData.h"
+#endif
+
+#include <sgl/core/DataPackage.h>
+#include <sgl/graphic/Cursor.h>
+#include <sgl/graphic/Font.h>
+#include <sgl/graphic/FontManager.h>
+#include <sgl/graphic/Image.h>
+#include <sgl/graphic/TextureManager.h>
+#include <sgl/media/AudioManager.h>
+#include <sgl/utilities/StringManager.h>
+
+#ifdef DEV_MODE
+#include <chrono>
+#include <iostream>
+#endif
+
+namespace
+{
+const char * packageFontsGame = "data/fonts/game.bin";
+
+const char * packageMusicGame = "data/music/game.bin";
+const char * packageMusicMenus = "data/music/menus.bin";
+const char * packageMusicTest = "data/music/test.bin";
+
+const char * packageSoundsGame = "data/sfx/game.bin";
+const char * packageSoundsTest = "data/sfx/test.bin";
+const char * packageSoundsUI = "data/sfx/UI/UI.bin";
+}
+
+namespace game
+{
+
+ResourceLoader::ResourceLoader(Game * game)
+    : mGame(game)
+{
+    mTexPackages.assign(NUM_DATA_PACKAGES, nullptr);
+}
+
+ResourceLoader::~ResourceLoader()
+{
+    for(auto p : mTexPackages)
+        delete p;
+}
+
+void ResourceLoader::LoadFirstInitData()
+{
+    using namespace sgl;
+
+    // already done
+    if(mFirstInit)
+        return ;
+
+    mTexPackages.assign(NUM_DATA_PACKAGES, nullptr);
+
+    auto tm = graphic::TextureManager::Instance();
+    auto fm = graphic::FontManager::Instance();
+
+    // BACKGROUND
+    mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM] =
+        new sgl::core::DataPackage("data/img/backgrounds-perm.bin");
+    tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PERM], "space_bg.jpg");
+
+    // FONT
+    fm->RegisterDataPackage(packageFontsGame);
+    fm->RegisterFont(packageFontsGame, "Lato-Regular.ttf");
+
+    // SETUP JOBS
+    SetupFonts();
+    SetupMusic();
+    SetupSFX();
+    SetupPermanentTextures();
+
+    // NOTE always after creating the textures
+    SetupMouseCursors();
+
+    // mark done
+    mFirstInit = true;
+}
+
+void ResourceLoader::LoadPreGameData()
+{
+    SetupPregameTextures();
+}
+
+void ResourceLoader::LoadGameData()
+{
+    SetupGameTextures();
+}
+
+void ResourceLoader::DestroyPreGameTextures()
+{
+    auto tm = sgl::graphic::TextureManager::Instance();
+
+    // BACKGROUNDS PREGAME
+    tm->DestroyTexture("main_menu_bg.png");
+    // UI PREGAME
+    tm->DestroySprite(SpriteFileDialogChangelog);
+    tm->DestroyTexture("UI/main_menu_build_badge.png");
+    tm->DestroyTexture("UI/main_menu_warning_bg.png");
+    // MAIN MENU BUTTONS
+    tm->DestroySprite(SpriteFileMainMenuButtons);
+
+    // TEST
+#ifdef DEV_MODE
+    tm->DestroySprite(SpriteFileTestSprite);
+    tm->DestroySprite(SpriteFileTestUI);
+    tm->DestroyTexture("test/obj_null.png");
+    tm->DestroyTexture("test/red_dot4.png");
+    tm->DestroyTexture("test/square100.png");
+    tm->DestroyTexture("test/test-bar-bg.png");
+    tm->DestroyTexture("test/test-bar-nobg.png");
+    tm->DestroyTexture("test/text_area.png");
+    tm->DestroyTexture(SpriteFileTestSprite);
+#endif
+}
+
+void ResourceLoader::DestroyGameTextures()
+{
+    auto tm = sgl::graphic::TextureManager::Instance();
+
+    // ===== GAME =====
+    // CELLS
+    tm->DestroySprite(SpriteFileCells);
+    // CITY
+    tm->DestroySprite(SpriteFileCity);
+    // COLLECTIBLES
+    tm->DestroySprite(SpriteCollectiblesFile);
+    // INDICATORS
+    tm->DestroySprite(SpriteFileMapIndicators);
+    // MINI UNITS
+    tm->DestroySprite(SpriteFileMiniUnits);
+    // SCENE ELEMENTS
+    tm->DestroySprite(SpriteFileSceneObjects);
+    // STRUCTURES
+    tm->DestroySprite(SpriteFileStructures);
+    // TREES
+    tm->DestroySprite(SpriteFileTrees);
+    // UNITS
+    tm->DestroySprite(SpriteFileUnits);
+    // UNIT PARTICLES
+    tm->DestroySprite(SpriteFileGameObjectsRelated);
+    // WALLS
+    tm->DestroySprite(SpriteFileWalls);
+
+    // ===== UI GAME =====
+    // DIALOG EXIT
+    tm->DestroySprite(SpriteFileDialogExit);
+    tm->DestroyTexture(SpriteFileDialogExitExp);
+    // DIALOG EXPLORE TEMPLE
+    tm->DestroySprite(SpriteFileDialogExploreTemple);
+    tm->DestroySprite(SpriteFileDialogExploreTempleExp);
+    // DIALOG MISSION GOALS
+    tm->DestroySprite(SpriteFileDialogMissionGoals);
+    tm->DestroySprite(SpriteFileDialogMissionGoalsExp);
+    // DIALOG OBJECT
+    tm->DestroySprite(SpriteFileDialogObject);
+    tm->DestroySprite(SpriteFileDialogObjectExp);
+    // DIALOG RESEARCH
+    tm->DestroySprite(SpriteFileDialogResearch);
+    tm->DestroyTexture(SpriteFileDialogResearchExp);
+    // DIALOG SAVE
+    tm->DestroySprite(SpriteFileDialogSave);
+    tm->DestroyTexture(SpriteFileDialogSaveExp);
+    // DIALOG TECH TREE
+    tm->DestroySprite(SpriteFileDialogTechTree);
+    tm->DestroyTexture(SpriteFileDialogTechTreeExp);
+    // DIALOG TRADING
+    tm->DestroySprite(SpriteFileDialogTrading);
+    tm->DestroySprite(SpriteFileDialogTradingExp);
+    // DIALOG UPGRADE
+    tm->DestroySprite(SpriteFileDialogUpgrade);
+    tm->DestroyTexture(SpriteFileDialogUpgradeExp);
+    // FACTION SELECTION
+    tm->DestroySprite(SpriteFileDialogFactionSelection);
+    tm->DestroyTexture(SpriteFileDialogFactionSelectionExp);
+    // GAME UI
+    tm->DestroySprite(SpriteFileGameUIExp);
+    // MAP UI
+    tm->DestroySprite(SpriteFilePanelMinimap);
+    // PANEL SELECTED OBJECT
+    tm->DestroySprite(SpriteFilePanelSelectedObject);
+    // PANEL TURN CONTROL
+    tm->DestroySprite(SpriteFilePanelTurnControl);
+    // PANEL UNIT ACTIONS
+    tm->DestroySprite(SpriteFilePanelUnitActions);
+    tm->DestroySprite(SpriteFilePanelUnitActionsExp);
+    // MAP UI
+    tm->DestroySprite(SpriteFileMapUI);
+    // END MISSION DIALOG
+    tm->DestroySprite(SpriteFileDialogEndMission);
+    tm->DestroyTexture(SpriteFileDialogEndMissionExp);
+    // NEW ELEMENT DIALOG
+    tm->DestroySprite(SpriteFileDialogNewElement);
+    tm->DestroySprite(SpriteFileDialogNewElementExp);
+    // NEW MINI UNITS SQUAD DIALOG
+    tm->DestroySprite(SpriteFileDialogNewMiniUnits);
+    tm->DestroySprite(SpriteFileDialogNewMiniUnitsExp);
+    // OBJECT ACTION BUTTON
+    tm->DestroySprite(SpriteFileObjActionButton);
+    // PLANET MAP
+    tm->DestroySprite(SpriteFilePlanetMap);
+    tm->DestroySprite(SpriteFilePlanetMap2);
+    // RESOURCES BAR
+    tm->DestroySprite(SpriteFileResourcesBar);
+    tm->DestroyTexture(SpriteFileResourcesBarExp);
+    // QUICK UNIT SELECTION
+    tm->DestroySprite(SpriteFileUnitQuickSel);
+
+    // ===== UI TUTORIAL =====
+    tm->DestroySprite(SpriteFileTutorial);
+    tm->DestroySprite(SpriteFileTutorialExp);
+}
+
+void ResourceLoader::Update(float delta)
+{
+    mJobs[mCurrJob]();
+
+    ++mCurrJob;
+}
+
+void ResourceLoader::SetupFonts()
+{
+    // REGISTER FONTS
+    auto fm = sgl::graphic::FontManager::Instance();
+
+    mJobs.emplace_back([this, fm]
+                       {
+                           fm->RegisterFont(packageFontsGame, "Lato-Bold.ttf");
+                       });
+}
+
+void ResourceLoader::SetupMusic()
+{
+    auto am = sgl::media::AudioManager::Instance();
+
+    // ===== INIT PACKAGES =====
+    // LOAD MUSIC GAME PACKAGE
+    mJobs.emplace_back([am]
+                       {
+                           am->RegisterDataPackage(packageMusicGame);
+                       });
+
+    // LOAD MUSIC MENUS PACKAGE
+    mJobs.emplace_back([am]
+                       {
+                           am->RegisterDataPackage(packageMusicMenus);
+                       });
+
+#ifdef DEV_MODE
+    // LOAD MUSIC TEST PACKAGE
+    mJobs.emplace_back([am]
+                       {
+                           am->RegisterDataPackage(packageMusicTest);
+                       });
+#endif
+
+    // ===== CREATE MUSIC =====
+    // GAME MUSIC
+    mJobs.emplace_back([this, am]
+                       {
+                           am->CreateMusic(packageMusicGame, "game/music_01.ogg");
+                           am->CreateMusic(packageMusicGame, "mission/music_01.ogg");
+                           am->CreateMusic(packageMusicGame, "mission/music_02.ogg");
+                       });
+
+    // MENUS MUSIC
+    mJobs.emplace_back([this, am]
+                       {
+                           am->CreateMusic(packageMusicMenus, "menus/menu_01.ogg");
+                       });
+
+#ifdef DEV_MODE
+    // TEST MUSIC
+    mJobs.emplace_back([this, am]
+                       {
+                           am->CreateMusic(packageMusicTest, "test/menu_01.ogg");
+                           am->CreateMusic(packageSoundsTest, "test/test.ogg");
+                       });
+#endif
+}
+
+void ResourceLoader::SetupSFX()
+{
+    auto am = sgl::media::AudioManager::Instance();
+
+    // ===== INIT PACKAGES =====
+    // LOAD SFX GAME PACKAGE
+    mJobs.emplace_back([am]
+                       {
+                           am->RegisterDataPackage(packageSoundsGame);
+                       });
+
+    // LOAD SFX UI PACKAGE
+    mJobs.emplace_back([am]
+                       {
+                           am->RegisterDataPackage(packageSoundsUI);
+                       });
+
+#ifdef DEV_MODE
+    // LOAD SFX TEST PACKAGE
+    mJobs.emplace_back([am]
+                       {
+                           am->RegisterDataPackage(packageSoundsTest);
+                       });
+#endif
+
+    // ===== CREATE SFX =====
+    // GAME SFX
+    mJobs.emplace_back([this, am]
+                       {
+                           am->CreateSound(packageSoundsGame, "game/build-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/build-02.ogg");
+                           am->CreateSound(packageSoundsGame, "game/build-03.ogg");
+                           am->CreateSound(packageSoundsGame, "game/build-04.ogg");
+                           am->CreateSound(packageSoundsGame, "game/collect-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/collect-02.ogg");
+                           am->CreateSound(packageSoundsGame, "game/collect-03.ogg");
+                           am->CreateSound(packageSoundsGame, "game/conquer-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/conquer-02.ogg");
+                           am->CreateSound(packageSoundsGame, "game/conquer-03.ogg");
+                           am->CreateSound(packageSoundsGame, "game/conquer-04.ogg");
+                           am->CreateSound(packageSoundsGame, "game/conquer-05.ogg");
+                           am->CreateSound(packageSoundsGame, "game/error_action_01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/explosion-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/gate_close.ogg");
+                           am->CreateSound(packageSoundsGame, "game/gate_open.ogg");
+                           am->CreateSound(packageSoundsGame, "game/laser-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/miniunit_move-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/selection-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/selection-02.ogg");
+                           am->CreateSound(packageSoundsGame, "game/selection-03.ogg");
+                           am->CreateSound(packageSoundsGame, "game/unit_move-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/unit_move-02.ogg");
+                           am->CreateSound(packageSoundsGame, "game/upgrade-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/upgrade_notification-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/upgrade_unlocked-01.ogg");
+                       });
+
+    // UI SFX
+    mJobs.emplace_back([this, am]
+                       {
+                           am->CreateSound(packageSoundsUI, "UI/button_click_cancel-01.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/button_click_cancel-02.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/button_click_long-01.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/button_click_long-02.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/button_click-01.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/button_click-02.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/button_click-03.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/button_over-01.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/button_over-02.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/button_over-03.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/checkbox-01.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/checkbox-02.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/dialog_close-01.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/dialog_close-02.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/dialog_open-01.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/dialog_open-02.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/goal_completed.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/panel-close-01.ogg");
+                           am->CreateSound(packageSoundsUI, "UI/panel-open-01.ogg");
+                       });
+
+#ifdef DEV_MODE
+    // TEST SFX
+    mJobs.emplace_back([this, am]
+                       {
+                           am->CreateSound(packageSoundsTest, "test/test.ogg");
+                       });
+#endif
+}
+
+void ResourceLoader::SetupPermanentTextures()
+{
+    auto tm = sgl::graphic::TextureManager::Instance();
+
+    // ===== INIT PACKAGES =====
+    // UI PERMANENT PACKAGE
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_PERM] = new sgl::core::DataPackage("data/img/UI/UI-perm.bin");
+    });
+
+    // ===== REGISTER TEXTURES =====
+    // CURSOR
+    mJobs.emplace_back([this, tm]
+    {
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileCursor);
+    });
+
+    // SETTINGS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 90, 800 },
+            { 91, 0, 110, 800 },
+
+            // COMBO BOX
+            { 201, 0, 350, 38 },
+            { 201, 39, 350, 38 },
+            { 201, 78, 350, 38 },
+            { 201, 117, 350, 38 },
+            { 201, 156, 350, 38 },
+            { 201, 195, 350, 38 },
+            { 201, 234, 350, 38 },
+            { 201, 273, 350, 38 },
+
+            // CHECK BOX
+            { 201, 312, 45, 39 },
+            { 247, 312, 45, 39 },
+            { 293, 312, 45, 39 },
+            { 339, 312, 45, 39 },
+            { 385, 312, 45, 39 },
+
+            // SLIDER
+            { 201, 352, 304, 18 },
+            { 201, 371, 300, 14 },
+            { 201, 386, 30, 30 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileDialogSettings, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileDialogSettingsExp);
+    });
+
+    // TOOLTIPS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // RESOURCE BAR TOOLTIP
+            { 0, 0, 304, 214 },
+            // GAME TOOLTIP
+            { 305, 0, 50, 50 },
+            { 305, 51, 50, 50 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileTooltips, rects);
+
+        // EXPANDABLE TEXTURE
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // GAME TOOLTIP
+            { 0, 0, 10, 50 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileTooltipsExp, rectsExp);
+    });
+
+    // UI SHARED GRAPHICS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // ICONS WHITE RESOURCES 24x24
+            { 0, 0, 24, 24 },
+            { 25, 0, 24, 24 },
+            { 50, 0, 24, 24 },
+            { 75, 0, 24, 24 },
+            { 100, 0, 24, 24 },
+            { 125, 0, 24, 24 },
+            // ICONS COLOR RESOURCES 24x24
+            { 0, 25, 24, 24 },
+            { 25, 25, 24, 24 },
+            { 50, 25, 24, 24 },
+            { 75, 25, 24, 24 },
+            { 100, 25, 24, 24 },
+            { 125, 25, 24, 24 },
+            // ICONS WHITE RESOURCES 16x16
+            { 150, 0, 16, 16 },
+            { 167, 0, 16, 16 },
+            { 184, 0, 16, 16 },
+            { 201, 0, 16, 16 },
+            { 218, 0, 16, 16 },
+            { 235, 0, 16, 16 },
+            // ICONS COLOR RESOURCES 16x16
+            { 150, 17, 16, 16 },
+            { 167, 17, 16, 16 },
+            { 184, 17, 16, 16 },
+            { 201, 17, 16, 16 },
+            { 218, 17, 16, 16 },
+            { 235, 17, 16, 16 },
+            // BUTTON DIALOG CLOSE
+            { 0, 50, 94, 40 },
+            { 95, 50, 94, 40 },
+            { 190, 50, 94, 40 },
+            { 285, 50, 94, 40 },
+            // SLIDER DIALOG
+            { 0, 91, 204, 16 },
+            { 0, 108, 200, 12 },
+            { 205, 91, 24, 24 },
+            // VALUE BAR
+            { 230, 91, 154, 16 },
+            { 230, 108, 150, 12 },
+            { 230, 121, 154, 16 },
+            // CHECKBOX
+            { 252, 0, 24, 24 },
+            { 278, 0, 24, 24 },
+            { 303, 0, 24, 24 },
+            // BUTTON DIALOG STANDARD
+            { 0, 138, 350, 44 },
+            { 0, 183, 350, 44 },
+            { 0, 228, 350, 44 },
+            { 0, 273, 350, 44 },
+            // STARS BAR
+            { 812, 0, 112, 16 },
+            { 812, 17, 112, 16 },
+            { 812, 34, 112, 16 },
+            { 812, 51, 112, 16 },
+            { 812, 68, 112, 16 },
+            { 812, 85, 112, 16 },
+            { 812, 102, 112, 16 },
+            { 812, 119, 112, 16 },
+            { 812, 136, 112, 16 },
+            { 812, 153, 112, 16 },
+            { 812, 170, 112, 16 },
+            // BUTTON DIALOG OK
+            { 401, 0, 220, 40 },
+            { 401, 41, 220, 40 },
+            { 401, 82, 220, 40 },
+            { 401, 123, 220, 40 },
+            // ATTRIBUTES PANEL
+            { 0, 318, 400, 38 },
+            { 0, 357, 400, 38 },
+            // ATTRIBUTES BAR
+            { 401, 164, 140, 18 },
+            { 401, 183, 140, 18 },
+            { 401, 202, 140, 18 },
+            { 401, 221, 140, 18 },
+            { 401, 240, 140, 18 },
+            { 401, 259, 140, 18 },
+            { 401, 278, 140, 18 },
+            { 401, 297, 140, 18 },
+            { 401, 316, 140, 18 },
+            { 401, 335, 140, 18 },
+            { 401, 354, 140, 18 },
+            // BUTTON TAB
+            { 542, 164, 260, 44 },
+            { 542, 209, 260, 44 },
+            { 542, 254, 260, 44 },
+            { 542, 299, 260, 44 },
+            { 542, 344, 260, 44 },
+            // BUTTON DIALOG BACK
+            { 622, 0, 94, 40 },
+            { 717, 0, 94, 40 },
+            { 622, 41, 94, 40 },
+            { 717, 41, 94, 40 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileUIShared, rects);
+    });
+}
+
+void ResourceLoader::SetupPregameTextures()
+{
+    auto tm = sgl::graphic::TextureManager::Instance();
+
+    // ===== INIT PACKAGES =====
+    // BACKGROUNDS PREGAME
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PREGAME] =
+            new sgl::core::DataPackage("data/img/backgrounds-pregame.bin");
+    });
+
+#ifdef DEV_MODE
+    // TEST
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_TEST] = new sgl::core::DataPackage("data/img/test.bin");
+    });
+#endif
+
+    // UI PREGAME
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_PREGAME] =
+            new sgl::core::DataPackage("data/img/UI/UI-pregame.bin");
+    });
+
+    // ===== REGISTER TEXTURES - BACKGROUNDS PREGAME =====
+    mJobs.emplace_back([this, tm]
+    {
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_BACKGROUNDS_PREGAME], "main_menu_bg.png");
+    });
+
+    // ===== REGISTER TEXTURES - UI PREGAME =====
+    // MAIN MENU
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // CHANGELOG DIALOG
+            { 0, 0, 525, 450 },
+            { 526, 0, 30, 30 },
+            { 526, 31, 24, 30 },
+            { 526, 62, 20, 360 },
+            // BUTTON UPDATES
+            { 0, 451, 475, 35 },
+            { 0, 487, 475, 35 },
+            { 0, 523, 475, 35 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], SpriteFileDialogChangelog, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], "UI/main_menu_build_badge.png");
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], "UI/main_menu_warning_bg.png");
+    });
+
+    // MAIN MENU BUTTONS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // PRIMARY BUTTON
+            { 0, 0, 360, 70 },
+            { 0, 71, 360, 70 },
+            { 0, 142, 360, 70 },
+            { 0, 213, 360, 70 },
+            { 0, 284, 360, 70 },
+            // WISHLIST BUTTON
+            { 0, 355, 285, 50 },
+            { 0, 406, 285, 50 },
+            { 0, 457, 285, 50 },
+            // SOCIAL BUTTON
+            { 286, 355, 90, 50 },
+            { 286, 406, 90, 50 },
+            { 286, 457, 90, 50 },
+            // ICONS
+            { 0, 508, 32, 24 },
+            { 33, 508, 32, 24 },
+            { 66, 508, 27, 24 },
+            { 94, 508, 34, 24 },
+            { 129, 508, 24, 24 }
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], SpriteFileMainMenuButtons, rects);
+    });
+
+    // ===== REGISTER TEXTURES - TEST =====
+#ifdef DEV_MODE
+    // TEST SPRITE
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            { 0, 0, 40, 40 },
+            { 40, 0, 40, 40 },
+            { 0, 40, 40, 40 },
+            { 40, 40, 40, 40 }
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestSprite, rects);
+    });
+
+    // TEST UI
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // COMBOBOX MAIN BUTTON BG
+            { 0, 0, 200, 50 },
+            { 200, 0, 200, 50 },
+            { 400, 0, 200, 50 },
+            { 600, 0, 200, 50 },
+            { 800, 0, 200, 50 },
+            // COMBOBOX ITEM BUTTON BG
+            { 0, 50, 200, 50 },
+            { 200, 50, 200, 50 },
+            { 400, 50, 200, 50 },
+            { 600, 50, 200, 50 },
+            { 800, 50, 200, 50 },
+            // SLIDER HORIZ
+            { 0, 101, 304, 20 },
+            { 305, 101, 300, 16 },
+            { 606, 101, 30, 30 },
+            // MULTI SELECTION
+            { 637, 101, 40, 40 },
+            { 678, 101, 40, 40 },
+            { 719, 101, 40, 40 },
+            { 760, 101, 40, 40 },
+            { 801, 101, 40, 40 },
+            // TEST CURSORS
+            { 842, 101, 19, 26 },
+            // PROGRESS BAR
+            { 862, 101, 52, 8 },
+            { 862, 110, 50, 6 },
+            { 862, 117, 50, 6 },
+            { 862, 124, 50, 6 },
+            { 862, 131, 50, 6 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestUI, rects);
+    });
+
+    // TEST IMAGES
+    mJobs.emplace_back([this, tm]
+    {
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/obj_null.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/red_dot4.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/square100.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/test-bar-bg.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/test-bar-nobg.png");
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], "test/text_area.png");
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_TEST], SpriteFileTestSprite);
+    });
+#endif
+}
+
+void ResourceLoader::SetupGameTextures()
+{
+    // LOAD GAME PACKAGE
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_GAME] = new sgl::core::DataPackage("data/img/game.bin");
+    });
+
+    // LOAD UI GAME PACKAGE
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_GAME] = new sgl::core::DataPackage("data/img/UI/UI-game.bin");
+    });
+
+    // LOAD UI TUTORIAL PACKAGE
+    mJobs.emplace_back([this]
+    {
+        mTexPackages[PACKAGE_IMGS_UI_TUTORIAL] = new sgl::core::DataPackage("data/img/UI/UI-tutorial.bin");
+    });
+
+        auto tm = sgl::graphic::TextureManager::Instance();
+
+    // CELLS
+    mJobs.emplace_back([this, tm]
+    {
+        const int indRows = 5;
+        const int indCols = 5;
+        const int cellW = 96;
+        const int cellH = 48;
+        const int blockW = cellW + 1;
+        const int blockH = cellH + 1;
+        int x = 0;
+        int y = 0;
+
+        std::vector<sgl::core::Rectd> rects;
+        rects.reserve(indRows * indCols);
+
+        for(int r = 0; r < indRows; ++r)
+        {
+            for(int c = 0; c < indCols; ++c)
+            {
+                rects.emplace_back(x, y, cellW, cellH);
+
+                x += blockW;
+            }
+
+            x = 0;
+            y += blockH;
+        }
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileCells, rects);
+    });
+
+    // CITY
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // FACTION 1
+            { 0, 0, 192, 109 },
+            { 0, 110, 192, 111 },
+            { 0, 222, 192, 123 },
+            { 0, 346, 192, 119 },
+            { 0, 466, 192, 119 },
+            { 0, 586, 192, 136 },
+            { 0, 723, 192, 118 },
+            { 0, 842, 192, 119 },
+            { 0, 962, 192, 120 },
+            { 0, 1083, 192, 123 },
+            { 0, 1207, 192, 128 },
+            { 0, 1336, 192, 131 },
+            { 0, 1468, 192, 118 },
+            { 0, 1587, 192, 124 },
+            { 0, 1712, 192, 122 },
+            { 0, 1835, 192, 120 },
+            // FACTION 1 - SELECTED
+            { 193, 0, 192, 109 },
+            { 193, 110, 192, 111 },
+            { 193, 222, 192, 123 },
+            { 193, 346, 192, 119 },
+            { 193, 466, 192, 119 },
+            { 193, 586, 192, 136 },
+            { 193, 723, 192, 118 },
+            { 193, 842, 192, 119 },
+            { 193, 962, 192, 120 },
+            { 193, 1083, 192, 123 },
+            { 193, 1207, 192, 128 },
+            { 193, 1336, 192, 131 },
+            { 193, 1468, 192, 118 },
+            { 193, 1587, 192, 124 },
+            { 193, 1712, 192, 122 },
+            { 193, 1835, 192, 120 },
+            // FACTION 2
+            { 386, 0, 192, 109 },
+            { 386, 110, 192, 111 },
+            { 386, 222, 192, 123 },
+            { 386, 346, 192, 119 },
+            { 386, 466, 192, 119 },
+            { 386, 586, 192, 136 },
+            { 386, 723, 192, 118 },
+            { 386, 842, 192, 119 },
+            { 386, 962, 192, 120 },
+            { 386, 1083, 192, 123 },
+            { 386, 1207, 192, 128 },
+            { 386, 1336, 192, 131 },
+            { 386, 1468, 192, 118 },
+            { 386, 1587, 192, 124 },
+            { 386, 1712, 192, 122 },
+            { 386, 1835, 192, 120 },
+            // FACTION 2 - SELECTED
+            { 579, 0, 192, 109 },
+            { 579, 110, 192, 111 },
+            { 579, 222, 192, 123 },
+            { 579, 346, 192, 119 },
+            { 579, 466, 192, 119 },
+            { 579, 586, 192, 136 },
+            { 579, 723, 192, 118 },
+            { 579, 842, 192, 119 },
+            { 579, 962, 192, 120 },
+            { 579, 1083, 192, 123 },
+            { 579, 1207, 192, 128 },
+            { 579, 1336, 192, 131 },
+            { 579, 1468, 192, 118 },
+            { 579, 1587, 192, 124 },
+            { 579, 1712, 192, 122 },
+            { 579, 1835, 192, 120 },
+            // FACTION 3
+            { 772, 0, 192, 109 },
+            { 772, 110, 192, 111 },
+            { 772, 222, 192, 123 },
+            { 772, 346, 192, 119 },
+            { 772, 466, 192, 119 },
+            { 772, 586, 192, 136 },
+            { 772, 723, 192, 118 },
+            { 772, 842, 192, 119 },
+            { 772, 962, 192, 120 },
+            { 772, 1083, 192, 123 },
+            { 772, 1207, 192, 128 },
+            { 772, 1336, 192, 131 },
+            { 772, 1468, 192, 118 },
+            { 772, 1587, 192, 124 },
+            { 772, 1712, 192, 122 },
+            { 772, 1835, 192, 120 },
+            // FACTION 3 - SELECTED
+            { 965, 0, 192, 109 },
+            { 965, 110, 192, 111 },
+            { 965, 222, 192, 123 },
+            { 965, 346, 192, 119 },
+            { 965, 466, 192, 119 },
+            { 965, 586, 192, 136 },
+            { 965, 723, 192, 118 },
+            { 965, 842, 192, 119 },
+            { 965, 962, 192, 120 },
+            { 965, 1083, 192, 123 },
+            { 965, 1207, 192, 128 },
+            { 965, 1336, 192, 131 },
+            { 965, 1468, 192, 118 },
+            { 965, 1587, 192, 124 },
+            { 965, 1712, 192, 122 },
+            { 965, 1835, 192, 120 },
+            // NO FACTION
+            { 1158, 0, 192, 109 },
+            { 1158, 110, 192, 111 },
+            { 1158, 222, 192, 123 },
+            { 1158, 346, 192, 119 },
+            { 1158, 466, 192, 119 },
+            { 1158, 586, 192, 136 },
+            { 1158, 723, 192, 118 },
+            { 1158, 842, 192, 119 },
+            { 1158, 962, 192, 120 },
+            { 1158, 1083, 192, 123 },
+            { 1158, 1207, 192, 128 },
+            { 1158, 1336, 192, 131 },
+            { 1158, 1468, 192, 118 },
+            { 1158, 1587, 192, 124 },
+            { 1158, 1712, 192, 122 },
+            { 1158, 1835, 192, 120 },
+            // NO FACTION - SELECTED
+            { 1351, 0, 192, 109 },
+            { 1351, 110, 192, 111 },
+            { 1351, 222, 192, 123 },
+            { 1351, 346, 192, 119 },
+            { 1351, 466, 192, 119 },
+            { 1351, 586, 192, 136 },
+            { 1351, 723, 192, 118 },
+            { 1351, 842, 192, 119 },
+            { 1351, 962, 192, 120 },
+            { 1351, 1083, 192, 123 },
+            { 1351, 1207, 192, 128 },
+            { 1351, 1336, 192, 131 },
+            { 1351, 1468, 192, 118 },
+            { 1351, 1587, 192, 124 },
+            { 1351, 1712, 192, 122 },
+            { 1351, 1835, 192, 120 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileCity, rects);
+    });
+
+    // COLLECTIBLES
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // diamonds
+            { 0, 0, 96, 51 },
+            { 0, 52, 96, 51 },
+            { 0, 104, 96, 51 },
+            { 0, 156, 96, 70 },
+
+            // blobs
+            { 97, 0, 96, 48 },
+            { 97, 49, 96, 48 },
+            { 97, 98, 96, 48 },
+            { 97, 147, 96, 58 },
+
+            // loot box
+            { 194, 0, 96, 54 },
+            { 194, 55, 96, 54 },
+            // loot box lvl 2
+            { 194, 110, 96, 54 },
+            { 194, 165, 96, 54 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteCollectiblesFile, rects);
+    });
+
+    // INDICATORS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // wall indicators
+            { 0, 0, 96, 48 },
+            { 97, 0, 96, 48 },
+            { 194, 0, 96, 48 },
+            { 291, 0, 96, 48 },
+            { 388, 0, 96, 48 },
+            { 485, 0, 96, 48 },
+            { 0, 49, 96, 48 },
+            { 97, 49, 96, 48 },
+            { 194, 49, 96, 48 },
+            { 291, 49, 96, 48 },
+            { 388, 49, 96, 48 },
+            { 485, 49, 96, 48 },
+            { 0, 98, 96, 48 },
+            { 97, 98, 96, 48 },
+            { 194, 98, 96, 48 },
+            { 291, 98, 96, 48 },
+            { 388, 98, 96, 48 },
+            { 485, 98, 96, 48 },
+            { 0, 147, 96, 48 },
+            // conquest indicator
+            { 97, 147, 96, 48 },
+            { 194, 147, 96, 48 },
+            { 291, 147, 96, 48 },
+            // attack range indicator
+            { 0, 196, 96, 48 },
+            // HEALING RANGE INDICATOR
+            { 582, 0, 96, 48 },
+            { 582, 49, 96, 48 },
+            { 582, 98, 96, 48 },
+            // INFLUENCE AREA F1
+            { 194, 200, 96, 48 },
+            { 291, 200, 96, 48 },
+            { 388, 200, 96, 48 },
+            { 485, 200, 96, 48 },
+            { 0, 249, 96, 48 },
+            { 97, 249, 96, 48 },
+            { 194, 249, 96, 48 },
+            { 291, 249, 96, 48 },
+            { 388, 249, 96, 48 },
+            { 485, 249, 96, 48 },
+            { 0, 298, 96, 48 },
+            { 97, 298, 96, 48 },
+            // INFLUENCE AREA F2
+            { 194, 298, 96, 48 },
+            { 291, 298, 96, 48 },
+            { 388, 298, 96, 48 },
+            { 485, 298, 96, 48 },
+            { 0, 347, 96, 48 },
+            { 97, 347, 96, 48 },
+            { 194, 347, 96, 48 },
+            { 291, 347, 96, 48 },
+            { 388, 347, 96, 48 },
+            { 485, 347, 96, 48 },
+            { 0, 396, 96, 48 },
+            { 97, 396, 96, 48 },
+            // INFLUENCE AREA F3
+            { 194, 396, 96, 48 },
+            { 291, 396, 96, 48 },
+            { 388, 396, 96, 48 },
+            { 485, 396, 96, 48 },
+            { 0, 445, 96, 48 },
+            { 97, 445, 96, 48 },
+            { 194, 445, 96, 48 },
+            { 291, 445, 96, 48 },
+            { 388, 445, 96, 48 },
+            { 485, 445, 96, 48 },
+            { 0, 494, 96, 48 },
+            { 97, 494, 96, 48 },
+            // MOVE PATH
+            { 582, 147, 96, 48 },
+            { 582, 196, 96, 48 },
+            { 582, 245, 96, 48 },
+            { 582, 294, 96, 48 },
+            { 582, 343, 96, 48 },
+            { 582, 392, 96, 48 },
+            // SELECTION
+            { 194, 494, 96, 48 },
+            { 291, 494, 96, 48 },
+            { 388, 494, 96, 48 },
+            { 485, 494, 96, 48 },
+            { 582, 494, 96, 48 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileMapIndicators, rects);
+    });
+
+    // MINI UNITS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // unit 1 - FACTION 1
+            { 0, 0, 96, 48 },
+            { 0, 49, 96, 48 },
+            { 0, 98, 96, 48 },
+            { 0, 147, 96, 54 },
+            { 0, 202, 96, 54 },
+            // unit 1 - FACTION 2
+            { 97, 0, 96, 48 },
+            { 97, 49, 96, 48 },
+            { 97, 98, 96, 48 },
+            { 97, 147, 96, 54 },
+            { 97, 202, 96, 54 },
+            // unit 1 - FACTION 3
+            { 194, 0, 96, 48 },
+            { 194, 49, 96, 48 },
+            { 194, 98, 96, 48 },
+            { 194, 147, 96, 54 },
+            { 194, 202, 96, 54 },
+
+            // unit 2 - FACTION 1
+            { 0, 257, 96, 48 },
+            { 0, 306, 96, 48 },
+            { 0, 355, 96, 48 },
+            { 0, 404, 96, 54 },
+            { 0, 459, 96, 54 },
+            // unit 2 - FACTION 2
+            { 97, 257, 96, 48 },
+            { 97, 306, 96, 48 },
+            { 97, 355, 96, 48 },
+            { 97, 404, 96, 54 },
+            { 97, 459, 96, 54 },
+            // unit 2 - FACTION 3
+            { 194, 257, 96, 48 },
+            { 194, 306, 96, 48 },
+            { 194, 355, 96, 48 },
+            { 194, 404, 96, 54 },
+            { 194, 459, 96, 54 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileMiniUnits, rects);
+    });
+
+    // SCENE ELEMENTS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // MOUNTAINS 1
+            { 0, 0, 192, 134 },
+            { 193, 0, 192, 108 },
+            { 387, 0, 192, 131 },
+            { 579, 0, 192, 130 },
+            { 0, 135, 192, 134 },
+            { 193, 135, 192, 130 },
+            { 387, 135, 192, 132 },
+            { 579, 135, 192, 134 },
+            { 0, 270, 192, 132 },
+            { 193, 270, 192, 134 },
+            { 387, 270, 192, 131 },
+            { 579, 270, 192, 134 },
+
+            // MOUNTAINS 2
+            { 772, 0, 192, 126 },
+            { 965, 0, 192, 105 },
+            { 1158, 0, 192, 135 },
+            { 1351, 0, 192, 134 },
+            { 772, 127, 192, 128 },
+            { 965, 106, 192, 132 },
+            { 1158, 136, 192, 132 },
+            { 1351, 135, 192, 126 },
+            { 772, 256, 192, 128 },
+            { 965, 239, 192, 130 },
+            { 1158, 269, 192, 127 },
+            { 1351, 262, 192, 128 },
+
+            // ROCKS V1
+            { 0, 405, 96, 48 },
+            { 97, 405, 96, 50 },
+            { 194, 405, 96, 50 },
+            { 291, 405, 96, 48 },
+            { 388, 405, 96, 48 },
+            { 485, 405, 96, 52 },
+            { 582, 405, 96, 52 },
+            { 679, 405, 96, 52 },
+
+            { 0, 458, 96, 50 },
+            { 97, 458, 96, 48 },
+            { 194, 458, 96, 48 },
+            { 291, 458, 96, 51 },
+            { 388, 458, 96, 50 },
+            { 485, 458, 96, 48 },
+            { 582, 458, 96, 51 },
+            { 679, 458, 96, 51 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileSceneObjects, rects);
+    });
+
+    // STRUCTURES
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BASE LVL 1
+            { 0, 0, 288, 163 },
+            { 289, 0, 288, 163 },
+            { 578, 0, 288, 163 },
+            { 867, 0, 288, 163 },
+            { 485, 763, 288, 163 },
+            // TEMPLE
+            { 0, 164, 288, 167 },
+            { 289, 164, 288, 163 },
+            { 578, 164, 288, 163 },
+            { 867, 164, 288, 163 },
+            // TRADING POST
+            { 0, 332, 288, 144 },
+            { 289, 332, 288, 144 },
+            { 578, 332, 288, 144 },
+            { 867, 332, 288, 144 },
+            // ENERGY GENERATOR
+            { 1164, 0, 192, 136 },
+            { 1357, 0, 192, 136 },
+            { 1550, 0, 192, 136 },
+            { 1743, 0, 192, 136 },
+            // MATERIAL GENERATOR
+            { 1164, 136, 192, 134 },
+            { 1357, 136, 192, 134 },
+            { 1550, 136, 192, 134 },
+            { 1743, 136, 192, 134 },
+            // BARRACKS
+            { 1164, 271, 192, 96 },
+            { 1357, 271, 192, 96 },
+            { 1550, 271, 192, 96 },
+            { 1743, 271, 192, 96 },
+            // HOSPITAL
+            { 1164, 368, 192, 117 },
+            { 1357, 368, 192, 117 },
+            { 1550, 368, 192, 117 },
+            { 1743, 368, 192, 117 },
+            // RESEARCH CENTER
+            { 1164, 486, 192, 107 },
+            { 1357, 486, 192, 107 },
+            { 1550, 486, 192, 107 },
+            { 1743, 486, 192, 107 },
+            { 774, 763, 192, 107 },
+            // RADAR
+            { 1164, 594, 192, 119 },
+            { 1357, 594, 192, 119 },
+            { 1550, 594, 192, 119 },
+            { 1743, 594, 192, 119 },
+            // MATERIAL EXTRACTOR
+            { 1164, 714, 192, 96 },
+            { 1357, 714, 192, 96 },
+            { 1550, 714, 192, 96 },
+            { 1743, 714, 192, 96 },
+            // SPAWNING TOWER
+            { 1164, 811, 192, 120 },
+            { 1357, 811, 192, 120 },
+            { 1550, 811, 192, 120 },
+            { 1743, 811, 192, 120 },
+            // STORAGE MATERIAL
+            { 0, 477, 96, 80 },
+            { 97, 477, 96, 80 },
+            { 194, 477, 96, 80 },
+            { 291, 477, 96, 80 },
+            // STORAGE BLOBS
+            { 388, 477, 96, 56 },
+            { 485, 477, 96, 56 },
+            { 582, 477, 96, 56 },
+            { 679, 477, 96, 56 },
+            // SOLAR PANEL
+            { 776, 477, 96, 55 },
+            { 873, 477, 96, 55 },
+            { 970, 477, 96, 55 },
+            { 1067, 477, 96, 55 },
+            // STORAGE DIAMONDS
+            { 0, 558, 96, 88 },
+            { 97, 558, 96, 88 },
+            { 194, 558, 96, 88 },
+            { 291, 558, 96, 88 },
+            // RADAR TOWER
+            { 388, 533, 96, 96 },
+            { 485, 533, 96, 96 },
+            { 582, 533, 96, 96 },
+            { 679, 533, 96, 96 },
+            // STORAGE ENERGY
+            { 776, 533, 96, 95 },
+            { 873, 533, 96, 95 },
+            { 970, 533, 96, 95 },
+            { 1067, 533, 96, 95 },
+            // DEFENSIVE TOWER LVL 1
+            { 0, 647, 96, 65 },
+            { 97, 647, 96, 65 },
+            { 194, 647, 96, 65 },
+            { 291, 647, 96, 65 },
+            { 388, 630, 96, 78 },
+            { 485, 630, 96, 78 },
+            { 582, 630, 96, 78 },
+            { 679, 630, 96, 78 },
+            { 776, 629, 96, 84 },
+            { 873, 629, 96, 84 },
+            { 970, 629, 96, 84 },
+            { 1067, 629, 96, 84 },
+            // GATE LVL 1 FACTION 1
+            { 0, 714, 96, 48 },
+            { 97, 714, 96, 48 },
+            { 194, 714, 96, 48 },
+            { 291, 714, 96, 48 },
+            // GATE LVL 1 FACTION 2
+            { 388, 714, 96, 48 },
+            { 485, 714, 96, 48 },
+            { 582, 714, 96, 48 },
+            { 679, 714, 96, 48 },
+            // GATE LVL 1 FACTION 3
+            { 776, 714, 96, 48 },
+            { 873, 714, 96, 48 },
+            { 970, 714, 96, 48 },
+            { 1067, 714, 96, 48 },
+            // BUNKER
+            { 0, 763, 96, 55 },
+            { 97, 763, 96, 55 },
+            { 194, 763, 96, 55 },
+            { 291, 763, 96, 55 },
+            // PRACTICE TARGET
+            { 388, 763, 96, 48 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileStructures, rects);
+    });
+
+    // TREES
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // TREE TYPE 1
+            // 1 tree
+            { 0, 0, 96, 48 },
+            { 97, 0, 96, 51 },
+            { 194, 0, 96, 52 },
+            { 291, 0, 96, 54 },
+            { 388, 0, 96, 57 },
+            { 485, 0, 96, 59 },
+            { 582, 0, 96, 62 },
+            { 679, 0, 96, 65 },
+            // 2 trees
+            { 0, 66, 96, 63 },
+            { 97, 66, 96, 60 },
+            { 194, 66, 96, 55 },
+            { 291, 66, 96, 62 },
+            { 388, 66, 96, 61 },
+            { 485, 66, 96, 61 },
+            { 582, 66, 96, 60 },
+            { 679, 66, 96, 58 },
+            // 3 trees
+            { 0, 130, 96, 62 },
+            { 97, 130, 96, 65 },
+            { 194, 130, 96, 65 },
+            { 291, 130, 96, 68 },
+            { 388, 130, 96, 68 },
+            { 485, 130, 96, 58 },
+            { 582, 130, 96, 63 },
+            { 679, 130, 96, 60 },
+            // 4 trees
+            { 0, 199, 96, 65 },
+            { 97, 199, 96, 61 },
+            { 194, 199, 96, 67 },
+            { 291, 199, 96, 69 },
+            { 388, 199, 96, 67 },
+            { 485, 199, 96, 66 },
+            { 582, 199, 96, 66 },
+            { 679, 199, 96, 63 },
+
+            // TREE TYPE 2
+            // 1 tree
+            { 0, 269, 96, 51 },
+            { 97, 269, 96, 55 },
+            { 194, 269, 96, 59 },
+            { 291, 269, 96, 63 },
+            { 388, 269, 96, 67 },
+            { 485, 269, 96, 71 },
+            { 582, 269, 96, 75 },
+            // 2 trees
+            { 0, 345, 96, 71 },
+            { 97, 345, 96, 67 },
+            { 194, 345, 96, 61 },
+            { 291, 345, 96, 53 },
+            { 388, 345, 96, 52 },
+            { 485, 345, 96, 56 },
+            { 582, 345, 96, 58 },
+            // 3 trees
+            { 0, 417, 96, 66 },
+            { 97, 417, 96, 53 },
+            { 194, 417, 96, 60 },
+            { 291, 417, 96, 58 },
+            { 388, 417, 96, 57 },
+            { 485, 417, 96, 65 },
+            { 582, 417, 96, 66 },
+            // 4 trees
+            { 0, 483, 96, 64 },
+            { 97, 483, 96, 63 },
+            { 194, 483, 96, 67 },
+            { 291, 483, 96, 61 },
+            { 388, 483, 96, 67 },
+            { 485, 483, 96, 66 },
+            { 582, 483, 96, 66 },
+
+            // TREE TYPE 3
+            // 1 tree
+            { 0, 551, 96, 50 },
+            { 97, 551, 96, 54 },
+            { 194, 551, 96, 58 },
+            { 291, 551, 96, 62 },
+            { 388, 551, 96, 66 },
+            { 485, 551, 96, 70 },
+            { 582, 551, 96, 73 },
+            // 2 trees
+            { 0, 626, 96, 73 },
+            { 97, 626, 96, 71 },
+            { 194, 626, 96, 68 },
+            { 291, 626, 96, 65 },
+            { 388, 626, 96, 62 },
+            { 485, 626, 96, 58 },
+            { 582, 626, 96, 54 },
+            // 3 trees
+            { 0, 700, 96, 74 },
+            { 97, 700, 96, 72 },
+            { 194, 700, 96, 68 },
+            { 291, 700, 96, 64 },
+            { 388, 700, 96, 60 },
+            { 485, 700, 96, 58 },
+            { 582, 700, 96, 58 },
+
+            // CACTUS TYPE 1
+            // 1 cactus
+            { 0, 775, 96, 51 },
+            { 97, 775, 96, 53 },
+            { 194, 775, 96, 55 },
+            { 291, 775, 96, 58 },
+            { 388, 775, 96, 61 },
+            { 485, 775, 96, 63 },
+            { 582, 775, 96, 63 },
+            // 2 cactuses
+            { 0, 839, 96, 58 },
+            { 97, 839, 96, 57 },
+            { 194, 839, 96, 60 },
+            { 291, 839, 96, 56 },
+            { 388, 839, 96, 65 },
+            { 485, 839, 96, 55 },
+            { 582, 839, 96, 57 },
+            // 3 cactuses
+            { 0, 905, 96, 64 },
+            { 97, 905, 96, 59 },
+            { 194, 905, 96, 58 },
+            { 291, 905, 96, 60 },
+            { 388, 905, 96, 60 },
+            { 485, 905, 96, 64 },
+            { 582, 905, 96, 59 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileTrees, rects);
+    });
+
+    // UNITS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // unit 1
+            { 0, 0, 96, 58 },
+            { 97, 0, 96, 58 },
+            { 194, 0, 96, 58 },
+            // unit 2
+            { 0, 58, 96, 54 },
+            { 97, 58, 96, 54 },
+            { 194, 58, 96, 54 },
+            // unit 3
+            { 0, 112, 96, 54 },
+            { 97, 112, 96, 54 },
+            { 194, 112, 96, 54 },
+            // unit 4
+            { 0, 169, 96, 54 },
+            { 97, 169, 96, 54 },
+            { 194, 169, 96, 54 },
+            // unit 5
+            { 0, 224, 96, 52 },
+            { 97, 224, 96, 52 },
+            { 194, 224, 96, 52 },
+            // unit 6
+            { 0, 277, 96, 54 },
+            { 97, 277, 96, 54 },
+            { 194, 277, 96, 54 },
+            // unit 7
+            { 0, 332, 96, 61 },
+            { 97, 332, 96, 61 },
+            { 194, 332, 96, 61 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileUnits, rects);
+    });
+
+    // UNIT PARTICLES
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rectsUnitsPart
+        {
+            // OBJECT ENERGY BAR
+            { 0, 0, 60, 8 },
+            { 0, 9, 60, 8 },
+            { 0, 18, 60, 8 },
+            { 0, 27, 60, 8 },
+            { 0, 36, 60, 8 },
+            { 0, 45, 60, 8 },
+            { 0, 54, 60, 8 },
+            { 0, 63, 60, 8 },
+            { 0, 72, 60, 8 },
+            { 0, 81, 60, 8 },
+            { 0, 90, 60, 8 },
+
+            // OBJECT HEALTH BAR
+            { 61, 0, 60, 8 },
+            { 61, 9, 60, 8 },
+            { 61, 18, 60, 8 },
+            { 61, 27, 60, 8 },
+            { 61, 36, 60, 8 },
+            { 61, 45, 60, 8 },
+            { 61, 54, 60, 8 },
+            { 61, 63, 60, 8 },
+            { 61, 72, 60, 8 },
+            { 61, 81, 60, 8 },
+            { 61, 90, 60, 8 },
+
+            // UPGRADE
+            { 0, 99, 24, 24 },
+
+            // DAMAGE PARTICLES
+            { 25, 99, 4, 4 },
+
+            // HEALING
+            { 30, 99, 12, 12 },
+            { 43, 99, 12, 12 },
+            { 56, 99, 12, 12 },
+
+            // LASER
+            { 69, 99, 14, 3 },
+            { 69, 103, 14, 3 },
+            { 69, 107, 14, 3 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME],
+                           SpriteFileGameObjectsRelated, rectsUnitsPart);
+    });
+
+    // WALLS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // wall level 1 faction 1
+            { 0, 0, 96, 48 },
+            { 97, 0, 96, 48 },
+            { 194, 0, 96, 48 },
+            { 291, 0, 96, 48 },
+            { 388, 0, 96, 48 },
+            { 485, 0, 96, 48 },
+            { 582, 0, 96, 48 },
+            { 679, 0, 96, 48 },
+            { 776, 0, 96, 48 },
+            { 873, 0, 96, 48 },
+            { 970, 0, 96, 48 },
+            // wall level 1 faction 2
+            { 0, 49, 96, 48 },
+            { 97, 49, 96, 48 },
+            { 194, 49, 96, 48 },
+            { 291, 49, 96, 48 },
+            { 388, 49, 96, 48 },
+            { 485, 49, 96, 48 },
+            { 582, 49, 96, 48 },
+            { 679, 49, 96, 48 },
+            { 776, 49, 96, 48 },
+            { 873, 49, 96, 48 },
+            { 970, 49, 96, 48 },
+            // wall level 1 faction 3
+            { 0, 98, 96, 48 },
+            { 97, 98, 96, 48 },
+            { 194, 98, 96, 48 },
+            { 291, 98, 96, 48 },
+            { 388, 98, 96, 48 },
+            { 485, 98, 96, 48 },
+            { 582, 98, 96, 48 },
+            { 679, 98, 96, 48 },
+            { 776, 98, 96, 48 },
+            { 873, 98, 96, 48 },
+            { 970, 98, 96, 48 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_GAME], SpriteFileWalls, rects);
+    });
+
+    // ===== UI GAME =====
+    // DIALOG EXIT
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 604, 70 },
+            { 0, 71, 604, 90 },
+            // BUTTON WISHLIST
+            { 0, 162, 350, 44 },
+            { 0, 207, 350, 44 },
+            { 0, 252, 300, 44 },
+            // ICONS
+            { 351, 162, 32, 24 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExit, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogExitExp);
+    });
+
+    // DIALOG EXPLORE TEMPLE
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 90, 525 },
+            { 91, 0, 110, 525 },
+            { 201, 0, 90, 500 },
+            { 293, 0, 90, 500 },
+
+            // BUTTON
+            { 0, 526, 300, 50 },
+            { 0, 577, 300, 50 },
+            { 0, 627, 300, 50 },
+            { 0, 678, 300, 50 },
+
+            // LAYOUT
+            { 384, 0, 3, 285 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogExploreTemple, rects);
+
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+             // BACKGROUND
+             { 0, 0, 10, 525 },
+             { 11, 0, 10, 500 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogExploreTempleExp, rectsExp);
+    });
+
+    // DIALOG MISSION GOALS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUNDS
+            { 0, 0, 1284, 70 },
+            { 0, 71, 1284, 80 },
+
+            // BUTTON COLLECT
+            { 642, 152, 220, 44 },
+            { 863, 152, 220, 44 },
+            { 642, 197, 220, 44 },
+            { 863, 197, 220, 44 },
+
+            // BUTTON END MISSION
+            { 0, 152, 320, 50 },
+            { 321, 152, 320, 50 },
+            { 0, 203, 320, 50 },
+            { 321, 203, 320, 50 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogMissionGoals, rects);
+    });
+
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 1284, 10 },
+            // PANELS ROW
+            { 1285, 0, 10, 10 },
+            { 1296, 0, 10, 10 },
+            // SECTION HORIZONTAL LINE
+            { 1307, 0, 10, 3 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogMissionGoalsExp, rects);
+    });
+
+    // DIALOG OBJECT
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 90, 555 },
+            { 91, 0, 110, 555 },
+            // PANEL BACKGROUND
+            { 202, 0, 10, 210 },
+            { 202, 211, 10, 210 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogObject, rects);
+
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // BACKGROUND
+            { 0, 0, 10, 555 },
+            { 11, 0, 10, 210 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogObjectExp, rectsExp);
+    });
+
+    // DIALOG RESEARCH
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 90, 470 },
+            { 91, 0, 110, 470 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogResearch, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                            SpriteFileDialogResearchExp);
+    });
+
+    // DIALOG SAVE
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 704, 65 },
+            { 0, 66, 704, 80 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogSave, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                            SpriteFileDialogSaveExp);
+    });
+
+    // DIALOG TECH TREE
+    mJobs.emplace_back([this, tm]
+    {
+#ifdef DEV_MODE
+        // TODO remove later, now left just for reference on testing loading times
+        auto t0 = std::chrono::high_resolution_clock::now();
+#endif
+
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 90, 1002 },
+            { 91, 0, 110, 1002 },
+            // BUTTON SECTION
+            { 202, 0, 300, 48 },
+            { 202, 49, 300, 48 },
+            { 202, 98, 300, 48 },
+            { 202, 147, 300, 48 },
+            // BUTTON UNLOCK
+            { 202, 196, 300, 44 },
+            { 202, 241, 300, 44 },
+            { 202, 286, 300, 44 },
+            { 202, 331, 300, 44 },
+            // BUTTON UPGRADE
+            { 202, 376, 96, 84 },
+            { 299, 376, 96, 84 },
+            { 396, 376, 96, 84 },
+            { 202, 461, 96, 84 },
+            { 299, 461, 96, 84 },
+            { 299, 631, 20, 20 },
+            // UPGRADE UNLOCKED
+            { 396, 461, 96, 84 },
+            // BUTTON UPGRADE NOT UNLOCKABLE
+            { 202, 546, 96, 84 },
+            { 299, 546, 96, 84 },
+            { 396, 546, 96, 84 },
+            { 202, 631, 96, 84 },
+            // CONNECTIONS
+            { 202, 716, 3, 64 },
+            { 206, 716, 3, 107 },
+            { 210, 716, 96, 3 },
+            { 210, 720, 141, 3 },
+            // ICONS UPGRADES
+            { 202, 824, 48, 48 },
+            { 251, 824, 48, 48 },
+            { 300, 824, 48, 48 },
+            { 349, 824, 48, 48 },
+            { 398, 824, 48, 48 },
+            { 447, 824, 48, 48 },
+            { 202, 873, 48, 48 },
+            { 251, 873, 48, 48 },
+            { 300, 873, 48, 48 },
+            { 349, 873, 48, 48 },
+            { 398, 873, 48, 48 },
+            { 447, 873, 48, 48 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+            SpriteFileDialogTechTree, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+            SpriteFileDialogTechTreeExp);
+
+#ifdef DEV_MODE
+        // TODO remove later, now left just for reference on testing loading times
+        auto t1 = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
+        std::cout << "ScreenInitGame::SetupTextures - DIALOG TECH TREE: " << duration.count() << " ms" << std::endl;
+#endif
+    });
+
+    // DIALOG TRADING
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKROUNDS
+            { 0, 0, 90, 630 },
+            { 91, 0, 110, 630 },
+            { 0, 631, 250, 40 },
+            { 0, 672, 400, 40 },
+            // BUTTON BUY
+            { 202, 0, 200, 40 },
+            { 202, 41, 200, 40 },
+            { 202, 82, 200, 40 },
+            { 202, 123, 200, 40 },
+            // BUTTON SELL
+            { 202, 164, 200, 40 },
+            { 202, 205, 200, 40 },
+            { 202, 246, 200, 40 },
+            { 202, 287, 200, 40 },
+            // BUTTON MINUS
+            { 202, 328, 40, 34 },
+            { 243, 328, 40, 34 },
+            { 284, 328, 40, 34 },
+            { 325, 328, 40, 34 },
+            // BUTTON PLUS
+            { 202, 363, 40, 34 },
+            { 243, 363, 40, 34 },
+            { 284, 363, 40, 34 },
+            { 325, 363, 40, 34 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogTrading, rects);
+
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // BACKROUNDS
+            { 0, 0, 10, 630 },
+            { 0, 631, 10, 10 },
+            // LINE
+            { 0, 642, 10, 3 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME],
+                           SpriteFileDialogTradingExp, rectsExp);
+    });
+
+    // DIALOG UPGRADE
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // DIALOG
+            { 0, 0, 90, 655 },
+            { 91, 0, 360, 655 },
+            { 0, 656, 600, 40 },
+            { 0, 697, 600, 40 },
+            { 452, 163, 300, 480 },
+            // VALUE BAR
+            { 601, 644, 14, 18 },
+            { 601, 663, 14, 18 },
+            { 601, 682, 14, 18 },
+            // BUTTON -
+            { 452, 0, 42, 30 },
+            { 452, 31, 42, 30 },
+            { 452, 62, 42, 30 },
+            { 452, 93, 42, 30 },
+            // BUTTON +
+            { 616, 644, 42, 30 },
+            { 659, 644, 42, 30 },
+            { 616, 675, 42, 30 },
+            { 659, 675, 42, 30 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogUpgrade, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogUpgradeExp);
+    });
+
+    // FACTION SELECTION
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 90, 885 },
+            { 91, 0, 365, 885 },
+            { 0, 886, 450, 200 },
+            { 0, 1087, 500, 50 },
+
+            // BUTTON FACTION
+            { 457, 0, 230, 200 },
+            { 457, 201, 230, 200 },
+            { 457, 402, 230, 200 },
+
+            // LOGOS
+            { 530, 603, 152, 170 },
+            { 530, 774, 152, 170 },
+            { 530, 945, 152, 170 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogFactionSelection, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogFactionSelectionExp);
+    });
+
+    // GAME UI
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // SCREEN OVERLAY BG
+            { 0, 0, 10, 10 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileGameUIExp, rectsExp);
+    });
+
+    // MAP UI
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // MINIMAP
+            { 0, 0, 342, 342 },
+            // element
+            { 343, 343, 10, 10 },
+            // button close
+            { 159, 343, 20, 20 },
+            { 180, 343, 20, 20 },
+            { 201, 343, 20, 20 },
+            // button up
+            { 343, 0, 60, 16 },
+            { 343, 17, 60, 16 },
+            { 343, 34, 60, 16 },
+            { 343, 51, 60, 16 },
+            // button down
+            { 343, 68, 60, 16 },
+            { 343, 85, 60, 16 },
+            { 343, 102, 60, 16 },
+            { 343, 119, 60, 16 },
+            // button right
+            { 343, 136, 16, 60 },
+            { 359, 136, 16, 60 },
+            { 343, 198, 16, 60 },
+            { 359, 198, 16, 60 },
+            // button left
+            { 376, 136, 16, 60 },
+            { 392, 136, 16, 60 },
+            { 376, 198, 16, 60 },
+            { 392, 198, 16, 60 },
+            // camera corners
+            { 222, 343, 14, 26 },
+            { 237, 343, 14, 26 },
+            { 252, 343, 26, 14 },
+            { 252, 358, 26, 14 },
+            // MINIMAP BUTTON
+            { 0, 343, 52, 52 },
+            { 53, 343, 52, 52 },
+            { 106, 343, 52, 52 }
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelMinimap, rects);
+    });
+
+    // PANEL SELECTED OBJECT
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 342, 342 },
+            // VALUE BAR
+            { 0, 343, 154, 16 },
+            { 155, 343, 150, 12 },
+            { 306, 343, 154, 16 },
+            // ICONS
+            { 343, 66, 22, 22 },
+            { 366, 66, 22, 22 },
+            { 389, 66, 22, 22 },
+            // BUTTON PANEL
+            { 343, 110, 52, 52 },
+            { 396, 110, 52, 52 },
+            { 450, 110, 52, 52 },
+            // BUTTON CLOSE PANEL
+            { 343, 89, 20, 20 },
+            { 364, 89, 20, 20 },
+            { 385, 89, 20, 20 },
+            // BUTTON ACTION
+            { 343, 163, 60, 40 },
+            { 404, 163, 60, 40 },
+            { 343, 204, 60, 40 },
+            { 404, 204, 60, 40 },
+            { 343, 245, 60, 40 },
+            // ICONS ACTION
+            { 343, 0, 32, 32 },
+            { 376, 0, 32, 32 },
+            { 343, 33, 32, 32 },
+            { 376, 33, 32, 32 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelSelectedObject, rects);
+    });
+
+    // PANEL TURN CONTROL
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 750, 62 },
+            // PROGRESS BAR
+            { 0, 63, 404, 16 },
+            { 0, 80, 400, 12 },
+            { 0, 93, 404, 16 },
+            // BUTTON BASE
+            { 751, 0, 60, 44 },
+            { 812, 0, 60, 44 },
+            { 751, 45, 60, 44 },
+            { 812, 45, 60, 44 },
+            // BUTTON NEXT TURN
+            { 405, 63, 60, 44 },
+            { 466, 63, 60, 44 },
+            { 527, 63, 60, 44 },
+            { 588, 63, 60, 44 },
+            // ICONS
+            { 649, 63, 32, 32 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelTurnControl, rects);
+    });
+
+    // PANEL UNIT ACTIONS
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // PANEL HIT
+            { 0, 0, 120, 164 },
+            // ENERGY USAGE
+            { 121, 117, 96, 49 },
+            { 218, 117, 96, 49 },
+            // RESOURCES USAGE
+            { 121, 0, 174, 116 },
+            { 296, 0, 174, 116 },
+            // PANEL WARNING
+            { 315, 117, 63, 49 },
+            { 379, 117, 34, 49 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelUnitActions, rects);
+
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // PANEL WARNING
+            { 0, 0, 10, 49 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelUnitActionsExp, rectsExp);
+    });
+
+    // MAP UI
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // cell progress bar
+            { 0, 0, 52, 8 },
+            { 0, 9, 50, 6 },
+            { 0, 16, 50, 6 },
+            { 0, 23, 50, 6 },
+            { 0, 30, 50, 6 },
+            // icons cost
+            { 0, 37, 8, 14 },
+            { 9, 37, 11, 12 }
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileMapUI, rects);
+    });
+
+    // ===== UI TUTORIAL =====
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // AREA CORNERS
+            { 0, 0, 25, 25 },
+            { 26, 0, 25, 25 },
+            { 52, 0, 25, 25 },
+            { 78, 0, 25, 25 },
+            // INFO PANEL CORNERS
+            { 0, 26, 60, 60 },
+            { 61, 26, 60, 60 },
+            { 0, 87, 60, 60 },
+            { 61, 87, 60, 60 },
+            // INFO PANEL ISOMETRIC CORNERS
+            { 0, 148, 96, 48 },
+            { 0, 197, 96, 48 },
+            { 0, 246, 96, 48 },
+            { 0, 295, 96, 48 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorial, rects);
+
+        // TUTORIAL EXP
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // INFO PANEL SIDES AND CENTER
+            { 0, 0, 10, 60 },
+            { 11, 0, 10, 60 },
+            { 0, 61, 60, 10 },
+            { 0, 72, 60, 10 },
+            { 22, 0, 10, 10 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_TUTORIAL], SpriteFileTutorialExp, rectsExp);
+    });
+
+    // END MISSION DIALOG
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUND
+            { 0, 0, 90, 500 },
+            { 91, 0, 90, 500 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogEndMission, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogEndMissionExp);
+    });
+
+    // NEW ELEMENT DIALOG
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUNDS
+            { 0, 0, 90, 709 },
+            { 91, 0, 360, 709 },
+            { 452, 0, 90, 754 },
+            { 543, 0, 360, 754 },
+            { 904, 0, 200, 200 },
+            { 904, 201, 200, 200 },
+            { 904, 402, 200, 200 },
+            { 904, 603, 200, 200 },
+            { 0, 710, 400, 266 },
+            // BUTTON LEFT
+            { 400, 755, 20, 80 },
+            { 421, 755, 20, 80 },
+            { 442, 755, 20, 80 },
+            { 463, 755, 20, 80 },
+            // BUTTON RIGHT
+            { 400, 836, 20, 80 },
+            { 421, 836, 20, 80 },
+            { 442, 836, 20, 80 },
+            { 463, 836, 20, 80 }
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewElement, rects);
+
+        // NEW ELEMENT DIALOG - EXPANDABLE GRAPHICS
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // BACKGROUND
+            { 0, 0, 10, 709 },
+            { 11, 0, 10, 754 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewElementExp, rectsExp);
+    });
+
+    // NEW MINI UNITS SQUAD DIALOG
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BACKGROUNDS
+            { 0, 0, 90, 615 },
+            { 91, 0, 360, 615 },
+            { 452, 0, 10, 200 },
+            { 452, 201, 10, 200 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewMiniUnits, rects);
+
+        const std::vector<sgl::core::Rectd> rectsExp
+        {
+            // BACKGROUNDS
+            { 0, 0, 10, 615 },
+            { 0, 616, 10, 200 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogNewMiniUnitsExp, rectsExp);
+    });
+
+    // OBJECT ACTION BUTTON
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BUTTON
+            { 0, 0, 73, 73 },
+            { 74, 0, 73, 73 },
+            { 148, 0, 73, 73 },
+            { 222, 0, 73, 73 },
+            { 296, 0, 73, 73 },
+            // ICONS
+            { 0, 74, 52, 52 },
+            { 53, 74, 52, 52 },
+            { 106, 74, 52, 52 },
+            { 159, 74, 52, 52 },
+            { 212, 74, 52, 52 },
+            { 265, 74, 52, 52 },
+            { 318, 74, 52, 52 },
+            { 0, 127, 52, 52 },
+            { 53, 127, 52, 52 },
+            { 106, 127, 52, 52 },
+            { 159, 127, 52, 52 },
+            { 212, 127, 52, 52 },
+            { 265, 127, 52, 52 },
+            { 318, 127, 52, 52 },
+            { 0, 180, 52, 52 },
+            { 53, 180, 52, 52 },
+            { 106, 180, 52, 52 },
+            { 159, 180, 52, 52 },
+            { 212, 180, 52, 52 },
+            // BUTTON ACTION OPTION
+            { 371, 0, 258, 40 },
+            { 371, 41, 258, 40 },
+            { 371, 82, 258, 40 },
+            { 371, 123, 258, 40 },
+            { 371, 164, 258, 40 },
+            // BUTTON NOTIFICATION BG
+            { 371, 205, 22, 22 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileObjActionButton, rects);
+    });
+
+    // PLANET MAP
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // PLANET
+            { 0, 0, 700, 700 },
+            // PLANET CELL
+            { 701, 0, 72, 62 },
+            { 701, 63, 72, 62 },
+            { 701, 126, 72, 62 },
+            { 701, 189, 72, 62 },
+            { 701, 252, 72, 62 },
+            { 701, 315, 72, 62 },
+            { 701, 378, 72, 62 },
+            { 701, 441, 72, 62 },
+            { 701, 504, 72, 62 },
+            { 701, 567, 72, 62 },
+            { 701, 630, 72, 62 },
+            // PLANET MAIN CELL
+            { 774, 0, 96, 82 },
+            { 774, 83, 96, 82 },
+            { 774, 166, 96, 82 },
+            { 774, 249, 96, 82 },
+            { 774, 332, 96, 82 },
+            { 774, 415, 96, 82 },
+            { 871, 0, 96, 82 },
+            { 871, 83, 96, 82 },
+            { 871, 166, 96, 82 },
+            { 871, 249, 96, 82 },
+            { 871, 332, 96, 82 },
+            // STARS BAR
+            { 968, 360, 166, 28 },
+            { 968, 389, 166, 28 },
+            { 968, 418, 166, 28 },
+            { 968, 447, 166, 28 },
+            { 968, 476, 166, 28 },
+            { 968, 505, 166, 28 },
+            { 968, 534, 166, 28 },
+            { 968, 563, 166, 28 },
+            { 968, 592, 166, 28 },
+            { 968, 621, 166, 28 },
+            { 968, 650, 166, 28 },
+            // PIPS BAR
+            { 774, 498, 140, 18 },
+            { 774, 517, 140, 18 },
+            { 774, 536, 140, 18 },
+            { 774, 555, 140, 18 },
+            { 774, 574, 140, 18 },
+            { 774, 593, 140, 18 },
+            { 774, 612, 140, 18 },
+            { 774, 631, 140, 18 },
+            { 774, 650, 140, 18 },
+            { 774, 669, 140, 18 },
+            { 774, 688, 140, 18 },
+            { 774, 707, 140, 18 },
+
+            // BUTTON
+            { 968, 0, 250, 44 },
+            { 968, 45, 250, 44 },
+            { 968, 90, 250, 44 },
+            { 968, 135, 250, 44 },
+
+            // BUTTON 2
+            { 968, 180, 250, 44 },
+            { 968, 225, 250, 44 },
+            { 968, 270, 250, 44 },
+            { 968, 315, 250, 44 },
+
+            // ICONS
+            { 968, 679, 32, 32 },
+            { 1001, 679, 32, 32 },
+            { 1034, 679, 32, 32 },
+            { 1067, 679, 32, 32 },
+            { 1100, 679, 32, 32 },
+            { 968, 712, 32, 32 },
+            { 1001, 712, 32, 32 },
+            { 1034, 712, 32, 32 },
+            { 1067, 712, 32, 32 },
+            { 1100, 712, 32, 32 },
+
+            // BUTTON LEAVE
+            { 0, 701, 350, 44 },
+            { 0, 746, 350, 44 },
+            { 351, 701, 350, 44 },
+            { 351, 746, 350, 44 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePlanetMap, rects);
+    });
+
+    // PLANET MAP 2
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // PANELS
+            { 0, 0, 400, 50 },
+            { 401, 0, 400, 50 },
+            { 0, 51, 475, 200 },
+            { 0, 252, 475, 400 },
+            { 476, 52, 475, 500 },
+            { 476, 552, 475, 85 }
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePlanetMap2, rects);
+    });
+
+    // RESOURCES BAR
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BAR
+            { 0, 0, 75, 56 },
+            { 76, 0, 75, 56 },
+            // MINI BAR
+            { 0, 57, 54, 8 },
+            { 55, 57, 50, 4 },
+            // ICONS
+            { 152, 0, 32, 32 },
+            { 185, 0, 32, 32 },
+            { 218, 0, 32, 32 },
+            { 152, 33, 32, 32 },
+            { 185, 33, 32, 32 },
+            { 218, 33, 32, 32 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileResourcesBar, rects);
+
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileResourcesBarExp);
+    });
+
+    // QUICK UNIT SELECTION
+    mJobs.emplace_back([this, tm]
+    {
+        const std::vector<sgl::core::Rectd> rects
+        {
+            // BUTTON BG
+            { 0, 0, 192, 60 },
+            { 0, 61, 192, 60 },
+            { 0, 122, 192, 60 },
+            { 0, 183, 192, 60 },
+            { 0, 244, 192, 60 },
+            // ICONS
+            { 268, 0, 24, 24 },
+            { 293, 0, 24, 24 },
+            // UNITS F1
+            { 193, 0, 24, 40 },
+            { 193, 41, 40, 40 },
+            { 193, 82, 40, 40 },
+            { 193, 123, 32, 32 },
+            { 193, 156, 40, 33 },
+            { 193, 190, 32, 32 },
+            { 193, 223, 40, 40 },
+            // UNITS F2
+            { 218, 0, 24, 40 },
+            { 234, 41, 40, 40 },
+            { 234, 82, 40, 40 },
+            { 225, 123, 32, 32 },
+            { 234, 156, 40, 33 },
+            { 226, 190, 32, 32 },
+            { 234, 223, 40, 40 },
+            // UNITS F3
+            { 243, 0, 24, 40 },
+            { 275, 41, 40, 40 },
+            { 275, 82, 40, 40 },
+            { 258, 123, 32, 32 },
+            { 275, 156, 40, 33 },
+            { 259, 190, 32, 32 },
+            { 275, 223, 40, 40 },
+        };
+
+        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileUnitQuickSel, rects);
+    });
+}
+
+void ResourceLoader::SetupMouseCursors()
+{
+    mJobs.emplace_back([this]
+                       {
+                           using namespace sgl;
+
+                           auto tm = graphic::TextureManager::Instance();
+                           auto tex = tm->GetTexture(SpriteFileCursor);
+
+                           auto cursor = new graphic::Cursor(tex, 1, 1);
+
+                           mGame->RegisterCursor(CURSOR_DEFAULT, cursor);
+                       });
+}
+
+
+} // namespace game

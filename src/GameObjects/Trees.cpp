@@ -7,6 +7,7 @@
 #include "IsoObject.h"
 
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
 namespace
@@ -33,6 +34,11 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
         mNumVariants = NUM_TREE3_VARIANTS;
         mMaxNum = MAX_TREE3_TREES;
     }
+    else if(type == ObjectData::TYPE_CACTUS1)
+    {
+        mNumVariants = NUM_CACTUS1_VARIANTS;
+        mMaxNum = MAX_CACTUS1_TREES;
+    }
     else
     {
         mNumVariants = NUM_TREE1_VARIANTS;
@@ -52,11 +58,47 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
     // randomize turns for change
     const int minTurns = 10;
     const int maxTurns = 25;
-    sgl::utilities::UniformDistribution dis(minTurns, maxTurns, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution dis(minTurns, maxTurns);
     mTurnsToChange = dis.GetNextValue();
 
     SetObjColors();
     SetImage();
+}
+
+bool Trees::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mLevel = bf.ReadInt();
+    mNumTrees = bf.ReadInt();
+    mTurnsToChange = bf.ReadInt();
+    mTurns = bf.ReadInt();
+    mNumVariants = bf.ReadUint();
+    mMaxNum = bf.ReadUint();
+
+    return true;
+}
+
+bool Trees::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObject::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteInt(mLevel);
+    bf.WriteInt(mNumTrees);
+    bf.WriteInt(mTurnsToChange);
+    bf.WriteInt(mTurns);
+    bf.WriteUint(mNumVariants);
+    bf.WriteUint(mMaxNum);
+
+    return true;
 }
 
 void Trees::OnNewTurn(PlayerFaction faction)
@@ -83,7 +125,7 @@ void Trees::OnNewTurn(PlayerFaction faction)
     else if(mNumTrees < mMaxNum)
     {
         // randomize new variant
-        sgl::utilities::UniformDistribution dis(0, mNumVariants - 1, GetGame()->GetRandSeed());
+        sgl::utilities::UniformDistribution dis(0, mNumVariants - 1);
         mVariant = dis.GetNextValue();
 
         ++mNumTrees;
@@ -134,13 +176,18 @@ void Trees::SpawnTree(int r0, int c0)
 {
     GameMap * gm = GetGameMap();
 
-    sgl::utilities::UniformDistribution dis(0, mNumVariants - 1, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution dis(0, mNumVariants - 1);
     const int variant = dis.GetNextValue();
 
-    gm->CreateObject(MapLayers::REGULAR_OBJECTS, GetObjectType(), variant, NO_FACTION, r0, c0, false);
+    gm->CreateObject(GetObjectType(), variant, NO_FACTION, r0, c0, false);
+
+    const GameObjectTypeId type = GetObjectType();
 
     // set cell type of new tree
-    gm->SetCellType(r0, c0, CT_TREES1);
+    if(type == ObjectData::TYPE_CACTUS1)
+        gm->SetCellType(r0, c0, CT_SAND);
+    else
+        gm->SetCellType(r0, c0, CT_TREES1);
 
     // set cell type of surrounding cells
     const int rows = gm->GetNumRows();
@@ -196,6 +243,8 @@ void Trees::SetImage()
         spriteId0 = TREE2_1T_1;
     else if(type == ObjectData::TYPE_TREES3)
         spriteId0 = TREE3_1T_1;
+    else if(type == ObjectData::TYPE_CACTUS1)
+        spriteId0 = CACTUS1_1T_1;
 
     const unsigned int baseSpriteId = spriteId0 + (mNumVariants * (mNumTrees - 1));
     const unsigned int spriteId = baseSpriteId + mVariant;
@@ -228,6 +277,13 @@ void Trees::SetObjColors()
         mObjColors.push_back(0x37392dff);
         mObjColors.push_back(0x727255ff);
         mObjColors.push_back(0x464a36ff);
+    }
+    else if(type == ObjectData::TYPE_CACTUS1)
+    {
+        mObjColors.push_back(0xb3c270ff);
+        mObjColors.push_back(0x869056ff);
+        mObjColors.push_back(0x697043ff);
+        mObjColors.push_back(0x383b2bff);
     }
     else
     {

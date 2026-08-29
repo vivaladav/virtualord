@@ -15,8 +15,12 @@ enum PlayerFaction : unsigned int;
 class MiniUnitsGroup : public GameObjectsGroup
 {
 public:
-    MiniUnitsGroup(PlayerFaction faction);
+    MiniUnitsGroup(GameMap * gameMap);
 
+    bool Load(sgl::utilities::BinaryFile & bf) override;
+    bool Save(sgl::utilities::BinaryFile & bf) const override;
+
+    void SetFaction(PlayerFaction faction);
     PlayerFaction GetFaction() const;
 
     bool CanAttack() const;
@@ -41,6 +45,7 @@ private:
     PlayerFaction mFaction;
 };
 
+inline void MiniUnitsGroup::SetFaction(PlayerFaction faction) { mFaction = faction; }
 inline PlayerFaction MiniUnitsGroup::GetFaction() const { return mFaction; }
 
 inline void MiniUnitsGroup::ClearPath() { mPath.clear(); }

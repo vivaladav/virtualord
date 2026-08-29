@@ -21,6 +21,7 @@ const std::unordered_set<CellTypes> GameMapCell::PRIMARY_TYPES =
     CT_F3,
     CT_F3_CONNECTED,
     CT_ROCKS,
+    CT_SAND,
 };
 
 GameMapCell::GameMapCell()

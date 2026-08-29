@@ -1,7 +1,6 @@
 #include "Tutorial/StepGameSelectObject.h"
 
 #include "Game.h"
-#include "IsoObject.h"
 #include "GameObjects/GameObject.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -13,7 +12,7 @@ namespace game
 {
 
 StepGameSelectObject::StepGameSelectObject(const Game * game, const IsoMap * im, const GameObject * obj,
-                                       const char * text, const sgl::core::Pointd2D & p0)
+                                           const char * text, const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(500, 150)
     , mFocusArea(new IsoFocusArea(im))
     , mObj(obj)
@@ -38,11 +37,10 @@ StepGameSelectObject::StepGameSelectObject(const Game * game, const IsoMap * im,
                             mFocusArea->SetVisible(true);
 
                             // CLICK FILTER
-                            const auto isoObj = mObj->GetIsoObject();
-                            const int objX = isoObj->GetX();
-                            const int objY = isoObj->GetY();
-                            const int objW = isoObj->GetWidth();
-                            const int objH = isoObj->GetHeight();
+                            const int objX = mObj->GetX();
+                            const int objY = mObj->GetY();
+                            const int objW = mObj->GetWidth();
+                            const int objH = mObj->GetHeight();
 
                             auto cf = GetClickFilter();
                             cf->SetWorldClickableArea(objX, objY, objW, objH);

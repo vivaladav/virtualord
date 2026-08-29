@@ -24,6 +24,7 @@ namespace sgl
 
     namespace utilities
     {
+        class BinaryFile;
         class StateData;
         class StateManager;
     }
@@ -35,6 +36,7 @@ namespace game
 class ObjectsDataRegistry;
 class Planet;
 class Player;
+class ResourceLoader;
 class TutorialManager;
 
 enum ExtendedResource : unsigned int;
@@ -42,7 +44,7 @@ enum GameCursorId : unsigned int;
 enum LanguageId : unsigned int;
 enum PlanetId : unsigned int;
 enum PlayerFaction : unsigned int;
-enum StateId : int;
+enum StateId : unsigned int;
 enum TechUpgradeId : unsigned int;
 
 enum Difficulty : unsigned int
@@ -63,11 +65,31 @@ public:
 #endif
 
 public:
+    static const std::string SAVE_VERSION;
+    static const std::string SETTINGS_VERSION;
+
+public:
     Game(int argc, char * argv[]);
     ~Game();
 
-    void InitGameData();
+    ResourceLoader * GetResourceLoader() const;
+
+    void InitNewGameData();
     void ClearGameData();
+
+    // -- LOAD & SAVE --
+    const std::string & GetCurrentSaveFilePath() const;
+    sgl::utilities::BinaryFile * GetSaveFileForReading() const;
+    void CloseSaveFileForReading();
+    bool IsSaveFileValid() const;
+
+    bool LoadGame();
+    bool SaveGame();
+    bool LoadSettings();
+    bool SaveSettings();
+
+    const std::unordered_map<ExtendedResource, int> & GetCostSaveGame() const;
+    void LowerCostSaveGame();
 
     // -- mouse cursors --
     void RegisterCursor(GameCursorId curId, sgl::graphic::Cursor * cursor);
@@ -87,7 +109,7 @@ public:
     void SetClearColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
     // GAME STATE
-    int GetActiveStateId() const;
+    unsigned int GetActiveStateId() const;
     void RequestNextActiveState(StateId sid, sgl::utilities::StateData * data = nullptr);
 
     Difficulty GetDifficulty() const;
@@ -96,12 +118,15 @@ public:
     const ObjectsDataRegistry * GetObjectsRegistry() const;
 
     // -- players --
-    Player * AddPlayer(const char * name, int pid);
+    int GetNumActivePlayers() const;
 
-    int GetNumPlayers() const;
-
-    Player * GetPlayerByIndex(unsigned int index) const;
     Player * GetPlayerByFaction(PlayerFaction faction) const;
+    Player * GetActivePlayerByIndex(unsigned int index) const;
+    Player * GetActivePlayerByFaction(PlayerFaction faction) const;
+    void ClearAllAIActivePlayers();
+    void AddToActivePlayersRandomAI();
+    void AddToActivePlayersAI(PlayerFaction f);
+
     Player * GetLocalPlayer() const;
 
     void SetLocalPlayerFaction(PlayerFaction faction);
@@ -131,6 +156,8 @@ public:
     void SetAutoUnitCamera(bool val);
     bool IsTutorialEnabled() const;
     void SetTutorialEnabled(bool val);
+    bool IsAutosaveEnabled() const;
+    void SetAutosaveEnabled(bool val);
 
     float GetTimeAutoHideMouse() const;
 
@@ -148,6 +175,12 @@ public:
     TutorialManager * GetTutorialManager() const;
 
 private:
+    void CreatePlayers();
+    void InitPlayerLocal(Player * p);
+    void InitPlayerAI(Player * p);
+
+    void CreatePlanets();
+
     void ClearPlayers();
     void ClearPlanets();
 
@@ -155,8 +188,14 @@ private:
 
     void Update(float delta) override;
 
+    // -- LOAD & SAVE --
+    void InitDirectories();
+    void InitCostSaveGame();
+
 private:
     std::vector<Player *> mPlayers;
+    std::vector<Player *> mActivePlayers;
+    std::vector<Player *> mAIPlayers;
 
     std::unordered_map<PlanetId, Planet *> mPlanets;
 
@@ -165,6 +204,12 @@ private:
     std::map<unsigned int, std::function<void()>> mOnSettingsChanged;
 
     std::unordered_map<GameCursorId, sgl::graphic::Cursor *> mCursors;
+
+    std::unordered_map<ExtendedResource, int> mCostSave;
+
+    std::string mDirSave;
+    std::string mCurrSaveFile;
+    std::string mSettingsFile;
 
     sgl::graphic::Renderer * mRenderer = nullptr;
     sgl::graphic::Window * mWin = nullptr;
@@ -175,15 +220,18 @@ private:
 
     sgl::media::AudioManager * mAudioMan = nullptr;
 
+    ResourceLoader * mResLoader = nullptr;
+
     TutorialManager * mTutMan = nullptr;
 
     ObjectsDataRegistry * mObjsRegistry = nullptr;
 
-    Difficulty mDiff = EASY;
+    sgl::utilities::BinaryFile * mReaderSave = nullptr;
+
+    Difficulty mDifficulty = EASY;
 
     PlayerFaction mLocalFaction;
 
-    unsigned int mCurrMap = 0;
     PlanetId mCurrPlanet;
     unsigned int mCurrTerritory = 0;
 
@@ -202,12 +250,26 @@ private:
     bool mAutoEndTurn = true;
     bool mAutoUnitCamera = true;
     bool mTutorialEnabled = true;
+    bool mAutoSave = true;
 
     unsigned char mClearR = 0;
     unsigned char mClearG = 0;
     unsigned char mClearB = 0;
     unsigned char mClearA = 255;
 };
+
+inline ResourceLoader * Game::GetResourceLoader() const { return mResLoader; }
+
+inline const std::string & Game::GetCurrentSaveFilePath() const { return mCurrSaveFile; }
+inline sgl::utilities::BinaryFile * Game::GetSaveFileForReading() const
+{
+    return mReaderSave;
+}
+
+inline const std::unordered_map<ExtendedResource, int> & Game::GetCostSaveGame() const
+{
+    return mCostSave;
+}
 
 inline unsigned int Game::GetCurrentTerritory() const { return mCurrTerritory; }
 inline void Game::SetCurrentTerritory(unsigned int territory)
@@ -225,17 +287,17 @@ inline void Game::SetClearColor(unsigned char r, unsigned char g, unsigned char 
     mClearA = a;
 }
 
-inline Difficulty Game::GetDifficulty() const { return mDiff; }
-inline void Game::SetDifficulty(Difficulty level) { mDiff = level; }
+inline Difficulty Game::GetDifficulty() const { return mDifficulty; }
+inline void Game::SetDifficulty(Difficulty level) { mDifficulty = level; }
 
 inline const ObjectsDataRegistry * Game::GetObjectsRegistry() const { return mObjsRegistry; }
 
-inline int Game::GetNumPlayers() const { return mPlayers.size(); }
+inline int Game::GetNumActivePlayers() const { return mActivePlayers.size(); }
 
-inline Player * Game::GetPlayerByIndex(unsigned int index) const
+inline Player * Game::GetActivePlayerByIndex(unsigned int index) const
 {
-    if(index < mPlayers.size())
-        return mPlayers[index];
+    if(index < mActivePlayers.size())
+        return mActivePlayers[index];
     else
         return nullptr;
 }
@@ -243,19 +305,12 @@ inline Player * Game::GetPlayerByIndex(unsigned int index) const
 inline Player * Game::GetLocalPlayer() const
 {
     // NOTE for now local player is always at index 0. This might change in the future
-    const int indLocal = 0;
-    return mPlayers[indLocal];
+    const unsigned int indLocal = 0;
+    return mActivePlayers[indLocal];
 }
 
-inline void Game::SetLocalPlayerFaction(PlayerFaction faction)
-{
-    mLocalFaction = faction;
-}
-
-inline PlayerFaction Game::GetLocalPlayerFaction() const
-{
-    return mLocalFaction;
-}
+inline void Game::SetLocalPlayerFaction(PlayerFaction faction) { mLocalFaction = faction; }
+inline PlayerFaction Game::GetLocalPlayerFaction() const { return mLocalFaction; }
 
 inline int Game::GetTechUpgradecost(TechUpgradeId upgrade) const
 {
@@ -307,6 +362,9 @@ inline void Game::SetAutoUnitCamera(bool val) { mAutoUnitCamera = val; }
 
 inline bool Game::IsTutorialEnabled() const { return mTutorialEnabled; }
 inline void Game::SetTutorialEnabled(bool val) { mTutorialEnabled = val; }
+
+inline bool Game::IsAutosaveEnabled() const { return mAutoSave; }
+inline void Game::SetAutosaveEnabled(bool val) { mAutoSave = val; }
 
 inline float Game::GetTimeAutoHideMouse() const { return mTimeAutoHideMouse; }
 

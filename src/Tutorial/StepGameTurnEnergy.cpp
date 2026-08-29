@@ -40,7 +40,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
                            const int fW = panel->GetWidth() + (padding * 2);
                            const int fH = panel->GetHeight() + (padding * 2);
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                           mFocusArea->SetScreenArea(fX, fY, fW, fH, false);
                            mFocusArea->SetVisible(true);
                            mFocusArea->SetBlinking(true);
                        });
@@ -54,7 +54,7 @@ StepGameTurnEnergy::StepGameTurnEnergy(const GameHUD * HUD)
                            const int fW = panel->GetWidth() + padding;
                            const int fH = panel->GetHeight() + padding;
 
-                           mFocusArea->SetScreenArea(fX, fY, fW, fH);
+                           mFocusArea->SetScreenArea(fX, fY, fW, fH, false);
                            mFocusArea->SetVisible(true);
                            mFocusArea->SetBlinking(true);
                        });

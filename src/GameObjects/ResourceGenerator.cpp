@@ -8,6 +8,7 @@
 
 #include <sgl/graphic/ParticlesManager.h>
 #include <sgl/graphic/TextureManager.h>
+#include <sgl/utilities/BinaryFile.h>
 
 #include <cmath>
 
@@ -34,6 +35,32 @@ ResourceGenerator::ResourceGenerator(const ObjectData & data, const ObjectInitDa
     SetImage();
 
     UpdateOutput();
+}
+
+bool ResourceGenerator::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = Structure::Load(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    mOutput = bf.ReadInt();
+
+    return true;
+}
+
+bool ResourceGenerator::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = Structure::Save(bf);
+
+    if(!res)
+        return false;
+
+    // flags
+    bf.WriteInt(mOutput);
+
+    return true;
 }
 
 void ResourceGenerator::ScaleOutput(float mult)
@@ -86,10 +113,8 @@ void ResourceGenerator::OnNewTurn(PlayerFaction faction)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    IsoObject * isoObj = GetIsoObject();
-
-    const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y0 = isoObj->GetY() - isoObj->GetHeight() * 0.1f;
+    const float x0 = GetX() + GetWidth() * 0.5f;
+    const float y0 = GetY() - GetHeight() * 0.1f;
 
     DataParticleOutput pd(mOutput, outputType, x0, y0);
 
@@ -98,6 +123,8 @@ void ResourceGenerator::OnNewTurn(PlayerFaction faction)
 
 void ResourceGenerator::UpdateGraphics()
 {
+    Structure::UpdateGraphics();
+
     SetImage();
 }
 
@@ -113,7 +140,6 @@ void ResourceGenerator::SetImage()
         isoObj->SetColor(COLOR_FOW);
 
     const unsigned int faction = GetFaction();
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
 
     unsigned int texId = 0;
 
@@ -122,30 +148,30 @@ void ResourceGenerator::SetImage()
     if(type == ObjectData::TYPE_RES_GEN_ENERGY)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_GEN_ENERGY_F1 + (faction * NUM_ENE_GEN_SPRITES_PER_FAC) + sel;
+            texId = ID_STRUCT_GEN_ENERGY_F1 + faction;
         else
-            texId = ID_STRUCT_GEN_ENERGY + sel;
+            texId = ID_STRUCT_GEN_ENERGY;
     }
     else if(type == ObjectData::TYPE_RES_GEN_MATERIAL)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_GEN_MATERIAL_F1 + (faction * NUM_MAT_GEN_SPRITES_PER_FAC) + sel;
+            texId = ID_STRUCT_GEN_MATERIAL_F1 + faction;
         else
-            texId = ID_STRUCT_GEN_MATERIAL + sel;
+            texId = ID_STRUCT_GEN_MATERIAL;
     }
     else if(type == ObjectData::TYPE_RES_GEN_ENERGY_SOLAR)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_STRUCT_SOLAR_PANEL_F1 + (faction * NUM_SOLAR_PANEL_SPRITES_PER_FAC) + sel;
+            texId = ID_STRUCT_SOLAR_PANEL_F1 + faction;
         else
-            texId = ID_STRUCT_SOLAR_PANEL + sel;
+            texId = ID_STRUCT_SOLAR_PANEL;
     }
     else if(type == ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT)
     {
         if(faction != NO_FACTION && IsVisible())
-            texId = ID_MATERIAL_EXTRACTOR_F1 + (faction * NUM_MATERIAL_EXTRACTOR_SPRITES_PER_FAC) + sel;
+            texId = ID_MATERIAL_EXTRACTOR_F1 + faction;
         else
-            texId = ID_MATERIAL_EXTRACTOR + sel;
+            texId = ID_MATERIAL_EXTRACTOR;
     }
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texId);

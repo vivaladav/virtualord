@@ -102,20 +102,20 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     // assign it to NEW GAME button
     button->SetTooltip(tooltipWarning);
     button->SetTooltipShowingTime(7000);
-    button->SetTooltipDelay(250);
+    button->SetTooltipDelay(100);
 
     // -- BUTTON LOAD GAME --
-    /*
     button = new ButtonMainMenu(sm->GetCString("LOAD_GAME"), panelButtons);
     button->SetY(buttonY);
 
     button->AddOnClickFunction([game]
                                {
-                                    // TODO
+                                    game->LoadGame();
                                });
 
+    button->SetEnabled(game->IsSaveFileValid());
+
     buttonY += button->GetHeight() + VMARGIN;
-    */
 
     // -- BUTTON SETTINGS --
     button = new ButtonMainMenu(sm->GetCString("SETTINGS"), panelButtons);
@@ -287,7 +287,6 @@ void ScreenMainMenu::OnKeyUp(sgl::core::KeyboardEvent & event)
     {
         Game * game = GetGame();
 
-        srand(game->GetRandSeed());
         game->SetLocalPlayerFaction(static_cast<PlayerFaction>(rand() % NUM_FACTIONS));
         game->SetCurrentPlanet(PLANET_1);
         game->SetCurrentTerritory(0);
@@ -358,7 +357,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.7 - \"Defend to win\"", font, content);
+    auto title = new sgui::Label("0.6.9 - \"Graduation battle\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -369,44 +368,46 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "- Completed tutorial for mission 2.\n"
-                  "- Added second part of tutorial for planet screen.\n"
-                  "- Added option in settings to enable/disable constant speed scrolling"
-                  " (disabled by default).\n"
-                  "- Controls settings allow to set what mouse button to use as SELECT and ACTION"
-                  " buttons.\n"
-                  "- Added SFX played after conquering a structure.\n"
-                  "- Camera automatically follows what's happening during a mission.\n"
-                  "- Research center shows a blinking icon on top when not producing"
-                  " research points.\n"
-                  "- Research Center flashes when a tech upgrade is unlockable.\n"
-                  "- Action button that opens the tech tree dialog now shows a notification"
-                  " with the number of upgrades that can be unlocked.\n"
-                  "- Gates close automatically on new turn.\n"
-                  "- Gates open automatically when your units want to cross them.\n"
-                  "- Base flashes when a mission goal is completed.\n"
-                  "- Added new tech upgrades: increase unit slots.\n"
-                  "- Added new tech upgrade: structure trading post.\n"
+                  "- Third tutorial mission.\n"
+                  "- Structure indicator turns green when it's possible to build and red when not.\n"
+                  "- Add missing sound to UI sliders.\n"
+                  "- Focus areas in tutorial are animated on show.\n"
+                  "- New UI for selected objects.\n"
+                  "- Settings are saved on file and loaded when restarting the game.\n"
+                  "- Enemy faction is truly random when starting a new mission.\n"
+                  "- Game load & save (experimental).\n"
+                  "- New option in settings to control auto-save.\n"
+                  "- New mountains version.\n"
+                  "- New camera tracking objects when moving.\n"
+                  "- New plant type: cactus.\n"
+                  "- 2 new maps (planet 1 completed).\n"
+                  "- Units and structures show resources spent when doing something.\n"
                   "\nCHANGES\n"
-                  "- Make default scrolling speed a 5.\n"
-                  "- Reduced time / actions to complete first map tutorial.\n"
-                  "- Reduced times of unit and structure actions.\n"
-                  "- New graphics for barracks.\n"
-                  "- After units shoot action doesn't go back to default (move) to continue shooting.\n"
-                  "- Generators and Base produce more resources.\n"
-                  "- Increased initial storage space of energy and material.\n"
+                  "- In tutorial 1, text explaining to move to tower stays on screen until you"
+                  " center the view on it.\n"
+                  "- Exploding mini-units now explode when they stop next to an enemy even if they"
+                  " haven't reached their target yet.\n"
+                  "- Simplified values setting in dialog to control research production.\n"
                   "\nFIXES\n"
-                  "- Fixed crash when opening trading dialog.\n"
-                  "- Fixed crash after closing trading dialog and resources change.\n"
-                  "- Fixed AI not active after first tutorial.\n"
-                  "- Fixed new structure indicator not updating the position in same cases.\n"
-                  "- Fixed ComboBox not deleting entries when destroyed.\n"
-                  "- Fixed blinking energy icon appearing on some structures when it shouldn't.\n"
-                  "- Fixed crash when moving mouse outside of map while unit is attacking.\n"
-                  "- Fixed computation of probability of weapon hit.\n"
-                  "- Fixed resources update in some corner cases giving wrong numbers.\n"
-                  "- Fixed structure indicator rendered below other structures.\n"
-                  "- Fixed Trading Post not reducing quantities to sell.\n"
+                  "- Walls now connect to bunkers too.\n"
+                  "- Units no longer can build structures far away without moving.\n"
+                  "- Camera no longer keeps moving when view is centered on some object or cell.\n"
+                  "- Selection no longer allowed when moving camera in tutorial 1.\n"
+                  "- Tutorial always starting if enabled and starting a new game.\n"
+                  "- It's no longer possible to select random objects during the tutorial.\n"
+                  "- Automatic camera works fine when moving near map's border too.\n"
+                  "- It's no longer possible to move units when clicking action buttons during"
+                  " the tutorial.\n"
+                  "- Exploding objects damage all surrounding objects.\n"
+                  "- End mission dialog shows correct number of casualties.\n"
+                  "- Mini-units no longer shoot only once.\n"
+                  "- Casualties and kills stats are updated when using exploding mini-units too.\n"
+                  "- Quitting a tutorial doesn't award the mission goal \"tutorial completed\".\n"
+                  "- Cancelling an object action now works (reset to default action) for all"
+                  " actions.\n"
+                  "- Fixed random crashes when aborting the tutorial while a dialog is open.\n"
+                  "- Fixed crash when leaving game while conquering cells.\n"
+                  "- Resources spent when conquering structure are properly handled now.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

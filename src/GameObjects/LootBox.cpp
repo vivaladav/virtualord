@@ -12,6 +12,7 @@
 #include <sgl/graphic/TextureManager.h>
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
+#include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/LoadedDie.h>
 #include <sgl/utilities/UniformDistribution.h>
 
@@ -39,6 +40,34 @@ LootBox::LootBox(const ObjectData & data, const ObjectInitData & initData)
     // ObjectData::TYPE_LOOTBOX
     else
        SetPrize();
+}
+
+bool LootBox::Load(sgl::utilities::BinaryFile & bf)
+{
+    const bool res = GameObject::Load(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    mPrizeQuantity = bf.ReadInt();
+    mPrizeType = static_cast<Prize>(bf.ReadUint());
+
+    return true;
+}
+
+bool LootBox::Save(sgl::utilities::BinaryFile & bf) const
+{
+    const bool res = GameObject::Save(bf);
+
+    if(!res)
+        return false;
+
+    // values
+    bf.WriteInt(mPrizeQuantity);
+    bf.WriteUint(mPrizeType);
+
+    return true;
 }
 
 bool LootBox::IsExploding() const
@@ -84,10 +113,8 @@ void LootBox::Open(Player * p)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    IsoObject * isoObj = GetIsoObject();
-
-    const float x0 = isoObj->GetX() + isoObj->GetWidth() * 0.5f;
-    const float y0 = isoObj->GetY() - isoObj->GetHeight() * 0.25f;
+    const float x0 = GetX() + GetWidth() * 0.5f;
+    const float y0 = GetY() - GetHeight() * 0.25f;
 
     OutputType ot[NUM_OUTPUT_TYPES] =
     {
@@ -103,7 +130,7 @@ void LootBox::Open(Player * p)
                   static_cast<unsigned int>(NUM_LB_PRIZES));
 
     const float speed = 40.f;
-    const float decaySpeed = 100.f;
+    const float decaySpeed = 80.f;
     const float timeLife = 1.f;
     DataParticleOutput pd(mPrizeQuantity, ot[mPrizeType], x0, y0, speed, decaySpeed, timeLife);
 
@@ -157,7 +184,7 @@ void LootBox::SetPrize()
         max = mult * 250;
     }
 
-    sgl::utilities::UniformDistribution d(min, max, GetGame()->GetRandSeed());
+    sgl::utilities::UniformDistribution d(min, max);
 
     // round quantity to 5
     const int r = 5;
@@ -175,10 +202,8 @@ void LootBox::SetImage()
     else
         isoObj->SetColor(COLOR_FOW);
 
-    const unsigned int sel = static_cast<unsigned int>(IsSelected());
-    const unsigned int texInd0 = GetObjectType() == ObjectData::TYPE_LOOTBOX2 ?
-                                 IND_LOOTBOX_L2 : IND_LOOTBOX;
-    const unsigned int texInd = texInd0 + sel;
+    const unsigned int texInd = GetObjectType() == ObjectData::TYPE_LOOTBOX2 ?
+                                IND_LOOTBOX_L2 : IND_LOOTBOX;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteCollectiblesFile, texInd);
     isoObj->SetTexture(tex);

@@ -14,21 +14,34 @@
 #include "GameObjects/Structure.h"
 #include "GameObjects/Unit.h"
 
-#include <cmath>
+#include <sgl/utilities/BinaryFile.h>
+
+#include <algorithm>
 #include <iostream>
+
+#include <cmath>
 
 namespace game
 {
 
-Player::Player(const char * name, int pid)
+Player::Player()
     : mDummyStat(INVALID_STAT, 0)
-    , mName(name)
+    , mOnNumUnitsChanged([](){})
+    , mOnTurnEnergyChanged([](){})
+    , mOnTurnMaxEnergyChanged([](){})
+{
+    InitUpgrades();
+}
+
+Player::Player(int pid)
+    : mDummyStat(INVALID_STAT, 0)
     , mOnNumUnitsChanged([](){})
     , mOnTurnEnergyChanged([](){})
     , mOnTurnMaxEnergyChanged([](){})
     , mPlayerId(pid)
     , mFaction(NO_FACTION)
 {
+    // STATS
     mStats.emplace_back(Stat::BLOBS, 0);
     mStats.emplace_back(Stat::DIAMONDS, 0);
     mStats.emplace_back(Stat::ENERGY, 0);
@@ -46,17 +59,7 @@ Player::Player(const char * name, int pid)
     mStats[Stat::MONEY].SetMax(99999999);
     mStats[Stat::RESEARCH].SetMax(999999);
 
-    // -- UPGRADES --
-    for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
-    {
-        const auto tu = static_cast<TechUpgradeId>(i);
-
-        mUpgrades.emplace(tu, false);
-        mUpgradesAvailable.emplace(tu, false);
-    }
-
-    mUpgrades.emplace(TECH_UP_NULL, false);
-
+    // UPGRADES
     InitUpgrades();
 
     // UPDATE VALUES
@@ -66,6 +69,178 @@ Player::Player(const char * name, int pid)
 Player::~Player()
 {
     delete mAI;
+}
+
+bool Player::Load(sgl::utilities::BinaryFile & bf)
+{
+    // player ID
+    mPlayerId = bf.ReadInt();
+    // faction
+    mFaction = static_cast<PlayerFaction>(bf.ReadUint());
+    // name
+    bf.ReadString(mName);
+
+    // upgrades status - read only unlocked ones
+    const unsigned int numUnlocked = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numUnlocked; ++i)
+    {
+        const auto upgrade = static_cast<TechUpgradeId>(bf.ReadUint());
+        mUpgrades[upgrade] = true;
+    }
+
+    // upgrades available - read only available ones
+    const unsigned int numAvailable = bf.ReadUint();
+
+    for(unsigned int i = 0; i < numAvailable; ++i)
+    {
+        const auto upgrade = static_cast<TechUpgradeId>(bf.ReadUint());
+        mUpgradesAvailable[upgrade] = true;
+    }
+
+    // STATS
+    for(unsigned int i = 0; i < NUM_PSTATS; ++i)
+    {
+        const unsigned int statId = bf.ReadUint();
+        const int val = bf.ReadInt();
+        const int min = bf.ReadInt();
+        const int max = bf.ReadInt();
+
+        mStats.emplace_back(statId, val);
+        mStats.back().SetMin(min);
+        mStats.back().SetMax(max);
+    }
+
+    // available mini-units
+    const unsigned int numAvMiniUnits = bf.ReadUint();
+    mAvailableMiniUnits.reserve(numAvMiniUnits);
+
+    for(unsigned int i = 0; i < numAvMiniUnits; ++i)
+        mAvailableMiniUnits.emplace_back(bf.ReadSizeT());
+
+    // available structures
+    const unsigned int numAvStructures = bf.ReadUint();
+    mAvailableStructures.reserve(numAvStructures);
+
+    for(unsigned int i = 0; i < numAvStructures; ++i)
+        mAvailableStructures.emplace_back(bf.ReadSizeT());
+
+    // available units
+    const unsigned int numAvUnits = bf.ReadUint();
+    mAvailableUnits.reserve(numAvUnits);
+
+    for(unsigned int i = 0; i < numAvUnits; ++i)
+        mAvailableUnits.emplace_back(bf.ReadSizeT());
+
+    // turn data
+    mTurnEnergy = bf.ReadFloat();
+    mTurnMaxEnergy = bf.ReadFloat();
+
+    // stats
+    mTurnsPlayed = bf.ReadUint();
+    mNumCells = bf.ReadUint();
+    mNumLinkedCells = bf.ReadUint();
+    mMaxUnits = bf.ReadUint();
+    mEnemiesKilled = bf.ReadUint();
+    mCasualties = bf.ReadUint();
+
+    // upgrade multiplayers
+    mBaseProdMult = bf.ReadFloat();
+    mStorageEnergyMult = bf.ReadFloat();
+    mStorageMaterialMult = bf.ReadFloat();
+    mStorageDiamondsMult = bf.ReadFloat();
+    mStorageBlobsMult = bf.ReadFloat();
+
+    return true;
+}
+
+bool Player::Save(sgl::utilities::BinaryFile & bf) const
+{
+    // player ID
+    bf.WriteInt(mPlayerId);
+    // faction
+    bf.WriteUint(mFaction);
+    // name
+    bf.WriteString(mName);
+
+    // upgrades status - write only unlocked ones
+    const unsigned int unlocked = std::count_if(mUpgrades.begin(), mUpgrades.end(),
+                                                [](const std::pair<TechUpgradeId, bool> & it)
+                                                {
+                                                    return it.second == true;
+                                                });
+    bf.WriteUint(unlocked);
+
+    for(auto it : mUpgrades)
+    {
+        if(it.second)
+            bf.WriteUint(it.first);
+    }
+
+    // upgrades available - write only available ones
+    const unsigned int available = std::count_if(mUpgradesAvailable.begin(), mUpgradesAvailable.end(),
+                                                [](const std::pair<TechUpgradeId, bool> & it)
+                                                {
+                                                    return it.second == true;
+                                                });
+    bf.WriteUint(available);
+
+    for(auto it : mUpgradesAvailable)
+    {
+        if(it.second)
+            bf.WriteUint(it.first);
+    }
+
+    // stats
+    for(const StatValue & s : mStats)
+    {
+        bf.WriteUint(s.GetId());
+        bf.WriteInt(s.GetValue());
+        bf.WriteInt(s.GetMin());
+        bf.WriteInt(s.GetMax());
+    }
+
+    // available mini-units
+    const unsigned int numAvMiniUnits = mAvailableMiniUnits.size();
+    bf.WriteUint(numAvMiniUnits);
+
+    for(const GameObjectTypeId type : mAvailableMiniUnits)
+        bf.WriteSizeT(type);
+
+    // available structures
+    const unsigned int numAvStructures = mAvailableStructures.size();
+    bf.WriteUint(numAvStructures);
+
+    for(const GameObjectTypeId type : mAvailableStructures)
+        bf.WriteSizeT(type);
+
+    // available units
+    const unsigned int numAvUnits = mAvailableUnits.size();
+    bf.WriteUint(numAvUnits);
+
+    for(const GameObjectTypeId type : mAvailableUnits)
+        bf.WriteSizeT(type);
+
+    // turn data
+    bf.WriteFloat(mTurnEnergy);
+    bf.WriteFloat(mTurnMaxEnergy);
+
+    // stats
+    bf.WriteUint(mTurnsPlayed);
+    bf.WriteUint(mNumCells);
+    bf.WriteUint(mNumLinkedCells);
+    bf.WriteUint(mMaxUnits);
+    bf.WriteUint(mEnemiesKilled);
+    bf.WriteUint(mCasualties);
+
+    // upgrade multiplayers
+    bf.WriteFloat(mBaseProdMult);
+    bf.WriteFloat(mStorageEnergyMult);
+    bf.WriteFloat(mStorageMaterialMult);
+    bf.WriteFloat(mStorageDiamondsMult);
+    bf.WriteFloat(mStorageBlobsMult);
+
+    return true;
 }
 
 unsigned int Player::GetNumUnitsByType(GameObjectTypeId type) const
@@ -342,6 +517,13 @@ void Player::RemoveOnResourceRangeChanged(Stat sid, unsigned int funId)
 {
     if(sid < NUM_PSTATS)
         mStats[sid].RemoveOnRangeChanged(funId);
+}
+
+void Player::ResetMissionData()
+{
+    mNumCells = 0;
+    mEnemiesKilled = 0;
+    mCasualties = 0;
 }
 
 void Player::HandleCollectable(GameObject * collected, GameObject * collector)
@@ -674,10 +856,10 @@ void Player::ClearSelectedObject()
 
     // in case object is part of a group -> deselect all members
     if(og != nullptr)
-        og->SetSelected(false);
+        og->SetSelected(false, nullptr);
     // standard single object -> deselect
     else
-        mSelObj->SetSelected(false);
+        mSelObj->SetSelected(false, nullptr);
 
     mSelObj = nullptr;
 }
@@ -685,28 +867,9 @@ void Player::ClearSelectedObject()
 void Player::SetSelectedObject(GameObject * obj)
 {
     if(mSelObj != nullptr)
-        mSelObj->SetSelected(false);
+        mSelObj->SetSelected(false, nullptr);
 
     mSelObj = obj;
-
-    auto og = mSelObj->GetGroup();
-
-    // in case object is part of a group -> select all members
-    if(og != nullptr)
-    {
-        og->DoForAll([](GameObject * o)
-        {
-            o->SetActiveActionToDefault();
-            o->SetSelected(true);
-        });
-    }
-    // standard single object -> select
-    else
-    {
-        // reset active action
-        mSelObj->SetActiveActionToDefault();
-        mSelObj->SetSelected(true);
-    }
 }
 
 int Player::GetResourceProduction(ExtendedResource type) const
@@ -760,6 +923,16 @@ int Player::GetResourceDelta(ExtendedResource type) const
 
 void Player::InitUpgrades()
 {
+    for(unsigned int i = 0; i < NUM_TECH_UPGRADES; ++i)
+    {
+        const auto tu = static_cast<TechUpgradeId>(i);
+
+        mUpgrades.emplace(tu, false);
+        mUpgradesAvailable.emplace(tu, false);
+    }
+
+    mUpgrades.emplace(TECH_UP_NULL, false);
+
     mUpgradesAvailable[TECH_UP_BASE_IMPROVE_1] = true;
     mUpgradesAvailable[TECH_UP_UNIT_SLOTS_1] = true;
 }
