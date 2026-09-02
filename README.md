@@ -26,7 +26,7 @@ You can also follow all the less frequent updates on social media:
 
 
 ## Current status
-**0.6.7 (alpha)**
+**0.6.9 (alpha)**
 
 ### Videos
 Announcement trailer
