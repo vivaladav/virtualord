@@ -931,7 +931,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     {
         const core::Pointd2D p0(1300, 100);
         auto step = new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3",
-                                               "TUT_GAME_BUILD_GATE_2",
+                                               "TUT_GAME_BUILD_DTOWER_4",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
                                                TutorialConstants::catDefenses,
                                                TutorialConstants::structDefTower);
@@ -1007,7 +1007,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     {
         const core::Pointd2D p0(1300, 100);
         auto step = new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3",
-                                               "TUT_GAME_BUILD_GATE_2",
+                                               "TUT_GAME_BUILD_DTOWER_4",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
                                                TutorialConstants::catDefenses,
                                                TutorialConstants::structDefTower);
@@ -1130,7 +1130,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     {
         const core::Pointd2D p0(1300, 100);
         auto step = new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3",
-                                               "TUT_GAME_BUILD_GATE_2",
+                                               "TUT_GAME_BUILD_DTOWER_4",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
                                                TutorialConstants::catDefenses,
                                                TutorialConstants::structDefTower);
