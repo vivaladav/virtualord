@@ -359,7 +359,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.15.1 - \"Playtest more\"", font, content);
+    auto title = new sgui::Label("0.6.17 - \"...\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -370,35 +370,11 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "- New screen: CREDITS.\n"
-                  "- Added construction of wall with gate at the end of tutorial 1.\n"
-                  "- Units can build towers and gates on cells with wall.\n"
-                  "- Towers and bunkers can attack manually.\n"
-                  "- Save slots show mission and turn when saved in game.\n"
-                  "- Experimental multiple screen support in settings.\n"
-                  "- Video mode and resolution saved and loaded from settings.\n"
-                  "- New Video option to grab the mouse inside the game window.\n"
+                  "\n"
                   "\nCHANGES\n"
-                  "- Game is no longer paused when mouse leaves the screen.\n"
-                  "- Energy and material generators produce more resources.\n"
-                  "- Updated graphics of: trading post, spawning tower, hospital.\n"
-                  "- Removed faction energy.\n"
-                  "- Removed auto turn end.\n"
-                  "- Improved particles explosion for lasers.\n"
-                  "- Changed design for showing text in bottom control panel.\n"
-                  "- Tutorial missions 2 and 3 redesigned from scratch.\n"
-                  "- Different font sizes for hit points depending on outcome.\n"
-                  "- Increased contrast in tutorial info panels.\n"
+                  "\n"
                   "\nFIXES\n"
-                  "- Music no longer stops after first play during missions.\n"
-                  "- Music no longer stops after first play in other screens.\n"
-                  "- Option to hide static cursor is saved correctly.\n"
-                  "- Fixed Research Center not producing research points when on low resources.\n"
-                  "- Fixed check of valid saved files in main menu.\n"
-                  "- Add missing view attribute to City Block.\n"
-                  "- Owned Structures are unlinked if enemy interrups connection"
-                  " conquering a structure.\n"
-                  "- Reduced camera shake when following moving units.\n"
+                  "\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
