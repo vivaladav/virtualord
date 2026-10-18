@@ -838,6 +838,17 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
         return step;
     });
+    AddStep([this, local]
+    {
+        TutorialStep * step = nullptr;
+
+        if(mUpgrade1Unlocked)
+            step = new StepDummy;
+        else
+            step = new StepDelay(0.5f);
+
+        return step;
+    });
     // CONNECT WALL RIGHT
     AddStep([gameMap, isoMap]
     {
