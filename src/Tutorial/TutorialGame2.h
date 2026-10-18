@@ -14,7 +14,7 @@ public:
     ~TutorialGame2();
 
 private:
-    bool mFirstGenConqueredIsEnergy = false;
+    bool mUpgrade1Unlocked = false;
 };
 
 } // namespace game

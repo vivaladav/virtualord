@@ -10,7 +10,6 @@ StepGameWaitTurn::StepGameWaitTurn(const ScreenGame * screen)
 {
 }
 
-
 void StepGameWaitTurn::Update(float delta)
 {
     TutorialStep::Update(delta);
