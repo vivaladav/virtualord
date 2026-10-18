@@ -15,6 +15,7 @@ public:
 
 private:
     bool mUpgrade1Unlocked = false;
+    bool mUpgrade2Unlocked = false;
 };
 
 } // namespace game
