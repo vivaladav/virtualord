@@ -17,6 +17,7 @@
 #include "Screens/ScreenGame.h"
 #include "Tutorial/StepAISetActive.h"
 #include "Tutorial/StepDelay.h"
+#include "Tutorial/StepDummy.h"
 #include "Tutorial/StepGameAddEnemy.h"
 #include "Tutorial/StepGameBackToBase.h"
 #include "Tutorial/StepGameBuildStructAreaFree.h"
@@ -107,6 +108,9 @@ const Cell2D areaStorageBR(47, 47);
 
 const unsigned int muSquads = 3;
 const unsigned int muElements = 2;
+
+constexpr TechUpgradeId upgrade1 = TECH_UP_RADAR_STATION;
+constexpr TechUpgradeId upgrade2 = TECH_UP_STORAGE_STRUCTS;
 
 }
 
@@ -776,40 +780,134 @@ TutorialGame3::TutorialGame3(Screen * screen)
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
-    AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local]
     {
-        const auto all = local->GetStructuresByType(ObjectData::TYPE_RESEARCH_CENTER);
-        const GameObject * rc = all.back();
-        const float speed = 1000.f;
-        return new StepGameMoveCameraOverObject(rc, speed);
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade1))
+            step = new StepDummy;
+        else
+        {
+            const auto all = local->GetStructuresByType(ObjectData::TYPE_RESEARCH_CENTER);
+            const GameObject * rc = all.back();
+            const float speed = 1000.f;
+            step = new StepGameMoveCameraOverObject(rc, speed);
+        }
+
+        return step;
     });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([]
+    AddStep([local]
     {
-        const core::Pointd2D p0(685, 200);
-        return new StepGameSingleInfo(p0, "TUT_GAME_RES_CEN_2");
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade1))
+            step = new StepDummy;
+        else
+            step = new StepDelay(0.5f);
+
+        return step;
     });
-    AddStep([this, game, isoMap, local]
+    AddStep([local]
     {
-        const core::Pointd2D p0(710, 250);
-        const auto all = local->GetStructuresByType(ObjectData::TYPE_RESEARCH_CENTER);
-        const GameObject * rc = all.back();
-        return new StepGameSelectObject(game, isoMap, rc, "TUT_GAME_RES_CEN_1", p0);
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade1))
+            step = new StepDummy;
+        else
+        {
+            const core::Pointd2D p0(685, 200);
+            step = new StepGameSingleInfo(p0, "TUT_GAME_RES_CEN_2");
+        }
+
+        return step;
     });
-    AddStep([game, gs, panelActions]
+    AddStep([game, isoMap, local]
     {
-        const core::Pointd2D p0(1000, 650);
-        return new StepGameTechTreeIcon(game, gs, panelActions, p0);
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade1))
+            step = new StepDummy;
+        else
+        {
+            const core::Pointd2D p0(710, 250);
+            const auto all = local->GetStructuresByType(ObjectData::TYPE_RESEARCH_CENTER);
+            const GameObject * rc = all.back();
+            step = new StepGameSelectObject(game, isoMap, rc, "TUT_GAME_RES_CEN_1", p0);
+        }
+
+        return step;
     });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([hud] { return new StepGameTechTreeDialog(hud, TECH_UP_RADAR_STATION, false); });
-    AddStep([] { return new StepDelay(0.5f); });
-    // MOVE CAMERA BACK TO WALL LEFT
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([isoMap]
+    AddStep([this, game, gs, panelActions, local]
     {
-        return new StepGameMoveCameraOverCell(wallLeft2TL, isoMap, speedCamera);
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade1))
+            step = new StepDummy;
+        else
+        {
+            const core::Pointd2D p0(1000, 650);
+            step = new StepGameTechTreeIcon(game, gs, panelActions, p0);
+
+            mUpgrade1Unlocked = true;
+        }
+
+        return step;
+    });
+    AddStep([local]
+    {
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade1))
+            step = new StepDummy;
+        else
+            step = new StepDelay(0.5f);
+
+        return step;
+    });
+    AddStep([hud, local]
+    {
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade1))
+            step = new StepDummy;
+        else
+            step = new StepGameTechTreeDialog(hud, upgrade1, true);
+
+        return step;
+    });
+    AddStep([local]
+    {
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade1))
+            step = new StepDummy;
+        else
+            step = new StepDelay(0.5f);
+
+        return step;
+    });
+    // MOVE CAMERA
+    AddStep([this, isoMap, local]
+    {
+        TutorialStep * step = nullptr;
+
+        if(!mUpgrade1Unlocked)
+            step = new StepDummy;
+        else
+            step = new StepGameMoveCameraOverCell(wallLeft2TL, isoMap, speedCamera);
+
+        return step;
+    });
+    AddStep([this, local]
+    {
+        TutorialStep * step = nullptr;
+
+        if(mUpgrade1Unlocked)
+            step = new StepDummy;
+        else
+            step = new StepDelay(0.5f);
+
+        return step;
     });
     // BUILD GATE IN LEFT WALL 2
     AddStep([local, game]
@@ -1781,36 +1879,102 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
-    // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
-    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE CAMERA OVER RESEARCH CENTER
     AddStep([this, local]
     {
-        const auto all = local->GetStructuresByType(ObjectData::TYPE_RESEARCH_CENTER);
-        const GameObject * rc = all.back();
-        const float speed = 1000.f;
-        return new StepGameMoveCameraOverObject(rc, speed);
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade2))
+            step = new StepDummy;
+        else
+        {
+            const auto all = local->GetStructuresByType(ObjectData::TYPE_RESEARCH_CENTER);
+            const GameObject * rc = all.back();
+            const float speed = 1000.f;
+            step = new StepGameMoveCameraOverObject(rc, speed);
+        }
+
+        return step;
     });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([]
+    AddStep([local]
     {
-        const core::Pointd2D p0(685, 200);
-        return new StepGameSingleInfo(p0, "TUT_GAME_RES_CEN_2");
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade2))
+            step = new StepDummy;
+        else
+            step = new StepDelay(0.5f);
+
+        return step;
     });
-    AddStep([this, game, isoMap, local]
+    AddStep([local]
     {
-        const core::Pointd2D p0(710, 250);
-        const auto all = local->GetStructuresByType(ObjectData::TYPE_RESEARCH_CENTER);
-        const GameObject * rc = all.back();
-        return new StepGameSelectObject(game, isoMap, rc, "TUT_GAME_RES_CEN_1", p0);
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade2))
+            step = new StepDummy;
+        else
+        {
+            const core::Pointd2D p0(685, 200);
+            step = new StepGameSingleInfo(p0, "TUT_GAME_RES_CEN_2");
+        }
+
+        return step;
     });
-    AddStep([game, gs, panelActions]
+    // SELECT RESEARCH CENTER
+    AddStep([game, isoMap, local]
     {
-        const core::Pointd2D p0(1000, 650);
-        return new StepGameTechTreeIcon(game, gs, panelActions, p0);
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade2))
+            step = new StepDummy;
+        else
+        {
+            const core::Pointd2D p0(710, 250);
+            const auto all = local->GetStructuresByType(ObjectData::TYPE_RESEARCH_CENTER);
+            const GameObject * rc = all.back();
+            step = new StepGameSelectObject(game, isoMap, rc, "TUT_GAME_RES_CEN_1", p0);
+        }
+
+        return step;
     });
-    AddStep([] { return new StepDelay(0.5f); });
-    AddStep([hud] { return new StepGameTechTreeDialog(hud, TECH_UP_STORAGE_STRUCTS, false); });
-    AddStep([] { return new StepDelay(0.5f); });
+    // UNLOCK TECH UPGRADE 2
+    AddStep([this, game, gs, panelActions, local]
+    {
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade2))
+            step = new StepDummy;
+        else
+        {
+            const core::Pointd2D p0(1000, 650);
+            step = new StepGameTechTreeIcon(game, gs, panelActions, p0);
+        }
+
+        return step;
+    });
+    AddStep([local]
+    {
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade2))
+            step = new StepDummy;
+        else
+            step = new StepDelay(0.5f);
+
+        return step;
+    });
+    AddStep([hud, local]
+    {
+        TutorialStep * step = nullptr;
+
+        if(local->IsUpgradeUnlocked(upgrade2))
+            step = new StepDummy;
+        else
+            step = new StepGameTechTreeDialog(hud, upgrade2, false);
+
+        return step;
+    });
     // ENABLE AI
     AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), true); });
     // SAVE GAME

@@ -374,7 +374,8 @@ void ScreenMainMenu::CreateChangelog()
                   "\nCHANGES\n"
                   "\n"
                   "\nFIXES\n"
-                  "\n"
+                  "- Prevented soft-lock when upgrade is unlocked in tutorial missions"
+                  " before than expected.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
