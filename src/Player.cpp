@@ -333,6 +333,8 @@ unsigned int Player::GetNumStructuresByType(GameObjectTypeId type) const
 
 void Player::AddStructure(Structure * s)
 {
+    assert(s->IsStructure());
+
     mStructures.push_back(s);
 }
 

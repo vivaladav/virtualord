@@ -663,6 +663,13 @@ void ScreenGame::InitPlayers()
     {
         Player * p = game->GetActivePlayerByIndex(i);
 
+#ifdef DEBUG
+        // make sure Player data is clared
+        assert(p->GetNumStructures() == 0);
+        assert(p->GetNumUnits() == 0);
+        assert(p->GetSelectedObject() == nullptr);
+#endif
+
         // AI players
         if(p->IsAI())
         {
