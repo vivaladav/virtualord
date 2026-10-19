@@ -376,6 +376,7 @@ void ScreenMainMenu::CreateChangelog()
                   "\nFIXES\n"
                   "- Prevented soft-lock when upgrade is unlocked in tutorial missions"
                   " before than expected.\n"
+                  "- Fixed crash happening when playing multiple missions in one run.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

@@ -910,6 +910,9 @@ void Player::OnMissionOver()
     mUnits.clear();
     mStructures.clear();
 
+    mVisMap.clear();
+    mWalkableOverrideMap.clear();
+
     mSelObj = nullptr;
 
     SwitchFromLocalToGlobalResources();

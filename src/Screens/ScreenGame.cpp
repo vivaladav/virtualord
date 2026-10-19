@@ -128,13 +128,7 @@ ScreenGame::ScreenGame(Game * game)
 
 ScreenGame::~ScreenGame()
 {
-    Game * game = GetGame();
-
     mLocalPlayer->RemoveOnUpgradeUnlocked(mIdOnUnlockUpgraded);
-
-    game->RemoveOnSettingsChangedFunction(mIdOnSettingsChanged);
-    game->ClearAllAIActivePlayers();
-    game->GetTutorialManager()->ClearLastStartedTutorialId();
 
     delete mPathfinder;
     delete mPartMan;
@@ -160,6 +154,9 @@ ScreenGame::~ScreenGame()
     // make sure to reset stage visibility in case it was off before exit
     stage->SetVisible(true);
 
+    // handle Game data
+    Game * game = GetGame();
+
     // clear Players
     // NOTE do it after all deletes so listeners are removed
     for(int i = 0; i < game->GetNumActivePlayers(); ++i)
@@ -167,6 +164,10 @@ ScreenGame::~ScreenGame()
         Player * p = game->GetActivePlayerByIndex(i);
         p->OnMissionOver();
     }
+
+    game->RemoveOnSettingsChangedFunction(mIdOnSettingsChanged);
+    game->GetTutorialManager()->ClearLastStartedTutorialId();
+    game->ClearAllAIActivePlayers();
 }
 
 void ScreenGame::InitNewGame()
