@@ -181,7 +181,7 @@ bool Unit::CanBuild() const
 
 float Unit::GetTimeBuildStructure() const
 {
-    const float maxTime = 3.f;
+    const float maxTime = 2.5f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONSTRUCTION));
 }
 
@@ -212,7 +212,7 @@ float Unit::GetTimeConquestStructure() const
 
 float Unit::GetTimeOpenLootbox() const
 {
-    const float maxTime = 2.f;
+    const float maxTime = 1.75f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONQUEST));
 }
 

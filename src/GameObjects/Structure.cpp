@@ -24,7 +24,7 @@ Structure::~Structure()
 
 float Structure::GetTimeBuildUnit() const
 {
-    const float maxTime = 2.f;
+    const float maxTime = 1.75f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONSTRUCTION));
 }
 

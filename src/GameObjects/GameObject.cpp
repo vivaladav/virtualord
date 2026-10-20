@@ -952,7 +952,12 @@ float GameObject::GetTime(float maxTime, float attribute) const
 
     const float baseTime = 0.25f;
 
-    return baseTime + maxTime - (maxTime * attribute / MAX_STAT_FVAL);
+    if(maxTime < baseTime)
+        return baseTime;
+
+    const float varTime = maxTime - baseTime;
+
+    return baseTime + varTime - (varTime * attribute / MAX_STAT_FVAL);
 }
 
 void GameObject::SetMaxVisibilityLevel(float maxVal, float maxValLinked)
