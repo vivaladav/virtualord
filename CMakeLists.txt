@@ -517,6 +517,8 @@ add_executable(
     src/Tutorial/StepPlanetMapConquerTerritory.cpp
     src/Tutorial/StepPlanetMapConquerTerritoryStart.h
     src/Tutorial/StepPlanetMapConquerTerritoryStart.cpp
+    src/Tutorial/StepPlanetMapExploreCancel.h
+    src/Tutorial/StepPlanetMapExploreCancel.cpp
     src/Tutorial/StepPlanetMapExploreTerritory.h
     src/Tutorial/StepPlanetMapExploreTerritory.cpp
     src/Tutorial/StepPlanetMapExploreTerritoryInfo.h
@@ -529,6 +531,8 @@ add_executable(
     src/Tutorial/StepPlanetMapIntro.cpp
     src/Tutorial/StepPlanetMapNoInfo.h
     src/Tutorial/StepPlanetMapNoInfo.cpp
+    src/Tutorial/StepPlanetMapNoResources.h
+    src/Tutorial/StepPlanetMapNoResources.cpp
     src/Tutorial/StepPlanetMapSelectTerritory.h
     src/Tutorial/StepPlanetMapSelectTerritory.cpp
     src/Tutorial/StepPlanetMapSendAI.h
