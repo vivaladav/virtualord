@@ -47,6 +47,19 @@ enum GameObjectActionType : unsigned int
     NUM_OBJ_ACTIONS
 };
 
+enum AttackStrategy : unsigned int
+{
+    ATTSTR_NO_ATTACK,
+    ATTSTR_CLOSEST_ENEMY,
+    ATTSTR_RANDOM_ENEMY,
+    ATTSTR_LOWEST_HP_ENEMY,
+    ATTSTR_HIGHEST_HP_ENEMY,
+
+    NUM_ATTACK_STRATEGIES,
+
+    ATTSTR_NULL,
+};
+
 class Game;
 class GameMap;
 class GameObjectsGroup;
@@ -185,11 +198,13 @@ public:
     void SetWeapon(Weapon * w);
 
     void SetAttackMode(AttackMode am);
+    AttackStrategy GetAttackStrategy() const;
+    void SetAttackStrategy(AttackStrategy as);
     void SetPerfectShot(bool enabled);
     void SetFatalHit(bool enabled);
+
     void ClearTargetAttack();
     bool SetTargetAttack(GameObject * obj);
-
     void FindAndSetEnemyTarget();
     bool HasEnemyInRange();
 
@@ -257,6 +272,11 @@ private:
 
     void PositionWarningMessage();
 
+    GameObject * FindEnemyClosest();
+    GameObject * FindEnemyRandom();
+    GameObject * FindEnemyLowHealth();
+    GameObject * FindEnemyHighHealth();
+
     void ShowIconUpgrade();
     void HideIconUpgrade();
     void PositionIconUpgrade();
@@ -321,6 +341,8 @@ private:
     GameObjectActionType mDefaultAction = IDLE;
 
     PlayerFaction mFaction;
+
+    AttackStrategy mAttStrategy = ATTSTR_CLOSEST_ENEMY;
 
     unsigned int mRows = 1;
     unsigned int mCols = 1;
@@ -437,6 +459,9 @@ inline const std::unordered_map<ObjAttId, int> & GameObject::GetAttributes() con
 }
 
 inline const Weapon * GameObject::GetWeapon() const { return mWeapon; }
+
+inline void GameObject::SetAttackStrategy(AttackStrategy as) { mAttStrategy = as; }
+inline AttackStrategy GameObject::GetAttackStrategy() const { return mAttStrategy; }
 
 inline void GameObject::SetIndestructible(bool val) { mIndestructible = val; }
 

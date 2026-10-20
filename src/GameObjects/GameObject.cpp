@@ -122,6 +122,7 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     mActiveAction = static_cast<GameObjectActionType>(bf.ReadUint());
     mCurrAction = static_cast<GameObjectActionType>(bf.ReadUint());
     mDefaultAction = static_cast<GameObjectActionType>(bf.ReadUint());
+    mAttStrategy = static_cast<AttackStrategy>(bf.ReadUint());
 
     // attributes
     const unsigned int numAttr = bf.ReadUint();
@@ -164,6 +165,7 @@ bool GameObject::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(mActiveAction);
     bf.WriteUint(mCurrAction);
     bf.WriteUint(mDefaultAction);
+    bf.WriteUint(mAttStrategy);
 
     // attributes
     bf.WriteUint(mAttributes.size());
@@ -633,49 +635,31 @@ void GameObject::FindAndSetEnemyTarget()
     if(mWeapon == nullptr)
         return ;
 
-    auto gm = GetGameMap();
-
-    const std::vector<GameMapCell> & cells = gm->GetCells();
-    const int mapRows = gm->GetNumRows();
-    const int mapCols = gm->GetNumCols();
-
-    const int cr = GetRow0();
-    const int cc = GetCol0();
-
-    const int rad = mWeapon->GetRange();
-    const int r0 = cr >= rad ? cr - rad : 0;
-    const int r1 = cr + rad < mapRows ? cr + rad + 1 : mapRows;
-    const int c0 = cc >= rad ? cc - rad : 0;
-    const int c1 = cc + rad < mapCols ? cc + rad + 1 : mapCols;
-
+    // find enemy based on strategy
     GameObject * target = nullptr;
-    int minDist = mapRows + mapCols;
 
-    for(int r = r0; r < r1; ++r)
+    switch(mAttStrategy)
     {
-        const int ind0 = r * mapCols;
+        // default first
+        case ATTSTR_CLOSEST_ENEMY:
+            target = FindEnemyClosest();
+        break;
 
-        for(int c = c0; c < c1; ++c)
-        {
-            const int ind = ind0 + c;
-            const GameMapCell & cell = cells[ind];
+        case ATTSTR_RANDOM_ENEMY:
+            target = FindEnemyRandom();
+        break;
 
-            // prioritize object on top
-            GameObject * obj = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
+        case ATTSTR_LOWEST_HP_ENEMY:
+            target = FindEnemyLowHealth();
+        break;
 
-            // enemy found
-            if(obj != nullptr && obj->GetFaction() != mFaction && obj->GetFaction() != NO_FACTION)
-            {
-                const int dist = std::abs(cr - r) + std::abs(cc - c);
+        case ATTSTR_HIGHEST_HP_ENEMY:
+            target = FindEnemyHighHealth();
+        break;
 
-                // enemy is closer than others
-                if(dist < minDist)
-                {
-                    minDist = dist;
-                    target = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
-                }
-            }
-        }
+        // ATTSTR_NO_ATTACK or ATTSTR_NULL
+        default:
+        break;
     }
 
     if(target != nullptr)
@@ -1038,6 +1022,117 @@ void GameObject::PositionWarningMessage()
         messY = objY + mIsoObj->GetHeight() + marginB;
 
     mWarnMessage->SetPosition(messX, messY);
+}
+
+GameObject * GameObject::FindEnemyClosest()
+{
+    auto gm = GetGameMap();
+
+    const std::vector<GameMapCell> & cells = gm->GetCells();
+    const int mapRows = gm->GetNumRows();
+    const int mapCols = gm->GetNumCols();
+
+    const int cr = GetRow0();
+    const int cc = GetCol0();
+
+    const int rad = mWeapon->GetRange();
+    const int r0 = cr >= rad ? cr - rad : 0;
+    const int r1 = cr + rad < mapRows ? cr + rad + 1 : mapRows;
+    const int c0 = cc >= rad ? cc - rad : 0;
+    const int c1 = cc + rad < mapCols ? cc + rad + 1 : mapCols;
+
+    GameObject * target = nullptr;
+    int minDist = mapRows + mapCols;
+
+    for(int r = r0; r < r1; ++r)
+    {
+        const int ind0 = r * mapCols;
+
+        for(int c = c0; c < c1; ++c)
+        {
+            const int ind = ind0 + c;
+            const GameMapCell & cell = cells[ind];
+
+            // prioritize object on top
+            GameObject * obj = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
+
+            // enemy found
+            if(obj != nullptr && obj->GetFaction() != mFaction && obj->GetFaction() != NO_FACTION)
+            {
+                const int dist = std::abs(cr - r) + std::abs(cc - c);
+
+                // enemy is closer than others
+                if(dist < minDist)
+                {
+                    minDist = dist;
+                    target = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
+                }
+            }
+        }
+    }
+
+    return target;
+}
+GameObject * GameObject::FindEnemyRandom()
+{
+    auto gm = GetGameMap();
+
+    const std::vector<GameMapCell> & cells = gm->GetCells();
+    const int mapRows = gm->GetNumRows();
+    const int mapCols = gm->GetNumCols();
+
+    const int cr = GetRow0();
+    const int cc = GetCol0();
+
+    const int rad = mWeapon->GetRange();
+    const int r0 = cr >= rad ? cr - rad : 0;
+    const int r1 = cr + rad < mapRows ? cr + rad + 1 : mapRows;
+    const int c0 = cc >= rad ? cc - rad : 0;
+    const int c1 = cc + rad < mapCols ? cc + rad + 1 : mapCols;
+
+    std::vector<GameObject *> targets;
+
+    for(int r = r0; r < r1; ++r)
+    {
+        const int ind0 = r * mapCols;
+
+        for(int c = c0; c < c1; ++c)
+        {
+            const int ind = ind0 + c;
+            const GameMapCell & cell = cells[ind];
+
+            // prioritize object on top
+            GameObject * obj = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
+
+            // enemy found
+            if(obj != nullptr && obj->GetFaction() != mFaction && obj->GetFaction() != NO_FACTION)
+                targets.emplace_back(obj);
+        }
+    }
+
+    const unsigned int numEnemies = targets.size();
+
+    if(numEnemies == 0)
+        return nullptr;
+    else if(numEnemies == 1)
+        return targets[0];
+    else
+    {
+        sgl::utilities::UniformDistribution dist(0, numEnemies - 1);
+        return targets[dist.GetNextValue()];
+    }
+}
+
+GameObject * GameObject::FindEnemyLowHealth()
+{
+    // TODO
+    return nullptr;
+}
+
+GameObject * GameObject::FindEnemyHighHealth()
+{
+    // TODO
+    return nullptr;
 }
 
 void GameObject::ShowIconUpgrade()
