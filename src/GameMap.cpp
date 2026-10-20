@@ -4778,7 +4778,7 @@ void GameMap::UpdateStructuresAttacking(float delta)
         if(obj->GetFaction() == mGame->GetLocalPlayerFaction())
         {
             const float speedCameraTower = 1500.f;
-            mScreenGame->CenterCameraOverObject(obj, speedCameraTower);
+            mScreenGame->CenterCameraOverObject(obj, speedCameraTower, true);
         }
 
         return ;

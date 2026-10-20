@@ -483,13 +483,25 @@ void ScreenGame::CenterCameraOverCell(unsigned int cellIndex, float speed)
     UpdateCurrentCell();
 }
 
-void ScreenGame::CenterCameraOverObject(const GameObject * obj, float speed)
+void ScreenGame::CenterCameraOverObject(const GameObject * obj, float speed, bool skipWhenClose)
 {
     if(nullptr == obj)
         return ;
 
     const int cX = obj->GetX() + obj->GetWidth() / 2;
     const int cY = obj->GetY() + obj->GetHeight() / 2;
+
+    // do not move if center of camera is currently not far from (cX, cY)
+    if(skipWhenClose)
+    {
+        const auto camera = mCamController->GetCamera();
+        const int camX = camera->GetCenterX();
+        const int camY = camera->GetCenterY();
+
+        if(std::abs(camX - cX) < (camera->GetWidth() / 2) &&
+           std::abs(camY - cY) < (camera->GetHeight() / 2))
+            return;
+    }
 
     if(speed < 0.f)
         mCamController->CenterCameraToPoint(cX, cY);
@@ -1784,7 +1796,7 @@ void ScreenGame::ExecuteAIAction(PlayerAI * ai)
         if(finished)
         {
             if(action->ObjSrc != nullptr && action->ObjSrc->IsVisible())
-                CenterCameraOverObject(action->ObjSrc, 0.f);
+                CenterCameraOverObject(action->ObjSrc, 0.f, true);
 
             ai->RegisterActionInProgress(action);
         }
