@@ -377,6 +377,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Prevented soft-lock when upgrade is unlocked in tutorial missions"
                   " before than expected.\n"
                   "- Fixed crash happening when playing multiple missions in one run.\n"
+                  "- Prevented soft-lock in tutorial of planet map when on low resources.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
