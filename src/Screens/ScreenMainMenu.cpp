@@ -372,7 +372,7 @@ void ScreenMainMenu::CreateChangelog()
     text->SetText("NEW FEATURES\n"
                   "\n"
                   "\nCHANGES\n"
-                  "\n"
+                  "\Make unit and structure actions 10-15% faster.\n"
                   "\nFIXES\n"
                   "- Prevented soft-lock when upgrade is unlocked in tutorial missions"
                   " before than expected.\n"
