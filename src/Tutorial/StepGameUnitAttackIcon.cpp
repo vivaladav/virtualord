@@ -13,7 +13,7 @@ namespace game
 {
 
 StepGameUnitAttackIcon::StepGameUnitAttackIcon(const Game * game, Screen * screen,
-                                               PanelObjectActions * panel,
+                                               PanelObjectActions * panel, const char * text,
                                                const sgl::core::Pointd2D & p0)
     : TutorialInfoStep(screen, 550, 150)
     , mFocusArea(new FocusArea)
@@ -34,7 +34,7 @@ StepGameUnitAttackIcon::StepGameUnitAttackIcon(const Game * game, Screen * scree
 
     info->SetPosition(p0.x, p0.y);
 
-    info->AddActionEntry(sm->GetCString("TUT_GAME_ATTACK_2"), 0.f, false, false,
+    info->AddActionEntry(sm->GetCString(text), 0.f, false, false,
                          [this, panel, game]
                         {
 

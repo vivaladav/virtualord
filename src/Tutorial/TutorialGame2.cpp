@@ -383,10 +383,10 @@ TutorialGame2::TutorialGame2(Screen * screen)
             return new StepGameSingleInfo(p0, "TUT_GAME_ATTACK_1");
         });
     AddStep([game, gs, panelActions]
-        {
-            const core::Pointd2D p0(450, 650);
-            return new StepGameUnitAttackIcon(game, gs, panelActions, p0);
-        });
+    {
+        const core::Pointd2D p0(450, 650);
+        return new StepGameUnitAttackIcon(game, gs, panelActions, "TUT_GAME_ATTACK_2", p0);
+    });
     AddStep([hud]
         {
             const core::Pointd2D p0(150, 600);

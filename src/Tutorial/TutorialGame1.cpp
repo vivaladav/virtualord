@@ -46,10 +46,12 @@
 #include "Tutorial/StepGameMissionGoalsIcon.h"
 #include "Tutorial/StepGameMissionGoalsDialog.h"
 #include "Tutorial/StepGameMoveCamera.h"
+#include "Tutorial/StepGameMoveCameraOverCell.h"
 #include "Tutorial/StepGameMoveCameraOverObject.h"
 #include "Tutorial/StepGameMoveUnit.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
 #include "Tutorial/StepGameMoveUnitToCorner.h"
+#include "Tutorial/StepGameObjectAttackSimple.h"
 #include "Tutorial/StepGamePrimaryMissionGoal.h"
 #include "Tutorial/StepGameQuickUnitButton.h"
 #include "Tutorial/StepGameSelectObject.h"
@@ -65,10 +67,12 @@
 #include "Tutorial/StepGameTowerIntro.h"
 #include "Tutorial/StepGameTurnEnergy.h"
 #include "Tutorial/StepGameUnit.h"
+#include "Tutorial/StepGameUnitAttackIcon.h"
 #include "Tutorial/StepGameUnitConquerCellsIcon.h"
 #include "Tutorial/StepGameUpgradeIntro.h"
 #include "Tutorial/StepGameUpgradeUnit.h"
 #include "Tutorial/StepGameWaitEnemyKilled.h"
+#include "Tutorial/StepGameWaitObjectIdle.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/StepGameWallBuildEnd.h"
 #include "Tutorial/StepGameWallBuildIcon.h"
@@ -79,6 +83,10 @@
 #include "Widgets/GameHUD.h"
 #include "Widgets/PanelObjectActions.h"
 
+#ifdef DEBUG
+#include <cassert>
+#endif
+
 namespace
 {
 using namespace game;
@@ -86,7 +94,8 @@ using namespace game;
 const Cell2D cellDT1(27, 16);
 const Cell2D cellDT2(47, 24);
 const Cell2D cellDT3(48, 33);
-const Cell2D cellEnemy(27, 18);
+const Cell2D cellEnemy1(27, 18);
+const Cell2D cellEnemy2(52, 37);
 const Cell2D cellMatGen1(32, 10);
 const Cell2D cellMatGen2(52, 20);
 const Cell2D cellEneGen2(41, 26);
@@ -516,13 +525,12 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([this, playerAI]
             {
                 return new StepGameAddEnemy(GetGameMap(), playerAI,
-                                            ObjectData::TYPE_UNIT_WORKER1, cellEnemy, true);
+                                            ObjectData::TYPE_UNIT_WORKER1, cellEnemy1, true);
             });
     AddStep([this]
             {
                 const float health = 35.f;
-                GameObject * enemy = GetObjectInCell(cellEnemy);
-
+                GameObject * enemy = GetObjectInCell(cellEnemy1);
                 return new StepGameSetObjectHealth(enemy, health);
             });
     AddStep([gs] { return new StepGameClearSelection(gs); });
@@ -550,7 +558,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([this]
             {
                 const GameObject * tower = GetObjectInCell(cellDT1);
-
                 return new StepGameMoveCameraOverObject(tower);
             });
     // ENEMY KILL AFTER END TURN
@@ -558,7 +565,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([this]
             {
-                GameObject * enemy = GetObjectInCell(cellEnemy);
+                GameObject * enemy = GetObjectInCell(cellEnemy1);
                 return new StepGameWaitEnemyKilled(enemy, GetGameMap());
             });
     // SAVE GAME
@@ -702,6 +709,19 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // ADD HIDDEN ENEMY
+    AddStep([this, playerAI]
+    {
+        return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SCOUT1,
+                                    cellEnemy2, true);
+    });
+    // SET ENEMY'S HEALTH 1-SHOT LOW
+    AddStep([this]
+    {
+        const float health = 10.f;
+        GameObject * enemy = GetObjectInCell(cellEnemy2);
+        return new StepGameSetObjectHealth(enemy, health);
+    });
     // CONNECT DEFENSIVE TOWER WITH WORKER 2
     AddStep([]
         {
@@ -724,11 +744,75 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1100, 450);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
+    AddStep([] { return new StepDelay(0.5f); });
+    // MOVE CAMERA NEXT DEFENSIVE TOWER
+    AddStep([isoMap]
+    {
+        const float speedCamera = 600.f;
+        const Cell2D cell(cellDT3.row, cellDT3.col - 2);
+        return new StepGameMoveCameraOverCell(cell, isoMap, speedCamera);
+    });
+    // SET PERFECT SHOT TO DEFENSIVE TOWER 3
+    AddStep([this]
+    {
+        GameObject * tower = GetObjectInCell(cellDT3);
+        return new StepGameSetObjectPerfectShot(tower, true);
+    });
+    // INTRODUCE ENEMY 2
+    AddStep([] { return new StepDelay(0.5f); });
     AddStep([]
-        {
-            const core::Pointd2D p0(1200, 400);
-            return new StepGameWallBuildIntro(p0);
-        });
+    {
+        const core::Pointd2D p0(1200, 550);
+        return new StepGameEnemyIntro(p0);
+    });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT DEFENSIVE TOWER
+    AddStep([this, game, isoMap]
+    {
+        const core::Pointd2D p0(1200, 400);
+        const GameObject * tower = GetObjectInCell(cellDT3);
+        return new StepGameSelectObject(game, isoMap, tower, "TUT_GAME_DEF_TOWER_1", p0);
+    });
+    // SET ACTION ATTACK
+    AddStep([this, game, gs, panelActions]
+    {
+        const core::Pointd2D p0(150, 700);
+        return new StepGameUnitAttackIcon(game, gs, panelActions, "TUT_GAME_ATTACK_2b", p0);
+    });
+    // ATTACK ENEMY
+    AddStep([this, game, isoMap]
+    {
+        const core::Pointd2D p0(1200, 350);
+        const GameObject * tower = GetObjectInCell(cellDT3);
+        return new StepGameObjectAttackSimple(game, tower, isoMap, cellEnemy2, p0);
+    });
+    // WAIT ENEMY DESTROYED
+    AddStep([this]
+    {
+        GameObject * enemy = GetObjectInCell(cellEnemy2);
+        return new StepGameWaitEnemyKilled(enemy, GetGameMap());
+    });
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([]
+    {
+        const core::Pointd2D p0(1150, 450);
+        return new StepGameSingleInfo(p0, "TUT_FATAL_SHOT");
+    });
+    AddStep([] { return new StepDelay(0.5f); });
+    // SELECT UNIT TO CONTINUE
+    AddStep([local, game, isoMap]
+    {
+        const auto unit = local->GetUnit(indUnit2);
+        const core::Pointd2D p0(1300, 450);
+        return new StepGameUnit(game, isoMap, unit, p0);
+    });
+    // INTRO WALL BUILDING
+    AddStep([] { return new StepDelay(0.5f); });
+    AddStep([]
+    {
+        const core::Pointd2D p0(1200, 400);
+        return new StepGameWallBuildIntro(p0);
+    });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE UNIT NEXT TO BUILD CELL
     AddStep([] { return new StepDelay(0.5f); });
@@ -804,8 +888,14 @@ TutorialGame1::TutorialGame1(Screen * screen)
 
 TutorialGame1::~TutorialGame1()
 {
-    // clear perfect shot flag from defensive tower
+    // clear perfect shot flag from defensive tower 1
     GameObject * tower = GetObjectInCell(cellDT1);
+
+    if(tower != nullptr && tower->GetObjectType() == ObjectData::TYPE_DEFENSIVE_TOWER)
+        tower->SetPerfectShot(false);
+
+    // clear perfect shot flag from defensive tower 3
+    tower = GetObjectInCell(cellDT3);
 
     if(tower != nullptr && tower->GetObjectType() == ObjectData::TYPE_DEFENSIVE_TOWER)
         tower->SetPerfectShot(false);

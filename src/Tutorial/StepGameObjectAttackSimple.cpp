@@ -1,8 +1,8 @@
-#include "Tutorial/StepGameUnitAttackSimple.h"
+#include "Tutorial/StepGameObjectAttackSimple.h"
 
 #include "Game.h"
 #include "IsoMap.h"
-#include "GameObjects/Unit.h"
+#include "GameObjects/GameObject.h"
 #include "Widgets/Tutorial/IsoFocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
 #include "Widgets/Tutorial/PanelInfoTutorial.h"
@@ -12,12 +12,14 @@
 namespace game
 {
 
-StepGameUnitAttackSimple::StepGameUnitAttackSimple(const Game * game, const Unit * unit,
-                                                   const IsoMap * isoMap, const Cell2D & target,
-                                                   const sgl::core::Pointd2D & p0)
-    : TutorialInfoStep(500, 150)
+StepGameObjectAttackSimple::StepGameObjectAttackSimple(const Game * game,
+                                                       const GameObject * Object,
+                                                       const IsoMap * isoMap,
+                                                       const Cell2D & target,
+                                                       const sgl::core::Pointd2D & p0)
+    : TutorialInfoStep(500, 130)
     , mFocusArea(new IsoFocusArea(isoMap))
-    , mUnit(unit)
+    , mObject(Object)
     , mTarget(target)
 {
     auto sm = sgl::utilities::StringManager::Instance();
@@ -45,14 +47,14 @@ StepGameUnitAttackSimple::StepGameUnitAttackSimple(const Game * game, const Unit
                         });
 }
 
-StepGameUnitAttackSimple::~StepGameUnitAttackSimple()
+StepGameObjectAttackSimple::~StepGameObjectAttackSimple()
 {
     delete mFocusArea;
 }
 
-void StepGameUnitAttackSimple::Update(float)
+void StepGameObjectAttackSimple::Update(float)
 {
-    if(mUnit != nullptr && mUnit->GetCurrentAction() == GameObjectActionType::ATTACK)
+    if(mObject != nullptr && mObject->GetCurrentAction() == GameObjectActionType::ATTACK)
         SetDone();
 }
 

@@ -367,6 +367,8 @@ add_executable(
     src/Tutorial/StepGameIntro3.cpp
     src/Tutorial/StepGameMakeEnemyAttack.h
     src/Tutorial/StepGameMakeEnemyAttack.cpp
+    src/Tutorial/StepGameMakeEnemyMove.h
+    src/Tutorial/StepGameMakeEnemyMove.cpp
     src/Tutorial/StepGameMapNavigation.h
     src/Tutorial/StepGameMapNavigation.cpp
     src/Tutorial/StepGameMaterialGenerator.h
@@ -393,6 +395,8 @@ add_executable(
     src/Tutorial/StepGameMoveUnitToArea.cpp
     src/Tutorial/StepGameMoveUnitToCorner.h
     src/Tutorial/StepGameMoveUnitToCorner.cpp
+    src/Tutorial/StepGameObjectAttackSimple.h
+    src/Tutorial/StepGameObjectAttackSimple.cpp
     src/Tutorial/StepGameOpenLootbox.h
     src/Tutorial/StepGameOpenLootbox.cpp
     src/Tutorial/StepGameOpenLootboxFree.h
@@ -473,8 +477,6 @@ add_executable(
     src/Tutorial/StepGameUnitAttackContinue.cpp
     src/Tutorial/StepGameUnitAttackFree.h
     src/Tutorial/StepGameUnitAttackFree.cpp
-    src/Tutorial/StepGameUnitAttackSimple.h
-    src/Tutorial/StepGameUnitAttackSimple.cpp
     src/Tutorial/StepGameUnitAttackIcon.h
     src/Tutorial/StepGameUnitAttackIcon.cpp
     src/Tutorial/StepGameUnitConquerCellsIcon.h
