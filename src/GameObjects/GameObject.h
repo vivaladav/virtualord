@@ -436,7 +436,11 @@ inline void GameObject::SetMaxSpeed(float val) { mMaxSpeed = val; }
 inline float GameObject::GetHealth() const { return mHealth; }
 
 inline float GameObject::GetEnergy() const { return mEnergy; }
-inline float GameObject::GetEnergyToSave() const { return mEnergyToSavePerc; }
+inline float GameObject::GetEnergyToSave() const
+{
+    const float maxPerc = 100.f;
+    return mEnergyToSavePerc * maxPerc;
+}
 inline void GameObject::SetEnergyToSave(float perc)
 {
     const float maxPerc = 100.f;

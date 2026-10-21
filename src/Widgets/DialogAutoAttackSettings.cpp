@@ -1,9 +1,9 @@
 #include "Widgets/DialogAutoAttackSettings.h"
 
-#include "Game.h"
-#include "Player.h"
-#include "GameObjects/ResearchCenter.h"
+#include "GameObjects/GameObject.h"
+#include "GameObjectTools/Weapon.h"
 #include "Widgets/ButtonDialogClose.h"
+#include "Widgets/GameComboBox.h"
 #include "Widgets/GameSliderH.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/WidgetsConstants.h"
@@ -18,6 +18,8 @@
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/Label.h>
 #include <sgl/utilities/StringManager.h>
+
+#include <string>
 
 namespace game
 {
@@ -40,20 +42,17 @@ DialogAutoAttackSettings::DialogAutoAttackSettings(GameObject * obj)
     mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 
-    SetSize(mBg->GetWidth(), mBg->GetHeight());
+    const int w = mBg->GetWidth();
+    const int h = mBg->GetHeight();
+    SetSize(w, h);
 
     // -- BUTTON CLOSE --
     mBtnClose = new ButtonDialogClose(this);
 
-    const int buttonX = GetWidth() - mBtnClose->GetWidth();
+    const int buttonX = w - mBtnClose->GetWidth();
     mBtnClose->SetX(buttonX);
 
     // -- CONTENT --
-    auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, 20, graphic::Font::NORMAL);
-    auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
-
-    int valRes = 0;
-
     // TITLE
     auto fontTitle = fm->GetFont(WidgetsConstants::FontFileDialogTitle,
                                  WidgetsConstants::FontSizeDialogTitle, graphic::Font::NORMAL);
@@ -65,8 +64,104 @@ DialogAutoAttackSettings::DialogAutoAttackSettings(GameObject * obj)
     title->SetPosition(titleX, titleY);
     title->SetColor(WidgetsConstants::colorDialogTitle);
 
+    // PANEL CONTENT
+    const int marginFieldV = 100;
+
+    auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, 20, graphic::Font::NORMAL);
+    auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
+
     int x = WidgetsConstants::MarginDialogContentL;
     int y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
+
+    // ENEMY SELECTION
+    sgui::Label * label = new sgui::Label(sm->GetCString("ENEMY_SEL"), fontHeader, this);
+    label->SetColor(WidgetsConstants::colorDialogHeader2);
+    label->SetPosition(x, y);
+
+    mComboEnemySel = new GameComboBox(this);
+    mComboEnemySel->AddItem(new GameComboBoxItem(sm->GetCString("ATT_DISABLED")));
+    mComboEnemySel->AddItem(new GameComboBoxItem(sm->GetCString("ENEMY_CLOSEST")));
+    mComboEnemySel->AddItem(new GameComboBoxItem(sm->GetCString("ENEMY_RANDOM")));
+    mComboEnemySel->SetActiveItem(mObj->GetAttackStrategy());
+
+    x = w - WidgetsConstants::MarginDialogContentL - mComboEnemySel->GetWidth();
+    y += (label->GetHeight() - mComboEnemySel->GetHeight()) / 2;
+    mComboEnemySel->SetPosition(x, y);
+
+    mComboEnemySel->SetOnActiveChanged([this](int ind)
+    {
+        const auto as = static_cast<AttackStrategy>(ind);
+
+        mObj->SetAttackStrategy(as);
+
+        const bool enabled = (as != ATTSTR_NO_ATTACK);
+        mComboAttackMode->SetEnabled(enabled);
+        mSliderEnergy->SetEnabled(enabled);
+    });
+
+    // ATTACK MODE
+    x = WidgetsConstants::MarginDialogContentL;
+    y = label->GetY() + label->GetHeight() + marginFieldV;
+
+    label = new sgui::Label(sm->GetCString("ATT_MODE"), fontHeader, this);
+    label->SetColor(WidgetsConstants::colorDialogHeader2);
+    label->SetPosition(x, y);
+
+    mComboAttackMode = new GameComboBox(this);
+    mComboAttackMode->AddItem(new GameComboBoxItem(sm->GetCString("QUICK_SHOT")));
+    mComboAttackMode->AddItem(new GameComboBoxItem(sm->GetCString("AIMED_SHOT")));
+    mComboAttackMode->AddItem(new GameComboBoxItem(sm->GetCString("BURST_SHOT")));
+    mComboAttackMode->SetActiveItem(mObj->GetWeapon()->GetAttackMode());
+
+    x = w - WidgetsConstants::MarginDialogContentL - mComboAttackMode->GetWidth();
+    y += (label->GetHeight() - mComboAttackMode->GetHeight()) / 2;
+    mComboAttackMode->SetPosition(x, y);
+
+    mComboAttackMode->SetOnActiveChanged([this](int ind)
+    {
+        mObj->SetAttackMode(static_cast<AttackMode>(ind));
+    });
+
+    // ENERGY TO SAVE
+    const int energy = mObj->GetEnergyToSave();
+
+    x = WidgetsConstants::MarginDialogContentL;
+    y = label->GetY() + label->GetHeight() + marginFieldV;
+
+    label = new sgui::Label(sm->GetCString("ENERGY_2_SAVE"), fontHeader, this);
+    label->SetColor(WidgetsConstants::colorDialogHeader2);
+    label->SetPosition(x, y);
+
+    const int minEne = 0;
+    const int maxEne = 50;
+    mSliderEnergy = new StandardGameSliderH(this);
+
+    mSliderEnergy->SetMinMax(minEne, maxEne);
+    mSliderEnergy->SetValue(energy);
+
+    const std::string textMax = std::to_string(maxEne) + std::string("%");
+    auto labelPerc = new sgui::Label(textMax.c_str(), fontHeader, this);
+    labelPerc->SetColor(WidgetsConstants::colorDialogText);
+
+    x = w - WidgetsConstants::MarginDialogContentL - labelPerc->GetWidth();
+    y += (label->GetHeight() - labelPerc->GetHeight()) / 2;
+    labelPerc->SetPosition(x, y);
+
+    const std::string textPerc = std::to_string(energy) + std::string("%");
+    labelPerc->SetText(textPerc.c_str());
+
+    const int marginSliderH = 20;
+    x -= marginSliderH + mSliderEnergy->GetWidth();
+    y += (labelPerc->GetHeight() - mSliderEnergy->GetHeight()) / 2;
+    mSliderEnergy->SetPosition(x, y);
+
+    mSliderEnergy->AddOnValueChanged([this, labelPerc](int val)
+    {
+        mObj->SetEnergyToSave(val);
+
+        const std::string textPerc = std::to_string(val) + std::string("%");
+        labelPerc->SetText(textPerc.c_str());
+    });
 }
 
 void DialogAutoAttackSettings::SetFunctionOnClose(const std::function<void()> & f)
