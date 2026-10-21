@@ -1741,6 +1741,12 @@ void ResourceLoader::SetupGameTextures()
     });
 
     // ===== UI GAME =====
+    // DIALOG AUTO ATTACK SETTINGS
+    mJobs.emplace_back([this, tm]
+    {
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogAutoAttSettings);
+    });
+
     // DIALOG EXIT
     mJobs.emplace_back([this, tm]
     {
@@ -2359,6 +2365,7 @@ void ResourceLoader::SetupGameTextures()
             { 106, 180, 52, 52 },
             { 159, 180, 52, 52 },
             { 212, 180, 52, 52 },
+            { 265, 180, 52, 52 },
             // BUTTON ACTION OPTION
             { 371, 0, 258, 40 },
             { 371, 41, 258, 40 },

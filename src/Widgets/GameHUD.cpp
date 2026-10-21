@@ -19,6 +19,7 @@
 #include "Widgets/ButtonPanelSelectedObject.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
 #include "Widgets/CountdownLabel.h"
+#include "Widgets/DialogAutoAttackSettings.h"
 #include "Widgets/DialogEndMission.h"
 #include "Widgets/DialogExit.h"
 #include "Widgets/DialogExploreTemple.h"
@@ -1101,6 +1102,50 @@ void GameHUD::HideDialogUpgrade()
     // schedule dialog deletion
     mDialogUpgrade->DeleteLater();
     mDialogUpgrade = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
+}
+
+void GameHUD::ShowDialogAutoAttackSettings(GameObject * obj)
+{
+    if(mDialogAutoAttSettings != nullptr)
+        return ;
+
+    mScreen->ShowScreenOverlay();
+
+    ++mVisibleDialogs;
+
+    mScreen->SetPause(true);
+
+    mDialogAutoAttSettings = new DialogAutoAttackSettings(obj);
+    mDialogAutoAttSettings->SetFocus();
+
+    mDialogAutoAttSettings->SetFunctionOnClose([this]
+    {
+        HideDialogAutoAttackSettings();
+    });
+
+    TemporaryClosePanels();
+
+    // position dialog
+    CenterWidget(mDialogAutoAttSettings);
+}
+
+void GameHUD::HideDialogAutoAttackSettings()
+{
+    if(mDialogAutoAttSettings == nullptr)
+        return ;
+
+    --mVisibleDialogs;
+
+    mScreen->HideScreenOverlay();
+
+    ReopenPanels();
+
+    // schedule dialog deletion
+    mDialogAutoAttSettings->DeleteLater();
+    mDialogAutoAttSettings = nullptr;
 
     // un-pause game
     mScreen->SetPause(false);

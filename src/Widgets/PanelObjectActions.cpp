@@ -81,6 +81,10 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
     mButtons[BTN_SAVE_GAME] =
         new ObjectActionButton(ObjectActionButton::SAVE_GAME, "V", KeyboardEvent::KEY_V,
                                sm->GetCString("TT_SAVE_GAME"), this);
+    mButtons[BTN_AUTO_ATT_SETTINGS] =
+    new ObjectActionButton(ObjectActionButton::SETTINGS, "S", KeyboardEvent::KEY_S,
+                               sm->GetCString("TT_AUTO_ATT_SETTINGS"), this);
+
     // keep these 2 last
     mButtons[BTN_SELF_DESTROY] =
         new ObjectActionButton(ObjectActionButton::SELF_DESTROY, "E", KeyboardEvent::KEY_E,
@@ -146,6 +150,7 @@ void PanelObjectActions::SetObject(GameObject * obj)
     }
     else if(objType == ObjectData::TYPE_BUNKER || objType == ObjectData::TYPE_DEFENSIVE_TOWER)
     {
+        mButtons[BTN_AUTO_ATT_SETTINGS]->SetVisible(true);
         mButtons[BTN_ATTACK]->SetVisible(true);
     }
     else if(mObj->GetObjectCategory() == ObjectData::CAT_MINI_UNIT)

@@ -819,19 +819,19 @@ void ScreenGame::CreateUI()
 
     // create new unit
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BARRACKS,
-        [this, panelObjActions]
+        [this]
     {
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_BARRACKS);
     });
 
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_BASE,
-        [this, panelObjActions]
+        [this]
     {
         mHUD->ShowDialogNewElement(DialogNewElement::ETYPE_UNITS_BASE);
     });
 
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_BUILD_UNIT_HOSPITAL,
-        [this, panelObjActions]
+        [this]
     {
         ClearCellOverlays();
 
@@ -839,16 +839,24 @@ void ScreenGame::CreateUI()
     });
 
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_MISSION_GOALS,
-    [this, panelObjActions]
+    [this]
     {
         mHUD->ShowDialogMissionGoals();
     });
 
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_SAVE_GAME,
-    [this, panelObjActions]
+    [this]
     {
         mHUD->ShowDialogSave();
     });
+
+    panelObjActions->AddButtonFunction(PanelObjectActions::BTN_AUTO_ATT_SETTINGS,
+    [this]
+    {
+        GameObject * selObj = mLocalPlayer->GetSelectedObject();
+        mHUD->ShowDialogAutoAttackSettings(selObj);
+    });
+
 
     // UNIT ACTIONS
     // build structure
@@ -980,19 +988,17 @@ void ScreenGame::CreateUI()
 
     // WALL GATE
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_OPEN_GATE,
-                                       [this, panelObjActions]
+                                       [this]
     {
         auto gate = static_cast<WallGate *>(mLocalPlayer->GetSelectedObject());
-
         mGameMap->OpenGate(gate);
     });
 
     panelObjActions->AddButtonFunction(PanelObjectActions::BTN_CLOSE_GATE,
-                                       [this, panelObjActions]
+                                       [this]
     {
         // close gate
         auto gate = static_cast<WallGate *>(mLocalPlayer->GetSelectedObject());
-
         mGameMap->CloseGate(gate);
     });
 

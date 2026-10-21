@@ -599,6 +599,8 @@ add_executable(
     src/Widgets/ButtonsPanel.cpp
     src/Widgets/CountdownLabel.h
     src/Widgets/CountdownLabel.cpp
+    src/Widgets/DialogAutoAttackSettings.h
+    src/Widgets/DialogAutoAttackSettings.cpp
     src/Widgets/DialogChangelog.h
     src/Widgets/DialogChangelog.cpp
     src/Widgets/DialogCredits.h

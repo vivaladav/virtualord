@@ -6,6 +6,9 @@ namespace game
 // MOUSE CURSOR
 extern const char SpriteFileCursor[];
 
+// DIALOG AUTO ATTACK SETTINGS
+extern const char SpriteFileDialogAutoAttSettings[];
+
 // DIALOG CHANGELOG
 extern const char SpriteFileDialogChangelog[];
 
@@ -448,6 +451,7 @@ enum SpriteIdObjActionButton : unsigned int
     IND_BUTTON_ICON_RESEARCH,
     IND_BUTTON_ICON_TECH_TREE,
     IND_BUTTON_ICON_SAVE,
+    IND_BUTTON_ICON_SETTINGS,
 
     // ACTION OPTION BUTTON
     ID_BTN_ACT_OPT_NORMAL,

@@ -4,6 +4,8 @@ namespace game
 {
 
 const char SpriteFileCursor[] = "UI/cursor.png";
+
+const char SpriteFileDialogAutoAttSettings[] = "UI/dialog_auto_attack_settings.png";
 const char SpriteFileDialogChangelog[] = "UI/dialog_changelog.png";
 const char SpriteFileDialogCredits[] = "UI/dialog_credits.png";
 const char SpriteFileDialogCreditsExp[] = "UI/dialog_credits-exp.png";
