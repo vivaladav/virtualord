@@ -95,21 +95,23 @@ void Laser::OnShoot(float x0, float y0)
     const float maxDamage = 30.f;
 #endif
 
-    // perfect shot always inflicts damage
-    if(IsPerfectShotEnabled())
-        damage = maxDamage * owner->GetAttribute(OBJ_ATT_ATTACK_POWER) / MAX_STAT_FVAL;
-    // regular shot
-    else if(valHit < probHit)
+    // check against probability or if perfect shot that always inflicts damage
+    if(valHit < probHit || IsPerfectShotEnabled())
     {
         damage = maxDamage * owner->GetAttribute(OBJ_ATT_ATTACK_POWER) / MAX_STAT_FVAL;
 
         // check if fatal hit is allowed
         if(IsFatalHitEnabled())
         {
-            const float probFatal = GetProbabilityFatalHit(mTarget);
-            const float valFatal = dist.GetNextValue();
+            if(IsFatalHitForced())
+                fatal = true;
+            else
+            {
+                const float probFatal = GetProbabilityFatalHit(mTarget);
+                const float valFatal = dist.GetNextValue();
 
-            fatal = valFatal < probFatal;
+                fatal = valFatal < probFatal;
+            }
         }
     }
 

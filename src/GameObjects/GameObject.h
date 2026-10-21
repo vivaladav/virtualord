@@ -202,8 +202,8 @@ public:
     void SetAttackMode(AttackMode am);
     AttackStrategy GetAttackStrategy() const;
     void SetAttackStrategy(AttackStrategy as);
-    void SetPerfectShot(bool enabled);
-    void SetFatalHit(bool enabled);
+    void SetPerfectShotEnabled(bool val, bool forceFatal);
+    void SetFatalHitEnabled(bool val);
 
     void ClearTargetAttack();
     bool SetTargetAttack(GameObject * obj);

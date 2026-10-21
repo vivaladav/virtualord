@@ -23,7 +23,7 @@ void StepGameSetObjectFatalHit::OnStart()
     TutorialStep::OnStart();
 
     for(GameObject * obj : mObjs)
-        obj->SetFatalHit(mEnabled);
+        obj->SetFatalHitEnabled(mEnabled);
 
     SetDone();
 }

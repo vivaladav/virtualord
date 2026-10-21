@@ -606,16 +606,16 @@ void GameObject::SetAttackMode(AttackMode am)
         mWeapon->SetAttackMode(am);
 }
 
-void GameObject::SetPerfectShot(bool enabled)
+void GameObject::SetPerfectShotEnabled(bool val, bool forceFatal)
 {
     if(mWeapon != nullptr)
-        mWeapon->SetPerfectShot(enabled);
+        mWeapon->SetPerfectShotEnabled(val, forceFatal);
 }
 
-void GameObject::SetFatalHit(bool enabled)
+void GameObject::SetFatalHitEnabled(bool val)
 {
     if(mWeapon != nullptr)
-        mWeapon->SetFatalHit(enabled);
+        mWeapon->SetFatalHitEnabled(val);
 }
 
 void GameObject::ClearTargetAttack()

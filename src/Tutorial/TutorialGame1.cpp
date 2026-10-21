@@ -55,6 +55,7 @@
 #include "Tutorial/StepGamePrimaryMissionGoal.h"
 #include "Tutorial/StepGameQuickUnitButton.h"
 #include "Tutorial/StepGameSelectObject.h"
+#include "Tutorial/StepGameSetObjectFatalHit.h"
 #include "Tutorial/StepGameSetObjectHealth.h"
 #include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
@@ -311,11 +312,17 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(900, 250);
             return new StepGameBuildTowerEnd(isoMap, unit, cellDT1, p0);
         });
+    // ENABLE PERFECT SHOT AND DISABLE FATAL HIT
     AddStep([this]
-            {
-                GameObject * tower = GetObjectInCell(cellDT1);
-                return new StepGameSetObjectPerfectShot(tower, true);
-            });
+    {
+        GameObject * tower = GetObjectInCell(cellDT1);
+        return new StepGameSetObjectPerfectShot(tower, true, false);
+    });
+    AddStep([this]
+    {
+        GameObject * tower = GetObjectInCell(cellDT1);
+        return new StepGameSetObjectFatalHit(tower, false);
+    });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT DEFENSIVE TOWER
     AddStep([game]
@@ -752,11 +759,11 @@ TutorialGame1::TutorialGame1(Screen * screen)
         const Cell2D cell(cellDT3.row, cellDT3.col - 2);
         return new StepGameMoveCameraOverCell(cell, isoMap, speedCamera);
     });
-    // SET PERFECT SHOT TO DEFENSIVE TOWER 3
+    // SET PERFECT SHOT AND FATAL TO DEFENSIVE TOWER 3
     AddStep([this]
     {
         GameObject * tower = GetObjectInCell(cellDT3);
-        return new StepGameSetObjectPerfectShot(tower, true);
+        return new StepGameSetObjectPerfectShot(tower, true, true);
     });
     // INTRODUCE ENEMY 2
     AddStep([] { return new StepDelay(0.5f); });
@@ -782,7 +789,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // ATTACK ENEMY
     AddStep([this, game, isoMap]
     {
-        const core::Pointd2D p0(1200, 350);
+        const core::Pointd2D p0(1200, 450);
         const GameObject * tower = GetObjectInCell(cellDT3);
         return new StepGameObjectAttackSimple(game, tower, isoMap, cellEnemy2, p0);
     });
@@ -892,13 +899,16 @@ TutorialGame1::~TutorialGame1()
     GameObject * tower = GetObjectInCell(cellDT1);
 
     if(tower != nullptr && tower->GetObjectType() == ObjectData::TYPE_DEFENSIVE_TOWER)
-        tower->SetPerfectShot(false);
+    {
+        tower->SetPerfectShotEnabled(false, false);
+        tower->SetFatalHitEnabled(true);
+    }
 
     // clear perfect shot flag from defensive tower 3
     tower = GetObjectInCell(cellDT3);
 
     if(tower != nullptr && tower->GetObjectType() == ObjectData::TYPE_DEFENSIVE_TOWER)
-        tower->SetPerfectShot(false);
+        tower->SetPerfectShotEnabled(false, false);
 
     // make sure selection is allowed again
     GetScreen()->SetSelectionAllowed(true);

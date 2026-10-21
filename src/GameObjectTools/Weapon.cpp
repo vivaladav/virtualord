@@ -73,6 +73,7 @@ bool Weapon::Load(sgl::utilities::BinaryFile & bf)
     // flags
     mReadyToShoot = bf.ReadBool();
     mPerfectShot = bf.ReadBool();
+    mForceFatal = bf.ReadBool();
     mFatalHit = bf.ReadBool();
 
     return true;
@@ -110,6 +111,7 @@ bool Weapon::Save(sgl::utilities::BinaryFile & bf) const
     // flags
     bf.WriteBool(mReadyToShoot);
     bf.WriteBool(mPerfectShot);
+    bf.WriteBool(mForceFatal);
     bf.WriteBool(mFatalHit);
 
     return true;
