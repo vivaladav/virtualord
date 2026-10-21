@@ -53,7 +53,7 @@
 #include "Tutorial/StepGamePrimaryMissionGoal.h"
 #include "Tutorial/StepGameQuickUnitButton.h"
 #include "Tutorial/StepGameSelectObject.h"
-#include "Tutorial/StepGameSetObjectMaxHealth.h"
+#include "Tutorial/StepGameSetObjectHealth.h"
 #include "Tutorial/StepGameSetObjectPerfectShot.h"
 #include "Tutorial/StepGameSetSelectionActiveAction.h"
 #include "Tutorial/StepGameSetSelectionAllowed.h"
@@ -520,10 +520,10 @@ TutorialGame1::TutorialGame1(Screen * screen)
             });
     AddStep([this]
             {
-                const float maxHealth = 80.f;
+                const float health = 35.f;
                 GameObject * enemy = GetObjectInCell(cellEnemy);
 
-                return new StepGameSetObjectMaxHealth(enemy, maxHealth);
+                return new StepGameSetObjectHealth(enemy, health);
             });
     AddStep([gs] { return new StepGameClearSelection(gs); });
     // EXPLAIN CAMERA MOVE AND MOVE TO TOWER 1
