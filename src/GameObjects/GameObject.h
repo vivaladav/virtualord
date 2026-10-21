@@ -169,6 +169,8 @@ public:
     float GetEnergy() const;
     void SumEnergy(float val);
     float GetMaxEnergy() const;
+    float GetEnergyToSave() const;
+    void SetEnergyToSave(float perc);
 
     float GetExplosionDamage() const;
 
@@ -354,6 +356,7 @@ private:
 
     float mMaxEnergy = 100.f;
     float mEnergy = 100.f;
+    float mEnergyToSavePerc = 0.f;
     float mMaxHealth = 100.f;
     float mHealth = 100.f;
     float mMaxSpeed = 0.f;
@@ -433,6 +436,16 @@ inline void GameObject::SetMaxSpeed(float val) { mMaxSpeed = val; }
 inline float GameObject::GetHealth() const { return mHealth; }
 
 inline float GameObject::GetEnergy() const { return mEnergy; }
+inline float GameObject::GetEnergyToSave() const { return mEnergyToSavePerc; }
+inline void GameObject::SetEnergyToSave(float perc)
+{
+    const float maxPerc = 100.f;
+
+    if(perc > maxPerc)
+        perc = maxPerc;
+
+    mEnergyToSavePerc = perc / maxPerc;
+}
 
 inline float GameObject::GetEnergyForActionStep(GameObjectActionType action) const
 {
