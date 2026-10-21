@@ -5,6 +5,7 @@
 #include "Tutorial/TutorialManager.h"
 #include "Widgets/ButtonDialogClose.h"
 #include "Widgets/ButtonPanelTab.h"
+#include "Widgets/GameComboBox.h"
 #include "Widgets/GameSliderH.h"
 #include "Widgets/GameUIData.h"
 #include "Widgets/SettingsCheckbox.h"
@@ -24,8 +25,6 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/sgui/ButtonsGroup.h>
-#include <sgl/sgui/ComboBox.h>
-#include <sgl/sgui/ComboBoxItem.h>
 #include <sgl/sgui/Image.h>
 #include <sgl/sgui/ImageButton.h>
 #include <sgl/sgui/Label.h>
@@ -65,189 +64,12 @@ const int mouseBtnId[] =
     sgl::core::MouseEvent::BUTTON_RIGHT,
 };
 
-// ====== COMBOBOX =====
-class SettingsComboBox : public sgl::sgui::ComboBox
-{
-public:
-    SettingsComboBox(sgl::sgui::Widget * parent)
-        : sgl::sgui::ComboBox(parent)
-    {
-        using namespace sgl::graphic;
-
-        auto fm = FontManager::Instance();
-        auto font = fm->GetFont(WidgetsConstants::FontFileText, 20, Font::NORMAL);
-        SetLabelFont(font);
-
-        SetGraphics(sgl::sgui::AbstractButton::NORMAL);
-    }
-
-private:
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_click-01.ogg");
-    }
-
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        SetGraphics(state);
-    }
-
-    void SetGraphics(sgl::sgui::AbstractButton::VisualState state)
-    {
-        using namespace sgl;
-
-        // BODY
-        const unsigned int texIds[NUM_VISUAL_STATES] =
-        {
-            ID_DLG_SETT_CB_NORMAL,
-            ID_DLG_SETT_CB_DISABLED,
-            ID_DLG_SETT_CB_OVER,
-            ID_DLG_SETT_CB_PUSHED,
-            ID_DLG_SETT_CB_NORMAL,
-        };
-
-        auto tm = graphic::TextureManager::Instance();
-        graphic::Texture * tex = tm->GetSprite(SpriteFileDialogSettings, texIds[state]);
-        SetBodyTexture(tex);
-
-        // TEXT
-        const unsigned int txtColors[NUM_VISUAL_STATES] =
-        {
-            WidgetsConstants::colorDialogButtonNormal,
-            WidgetsConstants::colorDialogButtonDisabled,
-            WidgetsConstants::colorDialogButtonOver,
-            WidgetsConstants::colorDialogButtonPushed,
-            WidgetsConstants::colorDialogButtonChecked
-        };
-
-        SetLabelColor(txtColors[state]);
-    }
-};
-
-// ====== COMBOBOX ITEM =====
-class SettingsComboBoxItem : public sgl::sgui::ComboBoxItem
-{
-public:
-    SettingsComboBoxItem(const char * txt)
-        : sgl::sgui::ComboBoxItem(txt)
-    {
-        using namespace sgl;
-
-        mBody = new graphic::Image;
-        RegisterRenderable(mBody);
-
-        // TEXT LABEL
-        auto fm = graphic::FontManager::Instance();
-        auto font = fm->GetFont(WidgetsConstants::FontFileText, 20, graphic::Font::NORMAL);
-        mLabel = new sgui::Label(txt, font, this);
-
-        // init to normal state
-        InitState(NORMAL);
-
-        UpdateGraphics();
-
-        // call SetLabel to position it
-        SetLabel(txt);
-    }
-
-    void SetLabel(const char * txt)
-    {
-        SetText(txt);
-
-        mLabel->SetText(txt);
-
-        // position label
-        const int labelX = (GetWidth() - mLabel->GetWidth()) / 2;
-        const int labelY = (GetHeight() - mLabel->GetHeight()) * 0.5f;
-        mLabel->SetPosition(labelX, labelY);
-    }
-
-private:
-    void HandleMouseOver() override
-    {
-        sgl::sgui::AbstractButton::HandleMouseOver();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_over-02.ogg");
-    }
-
-    void HandleButtonDown() override
-    {
-        sgl::sgui::AbstractButton::HandleButtonDown();
-
-        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
-        player->PlaySound("UI/button_click-02.ogg");
-    }
-
-    void HandlePositionChanged() override
-    {
-        PositionElements();
-    }
-
-    void OnStateChanged(sgl::sgui::AbstractButton::VisualState state) override
-    {
-        sgl::sgui::ComboBoxItem::OnStateChanged(state);
-
-        UpdateGraphics();
-    }
-
-    void UpdateGraphics()
-    {
-        using namespace sgl::graphic;
-
-        auto state = GetState();
-
-        // BODY
-        const unsigned int texIds[NUM_VISUAL_STATES] =
-            {
-                ID_DLG_SETT_CBI_NORMAL,
-                ID_DLG_SETT_CBI_DISABLED,
-                ID_DLG_SETT_CBI_OVER,
-                ID_DLG_SETT_CBI_PUSHED,
-                ID_DLG_SETT_CBI_NORMAL,
-            };
-
-        auto tm = TextureManager::Instance();
-        Texture * tex = tm->GetSprite(SpriteFileDialogSettings, texIds[state]);
-        mBody->SetTexture(tex);
-
-        SetSize(mBody->GetWidth(), mBody->GetHeight());
-
-        // TEXT
-        const unsigned int txtColors[NUM_VISUAL_STATES] =
-        {
-            WidgetsConstants::colorDialogButtonNormal,
-            WidgetsConstants::colorDialogButtonDisabled,
-            WidgetsConstants::colorDialogButtonOver,
-            WidgetsConstants::colorDialogButtonPushed,
-            WidgetsConstants::colorDialogButtonChecked
-        };
-
-        mLabel->SetColor(txtColors[state]);
-    }
-
-    void PositionElements()
-    {
-        const int x0 = GetScreenX();
-        const int y0 = GetScreenY();
-
-        // position BG
-        mBody->SetPosition(x0, y0);
-    }
-
-private:
-    sgl::graphic::Image * mBody = nullptr;
-    sgl::sgui::Label * mLabel = nullptr;
-};
-
-class ComboBoxItemResolution : public SettingsComboBoxItem
+// ====== COMBO BOX ITEM FOR SCREEN RESOLUTION =====
+class ComboBoxItemResolution : public GameComboBoxItem
 {
 public:
     ComboBoxItemResolution(int display, int mode, const char * txt)
-        : SettingsComboBoxItem(txt)
+        : GameComboBoxItem(txt)
         , mDisplay(display)
         , mMode(mode)
     {
@@ -449,11 +271,11 @@ void DialogSettings::CreatePanelGame()
 
     mComboLang = new SettingsComboBox(panel);
 
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ENG")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_FRA")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_GER")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_ITA")));
-    mComboLang->AddItem(new SettingsComboBoxItem(mSM->GetCString("LANG_SPA")));
+    mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_ENG")));
+    mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_FRA")));
+    mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_GER")));
+    mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_ITA")));
+    mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_SPA")));
 
     mComboLang->SetActiveItem(mGame->GetLanguage());
 
@@ -758,9 +580,9 @@ void DialogSettings::CreatePanelVideo()
     label->SetPosition(x, y);
 
     mComboVMode = new SettingsComboBox(panel);
-    mComboVMode->AddItem(new SettingsComboBoxItem(mSM->GetCString("BORDERLESS")));
-    mComboVMode->AddItem(new SettingsComboBoxItem(mSM->GetCString("FULLSCREEN")));
-    mComboVMode->AddItem(new SettingsComboBoxItem(mSM->GetCString("WINDOW")));
+    mComboVMode->AddItem(new GameComboBoxItem(mSM->GetCString("BORDERLESS")));
+    mComboVMode->AddItem(new GameComboBoxItem(mSM->GetCString("FULLSCREEN")));
+    mComboVMode->AddItem(new GameComboBoxItem(mSM->GetCString("WINDOW")));
     mComboVMode->SetActiveItem(videoMode);
 
     mComboVMode->SetOnActiveChanged([this, win](int mode)
@@ -992,9 +814,9 @@ void DialogSettings::CreatePanelControls()
     label->SetPosition(x, y);
 
     mComboBtnSelect = new SettingsComboBox(panel);
-    mComboBtnSelect->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_L")));
-    mComboBtnSelect->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_M")));
-    mComboBtnSelect->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_R")));
+    mComboBtnSelect->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_L")));
+    mComboBtnSelect->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_M")));
+    mComboBtnSelect->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_R")));
 
     const int btnSelect = mGame->GetButtonSelect();
     mComboBtnSelect->SetActiveItem(GetMouseButtonIndex(btnSelect));
@@ -1030,9 +852,9 @@ void DialogSettings::CreatePanelControls()
     label->SetPosition(x, y);
 
     mComboBtnAction = new SettingsComboBox(panel);
-    mComboBtnAction->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_L")));
-    mComboBtnAction->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_M")));
-    mComboBtnAction->AddItem(new SettingsComboBoxItem(mSM->GetCString("CLICK_R")));
+    mComboBtnAction->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_L")));
+    mComboBtnAction->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_M")));
+    mComboBtnAction->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_R")));
 
     const int btnAction = mGame->GetButtonAction();
     mComboBtnAction->SetActiveItem(GetMouseButtonIndex(btnAction));
@@ -1132,7 +954,7 @@ void DialogSettings::OnStringsChanged()
 
     for(unsigned int i = 0; i < NUM_LANGUAGES; ++i)
     {
-        auto cbi = static_cast<SettingsComboBoxItem *>(mComboLang->GetItem(i));
+        auto cbi = static_cast<GameComboBoxItem *>(mComboLang->GetItem(i));
         cbi->SetLabel(mSM->GetCString(strIdsLanguage[i]));
     }
 
@@ -1172,15 +994,15 @@ void DialogSettings::OnStringsChanged()
 
     // PANEL VIDEO - video mode ComboBox
     int ind = sgl::graphic::Window::VideoMode::VM_BORDERLESS;
-    auto cbi = static_cast<SettingsComboBoxItem *>(mComboVMode->GetItem(ind));
+    auto cbi = static_cast<GameComboBoxItem *>(mComboVMode->GetItem(ind));
     cbi->SetLabel(mSM->GetCString("BORDERLESS"));
 
     ind = sgl::graphic::Window::VideoMode::VM_FULLSCREEN;
-    cbi = static_cast<SettingsComboBoxItem *>(mComboVMode->GetItem(ind));
+    cbi = static_cast<GameComboBoxItem *>(mComboVMode->GetItem(ind));
     cbi->SetLabel(mSM->GetCString("FULLSCREEN"));
 
     ind = sgl::graphic::Window::VideoMode::VM_WINDOW;
-    cbi = static_cast<SettingsComboBoxItem *>(mComboVMode->GetItem(ind));
+    cbi = static_cast<GameComboBoxItem *>(mComboVMode->GetItem(ind));
     cbi->SetLabel(mSM->GetCString("WINDOW"));
 
     mComboVMode->Refresh();
@@ -1217,7 +1039,7 @@ void DialogSettings::OnStringsChanged()
 
     for(unsigned int i = 0; i < numbuttons; ++i)
     {
-        auto cbi = static_cast<SettingsComboBoxItem *>(mComboBtnSelect->GetItem(i));
+        auto cbi = static_cast<GameComboBoxItem *>(mComboBtnSelect->GetItem(i));
         cbi->SetLabel(mSM->GetCString(ButtonsStr[i]));
     }
 
@@ -1226,7 +1048,7 @@ void DialogSettings::OnStringsChanged()
     // PANEL CONTROLS - ACTION combo box
     for(unsigned int i = 0; i < numbuttons; ++i)
     {
-        auto cbi = static_cast<SettingsComboBoxItem *>(mComboBtnAction->GetItem(i));
+        auto cbi = static_cast<GameComboBoxItem *>(mComboBtnAction->GetItem(i));
         cbi->SetLabel(mSM->GetCString(ButtonsStr[i]));
     }
 

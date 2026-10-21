@@ -641,6 +641,8 @@ add_executable(
     src/Widgets/ExternalButtons.cpp
     src/Widgets/GameButton.h
     src/Widgets/GameButton.cpp
+    src/Widgets/GameComboBox.h
+    src/Widgets/GameComboBox.cpp
     src/Widgets/GameHUD.h
     src/Widgets/GameHUD.cpp
     src/Widgets/GameMapProgressBar.h
