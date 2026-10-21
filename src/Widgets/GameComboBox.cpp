@@ -15,7 +15,7 @@ namespace game
 {
 
 // ====== COMBOBOX =====
-SettingsComboBox::SettingsComboBox(sgl::sgui::Widget * parent)
+GameComboBox::GameComboBox(sgl::sgui::Widget * parent)
     : sgl::sgui::ComboBox(parent)
 {
     using namespace sgl::graphic;
@@ -27,7 +27,7 @@ SettingsComboBox::SettingsComboBox(sgl::sgui::Widget * parent)
     SetGraphics(sgl::sgui::AbstractButton::NORMAL);
 }
 
-void SettingsComboBox::HandleButtonDown()
+void GameComboBox::HandleButtonDown()
 {
     sgl::sgui::AbstractButton::HandleButtonDown();
 
@@ -35,12 +35,12 @@ void SettingsComboBox::HandleButtonDown()
     player->PlaySound("UI/button_click-01.ogg");
 }
 
-void SettingsComboBox::OnStateChanged(sgl::sgui::AbstractButton::VisualState state)
+void GameComboBox::OnStateChanged(sgl::sgui::AbstractButton::VisualState state)
 {
     SetGraphics(state);
 }
 
-void SettingsComboBox::SetGraphics(sgl::sgui::AbstractButton::VisualState state)
+void GameComboBox::SetGraphics(sgl::sgui::AbstractButton::VisualState state)
 {
     using namespace sgl;
 

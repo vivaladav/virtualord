@@ -269,7 +269,7 @@ void DialogSettings::CreatePanelGame()
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    mComboLang = new SettingsComboBox(panel);
+    mComboLang = new GameComboBox(panel);
 
     mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_ENG")));
     mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_FRA")));
@@ -467,7 +467,7 @@ void DialogSettings::CreatePanelVideo()
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    mComboRes = new SettingsComboBox(panel);
+    mComboRes = new GameComboBox(panel);
 
     const graphic::DisplayMode currDM = win->GetCurrentDisplayMode();
 
@@ -579,7 +579,7 @@ void DialogSettings::CreatePanelVideo()
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    mComboVMode = new SettingsComboBox(panel);
+    mComboVMode = new GameComboBox(panel);
     mComboVMode->AddItem(new GameComboBoxItem(mSM->GetCString("BORDERLESS")));
     mComboVMode->AddItem(new GameComboBoxItem(mSM->GetCString("FULLSCREEN")));
     mComboVMode->AddItem(new GameComboBoxItem(mSM->GetCString("WINDOW")));
@@ -813,7 +813,7 @@ void DialogSettings::CreatePanelControls()
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    mComboBtnSelect = new SettingsComboBox(panel);
+    mComboBtnSelect = new GameComboBox(panel);
     mComboBtnSelect->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_L")));
     mComboBtnSelect->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_M")));
     mComboBtnSelect->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_R")));
@@ -851,7 +851,7 @@ void DialogSettings::CreatePanelControls()
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    mComboBtnAction = new SettingsComboBox(panel);
+    mComboBtnAction = new GameComboBox(panel);
     mComboBtnAction->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_L")));
     mComboBtnAction->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_M")));
     mComboBtnAction->AddItem(new GameComboBoxItem(mSM->GetCString("CLICK_R")));

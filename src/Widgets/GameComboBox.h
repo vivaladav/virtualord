@@ -10,10 +10,10 @@ namespace game
 {
 
 // ====== COMBOBOX =====
-class SettingsComboBox : public sgl::sgui::ComboBox
+class GameComboBox : public sgl::sgui::ComboBox
 {
 public:
-    SettingsComboBox(sgl::sgui::Widget * parent);
+    GameComboBox(sgl::sgui::Widget * parent);
 
 private:
     void HandleButtonDown() override;
