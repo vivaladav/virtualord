@@ -133,34 +133,31 @@ DialogAutoAttackSettings::DialogAutoAttackSettings(GameObject * obj)
     label->SetPosition(x, y);
 
     const int minEne = 0;
-    const int maxEne = 50;
+    const int maxEne = mObj->GetMaxEnergy();
     mSliderEnergy = new StandardGameSliderH(this);
 
     mSliderEnergy->SetMinMax(minEne, maxEne);
     mSliderEnergy->SetValue(energy);
 
-    const std::string textMax = std::to_string(maxEne) + std::string("%");
-    auto labelPerc = new sgui::Label(textMax.c_str(), fontHeader, this);
-    labelPerc->SetColor(WidgetsConstants::colorDialogText);
+    auto labelVal = new sgui::Label(std::to_string(maxEne).c_str(), fontHeader, this);
+    labelVal->SetColor(WidgetsConstants::colorDialogText);
 
-    x = w - WidgetsConstants::MarginDialogContentL - labelPerc->GetWidth();
-    y += (label->GetHeight() - labelPerc->GetHeight()) / 2;
-    labelPerc->SetPosition(x, y);
+    x = w - WidgetsConstants::MarginDialogContentL - labelVal->GetWidth();
+    y += (label->GetHeight() - labelVal->GetHeight()) / 2;
+    labelVal->SetPosition(x, y);
 
-    const std::string textPerc = std::to_string(energy) + std::string("%");
-    labelPerc->SetText(textPerc.c_str());
+    labelVal->SetText(std::to_string(energy).c_str());
 
     const int marginSliderH = 20;
     x -= marginSliderH + mSliderEnergy->GetWidth();
-    y += (labelPerc->GetHeight() - mSliderEnergy->GetHeight()) / 2;
+    y += (labelVal->GetHeight() - mSliderEnergy->GetHeight()) / 2;
     mSliderEnergy->SetPosition(x, y);
 
-    mSliderEnergy->AddOnValueChanged([this, labelPerc](int val)
+    mSliderEnergy->AddOnValueChanged([this, labelVal](int val)
     {
         mObj->SetEnergyToSave(val);
 
-        const std::string textPerc = std::to_string(val) + std::string("%");
-        labelPerc->SetText(textPerc.c_str());
+        labelVal->SetText(std::to_string(val).c_str());
     });
 }
 

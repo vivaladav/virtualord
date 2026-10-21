@@ -141,7 +141,7 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     mExp = bf.ReadInt();
     mMaxEnergy = bf.ReadFloat();
     mEnergy = bf.ReadFloat();
-    mEnergyToSavePerc = bf.ReadFloat();
+    mEnergyToSave = bf.ReadFloat();
     mMaxHealth = bf.ReadFloat();
     mHealth = bf.ReadFloat();
     mMaxSpeed = bf.ReadFloat();
@@ -183,7 +183,7 @@ bool GameObject::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteInt(mExp);
     bf.WriteFloat(mMaxEnergy);
     bf.WriteFloat(mEnergy);
-    bf.WriteFloat(mEnergyToSavePerc);
+    bf.WriteFloat(mEnergyToSave);
     bf.WriteFloat(mMaxHealth);
     bf.WriteFloat(mHealth);
     bf.WriteFloat(mMaxSpeed);
@@ -639,9 +639,8 @@ void GameObject::FindAndSetEnemyTarget()
 
     // check if attacking leaves enough energy available
     const int costEnergy = mWeapon->GetCostEnergy();
-    const int minEnergy = std::roundf(GetMaxEnergy() * mEnergyToSavePerc);
 
-    if(mEnergy - costEnergy < minEnergy)
+    if(mEnergy - costEnergy < mEnergyToSave)
     {
         mWeapon->ClearTarget();
         return ;
