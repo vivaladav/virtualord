@@ -1,5 +1,7 @@
 #include "Widgets/GameSliderH.h"
 
+#include "Widgets/GameUIData.h"
+
 #include <sgl/graphic/Image.h>
 #include <sgl/graphic/Texture.h>
 #include <sgl/graphic/TextureManager.h>
@@ -113,6 +115,13 @@ void GameSliderH::UpdatePositions()
     const int btnX = barX + mBar->GetWidth() - (mButton->GetWidth() / 2);
     const int btnY = y0;
     mButton->SetPosition(btnX, btnY);
+}
+
+// ==== STANDARD HORIZONTAL GAME SLIDER ====
+StandardGameSliderH::StandardGameSliderH(sgl::sgui::Widget * parent)
+    : GameSliderH(SpriteFileUIShared, ID_SLIDER_DLG_BG, ID_SLIDER_DLG_BAR, ID_SLIDER_DLG_BTN,
+                  parent)
+{
 }
 
 } // namespace game

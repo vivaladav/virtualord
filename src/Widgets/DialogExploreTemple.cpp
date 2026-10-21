@@ -145,10 +145,6 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     const int blockResW = 510;
     const int minInvest = 0;
 
-    auto texSliderBg = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BG);
-    auto texSliderBar = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BAR);
-    auto texSliderBtn = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BTN);
-
     int x = WidgetsConstants::MarginDialogContentL;
     int y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
@@ -169,7 +165,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     const int maxTempleMoney = temple->GetMaxInvestableMoney();
     const int maxMoney =  playerMoney < maxTempleMoney ? playerMoney : maxTempleMoney;
 
-    mSliderMoney = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderMoney = new StandardGameSliderH(this);
     mSliderMoney->SetMinMax(minInvest, maxMoney);
     mSliderMoney->SetValue(minInvest + (maxMoney - minInvest) / 2);
     mSliderMoney->SetPosition(icon->GetX() + icon->GetWidth() + marginIconR,
@@ -199,7 +195,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     const int maxTempleMaterial = temple->GetMaxInvestableMaterial();
     const int maxMaterial =  playerMaterial < maxTempleMaterial ? playerMaterial : maxTempleMaterial;
 
-    mSliderMaterial = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderMaterial = new StandardGameSliderH(this);
     mSliderMaterial->SetMinMax(minInvest, maxMaterial);
     mSliderMaterial->SetValue(minInvest + (maxMaterial - minInvest) / 2);
     mSliderMaterial->SetPosition(icon->GetX() + icon->GetWidth() + marginIconR,
@@ -230,7 +226,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     const int maxTempleDiamonds = temple->GetMaxInvestableBlobs();
     const int maxDiamonds =  playerDiamonds < maxTempleDiamonds ? playerDiamonds : maxTempleDiamonds;
 
-    mSliderDiamonds = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderDiamonds = new StandardGameSliderH(this);
     mSliderDiamonds->SetMinMax(minInvest, maxDiamonds);
     mSliderDiamonds->SetValue(minInvest + (maxDiamonds - minInvest) / 2);
     mSliderDiamonds->SetPosition(icon->GetX() + icon->GetWidth() + marginIconR,
@@ -261,7 +257,7 @@ DialogExploreTemple::DialogExploreTemple(Player * player, Temple * temple)
     const int maxTempleBlobs = temple->GetMaxInvestableBlobs();
     const int maxBlobs =  playerBlobs < maxTempleBlobs ? playerBlobs : maxTempleBlobs;
 
-    mSliderBlobs = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderBlobs = new StandardGameSliderH(this);
     mSliderBlobs->SetMinMax(minInvest, maxBlobs);
     mSliderBlobs->SetValue(minInvest + (maxBlobs - minInvest) / 2);
     mSliderBlobs->SetPosition(icon->GetX() + icon->GetWidth() + marginIconR,
