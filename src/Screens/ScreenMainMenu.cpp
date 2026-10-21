@@ -370,7 +370,7 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "\n"
+                  "- New dialog to control attack strategies of defensive towers and bunkers.\n"
                   "\nCHANGES\n"
                   "- Made unit and structure actions 10-15% faster.\n"
                   "- Reduced auto camera movements when action is already on screen.\n"
