@@ -37,6 +37,7 @@
 #include <sgl/services/Steam.h>
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/BinaryFile.h>
+#include <sgl/utilities/Filesystem.h>
 #include <sgl/utilities/StateManager.h>
 #include <sgl/utilities/StringManager.h>
 #include <sgl/utilities/UniformDistribution.h>
@@ -78,7 +79,7 @@ bool Game::GOD_MODE = false;
 #endif
 
 const std::string Game::SAVE_VERSION("0.2.5");
-const std::string Game::SETTINGS_VERSION("0.1.5");
+const std::string Game::SETTINGS_VERSION("0.2.0");
 
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
@@ -289,7 +290,7 @@ Game::Game(int argc, char * argv[])
     mDirSettings = "save/";
     InitDirectories();
 
-    mSettingsFile = std::string("settings.sav");
+    mSettingsFile = std::string("settings.cfg");
 
     // init save files
     mSaveFiles.emplace_back("00_001.sav");
@@ -733,7 +734,14 @@ bool Game::LoadSettings()
 {
     using namespace sgl;
 
+    const utilities::Filesystem fs;
     const std::string path = mDirSettings + mSettingsFile;
+
+    if(!fs.DoesPathExist(path))
+    {
+        std::cout << "[WAR] Game::LoadSettings - file " << path << " does NOT exist." << std::endl;
+        return false;
+    }
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
@@ -761,6 +769,10 @@ bool Game::LoadSettings()
         return false;
     }
 
+    // game version
+    std::string gameVer;
+    bf.ReadString(gameVer);
+
     // settings
     const unsigned int lang = bf.ReadUint();
     SetLanguage(static_cast<LanguageId>(lang));
@@ -777,14 +789,6 @@ bool Game::LoadSettings()
     mTimeAutoHideMouse = bf.ReadFloat();
     SetAutoHideMouseEnabled(bf.ReadBool());
 
-    if(display >= 0 && dMode >= 0)
-    {
-        if(mWin->SetDisplayMode(display, dMode))
-            mWin->SetVideoMode(vMode);
-    }
-
-    mWin->GrabMouse(grabMouse);
-
     mMapDragging = bf.ReadBool();
     mMapScrollingOnEdges = bf.ReadBool();
     mMapScrollingConstSpeed = bf.ReadBool();
@@ -797,6 +801,20 @@ bool Game::LoadSettings()
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
     std::cout << "Game::LoadSettings - SETTINGS LOADED in: " << duration.count() << " ms" << std::endl;
 #endif
+
+    std::cout << "Game::LoadSettings - LOADED " << path << " (" << ver
+              << ") created by \"Virtualord " << gameVer << "\"" << std::endl;
+
+    // -- USE LOADED SETTINGS --
+    // update video mode
+    if(display >= 0 && dMode >= 0)
+    {
+        if(mWin->SetDisplayMode(display, dMode))
+            mWin->SetVideoMode(vMode);
+    }
+
+    // set mouse grab
+    mWin->GrabMouse(grabMouse);
 
     return true;
 }
@@ -824,6 +842,9 @@ bool Game::SaveSettings()
 
     // version
     bf.WriteString(SETTINGS_VERSION);
+    // game version
+    const std::string gameVersion(VERSION);
+    bf.WriteString(gameVersion);
 
     // settings
     bf.WriteUint(mLanguage);
