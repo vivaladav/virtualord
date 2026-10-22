@@ -223,7 +223,12 @@ void GameHUD::ShowPanelObjectActions(GameObject * obj)
         UpdateGoalsNotification();
     // disable ATTACK when tower or bunker is not linked
     else if(type == ObjectData::TYPE_BUNKER || type == ObjectData::TYPE_DEFENSIVE_TOWER)
-        mPanelObjActions->SetActionEnabled(PanelObjectActions::BTN_ATTACK, obj->IsLinked());
+    {
+        const bool linked = obj->IsLinked();
+
+        mPanelObjActions->SetActionEnabled(PanelObjectActions::BTN_ATTACK, linked);
+        mPanelObjActions->SetActionEnabled(PanelObjectActions::BTN_AUTO_ATT_SETTINGS, linked);
+    }
 }
 
 void GameHUD::UpdateUpgradesNotification()
