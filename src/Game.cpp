@@ -303,6 +303,9 @@ Game::Game(int argc, char * argv[])
     mSaveFiles.emplace_back("02_002.sav");
     mSaveFiles.emplace_back("02_003.sav");
 
+    // default auto-save file
+    mCurrAutoSaveFile = std::string("auto.sav");
+
     // load settings when starting
     const bool settingsOK = LoadSettings();
 

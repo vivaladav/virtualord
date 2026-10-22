@@ -82,6 +82,7 @@ public:
 
     // -- LOAD & SAVE --
     const std::string & GetSavefile(GameMode mode, unsigned int ind) const;
+    const std::string & GetAutoSavefile() const;
 
     void SetSaveFile(const std::string & f);
 
@@ -236,6 +237,7 @@ private:
     std::string mDirSave;
     std::string mDirSettings;
     std::string mCurrSaveFile;
+    std::string mCurrAutoSaveFile;
     std::string mSettingsFile;
 
     sgl::graphic::Renderer * mRenderer = nullptr;
@@ -289,6 +291,8 @@ private:
 };
 
 inline ResourceLoader * Game::GetResourceLoader() const { return mResLoader; }
+
+inline const std::string & Game::GetAutoSavefile() const { return mCurrAutoSaveFile; }
 
 inline void Game::SetSaveFile(const std::string & f) { mCurrSaveFile = f; }
 
