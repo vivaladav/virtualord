@@ -100,8 +100,6 @@ ButtonSaveSlot::ButtonSaveSlot(GameMode mode, PlayerFaction f, PlanetId planet, 
     }
 
     UpdateColors(GetState());
-
-    SetCheckable(true);
 }
 
 #ifdef DEMO_MODE
@@ -122,7 +120,10 @@ void ButtonSaveSlot::MarkNotAvailable()
     mLabelMode->SetPosition((GetWidth() - mLabelMode->GetWidth()) / 2,
                             (GetHeight() - mLabelMode->GetHeight()) / 2);
 
-    SetEnabled(false);
+    if(IsEnabled())
+        SetEnabled(false);
+    else
+        UpdateColors(DISABLED);
 }
 #endif
 
