@@ -78,7 +78,7 @@ namespace game
 bool Game::GOD_MODE = false;
 #endif
 
-const std::string Game::SAVE_VERSION("0.2.5");
+const std::string Game::SAVE_VERSION("0.3.0");
 const std::string Game::SETTINGS_VERSION("0.2.0");
 
 Game::Game(int argc, char * argv[])
@@ -479,6 +479,10 @@ bool Game::LoadGameHeader(GameMode & mode, PlayerFaction & faction, PlanetId & p
         return false;
     }
 
+    // game version
+    std::string gameVersion;
+    bf.ReadString(gameVersion);
+
     // READ HEADER
     mode = static_cast<GameMode>(bf.ReadUint());
     faction = static_cast<PlayerFaction>(bf.ReadUint());
@@ -492,6 +496,11 @@ bool Game::LoadGameHeader(GameMode & mode, PlayerFaction & faction, PlanetId & p
     auto t1 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
     std::cout << "Game::LoadGameHeader - GAME HEADER LOADED in: " << duration.count() << " ms" << std::endl;
+#endif
+
+#ifdef DEBUG
+    std::cout << "Game::LoadGameHeader - LOADED HEADER " << path << " - version: "
+              << version << " - create by \"Virtualord " << gameVersion << "\"" << std::endl;
 #endif
 
     return true;
@@ -541,6 +550,10 @@ bool Game::LoadGame(const std::string & saveFile)
                   << version << " (expected " << SAVE_VERSION << ")" << std::endl;
         return false;
     }
+
+    // game version
+    std::string gameVersion;
+    mReaderSave->ReadString(gameVersion);
 
     // HEADER with data used for quick load
     mGameMode = static_cast<GameMode>(mReaderSave->ReadUint());
@@ -636,6 +649,11 @@ bool Game::LoadGame(const std::string & saveFile)
     std::cout << "Game::LoadGame - GAME LOADED in: " << duration.count() << " ms" << std::endl;
 #endif
 
+#ifdef DEBUG
+    std::cout << "Game::LoadGame - LOADED GAME " << path << " - version: "
+              << version << " - create by \"Virtualord " << gameVersion << "\"" << std::endl;
+#endif
+
     if(!saveFile.empty())
         mCurrSaveFile = saveFile;
 
@@ -665,6 +683,10 @@ bool Game::SaveGame(const std::string & saveFile)
 
     // version
     bf.WriteString(SAVE_VERSION);
+
+    // game version
+    const std::string gameVersion(VERSION);
+    bf.WriteString(gameVersion);
 
     // HEADER with data used for quick load
     bf.WriteUint(mGameMode);
@@ -786,8 +808,8 @@ bool Game::LoadSettings()
     }
 
     // game version
-    std::string gameVer;
-    bf.ReadString(gameVer);
+    std::string gameVersion;
+    bf.ReadString(gameVersion);
 
     // settings
     const unsigned int lang = bf.ReadUint();
@@ -819,7 +841,7 @@ bool Game::LoadSettings()
 #endif
 
     std::cout << "Game::LoadSettings - LOADED " << path << " (" << ver
-              << ") created by \"Virtualord " << gameVer << "\"" << std::endl;
+              << ") created by \"Virtualord " << gameVersion << "\"" << std::endl;
 
     // -- USE LOADED SETTINGS --
     // update video mode
