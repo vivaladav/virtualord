@@ -421,7 +421,7 @@ void ScreenMainMenu::CreatePanelLoad()
     for(unsigned int i = 0; i < numSlots; ++i)
     {
         used = game->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
-                                    game->GetSavefile(GM_CAMPAIGN, i));
+                                    game->GetSavefile(i));
 
         if(used)
         {
@@ -429,7 +429,7 @@ void ScreenMainMenu::CreatePanelLoad()
 
             btnSlot->AddOnClickFunction([game, i]
             {
-                game->LoadGame(game->GetSavefile(GM_CAMPAIGN, i));
+                game->LoadGame(game->GetSavefile(i));
             });
         }
         else

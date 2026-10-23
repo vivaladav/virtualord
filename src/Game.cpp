@@ -296,12 +296,6 @@ Game::Game(int argc, char * argv[])
     mSaveFiles.emplace_back("00_001.sav");
     mSaveFiles.emplace_back("00_002.sav");
     mSaveFiles.emplace_back("00_003.sav");
-    mSaveFiles.emplace_back("01_001.sav");
-    mSaveFiles.emplace_back("01_002.sav");
-    mSaveFiles.emplace_back("01_003.sav");
-    mSaveFiles.emplace_back("02_001.sav");
-    mSaveFiles.emplace_back("02_002.sav");
-    mSaveFiles.emplace_back("02_003.sav");
 
     // default auto-save file
     mCurrAutoSaveFile = std::string("auto.sav");
@@ -383,14 +377,12 @@ void Game::CloseSaveFileForReading()
     mReaderSave = nullptr;
 }
 
-const std::string & Game::GetSavefile(GameMode mode, unsigned int ind) const
+const std::string & Game::GetSavefile(unsigned int ind) const
 {
     static const std::string empty;
 
-    const unsigned int savesPerMode = 3;
-
-    if(mode < NUM_GAME_MODES && ind < savesPerMode)
-        return mSaveFiles[(savesPerMode * mode) + ind];
+    if(ind < mSaveFiles.size())
+        return mSaveFiles[ind];
     else
         return empty;
 }

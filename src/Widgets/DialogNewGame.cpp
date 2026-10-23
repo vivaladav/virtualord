@@ -485,7 +485,7 @@ void DialogNewGame::CreatePanelSaves()
     {
         if(checked)
         {
-            mGame->SetSaveFile(mGame->GetSavefile(mGame->GetGameMode(), ind));
+            mGame->SetSaveFile(mGame->GetSavefile(ind));
 
             mButtonContinue->SetEnabled(true);
         }
@@ -503,7 +503,7 @@ void DialogNewGame::CreatePanelSaves()
 
     // SLOT 1
     used = mGame->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
-                                 mGame->GetSavefile(mGame->GetGameMode(), slot++));
+                                 mGame->GetSavefile(slot++));
 
     if(used)
         btn = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelSave);
@@ -518,7 +518,7 @@ void DialogNewGame::CreatePanelSaves()
 
     // SLOT 2
     used = mGame->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
-                                 mGame->GetSavefile(mGame->GetGameMode(), slot++));
+                                 mGame->GetSavefile(slot++));
 
     if(used)
         btn = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelSave);
@@ -537,7 +537,7 @@ void DialogNewGame::CreatePanelSaves()
 
     // SLOT 3
     used = mGame->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
-                                 mGame->GetSavefile(mGame->GetGameMode(), slot++));
+                                 mGame->GetSavefile(slot++));
 
     if(used)
         btn = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelSave);

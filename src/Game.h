@@ -81,7 +81,7 @@ public:
     void ClearGameData();
 
     // -- LOAD & SAVE --
-    const std::string & GetSavefile(GameMode mode, unsigned int ind) const;
+    const std::string & GetSavefile(unsigned int ind) const;
     const std::string & GetAutoSavefile() const;
 
     void SetSaveFile(const std::string & f);
