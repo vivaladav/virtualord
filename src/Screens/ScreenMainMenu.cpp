@@ -537,6 +537,7 @@ void ScreenMainMenu::CreateChangelog()
                   " before than expected.\n"
                   "- Fixed crash happening when playing multiple missions in one run.\n"
                   "- Prevented soft-lock in tutorial of planet map when on low resources.\n"
+                  "- Fixed save file corruption when using mini-units.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
