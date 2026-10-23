@@ -528,6 +528,7 @@ void ScreenMainMenu::CreateChangelog()
     text->SetText("NEW FEATURES\n"
                   "- New dialog to control attack strategies of defensive towers and bunkers.\n"
                   "- Game is automatically saved at every new turn.\n"
+                  "- New panel to select save slot to load.\n"
                   "\nCHANGES\n"
                   "- Made unit and structure actions 10-15% faster.\n"
                   "- Reduced auto camera movements when action is already on screen.\n"
