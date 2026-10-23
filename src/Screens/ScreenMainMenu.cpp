@@ -5,6 +5,7 @@
 #include "Version.h"
 #include "States/StatesIds.h"
 #include "Widgets/ButtonMainMenu.h"
+#include "Widgets/ButtonSaveSlot.h"
 #include "Widgets/DialogChangelog.h"
 #include "Widgets/ExternalButtons.h"
 #include "Widgets/GameButton.h"
@@ -50,7 +51,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
 
     game->SetClearColor(0x12, 0x12, 0x12, 0xFF);
 
-    auto panelButtons = new sgui::Widget;
+    mPanelButtons = new sgui::Widget;
 
     int buttonY = 0;
     const int VMARGIN = 35;
@@ -76,7 +77,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
 #endif
 
     // -- BUTTON NEW GAME --
-    ButtonMainMenu * button = new ButtonMainMenu(sm->GetCString("NEW_GAME"), panelButtons);
+    ButtonMainMenu * button = new ButtonMainMenu(sm->GetCString("NEW_GAME"), mPanelButtons);
 
     button->AddOnClickFunction([game]
     {
@@ -115,29 +116,34 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     // only visible if there's a save file available
     if(game->HasSavedFiles())
     {
-        button = new ButtonMainMenu(sm->GetCString("LOAD_GAME"), panelButtons);
+        button = new ButtonMainMenu(sm->GetCString("LOAD_GAME"), mPanelButtons);
         button->SetY(buttonY);
 
-        button->AddOnClickFunction([game]
+        button->AddOnClickFunction([this]
         {
-            // TODO
-            //  replace hardcoded values with proper implementation.
-            //  This will be changed to a dialog or screen to select a slot
-            game->LoadGame(game->GetSavefile(GM_CAMPAIGN, 0));
+            mPanelButtons->SetVisible(false);
+            mButtonChangelog->SetVisible(false);
+
+            mPanelLoad->SetVisible(true);
         });
 
         buttonY += button->GetHeight() + VMARGIN;
+
+        // also create panel to choose a save file
+        CreatePanelLoad();
+
+        mPanelLoad->SetVisible(false);
     }
 
     // -- BUTTON MAP EDITOR --
-    button = new ButtonMainMenu(sm->GetCString("MAP_EDITOR"), panelButtons);
+    button = new ButtonMainMenu(sm->GetCString("MAP_EDITOR"), mPanelButtons);
     button->SetY(buttonY);
 
 #ifdef DEMO_MODE
     button->SetEnabled(false);
 
     // cover button to show tooltip when mouse is over
-    auto cover = new WidgetCover(button, panelButtons);
+    auto cover = new WidgetCover(button, mPanelButtons);
     cover->SetPosition(button->GetX(), button->GetY());
 
     auto tt = new GameSimpleTooltip(sm->GetCString("NOT_IN_DEMO"));
@@ -149,7 +155,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     buttonY += button->GetHeight() + VMARGIN;
 
     // -- BUTTON SETTINGS --
-    button = new ButtonMainMenu(sm->GetCString("SETTINGS"), panelButtons);
+    button = new ButtonMainMenu(sm->GetCString("SETTINGS"), mPanelButtons);
     button->SetY(buttonY);
 
     button->AddOnClickFunction([game]
@@ -160,7 +166,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     buttonY += button->GetHeight() + VMARGIN;
 
     // -- CREDITS --
-    button = new ButtonMainMenu(sm->GetCString("CREDITS"), panelButtons);
+    button = new ButtonMainMenu(sm->GetCString("CREDITS"), mPanelButtons);
     button->SetY(buttonY);
 
     button->AddOnClickFunction([game]
@@ -171,15 +177,15 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     buttonY += button->GetHeight() + VMARGIN;
 
     // -- BUTTON EXIT --
-    button = new ButtonMainMenu(sm->GetCString("EXIT"), panelButtons);
+    button = new ButtonMainMenu(sm->GetCString("EXIT"), mPanelButtons);
     button->SetY(buttonY);
 
     button->AddOnClickFunction([game] { game->Exit(); });
 
     // position buttons panel
-    const int containerX = buttonsCX - panelButtons->GetWidth() * 0.5f;
+    const int containerX = buttonsCX - mPanelButtons->GetWidth() * 0.5f;
     const int containerY = 350;
-    panelButtons->SetPosition(containerX, containerY);
+    mPanelButtons->SetPosition(containerX, containerY);
 
     // CHANGELOG
     CreateChangelog();
@@ -311,6 +317,155 @@ void ScreenMainMenu::OnApplicationQuit(sgl::core::ApplicationEvent & event)
     GetGame()->Exit();
 
     event.SetConsumed();
+}
+
+void ScreenMainMenu::CreatePanelLoad()
+{
+    if(mPanelLoad != nullptr)
+        return ;
+
+    using namespace sgl;
+
+    auto fm = graphic::FontManager::Instance();
+    auto sm = utilities::StringManager::Instance();
+    auto tm = graphic::TextureManager::Instance();
+
+    auto game = GetGame();
+
+    // create panel
+    mPanelLoad =  new sgui::Widget;
+
+    const int marginHeaderB = 50;
+    const int marginHeaderL = 30;
+    int contY = 0;
+
+    // PANEL HEADER
+    auto tex = tm->GetSprite(SpriteFileMainMenuUI, ID_MM_HEADER_BG);
+    auto bgHeader = new sgui::Image(tex, mPanelLoad);
+
+    const int w = bgHeader->GetWidth();
+    auto fontHeader1 = fm->GetFont("Lato-Regular.ttf", 32, graphic::Font::NORMAL);
+    auto labelHeader1 = new sgui::Label(sm->GetCString("LOAD_GAME"), fontHeader1, mPanelLoad);
+    labelHeader1->SetColor(0xe7f6feff);
+    labelHeader1->SetPosition((w - labelHeader1->GetWidth()) / 2,
+                             (bgHeader->GetHeight() - labelHeader1->GetHeight()) / 2);
+
+    contY = bgHeader->GetHeight() + marginHeaderB;
+
+    // AUTOMATIC SAVE HEADER
+    const unsigned int colorHeader2 = 0xf1f3f4ff;
+    const int marginHeader2B = 5;
+    const int marginLineB = 15;
+    const int marginSlotB = 10;
+    const int marginSlotsB = 50;
+
+    auto fontHeader2 = fm->GetFont("Lato-Regular.ttf", 26, graphic::Font::NORMAL);
+
+    auto labelHeader2 = new sgui::Label(sm->GetCString("AUTO_SAVE"), fontHeader2, mPanelLoad);
+    labelHeader2->SetColor(colorHeader2);
+    labelHeader2->SetPosition(marginHeaderL, contY);
+
+    contY += labelHeader2->GetHeight() + marginHeader2B;
+
+    tex = tm->GetSprite(SpriteFileMainMenuUI, ID_MM_HLINE);
+    auto line = new sgui::Image(tex, mPanelLoad);
+    line->SetPosition(marginHeaderL, contY);
+
+    contY += line->GetHeight() + marginLineB;
+
+    // AUTOMATIC SAVE SLOT
+    GameMode mode;
+    PlayerFaction faction;
+    PlanetId planet;
+    unsigned int map;
+    int turn;
+    std::time_t timestamp;
+    bool used;
+    ButtonSaveSlot * btnSlot;
+    int slot = 0;
+
+    used = game->LoadGameHeader(mode, faction, planet, map, turn, timestamp, game->GetAutoSavefile());
+
+    if(used)
+        btnSlot = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelLoad);
+    else
+    {
+        btnSlot = new ButtonSaveSlot(mPanelLoad);
+        btnSlot->SetEnabled(false);
+    }
+
+    btnSlot->AddOnClickFunction([game]
+    {
+        game->LoadGame(game->GetAutoSavefile());
+    });
+
+    btnSlot->SetPosition((w - btnSlot->GetWidth()) / 2, contY);
+
+    contY += btnSlot->GetHeight() + marginSlotsB;
+
+    // SAVE SLOTS HEADER
+    labelHeader2 = new sgui::Label(sm->GetCString("SAVE_FILES"), fontHeader2, mPanelLoad);
+    labelHeader2->SetColor(colorHeader2);
+    labelHeader2->SetPosition(marginHeaderL, contY);
+
+    contY += labelHeader2->GetHeight() + marginHeader2B;
+
+    tex = tm->GetSprite(SpriteFileMainMenuUI, ID_MM_HLINE);
+    line = new sgui::Image(tex, mPanelLoad);
+    line->SetPosition(marginHeaderL, contY);
+
+    contY += line->GetHeight() + marginLineB;
+
+    const unsigned int numSlots = 3;
+
+    for(unsigned int i = 0; i < numSlots; ++i)
+    {
+        used = game->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
+                                    game->GetSavefile(GM_CAMPAIGN, i));
+
+        if(used)
+        {
+            btnSlot = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelLoad);
+
+            btnSlot->AddOnClickFunction([game, i]
+            {
+                game->LoadGame(game->GetSavefile(GM_CAMPAIGN, i));
+            });
+        }
+        else
+        {
+            btnSlot = new ButtonSaveSlot(mPanelLoad);
+            btnSlot->SetEnabled(false);
+        }
+
+#ifdef DEMO_MODE
+        if(i > 0)
+            btnSlot->MarkNotAvailable();
+#endif
+
+        btnSlot->SetPosition((w - btnSlot->GetWidth()) / 2, contY);
+
+        contY += btnSlot->GetHeight() + marginSlotB;
+    }
+
+    contY += marginSlotsB;
+
+    // BUTTON BACK
+    auto button = new ButtonMainMenu(sm->GetCString("BACK"), mPanelLoad);
+    button->SetPosition((w - button->GetWidth()) / 2, contY);
+
+    button->AddOnClickFunction([this]
+    {
+        mPanelButtons->SetVisible(true);
+        mButtonChangelog->SetVisible(true);
+
+        mPanelLoad->SetVisible(false);
+    });
+
+    // position panel
+    const int containerX = buttonsCX - mPanelLoad->GetWidth() / 2;
+    const int containerY = 350;
+    mPanelLoad->SetPosition(containerX, containerY);
 }
 
 void ScreenMainMenu::CreateChangelog()

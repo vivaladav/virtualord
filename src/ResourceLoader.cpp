@@ -619,6 +619,11 @@ void ResourceLoader::SetupPermanentTextures()
             { 351, 741, 350, 38 },
             { 351, 780, 350, 38 },
             { 351, 819, 350, 38 },
+            // BUTTON SAVE SLOT
+            { 812, 0, 540, 70 },
+            { 812, 71, 540, 70 },
+            { 812, 142, 540, 70 },
+            { 812, 213, 540, 70 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileUIShared, rects);
@@ -713,6 +718,7 @@ void ResourceLoader::SetupPregameTextures()
             // BACKROUNDS
             { 0, 244, 500, 250 },
             { 0, 495, 554, 136 },
+            { 0, 632, 600, 64 },
 
             // PRIMARY BUTTON
             { 0, 0, 400, 60 },
@@ -722,6 +728,9 @@ void ResourceLoader::SetupPregameTextures()
 
             // ICONS
             { 401, 0, 16, 16 },
+
+            // OTHERS
+            { 0, 697, 540, 3 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], SpriteFileMainMenuUI, rects);
@@ -856,11 +865,6 @@ void ResourceLoader::SetupGameSetupTextures()
             { 1028, 201, 540, 200 },
             { 1028, 402, 540, 200 },
             { 1028, 603, 540, 200 },
-            // SAVE SLOT
-            { 1028, 804, 540, 70 },
-            { 1028, 875, 540, 70 },
-            { 1028, 946, 540, 70 },
-            { 1028, 1017, 540, 70 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME_SETUP],

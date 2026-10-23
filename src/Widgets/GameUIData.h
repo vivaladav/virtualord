@@ -183,11 +183,6 @@ enum SpriteIdDialogNewGame : unsigned int
     ID_DLG_NEWG_BTN_DISABLED,
     ID_DLG_NEWG_BTN_OVER,
     ID_DLG_NEWG_BTN_CHECKED,
-    // BUTTON SLOT
-    ID_DLG_NEWG_SLOT_NORMAL,
-    ID_DLG_NEWG_SLOT_DISABLED,
-    ID_DLG_NEWG_SLOT_OVER,
-    ID_DLG_NEWG_SLOT_CHECKED,
 };
 
 extern const char SpriteFileDialogNewGameExp[];
@@ -518,6 +513,7 @@ enum SpriteIdMainMenuButtons : unsigned int
     // BACKROUNDS
     ID_MM_SECOND_PANEL_BG,
     ID_MM_WARN_PANEL_BG,
+    ID_MM_HEADER_BG,
 
     // PRIMARY BUTTON
     ID_MM_BTN1_NORMAL,
@@ -527,6 +523,9 @@ enum SpriteIdMainMenuButtons : unsigned int
 
     // ICONS
     ID_MM_ICON_UP,
+
+    // OTHERS
+    ID_MM_HLINE,
 
     NUM_MAIN_MENU_SPRITES
 };
@@ -927,6 +926,11 @@ enum SpriteIdUIShared : unsigned int
     ID_CBI_DISABLED,
     ID_CBI_OVER,
     ID_CBI_PUSHED,
+    // BUTTON SAVE SLOT
+    ID_DLG_NEWG_SLOT_NORMAL,
+    ID_DLG_NEWG_SLOT_DISABLED,
+    ID_DLG_NEWG_SLOT_OVER,
+    ID_DLG_NEWG_SLOT_CHECKED,
 };
 
 // UNIT QUICK SELECTION

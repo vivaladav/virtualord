@@ -29,7 +29,7 @@ ButtonSaveSlot::ButtonSaveSlot(GameMode mode, PlayerFaction f, PlanetId planet, 
     : sgl::sgui::ImageButton({ ID_DLG_NEWG_SLOT_NORMAL, ID_DLG_NEWG_SLOT_DISABLED,
                               ID_DLG_NEWG_SLOT_OVER, ID_DLG_NEWG_SLOT_NORMAL,
                               ID_DLG_NEWG_SLOT_CHECKED },
-                             SpriteFileDialogNewGame, parent)
+                             SpriteFileUIShared, parent)
     , mFaction(f)
 {
     using namespace sgl;
