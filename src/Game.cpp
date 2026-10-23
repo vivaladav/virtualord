@@ -402,9 +402,16 @@ bool Game::IsSaveFileValid(const std::string & saveFile) const
 {
     using namespace sgl;
 
-    // OPEN save file
+    const utilities::Filesystem fs;
     const std::string path = saveFile.empty() ? (mDirSave + mCurrSaveFile) : (mDirSave + saveFile);
 
+    if(!fs.DoesPathExist(path))
+    {
+        std::cout << "[WAR] Game::IsSaveFileValid - file " << path << " does NOT exist." << std::endl;
+        return false;
+    }
+
+    // OPEN save file
     utilities::BinaryFile bf(path, utilities::BinaryFile::OPEN_INPUT);
 
     if(!bf.IsOpen())
@@ -436,7 +443,14 @@ bool Game::LoadGameHeader(GameMode & mode, PlayerFaction & faction, PlanetId & p
 {
     using namespace sgl;
 
+    const utilities::Filesystem fs;
     const std::string path = saveFile.empty() ? (mDirSave + mCurrSaveFile) : (mDirSave + saveFile);
+
+    if(!fs.DoesPathExist(path))
+    {
+        std::cout << "[WAR] Game::LoadGameHeader - file " << path << " does NOT exist." << std::endl;
+        return false;
+    }
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
@@ -487,7 +501,14 @@ bool Game::LoadGame(const std::string & saveFile)
 {
     using namespace sgl;
 
+    const utilities::Filesystem fs;
     const std::string path = saveFile.empty() ? (mDirSave + mCurrSaveFile) : (mDirSave + saveFile);
+
+    if(!fs.DoesPathExist(path))
+    {
+        std::cout << "[WAR] Game::LoadGame - file " << path << " does NOT exist." << std::endl;
+        return false;
+    }
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
