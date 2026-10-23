@@ -284,23 +284,13 @@ bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(mMiniUnitsGroups.size());
 
     for(const MiniUnitsGroup * g : mMiniUnitsGroups)
-    {
-        if(g->IsEmpty())
-            continue;
-
         g->Save(bf);
-    }
 
     // city groups
     bf.WriteUint(mCities.size());
 
     for(const CityGroup * g : mCities)
-    {
-        if(g->IsEmpty())
-            continue;
-
         g->Save(bf);
-    }
 
     return true;
 }

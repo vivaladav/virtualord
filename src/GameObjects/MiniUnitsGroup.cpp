@@ -21,6 +21,9 @@ bool MiniUnitsGroup::Load(sgl::utilities::BinaryFile & bf)
     if(!res)
         return false;
 
+    if(IsEmpty())
+        return true;
+
     // path
     const unsigned int pathSize = bf.ReadUint();
     mPath.resize(pathSize);
