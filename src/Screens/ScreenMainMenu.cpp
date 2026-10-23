@@ -380,11 +380,11 @@ void ScreenMainMenu::CreatePanelLoad()
     unsigned int map;
     int turn;
     std::time_t timestamp;
-    bool used;
     ButtonSaveSlot * btnSlot;
     int slot = 0;
 
-    used = game->LoadGameHeader(mode, faction, planet, map, turn, timestamp, game->GetAutoSavefile());
+    const bool used = game->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
+                                           game->GetAutoSavefile());
 
     if(used)
         btnSlot = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelLoad);
@@ -420,8 +420,8 @@ void ScreenMainMenu::CreatePanelLoad()
 
     for(unsigned int i = 0; i < numSlots; ++i)
     {
-        used = game->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
-                                    game->GetSavefile(i));
+        const bool used = game->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
+                                               game->GetSavefile(i));
 
         if(used)
         {
@@ -439,6 +439,7 @@ void ScreenMainMenu::CreatePanelLoad()
         }
 
 #ifdef DEMO_MODE
+        // only 1 slot available in DEMO
         if(i > 0)
             btnSlot->MarkNotAvailable();
 #endif
