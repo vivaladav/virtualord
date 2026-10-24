@@ -45,7 +45,7 @@ void StepGameWaitUnitCanSpawn::Update(float delta)
     if(obj == nullptr)
         return ;
 
-    const float minEnergy = obj->GetEnergyForActionStep(SPAWN) * mSquads;
+    const float minEnergy = obj->GetEnergyForActionStep(ACT_SPAWN) * mSquads;
 
     // selecte object is not an unit OR can't build OR doesn't have enough energy
     if(obj->GetObjectCategory() != ObjectData::CAT_UNIT ||

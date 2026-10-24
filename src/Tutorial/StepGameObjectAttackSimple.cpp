@@ -54,7 +54,7 @@ StepGameObjectAttackSimple::~StepGameObjectAttackSimple()
 
 void StepGameObjectAttackSimple::Update(float)
 {
-    if(mObject != nullptr && mObject->GetCurrentAction() == GameObjectActionType::ATTACK)
+    if(mObject != nullptr && mObject->GetCurrentAction() == ACT_ATTACK)
         SetDone();
 }
 

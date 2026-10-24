@@ -1255,7 +1255,7 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
     }
 
     // check unit's energy
-    if(!unit->HasEnergyForActionStep(BUILD_STRUCTURE))
+    if(!unit->HasEnergyForActionStep(ACT_BUILD_STRUCTURE))
     {
         unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
         return false;
@@ -1372,7 +1372,7 @@ bool GameMap::IsDefensiveObject(const GameObject * obj)
 bool GameMap::HasResourcesToBuildWall(Unit * unit, unsigned int level)
 {
     // check if unit has enough energy
-    if(!unit->HasEnergyForActionStep(BUILD_WALL))
+    if(!unit->HasEnergyForActionStep(ACT_BUILD_WALL))
         return false;
 
     // check if player has enough resources
@@ -1502,7 +1502,7 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
     }
 
     // unit doesn't have enough energy
-    if(!unit->HasEnergyForActionStep(CONQUER_STRUCTURE))
+    if(!unit->HasEnergyForActionStep(ACT_CONQUER_STRUCTURE))
     {
         unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
         return false;
@@ -2084,7 +2084,7 @@ bool GameMap::CanCreateMiniUnit(GameObjectTypeId ut, GameObject * gen, int eleme
         return false;
     }
 
-    if(!gen->HasEnergyForActionStep(GameObjectActionType::SPAWN))
+    if(!gen->HasEnergyForActionStep(ACT_SPAWN))
     {
         gen->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
         return false;
@@ -4423,7 +4423,7 @@ bool GameMap::StartMiniUnitGroupMove()
             return ;
 
         // flag all mini units that need to move this turn
-        o->SetActiveAction(GameObjectActionType::MOVE);
+        o->SetActiveAction(ACT_MOVE);
 
         const auto p = mPathfinder->MakePath(o->GetRow0(), o->GetCol0(), target.row, target.col,
                                              sgl::ai::Pathfinder::INCLUDE_START);
@@ -4657,7 +4657,7 @@ void GameMap::InitMiniUnitsReadyToAttack(PlayerFaction faction)
             {
                 if(o->HasEnemyInRange())
                 {
-                    o->SetActiveAction(GameObjectActionType::ATTACK);
+                    o->SetActiveAction(ACT_ATTACK);
                     mMiniUnitsAttacking.emplace_back(static_cast<MiniUnit *>(o));
                 }
             });
@@ -4692,13 +4692,13 @@ void GameMap::UpdateMiniUnitsAttacking(float delta)
         return ;
 
     // unit not processed yet -> try to find a target
-    if(mu->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(mu->HasEnergyForActionStep(ACT_ATTACK))
         mu->FindAndSetEnemyTarget();
 
     // target found -> start attack
     if(mu->GetWeapon()->HasTarget())
     {
-        mu->SetCurrentAction(GameObjectActionType::ATTACK);
+        mu->SetCurrentAction(ACT_ATTACK);
         return ;
     }
 
@@ -4756,13 +4756,13 @@ void GameMap::UpdateStructuresAttacking(float delta)
         return ;
 
     // object not processed yet -> try to find a target
-    if(obj->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(obj->HasEnergyForActionStep(ACT_ATTACK))
         obj->FindAndSetEnemyTarget();
 
     // target found -> start attack
     if(obj->GetWeapon()->HasTarget())
     {
-        obj->SetCurrentAction(GameObjectActionType::ATTACK);
+        obj->SetCurrentAction(ACT_ATTACK);
 
         // move over first unit when starting to attack
         if(obj->GetFaction() == mGame->GetLocalPlayerFaction())

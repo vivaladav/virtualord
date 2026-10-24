@@ -823,7 +823,7 @@ void PlayerAI::AddActionsUnit(Unit * u)
 void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(!u->HasEnergyForActionStep(ACT_ATTACK))
         return ;
 
     // nothing to do if there's no visible enemy units
@@ -885,7 +885,7 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 void PlayerAI::AddActionUnitAttackEnemyTower(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(!u->HasEnergyForActionStep(ACT_ATTACK))
         return ;
 
     // nothing to do if there's no visible enemy units
@@ -954,7 +954,7 @@ void PlayerAI::AddActionUnitAttackEnemyTower(Unit * u)
 void PlayerAI::AddActionUnitAttackTrees(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(!u->HasEnergyForActionStep(ACT_ATTACK))
         return ;
 
     if(mTrees.empty())
@@ -1030,7 +1030,7 @@ void PlayerAI::AddActionUnitAttackTrees(Unit * u)
 void PlayerAI::AddActionUnitBuildStructure(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::BUILD_STRUCTURE))
+    if(!u->HasEnergyForActionStep(ACT_BUILD_STRUCTURE))
         return ;
 
     // DEFINE INITIAL PRIORITY
@@ -1648,7 +1648,7 @@ void PlayerAI::AddActionUnitOpenLootbox(Unit * u)
 void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::CONQUER_CELL))
+    if(!u->HasEnergyForActionStep(ACT_CONQUER_CELL))
         return ;
 
     // DEFINE INITIAL PRIORITY
@@ -1785,7 +1785,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 void PlayerAI::AddActionUnitConquerCity(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::CONQUER_STRUCTURE))
+    if(!u->HasEnergyForActionStep(ACT_CONQUER_STRUCTURE))
         return ;
 
     int priority = MAX_PRIORITY;
@@ -1866,7 +1866,7 @@ void PlayerAI::AddActionUnitConquerResGen(Unit * u, ExtendedResource type)
         return ;
 
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::CONQUER_STRUCTURE))
+    if(!u->HasEnergyForActionStep(ACT_CONQUER_STRUCTURE))
         return ;
 
     const StatValue & stat = mPlayer->GetResource(type);
@@ -2304,7 +2304,7 @@ int PlayerAI::GetStructurePriorityBonusEnergy(const Structure * s, float bonus) 
 
 int PlayerAI::GetUnitPriorityBonusDistance(const Unit * u, int dist, float bonus) const
 {
-    const float energyStep = u->GetEnergyForActionStep(MOVE);
+    const float energyStep = u->GetEnergyForActionStep(ACT_MOVE);
     const float energyTot = energyStep * dist;
     const float energyUnit = u->GetEnergy();
     const float maxDist = GetMaxDistanceForObject(u);

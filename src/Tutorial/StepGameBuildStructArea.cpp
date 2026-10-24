@@ -62,7 +62,7 @@ void StepGameBuildStructArea::Update(float)
        if(selObj->GetCurrentAction() == IDLE)
             SetDone();
     }
-    else if(selObj->GetCurrentAction() == BUILD_STRUCTURE)
+    else if(selObj->GetCurrentAction() == ACT_BUILD_STRUCTURE)
     {
         mFocusArea->SetBlinking(false);
         mFocusArea->SetVisible(false);

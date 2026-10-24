@@ -219,7 +219,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER MATERIAL GENERATOR
-    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, ACT_MOVE); });
     AddStep([this, local, isoMap, game]
         {
             const auto unit = local->GetUnit(indUnit1);
@@ -257,7 +257,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1150, 500);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
-    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, ACT_MOVE); });
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
@@ -418,7 +418,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
 
             return new StepGameConquerMaterialGenIntro(gen);
         });
-    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, ACT_MOVE); });
     AddStep([this, local, isoMap, game]
         {
             const auto unit = local->GetUnit(indUnit2);
@@ -453,7 +453,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const Cell2D cellEnd(51, 11);
             return new StepGameConquerCellsEnd(game, isoMap, unit, cellEnd, p0);
         });
-    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, ACT_MOVE); });
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
@@ -626,7 +626,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(400, 200);
             return new StepGameConquerEnergyGenIntro(gen, p0);
         });
-    AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::MOVE); });
+    AddStep([local] { return new StepGameSetSelectionActiveAction(local, ACT_MOVE); });
     AddStep([this, local, isoMap, game]
         {
             const auto unit = local->GetUnit(indUnit2);
@@ -736,7 +736,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             return new StepGameConnectStructIntro(p0);
         });
     AddStep([game, gs, panelActions] { return new StepGameUnitConquerCellsIcon(game, gs, panelActions); });
-    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::MOVE); });
+    AddStep([local] { return new StepGameSetSelectionDefaultAction(local, ACT_MOVE); });
     AddStep([this, isoMap, game]
         {
             const core::Pointd2D p0(1100, 450);

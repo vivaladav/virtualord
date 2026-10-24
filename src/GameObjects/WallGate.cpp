@@ -82,7 +82,7 @@ bool WallGate::Toggle()
     const GameMapCell * cell = GetCell();
     GetGameMap()->SetCellWalkable(cell->row, cell->col, mOpen);
 
-    ActionStepCompleted(TOGGLE_GATE);
+    ActionStepCompleted(ACT_TOGGLE_GATE);
 
     // update image
     SetImage();

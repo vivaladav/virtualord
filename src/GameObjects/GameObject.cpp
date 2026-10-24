@@ -473,7 +473,7 @@ bool GameObject::HasEnergyForActionStep(GameObjectActionType action) const
 {
     if(action < NUM_OBJ_ACTIONS)
     {
-        const float cost = (ATTACK == action) ? mWeapon->GetCostEnergy() :
+        const float cost = (ACT_ATTACK == action) ? mWeapon->GetCostEnergy() :
                            GetActionEnergyCost(action);
 
         return GetEnergy() >= cost;
@@ -967,7 +967,7 @@ float GameObject::GetRegenerationPower() const
 
 float GameObject::GetActionEnergyCost(GameObjectActionType action) const
 {
-    if(ATTACK == action)
+    if(ACT_ATTACK == action)
         return mWeapon->GetCostEnergyPerShot();
 
     constexpr float ACTION_COSTS[NUM_OBJ_ACTIONS] =

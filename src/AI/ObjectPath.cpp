@@ -36,7 +36,7 @@ ObjectPath::ObjectPath(GameObject * obj, IsoMap * im, GameMap * gm, ScreenGame *
 bool ObjectPath::InitNextMove()
 {
     // not enough energy -> FAIL
-    if(!mObj->HasEnergyForActionStep(MOVE))
+    if(!mObj->HasEnergyForActionStep(ACT_MOVE))
         return Fail();
 
     // check if next destination is walkable
@@ -215,7 +215,7 @@ void ObjectPath::Update(float delta)
         mGameMap->ApplyVisibility(player);
 
         // set action step completed for energy and experience update
-        mObj->ActionStepCompleted(MOVE);
+        mObj->ActionStepCompleted(ACT_MOVE);
 
         // close open gate
         if(mOpenGate != nullptr &&
@@ -243,7 +243,7 @@ void ObjectPath::UpdatePathCost()
     if(mCells.empty())
         mCost = 0;
     else
-        mCost = (mCells.size() - 1) * mObj->GetEnergyForActionStep(MOVE);
+        mCost = (mCells.size() - 1) * mObj->GetEnergyForActionStep(ACT_MOVE);
 }
 
 bool ObjectPath::Fail()

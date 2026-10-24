@@ -60,7 +60,7 @@ void StepGameConquerStructSimple::Update(float)
     if(mStruct->GetFaction() != NO_FACTION)
         SetDone();
     else if(mUnit != nullptr &&
-            (mUnit->GetCurrentAction() == CONQUER_STRUCTURE || mUnit->GetCurrentAction() == MOVE))
+            (mUnit->GetCurrentAction() == ACT_CONQUER_STRUCTURE || mUnit->GetCurrentAction() == ACT_MOVE))
     {
         mFocusArea->SetVisible(false);
 

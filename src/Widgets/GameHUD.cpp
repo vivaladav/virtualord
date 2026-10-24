@@ -711,7 +711,7 @@ void GameHUD::ShowDialogNewElement(unsigned int type)
 
         mDialogNewElement->SetFunctionOnBuild([this, unit]
         {
-            unit->SetActiveAction(GameObjectActionType::BUILD_STRUCTURE);
+            unit->SetActiveAction(ACT_BUILD_STRUCTURE);
 
             const GameObjectTypeId stype = mDialogNewElement->GetSelectedType();
             unit->SetStructureToBuild(stype);

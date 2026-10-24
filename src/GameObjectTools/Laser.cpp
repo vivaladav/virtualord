@@ -137,7 +137,7 @@ void Laser::OnShoot(float x0, float y0)
     mPartUpdater->AddParticle(pd);
 
     // consume owner's energy
-    owner->ActionStepCompleted(ATTACK);
+    owner->ActionStepCompleted(ACT_ATTACK);
 }
 
 } // namespace game

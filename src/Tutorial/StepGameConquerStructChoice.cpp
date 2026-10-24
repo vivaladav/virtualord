@@ -76,7 +76,7 @@ void StepGameConquerStructChoice::Update(float)
 {
     if(mStruct1->GetFaction() != NO_FACTION || mStruct2->GetFaction() != NO_FACTION)
         SetDone();
-    else if(mUnit != nullptr && mUnit->GetCurrentAction() == MOVE)
+    else if(mUnit != nullptr && mUnit->GetCurrentAction() == ACT_MOVE)
     {
         mFocusArea1->SetVisible(false);
         mFocusArea2->SetVisible(false);

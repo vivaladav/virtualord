@@ -59,7 +59,7 @@ void StepGameConquerCellsEnd::Update(float)
     if(mUnit->GetRow0() == mCellEnd.row && mUnit->GetCol0() == mCellEnd.col &&
         mUnit->GetCurrentAction() == IDLE)
         SetDone();
-    else if(action == CONQUER_CELL || action == MOVE)
+    else if(action == ACT_CONQUER_CELL || action == ACT_MOVE)
     {
         mFocusArea->SetBlinking(false);
         mFocusArea->SetVisible(false);

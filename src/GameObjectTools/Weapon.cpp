@@ -140,7 +140,7 @@ int Weapon::GetCostEnergyPerShot() const
 bool Weapon::SetTarget(GameObject * obj)
 {
     if(nullptr == obj || !IsTargetInRange(obj) || !obj->IsVisible() ||
-       !mOwner->HasEnergyForActionStep(ATTACK) || obj == mOwner)
+       !mOwner->HasEnergyForActionStep(ACT_ATTACK) || obj == mOwner)
         return false;
 
     mTarget = obj;

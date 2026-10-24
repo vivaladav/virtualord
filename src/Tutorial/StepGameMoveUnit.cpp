@@ -60,7 +60,7 @@ StepGameMoveUnit::StepGameMoveUnit(const Game * game, const Player * p, const Is
 
                             // re-allow unit to move
                             mUnit = p->GetUnit(0);
-                            mUnit->SetActiveAction(GameObjectActionType::MOVE);
+                            mUnit->SetActiveAction(ACT_MOVE);
                         });
 }
 
@@ -76,7 +76,7 @@ void StepGameMoveUnit::Update(float)
         if(mUnit->GetRow0() == destR && mUnit->GetCol0() == destC)
             SetDone();
         // hide focus area when move starts
-        else if(mUnit->GetCurrentAction() == GameObjectActionType::MOVE)
+        else if(mUnit->GetCurrentAction() == ACT_MOVE)
         {
             mFocusArea->SetBlinking(false);
             mFocusArea->SetVisible(false);

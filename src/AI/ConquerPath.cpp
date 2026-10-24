@@ -115,7 +115,7 @@ void ConquerPath::Update(float delta)
 bool ConquerPath::HasResourcesToConquerCell()
 {
     // check if unit has enough energy
-    if(!mUnit->HasEnergyForActionStep(CONQUER_CELL))
+    if(!mUnit->HasEnergyForActionStep(ACT_CONQUER_CELL))
         return false;
 
     // check if player has enough resources
@@ -173,7 +173,7 @@ bool ConquerPath::InitNextConquest()
 
         mGameMap->ConquerCell(nextCell, player);
 
-        mUnit->ActionStepCompleted(CONQUER_CELL);
+        mUnit->ActionStepCompleted(ACT_CONQUER_CELL);
 
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->FadeOutSound("game/conquer-01.ogg", 200);
@@ -223,7 +223,7 @@ bool ConquerPath::InitNextConquest()
 bool ConquerPath::InitNextMove()
 {
     // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForActionStep(MOVE))
+    if(!mUnit->HasEnergyForActionStep(ACT_MOVE))
         return Fail();
 
     const unsigned int nextInd = mCells[mNextCell];
@@ -353,7 +353,7 @@ void ConquerPath::UpdateMove(float delta)
         mGameMap->AddPlayerObjVisibility(mUnit, player);
         mGameMap->ApplyVisibility(player);
 
-        mUnit->ActionStepCompleted(MOVE);
+        mUnit->ActionStepCompleted(ACT_MOVE);
 
         // handle next step or termination
         if(ABORTING == mState)
@@ -377,7 +377,7 @@ void ConquerPath::UpdatePathCost()
     // define cost checking if cells are already conquered
     const unsigned int lenPath = mCells.size();
 
-    mCostUnitEnergy = (lenPath - 1) * mUnit->GetEnergyForActionStep(MOVE);
+    mCostUnitEnergy = (lenPath - 1) * mUnit->GetEnergyForActionStep(ACT_MOVE);
 
     const PlayerFaction f = mUnit->GetFaction();
 
@@ -388,7 +388,7 @@ void ConquerPath::UpdatePathCost()
         const Player * owner = mGameMap->GetCell(cellInd).owner;
         const bool notConquered = owner == nullptr || owner->GetFaction() != f;
 
-        mCostUnitEnergy += notConquered * mUnit->GetEnergyForActionStep(CONQUER_CELL);
+        mCostUnitEnergy += notConquered * mUnit->GetEnergyForActionStep(ACT_CONQUER_CELL);
         mCostResEnergy += notConquered * COST_CELL_CONQ_ENERGY;
         mCostResMaterial += notConquered * COST_CELL_CONQ_MATERIAL;
     }

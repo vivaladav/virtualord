@@ -55,7 +55,7 @@ StepGameUnitAttackFree::~StepGameUnitAttackFree()
 
 void StepGameUnitAttackFree::Update(float)
 {
-    if(!mGameMap->HasObject(mTarget) || mUnit->GetCurrentAction() == GameObjectActionType::ATTACK)
+    if(!mGameMap->HasObject(mTarget) || mUnit->GetCurrentAction() == ACT_ATTACK)
         SetDone();
 }
 

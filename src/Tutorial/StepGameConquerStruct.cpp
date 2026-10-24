@@ -68,7 +68,7 @@ StepGameConquerStruct::StepGameConquerStruct(const Game * game, const Player * p
 
                             // re-allow unit to move and conquer
                             mUnit = p->GetUnit(0);
-                            mUnit->SetActiveAction(MOVE);
+                            mUnit->SetActiveAction(ACT_MOVE);
                         });
 }
 
@@ -82,7 +82,7 @@ void StepGameConquerStruct::Update(float)
 {
     if(mEnergyGen->GetFaction() != NO_FACTION)
         SetDone();
-    else if(mUnit != nullptr && mUnit->GetCurrentAction() == CONQUER_STRUCTURE)
+    else if(mUnit != nullptr && mUnit->GetCurrentAction() == ACT_CONQUER_STRUCTURE)
     {
         mIsoFocusArea->SetVisible(false);
 

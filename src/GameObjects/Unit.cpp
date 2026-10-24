@@ -25,7 +25,7 @@ Unit::Unit(const ObjectData & data, const ObjectInitData & initData)
     : GameObject(data, initData)
     , mStructToBuild(ObjectData::TYPE_NULL)
 {
-    SetDefaultAction(MOVE);
+    SetDefaultAction(ACT_MOVE);
 
     // speed
     const float maxSpeed = 6.f;
@@ -319,7 +319,7 @@ void Unit::Heal()
         return ;
 
     // consume energy
-    ActionStepCompleted(HEAL);
+    ActionStepCompleted(ACT_HEAL);
 
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterHealing *>(partMan->GetUpdater(PU_HEALING));

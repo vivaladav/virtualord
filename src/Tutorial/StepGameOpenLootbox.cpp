@@ -76,7 +76,7 @@ StepGameOpenLootbox::~StepGameOpenLootbox()
 void StepGameOpenLootbox::Update(float)
 {
     if(mUnit != nullptr &&
-       (mUnit->GetCurrentAction() == OPEN_LOOTBOX || mUnit->GetCurrentAction() == MOVE))
+       (mUnit->GetCurrentAction() == ACT_OPEN_LOOTBOX || mUnit->GetCurrentAction() == ACT_MOVE))
         SetDone();
 }
 

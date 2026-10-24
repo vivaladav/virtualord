@@ -60,7 +60,7 @@ void StepGameBuildTowerEnd::Update(float)
     {
         const GameObjectActionType currAct = mUnit->GetCurrentAction();
 
-        if(currAct == BUILD_STRUCTURE || currAct == MOVE
+        if(currAct == ACT_BUILD_STRUCTURE || currAct == ACT_MOVE
             )
         {
             mFocusArea->SetBlinking(false);
