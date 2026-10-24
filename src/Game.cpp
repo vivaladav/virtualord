@@ -68,6 +68,8 @@ constexpr int START_MONEY = 1000;
 constexpr int START_DIAMONDS = 10;
 constexpr int START_BLOBS = 10;
 constexpr int START_RESEARCH = 0;
+
+constexpr int MAX_SAVE_SLOTS = 3;
 }
 
 namespace game
@@ -78,7 +80,7 @@ namespace game
 bool Game::GOD_MODE = false;
 #endif
 
-const std::string Game::SAVE_VERSION("0.3.0");
+const std::string Game::SAVE_VERSION("0.3.1");
 const std::string Game::SETTINGS_VERSION("0.2.0");
 
 Game::Game(int argc, char * argv[])
@@ -366,6 +368,20 @@ void Game::ClearGameData()
 }
 
 // -- LOAD & SAVE --
+void Game::SetSaveSlot(int slot)
+{
+    // fallback solution
+    if(slot < 0 || slot >= MAX_SAVE_SLOTS)
+    {
+        std::cout << "[ERR] Game::SetSaveSlot - slot " << slot << " NOT valid!" << std::endl;
+        mCurrentSaveSlot = -1;
+        mCurrSaveFile = mCurrAutoSaveFile;
+    }
+
+    mCurrentSaveSlot = slot;
+    mCurrSaveFile = mSaveFiles[slot];
+}
+
 void Game::CloseSaveFileForReading()
 {
     if(mReaderSave == nullptr)
@@ -635,6 +651,10 @@ bool Game::LoadGame(const std::string & saveFile)
     mCostSave[ER_ENERGY] = mReaderSave->ReadInt();
     mCostSave[ER_MATERIAL] = mReaderSave->ReadInt();
 
+    // current save slot
+    const int slot = mReaderSave->ReadInt();
+    SetSaveSlot(slot);
+
     // State
     const auto stateId = static_cast<StateId>(mReaderSave->ReadUint());
 
@@ -653,9 +673,6 @@ bool Game::LoadGame(const std::string & saveFile)
     std::cout << "Game::LoadGame - LOADED GAME " << path << " - version: "
               << version << " - create by \"Virtualord " << gameVersion << "\"" << std::endl;
 #endif
-
-    if(!saveFile.empty())
-        mCurrSaveFile = saveFile;
 
     return true;
 }
@@ -743,6 +760,9 @@ bool Game::SaveGame(const std::string & saveFile)
     bf.WriteInt(mCostSave[ER_MONEY]);
     bf.WriteInt(mCostSave[ER_ENERGY]);
     bf.WriteInt(mCostSave[ER_MATERIAL]);
+
+    // current save slot
+    bf.WriteInt(mCurrentSaveSlot);
 
     // NOTE KEEP THIS LAST SAVE BLOCK
     // State

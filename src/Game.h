@@ -84,7 +84,7 @@ public:
     const std::string & GetSavefile(unsigned int ind) const;
     const std::string & GetAutoSavefile() const;
 
-    void SetSaveFile(const std::string & f);
+    void SetSaveSlot(int slot);
 
     sgl::utilities::BinaryFile * GetSaveFileForReading() const;
     void CloseSaveFileForReading();
@@ -239,6 +239,7 @@ private:
     std::string mCurrSaveFile;
     std::string mCurrAutoSaveFile;
     std::string mSettingsFile;
+    int mCurrentSaveSlot = -1;
 
     sgl::graphic::Renderer * mRenderer = nullptr;
     sgl::graphic::Window * mWin = nullptr;
@@ -293,8 +294,6 @@ private:
 inline ResourceLoader * Game::GetResourceLoader() const { return mResLoader; }
 
 inline const std::string & Game::GetAutoSavefile() const { return mCurrAutoSaveFile; }
-
-inline void Game::SetSaveFile(const std::string & f) { mCurrSaveFile = f; }
 
 inline sgl::utilities::BinaryFile * Game::GetSaveFileForReading() const
 {

@@ -478,14 +478,13 @@ void DialogNewGame::CreatePanelSaves()
     const int spacingButtons = 10;
     int btnY = panelContY0;
 
-
     mButtonsSave = new sgui::AbstractButtonsGroup;
 
     mButtonsSave->AddFunctionOnToggle([this](unsigned int ind, bool checked)
     {
         if(checked)
         {
-            mGame->SetSaveFile(mGame->GetSavefile(ind));
+            mGame->SetSaveSlot(ind);
 
             mButtonContinue->SetEnabled(true);
         }
