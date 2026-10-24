@@ -105,6 +105,7 @@ public:
 #endif
 
     const std::unordered_map<ExtendedResource, int> & GetCostSaveGame() const;
+    void InitCostSaveGame();
     void LowerCostSaveGame();
 
     // -- mouse cursors --
@@ -215,7 +216,6 @@ private:
 
     // -- LOAD & SAVE --
     void InitDirectories();
-    void InitCostSaveGame();
 
 private:
     std::vector<Player *> mPlayers;

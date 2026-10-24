@@ -739,9 +739,6 @@ bool Game::SaveGame(const std::string & saveFile)
         bf.WriteBool(ai->IsActive());
     }
 
-    // reset cost of saving before writing the values
-    InitCostSaveGame();
-
     // save cost of saving
     bf.WriteInt(mCostSave[ER_MONEY]);
     bf.WriteInt(mCostSave[ER_ENERGY]);
@@ -942,13 +939,32 @@ using namespace std;
 }
 #endif
 
+void Game::InitCostSaveGame()
+{
+    const unsigned int maxMoney = 4000;
+    const unsigned int maxEnergy = 500;
+    const unsigned int maxMaterial = 50;
+
+    mCostSave.insert_or_assign(ER_MONEY, maxMoney);
+    mCostSave.insert_or_assign(ER_ENERGY, maxEnergy);
+    mCostSave.insert_or_assign(ER_MATERIAL, maxMaterial);
+}
+
 void Game::LowerCostSaveGame()
 {
-    const unsigned int minMoney = 500;
-    const unsigned int minEnergy = 100;
+    const unsigned int minMoney = 100;
+    const unsigned int minEnergy = 50;
     const unsigned int minMaterial = 10;
-    const unsigned int decMoney = mCostSave[ER_MONEY] > 1000 ? 1000 : 500;
-    const unsigned int decEnergy = 100;
+
+    unsigned int decMoney = 100;
+
+    if(mCostSave[ER_MONEY] > 1000)
+        decMoney = 1000;
+    else if(mCostSave[ER_MONEY] > 500)
+        500;
+
+    const unsigned int decEnergy = mCostSave[ER_ENERGY] > 100 ? 100 : 10;
+
     const unsigned int decMaterial = 10;
 
     const int newMoney = mCostSave[ER_MONEY] - decMoney;
@@ -1153,17 +1169,6 @@ void Game::InitDirectories()
 
     if(!filesystem::exists(pathSave))
         filesystem::create_directories(pathSave);
-}
-
-void Game::InitCostSaveGame()
-{
-    const unsigned int maxMoney = 4000;
-    const unsigned int maxEnergy = 500;
-    const unsigned int maxMaterial = 50;
-
-    mCostSave.insert_or_assign(ER_MONEY, maxMoney);
-    mCostSave.insert_or_assign(ER_ENERGY, maxEnergy);
-    mCostSave.insert_or_assign(ER_MATERIAL, maxMaterial);
 }
 
 void Game::CreatePlayers()
