@@ -774,11 +774,16 @@ TutorialGame1::TutorialGame1(Screen * screen)
     });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT DEFENSIVE TOWER
+    AddStep([]
+    {
+        const core::Pointd2D p0(1200, 300);
+        return new StepGameSingleInfo(p0, "TUT_GAME_DEF_TOWER_1");
+    });
     AddStep([this, game, isoMap]
     {
         const core::Pointd2D p0(1200, 400);
         const GameObject * tower = GetObjectInCell(cellDT3);
-        return new StepGameSelectObject(game, isoMap, tower, "TUT_GAME_DEF_TOWER_1", p0);
+        return new StepGameSelectObject(game, isoMap, tower, "TUT_GAME_DEF_TOWER_2", p0);
     });
     // SET ACTION ATTACK
     AddStep([this, game, gs, panelActions]
