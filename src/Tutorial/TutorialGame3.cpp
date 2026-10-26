@@ -871,7 +871,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
         if(local->IsUpgradeUnlocked(upgrade1))
             step = new StepDummy;
         else
-            step = new StepGameTechTreeDialog(hud, upgrade1, true);
+            step = new StepGameTechTreeDialog(hud, upgrade1, false);
 
         return step;
     });
