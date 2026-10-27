@@ -73,6 +73,8 @@ DialogAutoAttackSettings::DialogAutoAttackSettings(GameObject * obj)
     int x = WidgetsConstants::MarginDialogContentL;
     int y = WidgetsConstants::DialogTitleBarH + WidgetsConstants::MarginDialogContentT;
 
+    const AttackStrategy attStr = mObj->GetAttackStrategy();
+
     // ENEMY SELECTION
     sgui::Label * label = new sgui::Label(sm->GetCString("ENEMY_SEL"), fontHeader, this);
     label->SetColor(WidgetsConstants::colorDialogHeader2);
@@ -112,6 +114,7 @@ DialogAutoAttackSettings::DialogAutoAttackSettings(GameObject * obj)
     mComboAttackMode->AddItem(new GameComboBoxItem(sm->GetCString("AIMED_SHOT")));
     mComboAttackMode->AddItem(new GameComboBoxItem(sm->GetCString("BURST_SHOT")));
     mComboAttackMode->SetActiveItem(mObj->GetWeapon()->GetAttackMode());
+    mComboAttackMode->SetEnabled(attStr != ATTSTR_NO_ATTACK);
 
     x = w - WidgetsConstants::MarginDialogContentL - mComboAttackMode->GetWidth();
     y += (label->GetHeight() - mComboAttackMode->GetHeight()) / 2;
@@ -138,6 +141,7 @@ DialogAutoAttackSettings::DialogAutoAttackSettings(GameObject * obj)
 
     mSliderEnergy->SetMinMax(minEne, maxEne);
     mSliderEnergy->SetValue(energy);
+    mSliderEnergy->SetEnabled(attStr != ATTSTR_NO_ATTACK);
 
     auto labelVal = new sgui::Label(std::to_string(maxEne).c_str(), fontHeader, this);
     labelVal->SetColor(WidgetsConstants::colorDialogText);
