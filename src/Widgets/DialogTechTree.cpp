@@ -553,15 +553,6 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         btnUpgrade40->SetPosition(btnX, btnY);
     }
-    else
-    {
-        // -- COL 0 --
-        // [0, 0]
-        auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_NULL, 0, {}, false);
-        mVisibleButtonsUpgrade.emplace(TECH_UP_NULL, btnUpgrade00);
-
-        btnUpgrade00->SetPosition(btnX, btnY);
-    }
 }
 
 void DialogTechTree::UpdateUnlockableStates()
@@ -678,7 +669,8 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
                 mBtnUnlock->SetVisible(true);
                 mBtnUnlock->SetCost(cost);
                 mBtnUnlock->SetUpgradeToUnlock(btn);
-                mBtnUnlock->SetEnabled(mPlayer->HasEnough(ER_RESEARCH, cost));
+                mBtnUnlock->SetEnabled(mPlayer->HasEnough(ER_RESEARCH, cost) &&
+                                       btn->IsUnlockable());
             }
         });
     }
@@ -702,7 +694,6 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
     const bool unlockable = cost <= resPoints && enabled && !unlocked;
 
     btn->SetLevel(level);
-    btn->SetEnabled(enabled || unlocked);
     btn->SetUnlocked(unlocked);
     btn->SetUnlockable(unlockable);
 
