@@ -82,7 +82,7 @@ PanelObjectActions::PanelObjectActions(sgl::sgui::Widget * parent)
         new ObjectActionButton(ObjectActionButton::SAVE_GAME, "V", KeyboardEvent::KEY_V,
                                sm->GetCString("TT_SAVE_GAME"), this);
     mButtons[BTN_AUTO_ATT_SETTINGS] =
-    new ObjectActionButton(ObjectActionButton::SETTINGS, "S", KeyboardEvent::KEY_S,
+    new ObjectActionButton(ObjectActionButton::SETTINGS, "T", KeyboardEvent::KEY_T,
                                sm->GetCString("TT_AUTO_ATT_SETTINGS"), this);
 
     // keep these 2 last
