@@ -533,6 +533,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- Made unit and structure actions 10-15% faster.\n"
                   "- Reduced auto camera movements when action is already on screen.\n"
                   "- New file format and filename for settings.\n"
+                  "- All upgrades in tech tree are visible from the beginning.\n"
+                  "- Blobs and diamonds generate more research points.\n"
                   "\nFIXES\n"
                   "- Prevented soft-lock when upgrade is unlocked in tutorial missions"
                   " before than expected.\n"
