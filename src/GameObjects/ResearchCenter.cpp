@@ -319,7 +319,7 @@ void ResearchCenter::UpdateProduction()
     const int baseProd = (maxProdElem * mResUsage[ER_ENERGY] / maxUsage) +
                          (maxProdElem * mResUsage[ER_MATERIAL] / maxUsage) +
                          (maxProdElem2 * mResUsage[ER_MONEY] / maxUsage);
-    const int multProd2 = 2;
+    const int multProd2 = 3;
 
     mResearchPerTurn = baseProd + (baseProd * multProd2 * mResUsage[ER_BLOBS] / maxUsage) +
                        (baseProd * multProd2 * mResUsage[ER_DIAMONDS] / maxUsage);
