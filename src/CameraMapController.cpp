@@ -14,7 +14,7 @@ namespace game
 
 constexpr float DEF_SPEED_SCROLLING = 500.f;
 constexpr float DEF_SPEED_DRAGGING = 90.f;
-constexpr float DEF_SPEED_MOVING = 500.f;
+constexpr float DEF_SPEED_MOVING = 1500.f;
 constexpr int MOVE_L = -1;
 constexpr int MOVE_R = 1;
 constexpr int MOVE_U = -1;
@@ -114,8 +114,31 @@ void CameraMapController::MoveCenterCameraToPoint(int x, int y, float speed)
         }
     }
 
-    // define move direction
-    const float maxSpeed = speed > 0.f ? speed : mSpeedMove;
+    // set max speed
+    float maxSpeed = 0.f;
+
+    // value set by parameter
+    if(speed > 0.f)
+        maxSpeed = speed;
+    // speed is 0 -> define value depending on distance
+    else
+    {
+        const float dX = std::abs(deltaX);
+        const float dY = std::abs(deltaY);
+        const float distRatio = dX > dY ? dX / mCamera->GetWidth() : dY / mCamera->GetHeight();
+
+        if(distRatio > 1.f)
+            maxSpeed = mSpeedMove;
+        else
+        {
+            maxSpeed = mSpeedMove * distRatio;
+
+            const int minSpeed = 200.f;
+
+            if(maxSpeed < minSpeed)
+                maxSpeed = minSpeed;
+        }
+    }
 
     // X
     mMovingX = true;
