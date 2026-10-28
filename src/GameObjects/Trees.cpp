@@ -10,6 +10,8 @@
 #include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
+#include <cassert>
+
 namespace
 {
     constexpr float maxTreeEnergy = 100.f;
@@ -161,7 +163,7 @@ void Trees::OnNewTurn(PlayerFaction faction)
             {
                 const int ind = ind0 + c;
 
-                if(!gm->HasObject(ind))
+                if(gm->CanAddObjectToCell(ind))
                 {
                     SpawnTree(r, c);
 
@@ -179,7 +181,9 @@ void Trees::SpawnTree(int r0, int c0)
     sgl::utilities::UniformDistribution dis(0, mNumVariants - 1);
     const int variant = dis.GetNextValue();
 
-    gm->CreateObject(GetObjectType(), variant, NO_FACTION, r0, c0, false);
+    auto newTree = gm->CreateObject(GetObjectType(), variant, NO_FACTION, r0, c0, false);
+
+    assert(newTree);
 
     const GameObjectTypeId type = GetObjectType();
 

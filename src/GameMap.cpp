@@ -63,6 +63,8 @@
 #include <cmath>
 #include <iostream>
 
+#include <cassert>
+
 namespace
 {
 constexpr float timeAutoAttackDelay = 0.50f;
@@ -305,6 +307,35 @@ void GameMap::InitAfterLoad()
 
         UpdateLinkedCells(p);
     }
+}
+
+bool GameMap::CanAddObjectToCell(unsigned int ind) const
+{
+    // check there's no object in the cell
+    if(HasObject(ind))
+        return false;
+
+    // check cell is not already occupied by something in the list of objects to add
+    for(const auto & o2a : mObjectsToAdd)
+    {
+        const auto obj = o2a.obj;
+
+        for(int r = obj->GetRow1(); r <= obj->GetRow0(); ++r)
+        {
+            const unsigned int indObj0 = r * mCols;
+
+            for(int c = obj->GetCol1(); c <= obj->GetCol0(); ++c)
+            {
+                const unsigned int indObj = indObj0 + c;
+
+                if(ind == indObj)
+                    return false;
+            }
+        }
+    }
+
+    // all good
+    return true;
 }
 
 bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int ind) const
@@ -3726,6 +3757,8 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
             const unsigned int ind = indBase + c;
 
             GameMapCell & cell = mCells[ind];
+
+            assert(cell.objTop == nullptr);
 
             cell.walkable = o2a.obj->CanBeCollected();
             cell.objTop = o2a.obj;

@@ -60,6 +60,8 @@ public:
 
     const ControlMap * GetControlMap() const;
 
+    bool CanAddObjectToCell(unsigned int ind) const;
+    bool CanAddObjectToCell(unsigned int r, unsigned int c) const;
     bool HasObject(unsigned int ind) const;
     bool HasObject(unsigned int r, unsigned int c) const;
     bool HasObjectType(GameObjectTypeId type, unsigned int ind) const;
@@ -345,6 +347,12 @@ private:
 // ==================== INLINE METHODS ====================
 
 inline const ControlMap * GameMap::GetControlMap() const { return mControlMap; }
+
+inline bool GameMap::CanAddObjectToCell(unsigned int r, unsigned int c) const
+{
+    const unsigned int ind = r * mCols + c;
+    return CanAddObjectToCell(ind);
+}
 
 inline bool GameMap::HasObject(unsigned int ind) const
 {
