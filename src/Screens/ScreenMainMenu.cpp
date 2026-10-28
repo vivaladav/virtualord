@@ -543,6 +543,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Prevented soft-lock in tutorial of planet map when on low resources.\n"
                   "- Fixed save file corruption when using mini-units.\n"
                   "- Fixed a few missing strings in all languages.\n"
+                  "- Fixed multiple trees growing in same cell and corrupting save files.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
