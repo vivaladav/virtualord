@@ -4766,10 +4766,7 @@ void GameMap::UpdateStructuresAttacking(float delta)
 
         // move over first unit when starting to attack
         if(obj->GetFaction() == mGame->GetLocalPlayerFaction())
-        {
-            const float speedCameraTower = 1500.f;
-            mScreenGame->CenterCameraOverObject(obj, speedCameraTower, true);
-        }
+            mScreenGame->CenterCameraOverObject(obj, 0.f, true);
 
         return ;
     }

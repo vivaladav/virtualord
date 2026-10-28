@@ -655,7 +655,7 @@ void GameHUD::ShowDialogExploreTemple(Player * player, Temple * temple)
         // start exploration
         temple->StartExploring(player->GetFaction(), [this, player, temple]
         {
-            mScreen->CenterCameraOverObject(temple);
+            mScreen->CenterCameraOverObject(temple, 0.f);
 
             ShowDialogExploreTempleOutcome(player, temple);
         });
