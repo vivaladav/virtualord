@@ -658,7 +658,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     // MOVE VIEW BACK TO BASE
     AddStep([panelTurn]
     {
-        const core::Pointd2D p0(800, 500);
+        const core::Pointd2D p0(800, 650);
         return new StepGameBackToBase(panelTurn, "TUT_GAME_BACK_TO_BASE_1b", p0);
     });
     AddStep([] { return new StepDelay(0.5f); });
