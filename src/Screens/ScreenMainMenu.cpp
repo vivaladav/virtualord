@@ -125,6 +125,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
             mButtonChangelog->SetVisible(false);
 
             mPanelLoad->SetVisible(true);
+            mPanelLoad->SetFocus();
         });
 
         buttonY += button->GetHeight() + VMARGIN;
@@ -453,6 +454,7 @@ void ScreenMainMenu::CreatePanelLoad()
 
     // BUTTON BACK
     auto button = new ButtonMainMenu(sm->GetCString("BACK"), mPanelLoad);
+    button->SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
     button->SetPosition((w - button->GetWidth()) / 2, contY);
 
     button->AddOnClickFunction([this]
