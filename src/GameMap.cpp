@@ -346,8 +346,7 @@ bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int ind) const
 
 bool GameMap::IsObjectVisibleToLocalPlayer(const GameObject * obj) const
 {
-    Player * p = mGame->GetLocalPlayer();
-    return p->IsObjectVisible(obj);
+    return mGame->GetLocalPlayer()->IsObjectVisible(obj);
 }
 
 void GameMap::GetObjectsInAreaByType(std::vector<GameObject *> & objs, const Cell2D & tl,
@@ -370,16 +369,13 @@ void GameMap::GetObjectsInAreaByType(std::vector<GameObject *> & objs, const Cel
 
 bool GameMap::IsCellVisibleToLocalPlayer(unsigned int ind) const
 {
-    Player * p = mGame->GetLocalPlayer();
-    return p->IsCellVisible(ind);
+    return mGame->GetLocalPlayer()->IsCellVisible(ind);
 }
 
 bool GameMap::IsCellVisibleToLocalPlayer(unsigned int r, unsigned int c) const
 {
     const unsigned int ind = (r * mCols) + c;
-
-    Player * p = mGame->GetLocalPlayer();
-    return p->IsCellVisible(ind);
+    return mGame->GetLocalPlayer()->IsCellVisible(ind);
 }
 
 bool GameMap::IsAnyCellVisibleToLocalPlayer(unsigned int rTL, unsigned int cTL,
@@ -1425,7 +1421,8 @@ bool GameMap::HasResourcesToBuildWall(Unit * unit, unsigned int level)
 
     Player * player = mGame->GetActivePlayerByFaction(unit->GetFaction());
 
-    return player->HasEnough(ER_MATERIAL, costMat)  &&
+    return player != nullptr &&
+           player->HasEnough(ER_MATERIAL, costMat) &&
            player->HasEnough(ER_ENERGY, costEne);
 }
 
@@ -1640,11 +1637,13 @@ void GameMap::ConquerStructure(const Cell2D & end, Player * player)
     UpdateLinkedCells(player);
 
     if(prevOwner != nullptr)
+    {
         UpdateLinkedCells(prevOwner);
 
-    // update visibility
-    if(prevOwner && prevOwner != player)
-        DelPlayerObjVisibility(obj, prevOwner);
+        // update visibility
+        if(prevOwner != player)
+            DelPlayerObjVisibility(obj, prevOwner);
+    }
 
     AddPlayerObjVisibility(obj, player);
 
@@ -2867,13 +2866,11 @@ bool GameMap::FindClosestCellConnectedToObject(const GameObject * obj, const Cel
     end.row = -1;
     end.col = -1;
 
-    const PlayerFaction faction = obj->GetFaction();
+    const Player * player = mGame->GetActivePlayerByFaction(obj->GetFaction());
 
     // object has no faction -> no cell connected
-    if(faction == NO_FACTION)
+    if(player == nullptr)
         return false;
-
-    const Player * player = mGame->GetActivePlayerByFaction(faction);
 
     // FIND CONNECTED (SAME FACTION) CELLS
     std::vector<unsigned int> todo;
@@ -2960,6 +2957,9 @@ bool GameMap::FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, C
     int minDist = maxDist;
 
     const Player * player = mGame->GetActivePlayerByFaction(faction);
+
+    if(player == nullptr)
+        return false;
 
     const int r0 = start.row;
     const int c0 = start.col;
@@ -3434,6 +3434,9 @@ int GameMap::DefineCellType(unsigned int ind, const GameMapCell & cell)
 
 void GameMap::UpdateLinkedCells(Player * player)
 {
+    if(player == nullptr)
+        return;
+
     const GameObject * b = player->GetBase();
 
     if(nullptr == b)

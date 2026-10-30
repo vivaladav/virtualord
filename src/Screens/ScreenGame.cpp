@@ -350,7 +350,9 @@ void ScreenGame::OnObjectDestroyed(GameObject * obj)
     if(obj->IsSelected())
     {
         Player * owner = GetGame()->GetActivePlayerByFaction(obj->GetFaction());
-        ClearSelection(owner);
+
+        if(owner != nullptr)
+            ClearSelection(owner);
     }
 
     // remove object from mini map
@@ -359,6 +361,9 @@ void ScreenGame::OnObjectDestroyed(GameObject * obj)
 
 void ScreenGame::ClearSelection(Player * player)
 {
+    if(player == nullptr)
+        return ;
+
     GameObject * selObj = player->GetSelectedObject();
 
     // no selection -> nothing to do

@@ -1339,6 +1339,9 @@ Player * Game::GetPlayerByFaction(PlayerFaction faction) const
 
 Player * Game::GetActivePlayerByFaction(PlayerFaction faction) const
 {
+    if(faction == NO_FACTION)
+        return nullptr;
+
     for(Player * p : mActivePlayers)
     {
         if(p->GetFaction() == faction)
