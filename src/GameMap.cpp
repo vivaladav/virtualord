@@ -1061,18 +1061,31 @@ void GameMap::RegisterEnemyKill(GameObject * killer, GameObject * victim)
     const int experienceKill = 25;
     killer->SumExperience(experienceKill);
 
-    Player * p = mGame->GetActivePlayerByFaction(killer->GetFaction());
+    const PlayerFaction factionKiller = killer->GetFaction();
+    Player * p = mGame->GetActivePlayerByFaction(factionKiller);
+
+    // exit in case killer's Player is NULL (NO_FACTION)
+    if(p == nullptr)
+        return ;
+
     p->RegisterEnemyKill();
 
-    // track kill for mission goals
-    auto trackerMG = mScreenGame->GetMissionGoalsTracker();
-    trackerMG->AddObjectDestroyedByCategory(victim->GetObjectCategory());
+    const PlayerFaction factionVictim = victim->GetFaction();
+
+    // track kill for mission goals if enemy killed by local player
+    if(p == mGame->GetLocalPlayer() && factionKiller != factionVictim && factionVictim != NO_FACTION)
+    {
+        auto trackerMG = mScreenGame->GetMissionGoalsTracker();
+        trackerMG->AddEnemyObjectDestroyedByCategory(victim->GetObjectCategory());
+    }
 }
 
 void GameMap::RegisterCasualty(PlayerFaction killed)
 {
     Player * p = mGame->GetActivePlayerByFaction(killed);
-    p->RegisterCasualty();
+
+    if(p != nullptr)
+        p->RegisterCasualty();
 }
 
 bool GameMap::AreObjectsAdjacent(const GameObject * obj1, const GameObject * obj2) const
