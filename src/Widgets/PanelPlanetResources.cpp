@@ -27,7 +27,7 @@ PanelPlanetResources::PanelPlanetResources()
     auto sm = utilities::StringManager::Instance();
 
     // BACKGROUND
-    sgl::graphic::Texture * tex = tm->GetSprite(SpriteFilePlanetMap2, IND_PM_PANEL_RESOURCES);
+    sgl::graphic::Texture * tex = tm->GetSprite(SpriteFilePlanetMap, IND_PM_PANEL_RESOURCES);
     mBg = new sgl::graphic::Image(tex);
     RegisterRenderable(mBg);
 

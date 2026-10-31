@@ -40,7 +40,7 @@ PanelPlanetActionConquerAI::PanelPlanetActionConquerAI(Player * player, int mone
     auto sm = utilities::StringManager::Instance();
 
     // BACKGROUND
-    graphic::Texture * tex = tm->GetSprite(SpriteFilePlanetMap2, IND_PM_PANEL_ACTIONS);
+    graphic::Texture * tex = tm->GetSprite(SpriteFilePlanetMap, IND_PM_PANEL_ACTIONS);
     mBg = new graphic::Image(tex);
     RegisterRenderable(mBg);
 

@@ -244,7 +244,6 @@ void ResourceLoader::DestroyGameTextures()
     tm->DestroySprite(SpriteFileObjActionButton);
     // PLANET MAP
     tm->DestroySprite(SpriteFilePlanetMap);
-    tm->DestroySprite(SpriteFilePlanetMap2);
     // RESOURCES BAR
     tm->DestroySprite(SpriteFileResourcesBar);
     tm->DestroyTexture(SpriteFileResourcesBarExp);
@@ -2469,26 +2468,17 @@ void ResourceLoader::SetupGameTextures()
             { 0, 746, 350, 44 },
             { 351, 701, 350, 44 },
             { 351, 746, 350, 44 },
+
+            // PANELS
+            { 0, 791, 400, 52 },
+            { 401, 791, 400, 52 },
+            { 0, 844, 477, 204 },
+            { 0, 1049, 475, 402 },
+            { 478, 844, 477, 504 },
+            { 478, 1349, 475, 87 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePlanetMap, rects);
-    });
-
-    // PLANET MAP 2
-    mJobs.emplace_back([this, tm]
-    {
-        const std::vector<sgl::core::Rectd> rects
-        {
-            // PANELS
-            { 0, 0, 400, 50 },
-            { 401, 0, 400, 50 },
-            { 0, 51, 475, 200 },
-            { 0, 252, 475, 400 },
-            { 476, 52, 475, 500 },
-            { 476, 552, 475, 85 }
-        };
-
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePlanetMap2, rects);
     });
 
     // RESOURCES BAR

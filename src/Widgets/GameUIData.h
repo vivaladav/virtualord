@@ -716,13 +716,7 @@ enum SpriteIdPlanetMap : unsigned int
     IND_PM_BTN3_DISABLED,
     IND_PM_BTN3_OVER,
     IND_PM_BTN3_PRESSED,
-};
 
-// PLANET MAP 2
-extern const char SpriteFilePlanetMap2[];
-
-enum SpriteIdPlanetMap2 : unsigned int
-{
     // PANELS
     IND_PM_PANEL_NAME,
     IND_PM_PANEL_DATE,
