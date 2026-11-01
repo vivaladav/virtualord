@@ -517,7 +517,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.17 - \"It's DEMO time!\"", font, content);
+    auto title = new sgui::Label("0.6.18 - \"It's DEMO time!\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
