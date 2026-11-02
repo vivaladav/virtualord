@@ -2093,9 +2093,6 @@ TutorialGame3::TutorialGame3(Screen * screen)
         const core::Pointd2D p0(1200, 400);
         return new StepGameConnectStructFree(game, st, isoMap, "TUT_GAME_CONNECT_STRUCT", p0);
     });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // FINAL MESSAGE
     AddStep([game]
     {

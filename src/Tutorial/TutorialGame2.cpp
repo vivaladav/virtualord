@@ -1492,6 +1492,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
                                         target, p0);
     });
     AddStep([] { return new StepDelay(0.5f); });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([] { return new StepDelay(0.5f); });
     // ANNOUNCE FIGHT
     AddStep([]
     {
