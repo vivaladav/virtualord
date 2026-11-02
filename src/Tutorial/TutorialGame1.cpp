@@ -172,9 +172,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurn(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // EXPLAIN ENERGY REGENERATION
     AddStep([] { return new StepGameEnergyRegeneration; });
     // EXPLAIN STRUCTURE CONNECTIONS AND CONNECT GENERATOR TO BASE
@@ -215,9 +212,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // CONQUER MATERIAL GENERATOR
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, ACT_MOVE); });
     AddStep([this, local, isoMap, game]
@@ -233,9 +227,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([] { return new StepGameEndTurnIntro(); });
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // CONNECT MATERIAL GENERATOR
     AddStep([]
         {
@@ -261,9 +252,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // MOVE UNIT TO VISIBLE CORNER
     AddStep([this, local, isoMap]
             {
@@ -287,9 +275,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER 1
     AddStep([game, gs, panelActions]
         {
@@ -359,9 +344,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // BUILD WALL FROM TOWER
     AddStep([] { return new StepGameWallBuildIntro(); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -429,9 +411,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // CONNECT SECOND MATERIAL GENERATOR
     AddStep([]
             {
@@ -457,9 +436,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // MOVE UNIT TO VISIBLE CORNER
     AddStep([this, local, isoMap]
             {
@@ -498,9 +474,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // CONNECT DEFENSIVE TOWERs
     AddStep([]
         {
@@ -575,9 +548,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
                 GameObject * enemy = GetObjectInCell(cellEnemy1);
                 return new StepGameWaitEnemyKilled(enemy, GetGameMap());
             });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // COMMENT ON ENEMY KILL
     AddStep([this] { return new StepGameEnemyKilled(); });
     AddStep([hud]
@@ -616,9 +586,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // CONQUER SECOND ENERGY GENERATOR
     AddStep([this, local, game]
         {
@@ -659,9 +626,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // MOVE VIEW BACK TO BASE
     AddStep([panelTurn, game]
         {
@@ -713,9 +677,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // ADD HIDDEN ENEMY
     AddStep([this, playerAI]
     {
@@ -839,9 +800,6 @@ TutorialGame1::TutorialGame1(Screen * screen)
     // END TURN
     AddStep([panelTurn] { return new StepGameEndTurnSimple(panelTurn); });
     AddStep([gs] { return new StepGameWaitTurn(gs); });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // BUILD GATE WITH UNIT 2
     AddStep([game, gs, panelActions]
         {
