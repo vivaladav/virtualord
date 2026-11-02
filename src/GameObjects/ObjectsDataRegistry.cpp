@@ -74,7 +74,7 @@ void ObjectsDataRegistry::InitObjectData()
 
     mDataObjects.emplace(ObjectData::TYPE_BUNKER,
         ObjectData({ {OBJ_ATT_ENERGY, 4}, {OBJ_ATT_VIEW_RANGE, 3}, {OBJ_ATT_REGENERATION, 4},
-                     {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 7} },
+                     {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 5} },
                    { 150, 200, 0, 0 },
                    { ID_STRUCT_BUNKER_F1, ID_STRUCT_BUNKER_F2, ID_STRUCT_BUNKER_F3, ID_STRUCT_BUNKER },
                    SpriteFileStructures, ObjectData::TYPE_BUNKER, ObjectData::CAT_STRUCTURE,
@@ -82,7 +82,7 @@ void ObjectsDataRegistry::InitObjectData()
 
     mDataObjects.emplace(ObjectData::TYPE_DEFENSIVE_TOWER,
         ObjectData({ {OBJ_ATT_ENERGY, 5}, {OBJ_ATT_VIEW_RANGE, 4}, {OBJ_ATT_REGENERATION, 5},
-                     {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 7} },
+                     {OBJ_ATT_RESISTANCE, 4}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 5} },
                    { 250, 300, 0, 0 }, { ID_STRUCT_DTOWER_L1_F1, ID_STRUCT_DTOWER_L1_F2,
                    ID_STRUCT_DTOWER_L1_F3, ID_STRUCT_DTOWER_L1 }, SpriteFileStructures,
                    ObjectData::TYPE_DEFENSIVE_TOWER, ObjectData::CAT_STRUCTURE,
@@ -372,15 +372,15 @@ void ObjectsDataRegistry::InitObjectData()
 
     mDataObjects.emplace(ObjectData::TYPE_WALL,
         ObjectData({ {OBJ_ATT_ENERGY, 1}, {OBJ_ATT_VIEW_RANGE, 2}, {OBJ_ATT_REGENERATION, 5},
-                     {OBJ_ATT_RESISTANCE, 6}, {OBJ_ATT_SHIELD, 6}, {OBJ_ATT_HEALTH, 7} },
+                     {OBJ_ATT_RESISTANCE, 4}, {OBJ_ATT_SHIELD, 4}, {OBJ_ATT_HEALTH, 4} },
                    { 10, 20, 0, 0 },
                    { WALL_L1_F1_HORIZ, WALL_L1_F2_HORIZ, WALL_L1_F3_HORIZ },
                    SpriteFileWalls, ObjectData::TYPE_WALL, ObjectData::CAT_STRUCTURE,
                    OCS_WALL, OCAT_DEFENSE, WeaponData::TYPE_NULL, 1, 1));
 
     mDataObjects.emplace(ObjectData::TYPE_WALL_GATE,
-        ObjectData({ {OBJ_ATT_ENERGY, 3}, {OBJ_ATT_VIEW_RANGE, 2}, {OBJ_ATT_REGENERATION, 6},
-                     {OBJ_ATT_RESISTANCE, 5}, {OBJ_ATT_SHIELD, 5}, {OBJ_ATT_HEALTH, 7} },
+        ObjectData({ {OBJ_ATT_ENERGY, 5}, {OBJ_ATT_VIEW_RANGE, 2}, {OBJ_ATT_REGENERATION, 6},
+                     {OBJ_ATT_RESISTANCE, 3}, {OBJ_ATT_SHIELD, 3}, {OBJ_ATT_HEALTH, 2} },
                    { 150, 150, 0, 0 },
                    { WALL_GATE_L1_F1_HORIZ_CLOSED, WALL_GATE_L1_F2_HORIZ_CLOSED,
                      WALL_GATE_L1_F3_HORIZ_CLOSED, WALL_GATE_L1_HORIZ_CLOSED }, SpriteFileStructures,
