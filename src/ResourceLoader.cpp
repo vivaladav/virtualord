@@ -191,6 +191,8 @@ void ResourceLoader::DestroyGameTextures()
     tm->DestroySprite(SpriteFileWalls);
 
     // ===== UI GAME =====
+    // DIALOG AUTO ATTACK SETTINGS
+    tm->DestroyTexture(SpriteFileDialogAutoAttSettings);
     // DIALOG EXIT
     tm->DestroySprite(SpriteFileDialogExit);
     tm->DestroyTexture(SpriteFileDialogExitExp);
