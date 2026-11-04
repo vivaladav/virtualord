@@ -286,6 +286,23 @@ Game::Game(int argc, char * argv[])
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_4, 8000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_5, 12000);
 
+#ifdef DEMO_MODE
+// make costs for advanced tech upgrades extremely high in the demo
+mCostUpgrades[TECH_UP_BASE_IMPROVE_3] = 30000;
+mCostUpgrades[TECH_UP_BASE_IMPROVE_4] = 40000;
+mCostUpgrades[TECH_UP_BASE_IMPROVE_5] = 50000;
+mCostUpgrades[TECH_UP_RADAR_TOWER] = 20000;
+mCostUpgrades[TECH_UP_STORAGE_ENERGY_2] = 20000;
+mCostUpgrades[TECH_UP_STORAGE_MATERIAL_2] = 20000;
+mCostUpgrades[TECH_UP_STORAGE_DIAMONDS_2] = 20000;
+mCostUpgrades[TECH_UP_STORAGE_BLOBS_2] = 20000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_1] = 10000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_2] = 20000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_3] = 30000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_4] = 40000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_5] = 50000;
+#endif
+
     // TEMP CODE
     // TODO handle save directory properly
     mDirSave = "save/";
