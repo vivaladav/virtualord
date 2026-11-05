@@ -81,7 +81,7 @@ bool Game::GOD_MODE = false;
 #endif
 
 const std::string Game::SAVE_VERSION("0.3.1");
-const std::string Game::SETTINGS_VERSION("0.2.0");
+const std::string Game::SETTINGS_VERSION("0.3.0");
 
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
@@ -854,6 +854,13 @@ bool Game::LoadSettings()
     mButtonSelect = bf.ReadInt();
     mButtonAction = bf.ReadInt();
 
+    auto am = media::AudioManager::Instance();
+    auto ap = am->GetPlayer();
+    ap->SetMusicEnabled(bf.ReadBool());
+    am->SetVolumeMusic(bf.ReadUint());
+    ap->SetSoundEnabled(bf.ReadBool());
+    am->SetVolumeSound(bf.ReadUint());
+
     const int display = bf.ReadInt();
     const int dMode = bf.ReadInt();
     const auto vMode = static_cast<graphic::Window::VideoMode>(bf.ReadInt());
@@ -925,6 +932,13 @@ bool Game::SaveSettings()
     bf.WriteInt(mMapScrollingSpeed);
     bf.WriteInt(mButtonSelect);
     bf.WriteInt(mButtonAction);
+
+    auto am = media::AudioManager::Instance();
+    auto ap = am->GetPlayer();
+    bf.WriteBool(ap->IsMusicEnabled());
+    bf.WriteUint(am->GetVolumeMusic());
+    bf.WriteBool(ap->IsSoundEnabled());
+    bf.WriteUint(am->GetVolumeSound());
 
     bf.WriteInt(mWin->GetCurrentDisplayIndex());
     bf.WriteInt(mWin->GetCurrentDisplayModeIndex());
