@@ -315,8 +315,10 @@ void ResourceLoader::SetupMusic()
     mJobs.emplace_back([this, am]
                        {
                            am->CreateMusic(packageMusicGame, "game/music_01.ogg");
-                           am->CreateMusic(packageMusicGame, "mission/music_01.ogg");
-                           am->CreateMusic(packageMusicGame, "mission/music_02.ogg");
+                           am->CreateMusic(packageMusicGame, "game/mission_01.ogg");
+                           am->CreateMusic(packageMusicGame, "game/mission_02.ogg");
+                           am->CreateMusic(packageMusicGame, "game/mission_03.ogg");
+                           am->CreateMusic(packageMusicGame, "game/mission_04.ogg");
                        });
 
     // MENUS MUSIC
@@ -329,7 +331,7 @@ void ResourceLoader::SetupMusic()
     // TEST MUSIC
     mJobs.emplace_back([this, am]
                        {
-                           am->CreateMusic(packageMusicTest, "test/menu_01.ogg");
+                           am->CreateMusic(packageMusicTest, "test/music_01.ogg");
                            am->CreateMusic(packageSoundsTest, "test/test.ogg");
                        });
 #endif

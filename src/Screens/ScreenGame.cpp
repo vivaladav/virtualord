@@ -711,8 +711,10 @@ void ScreenGame::InitMusic()
     auto am = sgl::media::AudioManager::Instance();
     auto ap = am->GetPlayer();
 
-    ap->AddMusicToQueue("mission/music_01.ogg");
-    ap->AddMusicToQueue("mission/music_02.ogg");
+    ap->AddMusicToQueue("game/mission_01.ogg");
+    ap->AddMusicToQueue("game/mission_02.ogg");
+    ap->AddMusicToQueue("game/mission_03.ogg");
+    ap->AddMusicToQueue("game/mission_04.ogg");
     ap->PlayMusicQueue(true);
 }
 
