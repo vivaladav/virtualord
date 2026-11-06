@@ -533,6 +533,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- New panel to select save slot to load.\n"
                   "- Auto camera speed is higher when action is far away.\n"
                   "- Updated graphics of panels in planet map.\n"
+                  "- Added 2 new music tracks to missions.\n"
                   "\nCHANGES\n"
                   "- Made unit and structure actions 10-15% faster.\n"
                   "- Reduced auto camera movements when action is already on screen.\n"
@@ -549,6 +550,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed multiple trees growing in same cell and corrupting save files.\n"
                   "- Fixed tracking of enemies killed and related goals.\n"
                   "- Fixed potential crashes when game objects are destroyed.\n"
+                  "- Fixed audio settings not saved.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
