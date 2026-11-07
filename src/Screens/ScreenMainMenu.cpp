@@ -551,6 +551,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed tracking of enemies killed and related goals.\n"
                   "- Fixed potential crashes when game objects are destroyed.\n"
                   "- Fixed audio settings not saved.\n"
+                  "- Fixed crash in AI code when enemy base is destroyed.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
