@@ -441,6 +441,27 @@ void Player::RemVisibilityToAll()
     }
 }
 
+Cell2D Player::GetAverageBasePosition() const
+{
+    if(mStructures.empty())
+        return Cell2D(-1, -1);
+
+    Cell2D pos(0, 0);
+
+    for(const auto s : mStructures)
+    {
+        pos.row += (s->GetRow0() + s->GetRow1()) / 2;
+        pos.col += (s->GetCol0() + s->GetCol1()) / 2;
+    }
+
+    const unsigned int numStructs = mStructures.size();
+
+    pos.row /= numStructs;
+    pos.col /= numStructs;
+
+    return pos;
+}
+
 const StatValue & Player::GetResource(ExtendedResource res) const
 {
     if(res < NUM_EXT_RESOURCES)

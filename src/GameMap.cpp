@@ -2779,6 +2779,10 @@ int GameMap::ApproxDistance(const Cell2D & c1, const Cell2D & c2) const
 
 int GameMap::ApproxDistance(const GameObject * obj1, const GameObject * obj2) const
 {
+    // return very big distance if any object is NULL
+    if(obj1 == nullptr || obj2 == nullptr)
+        return std::numeric_limits<int>::max();
+
     const int R1 = obj1->GetRows() > 1 ? (obj1->GetRow0() + obj1->GetRow1()) / 2 : obj1->GetRow0();
     const int C1 = obj1->GetCols() > 1 ? (obj1->GetCol0() + obj1->GetCol1()) / 2 : obj1->GetCol0();
 

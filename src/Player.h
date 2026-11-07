@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Cell2D.h"
 #include "StatValue.h"
 #include "GameObjects/GameObjectTypes.h"
 
@@ -80,6 +81,7 @@ public:
 
     Base * GetBase() const;
     void SetBase(Base * b);
+    Cell2D GetAverageBasePosition() const;
 
     // resources
     const StatValue & GetResource(ExtendedResource res) const;

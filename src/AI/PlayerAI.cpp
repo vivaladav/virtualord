@@ -1045,9 +1045,22 @@ void PlayerAI::AddActionUnitBuildStructure(Unit * u)
     priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // decrease priority based on distance from Base
-    const GameObject * base = mPlayer->GetBase();
-    const int distBase = mGm->ApproxDistance(u, base);
     const int maxDist = GetMaxDistanceForObject(u);
+    const GameObject * base = mPlayer->GetBase();
+
+    int distBase = maxDist;
+
+    if(base != nullptr)
+        distBase = mGm->ApproxDistance(u, base);
+    else
+    {
+        const Cell2D avgBasePos = mPlayer->GetAverageBasePosition();
+
+        if(avgBasePos.row != -1 && avgBasePos.col != -1)
+            distBase = std::abs(avgBasePos.row - u->GetRow0()) +
+                       std::abs(avgBasePos.col - u->GetCol0());
+    }
+
     const float bonusDistBase = -10.f;
     priority += std::roundf(bonusDistBase * distBase / maxDist);
 
@@ -2279,6 +2292,9 @@ void PlayerAI::AddActionUpgrade(GameObject * obj, const int weights[],
 
 int PlayerAI::GetMaxDistanceForObject(const GameObject * obj) const
 {
+    if(obj == nullptr)
+        return std::numeric_limits<int>::max();
+
     const int r = obj->GetRow0();
     const int c = obj->GetCol0();
 
