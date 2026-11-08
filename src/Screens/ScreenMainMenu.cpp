@@ -528,7 +528,7 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "\n"
+                  "- Added master volume to audio settings.\n"
                   "\nCHANGES\n"
                   "\n"
                   "\nFIXES\n"
