@@ -139,6 +139,9 @@ ScreenTest::~ScreenTest()
     sgl::sgui::Stage::Instance()->ClearWidgets();
 
     GetGame()->SetCurrentCursor(CURSOR_DEFAULT);
+
+    auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
+    ap->ClearMusicQueue();
 }
 
 void ScreenTest::OnKeyUp(sgl::core::KeyboardEvent & event)
