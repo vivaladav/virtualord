@@ -332,7 +332,7 @@ void ResourceLoader::SetupMusic()
     mJobs.emplace_back([this, am]
                        {
                            am->CreateMusic(packageMusicTest, "test/music_01.ogg");
-                           am->CreateMusic(packageSoundsTest, "test/test.ogg");
+                           am->CreateMusic(packageMusicTest, "test/test.ogg");
                        });
 #endif
 }
