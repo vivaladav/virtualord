@@ -168,6 +168,10 @@ ScreenGame::~ScreenGame()
     game->RemoveOnSettingsChangedFunction(mIdOnSettingsChanged);
     game->GetTutorialManager()->ClearLastStartedTutorialId();
     game->ClearAllAIActivePlayers();
+
+    // clear music
+    auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
+    ap->ClearMusicQueue();
 }
 
 void ScreenGame::InitNewGame()
