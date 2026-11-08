@@ -517,7 +517,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.18 - \"It's DEMO time!\"", font, content);
+    auto title = new sgui::Label("0.6.19 - \"xxxxx\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -528,30 +528,11 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "- New dialog to control attack strategies of defensive towers and bunkers.\n"
-                  "- Game is automatically saved at every new turn.\n"
-                  "- New panel to select save slot to load.\n"
-                  "- Auto camera speed is higher when action is far away.\n"
-                  "- Updated graphics of panels in planet map.\n"
-                  "- Added 2 new music tracks to missions.\n"
+                  "\n"
                   "\nCHANGES\n"
-                  "- Made unit and structure actions 10-15% faster.\n"
-                  "- Reduced auto camera movements when action is already on screen.\n"
-                  "- New file format and filename for settings.\n"
-                  "- All upgrades in tech tree are visible from the beginning.\n"
-                  "- Blobs and diamonds generate more research points.\n"
+                  "\n"
                   "\nFIXES\n"
-                  "- Prevented soft-lock when upgrade is unlocked in tutorial missions"
-                  " before than expected.\n"
-                  "- Fixed crash happening when playing multiple missions in one run.\n"
-                  "- Prevented soft-lock in tutorial of planet map when on low resources.\n"
-                  "- Fixed save file corruption when using mini-units.\n"
-                  "- Fixed a few missing strings in all languages.\n"
-                  "- Fixed multiple trees growing in same cell and corrupting save files.\n"
-                  "- Fixed tracking of enemies killed and related goals.\n"
-                  "- Fixed potential crashes when game objects are destroyed.\n"
-                  "- Fixed audio settings not saved.\n"
-                  "- Fixed crash in AI code when enemy base is destroyed.\n"
+                  "\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
