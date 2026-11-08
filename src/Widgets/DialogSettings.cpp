@@ -327,8 +327,46 @@ void DialogSettings::CreatePanelAudio()
     auto am = media::AudioManager::Instance();
     auto ap = am->GetPlayer();
 
+    // MASTER VOLUME
+    const int volumeMin = 0;
+    const int volumeMax = 100;
+    const int volumeStep = 5;
+
+    const int marginSliderR = 30;
+
+    auto label = new sgui::Label(mSM->GetCString("VOL_MASTER"), font, panel);
+    mHeadersAudio.emplace_back(label);
+    label->SetColor(colorTxt);
+    label->SetPosition(x, y);
+
+    auto slider = new SliderSettings(panel);
+    slider->SetMinMax(volumeMin, volumeMax);
+    slider->SetStep(volumeStep);
+    slider->SetValue(am->GetVolumeAudio());
+
+    label = new sgui::Label(std::to_string(volumeMax).c_str(), font, panel);
+    label->SetColor(colorTxtSlider);
+
+    x = panelContentW - slider->GetWidth() - marginPanelH - marginSliderR - label->GetWidth();
+    y += (label->GetHeight() - slider->GetHeight()) * 0.5;
+    slider->SetPosition(x, y);
+
+    label->SetPosition(slider->GetX() + slider->GetWidth() + marginSliderR, slider->GetY());
+
+    label->SetText(std::to_string(slider->GetValue()).c_str());
+
+    slider->AddOnValueChanged([label, am](int val)
+                              {
+                                  am->SetVolumeAudio(val);
+
+                                  label->SetText(std::to_string(val).c_str());
+                              });
+
     // MUSIC ENABLED
-    auto label = new sgui::Label(mSM->GetCString("MUSIC"), font, panel);
+    x = contX0;
+    y = contY0 + blockSettingH;
+
+    label = new sgui::Label(mSM->GetCString("MUSIC"), font, panel);
     mHeadersAudio.emplace_back(label);
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
@@ -351,20 +389,14 @@ void DialogSettings::CreatePanelAudio()
 
     // MUSIC VOLUME
     x = contX0;
-    y = contY0 + blockSettingH;
-
-    const int volumeMin = 0;
-    const int volumeMax = 100;
-    const int volumeStep = 5;
-
-    const int marginSliderR = 30;
+    y = contY0 + blockSettingH * 2;
 
     label = new sgui::Label(mSM->GetCString("VOL_MUSIC"), font, panel);
     mHeadersAudio.emplace_back(label);
     label->SetColor(colorTxt);
     label->SetPosition(x, y);
 
-    auto slider = new SliderSettings(panel);
+    slider = new SliderSettings(panel);
     slider->SetMinMax(volumeMin, volumeMax);
     slider->SetStep(volumeStep);
     slider->SetValue(am->GetVolumeMusic());
@@ -389,7 +421,7 @@ void DialogSettings::CreatePanelAudio()
 
     // SOUNDS ENABLED
     x = contX0;
-    y = contY0 + blockSettingH * 2;
+    y = contY0 + blockSettingH * 3;
 
     label = new sgui::Label(mSM->GetCString("SFX"), font, panel);
     mHeadersAudio.emplace_back(label);
@@ -410,7 +442,7 @@ void DialogSettings::CreatePanelAudio()
 
     // SOUNDS VOLUME
     x = contX0;
-    y = contY0 + blockSettingH * 3;
+    y = contY0 + blockSettingH * 4;
 
     label = new sgui::Label(mSM->GetCString("VOL_SFX"), font, panel);
     mHeadersAudio.emplace_back(label);

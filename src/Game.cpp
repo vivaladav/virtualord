@@ -81,7 +81,7 @@ bool Game::GOD_MODE = false;
 #endif
 
 const std::string Game::SAVE_VERSION("0.3.1");
-const std::string Game::SETTINGS_VERSION("0.3.0");
+const std::string Game::SETTINGS_VERSION("0.3.1");
 
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
@@ -856,6 +856,7 @@ bool Game::LoadSettings()
 
     auto am = media::AudioManager::Instance();
     auto ap = am->GetPlayer();
+    am->SetVolumeAudio(bf.ReadUint());
     ap->SetMusicEnabled(bf.ReadBool());
     am->SetVolumeMusic(bf.ReadUint());
     ap->SetSoundEnabled(bf.ReadBool());
@@ -935,6 +936,7 @@ bool Game::SaveSettings()
 
     auto am = media::AudioManager::Instance();
     auto ap = am->GetPlayer();
+    bf.WriteUint(am->GetVolumeAudio());
     bf.WriteBool(ap->IsMusicEnabled());
     bf.WriteUint(am->GetVolumeMusic());
     bf.WriteBool(ap->IsSoundEnabled());
