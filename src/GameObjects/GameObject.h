@@ -113,7 +113,7 @@ public:
     int GetWidth() const;
     int GetHeight() const;
 
-    void ShowWarning(const char * text, float time);
+    void ShowWarning(const char * text, float time = 2.f);
 
     bool IsStructure() const;
     bool CanBeConquered() const;

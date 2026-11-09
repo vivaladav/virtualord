@@ -1277,7 +1277,7 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
     // out of bounds
     if((data.GetRows() - 1) > r || (data.GetCols() - 1) > c || r >= mRows || c >= mCols)
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 3.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
         return false;
     }
 
@@ -1290,14 +1290,14 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
 
     if(!costOk)
     {
-        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         return false;
     }
 
     // check unit's energy
     if(!unit->HasEnergyForActionStep(ACT_BUILD_STRUCTURE))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         return false;
     }
 
@@ -1325,7 +1325,7 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
             // already occupied
             if(!gcell.walkable && !canOverride)
             {
-                unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 3.f);
+                unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
                 return false;
             }
         }
@@ -1538,14 +1538,14 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
     // unit can't conquer
     if(!unit->CanConquer())
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"));
         return false;
     }
 
     // unit doesn't have enough energy
     if(!unit->HasEnergyForActionStep(ACT_CONQUER_STRUCTURE))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         return false;
     }
 
@@ -1561,7 +1561,7 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
     // target object can't be conquered
     if(!target->CanBeConquered())
     {
-       unit->ShowWarning(mSM->GetCString("WARN_CANT_BE_CONQUERED"), 3.f);
+       unit->ShowWarning(mSM->GetCString("WARN_CANT_BE_CONQUERED"));
         return false;
     }
 
@@ -1576,7 +1576,7 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
 
     if(!costOk)
     {
-        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         return false;
     }
 
@@ -1846,7 +1846,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     // already has enough units
     if(player->GetNumUnits() == player->GetMaxUnits())
     {
-        gen->ShowWarning(mSM->GetCString("WARN_TM_UNITS"), 2.f);
+        gen->ShowWarning(mSM->GetCString("WARN_TM_UNITS"));
         return false;
     }
 
@@ -1858,7 +1858,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
        !player->HasEnough(ER_DIAMONDS, costs[ER_DIAMONDS]) ||
        !player->HasEnough(ER_BLOBS, costs[ER_BLOBS]))
     {
-        gen->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        gen->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         return false;
     }
 
@@ -1904,7 +1904,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     }
 
     // free cell test failed
-    gen->ShowWarning(mSM->GetCString("WARN_CANT_CELL"), 3.f);
+    gen->ShowWarning(mSM->GetCString("WARN_CANT_CELL"));
     return false;
 }
 
@@ -2123,13 +2123,13 @@ bool GameMap::CanCreateMiniUnit(GameObjectTypeId ut, GameObject * gen, int eleme
        !player->HasEnough(ER_DIAMONDS, costs[ER_DIAMONDS] * elements) ||
        !player->HasEnough(ER_BLOBS, costs[ER_BLOBS] * elements))
     {
-        gen->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        gen->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         return false;
     }
 
     if(!gen->HasEnergyForActionStep(ACT_SPAWN))
     {
-        gen->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        gen->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         return false;
     }
 

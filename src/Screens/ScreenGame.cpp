@@ -2145,7 +2145,7 @@ bool ScreenGame::SetupNewMiniUnits(GameObjectTypeId type, GameObject * gen, Game
 
     if(-1 == cell.row || -1 == cell.col)
     {
-        gen->ShowWarning(mSM->GetCString("WARN_CANT_CELL"), 3.f);
+        gen->ShowWarning(mSM->GetCString("WARN_CANT_CELL"));
         return false;
     }
 
@@ -2239,7 +2239,7 @@ bool ScreenGame::SetupNewUnit(GameObjectTypeId type, GameObject * gen, Player * 
 
     if(-1 == cell.row || -1 == cell.col)
     {
-        gen->ShowWarning(mSM->GetCString("WARN_CANT_CELL"), 3.f);
+        gen->ShowWarning(mSM->GetCString("WARN_CANT_CELL"));
         return false;
     }
 
@@ -2307,7 +2307,7 @@ bool ScreenGame::SetupObjectInteraction(Unit * unit, GameObject * objTarget, Pla
     // unit doesn't have enough energy
     if(!unit->HasEnergyForActionStep(ACT_OPEN_LOOTBOX))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         return false;
     }
 
@@ -2382,7 +2382,7 @@ bool ScreenGame::SetupCellConquest(Unit * unit)
     {
         ResetObjectAction(unit);
 
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUEST"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUEST"));
         return false;
     }
 }
@@ -2564,9 +2564,9 @@ bool ScreenGame::SetupObjectAttack(GameObject * obj, GameObject * target, Player
     if(!res)
     {
         if(!obj->HasEnergyForActionStep(ACT_ATTACK))
-            obj->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 3.f);
+            obj->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         else
-            obj->ShowWarning(mSM->GetCString("WARN_CANT_TARGET"), 3.f);
+            obj->ShowWarning(mSM->GetCString("WARN_CANT_TARGET"));
 
         return false;
     }
@@ -2596,7 +2596,7 @@ bool ScreenGame::SetupHospitalHeal(Hospital * hospital, GameObject * target, Pla
 
     if(!res)
     {
-        hospital->ShowWarning(mSM->GetCString("WARN_CANT_TARGET"), 3.f);
+        hospital->ShowWarning(mSM->GetCString("WARN_CANT_TARGET"));
         return false;
     }
 
@@ -2619,7 +2619,7 @@ bool ScreenGame::SetupUnitHeal(Unit * unit, GameObject * target, Player * player
 
     if(!res)
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_TARGET"), 3.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_TARGET"));
         return false;
     }
 
@@ -2644,7 +2644,7 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
     // empty path -> exit
     if(path.empty())
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH2C"), 3.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH2C"));
         return false;
     }
 
@@ -2660,7 +2660,7 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
         if(cost > unit->GetEnergy())
         {
             delete op;
-            unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
             return false;
         }
     }
@@ -2686,7 +2686,7 @@ bool ScreenGame::SetupUnitMove(Unit * unit, const Cell2D & start, const Cell2D &
     else
     {
         delete op;
-        unit->ShowWarning(mSM->GetCString("WARN_MOV_FAIL"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_MOV_FAIL"));
         return false;
     }
 }
@@ -2797,7 +2797,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
 
     if(!mLocalPlayer->IsCellVisible(clickInd))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"));
         return;
     }
 
@@ -2806,7 +2806,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
 
     if(clickCell != selCell && !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
         return ;
     }
 
@@ -2814,11 +2814,11 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
     if(!mOverlayCellConquest->IsDoable())
     {
         if(!mOverlayCellConquest->IsDoableUnit())
-            unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         else if(!mOverlayCellConquest->IsDoableResources())
-            unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         else
-            unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"));
 
         return ;
     }
@@ -2836,7 +2836,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
             // can't find a path to this cell
             if(pathStart.empty())
             {
-                unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 2.f);
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"));
                 return ;
             }
 
@@ -2849,7 +2849,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
             // not enough unit energy
             if(cost > unit->GetEnergy())
             {
-                unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+                unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
                 return ;
             }
 
@@ -2877,7 +2877,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
     {
         if(!mOverlayCellConquest->IsValid())
         {
-            unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
             return ;
         }
 
@@ -2922,7 +2922,7 @@ void ScreenGame::HandleUnitCellConquestOnMouseUp(Unit * unit, const Cell2D & cli
     // empty path -> nothing to do
     if(path.empty())
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 3.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"));
         return ;
     }
 
@@ -2936,7 +2936,7 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
 
     if(!mLocalPlayer->IsCellVisible(ClickInd))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"));
         return;
     }
 
@@ -2960,7 +2960,7 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
         // unit can't conquer
         if(!unit->CanConquer())
         {
-            unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"));
             return ;
         }
 
@@ -2975,7 +2975,7 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
             // failed to find a suitable target
             if(-1 == target.row || -1 == target.col)
             {
-                unit->ShowWarning(mSM->GetCString("WARN_CANT_CELL"), 3.f);
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_CELL"));
                 return ;
             }
 
@@ -2995,7 +2995,7 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
         // unit can't interact
         if(!unit->CanConquer())
         {
-            unit->ShowWarning(mSM->GetCString("WARN_CANT_INTERACT"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_INTERACT"));
             return ;
         }
 
@@ -3010,7 +3010,7 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
             // failed to find a suitable target
             if(-1 == target.row || -1 == target.col)
             {
-                unit->ShowWarning(mSM->GetCString("WARN_CANT_CELL"), 3.f);
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_CELL"));
                 return ;
             }
 
@@ -3023,7 +3023,7 @@ void ScreenGame::HandleUnitMoveOnMouseUp(Unit * unit, const Cell2D & clickCell)
         }
     }
     else
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_BE_CONQUERED"), 3.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_BE_CONQUERED"));
 }
 
 void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & clickCell)
@@ -3039,7 +3039,7 @@ void ScreenGame::HandleUnitBuildStructureOnMouseUp(Unit * unit, const Cell2D & c
 
     if(costUnit > energyObj)
     {
-        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         return;
     }
 
@@ -3081,7 +3081,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 
     if(!mLocalPlayer->IsCellVisible(clickInd))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NVIS"));
         return;
     }
 
@@ -3095,7 +3095,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 
     if(!clickCellWalkable && !(unitOnClickCell && (!mOverlayWall->IsCellStartSet() || singleBlock)))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
         return ;
     }
 
@@ -3103,11 +3103,11 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
     if(!mOverlayWall->IsDoable())
     {
         if(!mOverlayWall->IsDoableUnit())
-            unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         else if(!mOverlayWall->IsDoableResources())
-            unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         else
-            unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD"));
 
         return ;
     }
@@ -3123,7 +3123,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 
             if(cellMoveTarget.row == -1 || cellMoveTarget.col == -1)
             {
-                unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+                unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
                 return ;
             }
 
@@ -3134,7 +3134,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
             // can't find a path to this cell
             if(pathStart.empty())
             {
-                unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 2.f);
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"));
                 return ;
             }
 
@@ -3147,7 +3147,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
             // not enough unit energy
             if(cost > unit->GetEnergy())
             {
-                unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+                unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
                 return ;
             }
 
@@ -3174,7 +3174,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
     {
         if(!mOverlayWall->IsValid())
         {
-            unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
             return ;
         }
 
@@ -3200,7 +3200,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
 
                     if(cellMoveTarget.row == -1 || cellMoveTarget.col == -1)
                     {
-                        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 2.f);
+                        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
                         return ;
                     }
                 }
@@ -3231,7 +3231,7 @@ void ScreenGame::HandleUnitBuildWallOnMouseUp(Unit * unit, const Cell2D & clickC
     // empty path -> nothing to do
     if(path.empty())
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 3.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH"));
         return ;
     }
 
@@ -3248,7 +3248,7 @@ void ScreenGame::HandleMiniUnitSetTargetOnMouseUp(GameObject * obj, const Cell2D
     if(!mLocalPlayer->IsCellVisible(clickInd) ||
        !mGameMap->IsCellWalkable(clickCell.row, clickCell.col))
     {
-        obj->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 3.f);
+        obj->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
         return ;
     }
 
@@ -3285,7 +3285,7 @@ void ScreenGame::HandleMiniUnitSetTargetOnMouseUp(GameObject * obj, const Cell2D
             o->SetActiveAction(GameObjectActionType::IDLE);
         });
 
-        obj->ShowWarning(mSM->GetCString("WARN_CANT_PATH"), 3.f);
+        obj->ShowWarning(mSM->GetCString("WARN_CANT_PATH"));
 
         return ;
     }
@@ -3938,7 +3938,7 @@ int ScreenGame::CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool 
     if(!mIsoMap->IsCellInside(dest))
     {
         if(building)
-            unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"));
 
         return 0;
     }
@@ -3952,7 +3952,7 @@ int ScreenGame::CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool 
     if(structTL.row < 0 || structTL.col < 0)
     {
         if(building)
-            unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"), 2.f);
+            unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"));
 
         return 0;
     }
@@ -3978,7 +3978,7 @@ int ScreenGame::CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool 
             if((!mLocalPlayer->IsCellVisible(idx) || !mGameMap->IsCellWalkable(idx)) && !canOverride)
             {
                 if(building)
-                    unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"), 2.f);
+                    unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"));
 
                 return 0;
             }
@@ -3997,7 +3997,7 @@ int ScreenGame::CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool 
         if(-1 == target.row || -1 == target.col)
         {
             if(building)
-                unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"), 2.f);
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_BUILD_HERE"));
 
             return 0;
         }
@@ -4009,7 +4009,7 @@ int ScreenGame::CheckBuildStructureValid(Unit * unit, const Cell2D & dest, bool 
         if(path.empty())
         {
             if(building)
-                unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH2C"), 2.f);
+                unit->ShowWarning(mSM->GetCString("WARN_CANT_PATH2C"));
 
             return 0;
         }
