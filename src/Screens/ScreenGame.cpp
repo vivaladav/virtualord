@@ -2563,7 +2563,11 @@ bool ScreenGame::SetupObjectAttack(GameObject * obj, GameObject * target, Player
 
     if(!res)
     {
-        obj->ShowWarning(mSM->GetCString("WARN_CANT_TARGET"), 3.f);
+        if(!obj->HasEnergyForActionStep(ACT_ATTACK))
+            obj->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 3.f);
+        else
+            obj->ShowWarning(mSM->GetCString("WARN_CANT_TARGET"), 3.f);
+
         return false;
     }
 
