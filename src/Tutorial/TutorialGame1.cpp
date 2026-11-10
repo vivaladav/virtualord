@@ -458,21 +458,19 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([local] { return new StepGameSetSelectionDefaultAction(local, GameObjectActionType::IDLE); });
     AddStep([local] { return new StepGameSetSelectionActiveAction(local, GameObjectActionType::IDLE); });
     AddStep([] { return new StepDelay(0.5f); });
-    // BUILD DEFENSIVE TOWER
+    // BUILD BUNKER
     AddStep([game, gs, panelActions]
-            {
-                const core::Pointd2D p0(900, 250);
-
-                return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
-            });
+    {
+        const core::Pointd2D p0(900, 250);
+        return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
+    });
     AddStep([hud]
-            {
-                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4",
-                                                  "TUT_GAME_BASE_BUILD_UNIT_3",
-                                                  TutorialConstants::catDefenses,
-                                                  TutorialConstants::structDefTower);
-            });
+    {
+        return new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3", nullptr,
+                                          "TUT_GAME_BASE_BUILD_UNIT_3",
+                                          TutorialConstants::catDefenses,
+                                          TutorialConstants::structBunker);
+    });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
         {
