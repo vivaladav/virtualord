@@ -533,7 +533,8 @@ void ScreenMainMenu::CreateChangelog()
                   "\nCHANGES\n"
                   "\n"
                   "\nFIXES\n"
-                  "\n"
+                  "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
+                  " to open the first lootbox.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
