@@ -535,6 +535,7 @@ void ScreenMainMenu::CreateChangelog()
                   "\nFIXES\n"
                   "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
                   " to open the first lootbox.\n"
+                  "- Fixed growing trees not cutting power of structures when links are broken.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
