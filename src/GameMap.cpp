@@ -2404,6 +2404,18 @@ bool GameMap::AbortMove(GameObject * obj)
     return false;
 }
 
+void GameMap::SetMoveFast(GameObject * obj)
+{
+    for(auto path : mPaths)
+    {
+        if(path->GetObject() == obj)
+        {
+            path->SetFast(true);
+            return;
+        }
+    }
+}
+
 Cell2D GameMap::GetCloseMoveTarget(const Cell2D & start, const Cell2D & end) const
 {
     // get all walkable cells around end

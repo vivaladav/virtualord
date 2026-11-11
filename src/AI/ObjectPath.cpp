@@ -79,8 +79,8 @@ bool ObjectPath::InitNextMove()
         mObjY = isoObj->GetY();
         mTargetX = target.x;
         mTargetY = target.y;
-        mVelX = (mTargetX - mObjX) * mObj->GetSpeed();
-        mVelY = (mTargetY - mObjY) * mObj->GetSpeed();
+        mVelX = mTargetX - mObjX;
+        mVelY = mTargetY - mObjY;
     }
 
     mState = MOVING;
@@ -137,10 +137,14 @@ void ObjectPath::Update(float delta)
 {
     int todo = 2;
 
-    // -- X --
-    mObjX += mVelX * delta;
+    const float speed = mFast ? 10.f : mObj->GetSpeed();
+    const float velX = mVelX * speed;
+    const float velY = mVelY * speed;
 
-    if(mVelX < 0.f)
+    // -- X --
+    mObjX += velX * delta;
+
+    if(velX < 0.f)
     {
         if(mObjX < mTargetX)
         {
@@ -148,7 +152,7 @@ void ObjectPath::Update(float delta)
             mObjX = mTargetX;
         }
     }
-    else if(mVelX > 0.f)
+    else if(velX > 0.f)
     {
         if(mObjX > mTargetX)
         {
@@ -160,9 +164,9 @@ void ObjectPath::Update(float delta)
         --todo;
 
     // -- Y --
-    mObjY += mVelY * delta;
+    mObjY += velY * delta;
 
-    if(mVelY < 0.f)
+    if(velY < 0.f)
     {
         if(mObjY < mTargetY)
         {
@@ -170,7 +174,7 @@ void ObjectPath::Update(float delta)
             mObjY = mTargetY;
         }
     }
-    else if(mVelY > 0.f)
+    else if(velY > 0.f)
     {
         if(mObjY > mTargetY)
         {

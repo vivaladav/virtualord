@@ -188,6 +188,7 @@ public:
     bool CanUnitMove(const Cell2D & start, const Cell2D & end, Player * player) const;
     bool MoveUnit(ObjectPath * path);
     bool AbortMove(GameObject * obj);
+    void SetMoveFast(GameObject * obj);
 
     Cell2D GetCloseMoveTarget(const Cell2D & start, const Cell2D & end) const;
     Cell2D GetAdjacentMoveTarget(const Cell2D & start, const GameObject * target) const;
