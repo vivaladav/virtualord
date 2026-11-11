@@ -387,8 +387,6 @@ add_executable(
     src/Tutorial/StepGameMoveUnitToCorner.cpp
     src/Tutorial/StepGameObjectAttackSimple.h
     src/Tutorial/StepGameObjectAttackSimple.cpp
-    src/Tutorial/StepGameOpenLootbox.h
-    src/Tutorial/StepGameOpenLootbox.cpp
     src/Tutorial/StepGameOpenLootboxFree.h
     src/Tutorial/StepGameOpenLootboxFree.cpp
     src/Tutorial/StepGamePanelHit.h
@@ -477,8 +475,6 @@ add_executable(
     src/Tutorial/StepGameWaitEnemiesKilled.cpp
     src/Tutorial/StepGameWaitEnemyKilled.h
     src/Tutorial/StepGameWaitEnemyKilled.cpp
-    src/Tutorial/StepGameWaitLootboxOpen.h
-    src/Tutorial/StepGameWaitLootboxOpen.cpp
     src/Tutorial/StepGameWaitObjectDestroyed.h
     src/Tutorial/StepGameWaitObjectDestroyed.cpp
     src/Tutorial/StepGameWaitObjectIdle.h

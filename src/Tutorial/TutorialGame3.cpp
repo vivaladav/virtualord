@@ -41,7 +41,6 @@
 #include "Tutorial/StepGameMoveToCellFree.h"
 #include "Tutorial/StepGameMoveUnitFree.h"
 #include "Tutorial/StepGameMoveUnitSimple.h"
-#include "Tutorial/StepGameOpenLootbox.h"
 #include "Tutorial/StepGameOpenLootboxFree.h"
 #include "Tutorial/StepGameQuickUnitButton.h"
 #include "Tutorial/StepGameSecondaryMissionGoal.h"
@@ -58,7 +57,6 @@
 #include "Tutorial/StepGameTechTreeIcon.h"
 #include "Tutorial/StepGameUnit.h"
 #include "Tutorial/StepGameWaitEnemyKilled.h"
-#include "Tutorial/StepGameWaitLootboxOpen.h"
 #include "Tutorial/StepGameWaitObjectIdle.h"
 #include "Tutorial/StepGameWaitTurn.h"
 #include "Tutorial/StepGameWaitStructCanBuild.h"
@@ -349,20 +347,13 @@ TutorialGame3::TutorialGame3(Screen * screen)
         return new StepGameSetLootboxPrize(lootbox, ER_MATERIAL, prizeQuantity);
     });
     // OPEN LOOTBOX
-    AddStep([this, local, game, isoMap]
+    AddStep([this, gameMap, isoMap]
     {
-        const auto all = local->GetUnitsByType(ObjectData::TYPE_UNIT_WORKER1);
-        const auto unit = all.back();
-        const GameObject * lootbox = GetObjectInCell(cellLootbox1);
         const core::Pointd2D p0(500, 100);
-
-        return new StepGameOpenLootbox(game, unit, lootbox, isoMap, "TUT_GAME_LOOTBOX_1", p0);
+        auto lootbox = static_cast<LootBox *>(GetObjectInCell(cellLootbox1));
+        return new StepGameOpenLootboxFree(gameMap, lootbox, isoMap, "TUT_GAME_LOOTBOX_1", p0);
     });
-    AddStep([this]
-    {
-        const GameObject * lootbox = GetObjectInCell(cellLootbox1);
-        return new StepGameWaitLootboxOpen(GetGameMap(), lootbox);
-    });
+    AddStep([] { return new StepDelay(0.5f); });
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
