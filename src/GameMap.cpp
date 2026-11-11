@@ -1215,6 +1215,10 @@ void GameMap::ConquerCell(const Cell2D & cell, Player * player)
     GameMapCell & gcell = mCells[ind];
     bool stolen = gcell.owner != nullptr && gcell.owner != player;
 
+    // cell already conquered by player
+    if(gcell.owner == player && player != nullptr)
+        return ;
+
     // make cell empty
     ClearCell(gcell);
 
@@ -1222,17 +1226,23 @@ void GameMap::ConquerCell(const Cell2D & cell, Player * player)
     Player * prevOwner = gcell.owner;
     gcell.owner = player;
 
-    // update player
-    player->SumCells(1);
+    // handle things for new player
+    // NOTE player can be NULL in cases like Trees conquering cells
+    if(player != nullptr)
+    {
+        // update player
+        player->SumCells(1);
 
-    // propagate effects of conquest
-    UpdateInfluencedCells(cell.row, cell.col);
+        // propagate effects of conquest
+        UpdateInfluencedCells(cell.row, cell.col);
 
-    UpdateLinkedCells(player);
+        UpdateLinkedCells(player);
 
-    // update visibility map
-    AddPlayerCellVisibility(gcell, player);
+        // update visibility map
+        AddPlayerCellVisibility(gcell, player);
+    }
 
+    // handle things for previous owner
     if(stolen)
     {
         DelPlayerCellVisibility(gcell, prevOwner);
@@ -1240,7 +1250,11 @@ void GameMap::ConquerCell(const Cell2D & cell, Player * player)
         UpdateLinkedCells(prevOwner);
     }
 
-    ApplyLocalVisibility();
+    // handle possible visibility changes for local player
+    const Player * local = mGame->GetLocalPlayer();
+
+    if(player == local || prevOwner == local)
+        ApplyLocalVisibility();
 }
 
 bool GameMap::ConquerCells(ConquerPath * path)
@@ -3635,6 +3649,9 @@ void GameMap::UpdateInfluencedCells(int row, int col)
 {
     const unsigned int ind0 = row * mCols + col;
     const GameMapCell & gcell = mCells[ind0];
+
+    if(gcell.owner == nullptr)
+        return ;
 
     const PlayerFaction faction = gcell.owner->GetFaction();
 

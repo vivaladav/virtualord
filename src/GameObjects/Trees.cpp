@@ -1,5 +1,6 @@
 #include "GameObjects/Trees.h"
 
+#include "Cell2D.h"
 #include "Game.h"
 #include "GameData.h"
 #include "GameConstants.h"
@@ -180,6 +181,8 @@ void Trees::SpawnTree(int r0, int c0)
 
     sgl::utilities::UniformDistribution dis(0, mNumVariants - 1);
     const int variant = dis.GetNextValue();
+
+    gm->ConquerCell(Cell2D(r0, c0), nullptr);
 
     auto newTree = gm->CreateObject(GetObjectType(), variant, NO_FACTION, r0, c0, false);
 
