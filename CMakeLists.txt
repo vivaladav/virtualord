@@ -287,8 +287,6 @@ add_executable(
     src/Tutorial/StepGameBuildUnitStart.cpp
     src/Tutorial/StepGameBuildUnitEnd.h
     src/Tutorial/StepGameBuildUnitEnd.cpp
-    src/Tutorial/StepGameBuildStructArea.h
-    src/Tutorial/StepGameBuildStructArea.cpp
     src/Tutorial/StepGameBuildStructAreaFree.h
     src/Tutorial/StepGameBuildStructAreaFree.cpp
     src/Tutorial/StepGameBuildStructIntro.h
@@ -323,20 +321,14 @@ add_executable(
     src/Tutorial/StepGameConquerCity.cpp
     src/Tutorial/StepGameConquerEnergyGenIntro.h
     src/Tutorial/StepGameConquerEnergyGenIntro.cpp
-    src/Tutorial/StepGameConquerGeneratorIntro.h
-    src/Tutorial/StepGameConquerGeneratorIntro.cpp
     src/Tutorial/StepGameConquerMaterialGenIntro.h
     src/Tutorial/StepGameConquerMaterialGenIntro.cpp
     src/Tutorial/StepGameConquerStruct.h
     src/Tutorial/StepGameConquerStruct.cpp
-    src/Tutorial/StepGameConquerStructChoice.h
-    src/Tutorial/StepGameConquerStructChoice.cpp
     src/Tutorial/StepGameConquerStructFree.h
     src/Tutorial/StepGameConquerStructFree.cpp
     src/Tutorial/StepGameConquerStructSimple.h
     src/Tutorial/StepGameConquerStructSimple.cpp
-    src/Tutorial/StepGameDialogTrading.h
-    src/Tutorial/StepGameDialogTrading.cpp
     src/Tutorial/StepGameDialogTradingBuy.h
     src/Tutorial/StepGameDialogTradingBuy.cpp
     src/Tutorial/StepGameDisableCamera.h
@@ -391,8 +383,6 @@ add_executable(
     src/Tutorial/StepGameMoveUnitFree.cpp
     src/Tutorial/StepGameMoveUnitSimple.h
     src/Tutorial/StepGameMoveUnitSimple.cpp
-    src/Tutorial/StepGameMoveUnitToArea.h
-    src/Tutorial/StepGameMoveUnitToArea.cpp
     src/Tutorial/StepGameMoveUnitToCorner.h
     src/Tutorial/StepGameMoveUnitToCorner.cpp
     src/Tutorial/StepGameObjectAttackSimple.h
@@ -473,8 +463,6 @@ add_executable(
     src/Tutorial/StepGameUnit.cpp
     src/Tutorial/StepGameUnitAttackBurst.h
     src/Tutorial/StepGameUnitAttackBurst.cpp
-    src/Tutorial/StepGameUnitAttackContinue.h
-    src/Tutorial/StepGameUnitAttackContinue.cpp
     src/Tutorial/StepGameUnitAttackFree.h
     src/Tutorial/StepGameUnitAttackFree.cpp
     src/Tutorial/StepGameUnitAttackIcon.h
@@ -485,8 +473,6 @@ add_executable(
     src/Tutorial/StepGameUpgradeIntro.cpp
     src/Tutorial/StepGameUpgradeUnit.h
     src/Tutorial/StepGameUpgradeUnit.cpp
-    src/Tutorial/StepGameUpgradeUnitFree.h
-    src/Tutorial/StepGameUpgradeUnitFree.cpp
     src/Tutorial/StepGameWaitEnemiesKilled.h
     src/Tutorial/StepGameWaitEnemiesKilled.cpp
     src/Tutorial/StepGameWaitEnemyKilled.h
@@ -497,8 +483,6 @@ add_executable(
     src/Tutorial/StepGameWaitObjectDestroyed.cpp
     src/Tutorial/StepGameWaitObjectIdle.h
     src/Tutorial/StepGameWaitObjectIdle.cpp
-    src/Tutorial/StepGameWaitSelectedHasEnergy.h
-    src/Tutorial/StepGameWaitSelectedHasEnergy.cpp
     src/Tutorial/StepGameWaitStructCanBuild.h
     src/Tutorial/StepGameWaitStructCanBuild.cpp
     src/Tutorial/StepGameWaitTurn.h
