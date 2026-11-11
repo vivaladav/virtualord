@@ -81,6 +81,7 @@ ScreenGame::ScreenGame(Game * game)
     , mSM(sgl::utilities::StringManager::Instance())
     , mPathfinder(new sgl::ai::Pathfinder)
     , mCurrCell(-1, -1)
+    , mPrevActionClickedCell(-1, -1)
     , mLocalPlayer(game->GetLocalPlayer())
     , mActiveplayer(game->GetActivePlayerByIndex(mActivePlayerIdx))
     , mTurnStage(TURN_STAGE_PLAY)
@@ -3387,6 +3388,12 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
             HandleUnitBuildWallOnMouseUp(selUnit, clickCell);
         else if (action == ACT_BUILD_STRUCTURE)
             HandleUnitBuildStructureOnMouseUp(selUnit, clickCell);
+        else
+        {
+            // make move fast on double click
+            if(selUnit->GetCurrentAction() == ACT_MOVE && mPrevActionClickedCell == clickCell)
+                    mGameMap->SetMoveFast(selObj);
+        }
     }
     else if(cat == ObjectData::CAT_MINI_UNIT)
     {
@@ -3407,6 +3414,8 @@ void ScreenGame::HandleActionClick(sgl::core::MouseButtonEvent & event)
         if(action == ACT_ATTACK)
             SetupObjectAttack(selObj, clickObj, mLocalPlayer);
     }
+
+    mPrevActionClickedCell = clickCell;
 }
 
 bool ScreenGame::StartUnitBuildWall(Unit * unit)

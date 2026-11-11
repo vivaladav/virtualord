@@ -252,6 +252,7 @@ private:
     sgl::ai::Pathfinder * mPathfinder = nullptr;
 
     struct Cell2D mCurrCell;
+    struct Cell2D mPrevActionClickedCell;
     sgl::core::Pointd2D mMousePos;
 
     // MAP OVERLAYS
