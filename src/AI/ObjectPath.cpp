@@ -96,6 +96,11 @@ bool ObjectPath::InitNextMove()
             ap->PlaySound("game/unit_move-02.ogg");
     }
 
+    // camera tracking - skip first cell to leave time for double clicks
+    if(2 == mNextCell && mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
+       mScreen->GetGame()->IsAutoUnitCameraEnabled()))
+        mScreen->StartCameraTracking(mObj);
+
     return true;
 }
 
@@ -112,11 +117,6 @@ bool ObjectPath::Start()
        currCell.objBottom->GetObjectType() == ObjectData::TYPE_WALL_GATE &&
        currCell.objBottom->GetFaction() == mObj->GetFaction())
         mOpenGate = static_cast<WallGate *>(currCell.objBottom);
-
-    // track object while moving if local
-    if(mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
-       mScreen->GetGame()->IsAutoUnitCameraEnabled()))
-        mScreen->StartCameraTracking(mObj);
 
     mNextCell = 1;
 

@@ -59,10 +59,6 @@ bool ConquerPath::Start()
 
     mNextCell = 0;
 
-    // track object while moving if local
-    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StartCameraTracking(mUnit);
-
     // stat conquering first cell
     return InitNextConquest();
 }
@@ -216,6 +212,11 @@ bool ConquerPath::InitNextConquest()
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->PlaySoundLoop("game/conquer-01.ogg");
     }
+
+
+    // camera tracking - skip first cell to leave time for double clicks
+    if(1 == mNextCell && mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+        mScreen->StartCameraTracking(mUnit);
 
     return true;
 }

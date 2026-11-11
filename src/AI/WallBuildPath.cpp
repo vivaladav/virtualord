@@ -268,6 +268,10 @@ bool WallBuildPath::InitNextMove()
         ap->PlaySound("game/unit_move-02.ogg");
     }
 
+    // camera tracking - skip first cell to leave time for double clicks
+    if(1 == mNextCell && mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+        mScreen->StartCameraTracking(mUnit);
+
     return true;
 }
 
@@ -393,10 +397,6 @@ bool WallBuildPath::Start()
         return false;
 
     mNextCell = 0;
-
-    // track object while moving if local
-    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StartCameraTracking(mUnit);
 
     return InitNextMove();
 }
