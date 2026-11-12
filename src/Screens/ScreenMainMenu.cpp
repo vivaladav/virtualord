@@ -531,11 +531,12 @@ void ScreenMainMenu::CreateChangelog()
                   "- Added master volume to audio settings.\n"
                   "- Double action-button click makes moves fast.\n"
                   "\nCHANGES\n"
-                  "\n"
+                  "- Bunkers and defensive towers consume energy every new turn.\n"
                   "\nFIXES\n"
                   "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
                   " to open the first lootbox.\n"
                   "- Fixed growing trees not cutting power of structures when links are broken.\n"
+                  "- Fixed units unable to move after loading in tutorial mission 1.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
