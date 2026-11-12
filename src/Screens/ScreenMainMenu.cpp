@@ -537,6 +537,7 @@ void ScreenMainMenu::CreateChangelog()
                   " to open the first lootbox.\n"
                   "- Fixed growing trees not cutting power of structures when links are broken.\n"
                   "- Fixed units unable to move after loading in tutorial mission 1.\n"
+                  "- Fixed crash when shooting mini-units are destroyed while attacking.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
