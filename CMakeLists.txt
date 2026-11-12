@@ -419,12 +419,8 @@ add_executable(
     src/Tutorial/StepGameSetObjectMaxHealth.cpp
     src/Tutorial/StepGameSetObjectPerfectShot.h
     src/Tutorial/StepGameSetObjectPerfectShot.cpp
-    src/Tutorial/StepGameSetSelectionActiveAction.h
-    src/Tutorial/StepGameSetSelectionActiveAction.cpp
     src/Tutorial/StepGameSetSelectionAllowed.h
     src/Tutorial/StepGameSetSelectionAllowed.cpp
-    src/Tutorial/StepGameSetSelectionDefaultAction.h
-    src/Tutorial/StepGameSetSelectionDefaultAction.cpp
     src/Tutorial/StepGameSetTarget.h
     src/Tutorial/StepGameSetTarget.cpp
     src/Tutorial/StepGameSetTargetIcon.h
