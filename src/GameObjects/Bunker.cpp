@@ -34,6 +34,17 @@ void Bunker::Update(float delta)
         PrepareShoot();
 }
 
+
+int Bunker::GetResourceUsage(ExtendedResource res) const
+{
+    const int energy = 4;
+
+    if(res == ER_ENERGY)
+        return energy;
+    else
+        return 0;
+}
+
 void Bunker::UpdateGraphics()
 {
     SetImage();

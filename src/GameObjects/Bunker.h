@@ -14,6 +14,8 @@ public:
 
     void Update(float delta) override;
 
+    int GetResourceUsage(ExtendedResource res) const override;
+
 protected:
     void UpdateGraphics() override;
 

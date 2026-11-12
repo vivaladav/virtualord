@@ -33,7 +33,7 @@ void Structure::OnPositionChanged()
     PositionIconEnergy();
 }
 
-int Structure::GetResourceProduction(ExtendedResource res) const
+int Structure::GetResourceProduction(ExtendedResource) const
 {
     return 0;
 }

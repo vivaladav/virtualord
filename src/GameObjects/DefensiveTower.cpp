@@ -37,6 +37,16 @@ void DefensiveTower::Update(float delta)
         PrepareShoot();
 }
 
+int DefensiveTower::GetResourceUsage(ExtendedResource res) const
+{
+    const int energy = 9;
+
+    if(res == ER_ENERGY)
+        return energy;
+    else
+        return 0;
+}
+
 void DefensiveTower::UpdateGraphics()
 {
     SetImage();
