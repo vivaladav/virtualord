@@ -3898,9 +3898,37 @@ void GameMap::DestroyObject(GameObject * obj)
     IsoLayer * layer = isoObj->GetLayer();
     layer->RemoveObject(isoObj);
 
+    const auto cat = obj->GetObjectCategory();
+    const auto type = obj->GetObjectType();
+
     // update linked cells when destroying a radar station to update the minimap visibility
-    if(obj->GetObjectType() == ObjectData::TYPE_RADAR_STATION && owner != nullptr && owner->IsLocal())
+    if(type == ObjectData::TYPE_RADAR_STATION && owner != nullptr && owner->IsLocal())
         UpdateLinkedCells(owner);
+
+    // remove mini units from any support list
+    if(cat == ObjectData::CAT_MINI_UNIT)
+    {
+        for(auto it = mMiniUnitsAttacking.begin(); it != mMiniUnitsAttacking.end(); ++it)
+        {
+            if(*it == obj)
+            {
+                mMiniUnitsAttacking.erase(it);
+                break;
+            }
+        }
+    }
+    // remove structures from any support list
+    else if(cat == ObjectData::CAT_STRUCTURE)
+    {
+        for(auto it = mStructuresAttacking.begin(); it != mStructuresAttacking.end(); ++it)
+        {
+            if(*it == obj)
+            {
+                mStructuresAttacking.erase(it);
+                break;
+            }
+        }
+    }
 
     // finally delete the object
     delete obj;
