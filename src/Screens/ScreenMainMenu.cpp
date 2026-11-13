@@ -534,6 +534,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Bunkers and defensive towers consume energy every new turn.\n"
                   "- Kills in chain of explosions are assigned to the object which started"
                   " the chain (the one which destroyed the first object of the chain).\n"
+                  "- Manual save and auto-save are now disabled during the tutorial.\n"
                   "\nFIXES\n"
                   "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
                   " to open the first lootbox.\n"
