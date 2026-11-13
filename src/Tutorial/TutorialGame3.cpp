@@ -798,11 +798,11 @@ TutorialGame3::TutorialGame3(Screen * screen)
 
         return step;
     });
-    AddStep([local]
+    AddStep([game, local]
     {
         TutorialStep * step = nullptr;
 
-        if(local->IsUpgradeUnlocked(upgrade1))
+        if(local->IsUpgradeUnlocked(upgrade1) || !game->CanLocalPlayerAffordTechUpgrade(upgrade1))
             step = new StepDummy;
         else
         {
@@ -855,14 +855,14 @@ TutorialGame3::TutorialGame3(Screen * screen)
 
         return step;
     });
-    AddStep([hud, local]
+    AddStep([game, hud, local]
     {
         TutorialStep * step = nullptr;
 
         if(local->IsUpgradeUnlocked(upgrade1))
             step = new StepDummy;
         else
-            step = new StepGameTechTreeDialog(hud, upgrade1, false);
+            step = new StepGameTechTreeDialog(game, hud, upgrade1, false);
 
         return step;
     });
@@ -1955,14 +1955,14 @@ TutorialGame3::TutorialGame3(Screen * screen)
 
         return step;
     });
-    AddStep([hud, local]
+    AddStep([game, hud, local]
     {
         TutorialStep * step = nullptr;
 
         if(local->IsUpgradeUnlocked(upgrade2))
             step = new StepDummy;
         else
-            step = new StepGameTechTreeDialog(hud, upgrade2, false);
+            step = new StepGameTechTreeDialog(game, hud, upgrade2, false);
 
         return step;
     });
