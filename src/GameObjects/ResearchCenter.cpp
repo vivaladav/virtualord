@@ -396,7 +396,7 @@ void ResearchCenter::UpdateHighlight()
 
         // there's at least 1 available upgrade that can be unlocked -> SHOW
         if(!player->IsUpgradeUnlocked(tu) && player->IsUpgradeAvailable(tu) &&
-           game->GetTechUpgradecost(tu) <= resPoints)
+           game->GetCostTechUpgrade(tu) <= resPoints)
         {
             ShowHighlight();
             return ;
