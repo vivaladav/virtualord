@@ -244,7 +244,7 @@ void GameHUD::UpdateUpgradesNotification()
         const auto tu = static_cast<TechUpgradeId>(i);
 
         count += player->IsUpgradeAvailable(tu) && !player->IsUpgradeUnlocked(tu) &&
-                 game->GetTechUpgradecost(tu) <= resPoints;
+                 game->GetCostTechUpgrade(tu) <= resPoints;
     }
 
     const PanelObjectActions::Button btnID = PanelObjectActions::BTN_TECH_TREE;

@@ -155,7 +155,8 @@ public:
     PlayerFaction GetLocalPlayerFaction() const;
 
     // -- tech upgrades --
-    int GetTechUpgradecost(TechUpgradeId upgrade) const;
+    int GetCostTechUpgrade(TechUpgradeId upgrade) const;
+    bool CanLocalPlayerAffordTechUpgrade(TechUpgradeId upgrade) const;
 
     // -- settings --
     LanguageId GetLanguage() const;
@@ -351,7 +352,7 @@ inline Player * Game::GetLocalPlayer() const
 inline void Game::SetLocalPlayerFaction(PlayerFaction faction) { mLocalFaction = faction; }
 inline PlayerFaction Game::GetLocalPlayerFaction() const { return mLocalFaction; }
 
-inline int Game::GetTechUpgradecost(TechUpgradeId upgrade) const
+inline int Game::GetCostTechUpgrade(TechUpgradeId upgrade) const
 {
     auto it = mCostUpgrades.find(upgrade);
 

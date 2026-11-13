@@ -1416,6 +1416,13 @@ void Game::AddToActivePlayersAI(PlayerFaction f)
     }
 }
 
+bool Game::CanLocalPlayerAffordTechUpgrade(TechUpgradeId upgrade) const
+{
+    const auto p = GetLocalPlayer();
+
+    return p->HasEnough(ER_RESEARCH, GetCostTechUpgrade(upgrade));
+}
+
 void Game::SetLanguage(LanguageId lang)
 {
     if(lang == mLanguage)
