@@ -220,7 +220,13 @@ void GameHUD::ShowPanelObjectActions(GameObject * obj)
     if(type == ObjectData::TYPE_RESEARCH_CENTER)
         UpdateUpgradesNotification();
     else if(type == ObjectData::TYPE_BASE)
+    {
         UpdateGoalsNotification();
+
+        // do not allow saving while playing the tutorial
+        const bool inTutorial = mScreen->GetGame()->GetTutorialManager()->HasActiveTutorial();
+        mPanelObjActions->SetActionEnabled(PanelObjectActions::BTN_SAVE_GAME, !inTutorial);
+    }
     // disable ATTACK when tower or bunker is not linked
     else if(type == ObjectData::TYPE_BUNKER || type == ObjectData::TYPE_DEFENSIVE_TOWER)
     {

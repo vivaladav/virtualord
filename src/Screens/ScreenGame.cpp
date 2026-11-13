@@ -4174,9 +4174,12 @@ void ScreenGame::EndTurn()
         // lower cost of save at every new turn
         game->LowerCostSaveGame();
 
-        // auto-save
-        game->SaveGame(game->GetAutoSavefile());
-        ShowLabelGameSaved();
+        // auto-save, but not when in tutorial
+        if(!game->GetTutorialManager()->HasActiveTutorial())
+        {
+            game->SaveGame(game->GetAutoSavefile());
+            ShowLabelGameSaved();
+        }
     }
     // new active player is AI
     else
