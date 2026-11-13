@@ -188,6 +188,8 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([] { return new StepDelay(0.5f); });
 
     // ===== PART 1 =====
+    // AUTO-SAVE
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     // INTRO
     AddStep([] { return new StepGameIntro2; });
     AddStep([] { return new StepDelay(0.5f); });

@@ -10,7 +10,11 @@ void StepSaveGame::OnStart()
 {
     TutorialStep::OnStart();
 
-    mGame->SaveGame();
+    if(mUseAutosave)
+        mGame->SaveGame(mGame->GetAutoSavefile());
+    else
+        mGame->SaveGame();
+
     mScreen->ShowLabelGameSaved();
 
 #ifdef DEV_MODE
