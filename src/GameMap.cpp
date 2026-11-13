@@ -3337,11 +3337,14 @@ void GameMap::Update(float delta)
         {
             GameObject * obj = *itObj;
 
+            // propagate killer for chain of kills
+            GameObject * killer = obj->GetKiller() != nullptr ? obj->GetKiller() : obj;
+
             // apply damage to surrounding area based on object's damage value and size
             const int damageRadius = obj->GetRows();
             const float maxDamage = obj->GetExplosionDamage();
-            DamageArea(Cell2D(obj->GetRow0(), obj->GetCol0()), Cell2D(obj->GetRow1(), obj->GetCol1()),
-                       obj, damageRadius, maxDamage);
+            DamageArea(Cell2D(obj->GetRow0(), obj->GetCol0()),
+                       Cell2D(obj->GetRow1(), obj->GetCol1()), killer, damageRadius, maxDamage);
 
             DestroyObjectPaths(obj);
 

@@ -210,6 +210,7 @@ public:
     void FindAndSetEnemyTarget();
     bool HasEnemyInRange();
 
+    GameObject * GetKiller() const;
     void Hit(float damage, GameObject * attacker, bool fatal, bool showHitPoints = true);
     void MissHit();
     void SelfDestroy();
@@ -328,6 +329,8 @@ private:
     Player * mOwner = nullptr;
 
     const GameMapCell * mCell = nullptr;
+
+    GameObject * mKiller = nullptr;
 
     WarningMessage * mWarnMessage = nullptr;
 
@@ -467,6 +470,8 @@ inline const Weapon * GameObject::GetWeapon() const { return mWeapon; }
 
 inline void GameObject::SetAttackStrategy(AttackStrategy as) { mAttStrategy = as; }
 inline AttackStrategy GameObject::GetAttackStrategy() const { return mAttStrategy; }
+
+inline GameObject * GameObject::GetKiller() const { return mKiller; }
 
 inline void GameObject::SetIndestructible(bool val) { mIndestructible = val; }
 

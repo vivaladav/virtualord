@@ -766,6 +766,8 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     // hit and destroyed
     if(IsDestroyed())
     {
+        mKiller = attacker;
+
         // use more particles
         const int partDestroyedMult = 2;
         numPart *= partDestroyedMult;
