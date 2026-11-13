@@ -532,6 +532,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- Double action-button click makes unit move faster.\n"
                   "\nCHANGES\n"
                   "- Bunkers and defensive towers consume energy every new turn.\n"
+                  "- Kills in chain of explosions are assigned to the object which started"
+                  " the chain (the one which destroyed the first object of the chain).\n"
                   "\nFIXES\n"
                   "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
                   " to open the first lootbox.\n"
@@ -540,6 +542,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fixed crash when shooting mini-units are destroyed while attacking.\n"
                   "- Fixed soft lock when player doesn't have enough research points to unlock"
                   " a tech upgrade in tutorial missions 2 and 3.\n"
+                  "- Fixed soft lock in tutorial 2 when one of final enemies is destroyed by"
+                  " an explosion of own faction's unit.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
