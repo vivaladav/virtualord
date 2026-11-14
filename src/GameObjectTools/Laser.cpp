@@ -14,6 +14,7 @@
 #include <sgl/media/AudioManager.h>
 #include <sgl/media/AudioPlayer.h>
 #include <sgl/utilities/UniformRealDistribution.h>
+#include <sgl/utilities/UniformDistribution.h>
 
 #include <cmath>
 
@@ -81,8 +82,9 @@ void Laser::OnShoot(float x0, float y0)
     const float maxProb = 100.f;
     const float probHit = GetProbabilityHit(mTarget);
 
-    auto dist = sgl::utilities::UniformRealDistribution(0.f, maxProb);
-    const float valHit = dist.GetNextValue();
+    auto game = GetGame();
+    auto distR = game->GetUniformRealDistribution(0.f, maxProb);
+    const float valHit = distR->GetNextValue();
 
     // 0 damage is miss
     float damage = 0.f;
@@ -98,7 +100,18 @@ void Laser::OnShoot(float x0, float y0)
     // check against probability or if perfect shot that always inflicts damage
     if(valHit < probHit || IsPerfectShotEnabled())
     {
+        const float minDamage = 1.f;
         damage = maxDamage * owner->GetAttribute(OBJ_ATT_ATTACK_POWER) / MAX_STAT_FVAL;
+
+        // add a small random variation to damage
+        const float treshDamage0 = 10.f;
+        const int varDamage = damage < treshDamage0 ? 1 : 2;
+        auto distU = game->GetUniformDistribution(-varDamage, varDamage);
+        damage += distU->GetNextValue();
+
+        // make sure damage is at least minDamage
+        if(damage < minDamage)
+            damage = minDamage;
 
         // check if fatal hit is allowed
         if(IsFatalHitEnabled())
@@ -108,7 +121,7 @@ void Laser::OnShoot(float x0, float y0)
             else
             {
                 const float probFatal = GetProbabilityFatalHit(mTarget);
-                const float valFatal = dist.GetNextValue();
+                const float valFatal = distR->GetNextValue();
 
                 fatal = valFatal < probFatal;
             }
