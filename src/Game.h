@@ -26,8 +26,10 @@ namespace sgl
     namespace utilities
     {
         class BinaryFile;
+        class UniformRealDistribution;
         class StateData;
         class StateManager;
+        class UniformDistribution;
     }
 }
 
@@ -199,6 +201,11 @@ public:
 
     TutorialManager * GetTutorialManager() const;
 
+    // -- probability distributions --
+    sgl::utilities::UniformDistribution * GetUniformDistribution(int min, int max) const;
+    sgl::utilities::UniformRealDistribution * GetUniformRealDistribution(float min,
+                                                                         float max) const;
+
 private:
     void CreatePlayers();
     void InitPlayerLocal(Player * p);
@@ -260,6 +267,9 @@ private:
     ObjectsDataRegistry * mObjsRegistry = nullptr;
 
     sgl::utilities::BinaryFile * mReaderSave = nullptr;
+
+    sgl::utilities::UniformDistribution * mDistUniform = nullptr;
+    sgl::utilities::UniformRealDistribution * mDistReal = nullptr;
 
     Difficulty mDifficulty = EASY;
 

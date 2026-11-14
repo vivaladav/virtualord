@@ -41,6 +41,7 @@
 #include <sgl/utilities/StateManager.h>
 #include <sgl/utilities/StringManager.h>
 #include <sgl/utilities/UniformDistribution.h>
+#include <sgl/utilities/UniformRealDistribution.h>
 
 #ifdef DEBUG
 #include <sgl/core/ModuleCore.h>
@@ -88,6 +89,8 @@ Game::Game(int argc, char * argv[])
     , mResLoader(new ResourceLoader(this))
     , mTutMan(new TutorialManager)
     , mObjsRegistry(new ObjectsDataRegistry)
+    , mDistUniform(new sgl::utilities::UniformDistribution(0, 1))
+    , mDistReal(new sgl::utilities::UniformRealDistribution(0.f, 1.f))
     , mLocalFaction(NO_FACTION)
     , mCurrPlanet(PLANET_UNKNOWN)
     , mLanguage(LANG_NULL)
@@ -332,6 +335,9 @@ mCostUpgrades[TECH_UP_UNIT_SLOTS_5] = 50000;
 Game::~Game()
 {
     using namespace sgl;
+
+    delete mDistUniform;
+    delete mDistReal;
 
     delete mGameStats;
 
@@ -1222,6 +1228,20 @@ void Game::InitDirectories()
 
     if(!filesystem::exists(pathSave))
         filesystem::create_directories(pathSave);
+}
+
+// -- probability distributions --
+sgl::utilities::UniformDistribution * Game::GetUniformDistribution(int min, int max) const
+{
+    mDistUniform->SetParameters(min, max);
+    return mDistUniform;
+}
+
+sgl::utilities::UniformRealDistribution * Game::GetUniformRealDistribution(float min,
+                                                                           float max) const
+{
+    mDistReal->SetParameters(min, max);
+    return mDistReal;
 }
 
 void Game::CreatePlayers()
