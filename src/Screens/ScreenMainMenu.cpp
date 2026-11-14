@@ -535,6 +535,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Kills in chain of explosions are assigned to the object which started"
                   " the chain (the one which destroyed the first object of the chain).\n"
                   "- Manual save and auto-save are now disabled during the tutorial.\n"
+                  "- Laser weapons inflict variable damage.\n"
                   "\nFIXES\n"
                   "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
                   " to open the first lootbox.\n"
