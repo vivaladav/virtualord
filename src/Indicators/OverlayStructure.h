@@ -26,6 +26,9 @@ public:
     OverlayStructure(IsoLayer * layer, const ObjectsDataRegistry * reg, PlayerFaction faction);
     ~OverlayStructure();
 
+    void Hide();
+    void Show();
+
     void ClearIndicator();
     void ShowIndicator(GameObjectTypeId type, int row, int col,
                        int unitCost = -1, bool doable = true);

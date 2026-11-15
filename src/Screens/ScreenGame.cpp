@@ -1125,6 +1125,26 @@ void ScreenGame::HideSelection()
 
     // hide all selected object UI
     mLastSelected->HideStatusUI();
+
+    // hide overlays
+    const auto actionActive = mLastSelected->GetActiveAction();
+
+    if(actionActive == ACT_MOVE)
+        mOverlayPath->Hide();
+    else if(actionActive == ACT_CONQUER_CELL)
+        mOverlayCellConquest->Hide();
+    else if(actionActive == ACT_BUILD_WALL)
+        mOverlayWall->Hide();
+    else if(actionActive == ACT_ATTACK)
+    {
+        mOverlayAttack->Hide();
+
+        mHUD->HidePanelHit();
+    }
+    else if(actionActive == ACT_BUILD_STRUCTURE)
+        mOverlayStruct->Hide();
+    else if(actionActive == ACT_HEAL)
+        mOverlayHeal->Hide();
 }
 
 void ScreenGame::ShowSelection()
@@ -1134,6 +1154,25 @@ void ScreenGame::ShowSelection()
 
     // show all selected object UI
     mLastSelected->ShowStatusUI();
+
+    // show overlays
+    const auto actionActive = mLastSelected->GetActiveAction();
+
+    if(actionActive == ACT_MOVE)
+        mOverlayPath->Show();
+    else if(actionActive == ACT_CONQUER_CELL)
+        mOverlayCellConquest->Show();
+    else if(actionActive == ACT_BUILD_WALL)
+        mOverlayWall->Show();
+    else if(actionActive == ACT_ATTACK)
+        mOverlayAttack->Show();
+    else if(actionActive == ACT_BUILD_STRUCTURE)
+        mOverlayStruct->Show();
+    else if(actionActive == ACT_HEAL)
+        mOverlayHeal->Show();
+
+    // update current cell in case mouse moved during turns
+    UpdateCurrentCell(true);
 }
 
 void ScreenGame::LoadMapFile()
@@ -1352,10 +1391,6 @@ void ScreenGame::OnMouseMotion(sgl::core::MouseMotionEvent & event)
 
     // CAMERA
     mCamController->HandleMouseMotion(event);
-
-    // no interaction during enemy turn
-    if(!CanLocalPlayerInteract())
-        return ;
 
     UpdateCurrentCell();
 }
@@ -4077,8 +4112,12 @@ void ScreenGame::UpdatePanelHit(const GameObject * attacker)
         mHUD->HidePanelHit();
 }
 
-void ScreenGame::UpdateCurrentCell()
+void ScreenGame::UpdateCurrentCell(bool forceUpdate)
 {
+    // no updates during enemy turn
+    if(!CanLocalPlayerInteract())
+        return ;
+
     // NOTE this could be moved to cam->SetFunctionOnMove if things get more complicated
     // for now I am calling it manually to minimize calls
     const sgl::graphic::Camera * cam = mCamController->GetCamera();
@@ -4087,8 +4126,8 @@ void ScreenGame::UpdateCurrentCell()
 
     const Cell2D cell = mIsoMap->CellFromWorldPoint(worldX, worldY);
 
-    if(cell == mCurrCell)
-        return ;
+    if(!forceUpdate && cell == mCurrCell)
+         return ;
 
     mCurrCell = cell;
 
@@ -4156,8 +4195,6 @@ void ScreenGame::EndTurn()
         mLastSelected = mLocalPlayer->GetSelectedObject();
 
         HideSelection();
-
-        //ClearSelection(mLocalPlayer);
     }
 
     // START NEW TURN
@@ -4194,7 +4231,6 @@ void ScreenGame::EndTurn()
         // lower cost of save at every new turn
         game->LowerCostSaveGame();
 
-        ShowSelection();
 
         // auto-save, but not when in tutorial
         if(!game->GetTutorialManager()->HasActiveTutorial())
@@ -4224,24 +4260,12 @@ void ScreenGame::InitLocalTurn()
 
     mHUD->SetLocalActionsEnabled(true);
 
-    //ReselectLastSelected();
-
     // reset focus to Stage
     sgl::sgui::Stage::Instance()->SetFocus();
 
     mLocalTurnInitDone = true;
-}
 
-void ScreenGame::ReselectLastSelected()
-{
-    if(mLastSelected == nullptr)
-        return ;
-
-    // make sure object is still valid
-    if(mGameMap->HasObject(mLastSelected))
-        SelectObject(mLastSelected, mLocalPlayer);
-
-    mLastSelected = nullptr;
+    ShowSelection();
 }
 
 #ifdef DEV_MODE

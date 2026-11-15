@@ -16,6 +16,9 @@ public:
     OverlayAttackRange(IsoMap * im);
     ~OverlayAttackRange();
 
+    void Hide();
+    void Show();
+
     void Clear();
     void Show(const GameObject * obj);
 

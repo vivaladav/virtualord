@@ -208,7 +208,7 @@ private:
 
     void UpdatePanelHit(const GameObject * attacker);
 
-    void UpdateCurrentCell();
+    void UpdateCurrentCell(bool forceUpdate = false);
 
     void AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, PlayerFaction f);
 
@@ -218,8 +218,6 @@ private:
     void EndTurn();
     void InitLocalTurn();
     unsigned int GetNumLocalTurns() const;
-
-    void ReselectLastSelected();
 
 #ifdef DEV_MODE
     void CreateEnemyInCurrentCell(GameObjectTypeId type);

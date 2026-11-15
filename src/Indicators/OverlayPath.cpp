@@ -31,6 +31,15 @@ OverlayPath::~OverlayPath()
         delete pi;
 }
 
+void OverlayPath::Hide()
+{
+    ClearPath();
+}
+
+void OverlayPath::Show()
+{
+}
+
 void OverlayPath::ClearPath()
 {
     for(auto pi : mActiveIndicators)

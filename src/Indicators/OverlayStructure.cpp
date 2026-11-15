@@ -25,6 +25,26 @@ OverlayStructure::~OverlayStructure()
         delete it.second;
 }
 
+void OverlayStructure::Hide()
+{
+    if(mIndicator != nullptr)
+    {
+        mLayer->SetObjectVisible(mIndicator, false);
+
+        mPanelUnitCost->SetVisible(false);
+    }
+}
+
+void OverlayStructure::Show()
+{
+    if(mIndicator != nullptr)
+    {
+        mLayer->SetObjectVisible(mIndicator, true);
+
+        mPanelUnitCost->SetVisible(true);
+    }
+}
+
 void OverlayStructure::ClearIndicator()
 {
     if(mIndicator != nullptr)
