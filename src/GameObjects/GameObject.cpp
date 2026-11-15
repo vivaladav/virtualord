@@ -911,6 +911,9 @@ void GameObject::HideStatusUI()
 
     if(mIconUpgrade != nullptr)
         mIconUpgrade->SetVisible(false);
+
+    if(mOverlaySel != nullptr)
+        mOverlaySel->Hide();
 }
 
 void GameObject::ShowStatusUI()
@@ -927,6 +930,9 @@ void GameObject::ShowStatusUI()
 
     if(mIconUpgrade != nullptr)
         mIconUpgrade->SetVisible(true);
+
+    if(mOverlaySel != nullptr)
+        mOverlaySel->Show();
 }
 
 void GameObject::OnNewTurn(PlayerFaction faction)

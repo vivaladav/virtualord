@@ -17,6 +17,9 @@ public:
     OverlaySelection(IsoLayer * layer);
     ~OverlaySelection();
 
+    void Hide();
+    void Show();
+
     void ClearIndicators();
     void AddObject(GameObject * obj, bool primary = false);
 

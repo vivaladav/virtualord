@@ -1118,6 +1118,24 @@ void ScreenGame::HideActionPanels()
     mHUD->HidePanelHit();
 }
 
+void ScreenGame::HideSelection()
+{
+    if(mLastSelected == nullptr)
+        return ;
+
+    // hide all selected object UI
+    mLastSelected->HideStatusUI();
+}
+
+void ScreenGame::ShowSelection()
+{
+    if(mLastSelected == nullptr)
+        return ;
+
+    // show all selected object UI
+    mLastSelected->ShowStatusUI();
+}
+
 void ScreenGame::LoadMapFile()
 {
     const std::string & mapFile = GetGame()->GetCurrentMapFile();
@@ -4137,7 +4155,9 @@ void ScreenGame::EndTurn()
         // store last local object selected before the turn ends
         mLastSelected = mLocalPlayer->GetSelectedObject();
 
-        ClearSelection(mLocalPlayer);
+        HideSelection();
+
+        //ClearSelection(mLocalPlayer);
     }
 
     // START NEW TURN
@@ -4174,6 +4194,8 @@ void ScreenGame::EndTurn()
         // lower cost of save at every new turn
         game->LowerCostSaveGame();
 
+        ShowSelection();
+
         // auto-save, but not when in tutorial
         if(!game->GetTutorialManager()->HasActiveTutorial())
         {
@@ -4202,7 +4224,7 @@ void ScreenGame::InitLocalTurn()
 
     mHUD->SetLocalActionsEnabled(true);
 
-    ReselectLastSelected();
+    //ReselectLastSelected();
 
     // reset focus to Stage
     sgl::sgui::Stage::Instance()->SetFocus();

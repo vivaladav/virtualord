@@ -14,11 +14,23 @@ OverlaySelection::OverlaySelection(IsoLayer * layer)
 
 OverlaySelection::~OverlaySelection()
 {
-    for(auto pi : mActiveIndicators)
-        delete pi;
+    for(auto ind : mActiveIndicators)
+        delete ind;
 
-    for(auto pi : mAvailableIndicators)
-        delete pi;
+    for(auto ind : mAvailableIndicators)
+        delete ind;
+}
+
+void OverlaySelection::Hide()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, false);
+}
+
+void OverlaySelection::Show()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, true);
 }
 
 void OverlaySelection::ClearIndicators()

@@ -135,6 +135,9 @@ private:
     void CreateOverlays();
     void HideActionPanels();
 
+    void HideSelection();
+    void ShowSelection();
+
     void LoadMapFile();
 
     void UpdateAI(float delta);
