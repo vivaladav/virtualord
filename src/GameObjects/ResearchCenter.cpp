@@ -143,9 +143,9 @@ void ResearchCenter::OnNewTurn(PlayerFaction faction)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    const int marginV = 20;
+    const int marginV = 25;
     const float x = GetX() + GetWidth() / 2.f;
-    const float y = GetY() - marginV;
+    const float y = GetStatusIconBaseY() - marginV;
     const float delay = 0.f;
 
     const DataParticleOutput pd(mResearchPerTurn, ER_RESEARCH, x, y, delay);
