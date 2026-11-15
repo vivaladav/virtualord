@@ -530,6 +530,7 @@ void ScreenMainMenu::CreateChangelog()
     text->SetText("NEW FEATURES\n"
                   "- Added master volume to audio settings.\n"
                   "- Double action-button click makes unit move faster.\n"
+                  "- Active action of selected object is kept over next turn.\n"
                   "\nCHANGES\n"
                   "- Bunkers and defensive towers consume energy every new turn.\n"
                   "- Kills in chain of explosions are assigned to the object which started"
@@ -546,6 +547,8 @@ void ScreenMainMenu::CreateChangelog()
                   " a tech upgrade in tutorial missions 2 and 3.\n"
                   "- Fixed soft lock in tutorial 2 when one of final enemies is destroyed by"
                   " an explosion of own faction's unit.\n"
+                  "- Fix output notification of Research Center appearing below"
+                  " status bars when selected.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
