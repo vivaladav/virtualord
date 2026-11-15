@@ -224,6 +224,9 @@ public:
     GameObjectActionType GetDefaultAction() const;
     void SetDefaultAction(GameObjectActionType action);
 
+    void HideStatusUI();
+    void ShowStatusUI();
+
     virtual void OnNewTurn(PlayerFaction faction);
 
     virtual void Update(float delta);

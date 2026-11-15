@@ -97,13 +97,16 @@ GameObject::GameObject(const ObjectData & data, const ObjectInitData & initData)
 
 GameObject::~GameObject()
 {
+    delete mBarEnergy;
+    delete mBarHealth;
+
+    delete mIconUpgrade;
+
     delete mWarnMessage;
 
     delete mIsoObj;
 
     delete mWeapon;
-
-    delete mIconUpgrade;
 
     ClearGroup();
 
@@ -894,6 +897,38 @@ void GameObject::SelfDestroy() { Hit(-1.f, nullptr, true, false); }
 
 void GameObject::SetActiveActionToDefault() { mActiveAction = mDefaultAction; }
 
+void GameObject::HideStatusUI()
+{
+    // nothing to do if not selected
+    if(!mSelected)
+        return ;
+
+    if(mBarEnergy != nullptr)
+        mBarEnergy->SetVisible(false);
+
+    if(mBarHealth != nullptr)
+        mBarHealth->SetVisible(false);
+
+    if(mIconUpgrade != nullptr)
+        mIconUpgrade->SetVisible(false);
+}
+
+void GameObject::ShowStatusUI()
+{
+    // nothing to do if not selected
+    if(!mSelected)
+        return ;
+
+    if(mBarEnergy != nullptr)
+        mBarEnergy->SetVisible(true);
+
+    if(mBarHealth != nullptr)
+        mBarHealth->SetVisible(true);
+
+    if(mIconUpgrade != nullptr)
+        mIconUpgrade->SetVisible(true);
+}
+
 void GameObject::OnNewTurn(PlayerFaction faction)
 {
     if(GetFaction() == faction)
@@ -1150,9 +1185,12 @@ GameObject * GameObject::FindEnemyHighHealth()
 
 void GameObject::ShowIconUpgrade()
 {
-    // already showing it
+    // already showed
     if(mIconUpgrade != nullptr)
+    {
+        mIconUpgrade->SetVisible(true);
         return ;
+    }
 
     // only show for local player
     if(!IsFactionLocal())
@@ -1169,8 +1207,8 @@ void GameObject::ShowIconUpgrade()
 
 void GameObject::HideIconUpgrade()
 {
-    delete mIconUpgrade;
-    mIconUpgrade = nullptr;
+    if(mIconUpgrade != nullptr)
+        mIconUpgrade->SetVisible(false);
 }
 
 void GameObject::PositionIconUpgrade()
@@ -1191,9 +1229,12 @@ void GameObject::PositionIconUpgrade()
 
 void GameObject::ShowEnergyBar()
 {
-    // already showing it
+    // already showed
     if(mBarEnergy != nullptr)
+    {
+        mBarEnergy->SetVisible(true);
         return ;
+    }
 
     // only show for local player
     if(!IsFactionLocal())
@@ -1211,8 +1252,8 @@ void GameObject::ShowEnergyBar()
 
 void GameObject::HideEnergyBar()
 {
-    delete mBarEnergy;
-    mBarEnergy = nullptr;
+    if(mBarEnergy != nullptr)
+        mBarEnergy->SetVisible(false);
 }
 
 void GameObject::PositionEnergyBar()
@@ -1242,9 +1283,12 @@ void GameObject::UpdateEnergyBar()
 
 void GameObject::ShowHealthBar()
 {
-    // already showing it
+    // already showed before
     if(mBarHealth != nullptr)
+    {
+        mBarHealth->SetVisible(true);
         return ;
+    }
 
     // only show for local player
     if(!IsFactionLocal())
@@ -1262,8 +1306,8 @@ void GameObject::ShowHealthBar()
 
 void GameObject::HideHealthBar()
 {
-    delete mBarHealth;
-    mBarHealth = nullptr;
+    if(mBarHealth != nullptr)
+        mBarHealth->SetVisible(false);
 }
 
 void GameObject::PositionHealthBar()
