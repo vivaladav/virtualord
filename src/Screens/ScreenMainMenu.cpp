@@ -531,6 +531,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Added master volume to audio settings.\n"
                   "- Double action-button click makes unit move faster.\n"
                   "- Active action of selected object is kept over next turn.\n"
+                  "- Added button to control panel to cycle through units.\n"
                   "\nCHANGES\n"
                   "- Bunkers and defensive towers consume energy every new turn.\n"
                   "- Kills in chain of explosions are assigned to the object which started"
