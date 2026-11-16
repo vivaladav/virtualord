@@ -89,6 +89,7 @@ public:
     bool IsSelectionAllowed() const;
     void ClearSelection(Player * player);
     void SelectObject(GameObject * obj, Player * player);
+    void SelectNextUnit();
 
     // speed < 0 : instant move | speed == 0 : default speed | speed > 0 : use value
     void CenterCameraOverCell(int r, int c, float speed = -1.f);

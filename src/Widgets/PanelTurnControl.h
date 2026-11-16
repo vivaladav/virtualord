@@ -27,6 +27,7 @@ public:
     PanelTurnControl(Player * player, sgl::sgui::Widget * parent);
 
     void AddFunctionGoToBase(const std::function<void()> & f);
+    void AddFunctionNextUnit(const std::function<void()> & f);
     void AddFunctionEndTurn(const std::function<void()> & f);
 
     void SetButtonsEnabled(bool enabled);
@@ -46,6 +47,7 @@ private:
     sgl::graphic::Image * mBg = nullptr;
 
     sgl::sgui::AbstractButton * mButtonBase = nullptr;
+    sgl::sgui::AbstractButton * mButtonNextUnit = nullptr;
     sgl::sgui::AbstractButton * mButtonEndTurn = nullptr;
 
     sgl::sgui::Label * mText = nullptr;

@@ -2160,7 +2160,7 @@ void ResourceLoader::SetupGameTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUND
-            { 0, 0, 750, 62 },
+            { 0, 0, 832, 62 },
             // BUTTON BASE
             { 0, 63, 60, 44 },
             { 61, 63, 60, 44 },
@@ -2171,6 +2171,11 @@ void ResourceLoader::SetupGameTextures()
             { 305, 63, 60, 44 },
             { 366, 63, 60, 44 },
             { 427, 63, 60, 44 },
+            // BUTTON NEXT UNIT
+            { 488, 63, 60, 44 },
+            { 549, 63, 60, 44 },
+            { 610, 63, 60, 44 },
+            { 671, 63, 60, 44 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelTurnControl, rects);

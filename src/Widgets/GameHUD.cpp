@@ -137,6 +137,10 @@ GameHUD::GameHUD(ScreenGame * screen)
     {
         mScreen->CenterCameraOverObject(local->GetBase());
     });
+    mPanelTurnCtrl->AddFunctionNextUnit([this, local]
+    {
+        mScreen->SelectNextUnit();
+    });
     mPanelTurnCtrl->AddFunctionEndTurn([this]
     {
         mScreen->EndTurn();

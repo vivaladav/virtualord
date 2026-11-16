@@ -465,6 +465,56 @@ void ScreenGame::SelectObject(GameObject * obj, Player * player)
     sgl::sgui::Stage::Instance()->SetFocus();
 }
 
+void ScreenGame::SelectNextUnit()
+{
+    const unsigned int numUnits = mLocalPlayer->GetNumUnits();
+
+    if(numUnits == 0)
+        return ;
+
+    const auto selObj = mLocalPlayer->GetSelectedObject();
+
+    Unit * nextUnit = nullptr;
+
+    // no selected object -> select first unit
+    if(selObj == nullptr)
+        nextUnit = mLocalPlayer->GetUnit(0);
+    else
+    {
+        // selected object is a unit
+        if(selObj->GetObjectCategory() == ObjectData::CAT_UNIT)
+        {
+            // there's only 1 unit -> center camera over it
+            if(numUnits == 1)
+            {
+                CenterCameraOverObject(selObj);
+                return ;
+            }
+            // more than 1 unit -> select next
+            else
+            {
+                for(unsigned int i = 0; i < numUnits; ++i)
+                {
+                    if(selObj == mLocalPlayer->GetUnit(i))
+                    {
+                        const unsigned int indNext = (i + 1) % numUnits;
+                        nextUnit = mLocalPlayer->GetUnit(indNext);
+                        break;
+                    }
+                }
+            }
+        }
+        // selected object is not a unit -> select first unit
+        else
+            nextUnit = mLocalPlayer->GetUnit(0);
+
+        ClearSelection(mLocalPlayer);
+    }
+
+    SelectObject(nextUnit, mLocalPlayer);
+    CenterCameraOverObject(nextUnit);
+}
+
 void ScreenGame::CenterCameraOverCell(int r, int c, float speed)
 {
     const unsigned int ind = r * mIsoMap->GetNumCols() + c;
