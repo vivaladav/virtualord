@@ -31,6 +31,7 @@ public:
     void AddFunctionEndTurn(const std::function<void()> & f);
 
     void SetButtonsEnabled(bool enabled);
+    void UpdateButtonNextUnitEnabled();
 
     void HideText();
     void ShowText(const char * text);

@@ -125,6 +125,8 @@ GameHUD::GameHUD(ScreenGame * screen)
     local->SetOnNumUnitsChanged([this]
     {
         UpdateQuickUnitButtons();
+
+        mPanelTurnCtrl->UpdateButtonNextUnitEnabled();
     });
 
     // OBJECT ACTIONS

@@ -216,6 +216,7 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
 
     // BUTTON NEXT UNIT
     mButtonNextUnit = new ButtonNextUnit(this);
+    UpdateButtonNextUnitEnabled();
 
     // BUTTON END TURN
     mButtonEndTurn = new ButtonEndTurn(this);
@@ -265,7 +266,15 @@ void PanelTurnControl::AddFunctionEndTurn(const std::function<void()> & f)
 void PanelTurnControl::SetButtonsEnabled(bool enabled)
 {
     mButtonBase->SetEnabled(enabled);
+
+    mButtonNextUnit->SetEnabled(enabled && mPlayer->GetNumUnits() > 0);
+
     mButtonEndTurn->SetEnabled(enabled);
+}
+
+void PanelTurnControl::UpdateButtonNextUnitEnabled()
+{
+    mButtonNextUnit->SetEnabled(mPlayer->GetNumUnits() > 0);
 }
 
 void PanelTurnControl::HideText()
