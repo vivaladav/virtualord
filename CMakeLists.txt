@@ -461,6 +461,8 @@ add_executable(
     src/Tutorial/StepGameUnitAttackFree.cpp
     src/Tutorial/StepGameUnitAttackIcon.h
     src/Tutorial/StepGameUnitAttackIcon.cpp
+    src/Tutorial/StepGameUnitBuildIcon.h
+    src/Tutorial/StepGameUnitBuildIcon.cpp
     src/Tutorial/StepGameUnitConquerCellsIcon.h
     src/Tutorial/StepGameUnitConquerCellsIcon.cpp
     src/Tutorial/StepGameUpgradeIntro.h
