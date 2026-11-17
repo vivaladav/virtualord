@@ -114,6 +114,16 @@ unsigned int WallGate::GetCostMaterial(unsigned int level)
     return (level + 1) * cost0;
 }
 
+int WallGate::GetResourceUsage(ExtendedResource res) const
+{
+    const int energy = 4;
+
+    if(res == ER_ENERGY)
+        return energy;
+    else
+        return 0;
+}
+
 void WallGate::OnLinkedChanged()
 {
     Structure::OnLinkedChanged();

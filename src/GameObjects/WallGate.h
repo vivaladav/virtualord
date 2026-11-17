@@ -32,6 +32,8 @@ public:
     static unsigned int GetCostEnergy(unsigned int level);
     static unsigned int GetCostMaterial(unsigned int level);
 
+    int GetResourceUsage(ExtendedResource res) const override;
+
 private:
     void OnLinkedChanged() override;
 
