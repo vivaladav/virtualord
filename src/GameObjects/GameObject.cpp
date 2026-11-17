@@ -929,7 +929,7 @@ void GameObject::ShowStatusUI()
         mBarHealth->SetVisible(true);
 
     if(mIconUpgrade != nullptr)
-        mIconUpgrade->SetVisible(true);
+        mIconUpgrade->SetVisible(mExp >= GetExperienceToNextLevel());
 
     if(mOverlaySel != nullptr)
         mOverlaySel->Show();
