@@ -52,6 +52,7 @@
 #include "Tutorial/StepGameUnitAttackBurst.h"
 #include "Tutorial/StepGameUnitAttackIcon.h"
 #include "Tutorial/StepGameUnitAttackFree.h"
+#include "Tutorial/StepGameUnitBuildIcon.h"
 #include "Tutorial/StepGameWaitEnemiesKilled.h"
 #include "Tutorial/StepGameWaitObjectDestroyed.h"
 #include "Tutorial/StepGameWaitStructCanBuild.h"
@@ -279,19 +280,21 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game, gs, panelActions]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameClickActionButton(game, gs, panelActions, "TUT_GAME_BUILD_BARRACKS_1",
-                                                  PanelObjectActions::BTN_BUILD_STRUCT, delayAnimLong);
+
+        auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_BARRACKS_1",
+                                              ObjectData::TYPE_BARRACKS, delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
     });
-    AddStep([hud]
+    AddStep([local, hud]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameBuildStructure(hud, nullptr, nullptr, "TUT_GAME_BASE_BUILD_UNIT_3",
-                                               TutorialConstants::catGeneric,
-                                               TutorialConstants::structBarracks);
-        step->SetDelayAnimation(2.f);
+        const auto unit = static_cast<Unit *>(local->GetSelectedObject());
+        auto step = new StepGameBuildStructure(unit, hud, nullptr, nullptr,
+                                               "TUT_GAME_BASE_BUILD_UNIT_3",
+                                               ObjectData::TYPE_BARRACKS);
+        step->SetDelayAnimation(delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -542,20 +545,20 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game, gs, panelActions]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameClickActionButton(game, gs, panelActions, "TUT_GAME_BUILD_RES_CEN_1",
-                                                  PanelObjectActions::BTN_BUILD_STRUCT, delayAnimLong);
+        auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_RES_CEN_1",
+                                              ObjectData::TYPE_RESEARCH_CENTER, delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
     });
-    AddStep([hud]
+    AddStep([local, hud]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameBuildStructure(hud, "TUT_GAME_BUILD_RES_CEN_2", nullptr,
+        const auto unit = static_cast<Unit *>(local->GetSelectedObject());
+        auto step = new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_RES_CEN_2", nullptr,
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
-                                               TutorialConstants::catTech,
-                                               TutorialConstants::structResearchCenter);
-        step->SetDelayAnimation(2.f);
+                                               ObjectData::TYPE_RESEARCH_CENTER);
+        step->SetDelayAnimation(delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -877,21 +880,21 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game, gs, panelActions]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameClickActionButton(game, gs, panelActions, "TUT_GAME_BUILD_GATE_1",
-                                                  PanelObjectActions::BTN_BUILD_STRUCT, delayAnimLong);
+        auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_GATE_1",
+                                              ObjectData::TYPE_WALL_GATE, delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
     });
-    AddStep([hud]
+    AddStep([local, hud]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3",
+        const auto unit = static_cast<Unit *>(local->GetSelectedObject());
+        auto step = new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_DTOWER_3",
                                                "TUT_GAME_BUILD_GATE_2",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
-                                               TutorialConstants::catDefenses,
-                                               TutorialConstants::structGate);
-        step->SetDelayAnimation(2.f);
+                                               ObjectData::TYPE_WALL_GATE);
+        step->SetDelayAnimation(delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -924,21 +927,21 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game, gs, panelActions]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameClickActionButton(game, gs, panelActions, "TUT_GAME_BUILD_DTOWERS",
-                                                  PanelObjectActions::BTN_BUILD_STRUCT, delayAnimLong);
+        auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_DTOWERS",
+                                              ObjectData::TYPE_DEFENSIVE_TOWER, delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
     });
-    AddStep([hud]
+    AddStep([local, hud]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3",
+        const auto unit = static_cast<Unit *>(local->GetSelectedObject());
+        auto step = new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_DTOWER_3",
                                                "TUT_GAME_BUILD_DTOWER_4",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
-                                               TutorialConstants::catDefenses,
-                                               TutorialConstants::structDefTower);
-        step->SetDelayAnimation(2.f);
+                                               ObjectData::TYPE_DEFENSIVE_TOWER);
+        step->SetDelayAnimation(delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -1000,21 +1003,21 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game, gs, panelActions]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameClickActionButton(game, gs, panelActions, "TUT_GAME_BUILD_DTOWERS",
-                                                  PanelObjectActions::BTN_BUILD_STRUCT, delayAnimLong);
+        auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_DTOWERS",
+                                              ObjectData::TYPE_DEFENSIVE_TOWER, delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
     });
-    AddStep([hud]
+    AddStep([local, hud]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3",
+        const auto unit = static_cast<Unit *>(local->GetSelectedObject());
+        auto step = new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_DTOWER_3",
                                                "TUT_GAME_BUILD_DTOWER_4",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
-                                               TutorialConstants::catDefenses,
-                                               TutorialConstants::structDefTower);
-        step->SetDelayAnimation(2.f);
+                                               ObjectData::TYPE_DEFENSIVE_TOWER);
+        step->SetDelayAnimation(delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -1076,21 +1079,21 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game, gs, panelActions]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameClickActionButton(game, gs, panelActions, "TUT_GAME_BUILD_GATE_1",
-                                                  PanelObjectActions::BTN_BUILD_STRUCT, delayAnimLong);
+        auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_GATE_1",
+                                              ObjectData::TYPE_WALL_GATE, delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
     });
-    AddStep([hud]
+    AddStep([local, hud]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3",
+        const auto unit = static_cast<Unit *>(local->GetSelectedObject());
+        auto step = new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_DTOWER_3",
                                                "TUT_GAME_BUILD_GATE_2",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
-                                               TutorialConstants::catDefenses,
-                                               TutorialConstants::structGate);
-        step->SetDelayAnimation(2.f);
+                                               ObjectData::TYPE_WALL_GATE);
+        step->SetDelayAnimation(delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -1123,21 +1126,21 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game, gs, panelActions]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameClickActionButton(game, gs, panelActions, "TUT_GAME_BUILD_DTOWERS",
-                                                  PanelObjectActions::BTN_BUILD_STRUCT, delayAnimLong);
+        auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_DTOWERS",
+                                              ObjectData::TYPE_DEFENSIVE_TOWER, delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
     });
-    AddStep([hud]
+    AddStep([local, hud]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3",
+        const auto unit = static_cast<Unit *>(local->GetSelectedObject());
+        auto step = new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_DTOWER_3",
                                                "TUT_GAME_BUILD_DTOWER_4",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
-                                               TutorialConstants::catDefenses,
-                                               TutorialConstants::structDefTower);
-        step->SetDelayAnimation(2.f);
+                                               ObjectData::TYPE_DEFENSIVE_TOWER);
+        step->SetDelayAnimation(delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -1307,20 +1310,20 @@ TutorialGame2::TutorialGame2(Screen * screen)
     AddStep([game, gs, panelActions]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameClickActionButton(game, gs, panelActions, "TUT_GAME_BUILD_TRAD_POST_1",
-                                                  PanelObjectActions::BTN_BUILD_STRUCT, delayAnimLong);
+        auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_TRAD_POST_1",
+                                              ObjectData::TYPE_TRADING_POST, delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
     });
-    AddStep([hud]
+    AddStep([local, hud]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameBuildStructure(hud, nullptr, "TUT_GAME_BUILD_TRAD_POST_2",
+        const auto unit = static_cast<Unit *>(local->GetSelectedObject());
+        auto step = new StepGameBuildStructure(unit, hud, nullptr, "TUT_GAME_BUILD_TRAD_POST_2",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
-                                               TutorialConstants::catGeneric,
-                                               TutorialConstants::structTradingPost);
-        step->SetDelayAnimation(2.f);
+                                               ObjectData::TYPE_TRADING_POST);
+        step->SetDelayAnimation(delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;

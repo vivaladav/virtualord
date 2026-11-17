@@ -273,19 +273,18 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([gs] { return new StepGameWaitTurn(gs); });
     // BUILD DEFENSIVE TOWER 1
     AddStep([game, gs, panelActions]
-        {
-            const core::Pointd2D p0(900, 250);
+    {
+        const core::Pointd2D p0(900, 250);
+        return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
+    });
+    AddStep([local, hud]
+    {
+        const auto unit = local->GetUnit(indUnit1);
 
-            return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
-        });
-    AddStep([hud]
-            {
-                return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                                  "TUT_GAME_BUILD_DTOWER_4",
-                                                  "TUT_GAME_BASE_BUILD_UNIT_3",
-                                                  TutorialConstants::catDefenses,
-                                                  TutorialConstants::structDefTower);
-            });
+        return new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_DTOWER_3",
+                                          "TUT_GAME_BUILD_DTOWER_4", "TUT_GAME_BASE_BUILD_UNIT_3",
+                                          ObjectData::TYPE_DEFENSIVE_TOWER);
+    });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
         {
@@ -448,12 +447,11 @@ TutorialGame1::TutorialGame1(Screen * screen)
         const core::Pointd2D p0(900, 250);
         return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_BUNKER_1", p0);
     });
-    AddStep([hud]
+    AddStep([local, hud]
     {
-        return new StepGameBuildStructure(hud,"TUT_GAME_BUILD_DTOWER_3", nullptr,
-                                          "TUT_GAME_BASE_BUILD_UNIT_3",
-                                          TutorialConstants::catDefenses,
-                                          TutorialConstants::structBunker);
+        const auto unit = local->GetUnit(indUnit2);
+        return new StepGameBuildStructure(unit, hud,"TUT_GAME_BUILD_DTOWER_3", nullptr,
+                                          "TUT_GAME_BASE_BUILD_UNIT_3", ObjectData::TYPE_BUNKER);
     });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
@@ -658,14 +656,13 @@ TutorialGame1::TutorialGame1(Screen * screen)
 
             return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1", p0);
         });
-    AddStep([hud]
-        {
-            return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                              "TUT_GAME_BUILD_DTOWER_4",
-                                              "TUT_GAME_BASE_BUILD_UNIT_3",
-                                              TutorialConstants::catDefenses,
-                                              TutorialConstants::structDefTower);
-           });
+    AddStep([local, hud]
+    {
+        const auto unit = local->GetUnit(indUnit2);
+        return new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_DTOWER_3",
+                                          "TUT_GAME_BUILD_DTOWER_4", "TUT_GAME_BASE_BUILD_UNIT_3",
+                                          ObjectData::TYPE_DEFENSIVE_TOWER);
+    });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this, local, isoMap]
         {
@@ -810,14 +807,13 @@ TutorialGame1::TutorialGame1(Screen * screen)
             const core::Pointd2D p0(1100, 400);
             return new StepGameBuildStructIntro(game, gs, panelActions, "TUT_GAME_BUILD_GATE_1", p0);
         });
-    AddStep([hud]
-        {
-            return new StepGameBuildStructure(hud, "TUT_GAME_BUILD_DTOWER_3",
-                                              "TUT_GAME_BUILD_GATE_2",
-                                              "TUT_GAME_BASE_BUILD_UNIT_3",
-                                              TutorialConstants::catDefenses,
-                                              TutorialConstants::structGate);
-        });
+    AddStep([local, hud]
+    {
+        const auto unit = local->GetUnit(indUnit2);
+        return new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_DTOWER_3",
+                                          "TUT_GAME_BUILD_GATE_2", "TUT_GAME_BASE_BUILD_UNIT_3",
+                                          ObjectData::TYPE_WALL_GATE);
+    });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     AddStep([this, local, isoMap, game]
         {
