@@ -55,9 +55,9 @@ bool CityBlock::Save(sgl::utilities::BinaryFile & bf) const
     return true;
 }
 
-void CityBlock::OnNewTurn(PlayerFaction faction)
+void CityBlock::OnTurnStart(PlayerFaction faction)
 {
-    Structure::OnNewTurn(faction);
+    Structure::OnTurnStart(faction);
 
     // not linked yet -> exit
     if(!IsLinked())

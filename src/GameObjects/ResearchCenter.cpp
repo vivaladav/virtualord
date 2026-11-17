@@ -118,9 +118,9 @@ bool ResearchCenter::Save(sgl::utilities::BinaryFile & bf) const
 }
 
 
-void ResearchCenter::OnNewTurn(PlayerFaction faction)
+void ResearchCenter::OnTurnStart(PlayerFaction faction)
 {
-    Structure::OnNewTurn(faction);
+    Structure::OnTurnStart(faction);
 
     // not producing anything
     if(mResearchPerTurn == 0)

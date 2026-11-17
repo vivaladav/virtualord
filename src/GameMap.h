@@ -223,7 +223,7 @@ public:
     void CloseGate(WallGate * gate);
 
     // turn system
-    void OnNewTurn(PlayerFaction faction);
+    void OnTurnStart(PlayerFaction faction);
 
     int GetFactionMoneyPerTurn(PlayerFaction faction);
 

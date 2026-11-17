@@ -91,7 +91,7 @@ public:
     int GetMaxInvestableBlobs() const;
     int GetMaxInvestableDiamonds() const;
 
-    void OnNewTurn(PlayerFaction faction) override;
+    void OnTurnStart(PlayerFaction faction) override;
 
 private:
     void FinishExploring();

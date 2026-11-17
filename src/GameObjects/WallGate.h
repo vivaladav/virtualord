@@ -27,7 +27,7 @@ public:
     bool IsOpen() const;
     bool Toggle();
 
-    void OnNewTurn(PlayerFaction faction) override;
+    void OnTurnStart(PlayerFaction faction) override;
 
     static unsigned int GetCostEnergy(unsigned int level);
     static unsigned int GetCostMaterial(unsigned int level);

@@ -90,9 +90,9 @@ bool WallGate::Toggle()
     return true;
 }
 
-void WallGate::OnNewTurn(PlayerFaction faction)
+void WallGate::OnTurnStart(PlayerFaction faction)
 {
-    Structure::OnNewTurn(faction);
+    Structure::OnTurnStart(faction);
 
     if(faction != GetFaction())
         return ;

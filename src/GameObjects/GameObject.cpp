@@ -935,7 +935,7 @@ void GameObject::ShowStatusUI()
         mOverlaySel->Show();
 }
 
-void GameObject::OnNewTurn(PlayerFaction faction)
+void GameObject::OnTurnStart(PlayerFaction faction)
 {
     if(GetFaction() == faction)
         RestoreTurnEnergy();

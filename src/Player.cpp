@@ -773,7 +773,7 @@ void Player::RemoveOnUpgradeUnlocked(unsigned int funId)
         mOnUpgradeUnlocked.erase(it);
 }
 
-void Player::OnNewTurn()
+void Player::OnTurnStart()
 {
     // update turns counter
     ++mTurnsPlayed;

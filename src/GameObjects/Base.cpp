@@ -64,9 +64,9 @@ bool Base::Save(sgl::utilities::BinaryFile & bf) const
     return true;
 }
 
-void Base::OnNewTurn(PlayerFaction faction)
+void Base::OnTurnStart(PlayerFaction faction)
 {
-    Structure::OnNewTurn(faction);
+    Structure::OnTurnStart(faction);
 
     // not linked yet -> exit
     if(!IsLinked())

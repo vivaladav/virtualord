@@ -158,7 +158,7 @@ public:
     float GetStorageBlobsMult() const;
 
     // -- TURN --
-    void OnNewTurn();
+    void OnTurnStart();
     unsigned int GetTurnsPlayed() const;
 
     // GAME STAGES

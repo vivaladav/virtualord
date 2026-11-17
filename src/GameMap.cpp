@@ -3299,15 +3299,15 @@ void GameMap::CloseGate(WallGate * gate)
     sgl::sgui::Stage::Instance()->SetFocus();
 }
 
-void GameMap::OnNewTurn(PlayerFaction faction)
+void GameMap::OnTurnStart(PlayerFaction faction)
 {
     // notify all objects
     for(GameObject * obj : mObjects)
-        obj->OnNewTurn(faction);
+        obj->OnTurnStart(faction);
 
     // notify all generators
     for(CollectableGenerator * cg : mCollGens)
-        cg->OnNewTurn();
+        cg->OnTurnStart();
 
     // select groups of mini units to move
     DeleteEmptyMiniUnitsGroups();

@@ -21,7 +21,7 @@ public:
 
     int GetResourceProduction(ExtendedResource res) const override;
 
-    void OnNewTurn(PlayerFaction faction) override;
+    void OnTurnStart(PlayerFaction faction) override;
 
 private:
     void UpdateGraphics() override;

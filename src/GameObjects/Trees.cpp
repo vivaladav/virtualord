@@ -104,9 +104,9 @@ bool Trees::Save(sgl::utilities::BinaryFile & bf) const
     return true;
 }
 
-void Trees::OnNewTurn(PlayerFaction faction)
+void Trees::OnTurnStart(PlayerFaction faction)
 {
-    GameObject::OnNewTurn(faction);
+    GameObject::OnTurnStart(faction);
 
     ++mTurns;
 

@@ -4251,7 +4251,6 @@ void ScreenGame::EndTurn()
     const int players = game->GetNumActivePlayers();
 
     mActivePlayerIdx = (mActivePlayerIdx + 1) % players;
-
     mActiveplayer = game->GetActivePlayerByIndex(mActivePlayerIdx);
 
 #ifdef DEBUG
@@ -4265,9 +4264,9 @@ void ScreenGame::EndTurn()
     // update active player data
     const PlayerFaction activeFaction = mActiveplayer->GetFaction();
 
-    mActiveplayer->OnNewTurn();
+    mActiveplayer->OnTurnStart();
 
-    mGameMap->OnNewTurn(activeFaction);
+    mGameMap->OnTurnStart(activeFaction);
 
     // new active player is local player
     if(IsCurrentTurnLocal())
@@ -4280,7 +4279,6 @@ void ScreenGame::EndTurn()
 
         // lower cost of save at every new turn
         game->LowerCostSaveGame();
-
 
         // auto-save, but not when in tutorial
         if(!game->GetTutorialManager()->HasActiveTutorial())

@@ -47,7 +47,7 @@ bool CollectableGenerator::Save(sgl::utilities::BinaryFile & bf) const
     return true;
 }
 
-void CollectableGenerator::OnNewTurn()
+void CollectableGenerator::OnTurnStart()
 {
     // generate only if cell is empty
     if(mGameMap->HasObject(mRow, mCol))
