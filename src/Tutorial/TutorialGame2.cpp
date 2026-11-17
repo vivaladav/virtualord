@@ -303,7 +303,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     {
         const core::Pointd2D p0(1300, 100);
         const Cell2D areaTL(7, 8);
-        const Cell2D areaBR(11, 14);
+        const Cell2D areaBR(12, 14);
         const int numToBuild = 1;
 
         auto step = new StepGameBuildStructAreaFree(gameMap, isoMap, areaTL, areaBR,
