@@ -156,8 +156,8 @@ void ResearchCenter::OnTurnEnd(PlayerFaction faction)
 {
     Structure::OnTurnEnd(faction);
 
-    // not own turn -> exit
-    if(faction != GetFaction())
+    // not own turn or not active -> exit
+    if(faction != GetFaction() || !IsLinked())
         return ;
 
     auto partMan = GetParticlesManager();

@@ -37,10 +37,11 @@ void Bunker::Update(float delta)
 
 int Bunker::GetResourceUsage(ExtendedResource res) const
 {
-    const int energy = 4;
+    // energy = 4
+    const int costs[NUM_EXT_RESOURCES] = { 4, 0, 0, 0, 0, 0 };
 
-    if(res == ER_ENERGY)
-        return energy;
+    if(res < NUM_EXT_RESOURCES)
+        return costs[res];
     else
         return 0;
 }
@@ -49,8 +50,8 @@ void Bunker::OnTurnEnd(PlayerFaction faction)
 {
     Structure::OnTurnEnd(faction);
 
-    // not my turn
-    if(faction != GetFaction())
+    // not own turn or not active -> exit
+    if(faction != GetFaction() || !IsLinked())
         return ;
 
     ShowEnergyUsage();

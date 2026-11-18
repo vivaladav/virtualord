@@ -124,8 +124,8 @@ void WallGate::OnTurnEnd(PlayerFaction faction)
 {
     Structure::OnTurnEnd(faction);
 
-    // not my turn
-    if(faction != GetFaction())
+    // not own turn or not active -> exit
+    if(faction != GetFaction() || !IsLinked())
         return ;
 
     UpdateWorkingState();
