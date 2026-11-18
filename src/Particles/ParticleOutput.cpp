@@ -89,7 +89,7 @@ void ParticleOutput::SetData(const DataParticleOutput & data)
 
     // TEXT
     const unsigned int colorText = 0xeff0f5ff;
-    const unsigned int colotTextNeg = 0xf7bebaff;
+    const unsigned int colotTextNeg = 0xef9890ff;
     const int fontSize = 20;
     auto fm = graphic::FontManager::Instance();
     graphic::Font * font = fm->GetFont("Lato-Bold.ttf", fontSize, graphic::Font::NORMAL);
