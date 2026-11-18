@@ -258,7 +258,6 @@ bool ScreenGame::Load(sgl::utilities::BinaryFile & bf)
     mTimePlayed = bf.ReadFloat();
 
     mAllowSelection = bf.ReadBool();
-    mLocalTurnInitDone = bf.ReadBool();
 
     // camera position
     mCameraInitPos.x = bf.ReadInt();
@@ -290,7 +289,6 @@ bool ScreenGame::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteFloat(mTimePlayed);
 
     bf.WriteBool(mAllowSelection);
-    bf.WriteBool(mLocalTurnInitDone);
 
     // save camera position
     auto cam = mCamController->GetCamera();
@@ -1466,10 +1464,24 @@ void ScreenGame::OnWindowMouseLeft(sgl::graphic::WindowEvent & event)
     mCamController->HandleMouseLeftWindow();
 }
 
-void ScreenGame::OnAutomaticMovesFinished()
+void ScreenGame::OnAutomaticStageFinished()
 {
+    // update map objects
+    mGameMap->OnTurnStart(mActiveplayer->GetFaction());
+
+    mActiveplayer->OnTurnStart();
+
     if(IsCurrentTurnLocal())
         InitLocalTurn();
+
+    // auto-save, but not when in tutorial
+    auto game = GetGame();
+
+    if(!game->GetTutorialManager()->HasActiveTutorial())
+    {
+        game->SaveGame(game->GetAutoSavefile());
+        ShowLabelGameSaved();
+    }
 }
 
 void ScreenGame::UpdateAI(float delta)
@@ -4233,7 +4245,7 @@ void ScreenGame::EndTurn()
 {
     Game * game = GetGame();
 
-    // END TURN
+    // -- END TURN --
 #ifdef DEBUG
     std::cout << "ScreenGame::EndTurn - END PLAYER " << mActivePlayerIdx << "\n" << std::endl;
 #endif
@@ -4251,7 +4263,7 @@ void ScreenGame::EndTurn()
 
     mGameMap->OnTurnEnd(mActiveplayer->GetFaction());
 
-    // START NEW TURN
+    // -- START NEW TURN --
     const int players = game->GetNumActivePlayers();
 
     mActivePlayerIdx = (mActivePlayerIdx + 1) % players;
@@ -4261,14 +4273,8 @@ void ScreenGame::EndTurn()
     std::cout << "ScreenGame::EndTurn - START PLAYER " << mActivePlayerIdx << std::endl;
 #endif
 
-    // reset flag for local turn init
-    if(IsCurrentTurnLocal())
-        mLocalTurnInitDone = false;
-
-    // update active player data
-    mActiveplayer->OnTurnStart();
-
-    mGameMap->OnTurnStart(mActiveplayer->GetFaction());
+    // start auto stage before new turn
+    mGameMap->OnTurnAuto(mActiveplayer->GetFaction());
 
     // new active player is local player
     if(IsCurrentTurnLocal())
@@ -4276,18 +4282,11 @@ void ScreenGame::EndTurn()
         mTrackerMG->AddPlayedTurns();
         mHUD->AddPlayedTurn();
 
-        if(!mGameMap->IsDoingAutomaticMoves())
-            InitLocalTurn();
+        // if(!mGameMap->IsDoingAutomaticMoves())
+        //     InitLocalTurn();
 
         // lower cost of save at every new turn
         game->LowerCostSaveGame();
-
-        // auto-save, but not when in tutorial
-        if(!game->GetTutorialManager()->HasActiveTutorial())
-        {
-            game->SaveGame(game->GetAutoSavefile());
-            ShowLabelGameSaved();
-        }
     }
     // new active player is AI
     else
@@ -4299,9 +4298,6 @@ void ScreenGame::EndTurn()
 
 void ScreenGame::InitLocalTurn()
 {
-    if(mLocalTurnInitDone)
-        return;
-
 #ifdef DEBUG
     std::cout << "ScreenGame::InitLocalTurn - turn: " << mLocalPlayer->GetTurnsPlayed() << std::endl;
 #endif
@@ -4312,8 +4308,6 @@ void ScreenGame::InitLocalTurn()
 
     // reset focus to Stage
     sgl::sgui::Stage::Instance()->SetFocus();
-
-    mLocalTurnInitDone = true;
 
     ShowSelection();
 }

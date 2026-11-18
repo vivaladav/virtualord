@@ -3299,6 +3299,13 @@ void GameMap::CloseGate(WallGate * gate)
     sgl::sgui::Stage::Instance()->SetFocus();
 }
 
+void GameMap::OnTurnAuto(PlayerFaction faction)
+{
+    // select groups of mini units to move
+    DeleteEmptyMiniUnitsGroups();
+    InitMiniUnitsGroupsReadyToMove(faction);
+}
+
 void GameMap::OnTurnStart(PlayerFaction faction)
 {
     // notify all objects
@@ -3308,10 +3315,6 @@ void GameMap::OnTurnStart(PlayerFaction faction)
     // notify all generators
     for(CollectableGenerator * cg : mCollGens)
         cg->OnTurnStart();
-
-    // select groups of mini units to move
-    DeleteEmptyMiniUnitsGroups();
-    InitMiniUnitsGroupsReadyToMove(faction);
 }
 
 void GameMap::OnTurnEnd(PlayerFaction faction)
@@ -4841,18 +4844,23 @@ void GameMap::InitStructuresReadyToAttack()
     Player * player = mScreenGame->GetActivePlayer();
 
     const std::vector<Structure *> & structures = player->GetStructures();
+    const int energy = player->GetResource(ER_ENERGY).GetValue();
 
-    for(auto s : structures)
+    // no auto defending if energy is 0
+    if(energy > 0)
     {
-        if(s->IsLinked() && s->HasEnemyInRange())
-            mStructuresAttacking.emplace_back(s);
+        for(auto s : structures)
+        {
+            if(s->IsLinked() && s->HasEnemyInRange())
+                mStructuresAttacking.emplace_back(s);
+        }
     }
 
     mTimerAutoAttacking = 0.f;
 
     // nothing to do -> end here
     if(mStructuresAttacking.empty())
-        mScreenGame->OnAutomaticMovesFinished();
+        mScreenGame->OnAutomaticStageFinished();
     else
         mScreenGame->SetLocalTurnStage(TURN_STAGE_TOWERS_ATTACK);
 }
@@ -4902,7 +4910,7 @@ void GameMap::UpdateStructuresAttacking(float delta)
 
     // nothing to do -> end here
     if(mStructuresAttacking.empty())
-        mScreenGame->OnAutomaticMovesFinished();
+        mScreenGame->OnAutomaticStageFinished();
 }
 
 } // namespace game

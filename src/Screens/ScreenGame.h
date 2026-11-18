@@ -76,7 +76,7 @@ public:
     void OnWindowMouseEntered(sgl::graphic::WindowEvent & event) override;
     void OnWindowMouseLeft(sgl::graphic::WindowEvent & event) override;
 
-    void OnAutomaticMovesFinished();
+    void OnAutomaticStageFinished();
 
     void OnObjectDestroyed(GameObject * obj);
 
@@ -279,7 +279,6 @@ private:
 
     bool mPaused = false;
     bool mAllowSelection = true;
-    bool mLocalTurnInitDone = false;
 };
 
 inline void ScreenGame::SetObjectActionCompleted(GameObject * obj)

@@ -223,6 +223,7 @@ public:
     void CloseGate(WallGate * gate);
 
     // turn system
+    void OnTurnAuto(PlayerFaction faction);
     void OnTurnStart(PlayerFaction faction);
     void OnTurnEnd(PlayerFaction faction);
 

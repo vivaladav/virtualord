@@ -81,7 +81,7 @@ namespace game
 bool Game::GOD_MODE = false;
 #endif
 
-const std::string Game::SAVE_VERSION("0.3.1");
+const std::string Game::SAVE_VERSION("0.3.2");
 const std::string Game::SETTINGS_VERSION("0.3.1");
 
 Game::Game(int argc, char * argv[])
