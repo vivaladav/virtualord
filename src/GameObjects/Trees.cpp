@@ -16,7 +16,8 @@
 namespace
 {
     constexpr float maxTreeEnergy = 100.f;
-    constexpr float maxTreeHealth = 200.f;
+    constexpr float maxTreeHealth = 150.f;
+    constexpr float maxTreeHealth2 = 100.f;
 }
 
 namespace game
@@ -53,7 +54,10 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
     SetStatic(true);
 
     // health
-    SetMaxHealth(maxTreeHealth);
+    if(type == ObjectData::TYPE_CACTUS1)
+        SetMaxHealth(maxTreeHealth2);
+    else
+        SetMaxHealth(maxTreeHealth);
 
     // energy
     SetMaxEnergy(maxTreeEnergy);
