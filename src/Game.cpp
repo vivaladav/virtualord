@@ -434,7 +434,7 @@ bool Game::HasSavedFiles() const
             return true;
     }
 
-    return false;
+    return IsSaveFileValid(mCurrAutoSaveFile);
 }
 
 bool Game::IsSaveFileValid(const std::string & saveFile) const
