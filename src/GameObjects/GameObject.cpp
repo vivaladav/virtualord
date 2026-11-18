@@ -157,6 +157,9 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     mVisited = bf.ReadBool();
     mIndestructible = bf.ReadBool();
 
+    if(mExp >= GetExperienceToNextLevel())
+        ShowIconUpgrade();
+
     return true;
 }
 
@@ -972,7 +975,8 @@ void GameObject::OnAttributeChanged()
 
 int GameObject::GetStatusIconBaseY() const
 {
-    return (mBarHealth != nullptr) ? mBarHealth->GetY() : mIsoObj->GetY();
+    return (mBarHealth != nullptr && mBarHealth->IsVisible()) ? mBarHealth->GetY() :
+                                                                mIsoObj->GetY();
 }
 
 void GameObject::NotifyValueChanged()
