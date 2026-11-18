@@ -778,11 +778,11 @@ void Player::OnTurnStart()
     // update turns counter
     ++mTurnsPlayed;
 
-    // UPDATE RESOURCES
+    // PRODUCE RESOURCES
     for(unsigned int r = 0; r < NUM_EXT_RESOURCES; ++r)
     {
-        const int delta = GetResourceDelta(static_cast<ExtendedResource>(r));
-        mLocalResources[r].SumValue(delta);
+        const int val = GetResourceProduction(static_cast<ExtendedResource>(r));
+        mLocalResources[r].SumValue(val);
     }
 
     NotifyResourcesChanged();
@@ -790,6 +790,14 @@ void Player::OnTurnStart()
 
 void Player::OnTurnEnd()
 {
+    // CONSUME RESOURCES
+    for(unsigned int r = 0; r < NUM_EXT_RESOURCES; ++r)
+    {
+        const int val = GetResourceConsumption(static_cast<ExtendedResource>(r));
+        mLocalResources[r].SumValue(-val);
+    }
+
+    NotifyResourcesChanged();
 }
 
 void Player::AddAvailableStructure(GameObjectTypeId type)
