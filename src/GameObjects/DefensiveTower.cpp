@@ -47,6 +47,17 @@ int DefensiveTower::GetResourceUsage(ExtendedResource res) const
         return 0;
 }
 
+void DefensiveTower::OnTurnEnd(PlayerFaction faction)
+{
+    Structure::OnTurnEnd(faction);
+
+    // not my turn
+    if(faction != GetFaction())
+        return ;
+
+    ShowEnergyUsage();
+}
+
 void DefensiveTower::UpdateGraphics()
 {
     SetImage();
@@ -67,7 +78,7 @@ void DefensiveTower::SetImage()
 
     unsigned int texInd = ID_STRUCT_DTOWER_L1;
 
-if(faction != NO_FACTION)
+    if(faction != NO_FACTION)
         texInd = ID_STRUCT_DTOWER_L1_F1 + faction;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

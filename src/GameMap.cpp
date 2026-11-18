@@ -3314,6 +3314,13 @@ void GameMap::OnTurnStart(PlayerFaction faction)
     InitMiniUnitsGroupsReadyToMove(faction);
 }
 
+void GameMap::OnTurnEnd(PlayerFaction faction)
+{
+    // notify all objects
+    for(GameObject * obj : mObjects)
+        obj->OnTurnEnd(faction);
+}
+
 int GameMap::GetFactionMoneyPerTurn(PlayerFaction faction)
 {
     const int perc = mControlMap->GetPercentageControlledByFaction(faction);

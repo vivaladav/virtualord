@@ -45,6 +45,17 @@ int Bunker::GetResourceUsage(ExtendedResource res) const
         return 0;
 }
 
+void Bunker::OnTurnEnd(PlayerFaction faction)
+{
+    Structure::OnTurnEnd(faction);
+
+    // not my turn
+    if(faction != GetFaction())
+        return ;
+
+    ShowEnergyUsage();
+}
+
 void Bunker::UpdateGraphics()
 {
     SetImage();

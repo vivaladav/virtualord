@@ -116,12 +116,23 @@ unsigned int WallGate::GetCostMaterial(unsigned int level)
 
 int WallGate::GetResourceUsage(ExtendedResource res) const
 {
-    const int energy = 4;
+    const int energy = 3;
 
     if(res == ER_ENERGY)
         return energy;
     else
         return 0;
+}
+
+void WallGate::OnTurnEnd(PlayerFaction faction)
+{
+    Structure::OnTurnEnd(faction);
+
+    // not my turn
+    if(faction != GetFaction())
+        return ;
+
+    ShowEnergyUsage();
 }
 
 void WallGate::OnLinkedChanged()

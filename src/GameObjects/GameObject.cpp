@@ -941,6 +941,10 @@ void GameObject::OnTurnStart(PlayerFaction faction)
         RestoreTurnEnergy();
 }
 
+void GameObject::OnTurnEnd(PlayerFaction)
+{
+}
+
 void GameObject::Update(float)
 {
     // update stuff only when cell is changed

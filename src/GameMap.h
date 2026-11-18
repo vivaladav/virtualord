@@ -224,6 +224,7 @@ public:
 
     // turn system
     void OnTurnStart(PlayerFaction faction);
+    void OnTurnEnd(PlayerFaction faction);
 
     int GetFactionMoneyPerTurn(PlayerFaction faction);
 

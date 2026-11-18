@@ -16,6 +16,8 @@ public:
 
     int GetResourceUsage(ExtendedResource res) const override;
 
+    void OnTurnEnd(PlayerFaction faction) override;
+
 protected:
     void UpdateGraphics() override;
 

@@ -4015,8 +4015,8 @@ void ScreenGame::ShowParticlesCost(const std::vector<int> & cost, const GameObje
     const float y12 = obj->GetY() - marginV0;
     const float marginV = 40.f;
     const float y34 = y12 - marginV;
-    const float speed = 70.f;
-    const float decaySpeed = 10.f;
+    const float speed = 50.f;
+    const float decaySpeed = 0.f;
     const bool allIcons = cost[OBJ_COST_BLOBS] > 0 || cost[OBJ_COST_DIAMONDS] > 0;
     const float timeLife = allIcons ? 1.25f : 1.f;
     const float delay = 0.f;
@@ -4247,6 +4247,10 @@ void ScreenGame::EndTurn()
         HideSelection();
     }
 
+    mActiveplayer->OnTurnEnd();
+
+    mGameMap->OnTurnEnd(mActiveplayer->GetFaction());
+
     // START NEW TURN
     const int players = game->GetNumActivePlayers();
 
@@ -4262,11 +4266,9 @@ void ScreenGame::EndTurn()
         mLocalTurnInitDone = false;
 
     // update active player data
-    const PlayerFaction activeFaction = mActiveplayer->GetFaction();
-
     mActiveplayer->OnTurnStart();
 
-    mGameMap->OnTurnStart(activeFaction);
+    mGameMap->OnTurnStart(mActiveplayer->GetFaction());
 
     // new active player is local player
     if(IsCurrentTurnLocal())

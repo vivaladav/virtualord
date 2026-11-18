@@ -228,6 +228,7 @@ public:
     void ShowStatusUI();
 
     virtual void OnTurnStart(PlayerFaction faction);
+    virtual void OnTurnEnd(PlayerFaction faction);
 
     virtual void Update(float delta);
 

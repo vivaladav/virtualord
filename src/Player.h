@@ -159,6 +159,7 @@ public:
 
     // -- TURN --
     void OnTurnStart();
+    void OnTurnEnd();
     unsigned int GetTurnsPlayed() const;
 
     // GAME STAGES

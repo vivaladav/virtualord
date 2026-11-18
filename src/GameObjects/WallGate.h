@@ -34,6 +34,8 @@ public:
 
     int GetResourceUsage(ExtendedResource res) const override;
 
+    void OnTurnEnd(PlayerFaction faction) override;
+
 private:
     void OnLinkedChanged() override;
 

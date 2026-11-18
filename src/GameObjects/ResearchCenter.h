@@ -20,6 +20,7 @@ public:
     bool Save(sgl::utilities::BinaryFile & bf) const override;
 
     void OnTurnStart(PlayerFaction faction) override;
+    void OnTurnEnd(PlayerFaction faction) override;
 
     int GetResourceProduction(ExtendedResource res) const override;
     int GetResourceUsage(ExtendedResource res) const override;

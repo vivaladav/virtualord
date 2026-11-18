@@ -28,6 +28,8 @@ protected:
 
     void UpdateGraphics() override;
 
+    void ShowEnergyUsage();
+
 private:
     void HideIconEnergy();
     void ShowIconEnergy();

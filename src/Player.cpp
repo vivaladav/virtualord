@@ -788,6 +788,10 @@ void Player::OnTurnStart()
     NotifyResourcesChanged();
 }
 
+void Player::OnTurnEnd()
+{
+}
+
 void Player::AddAvailableStructure(GameObjectTypeId type)
 {
     mAvailableStructures.emplace_back(type);
