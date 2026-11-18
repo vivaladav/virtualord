@@ -191,8 +191,22 @@ float Weapon::GetProbabilityHit(const GameObject * target) const
     const float finalProb = fixedProb + varProb;
 
     // bonus/malus based on attack mode
-    float bonusProb = GetBonusHitOnAttackMode(finalProb);
-    const float retProb = finalProb + bonusProb;
+    const float bonusProb = GetBonusHitOnAttackMode(finalProb);
+    // some categories get a probability bonus
+    const auto cat = target->GetObjectCategory();
+
+    // units and mini units hae no bonus
+    float bonusCat = 1.f;
+
+    // +15% for scene objects
+    if(cat == ObjectData::CAT_SCENE_OBJ)
+        bonusCat = 1.15f;
+    // +10% for everything that doesn't move
+    else if(cat != ObjectData::CAT_UNIT && cat != ObjectData::CAT_MINI_UNIT)
+        bonusCat = 1.10f;
+
+    // final value, before clamping
+    const float retProb = (finalProb + bonusProb) * bonusCat;
 
     // clamp
     if(retProb < minProb)
