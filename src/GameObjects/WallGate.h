@@ -28,15 +28,16 @@ public:
     bool Toggle();
 
     void OnTurnStart(PlayerFaction faction) override;
+    void OnTurnEnd(PlayerFaction faction) override;
 
     static unsigned int GetCostEnergy(unsigned int level);
     static unsigned int GetCostMaterial(unsigned int level);
 
     int GetResourceUsage(ExtendedResource res) const override;
 
-    void OnTurnEnd(PlayerFaction faction) override;
-
 private:
+    void UpdateWorkingState();
+
     void OnLinkedChanged() override;
 
     void UpdateGraphics() override;
@@ -44,7 +45,10 @@ private:
     void SetImage();
 
 private:
+    unsigned int mResTrackerId = 0;
+
     bool mOpen = false;
+    bool mWorking = false;
 };
 
 inline bool WallGate::IsOpen() const
