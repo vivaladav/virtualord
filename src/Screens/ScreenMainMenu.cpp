@@ -542,6 +542,8 @@ void ScreenMainMenu::CreateChangelog()
                   "- Laser weapons inflict variable damage.\n"
                   "- Structures consume resources at the end of their turn and produce some"
                   " at the beginning of a new turn.\n"
+                  "- Lowered health of trees.\n"
+                  "- Added accuracy bonus when shooting fixed elements.\n"
                   "\nFIXES\n"
                   "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
                   " to open the first lootbox.\n"
