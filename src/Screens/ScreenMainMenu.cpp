@@ -533,6 +533,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Active action of selected object is kept over next turn.\n"
                   "- Added button to control panel to cycle through units.\n"
                   "- Structures show resources consumed every turn at the end of each turn.\n"
+                  "- Added new sound effects.\n"
                   "\nCHANGES\n"
                   "- Active structures like gates, bunkers and defensive towers consume"
                   " energy every new turn.\n"
