@@ -545,6 +545,8 @@ void ScreenMainMenu::CreateChangelog()
                   " at the beginning of a new turn.\n"
                   "- Lowered health of trees.\n"
                   "- Added accuracy bonus when shooting fixed elements.\n"
+                  "- Lowered health and energy of mini units.\n"
+                  "- Reduced potential effect of explosions.\n"
                   "\nFIXES\n"
                   "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
                   " to open the first lootbox.\n"
