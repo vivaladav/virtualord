@@ -247,7 +247,7 @@ private:
     Cell2D GetClosestCell(const Cell2D & start, const std::vector<Cell2D> & targets) const;
 
     struct ObjectToAdd;
-    void AddObjectToMap(const ObjectToAdd & o2a);
+    bool AddObjectToMap(const ObjectToAdd & o2a);
     void DestroyObject(GameObject * obj);
 
     // -- player visibility --

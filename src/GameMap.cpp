@@ -843,7 +843,16 @@ GameObject * GameMap::CreateObject(GameObjectTypeId type, GameObjectVariantId va
 
     // schedule object for map addition
     if(instantAdd)
-        AddObjectToMap(o2a);
+    {
+        const bool res = AddObjectToMap(o2a);
+
+        if(!res)
+        {
+            std::cout << "[ERR] GameMap::CreateObject - AddObjectToMap failed" << std::endl;
+            delete o2a.obj;
+            return nullptr;
+        }
+    }
     else
         mObjectsToAdd.emplace_back(o2a);
 
@@ -3803,12 +3812,8 @@ Cell2D GameMap::GetClosestCell(const Cell2D & start, const std::vector<Cell2D> &
     return targets[minInd];
 }
 
-void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
+bool GameMap::AddObjectToMap(const ObjectToAdd & o2a)
 {
-    // add object to map containers
-    mObjects.push_back(o2a.obj);
-    mObjectsSet.insert(o2a.obj);
-
     // generic cells update
     for(unsigned int r = o2a.r1; r <= o2a.r0; ++r)
     {
@@ -3820,7 +3825,15 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
 
             GameMapCell & cell = mCells[ind];
 
-            assert(cell.objTop == nullptr);
+            if(cell.objTop != nullptr)
+            {
+                std::cout << "[ERR] GameMap::AddObjectToMap - trying to add object to full cell: "
+                          << "(" << r << ", " << c << ")" << std::endl;
+
+                assert(false);
+
+                return false;
+            }
 
             cell.walkable = o2a.obj->CanBeCollected();
             cell.objTop = o2a.obj;
@@ -3830,6 +3843,10 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
             UpdateCellType(ind, cell);
         }
     }
+
+    // add object to map containers
+    mObjects.push_back(o2a.obj);
+    mObjectsSet.insert(o2a.obj);
 
     // handle owned object
     if(o2a.owner != nullptr)
@@ -3857,6 +3874,8 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
 
     // apply visibility
     ApplyLocalVisibilityToObject(o2a.obj);
+
+    return true;
 }
 
 void GameMap::DestroyObject(GameObject * obj)
@@ -4275,9 +4294,14 @@ void GameMap::UpdateObjectsToAdd()
 {
     while(!mObjectsToAdd.empty())
     {
-        AddObjectToMap(mObjectsToAdd.back());
-
+        const ObjectToAdd o2a = mObjectsToAdd.back();
         mObjectsToAdd.pop_back();
+
+        if(!AddObjectToMap(o2a))
+        {
+            std::cout << "[ERR] GameMap::UpdateObjectsToAdd - AddObjectToMap failed" << std::endl;
+            delete o2a.obj;
+        }
     }
 }
 
