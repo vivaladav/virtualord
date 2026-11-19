@@ -382,7 +382,9 @@ void ResourceLoader::SetupSFX()
                            am->CreateSound(packageSoundsGame, "game/explosion-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/gate_close.ogg");
                            am->CreateSound(packageSoundsGame, "game/gate_open.ogg");
+                           am->CreateSound(packageSoundsGame, "game/hit-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/laser-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/miss-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/miniunit_move-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/selection-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/selection-02.ogg");
