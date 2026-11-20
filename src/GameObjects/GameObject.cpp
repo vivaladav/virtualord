@@ -157,7 +157,7 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     mVisited = bf.ReadBool();
     mIndestructible = bf.ReadBool();
 
-    if(mExp >= GetExperienceToNextLevel())
+    if(CanBeUpgraded())
         ShowIconUpgrade();
 
     return true;
@@ -525,14 +525,14 @@ void GameObject::SumExperience(int val)
 void GameObject::UpgradeLevel(const std::vector<int> & attChanges)
 {
     // can't upgrade yet or already at max level -> exit
-    if(mExp < GetExperienceToNextLevel() || mExpLevel == MAX_LEVEL)
+    if(!CanBeUpgraded())
         return;
 
     // increase level
     ++mExpLevel;
 
     // hide icon upgrade if exp is below new next level or reached max
-    if(mExp < GetExperienceToNextLevel() || mExpLevel == MAX_LEVEL)
+    if(!CanBeUpgraded())
         HideIconUpgrade();
 
     // update attributes
@@ -932,7 +932,7 @@ void GameObject::ShowStatusUI()
         mBarHealth->SetVisible(true);
 
     if(mIconUpgrade != nullptr)
-        mIconUpgrade->SetVisible(mExp >= GetExperienceToNextLevel());
+        mIconUpgrade->SetVisible(CanBeUpgraded());
 
     if(mOverlaySel != nullptr)
         mOverlaySel->Show();
@@ -1405,7 +1405,7 @@ void GameObject::SetExperience(int val)
 
     mExp = val;
 
-    if(mExp >= GetExperienceToNextLevel())
+    if(CanBeUpgraded())
         ShowIconUpgrade();
     else
         HideIconUpgrade();

@@ -300,11 +300,10 @@ void PanelObjectActions::OnUpdateStats()
 
 void PanelObjectActions::UpdateButtonUpgrade()
 {
-    const int exp = mObj->GetExperience();
-    const int maxExp = mObj->GetExperienceToNextLevel();
-    const bool showUpgrade = exp >= maxExp &&
-                             (mObj->GetExperienceLevel() + 1) < GameObject::MAX_LEVEL;
+    if(mObj == nullptr)
+        return ;
 
+    const bool showUpgrade = mObj->CanBeUpgraded();
     mButtons[BTN_UPGRADE]->SetVisible(showUpgrade);
 }
 

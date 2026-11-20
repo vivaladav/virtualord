@@ -556,20 +556,17 @@ void PanelSelectedObject::PositionElements()
 
 void PanelSelectedObject::UpdateStats()
 {
-    const int exp = mObj->GetExperience();
-    const int maxExp = mObj->GetExperienceToNextLevel();
-
     // LEVEL
     UpdateBarLevel();
 
     // STAT BARS
     static_cast<ObjectVisualStat *>(mStatEnergy)->SetValue(mObj->GetEnergy(), mObj->GetMaxEnergy());
     static_cast<ObjectVisualStat *>(mStatHealth)->SetValue(mObj->GetHealth(), mObj->GetMaxHealth());
-    static_cast<ObjectVisualStat *>(mStatExperience)->SetValue(exp, maxExp);
+    static_cast<ObjectVisualStat *>(mStatExperience)->SetValue(mObj->GetExperience(),
+                                                               mObj->GetExperienceToNextLevel());
 
     // UPGRADE BUTTON
-    const bool showUpgrade = exp >= maxExp &&
-                             (mObj->GetExperienceLevel() + 1) < GameObject::MAX_LEVEL;
+    const bool showUpgrade = mObj->CanBeUpgraded();
 
     mButtonUpgrade->SetVisible(showUpgrade);
 }
