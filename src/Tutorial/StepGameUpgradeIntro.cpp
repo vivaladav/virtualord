@@ -1,6 +1,8 @@
 #include "Tutorial/StepGameUpgradeIntro.h"
 
 #include "Game.h"
+#include "Player.h"
+#include "GameObjects/GameObject.h"
 #include "Widgets/PanelObjectActions.h"
 #include "Widgets/Tutorial/FocusArea.h"
 #include "Widgets/Tutorial/PanelClickFilter.h"
@@ -19,6 +21,16 @@ StepGameUpgradeIntro::StepGameUpgradeIntro(const Game * game, Screen * screen,
     , mFocusArea(new FocusArea)
     , mPanelActions(panel)
 {
+    // check that selected object is unit and can be upgraded
+    const auto selObj = game->GetLocalPlayer()->GetSelectedObject();
+
+    if(selObj == nullptr || selObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
+       !selObj->CanBeUpgraded())
+    {
+        SetDone();
+        return ;
+    }
+
     auto sm = sgl::utilities::StringManager::Instance();
 
     // do not allow object selection during this step

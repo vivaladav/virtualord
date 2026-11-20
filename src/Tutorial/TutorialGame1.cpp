@@ -263,7 +263,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
             core::Pointd2D p0(900, 250);
             return new StepGameUpgradeIntro(game, gs, panelActions, "TUT_GAME_UPGRADE_1", p0);
         });
-    AddStep([hud] { return new StepGameUpgradeUnit(hud, true); });
+    AddStep([local, hud] { return new StepGameUpgradeUnit(local, hud, true); });
     AddStep([this] { return new StepGameDisableCamera(GetCameraMapController()); });
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
