@@ -110,11 +110,7 @@ const Cell2D cellMatGen2(52, 20);
 const Cell2D cellEneGen2(41, 26);
 
 constexpr unsigned int indUnit1 = 0;
-// TODO change this back to 1 when testing full tutorial
 constexpr unsigned int indUnit2 = 1;
-
-constexpr float delayAnimLong = 2.f;
-constexpr float speedCamera = 700.f;
 
 }
 
@@ -402,7 +398,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
         const core::Pointd2D p0(1300, 100);
         auto step = new StepGameClickActionButton(game, gs, panelActions, "TUT_GAME_BUILD_WORKER",
                                                   PanelObjectActions::BTN_BUILD_UNIT_BASE,
-                                                  delayAnimLong);
+                                                  TutorialConstants::delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -410,7 +406,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([hud]
     {
         const core::Pointd2D p0(1300, 100);
-        auto step = new StepGameBuildUnitEnd(hud, "TUT_GAME_BUILD_WORKER", delayAnimLong);
+        auto step = new StepGameBuildUnitEnd(hud, "TUT_GAME_BUILD_WORKER",
+                                             TutorialConstants::delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -445,7 +442,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([isoMap]
     {
         const Cell2D target(48, 19);
-        return new StepGameMoveCameraOverCell(target, isoMap, speedCamera);
+        return new StepGameMoveCameraOverCell(target, isoMap, TutorialConstants::speedCamera);
     });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([game, isoMap, local]
@@ -475,7 +472,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     {
         const core::Pointd2D p0(1300, 100);
         auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_BUNKER_1",
-                                              ObjectData::TYPE_BUNKER, delayAnimLong);
+                                              ObjectData::TYPE_BUNKER,
+                                              TutorialConstants::delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -487,7 +485,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
         auto step = new StepGameBuildStructure(unit, hud, "TUT_GAME_BUILD_DTOWER_3", nullptr,
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
                                                ObjectData::TYPE_BUNKER);
-        step->SetDelayAnimation(delayAnimLong);
+        step->SetDelayAnimation(TutorialConstants::delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -659,7 +657,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     {
         const core::Pointd2D p0(1300, 100);
         auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_DTOWER_1",
-                                              ObjectData::TYPE_DEFENSIVE_TOWER, delayAnimLong);
+                                              ObjectData::TYPE_DEFENSIVE_TOWER,
+                                              TutorialConstants::delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -672,7 +671,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                                                "TUT_GAME_BUILD_DTOWER_4",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
                                                ObjectData::TYPE_DEFENSIVE_TOWER);
-        step->SetDelayAnimation(delayAnimLong);
+        step->SetDelayAnimation(TutorialConstants::delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -807,7 +806,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     {
         const core::Pointd2D p0(1300, 100);
         auto step = new StepGameUnitBuildIcon(game, gs, panelActions, "TUT_GAME_BUILD_GATE_1",
-                                              ObjectData::TYPE_WALL_GATE, delayAnimLong);
+                                              ObjectData::TYPE_WALL_GATE,
+                                              TutorialConstants::delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -820,7 +820,7 @@ TutorialGame1::TutorialGame1(Screen * screen)
                                                "TUT_GAME_BUILD_GATE_2",
                                                "TUT_GAME_BASE_BUILD_UNIT_3",
                                                ObjectData::TYPE_WALL_GATE);
-        step->SetDelayAnimation(delayAnimLong);
+        step->SetDelayAnimation(TutorialConstants::delayAnimLong);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
