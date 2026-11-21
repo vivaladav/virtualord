@@ -60,6 +60,7 @@ enum LanguageId : unsigned int
     LANG_FRENCH,
     LANG_GERMAN,
     LANG_ITALIAN,
+    LANG_PORTUGUES_BR,
     LANG_SPANISH,
 
     NUM_LANGUAGES,

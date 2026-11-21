@@ -1458,6 +1458,7 @@ void Game::SetLanguage(LanguageId lang)
         "fr.txt",
         "de.txt",
         "it.txt",
+        "br.txt",
         "es.txt",
     };
 

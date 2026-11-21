@@ -275,6 +275,7 @@ void DialogSettings::CreatePanelGame()
     mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_FRA")));
     mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_GER")));
     mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_ITA")));
+    mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_BRA")));
     mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_SPA")));
 
     mComboLang->SetActiveItem(mGame->GetLanguage());
@@ -979,6 +980,7 @@ void DialogSettings::OnStringsChanged()
         "LANG_FRA",
         "LANG_GER",
         "LANG_ITA",
+        "LANG_BRA",
         "LANG_SPA",
     };
 
