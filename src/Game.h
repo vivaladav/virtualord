@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.h"
+
 #include <sgl/core/Application.h>
 
 #include <chrono>
@@ -46,7 +48,6 @@ class TutorialManager;
 enum ExtendedResource : unsigned int;
 enum GameCursorId : unsigned int;
 enum GameMode : unsigned int;
-enum LanguageId : unsigned int;
 enum PlanetId : unsigned int;
 enum PlayerFaction : unsigned int;
 enum StateId : unsigned int;

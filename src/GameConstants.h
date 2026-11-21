@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.h"
+
 namespace game
 {
 
@@ -52,20 +54,6 @@ enum GameMode : unsigned int
     NUM_GAME_MODES,
 
     GM_NULL
-};
-
-enum LanguageId : unsigned int
-{
-    LANG_ENGLISH,
-    LANG_FRENCH,
-    LANG_GERMAN,
-    LANG_ITALIAN,
-    LANG_PORTUGUES_BR,
-    LANG_SPANISH,
-
-    NUM_LANGUAGES,
-
-    LANG_NULL
 };
 
 enum MapLayers : unsigned int
@@ -220,5 +208,21 @@ enum TurnStage : unsigned int
 
 extern const char * FACTIONS_NAME[NUM_FACTIONS];
 extern const char * MISSION_CATEGORY_TITLE[NUM_MISSION_CATEGORIES];
+
+class GameConstants
+{
+public:
+    // -- LANGUAGES --
+    static const LanguageId LANG_ENGLISH;
+    static const LanguageId LANG_FRENCH;
+    static const LanguageId LANG_GERMAN;
+    static const LanguageId LANG_ITALIAN;
+    static const LanguageId LANG_PORTUGUES_BR;
+    static const LanguageId LANG_SPANISH;
+
+    static const LanguageId LANG_NULL;
+
+    static constexpr unsigned int NUM_LANGUAGES = 6;
+};
 
 } // namespace game

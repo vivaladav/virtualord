@@ -82,7 +82,7 @@ bool Game::GOD_MODE = false;
 #endif
 
 const std::string Game::SAVE_VERSION("0.3.2");
-const std::string Game::SETTINGS_VERSION("0.3.1");
+const std::string Game::SETTINGS_VERSION("0.3.2");
 
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
@@ -93,7 +93,7 @@ Game::Game(int argc, char * argv[])
     , mDistReal(new sgl::utilities::UniformRealDistribution(0.f, 1.f))
     , mLocalFaction(NO_FACTION)
     , mCurrPlanet(PLANET_UNKNOWN)
-    , mLanguage(LANG_NULL)
+    , mLanguage(GameConstants::LANG_NULL)
     , mButtonSelect(sgl::core::MouseEvent::BUTTON_LEFT)
     , mButtonAction(sgl::core::MouseEvent::BUTTON_RIGHT)
 {
@@ -140,7 +140,7 @@ Game::Game(int argc, char * argv[])
 #endif
 
     // set default language
-    LanguageId startLanguage = LANG_ENGLISH;
+    LanguageId startLanguage = GameConstants::LANG_ENGLISH;
 
     // -- STEAM INTEGRATION --
     auto steam = sgl::services::Steam::Create();
@@ -177,13 +177,13 @@ Game::Game(int argc, char * argv[])
             const std::string strSpanishLa("latam");
 
             if(strLang == strSpanishEs || strLang == strSpanishLa)
-                startLanguage = LANG_SPANISH;
+                startLanguage = GameConstants::LANG_SPANISH;
             else if(strLang == strGerman)
-                startLanguage = LANG_GERMAN;
+                startLanguage = GameConstants::LANG_GERMAN;
             else if(strLang == strItalian)
-                startLanguage = LANG_ITALIAN;
+                startLanguage = GameConstants::LANG_ITALIAN;
             else if(strLang == strFrench)
-                startLanguage = LANG_FRENCH;
+                startLanguage = GameConstants::LANG_FRENCH;
         }
     }
 
@@ -852,8 +852,8 @@ bool Game::LoadSettings()
     bf.ReadString(gameVersion);
 
     // settings
-    const unsigned int lang = bf.ReadUint();
-    SetLanguage(static_cast<LanguageId>(lang));
+    const auto lang = static_cast<LanguageId>(bf.ReadSizeT());
+    SetLanguage(lang);
 
     mMapDraggingSpeed = bf.ReadInt();
     mMapScrollingSpeed = bf.ReadInt();
@@ -933,7 +933,7 @@ bool Game::SaveSettings()
     bf.WriteString(gameVersion);
 
     // settings
-    bf.WriteUint(mLanguage);
+    bf.WriteSizeT(mLanguage);
 
     bf.WriteInt(mMapDraggingSpeed);
     bf.WriteInt(mMapScrollingSpeed);
@@ -1452,19 +1452,22 @@ void Game::SetLanguage(LanguageId lang)
 
     auto sm = sgl::utilities::StringManager::Instance();
 
-    const char * languages[] =
+    const std::unordered_map<LanguageId, std::string> files =
     {
-        "en.txt",
-        "fr.txt",
-        "de.txt",
-        "it.txt",
-        "br.txt",
-        "es.txt",
+        { GameConstants::LANG_ENGLISH, "en.txt" },
+        { GameConstants::LANG_FRENCH, "fr.txt" },
+        { GameConstants::LANG_GERMAN, "de.txt" },
+        { GameConstants::LANG_ITALIAN, "it.txt" },
+        { GameConstants::LANG_PORTUGUES_BR, "br.txt" },
+        { GameConstants::LANG_SPANISH, "es.txt" },
     };
 
-    static_assert((sizeof(languages) / sizeof(char *)) == NUM_LANGUAGES);
+    assert(files.size() == GameConstants::NUM_LANGUAGES);
 
-    sm->LoadStringsFromPackage(languages[lang]);
+    auto it = files.find(lang);
+
+    if(it != files.end())
+        sm->LoadStringsFromPackage(it->second.c_str());
 }
 
 bool Game::IsAutoHideMouseEnable() const

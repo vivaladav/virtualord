@@ -62,6 +62,7 @@ add_executable(
     src/ResourceLoader.cpp
     src/StatValue.h
     src/StatValue.cpp
+    src/Types.h
     src/Version.h
     src/AI/ActionAI.h
     src/AI/ActionAI.cpp

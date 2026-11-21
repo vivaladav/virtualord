@@ -34,6 +34,7 @@
 #include <cmath>
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
 
 // anonymous namespace for local "private" classes
 namespace
@@ -278,7 +279,22 @@ void DialogSettings::CreatePanelGame()
     mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_BRA")));
     mComboLang->AddItem(new GameComboBoxItem(mSM->GetCString("LANG_SPA")));
 
-    mComboLang->SetActiveItem(mGame->GetLanguage());
+    const std::unordered_map<LanguageId, unsigned int> languages =
+    {
+        { GameConstants::LANG_ENGLISH, 0 },
+        { GameConstants::LANG_FRENCH, 1 },
+        { GameConstants::LANG_GERMAN, 2 },
+        { GameConstants::LANG_ITALIAN, 3 },
+        { GameConstants::LANG_PORTUGUES_BR, 4 },
+        { GameConstants::LANG_SPANISH, 5 },
+    };
+
+    assert(languages.size() == GameConstants::NUM_LANGUAGES);
+
+    const auto it = languages.find(mGame->GetLanguage());
+    const unsigned int indLang = it != languages.end() ? it->second : 0;
+
+    mComboLang->SetActiveItem(indLang);
 
     x = panelContentW - mComboLang->GetWidth() - marginPanelH;
     y += (label->GetHeight() - mComboLang->GetHeight()) * 0.5;
@@ -287,7 +303,20 @@ void DialogSettings::CreatePanelGame()
 
     mComboLang->SetOnActiveChanged([this](int ind)
     {
-        mGame->SetLanguage(static_cast<LanguageId>(ind));
+        const LanguageId languages[] =
+        {
+            GameConstants::LANG_ENGLISH,
+            GameConstants::LANG_FRENCH,
+            GameConstants::LANG_GERMAN,
+            GameConstants::LANG_ITALIAN,
+            GameConstants::LANG_PORTUGUES_BR,
+            GameConstants::LANG_SPANISH,
+        };
+
+        static_assert(sizeof(languages) / sizeof(LanguageId) == GameConstants::NUM_LANGUAGES);
+
+        if(ind < GameConstants::NUM_LANGUAGES)
+            mGame->SetLanguage(languages[ind]);
     });
 
     // AUTO UNIT CAMERA
@@ -984,9 +1013,9 @@ void DialogSettings::OnStringsChanged()
         "LANG_SPA",
     };
 
-    static_assert((sizeof(strIdsLanguage) / sizeof(char *)) == NUM_LANGUAGES);
+    static_assert((sizeof(strIdsLanguage) / sizeof(char *)) == GameConstants::NUM_LANGUAGES);
 
-    for(unsigned int i = 0; i < NUM_LANGUAGES; ++i)
+    for(unsigned int i = 0; i < GameConstants::NUM_LANGUAGES; ++i)
     {
         auto cbi = static_cast<GameComboBoxItem *>(mComboLang->GetItem(i));
         cbi->SetLabel(mSM->GetCString(strIdsLanguage[i]));
