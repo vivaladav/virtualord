@@ -995,6 +995,7 @@ void DialogSettings::OnStringsChanged()
     // PANEL AUDIO - headers
     const char * strIdsAudio[] =
     {
+        "VOL_MASTER",
         "MUSIC",
         "VOL_MUSIC",
         "SFX",
