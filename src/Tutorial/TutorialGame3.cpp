@@ -1840,6 +1840,8 @@ TutorialGame3::TutorialGame3(Screen * screen)
     // ===== PART 7 =====
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
+    // ENABLE AI
+    AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), true); });
     // MOVE CAMERA OVER TARGET
     AddStep([isoMap]
     {
@@ -2018,8 +2020,6 @@ TutorialGame3::TutorialGame3(Screen * screen)
 
         return step;
     });
-    // ENABLE AI
-    AddStep([playerAI] { return new StepAISetActive(playerAI->GetAI(), true); });
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
