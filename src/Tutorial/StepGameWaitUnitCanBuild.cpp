@@ -37,6 +37,11 @@ StepGameWaitUnitCanBuild::StepGameWaitUnitCanBuild(const Player * p, const Objec
     }
 }
 
+StepGameWaitUnitCanBuild::~StepGameWaitUnitCanBuild()
+{
+    delete mFocusArea;
+}
+
 void StepGameWaitUnitCanBuild::OnStart()
 {
     TutorialInfoStep::OnStart();

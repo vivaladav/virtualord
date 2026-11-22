@@ -16,6 +16,7 @@ class StepGameWaitUnitCanBuild : public TutorialInfoStep
 public:
     StepGameWaitUnitCanBuild(const Player * p, const ObjectData & buildData, const char * text,
                              const IsoMap * isoMap, const Cell2D & areaTL, const Cell2D & areaBR);
+    ~StepGameWaitUnitCanBuild();
 
     void OnStart() override;
 
