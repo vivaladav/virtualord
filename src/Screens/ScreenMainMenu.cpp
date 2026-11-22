@@ -534,6 +534,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Added button to control panel to cycle through units.\n"
                   "- Structures show resources consumed every turn at the end of each turn.\n"
                   "- Added new sound effects.\n"
+                  "- New language: Portuguese (Brazilian)\n"
                   "\nCHANGES\n"
                   "- Active structures like gates, bunkers and defensive towers consume"
                   " energy every new turn.\n"
@@ -559,6 +560,7 @@ void ScreenMainMenu::CreateChangelog()
                   " an explosion of own faction's unit.\n"
                   "- Fix output notification of Research Center appearing below"
                   " status bars when selected.\n"
+                  "- Fixed several typos and improved Italian translation.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
