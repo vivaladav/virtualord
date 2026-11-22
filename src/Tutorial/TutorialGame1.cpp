@@ -103,6 +103,7 @@ using namespace game;
 const Cell2D cellDT1(27, 16);
 const Cell2D cellDT2(47, 24);
 const Cell2D cellDT3(48, 33);
+const Cell2D cellGate(51, 34);
 const Cell2D cellEnemy1(27, 18);
 const Cell2D cellEnemy2(52, 37);
 const Cell2D cellMatGen1(32, 10);
@@ -456,14 +457,15 @@ TutorialGame1::TutorialGame1(Screen * screen)
     });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD BUNKER
-    AddStep([local, game]
+    AddStep([local, game, isoMap]
     {
         const core::Pointd2D p0(1300, 600);
 
         const auto reg = game->GetObjectsRegistry();
         const ObjectData & data = reg->GetObjectData(ObjectData::TYPE_BUNKER);
 
-        auto step = new StepGameWaitUnitCanBuild(local, data, "TUT_GAME_BUILD_BUNKER_1");
+        auto step = new StepGameWaitUnitCanBuild(local, data, "TUT_GAME_BUILD_BUNKER_1",
+                                                 isoMap, cellDT2, cellDT2);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -641,14 +643,15 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD DEFENSIVE TOWER 3
-    AddStep([local, game]
+    AddStep([local, game, isoMap]
     {
         const core::Pointd2D p0(1300, 600);
 
         const auto reg = game->GetObjectsRegistry();
         const ObjectData & data = reg->GetObjectData(ObjectData::TYPE_DEFENSIVE_TOWER);
 
-        auto step = new StepGameWaitUnitCanBuild(local, data, "TUT_GAME_BUILD_DTOWER_1");
+        auto step = new StepGameWaitUnitCanBuild(local, data, "TUT_GAME_BUILD_DTOWER_1",
+                                                 isoMap, cellDT3, cellDT3);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -790,14 +793,15 @@ TutorialGame1::TutorialGame1(Screen * screen)
     });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD GATE
-    AddStep([local, game]
+    AddStep([local, game, isoMap]
     {
         const core::Pointd2D p0(1300, 100);
 
         const auto reg = game->GetObjectsRegistry();
         const ObjectData & data = reg->GetObjectData(ObjectData::TYPE_WALL_GATE);
 
-        auto step = new StepGameWaitUnitCanBuild(local, data, "TUT_GAME_BUILD_GATE_1");
+        auto step = new StepGameWaitUnitCanBuild(local, data, "TUT_GAME_BUILD_GATE_1",
+                                                 isoMap, cellGate, cellGate);
         step->SetInfoPosition(p0.x, p0.y);
 
         return step;
@@ -828,9 +832,8 @@ TutorialGame1::TutorialGame1(Screen * screen)
     AddStep([gameMap, isoMap]
     {
         const core::Pointd2D p0(1300, 100);
-        const Cell2D target(51, 34);
         const unsigned int numToBuild = 1;
-        auto step = new StepGameBuildStructAreaFree(gameMap, isoMap, target, target,
+        auto step = new StepGameBuildStructAreaFree(gameMap, isoMap, cellGate, cellGate,
                                                     ObjectData::TYPE_WALL_GATE, numToBuild,
                                                     "TUT_GAME_BUILD_GATE_1");
         step->SetInfoPosition(p0.x, p0.y);
