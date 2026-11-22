@@ -893,4 +893,13 @@ TutorialGame1::~TutorialGame1()
     GetScreen()->SetSelectionAllowed(true);
 }
 
+void TutorialGame1::OnContinue()
+{
+    const unsigned int turn = GetScreen()->GetGame()->GetLocalPlayer()->GetTurnsPlayed();
+    const unsigned int turnFreeCamera = 7;
+
+    if(turn >= turnFreeCamera)
+        GetCameraMapController()->SetEnabled(true);
+}
+
 } // namespace game

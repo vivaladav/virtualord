@@ -39,6 +39,8 @@ private:
     void FinalizeStep();
     void StartNextStep();
 
+    virtual void OnContinue();
+
 private:
     std::deque<std::function<TutorialStep *()>> mSteps;
 
