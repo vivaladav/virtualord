@@ -244,7 +244,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return new StepGameConnectStructFree(game, gen, isoMap, "TUT_GAME_CONNECT_STRUCT", p0);
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER MATERIAL GENERATOR 1
     AddStep([] { return new StepDelay(0.5f); });
@@ -263,7 +263,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return new StepGameConnectStructFree(game, gen, isoMap, "TUT_GAME_CONNECT_STRUCT", p0);
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD BARRACKS
     AddStep([local, game, isoMap]
@@ -324,7 +324,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return new StepGameConnectStructFree(game, barracks, isoMap, "TUT_GAME_CONNECT_STRUCT", p0);
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // BUILD SOLDIER
     AddStep([local, game]
@@ -437,7 +437,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return step;
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // PRESENT DIAMONDS
     AddStep([this, local, isoMap]
@@ -462,7 +462,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return new StepGameMoveCameraOverCell(cell, isoMap, TutorialConstants::speedCamera);
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // PRESENT BLOBS
     AddStep([this, local, isoMap]
@@ -480,7 +480,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
                                           "TUT_GAME_COLLECT_BLOBS", p0);
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE CAMERA OVER MATERIAL GENERATOR
     AddStep([this]
@@ -505,7 +505,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return new StepGameConnectStructFree(game, gen, isoMap, "TUT_GAME_CONNECT_STRUCT", p0);
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // MOVE CAMERA OVER ENERGY GENERATOR
     AddStep([this]
@@ -528,6 +528,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         const core::Pointd2D p0(1200, 400);
         return new StepGameConnectStructFree(game, gen, isoMap, "TUT_GAME_CONNECT_STRUCT", p0);
     });
+    // ===== PART 2 =====
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -589,7 +590,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return new StepGameConnectStructFree(game, rc, isoMap, "TUT_GAME_CONNECT_STRUCT", p0);
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT RESEARCH CENTER
     AddStep([local, game, isoMap]
@@ -612,7 +613,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return new StepGameSetupResearch(hud, { 100, 90, 80 });
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // EXPLAIN RESOURCES BAR
     AddStep([hud] { return new StepGameResourcesBar(hud); });
@@ -653,7 +654,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return new StepGameConnectStructFree(game, gen, isoMap, "TUT_GAME_CONNECT_STRUCT", p0);
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONQUER ENERGY GENERATOR 3
     AddStep([this, local, isoMap, game]
@@ -699,6 +700,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         const core::Pointd2D p0(1200, 300);
         return new StepGameConnectStructFree(game, gen, isoMap, "TUT_GAME_CONNECT_STRUCT", p0);
     });
+    // ===== PART 3 =====
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -725,7 +727,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return step;
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // SELECT RESEARCH CENTER AND UNLOCK UPGRADE
     AddStep([this, local]
@@ -966,6 +968,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
         return step;
     });
+    // ===== PART 4 =====
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -985,7 +988,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return step;
     });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // CONNECT WALL CENTER
     AddStep([gameMap, isoMap]
@@ -1044,6 +1047,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
         return step;
     });
+    // ===== PART 5 =====
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -1062,9 +1066,6 @@ TutorialGame2::TutorialGame2(Screen * screen)
         step->SetInfoPosition(p0.x, p0.y);
         return step;
     });
-    // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
-    AddStep([] { return new StepDelay(0.5f); });
     // CONNECT WALL LEFT
     AddStep([gameMap, isoMap]
     {
@@ -1074,6 +1075,9 @@ TutorialGame2::TutorialGame2(Screen * screen)
         step->SetInfoPosition(p0.x, p0.y);
         return step;
     });
+    // SAVE GAME
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
+    AddStep([] { return new StepDelay(0.5f); });
     // BUILD GATE IN LEFT WALL
     AddStep([local, game, isoMap]
     {
@@ -1171,6 +1175,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
 
         return step;
     });
+    // ===== PART 6 =====
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
@@ -1386,7 +1391,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
     });
     AddStep([] { return new StepDelay(0.5f); });
     // SAVE GAME
-    AddStep([game, gs] { return new StepSaveGame(game, gs); });
+    AddStep([game, gs] { return new StepSaveGame(game, gs, true); });
     AddStep([] { return new StepDelay(0.5f); });
     // ANNOUNCE ENEMIES ARE COMING
     AddStep([]
@@ -1514,7 +1519,7 @@ TutorialGame2::TutorialGame2(Screen * screen)
         return new StepGameMoveUnitFree(game, unit, isoMap, "TUT_GAME_MOVE_SOLDIER",
                                         target, p0);
     });
-    AddStep([] { return new StepDelay(0.5f); });
+    // ===== PART 7 =====
     // SAVE GAME
     AddStep([game, gs] { return new StepSaveGame(game, gs); });
     AddStep([] { return new StepDelay(0.5f); });
