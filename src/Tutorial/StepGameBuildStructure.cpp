@@ -90,6 +90,11 @@ StepGameBuildStructure::StepGameBuildStructure(const Unit * unit, GameHUD * HUD,
         mIndCat = TutorialConstants::catResources;
         mIndStruct = TutorialConstants::structEneWarehouse;
     }
+    else if(ObjectData::TYPE_RADAR_STATION == type)
+    {
+        mIndCat = TutorialConstants::catTech;
+        mIndStruct = TutorialConstants::structRadarStation;
+    }
     else
         assert(false);
 
