@@ -548,6 +548,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Added accuracy bonus when shooting fixed elements.\n"
                   "- Lowered health and energy of mini units.\n"
                   "- Reduced potential effect of explosions.\n"
+                  "- Replaced 1 music track played during missions.\n"
                   "\nFIXES\n"
                   "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
                   " to open the first lootbox.\n"
