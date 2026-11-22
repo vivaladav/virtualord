@@ -47,6 +47,7 @@
 #include "Tutorial/StepGameSecondaryMissionGoal.h"
 #include "Tutorial/StepGameSelectObject.h"
 #include "Tutorial/StepGameSetLootboxPrize.h"
+#include "Tutorial/StepGameSetObjectHealth.h"
 #include "Tutorial/StepGameSetTarget.h"
 #include "Tutorial/StepGameSetTargetIcon.h"
 #include "Tutorial/StepGameSetupMiniUnits.h"
@@ -83,7 +84,7 @@ const Cell2D cellMatGen3(51, 72);
 const Cell2D cellEneGen1(62, 66);
 const Cell2D cellEneGen2(49, 41);
 const Cell2D cellEneGen3(73, 53);
-const Cell2D cellEnemy1(64,53);
+const Cell2D cellEnemy1(65,54);
 const Cell2D cellMiniUnits1(71, 62);
 
 const Cell2D wallLeft1TL(50, 37);
@@ -1078,6 +1079,13 @@ TutorialGame3::TutorialGame3(Screen * screen)
         return new StepGameAddEnemy(GetGameMap(), playerAI, ObjectData::TYPE_UNIT_SOLDIER1,
                                     cellEnemy1, true);
     });
+    // SET HEALTH OF ENEMY
+    AddStep([this]
+    {
+        const float healthEnemy = 50.f;
+        const auto enemy = GetObjectInCell(cellEnemy1);
+        return new StepGameSetObjectHealth(enemy, healthEnemy);
+    });
     // MOVE CAMERA
     AddStep([isoMap]
     {
@@ -1145,7 +1153,7 @@ TutorialGame3::TutorialGame3(Screen * screen)
     {
         const auto mu = GetObjectInCell(cellMiniUnits1);
         const auto group = static_cast<MiniUnitsGroup *>(mu->GetGroup());
-        const Cell2D target(65,52);
+        const Cell2D target(66,53);
         const core::Pointd2D p0(900, 150);
         return new StepGameSetTarget(isoMap, group, target, p0);
     });
