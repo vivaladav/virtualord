@@ -211,7 +211,9 @@ public:
     bool HasEnemyInRange();
 
     GameObject * GetKiller() const;
-    void Hit(float damage, GameObject * attacker, bool fatal, bool showHitPoints = true);
+    PlayerFaction GetKillerFaction() const;
+    void Hit(float damage, GameObject * attacker, PlayerFaction factionAttacker, bool fatal,
+             bool showHitPoints = true);
     void MissHit();
     void SelfDestroy();
     void SetIndestructible(bool val);
@@ -335,6 +337,9 @@ private:
     const GameMapCell * mCell = nullptr;
 
     GameObject * mKiller = nullptr;
+    // NOTE killer faction is needed to propagate killer in chain of kills as killer object
+    // can be destroyed in the middle of it and its faction value becomes unusable
+    PlayerFaction mKillerFaction;
 
     WarningMessage * mWarnMessage = nullptr;
 
@@ -476,6 +481,7 @@ inline void GameObject::SetAttackStrategy(AttackStrategy as) { mAttStrategy = as
 inline AttackStrategy GameObject::GetAttackStrategy() const { return mAttStrategy; }
 
 inline GameObject * GameObject::GetKiller() const { return mKiller; }
+inline PlayerFaction GameObject::GetKillerFaction() const { return mKillerFaction; }
 
 inline void GameObject::SetIndestructible(bool val) { mIndestructible = val; }
 

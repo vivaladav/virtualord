@@ -34,6 +34,10 @@
 
 #include <cstdlib>
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 namespace
 {
 const float minDelta = 0.01f;
@@ -66,6 +70,7 @@ GameObject::GameObject(const ObjectData & data, const ObjectInitData & initData)
     , mGameMap(initData.GetGameMap())
     , mPartMan(initData.GetParticlesManager())
     , mOwner(initData.GetPlayer())
+    , mKillerFaction(NO_FACTION)
     , mType(data.GetType())
     , mCategory(data.GetCategory())
     , mRows(data.GetRows())
@@ -726,7 +731,8 @@ bool GameObject::HasEnemyInRange()
     return false;
 }
 
-void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showHitPoints)
+void GameObject::Hit(float damage, GameObject * attacker, PlayerFaction factionAttacker, bool fatal,
+                     bool showHitPoints)
 {
     using namespace sgl;
 
@@ -772,7 +778,16 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     // hit and destroyed
     if(IsDestroyed())
     {
+#ifdef DEBUG
+        std::cout << "GameObject::Hit - object: " << this << " destroyed by: " << attacker
+                  << " of faction: " << factionAttacker << " VALID: "
+                  << mGameMap->HasObject(attacker) << std::endl;
+#endif
+
+        // NOTE killer faction is needed to propagate killer in chain of kills as killer object
+        // can be destroyed in the middle of it and its faction value becomes unusable
         mKiller = attacker;
+        mKillerFaction = factionAttacker;
 
         // use more particles
         const int partDestroyedMult = 2;
@@ -783,7 +798,7 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
         if(mOwner != nullptr)
         {
             if(attacker != nullptr)
-                mGameMap->RegisterEnemyKill(attacker, this);
+                mGameMap->RegisterEnemyKill(attacker, factionAttacker, this);
 
             // do not register casualty when exploding mini-units explode near enemies
             if(mType != ObjectData::TYPE_MINI_UNIT1 || !selfDestruct)
@@ -896,7 +911,7 @@ void GameObject::MissHit()
     puHP->AddParticle(dataHP);
 }
 
-void GameObject::SelfDestroy() { Hit(-1.f, nullptr, true, false); }
+void GameObject::SelfDestroy() { Hit(-1.f, nullptr, NO_FACTION, true, false); }
 
 void GameObject::SetActiveActionToDefault() { mActiveAction = mDefaultAction; }
 

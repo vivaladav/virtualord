@@ -131,7 +131,10 @@ void ParticleSingleLaser::OnDone()
 
     if(mDamage > 0.f)
     {
-        mTarget->Hit(mDamage, mShooter, mFatal);
+        const bool shooterValid = mShooter != nullptr && mGameMap->HasObject(mShooter);
+        const PlayerFaction f = shooterValid ? mShooter->GetFaction() : NO_FACTION;
+
+        mTarget->Hit(mDamage, mShooter, f, mFatal);
 
         // play hit SFX if not destroyed
         if(!mTarget->IsDestroyed())

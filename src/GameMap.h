@@ -128,7 +128,7 @@ public:
     void SetObjectActionFailed(GameObject * obj);
 
     // kills
-    void RegisterEnemyKill(GameObject * killer, GameObject * victim);
+    void RegisterEnemyKill(GameObject * killer, PlayerFaction factionKiller, GameObject * victim);
     void RegisterCasualty(PlayerFaction killed);
 
     bool AreObjectsAdjacent(const GameObject * obj1, const GameObject * obj2) const;
@@ -182,7 +182,8 @@ public:
     bool IsDoingAutomaticMoves() const;
 
     // damage
-    void DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject * attacker, int radius, float maxDamage);
+    void DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject * attacker,
+                    PlayerFaction factionAttacker, int radius, float maxDamage);
 
     // move units
     bool CanUnitMove(const Cell2D & start, const Cell2D & end, Player * player) const;

@@ -1060,13 +1060,15 @@ void GameMap::SetObjectActionFailed(GameObject * obj)
     mScreenGame->SetObjectActionFailed(obj);
 }
 
-void GameMap::RegisterEnemyKill(GameObject * killer, GameObject * victim)
+void GameMap::RegisterEnemyKill(GameObject * killer, PlayerFaction factionKiller, GameObject * victim)
 {
-    // TODO assign experience points based on kill maybe
-    const int experienceKill = 25;
-    killer->SumExperience(experienceKill);
+    // check if killer is still valid and still alive
+    if(killer != nullptr && HasObject(killer) && !killer->IsDestroyed())
+    {
+        const int experienceKill = 25;
+        killer->SumExperience(experienceKill);
+    }
 
-    const PlayerFaction factionKiller = killer->GetFaction();
     Player * p = mGame->GetActivePlayerByFaction(factionKiller);
 
     // exit in case killer's Player is NULL (NO_FACTION)
@@ -2244,9 +2246,11 @@ MiniUnitsGroup * GameMap::CreateMiniUnitsGroup()
 }
 
 void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject * attacker,
-                         int radius, float maxDamage)
+                         PlayerFaction factionAttacker, int radius, float maxDamage)
 {
     const bool fatal = false;
+
+    GameObject * obj = nullptr;
 
     for(int rad = 1; rad <= radius; ++rad)
     {
@@ -2272,11 +2276,15 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject 
             {
                 const int ind = ind0 + c;
 
-                if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
+                obj = mCells[ind].objTop;
 
-                if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
+
+                obj = mCells[ind].objBottom;
+
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
             }
         }
 
@@ -2291,11 +2299,15 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject 
             {
                 const int ind = ind0 + c;
 
-                if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
+                obj = mCells[ind].objTop;
 
-                if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
+
+                obj = mCells[ind].objBottom;
+
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
             }
         }
 
@@ -2314,11 +2326,15 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject 
             {
                 const int ind = r * mCols + lCol;
 
-                if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
+                obj = mCells[ind].objTop;
 
-                if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
+
+                obj = mCells[ind].objBottom;
+
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
             }
         }
 
@@ -2331,11 +2347,15 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject 
             {
                 const int ind = r * mCols + rCol;
 
-                if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
+                obj = mCells[ind].objTop;
 
-                if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
+
+                obj = mCells[ind].objBottom;
+
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
             }
         }
     }
@@ -3356,14 +3376,17 @@ void GameMap::Update(float delta)
         {
             GameObject * obj = *itObj;
 
-            // propagate killer for chain of kills
+            // propagate killer and killer's faction for chain of kills
+            // NOTE killer can be not valid as it might be destroyed in previous update
             GameObject * killer = obj->GetKiller() != nullptr ? obj->GetKiller() : obj;
+            PlayerFaction factionKiller = obj->GetKillerFaction();
 
             // apply damage to surrounding area based on object's damage value and size
             const int damageRadius = obj->GetRows();
             const float maxDamage = obj->GetExplosionDamage();
             DamageArea(Cell2D(obj->GetRow0(), obj->GetCol0()),
-                       Cell2D(obj->GetRow1(), obj->GetCol1()), killer, damageRadius, maxDamage);
+                       Cell2D(obj->GetRow1(), obj->GetCol1()), killer, factionKiller,
+                       damageRadius, maxDamage);
 
             DestroyObjectPaths(obj);
 
@@ -4484,6 +4507,8 @@ const WeaponData & GameMap::GetWeaponData(WeaponType t) const
 
 Weapon * GameMap::AssignWeaponToObject(WeaponType wt, GameObject * obj)
 {
+    //assert(obj->GetWeapon() == nullptr);
+
     if(wt == WeaponData::TYPE_NULL)
         return nullptr;
 
