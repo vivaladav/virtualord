@@ -1171,6 +1171,13 @@ void ScreenGame::HideSelection()
     if(mLastSelected == nullptr)
         return ;
 
+    // previously selected object is no longer valid (got destroyed)
+    if(!mGameMap->HasObject(mLastSelected))
+    {
+        mLastSelected = nullptr;
+        return ;
+    }
+
     // hide all selected object UI
     mLastSelected->HideStatusUI();
 
@@ -1199,6 +1206,13 @@ void ScreenGame::ShowSelection()
 {
     if(mLastSelected == nullptr)
         return ;
+
+    // previously selected object is no longer valid (got destroyed)
+    if(!mGameMap->HasObject(mLastSelected))
+    {
+        mLastSelected = nullptr;
+        return ;
+    }
 
     // show all selected object UI
     mLastSelected->ShowStatusUI();
