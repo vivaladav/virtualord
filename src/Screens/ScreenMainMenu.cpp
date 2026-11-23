@@ -517,7 +517,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.19 - \"xxxxx\"", font, content);
+    auto title = new sgui::Label("0.6.19 - \"Better DEMO time\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -549,6 +549,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Lowered health and energy of mini units.\n"
                   "- Reduced potential effect of explosions.\n"
                   "- Replaced 1 music track played during missions.\n"
+                  "- Changed second half of tutorial mission 1 to be like 2 and 3.\n"
                   "\nFIXES\n"
                   "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
                   " to open the first lootbox.\n"
