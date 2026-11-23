@@ -699,7 +699,7 @@ GameObject * GameMap::CreateObjectFromFile(GameObjectTypeId type, GameObjectVari
 
         const Cell2D dest(r0, c0);
 
-        return CreateMiniUnit(type, nullptr, dest, variant, owner);
+        return CreateMiniUnit(type, nullptr, dest, variant, owner, assignWeapon);
     }
     else
         return CreateObject(type, variant, pf, r0, c0, true, assignWeapon);
@@ -4507,8 +4507,6 @@ const WeaponData & GameMap::GetWeaponData(WeaponType t) const
 
 Weapon * GameMap::AssignWeaponToObject(WeaponType wt, GameObject * obj)
 {
-    //assert(obj->GetWeapon() == nullptr);
-
     if(wt == WeaponData::TYPE_NULL)
         return nullptr;
 

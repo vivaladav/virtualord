@@ -563,6 +563,7 @@ void ScreenMainMenu::CreateChangelog()
                   "- Fix output notification of Research Center appearing below"
                   " status bars when selected.\n"
                   "- Fixed several typos and improved Italian translation.\n"
+                  "- Fixed weapons created twice for mini-units when loading.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);
