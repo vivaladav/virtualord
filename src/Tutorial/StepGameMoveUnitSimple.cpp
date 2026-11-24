@@ -55,7 +55,7 @@ void StepGameMoveUnitSimple::Update(float)
     if(mUnit->GetRow0() == mTarget.row && mUnit->GetCol0() == mTarget.col)
         SetDone();
     // hide focus area when move starts
-    else if(mUnit->GetCurrentAction() == GameObjectActionType::MOVE)
+    else if(mUnit->GetCurrentAction() == ACT_MOVE)
     {
         mFocusArea->SetBlinking(false);
         mFocusArea->SetVisible(false);

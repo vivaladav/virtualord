@@ -55,9 +55,9 @@ bool CityBlock::Save(sgl::utilities::BinaryFile & bf) const
     return true;
 }
 
-void CityBlock::OnNewTurn(PlayerFaction faction)
+void CityBlock::OnTurnStart(PlayerFaction faction)
 {
-    Structure::OnNewTurn(faction);
+    Structure::OnTurnStart(faction);
 
     // not linked yet -> exit
     if(!IsLinked())
@@ -94,6 +94,32 @@ void CityBlock::OnNewTurn(PlayerFaction faction)
     pu->AddParticle(pd);
 }
 
+void CityBlock::OnTurnEnd(PlayerFaction faction)
+{
+    Structure::OnTurnEnd(faction);
+
+    // not own turn or not active -> exit
+    if(faction != GetFaction() || !IsLinked())
+        return ;
+
+    auto partMan = GetParticlesManager();
+    auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
+
+    const int marginV = 20;
+    const float x0 = GetX() + GetWidth() * 0.25f;
+    const float x1 = GetX() + GetWidth() * 0.75f;
+    const float y0 = GetY() - marginV;
+    const float delay = 0.f;
+
+    // ENERGY
+    const DataParticleOutput d0(-GetResourceUsage(ER_ENERGY), ER_ENERGY, x0, y0, delay);
+    pu->AddParticle(d0);
+
+    // MATERIAL
+    const DataParticleOutput d1(-GetResourceUsage(ER_MATERIAL), ER_MATERIAL, x1, y0, delay);
+    pu->AddParticle(d1);
+}
+
 int CityBlock::GetResourceProduction(ExtendedResource res) const
 {
     if(res == ER_MONEY)
@@ -101,6 +127,17 @@ int CityBlock::GetResourceProduction(ExtendedResource res) const
         const int money = 50;
         return money;
     }
+    else
+        return 0;
+}
+
+int CityBlock::GetResourceUsage(ExtendedResource res) const
+{
+    // energy = 4, material = 2
+    const int costs[NUM_EXT_RESOURCES] = { 4, 2, 0, 0, 0, 0 };
+
+    if(res < NUM_EXT_RESOURCES)
+        return costs[res];
     else
         return 0;
 }

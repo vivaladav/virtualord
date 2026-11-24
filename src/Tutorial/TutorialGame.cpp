@@ -65,7 +65,7 @@ TutorialGame::~TutorialGame()
 
         if(unit->GetDefaultAction() == IDLE)
         {
-            unit->SetDefaultAction(MOVE);
+            unit->SetDefaultAction(ACT_MOVE);
 
             // also reset the active action if IDLE
             if(unit->GetActiveAction() == IDLE)

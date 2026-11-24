@@ -34,6 +34,10 @@
 
 #include <cstdlib>
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 namespace
 {
 const float minDelta = 0.01f;
@@ -66,6 +70,7 @@ GameObject::GameObject(const ObjectData & data, const ObjectInitData & initData)
     , mGameMap(initData.GetGameMap())
     , mPartMan(initData.GetParticlesManager())
     , mOwner(initData.GetPlayer())
+    , mKillerFaction(NO_FACTION)
     , mType(data.GetType())
     , mCategory(data.GetCategory())
     , mRows(data.GetRows())
@@ -97,13 +102,16 @@ GameObject::GameObject(const ObjectData & data, const ObjectInitData & initData)
 
 GameObject::~GameObject()
 {
+    delete mBarEnergy;
+    delete mBarHealth;
+
+    delete mIconUpgrade;
+
     delete mWarnMessage;
 
     delete mIsoObj;
 
     delete mWeapon;
-
-    delete mIconUpgrade;
 
     ClearGroup();
 
@@ -122,6 +130,7 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     mActiveAction = static_cast<GameObjectActionType>(bf.ReadUint());
     mCurrAction = static_cast<GameObjectActionType>(bf.ReadUint());
     mDefaultAction = static_cast<GameObjectActionType>(bf.ReadUint());
+    mAttStrategy = static_cast<AttackStrategy>(bf.ReadUint());
 
     // attributes
     const unsigned int numAttr = bf.ReadUint();
@@ -140,6 +149,7 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     mExp = bf.ReadInt();
     mMaxEnergy = bf.ReadFloat();
     mEnergy = bf.ReadFloat();
+    mEnergyToSave = bf.ReadFloat();
     mMaxHealth = bf.ReadFloat();
     mHealth = bf.ReadFloat();
     mMaxSpeed = bf.ReadFloat();
@@ -151,6 +161,9 @@ bool GameObject::Load(sgl::utilities::BinaryFile & bf)
     mVisible = bf.ReadBool();
     mVisited = bf.ReadBool();
     mIndestructible = bf.ReadBool();
+
+    if(CanBeUpgraded())
+        ShowIconUpgrade();
 
     return true;
 }
@@ -164,6 +177,7 @@ bool GameObject::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(mActiveAction);
     bf.WriteUint(mCurrAction);
     bf.WriteUint(mDefaultAction);
+    bf.WriteUint(mAttStrategy);
 
     // attributes
     bf.WriteUint(mAttributes.size());
@@ -180,6 +194,7 @@ bool GameObject::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteInt(mExp);
     bf.WriteFloat(mMaxEnergy);
     bf.WriteFloat(mEnergy);
+    bf.WriteFloat(mEnergyToSave);
     bf.WriteFloat(mMaxHealth);
     bf.WriteFloat(mHealth);
     bf.WriteFloat(mMaxSpeed);
@@ -469,7 +484,7 @@ bool GameObject::HasEnergyForActionStep(GameObjectActionType action) const
 {
     if(action < NUM_OBJ_ACTIONS)
     {
-        const float cost = (ATTACK == action) ? mWeapon->GetCostEnergy() :
+        const float cost = (ACT_ATTACK == action) ? mWeapon->GetCostEnergy() :
                            GetActionEnergyCost(action);
 
         return GetEnergy() >= cost;
@@ -515,14 +530,14 @@ void GameObject::SumExperience(int val)
 void GameObject::UpgradeLevel(const std::vector<int> & attChanges)
 {
     // can't upgrade yet or already at max level -> exit
-    if(mExp < GetExperienceToNextLevel() || mExpLevel == MAX_LEVEL)
+    if(!CanBeUpgraded())
         return;
 
     // increase level
     ++mExpLevel;
 
     // hide icon upgrade if exp is below new next level or reached max
-    if(mExp < GetExperienceToNextLevel() || mExpLevel == MAX_LEVEL)
+    if(!CanBeUpgraded())
         HideIconUpgrade();
 
     // update attributes
@@ -602,16 +617,16 @@ void GameObject::SetAttackMode(AttackMode am)
         mWeapon->SetAttackMode(am);
 }
 
-void GameObject::SetPerfectShot(bool enabled)
+void GameObject::SetPerfectShotEnabled(bool val, bool forceFatal)
 {
     if(mWeapon != nullptr)
-        mWeapon->SetPerfectShot(enabled);
+        mWeapon->SetPerfectShotEnabled(val, forceFatal);
 }
 
-void GameObject::SetFatalHit(bool enabled)
+void GameObject::SetFatalHitEnabled(bool val)
 {
     if(mWeapon != nullptr)
-        mWeapon->SetFatalHit(enabled);
+        mWeapon->SetFatalHitEnabled(val);
 }
 
 void GameObject::ClearTargetAttack()
@@ -633,49 +648,40 @@ void GameObject::FindAndSetEnemyTarget()
     if(mWeapon == nullptr)
         return ;
 
-    auto gm = GetGameMap();
+    // check if attacking leaves enough energy available
+    const int costEnergy = mWeapon->GetCostEnergy();
 
-    const std::vector<GameMapCell> & cells = gm->GetCells();
-    const int mapRows = gm->GetNumRows();
-    const int mapCols = gm->GetNumCols();
-
-    const int cr = GetRow0();
-    const int cc = GetCol0();
-
-    const int rad = mWeapon->GetRange();
-    const int r0 = cr >= rad ? cr - rad : 0;
-    const int r1 = cr + rad < mapRows ? cr + rad + 1 : mapRows;
-    const int c0 = cc >= rad ? cc - rad : 0;
-    const int c1 = cc + rad < mapCols ? cc + rad + 1 : mapCols;
-
-    GameObject * target = nullptr;
-    int minDist = mapRows + mapCols;
-
-    for(int r = r0; r < r1; ++r)
+    if(mEnergy - costEnergy < mEnergyToSave)
     {
-        const int ind0 = r * mapCols;
+        mWeapon->ClearTarget();
+        return ;
+    }
 
-        for(int c = c0; c < c1; ++c)
-        {
-            const int ind = ind0 + c;
-            const GameMapCell & cell = cells[ind];
+    // find enemy based on strategy
+    GameObject * target = nullptr;
 
-            // prioritize object on top
-            GameObject * obj = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
+    switch(mAttStrategy)
+    {
+        // default first
+        case ATTSTR_CLOSEST_ENEMY:
+            target = FindEnemyClosest();
+        break;
 
-            // enemy found
-            if(obj != nullptr && obj->GetFaction() != mFaction && obj->GetFaction() != NO_FACTION)
-            {
-                const int dist = std::abs(cr - r) + std::abs(cc - c);
+        case ATTSTR_RANDOM_ENEMY:
+            target = FindEnemyRandom();
+        break;
 
-                // enemy is closer than others
-                if(dist < minDist)
-                {
-                    minDist = dist;
-                    target = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
-                }
-            }
-        }
+        case ATTSTR_LOWEST_HP_ENEMY:
+            target = FindEnemyLowHealth();
+        break;
+
+        case ATTSTR_HIGHEST_HP_ENEMY:
+            target = FindEnemyHighHealth();
+        break;
+
+        // ATTSTR_NO_ATTACK or ATTSTR_NULL
+        default:
+        break;
     }
 
     if(target != nullptr)
@@ -725,7 +731,8 @@ bool GameObject::HasEnemyInRange()
     return false;
 }
 
-void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showHitPoints)
+void GameObject::Hit(float damage, GameObject * attacker, PlayerFaction factionAttacker, bool fatal,
+                     bool showHitPoints)
 {
     using namespace sgl;
 
@@ -771,6 +778,17 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
     // hit and destroyed
     if(IsDestroyed())
     {
+#ifdef DEBUG
+        std::cout << "GameObject::Hit - object: " << this << " destroyed by: " << attacker
+                  << " of faction: " << factionAttacker << " VALID: "
+                  << mGameMap->HasObject(attacker) << std::endl;
+#endif
+
+        // NOTE killer faction is needed to propagate killer in chain of kills as killer object
+        // can be destroyed in the middle of it and its faction value becomes unusable
+        mKiller = attacker;
+        mKillerFaction = factionAttacker;
+
         // use more particles
         const int partDestroyedMult = 2;
         numPart *= partDestroyedMult;
@@ -780,7 +798,7 @@ void GameObject::Hit(float damage, GameObject * attacker, bool fatal, bool showH
         if(mOwner != nullptr)
         {
             if(attacker != nullptr)
-                mGameMap->RegisterEnemyKill(attacker, this);
+                mGameMap->RegisterEnemyKill(attacker, factionAttacker, this);
 
             // do not register casualty when exploding mini-units explode near enemies
             if(mType != ObjectData::TYPE_MINI_UNIT1 || !selfDestruct)
@@ -893,14 +911,56 @@ void GameObject::MissHit()
     puHP->AddParticle(dataHP);
 }
 
-void GameObject::SelfDestroy() { Hit(-1.f, nullptr, true, false); }
+void GameObject::SelfDestroy() { Hit(-1.f, nullptr, NO_FACTION, true, false); }
 
 void GameObject::SetActiveActionToDefault() { mActiveAction = mDefaultAction; }
 
-void GameObject::OnNewTurn(PlayerFaction faction)
+void GameObject::HideStatusUI()
+{
+    // nothing to do if not selected
+    if(!mSelected)
+        return ;
+
+    if(mBarEnergy != nullptr)
+        mBarEnergy->SetVisible(false);
+
+    if(mBarHealth != nullptr)
+        mBarHealth->SetVisible(false);
+
+    if(mIconUpgrade != nullptr)
+        mIconUpgrade->SetVisible(false);
+
+    if(mOverlaySel != nullptr)
+        mOverlaySel->Hide();
+}
+
+void GameObject::ShowStatusUI()
+{
+    // nothing to do if not selected
+    if(!mSelected)
+        return ;
+
+    if(mBarEnergy != nullptr)
+        mBarEnergy->SetVisible(true);
+
+    if(mBarHealth != nullptr)
+        mBarHealth->SetVisible(true);
+
+    if(mIconUpgrade != nullptr)
+        mIconUpgrade->SetVisible(CanBeUpgraded());
+
+    if(mOverlaySel != nullptr)
+        mOverlaySel->Show();
+}
+
+void GameObject::OnTurnStart(PlayerFaction faction)
 {
     if(GetFaction() == faction)
         RestoreTurnEnergy();
+}
+
+void GameObject::OnTurnEnd(PlayerFaction)
+{
 }
 
 void GameObject::Update(float)
@@ -930,7 +990,8 @@ void GameObject::OnAttributeChanged()
 
 int GameObject::GetStatusIconBaseY() const
 {
-    return (mBarHealth != nullptr) ? mBarHealth->GetY() : mIsoObj->GetY();
+    return (mBarHealth != nullptr && mBarHealth->IsVisible()) ? mBarHealth->GetY() :
+                                                                mIsoObj->GetY();
 }
 
 void GameObject::NotifyValueChanged()
@@ -952,7 +1013,12 @@ float GameObject::GetTime(float maxTime, float attribute) const
 
     const float baseTime = 0.25f;
 
-    return baseTime + maxTime - (maxTime * attribute / MAX_STAT_FVAL);
+    if(maxTime < baseTime)
+        return baseTime;
+
+    const float varTime = maxTime - baseTime;
+
+    return baseTime + varTime - (varTime * attribute / MAX_STAT_FVAL);
 }
 
 void GameObject::SetMaxVisibilityLevel(float maxVal, float maxValLinked)
@@ -967,7 +1033,7 @@ float GameObject::GetRegenerationPower() const
 
 float GameObject::GetActionEnergyCost(GameObjectActionType action) const
 {
-    if(ATTACK == action)
+    if(ACT_ATTACK == action)
         return mWeapon->GetCostEnergyPerShot();
 
     constexpr float ACTION_COSTS[NUM_OBJ_ACTIONS] =
@@ -1035,11 +1101,125 @@ void GameObject::PositionWarningMessage()
     mWarnMessage->SetPosition(messX, messY);
 }
 
+GameObject * GameObject::FindEnemyClosest()
+{
+    auto gm = GetGameMap();
+
+    const std::vector<GameMapCell> & cells = gm->GetCells();
+    const int mapRows = gm->GetNumRows();
+    const int mapCols = gm->GetNumCols();
+
+    const int cr = GetRow0();
+    const int cc = GetCol0();
+
+    const int rad = mWeapon->GetRange();
+    const int r0 = cr >= rad ? cr - rad : 0;
+    const int r1 = cr + rad < mapRows ? cr + rad + 1 : mapRows;
+    const int c0 = cc >= rad ? cc - rad : 0;
+    const int c1 = cc + rad < mapCols ? cc + rad + 1 : mapCols;
+
+    GameObject * target = nullptr;
+    int minDist = mapRows + mapCols;
+
+    for(int r = r0; r < r1; ++r)
+    {
+        const int ind0 = r * mapCols;
+
+        for(int c = c0; c < c1; ++c)
+        {
+            const int ind = ind0 + c;
+            const GameMapCell & cell = cells[ind];
+
+            // prioritize object on top
+            GameObject * obj = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
+
+            // enemy found
+            if(obj != nullptr && obj->GetFaction() != mFaction && obj->GetFaction() != NO_FACTION)
+            {
+                const int dist = std::abs(cr - r) + std::abs(cc - c);
+
+                // enemy is closer than others
+                if(dist < minDist)
+                {
+                    minDist = dist;
+                    target = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
+                }
+            }
+        }
+    }
+
+    return target;
+}
+GameObject * GameObject::FindEnemyRandom()
+{
+    auto gm = GetGameMap();
+
+    const std::vector<GameMapCell> & cells = gm->GetCells();
+    const int mapRows = gm->GetNumRows();
+    const int mapCols = gm->GetNumCols();
+
+    const int cr = GetRow0();
+    const int cc = GetCol0();
+
+    const int rad = mWeapon->GetRange();
+    const int r0 = cr >= rad ? cr - rad : 0;
+    const int r1 = cr + rad < mapRows ? cr + rad + 1 : mapRows;
+    const int c0 = cc >= rad ? cc - rad : 0;
+    const int c1 = cc + rad < mapCols ? cc + rad + 1 : mapCols;
+
+    std::vector<GameObject *> targets;
+
+    for(int r = r0; r < r1; ++r)
+    {
+        const int ind0 = r * mapCols;
+
+        for(int c = c0; c < c1; ++c)
+        {
+            const int ind = ind0 + c;
+            const GameMapCell & cell = cells[ind];
+
+            // prioritize object on top
+            GameObject * obj = cell.objTop != nullptr ? cell.objTop : cell.objBottom;
+
+            // enemy found
+            if(obj != nullptr && obj->GetFaction() != mFaction && obj->GetFaction() != NO_FACTION)
+                targets.emplace_back(obj);
+        }
+    }
+
+    const unsigned int numEnemies = targets.size();
+
+    if(numEnemies == 0)
+        return nullptr;
+    else if(numEnemies == 1)
+        return targets[0];
+    else
+    {
+        sgl::utilities::UniformDistribution dist(0, numEnemies - 1);
+        return targets[dist.GetNextValue()];
+    }
+}
+
+GameObject * GameObject::FindEnemyLowHealth()
+{
+    // TODO
+    return nullptr;
+}
+
+GameObject * GameObject::FindEnemyHighHealth()
+{
+    // TODO
+    return nullptr;
+}
+
 void GameObject::ShowIconUpgrade()
 {
-    // already showing it
+    // already showed
     if(mIconUpgrade != nullptr)
+    {
+        mIconUpgrade->SetVisible(true);
         return ;
+    }
 
     // only show for local player
     if(!IsFactionLocal())
@@ -1056,8 +1236,8 @@ void GameObject::ShowIconUpgrade()
 
 void GameObject::HideIconUpgrade()
 {
-    delete mIconUpgrade;
-    mIconUpgrade = nullptr;
+    if(mIconUpgrade != nullptr)
+        mIconUpgrade->SetVisible(false);
 }
 
 void GameObject::PositionIconUpgrade()
@@ -1078,9 +1258,12 @@ void GameObject::PositionIconUpgrade()
 
 void GameObject::ShowEnergyBar()
 {
-    // already showing it
+    // already showed
     if(mBarEnergy != nullptr)
+    {
+        mBarEnergy->SetVisible(true);
         return ;
+    }
 
     // only show for local player
     if(!IsFactionLocal())
@@ -1098,8 +1281,8 @@ void GameObject::ShowEnergyBar()
 
 void GameObject::HideEnergyBar()
 {
-    delete mBarEnergy;
-    mBarEnergy = nullptr;
+    if(mBarEnergy != nullptr)
+        mBarEnergy->SetVisible(false);
 }
 
 void GameObject::PositionEnergyBar()
@@ -1129,9 +1312,12 @@ void GameObject::UpdateEnergyBar()
 
 void GameObject::ShowHealthBar()
 {
-    // already showing it
+    // already showed before
     if(mBarHealth != nullptr)
+    {
+        mBarHealth->SetVisible(true);
         return ;
+    }
 
     // only show for local player
     if(!IsFactionLocal())
@@ -1149,8 +1335,8 @@ void GameObject::ShowHealthBar()
 
 void GameObject::HideHealthBar()
 {
-    delete mBarHealth;
-    mBarHealth = nullptr;
+    if(mBarHealth != nullptr)
+        mBarHealth->SetVisible(false);
 }
 
 void GameObject::PositionHealthBar()
@@ -1234,7 +1420,7 @@ void GameObject::SetExperience(int val)
 
     mExp = val;
 
-    if(mExp >= GetExperienceToNextLevel())
+    if(CanBeUpgraded())
         ShowIconUpgrade();
     else
         HideIconUpgrade();

@@ -532,7 +532,7 @@ void MapIO::ReadDataBinary(sgl::utilities::BinaryFile & bf)
     }
 
     // save objects
-    const unsigned int numObjs = bf.ReadInt();
+    const unsigned int numObjs = bf.ReadUint();
 
     for(unsigned int i = 0; i < numObjs; ++i)
     {

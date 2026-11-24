@@ -68,6 +68,10 @@ public:
 
     // indexes of units in build dialog
     static const int unitMiniSpawner;
+
+    // camera and animations
+    static const float delayAnimLong;
+    static const float speedCamera;
 };
 
 } // namespace game

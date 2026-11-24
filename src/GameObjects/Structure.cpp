@@ -2,7 +2,11 @@
 
 #include "GameConstants.h"
 #include "Player.h"
+#include "Particles/DataParticleOutput.h"
+#include "Particles/UpdaterOutput.h"
 #include "Widgets/BlinkingIcon.h"
+
+#include <sgl/graphic/ParticlesManager.h>
 
 namespace game
 {
@@ -24,7 +28,7 @@ Structure::~Structure()
 
 float Structure::GetTimeBuildUnit() const
 {
-    const float maxTime = 2.f;
+    const float maxTime = 1.75f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_CONSTRUCTION));
 }
 
@@ -33,7 +37,7 @@ void Structure::OnPositionChanged()
     PositionIconEnergy();
 }
 
-int Structure::GetResourceProduction(ExtendedResource res) const
+int Structure::GetResourceProduction(ExtendedResource) const
 {
     return 0;
 }
@@ -60,6 +64,22 @@ void Structure::OnLinkedChanged()
 void Structure::UpdateGraphics()
 {
     UpdateIconEnergy();
+}
+
+void Structure::ShowEnergyUsage()
+{
+    // emit notification
+    auto partMan = GetParticlesManager();
+    auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
+
+    const int marginV = 20;
+    const float x = GetX() + GetWidth() / 2.f;
+    const float y = GetY() - marginV;
+    const float delay = 0.f;
+
+    const int val = -GetResourceUsage(ER_ENERGY);
+    const DataParticleOutput pd(val, ER_ENERGY, x, y, delay);
+    pu->AddParticle(pd);
 }
 
 void Structure::HideIconEnergy()

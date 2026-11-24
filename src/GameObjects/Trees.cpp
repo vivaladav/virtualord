@@ -1,5 +1,6 @@
 #include "GameObjects/Trees.h"
 
+#include "Cell2D.h"
 #include "Game.h"
 #include "GameData.h"
 #include "GameConstants.h"
@@ -10,10 +11,13 @@
 #include <sgl/utilities/BinaryFile.h>
 #include <sgl/utilities/UniformDistribution.h>
 
+#include <cassert>
+
 namespace
 {
     constexpr float maxTreeEnergy = 100.f;
-    constexpr float maxTreeHealth = 200.f;
+    constexpr float maxTreeHealth = 150.f;
+    constexpr float maxTreeHealth2 = 100.f;
 }
 
 namespace game
@@ -50,7 +54,10 @@ Trees::Trees(const ObjectData & data, const ObjectInitData & initData, GameObjec
     SetStatic(true);
 
     // health
-    SetMaxHealth(maxTreeHealth);
+    if(type == ObjectData::TYPE_CACTUS1)
+        SetMaxHealth(maxTreeHealth2);
+    else
+        SetMaxHealth(maxTreeHealth);
 
     // energy
     SetMaxEnergy(maxTreeEnergy);
@@ -101,9 +108,9 @@ bool Trees::Save(sgl::utilities::BinaryFile & bf) const
     return true;
 }
 
-void Trees::OnNewTurn(PlayerFaction faction)
+void Trees::OnTurnStart(PlayerFaction faction)
 {
-    GameObject::OnNewTurn(faction);
+    GameObject::OnTurnStart(faction);
 
     ++mTurns;
 
@@ -161,7 +168,7 @@ void Trees::OnNewTurn(PlayerFaction faction)
             {
                 const int ind = ind0 + c;
 
-                if(!gm->HasObject(ind))
+                if(gm->CanAddObjectToCell(ind))
                 {
                     SpawnTree(r, c);
 
@@ -179,7 +186,11 @@ void Trees::SpawnTree(int r0, int c0)
     sgl::utilities::UniformDistribution dis(0, mNumVariants - 1);
     const int variant = dis.GetNextValue();
 
-    gm->CreateObject(GetObjectType(), variant, NO_FACTION, r0, c0, false);
+    gm->ConquerCell(Cell2D(r0, c0), nullptr);
+
+    auto newTree = gm->CreateObject(GetObjectType(), variant, NO_FACTION, r0, c0, false);
+
+    assert(newTree);
 
     const GameObjectTypeId type = GetObjectType();
 

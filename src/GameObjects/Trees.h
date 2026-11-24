@@ -14,7 +14,7 @@ public:
     bool Load(sgl::utilities::BinaryFile & bf) override;
     bool Save(sgl::utilities::BinaryFile & bf) const override;
 
-    void OnNewTurn(PlayerFaction faction) override;
+    void OnTurnStart(PlayerFaction faction) override;
 
 private:
     void SpawnTree(int r0, int c0);

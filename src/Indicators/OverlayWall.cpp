@@ -35,6 +35,33 @@ OverlayWall::~OverlayWall()
         delete pi;
 }
 
+void OverlayWall::Hide()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, false);
+
+    if(mLayer->HasObject(mTarget))
+        mLayer->SetObjectVisible(mTarget, false);
+
+    mPanelCost->SetVisible(false);
+    mPanelMoveCost->SetVisible(false);
+}
+
+void OverlayWall::Show()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, true);
+
+    if(mLayer->HasObject(mTarget))
+    {
+        mLayer->SetObjectVisible(mTarget, true);
+
+        mPanelMoveCost->SetVisible(mActiveIndicators.empty());
+    }
+    else
+        mPanelCost->SetVisible(true);
+}
+
 bool OverlayWall::IsIndexInWallPath(unsigned int ind) const
 {
     auto it = std::find(mWallPath.begin(), mWallPath.end(), ind);

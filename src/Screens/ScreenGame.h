@@ -76,7 +76,7 @@ public:
     void OnWindowMouseEntered(sgl::graphic::WindowEvent & event) override;
     void OnWindowMouseLeft(sgl::graphic::WindowEvent & event) override;
 
-    void OnAutomaticMovesFinished();
+    void OnAutomaticStageFinished();
 
     void OnObjectDestroyed(GameObject * obj);
 
@@ -89,12 +89,14 @@ public:
     bool IsSelectionAllowed() const;
     void ClearSelection(Player * player);
     void SelectObject(GameObject * obj, Player * player);
+    void SelectNextUnit();
 
     // speed < 0 : instant move | speed == 0 : default speed | speed > 0 : use value
     void CenterCameraOverCell(int r, int c, float speed = -1.f);
     void CenterCameraOverCell(const Cell2D & cell, float speed = -1.f);
     void CenterCameraOverCell(unsigned int cellIndex, float speed = -1.f);
-    void CenterCameraOverObject(const GameObject * obj, float speed = -1.f);
+    void CenterCameraOverObject(const GameObject * obj, float speed = -1.f,
+                                bool skipWhenClose = false);
     void StartCameraTracking(const GameObject * obj);
     void StopCameraTracking();
     void StopCameraMove();
@@ -133,6 +135,9 @@ private:
     void CreateUI();
     void CreateOverlays();
     void HideActionPanels();
+
+    void HideSelection();
+    void ShowSelection();
 
     void LoadMapFile();
 
@@ -204,7 +209,7 @@ private:
 
     void UpdatePanelHit(const GameObject * attacker);
 
-    void UpdateCurrentCell();
+    void UpdateCurrentCell(bool forceUpdate = false);
 
     void AddObjectToMinimap(const Cell2D & cell, GameObjectTypeId type, PlayerFaction f);
 
@@ -214,8 +219,6 @@ private:
     void EndTurn();
     void InitLocalTurn();
     unsigned int GetNumLocalTurns() const;
-
-    void ReselectLastSelected();
 
 #ifdef DEV_MODE
     void CreateEnemyInCurrentCell(GameObjectTypeId type);
@@ -251,6 +254,7 @@ private:
     sgl::ai::Pathfinder * mPathfinder = nullptr;
 
     struct Cell2D mCurrCell;
+    struct Cell2D mPrevActionClickedCell;
     sgl::core::Pointd2D mMousePos;
 
     // MAP OVERLAYS
@@ -275,7 +279,6 @@ private:
 
     bool mPaused = false;
     bool mAllowSelection = true;
-    bool mLocalTurnInitDone = false;
 };
 
 inline void ScreenGame::SetObjectActionCompleted(GameObject * obj)

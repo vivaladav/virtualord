@@ -2,7 +2,11 @@
 
 #include "Screen.h"
 
-namespace sgl { namespace graphic { class Image; } }
+namespace sgl
+{
+    namespace graphic { class Image; }
+    namespace sgui { class Widget; }
+}
 
 namespace game
 {
@@ -24,10 +28,14 @@ public:
 private:
     void OnApplicationQuit(sgl::core::ApplicationEvent & event) override;
 
+    void CreatePanelLoad();
     void CreateChangelog();
 
 private:
     sgl::graphic::Image * mBg = nullptr;
+
+    sgl::sgui::Widget * mPanelButtons = nullptr;
+    sgl::sgui::Widget * mPanelLoad = nullptr;
 
     ButtonChangelog * mButtonChangelog = nullptr;
     DialogChangelog * mDialogChangelog = nullptr;

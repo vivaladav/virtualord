@@ -14,6 +14,10 @@ public:
 
     void Update(float delta) override;
 
+    int GetResourceUsage(ExtendedResource res) const override;
+
+    void OnTurnEnd(PlayerFaction faction) override;
+
 protected:
     void UpdateGraphics() override;
 

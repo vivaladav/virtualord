@@ -4,12 +4,17 @@
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepPlanetMapConquerTerritory.h"
 #include "Tutorial/StepPlanetMapConquerTerritoryStart.h"
+#include "Tutorial/StepPlanetMapExploreCancel.h"
 #include "Tutorial/StepPlanetMapExploreTerritory.h"
 #include "Tutorial/StepPlanetMapExploreTerritoryStart.h"
 #include "Tutorial/StepPlanetMapExploreTerritorySuccess.h"
 #include "Tutorial/StepPlanetMapIntro.h"
+#include "Tutorial/StepPlanetMapNoResources.h"
 #include "Tutorial/StepPlanetMapSelectTerritory.h"
 #include "Tutorial/TutorialConstants.h"
+#include "Widgets/PanelPlanetActionExplore.h"
+
+#include <sgl/sgui/AbstractButton.h>
 
 namespace
 {
@@ -38,13 +43,32 @@ TutorialPlanetMap2::TutorialPlanetMap2(Screen * screen)
             });
     // EXPLORE MAIN TERRITORY
     AddStep([this] { return new StepPlanetMapExploreTerritory(GetPanelActions()); });
-    AddStep([this] { return new StepPlanetMapExploreTerritoryStart(GetPanelExplore()); });
+    AddStep([this]
+    {
+        TutorialStep * step = nullptr;
+        auto panel = GetPanelExplore();
+
+        if(panel->GetButtonOk()->IsEnabled())
+            step = new StepPlanetMapExploreTerritoryStart(panel);
+        else
+            step = new StepPlanetMapNoResources;
+
+        return step;
+    });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this]
-            {
-                return new StepPlanetMapExploreTerritorySuccess(GetPanelExplore(), GetPanelInfo(),
-                                                                GetPanelResources());
-            });
+    {
+        TutorialStep * step = nullptr;
+        auto panel = GetPanelExplore();
+
+        if(panel->GetButtonOk()->IsEnabled())
+            step = new StepPlanetMapExploreTerritorySuccess(panel, GetPanelInfo(),
+                                                            GetPanelResources());
+        else
+            step = new StepPlanetMapExploreCancel(panel);
+
+        return step;
+    });
     // CONQUER TERRITORY
     AddStep([this]
             {

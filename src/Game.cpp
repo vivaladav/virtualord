@@ -37,9 +37,11 @@
 #include <sgl/services/Steam.h>
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/BinaryFile.h>
+#include <sgl/utilities/Filesystem.h>
 #include <sgl/utilities/StateManager.h>
 #include <sgl/utilities/StringManager.h>
 #include <sgl/utilities/UniformDistribution.h>
+#include <sgl/utilities/UniformRealDistribution.h>
 
 #ifdef DEBUG
 #include <sgl/core/ModuleCore.h>
@@ -67,6 +69,8 @@ constexpr int START_MONEY = 1000;
 constexpr int START_DIAMONDS = 10;
 constexpr int START_BLOBS = 10;
 constexpr int START_RESEARCH = 0;
+
+constexpr int MAX_SAVE_SLOTS = 3;
 }
 
 namespace game
@@ -77,17 +81,19 @@ namespace game
 bool Game::GOD_MODE = false;
 #endif
 
-const std::string Game::SAVE_VERSION("0.2.2");
-const std::string Game::SETTINGS_VERSION("0.1.5");
+const std::string Game::SAVE_VERSION("0.3.2");
+const std::string Game::SETTINGS_VERSION("0.3.2");
 
 Game::Game(int argc, char * argv[])
     : sgl::core::Application(argc, argv)
     , mResLoader(new ResourceLoader(this))
     , mTutMan(new TutorialManager)
     , mObjsRegistry(new ObjectsDataRegistry)
+    , mDistUniform(new sgl::utilities::UniformDistribution(0, 1))
+    , mDistReal(new sgl::utilities::UniformRealDistribution(0.f, 1.f))
     , mLocalFaction(NO_FACTION)
     , mCurrPlanet(PLANET_UNKNOWN)
-    , mLanguage(LANG_NULL)
+    , mLanguage(GameConstants::LANG_NULL)
     , mButtonSelect(sgl::core::MouseEvent::BUTTON_LEFT)
     , mButtonAction(sgl::core::MouseEvent::BUTTON_RIGHT)
 {
@@ -134,7 +140,7 @@ Game::Game(int argc, char * argv[])
 #endif
 
     // set default language
-    LanguageId startLanguage = LANG_ENGLISH;
+    LanguageId startLanguage = GameConstants::LANG_ENGLISH;
 
     // -- STEAM INTEGRATION --
     auto steam = sgl::services::Steam::Create();
@@ -171,13 +177,13 @@ Game::Game(int argc, char * argv[])
             const std::string strSpanishLa("latam");
 
             if(strLang == strSpanishEs || strLang == strSpanishLa)
-                startLanguage = LANG_SPANISH;
+                startLanguage = GameConstants::LANG_SPANISH;
             else if(strLang == strGerman)
-                startLanguage = LANG_GERMAN;
+                startLanguage = GameConstants::LANG_GERMAN;
             else if(strLang == strItalian)
-                startLanguage = LANG_ITALIAN;
+                startLanguage = GameConstants::LANG_ITALIAN;
             else if(strLang == strFrench)
-                startLanguage = LANG_FRENCH;
+                startLanguage = GameConstants::LANG_FRENCH;
         }
     }
 
@@ -283,24 +289,38 @@ Game::Game(int argc, char * argv[])
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_4, 8000);
     mCostUpgrades.emplace(TECH_UP_UNIT_SLOTS_5, 12000);
 
+#ifdef DEMO_MODE
+// make costs for advanced tech upgrades extremely high in the demo
+mCostUpgrades[TECH_UP_BASE_IMPROVE_3] = 30000;
+mCostUpgrades[TECH_UP_BASE_IMPROVE_4] = 40000;
+mCostUpgrades[TECH_UP_BASE_IMPROVE_5] = 50000;
+mCostUpgrades[TECH_UP_RADAR_TOWER] = 20000;
+mCostUpgrades[TECH_UP_STORAGE_ENERGY_2] = 20000;
+mCostUpgrades[TECH_UP_STORAGE_MATERIAL_2] = 20000;
+mCostUpgrades[TECH_UP_STORAGE_DIAMONDS_2] = 20000;
+mCostUpgrades[TECH_UP_STORAGE_BLOBS_2] = 20000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_1] = 10000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_2] = 20000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_3] = 30000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_4] = 40000;
+mCostUpgrades[TECH_UP_UNIT_SLOTS_5] = 50000;
+#endif
+
     // TEMP CODE
     // TODO handle save directory properly
     mDirSave = "save/";
     mDirSettings = "save/";
     InitDirectories();
 
-    mSettingsFile = std::string("settings.sav");
+    mSettingsFile = std::string("settings.cfg");
 
     // init save files
     mSaveFiles.emplace_back("00_001.sav");
     mSaveFiles.emplace_back("00_002.sav");
     mSaveFiles.emplace_back("00_003.sav");
-    mSaveFiles.emplace_back("01_001.sav");
-    mSaveFiles.emplace_back("01_002.sav");
-    mSaveFiles.emplace_back("01_003.sav");
-    mSaveFiles.emplace_back("02_001.sav");
-    mSaveFiles.emplace_back("02_002.sav");
-    mSaveFiles.emplace_back("02_003.sav");
+
+    // default auto-save file
+    mCurrAutoSaveFile = std::string("auto.sav");
 
     // load settings when starting
     const bool settingsOK = LoadSettings();
@@ -315,6 +335,9 @@ Game::Game(int argc, char * argv[])
 Game::~Game()
 {
     using namespace sgl;
+
+    delete mDistUniform;
+    delete mDistReal;
 
     delete mGameStats;
 
@@ -368,6 +391,20 @@ void Game::ClearGameData()
 }
 
 // -- LOAD & SAVE --
+void Game::SetSaveSlot(int slot)
+{
+    // fallback solution
+    if(slot < 0 || slot >= MAX_SAVE_SLOTS)
+    {
+        std::cout << "[ERR] Game::SetSaveSlot - slot " << slot << " NOT valid!" << std::endl;
+        mCurrentSaveSlot = -1;
+        mCurrSaveFile = mCurrAutoSaveFile;
+    }
+
+    mCurrentSaveSlot = slot;
+    mCurrSaveFile = mSaveFiles[slot];
+}
+
 void Game::CloseSaveFileForReading()
 {
     if(mReaderSave == nullptr)
@@ -379,14 +416,12 @@ void Game::CloseSaveFileForReading()
     mReaderSave = nullptr;
 }
 
-const std::string & Game::GetSavefile(GameMode mode, unsigned int ind) const
+const std::string & Game::GetSavefile(unsigned int ind) const
 {
     static const std::string empty;
 
-    const unsigned int savesPerMode = 3;
-
-    if(mode < NUM_GAME_MODES && ind < savesPerMode)
-        return mSaveFiles[(savesPerMode * mode) + ind];
+    if(ind < mSaveFiles.size())
+        return mSaveFiles[ind];
     else
         return empty;
 }
@@ -399,16 +434,23 @@ bool Game::HasSavedFiles() const
             return true;
     }
 
-    return false;
+    return IsSaveFileValid(mCurrAutoSaveFile);
 }
 
 bool Game::IsSaveFileValid(const std::string & saveFile) const
 {
     using namespace sgl;
 
-    // OPEN save file
+    const utilities::Filesystem fs;
     const std::string path = saveFile.empty() ? (mDirSave + mCurrSaveFile) : (mDirSave + saveFile);
 
+    if(!fs.DoesPathExist(path))
+    {
+        std::cout << "[WAR] Game::IsSaveFileValid - file " << path << " does NOT exist." << std::endl;
+        return false;
+    }
+
+    // OPEN save file
     utilities::BinaryFile bf(path, utilities::BinaryFile::OPEN_INPUT);
 
     if(!bf.IsOpen())
@@ -440,7 +482,14 @@ bool Game::LoadGameHeader(GameMode & mode, PlayerFaction & faction, PlanetId & p
 {
     using namespace sgl;
 
+    const utilities::Filesystem fs;
     const std::string path = saveFile.empty() ? (mDirSave + mCurrSaveFile) : (mDirSave + saveFile);
+
+    if(!fs.DoesPathExist(path))
+    {
+        std::cout << "[WAR] Game::LoadGameHeader - file " << path << " does NOT exist." << std::endl;
+        return false;
+    }
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
@@ -469,6 +518,10 @@ bool Game::LoadGameHeader(GameMode & mode, PlayerFaction & faction, PlanetId & p
         return false;
     }
 
+    // game version
+    std::string gameVersion;
+    bf.ReadString(gameVersion);
+
     // READ HEADER
     mode = static_cast<GameMode>(bf.ReadUint());
     faction = static_cast<PlayerFaction>(bf.ReadUint());
@@ -484,6 +537,11 @@ bool Game::LoadGameHeader(GameMode & mode, PlayerFaction & faction, PlanetId & p
     std::cout << "Game::LoadGameHeader - GAME HEADER LOADED in: " << duration.count() << " ms" << std::endl;
 #endif
 
+#ifdef DEBUG
+    std::cout << "Game::LoadGameHeader - LOADED HEADER " << path << " - version: "
+              << version << " - create by \"Virtualord " << gameVersion << "\"" << std::endl;
+#endif
+
     return true;
 }
 
@@ -491,7 +549,14 @@ bool Game::LoadGame(const std::string & saveFile)
 {
     using namespace sgl;
 
+    const utilities::Filesystem fs;
     const std::string path = saveFile.empty() ? (mDirSave + mCurrSaveFile) : (mDirSave + saveFile);
+
+    if(!fs.DoesPathExist(path))
+    {
+        std::cout << "[WAR] Game::LoadGame - file " << path << " does NOT exist." << std::endl;
+        return false;
+    }
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
@@ -524,6 +589,10 @@ bool Game::LoadGame(const std::string & saveFile)
                   << version << " (expected " << SAVE_VERSION << ")" << std::endl;
         return false;
     }
+
+    // game version
+    std::string gameVersion;
+    mReaderSave->ReadString(gameVersion);
 
     // HEADER with data used for quick load
     mGameMode = static_cast<GameMode>(mReaderSave->ReadUint());
@@ -605,6 +674,10 @@ bool Game::LoadGame(const std::string & saveFile)
     mCostSave[ER_ENERGY] = mReaderSave->ReadInt();
     mCostSave[ER_MATERIAL] = mReaderSave->ReadInt();
 
+    // current save slot
+    const int slot = mReaderSave->ReadInt();
+    SetSaveSlot(slot);
+
     // State
     const auto stateId = static_cast<StateId>(mReaderSave->ReadUint());
 
@@ -619,8 +692,10 @@ bool Game::LoadGame(const std::string & saveFile)
     std::cout << "Game::LoadGame - GAME LOADED in: " << duration.count() << " ms" << std::endl;
 #endif
 
-    if(!saveFile.empty())
-        mCurrSaveFile = saveFile;
+#ifdef DEBUG
+    std::cout << "Game::LoadGame - LOADED GAME " << path << " - version: "
+              << version << " - create by \"Virtualord " << gameVersion << "\"" << std::endl;
+#endif
 
     return true;
 }
@@ -648,6 +723,10 @@ bool Game::SaveGame(const std::string & saveFile)
 
     // version
     bf.WriteString(SAVE_VERSION);
+
+    // game version
+    const std::string gameVersion(VERSION);
+    bf.WriteString(gameVersion);
 
     // HEADER with data used for quick load
     bf.WriteUint(mGameMode);
@@ -700,13 +779,13 @@ bool Game::SaveGame(const std::string & saveFile)
         bf.WriteBool(ai->IsActive());
     }
 
-    // reset cost of saving before writing the values
-    InitCostSaveGame();
-
     // save cost of saving
     bf.WriteInt(mCostSave[ER_MONEY]);
     bf.WriteInt(mCostSave[ER_ENERGY]);
     bf.WriteInt(mCostSave[ER_MATERIAL]);
+
+    // current save slot
+    bf.WriteInt(mCurrentSaveSlot);
 
     // NOTE KEEP THIS LAST SAVE BLOCK
     // State
@@ -733,7 +812,14 @@ bool Game::LoadSettings()
 {
     using namespace sgl;
 
+    const utilities::Filesystem fs;
     const std::string path = mDirSettings + mSettingsFile;
+
+    if(!fs.DoesPathExist(path))
+    {
+        std::cout << "[WAR] Game::LoadSettings - file " << path << " does NOT exist." << std::endl;
+        return false;
+    }
 
 #ifdef DEV_MODE
     // TODO remove later, now left just for reference on testing times
@@ -761,14 +847,26 @@ bool Game::LoadSettings()
         return false;
     }
 
+    // game version
+    std::string gameVersion;
+    bf.ReadString(gameVersion);
+
     // settings
-    const unsigned int lang = bf.ReadUint();
-    SetLanguage(static_cast<LanguageId>(lang));
+    const auto lang = static_cast<LanguageId>(bf.ReadSizeT());
+    SetLanguage(lang);
 
     mMapDraggingSpeed = bf.ReadInt();
     mMapScrollingSpeed = bf.ReadInt();
     mButtonSelect = bf.ReadInt();
     mButtonAction = bf.ReadInt();
+
+    auto am = media::AudioManager::Instance();
+    auto ap = am->GetPlayer();
+    am->SetVolumeAudio(bf.ReadUint());
+    ap->SetMusicEnabled(bf.ReadBool());
+    am->SetVolumeMusic(bf.ReadUint());
+    ap->SetSoundEnabled(bf.ReadBool());
+    am->SetVolumeSound(bf.ReadUint());
 
     const int display = bf.ReadInt();
     const int dMode = bf.ReadInt();
@@ -776,14 +874,6 @@ bool Game::LoadSettings()
     const bool grabMouse = bf.ReadBool();
     mTimeAutoHideMouse = bf.ReadFloat();
     SetAutoHideMouseEnabled(bf.ReadBool());
-
-    if(display >= 0 && dMode >= 0)
-    {
-        if(mWin->SetDisplayMode(display, dMode))
-            mWin->SetVideoMode(vMode);
-    }
-
-    mWin->GrabMouse(grabMouse);
 
     mMapDragging = bf.ReadBool();
     mMapScrollingOnEdges = bf.ReadBool();
@@ -797,6 +887,20 @@ bool Game::LoadSettings()
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
     std::cout << "Game::LoadSettings - SETTINGS LOADED in: " << duration.count() << " ms" << std::endl;
 #endif
+
+    std::cout << "Game::LoadSettings - LOADED " << path << " (" << ver
+              << ") created by \"Virtualord " << gameVersion << "\"" << std::endl;
+
+    // -- USE LOADED SETTINGS --
+    // update video mode
+    if(display >= 0 && dMode >= 0)
+    {
+        if(mWin->SetDisplayMode(display, dMode))
+            mWin->SetVideoMode(vMode);
+    }
+
+    // set mouse grab
+    mWin->GrabMouse(grabMouse);
 
     return true;
 }
@@ -824,14 +928,25 @@ bool Game::SaveSettings()
 
     // version
     bf.WriteString(SETTINGS_VERSION);
+    // game version
+    const std::string gameVersion(VERSION);
+    bf.WriteString(gameVersion);
 
     // settings
-    bf.WriteUint(mLanguage);
+    bf.WriteSizeT(mLanguage);
 
     bf.WriteInt(mMapDraggingSpeed);
     bf.WriteInt(mMapScrollingSpeed);
     bf.WriteInt(mButtonSelect);
     bf.WriteInt(mButtonAction);
+
+    auto am = media::AudioManager::Instance();
+    auto ap = am->GetPlayer();
+    bf.WriteUint(am->GetVolumeAudio());
+    bf.WriteBool(ap->IsMusicEnabled());
+    bf.WriteUint(am->GetVolumeMusic());
+    bf.WriteBool(ap->IsSoundEnabled());
+    bf.WriteUint(am->GetVolumeSound());
 
     bf.WriteInt(mWin->GetCurrentDisplayIndex());
     bf.WriteInt(mWin->GetCurrentDisplayModeIndex());
@@ -883,13 +998,32 @@ using namespace std;
 }
 #endif
 
+void Game::InitCostSaveGame()
+{
+    const unsigned int maxMoney = 4000;
+    const unsigned int maxEnergy = 500;
+    const unsigned int maxMaterial = 50;
+
+    mCostSave.insert_or_assign(ER_MONEY, maxMoney);
+    mCostSave.insert_or_assign(ER_ENERGY, maxEnergy);
+    mCostSave.insert_or_assign(ER_MATERIAL, maxMaterial);
+}
+
 void Game::LowerCostSaveGame()
 {
-    const unsigned int minMoney = 500;
-    const unsigned int minEnergy = 100;
+    const unsigned int minMoney = 100;
+    const unsigned int minEnergy = 50;
     const unsigned int minMaterial = 10;
-    const unsigned int decMoney = mCostSave[ER_MONEY] > 1000 ? 1000 : 500;
-    const unsigned int decEnergy = 100;
+
+    unsigned int decMoney = 100;
+
+    if(mCostSave[ER_MONEY] > 1000)
+        decMoney = 1000;
+    else if(mCostSave[ER_MONEY] > 500)
+        500;
+
+    const unsigned int decEnergy = mCostSave[ER_ENERGY] > 100 ? 100 : 10;
+
     const unsigned int decMaterial = 10;
 
     const int newMoney = mCostSave[ER_MONEY] - decMoney;
@@ -1096,15 +1230,18 @@ void Game::InitDirectories()
         filesystem::create_directories(pathSave);
 }
 
-void Game::InitCostSaveGame()
+// -- probability distributions --
+sgl::utilities::UniformDistribution * Game::GetUniformDistribution(int min, int max) const
 {
-    const unsigned int maxMoney = 4000;
-    const unsigned int maxEnergy = 500;
-    const unsigned int maxMaterial = 50;
+    mDistUniform->SetParameters(min, max);
+    return mDistUniform;
+}
 
-    mCostSave.insert_or_assign(ER_MONEY, maxMoney);
-    mCostSave.insert_or_assign(ER_ENERGY, maxEnergy);
-    mCostSave.insert_or_assign(ER_MATERIAL, maxMaterial);
+sgl::utilities::UniformRealDistribution * Game::GetUniformRealDistribution(float min,
+                                                                           float max) const
+{
+    mDistReal->SetParameters(min, max);
+    return mDistReal;
 }
 
 void Game::CreatePlayers()
@@ -1255,6 +1392,9 @@ Player * Game::GetPlayerByFaction(PlayerFaction faction) const
 
 Player * Game::GetActivePlayerByFaction(PlayerFaction faction) const
 {
+    if(faction == NO_FACTION)
+        return nullptr;
+
     for(Player * p : mActivePlayers)
     {
         if(p->GetFaction() == faction)
@@ -1296,6 +1436,13 @@ void Game::AddToActivePlayersAI(PlayerFaction f)
     }
 }
 
+bool Game::CanLocalPlayerAffordTechUpgrade(TechUpgradeId upgrade) const
+{
+    const auto p = GetLocalPlayer();
+
+    return p->HasEnough(ER_RESEARCH, GetCostTechUpgrade(upgrade));
+}
+
 void Game::SetLanguage(LanguageId lang)
 {
     if(lang == mLanguage)
@@ -1305,18 +1452,22 @@ void Game::SetLanguage(LanguageId lang)
 
     auto sm = sgl::utilities::StringManager::Instance();
 
-    const char * languages[] =
+    const std::unordered_map<LanguageId, std::string> files =
     {
-        "en.txt",
-        "fr.txt",
-        "de.txt",
-        "it.txt",
-        "es.txt",
+        { GameConstants::LANG_ENGLISH, "en.txt" },
+        { GameConstants::LANG_FRENCH, "fr.txt" },
+        { GameConstants::LANG_GERMAN, "de.txt" },
+        { GameConstants::LANG_ITALIAN, "it.txt" },
+        { GameConstants::LANG_PORTUGUES_BR, "br.txt" },
+        { GameConstants::LANG_SPANISH, "es.txt" },
     };
 
-    static_assert((sizeof(languages) / sizeof(char *)) == NUM_LANGUAGES);
+    assert(files.size() == GameConstants::NUM_LANGUAGES);
 
-    sm->LoadStringsFromPackage(languages[lang]);
+    auto it = files.find(lang);
+
+    if(it != files.end())
+        sm->LoadStringsFromPackage(it->second.c_str());
 }
 
 bool Game::IsAutoHideMouseEnable() const

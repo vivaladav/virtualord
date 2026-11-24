@@ -402,10 +402,6 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFilePanelHeader, 20, graphic::Font::NORMAL);
     auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
 
-    auto texSliderBg = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BG);
-    auto texSliderBar = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BAR);
-    auto texSliderBtn = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BTN);
-
     int x = x0;
     int y = panelY + marginT;
 
@@ -425,7 +421,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     const int marginSliderR = 20;
     const int marginSliderB = 60;
 
-    mSliderElements = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderElements = new StandardGameSliderH(this);
     mSliderElements->SetMinMax(minElements, maxElements);
     mSliderElements->SetValue(defElements);
     mSliderElements->SetPosition(x, y);
@@ -464,7 +460,7 @@ void DialogNewMiniUnitsSquad::CreatePanelConfig()
     const int maxSquads = squadLimits[attSpawning];
     const int defSquads = 2;
 
-    mSliderSquads = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderSquads = new StandardGameSliderH(this);
     mSliderSquads->SetMinMax(minSquads, maxSquads);
     mSliderSquads->SetValue(defSquads);
     mSliderSquads->SetPosition(x, y);

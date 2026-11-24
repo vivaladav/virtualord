@@ -40,6 +40,7 @@ public:
         RESEARCH,
         TECH_TREE,
         SAVE_GAME,
+        SETTINGS,
 
         NUM_ACTION_ICONS
     };

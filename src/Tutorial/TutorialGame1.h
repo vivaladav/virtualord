@@ -12,6 +12,9 @@ class TutorialGame1 : public TutorialGame
 public:
     TutorialGame1(Screen * screen);
     ~TutorialGame1();
+
+private:
+    void OnContinue() override;
 };
 
 } // namespace game

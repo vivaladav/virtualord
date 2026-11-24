@@ -36,7 +36,7 @@ ObjectPath::ObjectPath(GameObject * obj, IsoMap * im, GameMap * gm, ScreenGame *
 bool ObjectPath::InitNextMove()
 {
     // not enough energy -> FAIL
-    if(!mObj->HasEnergyForActionStep(MOVE))
+    if(!mObj->HasEnergyForActionStep(ACT_MOVE))
         return Fail();
 
     // check if next destination is walkable
@@ -79,8 +79,8 @@ bool ObjectPath::InitNextMove()
         mObjY = isoObj->GetY();
         mTargetX = target.x;
         mTargetY = target.y;
-        mVelX = (mTargetX - mObjX) * mObj->GetSpeed();
-        mVelY = (mTargetY - mObjY) * mObj->GetSpeed();
+        mVelX = mTargetX - mObjX;
+        mVelY = mTargetY - mObjY;
     }
 
     mState = MOVING;
@@ -95,6 +95,11 @@ bool ObjectPath::InitNextMove()
         else
             ap->PlaySound("game/unit_move-02.ogg");
     }
+
+    // camera tracking - skip first cell to leave time for double clicks
+    if(2 == mNextCell && mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
+       mScreen->GetGame()->IsAutoUnitCameraEnabled()))
+        mScreen->StartCameraTracking(mObj);
 
     return true;
 }
@@ -112,11 +117,6 @@ bool ObjectPath::Start()
        currCell.objBottom->GetObjectType() == ObjectData::TYPE_WALL_GATE &&
        currCell.objBottom->GetFaction() == mObj->GetFaction())
         mOpenGate = static_cast<WallGate *>(currCell.objBottom);
-
-    // track object while moving if local
-    if(mLocal && (mObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
-       mScreen->GetGame()->IsAutoUnitCameraEnabled()))
-        mScreen->StartCameraTracking(mObj);
 
     mNextCell = 1;
 
@@ -137,10 +137,14 @@ void ObjectPath::Update(float delta)
 {
     int todo = 2;
 
-    // -- X --
-    mObjX += mVelX * delta;
+    const float speed = mFast ? 10.f : mObj->GetSpeed();
+    const float velX = mVelX * speed;
+    const float velY = mVelY * speed;
 
-    if(mVelX < 0.f)
+    // -- X --
+    mObjX += velX * delta;
+
+    if(velX < 0.f)
     {
         if(mObjX < mTargetX)
         {
@@ -148,7 +152,7 @@ void ObjectPath::Update(float delta)
             mObjX = mTargetX;
         }
     }
-    else if(mVelX > 0.f)
+    else if(velX > 0.f)
     {
         if(mObjX > mTargetX)
         {
@@ -160,9 +164,9 @@ void ObjectPath::Update(float delta)
         --todo;
 
     // -- Y --
-    mObjY += mVelY * delta;
+    mObjY += velY * delta;
 
-    if(mVelY < 0.f)
+    if(velY < 0.f)
     {
         if(mObjY < mTargetY)
         {
@@ -170,7 +174,7 @@ void ObjectPath::Update(float delta)
             mObjY = mTargetY;
         }
     }
-    else if(mVelY > 0.f)
+    else if(velY > 0.f)
     {
         if(mObjY > mTargetY)
         {
@@ -215,7 +219,7 @@ void ObjectPath::Update(float delta)
         mGameMap->ApplyVisibility(player);
 
         // set action step completed for energy and experience update
-        mObj->ActionStepCompleted(MOVE);
+        mObj->ActionStepCompleted(ACT_MOVE);
 
         // close open gate
         if(mOpenGate != nullptr &&
@@ -243,7 +247,7 @@ void ObjectPath::UpdatePathCost()
     if(mCells.empty())
         mCost = 0;
     else
-        mCost = (mCells.size() - 1) * mObj->GetEnergyForActionStep(MOVE);
+        mCost = (mCells.size() - 1) * mObj->GetEnergyForActionStep(ACT_MOVE);
 }
 
 bool ObjectPath::Fail()

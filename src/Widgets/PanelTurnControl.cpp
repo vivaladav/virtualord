@@ -80,6 +80,59 @@ private:
     GameSimpleTooltip * mTooltip = nullptr;
 };
 
+// ========== BUTTON NEXT UNIT ==========
+class ButtonNextUnit : public sgl::sgui::ImageButton, sgl::utilities::StringsChangeListener
+{
+public:
+    ButtonNextUnit(sgl::sgui::Widget * parent)
+        : sgl::sgui::ImageButton({
+                                     ID_TURNC_BTN_NEXTU_NORMAL,
+                                     ID_TURNC_BTN_NEXTU_DISABLED,
+                                     ID_TURNC_BTN_NEXTU_OVER,
+                                     ID_TURNC_BTN_NEXTU_PUSHED,
+                                     ID_TURNC_BTN_NEXTU_NORMAL
+                                 }, SpriteFilePanelTurnControl, parent)
+    {
+        using namespace sgl;
+
+        auto sm = utilities::StringManager::Instance();
+
+        // tooltip
+        mTooltip = new GameSimpleTooltip(sm->GetCString("TT_NEXT_UNIT"));
+        SetTooltip(mTooltip);
+        SetTooltipDelay(WidgetsConstants::timeTooltipButtonDelay);
+
+        // shortcut
+        SetShortcutKey(core::KeyboardEvent::KEY_N, core::KeyboardEvent::MOD_SHIFT);
+    }
+
+    void OnStringsChanged() override
+    {
+        auto sm = sgl::utilities::StringManager::Instance();
+
+        mTooltip->SetText(sm->GetCString("TT_NEXT_UNIT"));
+    }
+
+    void HandleMouseOver() override
+    {
+        sgl::sgui::ImageButton::HandleMouseOver();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+    void HandleButtonDown() override
+    {
+        sgl::sgui::ImageButton::HandleButtonDown();
+
+        auto player = sgl::media::AudioManager::Instance()->GetPlayer();
+        player->PlaySound("UI/button_over-01.ogg");
+    }
+
+private:
+    GameSimpleTooltip * mTooltip = nullptr;
+};
+
 // ========== BUTTON END TURN ==========
 class ButtonEndTurn : public sgl::sgui::ImageButton, sgl::utilities::StringsChangeListener
 {
@@ -161,6 +214,10 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     // BUTTON GO BACK TO BASE
     mButtonBase = new ButtonGoToBase(this);
 
+    // BUTTON NEXT UNIT
+    mButtonNextUnit = new ButtonNextUnit(this);
+    UpdateButtonNextUnitEnabled();
+
     // BUTTON END TURN
     mButtonEndTurn = new ButtonEndTurn(this);
 
@@ -174,13 +231,17 @@ PanelTurnControl::PanelTurnControl(Player * player, sgl::sgui::Widget * parent)
     mText->SetVisible(false);
 
     // POSITION ELEMENTS
-    const int marginButton = 50;
+    const int marginButton = 45;
+    const int spacingButton = 15;
     const int marginIcon = 5;
     const int marginBar = 5;
 
     int x = marginButton;
     int y = (h - mButtonBase->GetHeight()) / 2;
     mButtonBase->SetPosition(x, y);
+
+    x += mButtonBase->GetWidth() + spacingButton;
+    mButtonNextUnit->SetPosition(x, y);
 
     x = GetWidth() - marginButton - mButtonEndTurn->GetWidth();
     y = (h - mButtonEndTurn->GetHeight()) / 2;
@@ -192,6 +253,11 @@ void PanelTurnControl::AddFunctionGoToBase(const std::function<void()> & f)
     mButtonBase->AddOnClickFunction(f);
 }
 
+void  PanelTurnControl::AddFunctionNextUnit(const std::function<void()> & f)
+{
+    mButtonNextUnit->AddOnClickFunction(f);
+}
+
 void PanelTurnControl::AddFunctionEndTurn(const std::function<void()> & f)
 {
     mButtonEndTurn->AddOnClickFunction(f);
@@ -200,7 +266,15 @@ void PanelTurnControl::AddFunctionEndTurn(const std::function<void()> & f)
 void PanelTurnControl::SetButtonsEnabled(bool enabled)
 {
     mButtonBase->SetEnabled(enabled);
+
+    mButtonNextUnit->SetEnabled(enabled && mPlayer->GetNumUnits() > 0);
+
     mButtonEndTurn->SetEnabled(enabled);
+}
+
+void PanelTurnControl::UpdateButtonNextUnitEnabled()
+{
+    mButtonNextUnit->SetEnabled(mPlayer->GetNumUnits() > 0);
 }
 
 void PanelTurnControl::HideText()
@@ -229,7 +303,7 @@ void PanelTurnControl::HandlePositionChanged()
 
 void PanelTurnControl::PositionText()
 {
-    const int textAreaX0 = 125;
+    const int textAreaX0 = 203;
     const int textAreaY0 = 16;
     const int textAreaW = 500;
     const int textAreaH = 32;

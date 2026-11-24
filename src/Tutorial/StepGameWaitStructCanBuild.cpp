@@ -43,7 +43,7 @@ void StepGameWaitStructCanBuild::Update(float delta)
     if(obj == nullptr)
         return ;
 
-    const float minEnergy = obj->GetEnergyForActionStep(BUILD_UNIT);
+    const float minEnergy = obj->GetEnergyForActionStep(ACT_BUILD_UNIT);
 
     // selecte object is not an unit OR can't build OR doesn't have enough energy
     if(obj->GetObjectType() != mStruct || obj->GetEnergy() < minEnergy)

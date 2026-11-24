@@ -20,20 +20,32 @@ OverlayAttackRange::OverlayAttackRange(IsoMap * im)
 
 OverlayAttackRange::~OverlayAttackRange()
 {
-    for(auto pi : mActiveIndicators)
-        delete pi;
+    for(auto ind : mActiveIndicators)
+        delete ind;
 
-    for(auto pi : mAvailableIndicators)
-        delete pi;
+    for(auto ind : mAvailableIndicators)
+        delete ind;
+}
+
+void OverlayAttackRange::Hide()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, false);
+}
+
+void OverlayAttackRange::Show()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, true);
 }
 
 void OverlayAttackRange::Clear()
 {
-    for(auto pi : mActiveIndicators)
+    for(auto ind : mActiveIndicators)
     {
-        mLayer->RemoveObject(pi);
+        mLayer->RemoveObject(ind);
 
-        mAvailableIndicators.emplace_back(pi);
+        mAvailableIndicators.emplace_back(ind);
     }
 
     mActiveIndicators.clear();
@@ -66,10 +78,10 @@ void OverlayAttackRange::Show(const GameObject * obj)
                 const int distC = std::abs(c - c0);
                 const int dist = distR > distC ? distR : distC;
 
-                auto pi = GetNewIndicator(dist, range);
-                mActiveIndicators.emplace_back(pi);
+                auto ind = GetNewIndicator(dist, range);
+                mActiveIndicators.emplace_back(ind);
 
-                mLayer->AddObject(pi, r, c);
+                mLayer->AddObject(ind, r, c);
             }
         }
     }

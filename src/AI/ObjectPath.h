@@ -29,6 +29,8 @@ public:
 public:
     ObjectPath(GameObject * obj, IsoMap * im, GameMap * gm, ScreenGame * sg);
 
+    void SetFast(bool val);
+
     GameObject * GetObject() const;
 
     PathState GetState() const;
@@ -87,7 +89,10 @@ private:
     int mCost = 0;
 
     bool mLocal = false;
+    bool mFast = false;
 };
+
+inline void ObjectPath::SetFast(bool val) { mFast = val; }
 
 inline GameObject * ObjectPath::GetObject() const { return mObj; }
 

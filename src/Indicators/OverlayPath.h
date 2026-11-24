@@ -17,6 +17,9 @@ public:
     OverlayPath(IsoLayer * layer, PlayerFaction faction, int mapCols);
     ~OverlayPath();
 
+    void Hide();
+    void Show();
+
     void ClearPath();
     void SetPath(const std::vector<unsigned int> & path, int cost = -1, bool doable = true);
 

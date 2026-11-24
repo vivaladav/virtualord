@@ -61,8 +61,8 @@ void StepGameWallBuildEnd::Update(float)
     }
     else
     {
-        if(mUnit->GetCurrentAction() == GameObjectActionType::BUILD_WALL ||
-           mUnit->GetCurrentAction() == GameObjectActionType::MOVE)
+        if(mUnit->GetCurrentAction() == ACT_BUILD_WALL ||
+           mUnit->GetCurrentAction() == ACT_MOVE)
         {
             mFocusArea->SetBlinking(false);
             mFocusArea->SetVisible(false);

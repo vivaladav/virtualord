@@ -1,6 +1,8 @@
 #include "Tutorial/StepGameUpgradeUnit.h"
 
 #include "GameConstants.h"
+#include "Player.h"
+#include "GameObjects/GameObject.h"
 #include "Widgets/DialogUpgrade.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -19,11 +21,21 @@ const int padding = 10;
 namespace game
 {
 
-StepGameUpgradeUnit::StepGameUpgradeUnit(GameHUD * HUD, bool showIntro)
+StepGameUpgradeUnit::StepGameUpgradeUnit(const Player *p, GameHUD * HUD, bool showIntro)
     : TutorialInfoStep(670, showIntro ? 230 : 175)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
 {
+    // check that selected object is unit and can be upgraded
+    const auto selObj = p->GetSelectedObject();
+
+    if(selObj == nullptr || selObj->GetObjectCategory() != ObjectData::CAT_UNIT ||
+       !selObj->CanBeUpgraded())
+    {
+        SetDone();
+        return ;
+    }
+
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS

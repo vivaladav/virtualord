@@ -63,6 +63,8 @@
 #include <cmath>
 #include <iostream>
 
+#include <cassert>
+
 namespace
 {
 constexpr float timeAutoAttackDelay = 0.50f;
@@ -284,23 +286,13 @@ bool GameMap::Save(sgl::utilities::BinaryFile & bf) const
     bf.WriteUint(mMiniUnitsGroups.size());
 
     for(const MiniUnitsGroup * g : mMiniUnitsGroups)
-    {
-        if(g->IsEmpty())
-            continue;
-
         g->Save(bf);
-    }
 
     // city groups
     bf.WriteUint(mCities.size());
 
     for(const CityGroup * g : mCities)
-    {
-        if(g->IsEmpty())
-            continue;
-
         g->Save(bf);
-    }
 
     return true;
 }
@@ -317,6 +309,35 @@ void GameMap::InitAfterLoad()
     }
 }
 
+bool GameMap::CanAddObjectToCell(unsigned int ind) const
+{
+    // check there's no object in the cell
+    if(HasObject(ind))
+        return false;
+
+    // check cell is not already occupied by something in the list of objects to add
+    for(const auto & o2a : mObjectsToAdd)
+    {
+        const auto obj = o2a.obj;
+
+        for(int r = obj->GetRow1(); r <= obj->GetRow0(); ++r)
+        {
+            const unsigned int indObj0 = r * mCols;
+
+            for(int c = obj->GetCol1(); c <= obj->GetCol0(); ++c)
+            {
+                const unsigned int indObj = indObj0 + c;
+
+                if(ind == indObj)
+                    return false;
+            }
+        }
+    }
+
+    // all good
+    return true;
+}
+
 bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int ind) const
 {
     return ind < mCells.size() && mCells[ind].objTop != nullptr &&
@@ -325,8 +346,7 @@ bool GameMap::HasObjectType(GameObjectTypeId type, unsigned int ind) const
 
 bool GameMap::IsObjectVisibleToLocalPlayer(const GameObject * obj) const
 {
-    Player * p = mGame->GetLocalPlayer();
-    return p->IsObjectVisible(obj);
+    return mGame->GetLocalPlayer()->IsObjectVisible(obj);
 }
 
 void GameMap::GetObjectsInAreaByType(std::vector<GameObject *> & objs, const Cell2D & tl,
@@ -349,16 +369,13 @@ void GameMap::GetObjectsInAreaByType(std::vector<GameObject *> & objs, const Cel
 
 bool GameMap::IsCellVisibleToLocalPlayer(unsigned int ind) const
 {
-    Player * p = mGame->GetLocalPlayer();
-    return p->IsCellVisible(ind);
+    return mGame->GetLocalPlayer()->IsCellVisible(ind);
 }
 
 bool GameMap::IsCellVisibleToLocalPlayer(unsigned int r, unsigned int c) const
 {
     const unsigned int ind = (r * mCols) + c;
-
-    Player * p = mGame->GetLocalPlayer();
-    return p->IsCellVisible(ind);
+    return mGame->GetLocalPlayer()->IsCellVisible(ind);
 }
 
 bool GameMap::IsAnyCellVisibleToLocalPlayer(unsigned int rTL, unsigned int cTL,
@@ -682,7 +699,7 @@ GameObject * GameMap::CreateObjectFromFile(GameObjectTypeId type, GameObjectVari
 
         const Cell2D dest(r0, c0);
 
-        return CreateMiniUnit(type, nullptr, dest, variant, owner);
+        return CreateMiniUnit(type, nullptr, dest, variant, owner, assignWeapon);
     }
     else
         return CreateObject(type, variant, pf, r0, c0, true, assignWeapon);
@@ -826,7 +843,16 @@ GameObject * GameMap::CreateObject(GameObjectTypeId type, GameObjectVariantId va
 
     // schedule object for map addition
     if(instantAdd)
-        AddObjectToMap(o2a);
+    {
+        const bool res = AddObjectToMap(o2a);
+
+        if(!res)
+        {
+            std::cout << "[ERR] GameMap::CreateObject - AddObjectToMap failed" << std::endl;
+            delete o2a.obj;
+            return nullptr;
+        }
+    }
     else
         mObjectsToAdd.emplace_back(o2a);
 
@@ -1034,24 +1060,39 @@ void GameMap::SetObjectActionFailed(GameObject * obj)
     mScreenGame->SetObjectActionFailed(obj);
 }
 
-void GameMap::RegisterEnemyKill(GameObject * killer, GameObject * victim)
+void GameMap::RegisterEnemyKill(GameObject * killer, PlayerFaction factionKiller, GameObject * victim)
 {
-    // TODO assign experience points based on kill maybe
-    const int experienceKill = 25;
-    killer->SumExperience(experienceKill);
+    // check if killer is still valid and still alive
+    if(killer != nullptr && HasObject(killer) && !killer->IsDestroyed())
+    {
+        const int experienceKill = 25;
+        killer->SumExperience(experienceKill);
+    }
 
-    Player * p = mGame->GetActivePlayerByFaction(killer->GetFaction());
+    Player * p = mGame->GetActivePlayerByFaction(factionKiller);
+
+    // exit in case killer's Player is NULL (NO_FACTION)
+    if(p == nullptr)
+        return ;
+
     p->RegisterEnemyKill();
 
-    // track kill for mission goals
-    auto trackerMG = mScreenGame->GetMissionGoalsTracker();
-    trackerMG->AddObjectDestroyedByCategory(victim->GetObjectCategory());
+    const PlayerFaction factionVictim = victim->GetFaction();
+
+    // track kill for mission goals if enemy killed by local player
+    if(p == mGame->GetLocalPlayer() && factionKiller != factionVictim && factionVictim != NO_FACTION)
+    {
+        auto trackerMG = mScreenGame->GetMissionGoalsTracker();
+        trackerMG->AddEnemyObjectDestroyedByCategory(victim->GetObjectCategory());
+    }
 }
 
 void GameMap::RegisterCasualty(PlayerFaction killed)
 {
     Player * p = mGame->GetActivePlayerByFaction(killed);
-    p->RegisterCasualty();
+
+    if(p != nullptr)
+        p->RegisterCasualty();
 }
 
 bool GameMap::AreObjectsAdjacent(const GameObject * obj1, const GameObject * obj2) const
@@ -1185,6 +1226,10 @@ void GameMap::ConquerCell(const Cell2D & cell, Player * player)
     GameMapCell & gcell = mCells[ind];
     bool stolen = gcell.owner != nullptr && gcell.owner != player;
 
+    // cell already conquered by player
+    if(gcell.owner == player && player != nullptr)
+        return ;
+
     // make cell empty
     ClearCell(gcell);
 
@@ -1192,17 +1237,23 @@ void GameMap::ConquerCell(const Cell2D & cell, Player * player)
     Player * prevOwner = gcell.owner;
     gcell.owner = player;
 
-    // update player
-    player->SumCells(1);
+    // handle things for new player
+    // NOTE player can be NULL in cases like Trees conquering cells
+    if(player != nullptr)
+    {
+        // update player
+        player->SumCells(1);
 
-    // propagate effects of conquest
-    UpdateInfluencedCells(cell.row, cell.col);
+        // propagate effects of conquest
+        UpdateInfluencedCells(cell.row, cell.col);
 
-    UpdateLinkedCells(player);
+        UpdateLinkedCells(player);
 
-    // update visibility map
-    AddPlayerCellVisibility(gcell, player);
+        // update visibility map
+        AddPlayerCellVisibility(gcell, player);
+    }
 
+    // handle things for previous owner
     if(stolen)
     {
         DelPlayerCellVisibility(gcell, prevOwner);
@@ -1210,7 +1261,11 @@ void GameMap::ConquerCell(const Cell2D & cell, Player * player)
         UpdateLinkedCells(prevOwner);
     }
 
-    ApplyLocalVisibility();
+    // handle possible visibility changes for local player
+    const Player * local = mGame->GetLocalPlayer();
+
+    if(player == local || prevOwner == local)
+        ApplyLocalVisibility();
 }
 
 bool GameMap::ConquerCells(ConquerPath * path)
@@ -1247,7 +1302,7 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
     // out of bounds
     if((data.GetRows() - 1) > r || (data.GetCols() - 1) > c || r >= mRows || c >= mCols)
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 3.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
         return false;
     }
 
@@ -1260,14 +1315,14 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
 
     if(!costOk)
     {
-        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         return false;
     }
 
     // check unit's energy
-    if(!unit->HasEnergyForActionStep(BUILD_STRUCTURE))
+    if(!unit->HasEnergyForActionStep(ACT_BUILD_STRUCTURE))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         return false;
     }
 
@@ -1295,7 +1350,7 @@ bool GameMap::CanBuildStructure(Unit * unit, const Cell2D & cell, Player * playe
             // already occupied
             if(!gcell.walkable && !canOverride)
             {
-                unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"), 3.f);
+                unit->ShowWarning(mSM->GetCString("WARN_CELL_NOT_VALID"));
                 return false;
             }
         }
@@ -1382,7 +1437,7 @@ bool GameMap::IsDefensiveObject(const GameObject * obj)
 bool GameMap::HasResourcesToBuildWall(Unit * unit, unsigned int level)
 {
     // check if unit has enough energy
-    if(!unit->HasEnergyForActionStep(BUILD_WALL))
+    if(!unit->HasEnergyForActionStep(ACT_BUILD_WALL))
         return false;
 
     // check if player has enough resources
@@ -1391,7 +1446,8 @@ bool GameMap::HasResourcesToBuildWall(Unit * unit, unsigned int level)
 
     Player * player = mGame->GetActivePlayerByFaction(unit->GetFaction());
 
-    return player->HasEnough(ER_MATERIAL, costMat)  &&
+    return player != nullptr &&
+           player->HasEnough(ER_MATERIAL, costMat) &&
            player->HasEnough(ER_ENERGY, costEne);
 }
 
@@ -1507,14 +1563,14 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
     // unit can't conquer
     if(!unit->CanConquer())
     {
-        unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_CANT_CONQUER"));
         return false;
     }
 
     // unit doesn't have enough energy
-    if(!unit->HasEnergyForActionStep(CONQUER_STRUCTURE))
+    if(!unit->HasEnergyForActionStep(ACT_CONQUER_STRUCTURE))
     {
-        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         return false;
     }
 
@@ -1530,7 +1586,7 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
     // target object can't be conquered
     if(!target->CanBeConquered())
     {
-       unit->ShowWarning(mSM->GetCString("WARN_CANT_BE_CONQUERED"), 3.f);
+       unit->ShowWarning(mSM->GetCString("WARN_CANT_BE_CONQUERED"));
         return false;
     }
 
@@ -1545,7 +1601,7 @@ bool GameMap::CanConquerStructure(Unit * unit, const Cell2D & end, Player * play
 
     if(!costOk)
     {
-        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        unit->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         return false;
     }
 
@@ -1606,11 +1662,13 @@ void GameMap::ConquerStructure(const Cell2D & end, Player * player)
     UpdateLinkedCells(player);
 
     if(prevOwner != nullptr)
+    {
         UpdateLinkedCells(prevOwner);
 
-    // update visibility
-    if(prevOwner && prevOwner != player)
-        DelPlayerObjVisibility(obj, prevOwner);
+        // update visibility
+        if(prevOwner != player)
+            DelPlayerObjVisibility(obj, prevOwner);
+    }
 
     AddPlayerObjVisibility(obj, player);
 
@@ -1813,7 +1871,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     // already has enough units
     if(player->GetNumUnits() == player->GetMaxUnits())
     {
-        gen->ShowWarning(mSM->GetCString("WARN_TM_UNITS"), 2.f);
+        gen->ShowWarning(mSM->GetCString("WARN_TM_UNITS"));
         return false;
     }
 
@@ -1825,7 +1883,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
        !player->HasEnough(ER_DIAMONDS, costs[ER_DIAMONDS]) ||
        !player->HasEnough(ER_BLOBS, costs[ER_BLOBS]))
     {
-        gen->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        gen->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         return false;
     }
 
@@ -1871,7 +1929,7 @@ bool GameMap::CanCreateUnit(GameObjectTypeId ut, GameObject * gen, Player * play
     }
 
     // free cell test failed
-    gen->ShowWarning(mSM->GetCString("WARN_CANT_CELL"), 3.f);
+    gen->ShowWarning(mSM->GetCString("WARN_CANT_CELL"));
     return false;
 }
 
@@ -2090,13 +2148,13 @@ bool GameMap::CanCreateMiniUnit(GameObjectTypeId ut, GameObject * gen, int eleme
        !player->HasEnough(ER_DIAMONDS, costs[ER_DIAMONDS] * elements) ||
        !player->HasEnough(ER_BLOBS, costs[ER_BLOBS] * elements))
     {
-        gen->ShowWarning(mSM->GetCString("WARN_LACK_RES"), 2.f);
+        gen->ShowWarning(mSM->GetCString("WARN_LACK_RES"));
         return false;
     }
 
-    if(!gen->HasEnergyForActionStep(GameObjectActionType::SPAWN))
+    if(!gen->HasEnergyForActionStep(ACT_SPAWN))
     {
-        gen->ShowWarning(mSM->GetCString("WARN_NO_ENE"), 2.f);
+        gen->ShowWarning(mSM->GetCString("WARN_NO_ENE"));
         return false;
     }
 
@@ -2188,15 +2246,17 @@ MiniUnitsGroup * GameMap::CreateMiniUnitsGroup()
 }
 
 void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject * attacker,
-                         int radius, float maxDamage)
+                         PlayerFaction factionAttacker, int radius, float maxDamage)
 {
     const bool fatal = false;
+
+    GameObject * obj = nullptr;
 
     for(int rad = 1; rad <= radius; ++rad)
     {
         // define damage
         const int maxDamage1 = std::roundf(maxDamage / rad);
-        const int maxDamage0 = maxDamage1 / 3;
+        const int maxDamage0 = maxDamage / (rad * 5);
         auto distDamage = sgl::utilities::UniformDistribution(maxDamage0, maxDamage1);
 
         // ALONG COLS FROM LEFT TO RIGHT
@@ -2216,11 +2276,15 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject 
             {
                 const int ind = ind0 + c;
 
-                if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
+                obj = mCells[ind].objTop;
 
-                if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
+
+                obj = mCells[ind].objBottom;
+
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
             }
         }
 
@@ -2235,11 +2299,15 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject 
             {
                 const int ind = ind0 + c;
 
-                if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
+                obj = mCells[ind].objTop;
 
-                if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
+
+                obj = mCells[ind].objBottom;
+
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
             }
         }
 
@@ -2258,11 +2326,15 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject 
             {
                 const int ind = r * mCols + lCol;
 
-                if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
+                obj = mCells[ind].objTop;
 
-                if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
+
+                obj = mCells[ind].objBottom;
+
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
             }
         }
 
@@ -2275,11 +2347,15 @@ void GameMap::DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject 
             {
                 const int ind = r * mCols + rCol;
 
-                if(mCells[ind].objTop != nullptr && !mCells[ind].objTop->IsDestroyed())
-                    mCells[ind].objTop->Hit(distDamage.GetNextValue(), attacker, fatal);
+                obj = mCells[ind].objTop;
 
-                if(mCells[ind].objBottom != nullptr && !mCells[ind].objBottom->IsDestroyed())
-                    mCells[ind].objBottom->Hit(distDamage.GetNextValue(), attacker, fatal);
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
+
+                obj = mCells[ind].objBottom;
+
+                if(obj != nullptr && HasObject(obj) && !obj->IsDestroyed())
+                    obj->Hit(distDamage.GetNextValue(), attacker, factionAttacker, fatal);
             }
         }
     }
@@ -2369,6 +2445,18 @@ bool GameMap::AbortMove(GameObject * obj)
     }
 
     return false;
+}
+
+void GameMap::SetMoveFast(GameObject * obj)
+{
+    for(auto path : mPaths)
+    {
+        if(path->GetObject() == obj)
+        {
+            path->SetFast(true);
+            return;
+        }
+    }
 }
 
 Cell2D GameMap::GetCloseMoveTarget(const Cell2D & start, const Cell2D & end) const
@@ -2746,6 +2834,10 @@ int GameMap::ApproxDistance(const Cell2D & c1, const Cell2D & c2) const
 
 int GameMap::ApproxDistance(const GameObject * obj1, const GameObject * obj2) const
 {
+    // return very big distance if any object is NULL
+    if(obj1 == nullptr || obj2 == nullptr)
+        return std::numeric_limits<int>::max();
+
     const int R1 = obj1->GetRows() > 1 ? (obj1->GetRow0() + obj1->GetRow1()) / 2 : obj1->GetRow0();
     const int C1 = obj1->GetCols() > 1 ? (obj1->GetCol0() + obj1->GetCol1()) / 2 : obj1->GetCol0();
 
@@ -2833,13 +2925,11 @@ bool GameMap::FindClosestCellConnectedToObject(const GameObject * obj, const Cel
     end.row = -1;
     end.col = -1;
 
-    const PlayerFaction faction = obj->GetFaction();
+    const Player * player = mGame->GetActivePlayerByFaction(obj->GetFaction());
 
     // object has no faction -> no cell connected
-    if(faction == NO_FACTION)
+    if(player == nullptr)
         return false;
-
-    const Player * player = mGame->GetActivePlayerByFaction(faction);
 
     // FIND CONNECTED (SAME FACTION) CELLS
     std::vector<unsigned int> todo;
@@ -2926,6 +3016,9 @@ bool GameMap::FindClosestLinkedCell(PlayerFaction faction, const Cell2D start, C
     int minDist = maxDist;
 
     const Player * player = mGame->GetActivePlayerByFaction(faction);
+
+    if(player == nullptr)
+        return false;
 
     const int r0 = start.row;
     const int c0 = start.col;
@@ -3235,19 +3328,29 @@ void GameMap::CloseGate(WallGate * gate)
     sgl::sgui::Stage::Instance()->SetFocus();
 }
 
-void GameMap::OnNewTurn(PlayerFaction faction)
+void GameMap::OnTurnAuto(PlayerFaction faction)
 {
-    // notify all objects
-    for(GameObject * obj : mObjects)
-        obj->OnNewTurn(faction);
-
-    // notify all generators
-    for(CollectableGenerator * cg : mCollGens)
-        cg->OnNewTurn();
-
     // select groups of mini units to move
     DeleteEmptyMiniUnitsGroups();
     InitMiniUnitsGroupsReadyToMove(faction);
+}
+
+void GameMap::OnTurnStart(PlayerFaction faction)
+{
+    // notify all objects
+    for(GameObject * obj : mObjects)
+        obj->OnTurnStart(faction);
+
+    // notify all generators
+    for(CollectableGenerator * cg : mCollGens)
+        cg->OnTurnStart();
+}
+
+void GameMap::OnTurnEnd(PlayerFaction faction)
+{
+    // notify all objects
+    for(GameObject * obj : mObjects)
+        obj->OnTurnEnd(faction);
 }
 
 int GameMap::GetFactionMoneyPerTurn(PlayerFaction faction)
@@ -3273,11 +3376,17 @@ void GameMap::Update(float delta)
         {
             GameObject * obj = *itObj;
 
+            // propagate killer and killer's faction for chain of kills
+            // NOTE killer can be not valid as it might be destroyed in previous update
+            GameObject * killer = obj->GetKiller() != nullptr ? obj->GetKiller() : obj;
+            PlayerFaction factionKiller = obj->GetKillerFaction();
+
             // apply damage to surrounding area based on object's damage value and size
             const int damageRadius = obj->GetRows();
             const float maxDamage = obj->GetExplosionDamage();
-            DamageArea(Cell2D(obj->GetRow0(), obj->GetCol0()), Cell2D(obj->GetRow1(), obj->GetCol1()),
-                       obj, damageRadius, maxDamage);
+            DamageArea(Cell2D(obj->GetRow0(), obj->GetCol0()),
+                       Cell2D(obj->GetRow1(), obj->GetCol1()), killer, factionKiller,
+                       damageRadius, maxDamage);
 
             DestroyObjectPaths(obj);
 
@@ -3400,6 +3509,9 @@ int GameMap::DefineCellType(unsigned int ind, const GameMapCell & cell)
 
 void GameMap::UpdateLinkedCells(Player * player)
 {
+    if(player == nullptr)
+        return;
+
     const GameObject * b = player->GetBase();
 
     if(nullptr == b)
@@ -3583,6 +3695,9 @@ void GameMap::UpdateInfluencedCells(int row, int col)
     const unsigned int ind0 = row * mCols + col;
     const GameMapCell & gcell = mCells[ind0];
 
+    if(gcell.owner == nullptr)
+        return ;
+
     const PlayerFaction faction = gcell.owner->GetFaction();
 
     const unsigned int r0 = (row > 0) ? row - 1 : row;
@@ -3720,12 +3835,8 @@ Cell2D GameMap::GetClosestCell(const Cell2D & start, const std::vector<Cell2D> &
     return targets[minInd];
 }
 
-void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
+bool GameMap::AddObjectToMap(const ObjectToAdd & o2a)
 {
-    // add object to map containers
-    mObjects.push_back(o2a.obj);
-    mObjectsSet.insert(o2a.obj);
-
     // generic cells update
     for(unsigned int r = o2a.r1; r <= o2a.r0; ++r)
     {
@@ -3737,6 +3848,16 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
 
             GameMapCell & cell = mCells[ind];
 
+            if(cell.objTop != nullptr)
+            {
+                std::cout << "[ERR] GameMap::AddObjectToMap - trying to add object to full cell: "
+                          << "(" << r << ", " << c << ")" << std::endl;
+
+                assert(false);
+
+                return false;
+            }
+
             cell.walkable = o2a.obj->CanBeCollected();
             cell.objTop = o2a.obj;
             cell.owner = o2a.owner;
@@ -3745,6 +3866,10 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
             UpdateCellType(ind, cell);
         }
     }
+
+    // add object to map containers
+    mObjects.push_back(o2a.obj);
+    mObjectsSet.insert(o2a.obj);
 
     // handle owned object
     if(o2a.owner != nullptr)
@@ -3772,6 +3897,8 @@ void GameMap::AddObjectToMap(const ObjectToAdd & o2a)
 
     // apply visibility
     ApplyLocalVisibilityToObject(o2a.obj);
+
+    return true;
 }
 
 void GameMap::DestroyObject(GameObject * obj)
@@ -3826,9 +3953,37 @@ void GameMap::DestroyObject(GameObject * obj)
     IsoLayer * layer = isoObj->GetLayer();
     layer->RemoveObject(isoObj);
 
+    const auto cat = obj->GetObjectCategory();
+    const auto type = obj->GetObjectType();
+
     // update linked cells when destroying a radar station to update the minimap visibility
-    if(obj->GetObjectType() == ObjectData::TYPE_RADAR_STATION && owner != nullptr && owner->IsLocal())
+    if(type == ObjectData::TYPE_RADAR_STATION && owner != nullptr && owner->IsLocal())
         UpdateLinkedCells(owner);
+
+    // remove mini units from any support list
+    if(cat == ObjectData::CAT_MINI_UNIT)
+    {
+        for(auto it = mMiniUnitsAttacking.begin(); it != mMiniUnitsAttacking.end(); ++it)
+        {
+            if(*it == obj)
+            {
+                mMiniUnitsAttacking.erase(it);
+                break;
+            }
+        }
+    }
+    // remove structures from any support list
+    else if(cat == ObjectData::CAT_STRUCTURE)
+    {
+        for(auto it = mStructuresAttacking.begin(); it != mStructuresAttacking.end(); ++it)
+        {
+            if(*it == obj)
+            {
+                mStructuresAttacking.erase(it);
+                break;
+            }
+        }
+    }
 
     // finally delete the object
     delete obj;
@@ -4162,9 +4317,14 @@ void GameMap::UpdateObjectsToAdd()
 {
     while(!mObjectsToAdd.empty())
     {
-        AddObjectToMap(mObjectsToAdd.back());
-
+        const ObjectToAdd o2a = mObjectsToAdd.back();
         mObjectsToAdd.pop_back();
+
+        if(!AddObjectToMap(o2a))
+        {
+            std::cout << "[ERR] GameMap::UpdateObjectsToAdd - AddObjectToMap failed" << std::endl;
+            delete o2a.obj;
+        }
     }
 }
 
@@ -4433,7 +4593,7 @@ bool GameMap::StartMiniUnitGroupMove()
             return ;
 
         // flag all mini units that need to move this turn
-        o->SetActiveAction(GameObjectActionType::MOVE);
+        o->SetActiveAction(ACT_MOVE);
 
         const auto p = mPathfinder->MakePath(o->GetRow0(), o->GetCol0(), target.row, target.col,
                                              sgl::ai::Pathfinder::INCLUDE_START);
@@ -4667,7 +4827,7 @@ void GameMap::InitMiniUnitsReadyToAttack(PlayerFaction faction)
             {
                 if(o->HasEnemyInRange())
                 {
-                    o->SetActiveAction(GameObjectActionType::ATTACK);
+                    o->SetActiveAction(ACT_ATTACK);
                     mMiniUnitsAttacking.emplace_back(static_cast<MiniUnit *>(o));
                 }
             });
@@ -4702,13 +4862,13 @@ void GameMap::UpdateMiniUnitsAttacking(float delta)
         return ;
 
     // unit not processed yet -> try to find a target
-    if(mu->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(mu->HasEnergyForActionStep(ACT_ATTACK))
         mu->FindAndSetEnemyTarget();
 
     // target found -> start attack
     if(mu->GetWeapon()->HasTarget())
     {
-        mu->SetCurrentAction(GameObjectActionType::ATTACK);
+        mu->SetCurrentAction(ACT_ATTACK);
         return ;
     }
 
@@ -4731,18 +4891,23 @@ void GameMap::InitStructuresReadyToAttack()
     Player * player = mScreenGame->GetActivePlayer();
 
     const std::vector<Structure *> & structures = player->GetStructures();
+    const int energy = player->GetResource(ER_ENERGY).GetValue();
 
-    for(auto s : structures)
+    // no auto defending if energy is 0
+    if(energy > 0)
     {
-        if(s->IsLinked() && s->HasEnemyInRange())
-            mStructuresAttacking.emplace_back(s);
+        for(auto s : structures)
+        {
+            if(s->IsLinked() && s->HasEnemyInRange())
+                mStructuresAttacking.emplace_back(s);
+        }
     }
 
     mTimerAutoAttacking = 0.f;
 
     // nothing to do -> end here
     if(mStructuresAttacking.empty())
-        mScreenGame->OnAutomaticMovesFinished();
+        mScreenGame->OnAutomaticStageFinished();
     else
         mScreenGame->SetLocalTurnStage(TURN_STAGE_TOWERS_ATTACK);
 }
@@ -4766,20 +4931,17 @@ void GameMap::UpdateStructuresAttacking(float delta)
         return ;
 
     // object not processed yet -> try to find a target
-    if(obj->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(obj->HasEnergyForActionStep(ACT_ATTACK))
         obj->FindAndSetEnemyTarget();
 
     // target found -> start attack
     if(obj->GetWeapon()->HasTarget())
     {
-        obj->SetCurrentAction(GameObjectActionType::ATTACK);
+        obj->SetCurrentAction(ACT_ATTACK);
 
         // move over first unit when starting to attack
         if(obj->GetFaction() == mGame->GetLocalPlayerFaction())
-        {
-            const float speedCameraTower = 1500.f;
-            mScreenGame->CenterCameraOverObject(obj, speedCameraTower);
-        }
+            mScreenGame->CenterCameraOverObject(obj, 0.f, true);
 
         return ;
     }
@@ -4795,7 +4957,7 @@ void GameMap::UpdateStructuresAttacking(float delta)
 
     // nothing to do -> end here
     if(mStructuresAttacking.empty())
-        mScreenGame->OnAutomaticMovesFinished();
+        mScreenGame->OnAutomaticStageFinished();
 }
 
 } // namespace game

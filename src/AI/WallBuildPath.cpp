@@ -152,7 +152,7 @@ bool WallBuildPath::InitNextBuild()
 
         mGameMap->BuildWall(nextCell, player, mBlockTypes[mNextCell]);
 
-        mUnit->ActionStepCompleted(BUILD_WALL);
+        mUnit->ActionStepCompleted(ACT_BUILD_WALL);
 
         // emit notification
         if(mLocal)
@@ -217,7 +217,7 @@ bool WallBuildPath::InitNextMove()
         return InitNextBuild();
 
     // not enough energy -> FAIL
-    if(!mUnit->HasEnergyForActionStep(MOVE))
+    if(!mUnit->HasEnergyForActionStep(ACT_MOVE))
         return Fail();
 
     const unsigned int movCell = mNextCell + 1;
@@ -267,6 +267,10 @@ bool WallBuildPath::InitNextMove()
         auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
         ap->PlaySound("game/unit_move-02.ogg");
     }
+
+    // camera tracking - skip first cell to leave time for double clicks
+    if(1 == mNextCell && mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
+        mScreen->StartCameraTracking(mUnit);
 
     return true;
 }
@@ -348,7 +352,7 @@ void WallBuildPath::UpdateMove(float delta)
         mGameMap->AddPlayerObjVisibility(mUnit, player);
         mGameMap->ApplyVisibility(player);
 
-        mUnit->ActionStepCompleted(MOVE);
+        mUnit->ActionStepCompleted(ACT_MOVE);
 
         // handle next step or termination
         if(ABORTING == mState)
@@ -378,8 +382,8 @@ void WallBuildPath::UpdatePathCost()
     const bool unitOnStart = mUnit->GetRow0() == IndToRow(ind0) && mUnit->GetCol0() == IndToCol(ind0);
     const bool includeMove = numBlocks > 1 || unitOnStart;
 
-    mCostUnitEnergy = numBlocks * ((includeMove * mUnit->GetEnergyForActionStep(MOVE)) +
-                                   mUnit->GetEnergyForActionStep(BUILD_WALL));
+    mCostUnitEnergy = numBlocks * ((includeMove * mUnit->GetEnergyForActionStep(ACT_MOVE)) +
+                                   mUnit->GetEnergyForActionStep(ACT_BUILD_WALL));
 
     // resources
     mCostResEnergy = numBlocks * Wall::GetCostEnergy(mLevel);
@@ -393,10 +397,6 @@ bool WallBuildPath::Start()
         return false;
 
     mNextCell = 0;
-
-    // track object while moving if local
-    if(mLocal && mScreen->GetGame()->IsAutoUnitCameraEnabled())
-        mScreen->StartCameraTracking(mUnit);
 
     return InitNextMove();
 }

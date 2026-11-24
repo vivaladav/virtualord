@@ -19,6 +19,7 @@
 #include "Widgets/ButtonPanelSelectedObject.h"
 #include "Widgets/ButtonQuickUnitSelection.h"
 #include "Widgets/CountdownLabel.h"
+#include "Widgets/DialogAutoAttackSettings.h"
 #include "Widgets/DialogEndMission.h"
 #include "Widgets/DialogExit.h"
 #include "Widgets/DialogExploreTemple.h"
@@ -124,6 +125,8 @@ GameHUD::GameHUD(ScreenGame * screen)
     local->SetOnNumUnitsChanged([this]
     {
         UpdateQuickUnitButtons();
+
+        mPanelTurnCtrl->UpdateButtonNextUnitEnabled();
     });
 
     // OBJECT ACTIONS
@@ -135,6 +138,10 @@ GameHUD::GameHUD(ScreenGame * screen)
     mPanelTurnCtrl->AddFunctionGoToBase([this, local]
     {
         mScreen->CenterCameraOverObject(local->GetBase());
+    });
+    mPanelTurnCtrl->AddFunctionNextUnit([this, local]
+    {
+        mScreen->SelectNextUnit();
     });
     mPanelTurnCtrl->AddFunctionEndTurn([this]
     {
@@ -219,10 +226,21 @@ void GameHUD::ShowPanelObjectActions(GameObject * obj)
     if(type == ObjectData::TYPE_RESEARCH_CENTER)
         UpdateUpgradesNotification();
     else if(type == ObjectData::TYPE_BASE)
+    {
         UpdateGoalsNotification();
+
+        // do not allow saving while playing the tutorial
+        const bool inTutorial = mScreen->GetGame()->GetTutorialManager()->HasActiveTutorial();
+        mPanelObjActions->SetActionEnabled(PanelObjectActions::BTN_SAVE_GAME, !inTutorial);
+    }
     // disable ATTACK when tower or bunker is not linked
     else if(type == ObjectData::TYPE_BUNKER || type == ObjectData::TYPE_DEFENSIVE_TOWER)
-        mPanelObjActions->SetActionEnabled(PanelObjectActions::BTN_ATTACK, obj->IsLinked());
+    {
+        const bool linked = obj->IsLinked();
+
+        mPanelObjActions->SetActionEnabled(PanelObjectActions::BTN_ATTACK, linked);
+        mPanelObjActions->SetActionEnabled(PanelObjectActions::BTN_AUTO_ATT_SETTINGS, linked);
+    }
 }
 
 void GameHUD::UpdateUpgradesNotification()
@@ -238,7 +256,7 @@ void GameHUD::UpdateUpgradesNotification()
         const auto tu = static_cast<TechUpgradeId>(i);
 
         count += player->IsUpgradeAvailable(tu) && !player->IsUpgradeUnlocked(tu) &&
-                 game->GetTechUpgradecost(tu) <= resPoints;
+                 game->GetCostTechUpgrade(tu) <= resPoints;
     }
 
     const PanelObjectActions::Button btnID = PanelObjectActions::BTN_TECH_TREE;
@@ -649,7 +667,7 @@ void GameHUD::ShowDialogExploreTemple(Player * player, Temple * temple)
         // start exploration
         temple->StartExploring(player->GetFaction(), [this, player, temple]
         {
-            mScreen->CenterCameraOverObject(temple);
+            mScreen->CenterCameraOverObject(temple, 0.f);
 
             ShowDialogExploreTempleOutcome(player, temple);
         });
@@ -705,7 +723,7 @@ void GameHUD::ShowDialogNewElement(unsigned int type)
 
         mDialogNewElement->SetFunctionOnBuild([this, unit]
         {
-            unit->SetActiveAction(GameObjectActionType::BUILD_STRUCTURE);
+            unit->SetActiveAction(ACT_BUILD_STRUCTURE);
 
             const GameObjectTypeId stype = mDialogNewElement->GetSelectedType();
             unit->SetStructureToBuild(stype);
@@ -1101,6 +1119,50 @@ void GameHUD::HideDialogUpgrade()
     // schedule dialog deletion
     mDialogUpgrade->DeleteLater();
     mDialogUpgrade = nullptr;
+
+    // un-pause game
+    mScreen->SetPause(false);
+}
+
+void GameHUD::ShowDialogAutoAttackSettings(GameObject * obj)
+{
+    if(mDialogAutoAttSettings != nullptr)
+        return ;
+
+    mScreen->ShowScreenOverlay();
+
+    ++mVisibleDialogs;
+
+    mScreen->SetPause(true);
+
+    mDialogAutoAttSettings = new DialogAutoAttackSettings(obj);
+    mDialogAutoAttSettings->SetFocus();
+
+    mDialogAutoAttSettings->SetFunctionOnClose([this]
+    {
+        HideDialogAutoAttackSettings();
+    });
+
+    TemporaryClosePanels();
+
+    // position dialog
+    CenterWidget(mDialogAutoAttSettings);
+}
+
+void GameHUD::HideDialogAutoAttackSettings()
+{
+    if(mDialogAutoAttSettings == nullptr)
+        return ;
+
+    --mVisibleDialogs;
+
+    mScreen->HideScreenOverlay();
+
+    ReopenPanels();
+
+    // schedule dialog deletion
+    mDialogAutoAttSettings->DeleteLater();
+    mDialogAutoAttSettings = nullptr;
 
     // un-pause game
     mScreen->SetPause(false);

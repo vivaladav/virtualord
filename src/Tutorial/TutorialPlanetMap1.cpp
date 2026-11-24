@@ -4,15 +4,20 @@
 #include "Tutorial/StepDelay.h"
 #include "Tutorial/StepPlanetMapConquerTerritory.h"
 #include "Tutorial/StepPlanetMapConquerTerritoryStart.h"
+#include "Tutorial/StepPlanetMapExploreCancel.h"
 #include "Tutorial/StepPlanetMapIntro.h"
 #include "Tutorial/StepPlanetMapExploreTerritory.h"
 #include "Tutorial/StepPlanetMapExploreTerritoryInfo.h"
 #include "Tutorial/StepPlanetMapExploreTerritoryStart.h"
 #include "Tutorial/StepPlanetMapExploreTerritorySuccess.h"
 #include "Tutorial/StepPlanetMapNoInfo.h"
+#include "Tutorial/StepPlanetMapNoResources.h"
 #include "Tutorial/StepPlanetMapSelectTerritory.h"
 #include "Tutorial/StepPlanetMapSendAI.h"
 #include "Tutorial/TutorialConstants.h"
+#include "Widgets/PanelPlanetActionExplore.h"
+
+#include <sgl/sgui/AbstractButton.h>
 
 namespace game
 {
@@ -35,13 +40,32 @@ TutorialPlanetMap1::TutorialPlanetMap1(Screen * screen)
     AddStep([this] { return new StepPlanetMapExploreTerritory(GetPanelActions()); });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([] { return new StepPlanetMapExploreTerritoryInfo; });
-    AddStep([this] { return new StepPlanetMapExploreTerritoryStart(GetPanelExplore()); });
+    AddStep([this]
+    {
+        TutorialStep * step = nullptr;
+        auto panel = GetPanelExplore();
+
+        if(panel->GetButtonOk()->IsEnabled())
+            step = new StepPlanetMapExploreTerritoryStart(panel);
+        else
+            step = new StepPlanetMapNoResources;
+
+        return step;
+    });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this]
-        {
-            return new StepPlanetMapExploreTerritorySuccess(GetPanelExplore(), GetPanelInfo(),
+    {
+        TutorialStep * step = nullptr;
+        auto panel = GetPanelExplore();
+
+        if(panel->GetButtonOk()->IsEnabled())
+            step = new StepPlanetMapExploreTerritorySuccess(panel, GetPanelInfo(),
                                                             GetPanelResources());
-        });
+        else
+            step = new StepPlanetMapExploreCancel(panel);
+
+        return step;
+    });
     AddStep([] { return new StepDelay(0.5f); });
     AddStep([this] { return new StepPlanetMapSendAI(GetPanelActions()); });
     AddStep([this]

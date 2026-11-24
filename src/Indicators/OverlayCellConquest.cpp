@@ -28,11 +28,38 @@ OverlayCellConquest::~OverlayCellConquest()
 {
     delete mTarget;
 
-    for(auto pi : mActiveIndicators)
-        delete pi;
+    for(auto ind : mActiveIndicators)
+        delete ind;
 
-    for(auto pi : mAvailableIndicators)
-        delete pi;
+    for(auto ind : mAvailableIndicators)
+        delete ind;
+}
+
+void OverlayCellConquest::Hide()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, false);
+
+    if(mLayer->HasObject(mTarget))
+        mLayer->SetObjectVisible(mTarget, false);
+
+    mPanelMoveCost->SetVisible(false);
+    mPanelCost->SetVisible(false);
+}
+
+void OverlayCellConquest::Show()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, true);
+
+    if(mLayer->HasObject(mTarget))
+    {
+        mLayer->SetObjectVisible(mTarget, true);
+
+        mPanelMoveCost->SetVisible(mActiveIndicators.empty());
+    }
+    else
+        mPanelCost->SetVisible(true);
 }
 
 bool OverlayCellConquest::IsIndexInConquestPath(unsigned int ind) const
@@ -120,11 +147,11 @@ void OverlayCellConquest::SetPath(const std::vector<unsigned int> & path,
         const unsigned int row = ind / mMapCols;
         const unsigned int col = ind % mMapCols;
 
-        auto pi = GetNewIndicator();
-        pi->SetDoable(doable);
-        mActiveIndicators.emplace_back(pi);
+        auto ci = GetNewIndicator();
+        ci->SetDoable(doable);
+        mActiveIndicators.emplace_back(ci);
 
-        mLayer->AddObject(pi, row, col);
+        mLayer->AddObject(ci, row, col);
     }
 
     if(costUnitEnergy > 0 && mValid)

@@ -170,6 +170,7 @@ public:
         const int marginTeamB = 80;
         const int marginExternalB = 40;
         const int marginMemberR = 10;
+        const int marginMemberB = 10;
 
         const int sizeHeader = 24;
         const int sizeText = 20;
@@ -241,7 +242,7 @@ public:
 
         contY += header->GetHeight() + marginHeaderB;
 
-        // LOCALIZATION MEMBERS
+        // LOCALIZATION MEMBER
         label = new sgui::Label("Pascal \"Hyperpas\" Biedermann", fontText, this);
         label->SetColor(colorText);
         label->SetPosition(contX, contY);
@@ -249,6 +250,34 @@ public:
         contX += label->GetWidth() + marginMemberR;
 
         label2 = new sgui::Label("(Deutsch, Français)", fontText, this);
+        label2->SetColor(colorText2);
+        label2->SetPosition(contX, contY);
+
+        // LOCALIZATION MEMBER
+        contX = 0;
+        contY += label->GetHeight() + marginMemberB;
+
+        label = new sgui::Label("Felipe \"krtflp\" Costa", fontText, this);
+        label->SetColor(colorText);
+        label->SetPosition(contX, contY);
+
+        contX += label->GetWidth() + marginMemberR;
+
+        label2 = new sgui::Label("(Português - Brasil)", fontText, this);
+        label2->SetColor(colorText2);
+        label2->SetPosition(contX, contY);
+
+        // LOCALIZATION MEMBER
+        contX = 0;
+        contY += label->GetHeight() + marginMemberB;
+
+        label = new sgui::Label("Rosario \"Leureko\" Iovino", fontText, this);
+        label->SetColor(colorText);
+        label->SetPosition(contX, contY);
+
+        contX += label->GetWidth() + marginMemberR;
+
+        label2 = new sgui::Label("(Italiano)", fontText, this);
         label2->SetColor(colorText2);
         label2->SetPosition(contX, contY);
     }

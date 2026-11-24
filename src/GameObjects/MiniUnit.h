@@ -25,6 +25,9 @@ public:
     void Update(float delta) override;
 
 private:
+    int GetGroupMaxHealth(int elements);
+    int GetGroupMaxEnergy(int elements);
+
     void UpdateGraphics() override;
 
     void SetImage();
@@ -45,5 +48,19 @@ inline bool MiniUnit::IsMoving() const { return mMoving; }
 inline void MiniUnit::SetMoving(bool moving) { mMoving = moving; }
 
 inline void MiniUnit::setTargetReached() { mTargetReached = true; }
+
+inline int MiniUnit::GetGroupMaxHealth(int elements)
+{
+    // health = 1 element value + half value for every other element
+    const float maxSingleHealthValue = 50.f;
+    return maxSingleHealthValue + ((maxSingleHealthValue / 2) * (elements - 1));
+}
+
+inline int MiniUnit::GetGroupMaxEnergy(int elements)
+{
+    // energy = 1 element value + half value for every other element
+    const float maxSingleEnergyValue = 120.f;
+    return maxSingleEnergyValue + ((maxSingleEnergyValue / 2) * (elements - 1));
+}
 
 } // namespace game

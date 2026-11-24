@@ -823,7 +823,7 @@ void PlayerAI::AddActionsUnit(Unit * u)
 void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(!u->HasEnergyForActionStep(ACT_ATTACK))
         return ;
 
     // nothing to do if there's no visible enemy units
@@ -885,7 +885,7 @@ void PlayerAI::AddActionUnitAttackEnemyUnit(Unit * u)
 void PlayerAI::AddActionUnitAttackEnemyTower(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(!u->HasEnergyForActionStep(ACT_ATTACK))
         return ;
 
     // nothing to do if there's no visible enemy units
@@ -954,7 +954,7 @@ void PlayerAI::AddActionUnitAttackEnemyTower(Unit * u)
 void PlayerAI::AddActionUnitAttackTrees(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::ATTACK))
+    if(!u->HasEnergyForActionStep(ACT_ATTACK))
         return ;
 
     if(mTrees.empty())
@@ -1030,7 +1030,7 @@ void PlayerAI::AddActionUnitAttackTrees(Unit * u)
 void PlayerAI::AddActionUnitBuildStructure(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::BUILD_STRUCTURE))
+    if(!u->HasEnergyForActionStep(ACT_BUILD_STRUCTURE))
         return ;
 
     // DEFINE INITIAL PRIORITY
@@ -1045,9 +1045,22 @@ void PlayerAI::AddActionUnitBuildStructure(Unit * u)
     priority += GetUnitPriorityBonusHealth(u, bonusHealth);
 
     // decrease priority based on distance from Base
-    const GameObject * base = mPlayer->GetBase();
-    const int distBase = mGm->ApproxDistance(u, base);
     const int maxDist = GetMaxDistanceForObject(u);
+    const GameObject * base = mPlayer->GetBase();
+
+    int distBase = maxDist;
+
+    if(base != nullptr)
+        distBase = mGm->ApproxDistance(u, base);
+    else
+    {
+        const Cell2D avgBasePos = mPlayer->GetAverageBasePosition();
+
+        if(avgBasePos.row != -1 && avgBasePos.col != -1)
+            distBase = std::abs(avgBasePos.row - u->GetRow0()) +
+                       std::abs(avgBasePos.col - u->GetCol0());
+    }
+
     const float bonusDistBase = -10.f;
     priority += std::roundf(bonusDistBase * distBase / maxDist);
 
@@ -1648,7 +1661,7 @@ void PlayerAI::AddActionUnitOpenLootbox(Unit * u)
 void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::CONQUER_CELL))
+    if(!u->HasEnergyForActionStep(ACT_CONQUER_CELL))
         return ;
 
     // DEFINE INITIAL PRIORITY
@@ -1785,7 +1798,7 @@ void PlayerAI::AddActionUnitConnectStructure(Unit * u)
 void PlayerAI::AddActionUnitConquerCity(Unit * u)
 {
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::CONQUER_STRUCTURE))
+    if(!u->HasEnergyForActionStep(ACT_CONQUER_STRUCTURE))
         return ;
 
     int priority = MAX_PRIORITY;
@@ -1866,7 +1879,7 @@ void PlayerAI::AddActionUnitConquerResGen(Unit * u, ExtendedResource type)
         return ;
 
     // not enough energy to consider this action now
-    if(!u->HasEnergyForActionStep(GameObjectActionType::CONQUER_STRUCTURE))
+    if(!u->HasEnergyForActionStep(ACT_CONQUER_STRUCTURE))
         return ;
 
     const StatValue & stat = mPlayer->GetResource(type);
@@ -2279,6 +2292,9 @@ void PlayerAI::AddActionUpgrade(GameObject * obj, const int weights[],
 
 int PlayerAI::GetMaxDistanceForObject(const GameObject * obj) const
 {
+    if(obj == nullptr)
+        return std::numeric_limits<int>::max();
+
     const int r = obj->GetRow0();
     const int c = obj->GetCol0();
 
@@ -2304,7 +2320,7 @@ int PlayerAI::GetStructurePriorityBonusEnergy(const Structure * s, float bonus) 
 
 int PlayerAI::GetUnitPriorityBonusDistance(const Unit * u, int dist, float bonus) const
 {
-    const float energyStep = u->GetEnergyForActionStep(MOVE);
+    const float energyStep = u->GetEnergyForActionStep(ACT_MOVE);
     const float energyTot = energyStep * dist;
     const float energyUnit = u->GetEnergy();
     const float maxDist = GetMaxDistanceForObject(u);

@@ -11,6 +11,9 @@ class TutorialGame3 : public TutorialGame
 {
 public:
     TutorialGame3(Screen * screen);
+
+private:
+    bool mUpgrade1Unlocked = false;
 };
 
 } // namespace game

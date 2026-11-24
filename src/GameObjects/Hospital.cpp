@@ -211,7 +211,7 @@ void Hospital::Heal()
         return ;
 
     // consume energy
-    ActionStepCompleted(HEAL);
+    ActionStepCompleted(ACT_HEAL);
 
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterHealing *>(partMan->GetUpdater(PU_HEALING));

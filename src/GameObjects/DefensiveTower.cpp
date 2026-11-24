@@ -37,6 +37,28 @@ void DefensiveTower::Update(float delta)
         PrepareShoot();
 }
 
+int DefensiveTower::GetResourceUsage(ExtendedResource res) const
+{
+    // energy = 9
+    const int costs[NUM_EXT_RESOURCES] = { 9, 0, 0, 0, 0, 0 };
+
+    if(res < NUM_EXT_RESOURCES)
+        return costs[res];
+    else
+        return 0;
+}
+
+void DefensiveTower::OnTurnEnd(PlayerFaction faction)
+{
+    Structure::OnTurnEnd(faction);
+
+    // not own turn or not active -> exit
+    if(faction != GetFaction() || !IsLinked())
+        return ;
+
+    ShowEnergyUsage();
+}
+
 void DefensiveTower::UpdateGraphics()
 {
     SetImage();
@@ -57,7 +79,7 @@ void DefensiveTower::SetImage()
 
     unsigned int texInd = ID_STRUCT_DTOWER_L1;
 
-if(faction != NO_FACTION)
+    if(faction != NO_FACTION)
         texInd = ID_STRUCT_DTOWER_L1_F1 + faction;
 
     sgl::graphic::Texture * tex = tm->GetSprite(SpriteFileStructures, texInd);

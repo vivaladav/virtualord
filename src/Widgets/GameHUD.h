@@ -18,6 +18,7 @@ class ButtonMinimap;
 class ButtonPanelSelectedObject;
 class CameraMapController;
 class CountdownLabel;
+class DialogAutoAttackSettings;
 class DialogEndMission;
 class DialogExit;
 class DialogExploreTemple;
@@ -135,6 +136,9 @@ public:
     void HideDialogUpgrade();
     DialogUpgrade * GetDialogUpgrade() const;
 
+    void ShowDialogAutoAttackSettings(GameObject * obj);
+    void HideDialogAutoAttackSettings();
+
     void SetLocalActionsEnabled(bool enabled);
 
     GameMapProgressBar * CreateProgressBarInCell(const Cell2D & cell, float time, PlayerFaction faction);
@@ -179,6 +183,7 @@ private:
     sgl::sgui::ButtonsGroup * mGroupUnitSel = nullptr;
     CountdownLabel * mCountdownLabel = nullptr;
 
+    DialogAutoAttackSettings * mDialogAutoAttSettings = nullptr;
     DialogEndMission * mDialogEnd = nullptr;
     DialogExit * mDialogExit = nullptr;
     DialogExploreTemple * mDialogExploreTemple = nullptr;

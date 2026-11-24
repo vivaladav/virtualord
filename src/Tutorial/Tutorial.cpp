@@ -34,6 +34,8 @@ void Tutorial::Continue(unsigned int firstStep)
     mSteps.erase(mSteps.begin(), mSteps.begin() + firstStep);
     mStepsDone = firstStep;
 
+    OnContinue();
+
     StartNextStep();
 }
 
@@ -81,5 +83,7 @@ void Tutorial::StartNextStep()
 
     mCurrStep->OnStart();
 }
+
+void Tutorial::OnContinue() { }
 
 } // namespace game

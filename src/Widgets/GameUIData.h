@@ -6,6 +6,9 @@ namespace game
 // MOUSE CURSOR
 extern const char SpriteFileCursor[];
 
+// DIALOG AUTO ATTACK SETTINGS
+extern const char SpriteFileDialogAutoAttSettings[];
+
 // DIALOG CHANGELOG
 extern const char SpriteFileDialogChangelog[];
 
@@ -180,11 +183,6 @@ enum SpriteIdDialogNewGame : unsigned int
     ID_DLG_NEWG_BTN_DISABLED,
     ID_DLG_NEWG_BTN_OVER,
     ID_DLG_NEWG_BTN_CHECKED,
-    // BUTTON SLOT
-    ID_DLG_NEWG_SLOT_NORMAL,
-    ID_DLG_NEWG_SLOT_DISABLED,
-    ID_DLG_NEWG_SLOT_OVER,
-    ID_DLG_NEWG_SLOT_CHECKED,
 };
 
 extern const char SpriteFileDialogNewGameExp[];
@@ -448,6 +446,7 @@ enum SpriteIdObjActionButton : unsigned int
     IND_BUTTON_ICON_RESEARCH,
     IND_BUTTON_ICON_TECH_TREE,
     IND_BUTTON_ICON_SAVE,
+    IND_BUTTON_ICON_SETTINGS,
 
     // ACTION OPTION BUTTON
     ID_BTN_ACT_OPT_NORMAL,
@@ -514,6 +513,7 @@ enum SpriteIdMainMenuButtons : unsigned int
     // BACKROUNDS
     ID_MM_SECOND_PANEL_BG,
     ID_MM_WARN_PANEL_BG,
+    ID_MM_HEADER_BG,
 
     // PRIMARY BUTTON
     ID_MM_BTN1_NORMAL,
@@ -523,6 +523,9 @@ enum SpriteIdMainMenuButtons : unsigned int
 
     // ICONS
     ID_MM_ICON_UP,
+
+    // OTHERS
+    ID_MM_HLINE,
 
     NUM_MAIN_MENU_SPRITES
 };
@@ -597,6 +600,11 @@ enum SpriteIdPanelTurnControl : unsigned int
     ID_TURNC_BTN_NEXTT_DISABLED,
     ID_TURNC_BTN_NEXTT_OVER,
     ID_TURNC_BTN_NEXTT_PUSHED,
+    // BUTTON NEXT UNIT
+    ID_TURNC_BTN_NEXTU_NORMAL,
+    ID_TURNC_BTN_NEXTU_DISABLED,
+    ID_TURNC_BTN_NEXTU_OVER,
+    ID_TURNC_BTN_NEXTU_PUSHED,
 };
 
 // PANEL UNIT ACTIONS
@@ -713,13 +721,7 @@ enum SpriteIdPlanetMap : unsigned int
     IND_PM_BTN3_DISABLED,
     IND_PM_BTN3_OVER,
     IND_PM_BTN3_PRESSED,
-};
 
-// PLANET MAP 2
-extern const char SpriteFilePlanetMap2[];
-
-enum SpriteIdPlanetMap2 : unsigned int
-{
     // PANELS
     IND_PM_PANEL_NAME,
     IND_PM_PANEL_DATE,
@@ -761,16 +763,6 @@ enum SpriteIdSettings : unsigned int
     // BACKGROUND
     ID_DLG_SETT_BG_L,
     ID_DLG_SETT_BG_R,
-
-    // COMBO BOX
-    ID_DLG_SETT_CB_NORMAL,
-    ID_DLG_SETT_CB_DISABLED,
-    ID_DLG_SETT_CB_OVER,
-    ID_DLG_SETT_CB_PUSHED,
-    ID_DLG_SETT_CBI_NORMAL,
-    ID_DLG_SETT_CBI_DISABLED,
-    ID_DLG_SETT_CBI_OVER,
-    ID_DLG_SETT_CBI_PUSHED,
 
     // CHECK BOX
     ID_DLG_SETT_CHB_NORMAL,
@@ -924,6 +916,20 @@ enum SpriteIdUIShared : unsigned int
     ID_ICON_STEAM,
     ID_ICON_DISCORD,
     ID_ICON_FEEDBACK,
+    // COMBO BOX
+    ID_CB_NORMAL,
+    ID_CB_DISABLED,
+    ID_CB_OVER,
+    ID_CB_PUSHED,
+    ID_CBI_NORMAL,
+    ID_CBI_DISABLED,
+    ID_CBI_OVER,
+    ID_CBI_PUSHED,
+    // BUTTON SAVE SLOT
+    ID_DLG_NEWG_SLOT_NORMAL,
+    ID_DLG_NEWG_SLOT_DISABLED,
+    ID_DLG_NEWG_SLOT_OVER,
+    ID_DLG_NEWG_SLOT_CHECKED,
 };
 
 // UNIT QUICK SELECTION

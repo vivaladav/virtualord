@@ -4,6 +4,9 @@
 #include "GameObjects/GameObject.h"
 #include "Particles/DataParticleSingleLaser.h"
 
+#include <sgl/media/AudioManager.h>
+#include <sgl/media/AudioPlayer.h>
+
 #include <cmath>
 
 namespace game
@@ -124,10 +127,25 @@ void ParticleSingleLaser::OnDone()
     if(!mGameMap->HasObject(mTarget))
         return ;
 
+    auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
+
     if(mDamage > 0.f)
-        mTarget->Hit(mDamage, mShooter, mFatal);
+    {
+        const bool shooterValid = mShooter != nullptr && mGameMap->HasObject(mShooter);
+        const PlayerFaction f = shooterValid ? mShooter->GetFaction() : NO_FACTION;
+
+        mTarget->Hit(mDamage, mShooter, f, mFatal);
+
+        // play hit SFX if not destroyed
+        if(!mTarget->IsDestroyed())
+            ap->PlaySound("game/hit-01.ogg");
+    }
     else
+    {
         mTarget->MissHit();
+
+        ap->PlaySound("game/miss-01.ogg");
+    }
 }
 
 } // namespace game

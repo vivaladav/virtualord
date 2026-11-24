@@ -216,9 +216,6 @@ DialogExit::DialogExit(DialogButtons buttons, Game * game, Screen * screen)
             // abort the tutorial without saving
             if(tm->HasActiveTutorial())
                 tm->AbortTutorial();
-            // auto save if not playing a tutorial
-            else
-                game->SaveGame();
 
             game->RequestNextActiveState(StateId::INIT);
         });

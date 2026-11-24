@@ -89,10 +89,6 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     auto fontHeader = fm->GetFont(WidgetsConstants::FontFileHeader, 20, graphic::Font::NORMAL);
     auto fontText = fm->GetFont(WidgetsConstants::FontFileText, 18, graphic::Font::NORMAL);
 
-    auto texSliderBg = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BG);
-    auto texSliderBar = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BAR);
-    auto texSliderBtn = tm->GetSprite(SpriteFileUIShared, ID_SLIDER_DLG_BTN);
-
     int valRes = 0;
 
     // TITLE
@@ -128,7 +124,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > topRes)
         valRes = topRes;
 
-    mSliderMoney = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderMoney = new StandardGameSliderH(this);
 
     y += (icon->GetHeight() - mSliderMoney->GetHeight()) / 2;
 
@@ -170,7 +166,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > topRes)
         valRes = topRes;
 
-    mSliderEnergy = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderEnergy = new StandardGameSliderH(this);
 
     y += (icon->GetHeight() - mSliderEnergy->GetHeight()) / 2;
 
@@ -212,7 +208,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > topRes)
         valRes = topRes;
 
-    mSliderMaterial = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderMaterial = new StandardGameSliderH(this);
 
     y += (icon->GetHeight() - mSliderMaterial->GetHeight()) / 2;
 
@@ -254,7 +250,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > topRes2)
         valRes = topRes2;
 
-    mSliderDiamonds = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderDiamonds = new StandardGameSliderH(this);
 
     y += (icon->GetHeight() - mSliderDiamonds->GetHeight()) / 2;
 
@@ -295,7 +291,7 @@ DialogResearch::DialogResearch(Player * player, ResearchCenter * rc)
     if(valRes > topRes2)
         valRes = topRes2;
 
-    mSliderBlobs = new GameSliderH(texSliderBg, texSliderBar, texSliderBtn, this);
+    mSliderBlobs = new StandardGameSliderH(this);
 
     y += (icon->GetHeight() - mSliderBlobs->GetHeight()) / 2;
 

@@ -83,9 +83,9 @@ int ResourceGenerator::GetResourceProduction(ExtendedResource res) const
         return 0;
 }
 
-void ResourceGenerator::OnNewTurn(PlayerFaction faction)
+void ResourceGenerator::OnTurnStart(PlayerFaction faction)
 {
-    Structure::OnNewTurn(faction);
+    Structure::OnTurnStart(faction);
 
     // not linked yet -> exit
     if(!IsLinked())

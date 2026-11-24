@@ -4,6 +4,8 @@ namespace game
 {
 
 const char SpriteFileCursor[] = "UI/cursor.png";
+
+const char SpriteFileDialogAutoAttSettings[] = "UI/dialog_auto_attack_settings.png";
 const char SpriteFileDialogChangelog[] = "UI/dialog_changelog.png";
 const char SpriteFileDialogCredits[] = "UI/dialog_credits.png";
 const char SpriteFileDialogCreditsExp[] = "UI/dialog_credits-exp.png";
@@ -48,7 +50,6 @@ const char SpriteFilePanelTurnControl[] = "UI/panel_turn_control.png";
 const char SpriteFilePanelUnitActions[] = "UI/panel_unit_actions.png";
 const char SpriteFilePanelUnitActionsExp[] = "UI/panel_unit_actions-exp.png";
 const char SpriteFilePlanetMap[] = "UI/planet_map.png";
-const char SpriteFilePlanetMap2[] = "UI/planet_map-2.png";
 const char SpriteFileResourcesBar[] = "UI/resources_bar.png";
 const char SpriteFileResourcesBarExp[] = "UI/resources_bar-exp.png";
 const char SpriteFileTooltips[] = "UI/tooltips.png";

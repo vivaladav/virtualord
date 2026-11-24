@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-project(virtualord LANGUAGES CXX VERSION 0.6.15.1)
+project(virtualord LANGUAGES CXX VERSION 0.6.19)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -62,6 +62,7 @@ add_executable(
     src/ResourceLoader.cpp
     src/StatValue.h
     src/StatValue.cpp
+    src/Types.h
     src/Version.h
     src/AI/ActionAI.h
     src/AI/ActionAI.cpp
@@ -269,6 +270,8 @@ add_executable(
     src/Tutorial/StepAISetActive.cpp
     src/Tutorial/StepDelay.h
     src/Tutorial/StepDelay.cpp
+    src/Tutorial/StepDummy.h
+    src/Tutorial/StepDummy.cpp
     src/Tutorial/StepGameAddEnemy.h
     src/Tutorial/StepGameAddEnemy.cpp
     src/Tutorial/StepGameBackToBase.h
@@ -285,14 +288,14 @@ add_executable(
     src/Tutorial/StepGameBuildUnitStart.cpp
     src/Tutorial/StepGameBuildUnitEnd.h
     src/Tutorial/StepGameBuildUnitEnd.cpp
-    src/Tutorial/StepGameBuildStructArea.h
-    src/Tutorial/StepGameBuildStructArea.cpp
     src/Tutorial/StepGameBuildStructAreaFree.h
     src/Tutorial/StepGameBuildStructAreaFree.cpp
     src/Tutorial/StepGameBuildStructIntro.h
     src/Tutorial/StepGameBuildStructIntro.cpp
     src/Tutorial/StepGameBuildTowerEnd.h
     src/Tutorial/StepGameBuildTowerEnd.cpp
+    src/Tutorial/StepGameBuildUnit.h
+    src/Tutorial/StepGameBuildUnit.cpp
     src/Tutorial/StepGameBuildWallLine.h
     src/Tutorial/StepGameBuildWallLine.cpp
     src/Tutorial/StepGameCityIntro.h
@@ -321,20 +324,14 @@ add_executable(
     src/Tutorial/StepGameConquerCity.cpp
     src/Tutorial/StepGameConquerEnergyGenIntro.h
     src/Tutorial/StepGameConquerEnergyGenIntro.cpp
-    src/Tutorial/StepGameConquerGeneratorIntro.h
-    src/Tutorial/StepGameConquerGeneratorIntro.cpp
     src/Tutorial/StepGameConquerMaterialGenIntro.h
     src/Tutorial/StepGameConquerMaterialGenIntro.cpp
     src/Tutorial/StepGameConquerStruct.h
     src/Tutorial/StepGameConquerStruct.cpp
-    src/Tutorial/StepGameConquerStructChoice.h
-    src/Tutorial/StepGameConquerStructChoice.cpp
     src/Tutorial/StepGameConquerStructFree.h
     src/Tutorial/StepGameConquerStructFree.cpp
     src/Tutorial/StepGameConquerStructSimple.h
     src/Tutorial/StepGameConquerStructSimple.cpp
-    src/Tutorial/StepGameDialogTrading.h
-    src/Tutorial/StepGameDialogTrading.cpp
     src/Tutorial/StepGameDialogTradingBuy.h
     src/Tutorial/StepGameDialogTradingBuy.cpp
     src/Tutorial/StepGameDisableCamera.h
@@ -365,6 +362,8 @@ add_executable(
     src/Tutorial/StepGameIntro3.cpp
     src/Tutorial/StepGameMakeEnemyAttack.h
     src/Tutorial/StepGameMakeEnemyAttack.cpp
+    src/Tutorial/StepGameMakeEnemyMove.h
+    src/Tutorial/StepGameMakeEnemyMove.cpp
     src/Tutorial/StepGameMapNavigation.h
     src/Tutorial/StepGameMapNavigation.cpp
     src/Tutorial/StepGameMaterialGenerator.h
@@ -387,12 +386,10 @@ add_executable(
     src/Tutorial/StepGameMoveUnitFree.cpp
     src/Tutorial/StepGameMoveUnitSimple.h
     src/Tutorial/StepGameMoveUnitSimple.cpp
-    src/Tutorial/StepGameMoveUnitToArea.h
-    src/Tutorial/StepGameMoveUnitToArea.cpp
     src/Tutorial/StepGameMoveUnitToCorner.h
     src/Tutorial/StepGameMoveUnitToCorner.cpp
-    src/Tutorial/StepGameOpenLootbox.h
-    src/Tutorial/StepGameOpenLootbox.cpp
+    src/Tutorial/StepGameObjectAttackSimple.h
+    src/Tutorial/StepGameObjectAttackSimple.cpp
     src/Tutorial/StepGameOpenLootboxFree.h
     src/Tutorial/StepGameOpenLootboxFree.cpp
     src/Tutorial/StepGamePanelHit.h
@@ -425,12 +422,8 @@ add_executable(
     src/Tutorial/StepGameSetObjectMaxHealth.cpp
     src/Tutorial/StepGameSetObjectPerfectShot.h
     src/Tutorial/StepGameSetObjectPerfectShot.cpp
-    src/Tutorial/StepGameSetSelectionActiveAction.h
-    src/Tutorial/StepGameSetSelectionActiveAction.cpp
     src/Tutorial/StepGameSetSelectionAllowed.h
     src/Tutorial/StepGameSetSelectionAllowed.cpp
-    src/Tutorial/StepGameSetSelectionDefaultAction.h
-    src/Tutorial/StepGameSetSelectionDefaultAction.cpp
     src/Tutorial/StepGameSetTarget.h
     src/Tutorial/StepGameSetTarget.cpp
     src/Tutorial/StepGameSetTargetIcon.h
@@ -467,34 +460,26 @@ add_executable(
     src/Tutorial/StepGameUnit.cpp
     src/Tutorial/StepGameUnitAttackBurst.h
     src/Tutorial/StepGameUnitAttackBurst.cpp
-    src/Tutorial/StepGameUnitAttackContinue.h
-    src/Tutorial/StepGameUnitAttackContinue.cpp
     src/Tutorial/StepGameUnitAttackFree.h
     src/Tutorial/StepGameUnitAttackFree.cpp
-    src/Tutorial/StepGameUnitAttackSimple.h
-    src/Tutorial/StepGameUnitAttackSimple.cpp
     src/Tutorial/StepGameUnitAttackIcon.h
     src/Tutorial/StepGameUnitAttackIcon.cpp
+    src/Tutorial/StepGameUnitBuildIcon.h
+    src/Tutorial/StepGameUnitBuildIcon.cpp
     src/Tutorial/StepGameUnitConquerCellsIcon.h
     src/Tutorial/StepGameUnitConquerCellsIcon.cpp
     src/Tutorial/StepGameUpgradeIntro.h
     src/Tutorial/StepGameUpgradeIntro.cpp
     src/Tutorial/StepGameUpgradeUnit.h
     src/Tutorial/StepGameUpgradeUnit.cpp
-    src/Tutorial/StepGameUpgradeUnitFree.h
-    src/Tutorial/StepGameUpgradeUnitFree.cpp
     src/Tutorial/StepGameWaitEnemiesKilled.h
     src/Tutorial/StepGameWaitEnemiesKilled.cpp
     src/Tutorial/StepGameWaitEnemyKilled.h
     src/Tutorial/StepGameWaitEnemyKilled.cpp
-    src/Tutorial/StepGameWaitLootboxOpen.h
-    src/Tutorial/StepGameWaitLootboxOpen.cpp
     src/Tutorial/StepGameWaitObjectDestroyed.h
     src/Tutorial/StepGameWaitObjectDestroyed.cpp
     src/Tutorial/StepGameWaitObjectIdle.h
     src/Tutorial/StepGameWaitObjectIdle.cpp
-    src/Tutorial/StepGameWaitSelectedHasEnergy.h
-    src/Tutorial/StepGameWaitSelectedHasEnergy.cpp
     src/Tutorial/StepGameWaitStructCanBuild.h
     src/Tutorial/StepGameWaitStructCanBuild.cpp
     src/Tutorial/StepGameWaitTurn.h
@@ -515,6 +500,8 @@ add_executable(
     src/Tutorial/StepPlanetMapConquerTerritory.cpp
     src/Tutorial/StepPlanetMapConquerTerritoryStart.h
     src/Tutorial/StepPlanetMapConquerTerritoryStart.cpp
+    src/Tutorial/StepPlanetMapExploreCancel.h
+    src/Tutorial/StepPlanetMapExploreCancel.cpp
     src/Tutorial/StepPlanetMapExploreTerritory.h
     src/Tutorial/StepPlanetMapExploreTerritory.cpp
     src/Tutorial/StepPlanetMapExploreTerritoryInfo.h
@@ -527,6 +514,8 @@ add_executable(
     src/Tutorial/StepPlanetMapIntro.cpp
     src/Tutorial/StepPlanetMapNoInfo.h
     src/Tutorial/StepPlanetMapNoInfo.cpp
+    src/Tutorial/StepPlanetMapNoResources.h
+    src/Tutorial/StepPlanetMapNoResources.cpp
     src/Tutorial/StepPlanetMapSelectTerritory.h
     src/Tutorial/StepPlanetMapSelectTerritory.cpp
     src/Tutorial/StepPlanetMapSendAI.h
@@ -593,6 +582,8 @@ add_executable(
     src/Widgets/ButtonsPanel.cpp
     src/Widgets/CountdownLabel.h
     src/Widgets/CountdownLabel.cpp
+    src/Widgets/DialogAutoAttackSettings.h
+    src/Widgets/DialogAutoAttackSettings.cpp
     src/Widgets/DialogChangelog.h
     src/Widgets/DialogChangelog.cpp
     src/Widgets/DialogCredits.h
@@ -635,6 +626,8 @@ add_executable(
     src/Widgets/ExternalButtons.cpp
     src/Widgets/GameButton.h
     src/Widgets/GameButton.cpp
+    src/Widgets/GameComboBox.h
+    src/Widgets/GameComboBox.cpp
     src/Widgets/GameHUD.h
     src/Widgets/GameHUD.cpp
     src/Widgets/GameMapProgressBar.h

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.h"
+
 #include <sgl/core/Application.h>
 
 #include <chrono>
@@ -26,8 +28,10 @@ namespace sgl
     namespace utilities
     {
         class BinaryFile;
+        class UniformRealDistribution;
         class StateData;
         class StateManager;
+        class UniformDistribution;
     }
 }
 
@@ -44,7 +48,6 @@ class TutorialManager;
 enum ExtendedResource : unsigned int;
 enum GameCursorId : unsigned int;
 enum GameMode : unsigned int;
-enum LanguageId : unsigned int;
 enum PlanetId : unsigned int;
 enum PlayerFaction : unsigned int;
 enum StateId : unsigned int;
@@ -81,9 +84,10 @@ public:
     void ClearGameData();
 
     // -- LOAD & SAVE --
-    const std::string & GetSavefile(GameMode mode, unsigned int ind) const;
+    const std::string & GetSavefile(unsigned int ind) const;
+    const std::string & GetAutoSavefile() const;
 
-    void SetSaveFile(const std::string & f);
+    void SetSaveSlot(int slot);
 
     sgl::utilities::BinaryFile * GetSaveFileForReading() const;
     void CloseSaveFileForReading();
@@ -104,6 +108,7 @@ public:
 #endif
 
     const std::unordered_map<ExtendedResource, int> & GetCostSaveGame() const;
+    void InitCostSaveGame();
     void LowerCostSaveGame();
 
     // -- mouse cursors --
@@ -153,7 +158,8 @@ public:
     PlayerFaction GetLocalPlayerFaction() const;
 
     // -- tech upgrades --
-    int GetTechUpgradecost(TechUpgradeId upgrade) const;
+    int GetCostTechUpgrade(TechUpgradeId upgrade) const;
+    bool CanLocalPlayerAffordTechUpgrade(TechUpgradeId upgrade) const;
 
     // -- settings --
     LanguageId GetLanguage() const;
@@ -196,6 +202,11 @@ public:
 
     TutorialManager * GetTutorialManager() const;
 
+    // -- probability distributions --
+    sgl::utilities::UniformDistribution * GetUniformDistribution(int min, int max) const;
+    sgl::utilities::UniformRealDistribution * GetUniformRealDistribution(float min,
+                                                                         float max) const;
+
 private:
     void CreatePlayers();
     void InitPlayerLocal(Player * p);
@@ -214,7 +225,6 @@ private:
 
     // -- LOAD & SAVE --
     void InitDirectories();
-    void InitCostSaveGame();
 
 private:
     std::vector<Player *> mPlayers;
@@ -236,7 +246,9 @@ private:
     std::string mDirSave;
     std::string mDirSettings;
     std::string mCurrSaveFile;
+    std::string mCurrAutoSaveFile;
     std::string mSettingsFile;
+    int mCurrentSaveSlot = -1;
 
     sgl::graphic::Renderer * mRenderer = nullptr;
     sgl::graphic::Window * mWin = nullptr;
@@ -256,6 +268,9 @@ private:
     ObjectsDataRegistry * mObjsRegistry = nullptr;
 
     sgl::utilities::BinaryFile * mReaderSave = nullptr;
+
+    sgl::utilities::UniformDistribution * mDistUniform = nullptr;
+    sgl::utilities::UniformRealDistribution * mDistReal = nullptr;
 
     Difficulty mDifficulty = EASY;
 
@@ -290,7 +305,7 @@ private:
 
 inline ResourceLoader * Game::GetResourceLoader() const { return mResLoader; }
 
-inline void Game::SetSaveFile(const std::string & f) { mCurrSaveFile = f; }
+inline const std::string & Game::GetAutoSavefile() const { return mCurrAutoSaveFile; }
 
 inline sgl::utilities::BinaryFile * Game::GetSaveFileForReading() const
 {
@@ -348,7 +363,7 @@ inline Player * Game::GetLocalPlayer() const
 inline void Game::SetLocalPlayerFaction(PlayerFaction faction) { mLocalFaction = faction; }
 inline PlayerFaction Game::GetLocalPlayerFaction() const { return mLocalFaction; }
 
-inline int Game::GetTechUpgradecost(TechUpgradeId upgrade) const
+inline int Game::GetCostTechUpgrade(TechUpgradeId upgrade) const
 {
     auto it = mCostUpgrades.find(upgrade);
 

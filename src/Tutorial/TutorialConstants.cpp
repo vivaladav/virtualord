@@ -41,4 +41,8 @@ const int TutorialConstants::catUnitGeneric = 0;
 // indexes of units in build dialog
 const int TutorialConstants::unitMiniSpawner = 1;
 
+// camera and animations
+const float TutorialConstants::delayAnimLong = 2.f;
+const float TutorialConstants::speedCamera = 700.f;
+
 } // namespace game

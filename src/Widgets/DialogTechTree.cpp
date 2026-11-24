@@ -211,7 +211,7 @@ DialogTechTree::DialogTechTree(Player * player, Game * game)
         auto btn = mBtnUnlock->GetUpgradeToUnlock();
 
         const TechUpgradeId upgrade = btn->GetUpgrade();
-        const int cost = mGame->GetTechUpgradecost(upgrade);
+        const int cost = mGame->GetCostTechUpgrade(upgrade);
 
         if(cost > 0)
         {
@@ -553,15 +553,6 @@ void DialogTechTree::UpdateUpgrades(UpgradeSections section)
 
         btnUpgrade40->SetPosition(btnX, btnY);
     }
-    else
-    {
-        // -- COL 0 --
-        // [0, 0]
-        auto btnUpgrade00 = GetNewButtonUpgrade(TECH_UP_NULL, 0, {}, false);
-        mVisibleButtonsUpgrade.emplace(TECH_UP_NULL, btnUpgrade00);
-
-        btnUpgrade00->SetPosition(btnX, btnY);
-    }
 }
 
 void DialogTechTree::UpdateUnlockableStates()
@@ -573,7 +564,7 @@ void DialogTechTree::UpdateUnlockableStates()
         auto btn = it.second;
 
         const TechUpgradeId upgrade = btn->GetUpgrade();
-        const int cost = mGame->GetTechUpgradecost(upgrade);
+        const int cost = mGame->GetCostTechUpgrade(upgrade);
         const bool unlockable = cost <= resPoints && btn->IsEnabled() && !btn->IsUnlocked();
 
         btn->SetUnlockable(unlockable);
@@ -671,14 +662,15 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
             }
 
             // update button unlock
-            const int cost = mGame->GetTechUpgradecost(upgrade);
+            const int cost = mGame->GetCostTechUpgrade(upgrade);
 
             if(cost > 0)
             {
                 mBtnUnlock->SetVisible(true);
                 mBtnUnlock->SetCost(cost);
                 mBtnUnlock->SetUpgradeToUnlock(btn);
-                mBtnUnlock->SetEnabled(mPlayer->HasEnough(ER_RESEARCH, cost));
+                mBtnUnlock->SetEnabled(mPlayer->HasEnough(ER_RESEARCH, cost) &&
+                                       btn->IsUnlockable());
             }
         });
     }
@@ -697,12 +689,11 @@ ButtonTechUpgrade * DialogTechTree::GetNewButtonUpgrade(TechUpgradeId upgrade, i
         }
     }
 
-    const int cost = mGame->GetTechUpgradecost(upgrade);
+    const int cost = mGame->GetCostTechUpgrade(upgrade);
     const int resPoints = mPlayer->GetResource(ER_RESEARCH).GetValue();
     const bool unlockable = cost <= resPoints && enabled && !unlocked;
 
     btn->SetLevel(level);
-    btn->SetEnabled(enabled || unlocked);
     btn->SetUnlocked(unlocked);
     btn->SetUnlockable(unlockable);
 

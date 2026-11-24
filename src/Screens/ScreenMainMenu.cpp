@@ -5,6 +5,7 @@
 #include "Version.h"
 #include "States/StatesIds.h"
 #include "Widgets/ButtonMainMenu.h"
+#include "Widgets/ButtonSaveSlot.h"
 #include "Widgets/DialogChangelog.h"
 #include "Widgets/ExternalButtons.h"
 #include "Widgets/GameButton.h"
@@ -50,7 +51,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
 
     game->SetClearColor(0x12, 0x12, 0x12, 0xFF);
 
-    auto panelButtons = new sgui::Widget;
+    mPanelButtons = new sgui::Widget;
 
     int buttonY = 0;
     const int VMARGIN = 35;
@@ -76,7 +77,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
 #endif
 
     // -- BUTTON NEW GAME --
-    ButtonMainMenu * button = new ButtonMainMenu(sm->GetCString("NEW_GAME"), panelButtons);
+    ButtonMainMenu * button = new ButtonMainMenu(sm->GetCString("NEW_GAME"), mPanelButtons);
 
     button->AddOnClickFunction([game]
     {
@@ -115,29 +116,35 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     // only visible if there's a save file available
     if(game->HasSavedFiles())
     {
-        button = new ButtonMainMenu(sm->GetCString("LOAD_GAME"), panelButtons);
+        button = new ButtonMainMenu(sm->GetCString("LOAD_GAME"), mPanelButtons);
         button->SetY(buttonY);
 
-        button->AddOnClickFunction([game]
+        button->AddOnClickFunction([this]
         {
-            // TODO
-            //  replace hardcoded values with proper implementation.
-            //  This will be changed to a dialog or screen to select a slot
-            game->LoadGame(game->GetSavefile(GM_CAMPAIGN, 0));
+            mPanelButtons->SetVisible(false);
+            mButtonChangelog->SetVisible(false);
+
+            mPanelLoad->SetVisible(true);
+            mPanelLoad->SetFocus();
         });
 
         buttonY += button->GetHeight() + VMARGIN;
+
+        // also create panel to choose a save file
+        CreatePanelLoad();
+
+        mPanelLoad->SetVisible(false);
     }
 
     // -- BUTTON MAP EDITOR --
-    button = new ButtonMainMenu(sm->GetCString("MAP_EDITOR"), panelButtons);
+    button = new ButtonMainMenu(sm->GetCString("MAP_EDITOR"), mPanelButtons);
     button->SetY(buttonY);
 
 #ifdef DEMO_MODE
     button->SetEnabled(false);
 
     // cover button to show tooltip when mouse is over
-    auto cover = new WidgetCover(button, panelButtons);
+    auto cover = new WidgetCover(button, mPanelButtons);
     cover->SetPosition(button->GetX(), button->GetY());
 
     auto tt = new GameSimpleTooltip(sm->GetCString("NOT_IN_DEMO"));
@@ -149,7 +156,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     buttonY += button->GetHeight() + VMARGIN;
 
     // -- BUTTON SETTINGS --
-    button = new ButtonMainMenu(sm->GetCString("SETTINGS"), panelButtons);
+    button = new ButtonMainMenu(sm->GetCString("SETTINGS"), mPanelButtons);
     button->SetY(buttonY);
 
     button->AddOnClickFunction([game]
@@ -160,7 +167,7 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     buttonY += button->GetHeight() + VMARGIN;
 
     // -- CREDITS --
-    button = new ButtonMainMenu(sm->GetCString("CREDITS"), panelButtons);
+    button = new ButtonMainMenu(sm->GetCString("CREDITS"), mPanelButtons);
     button->SetY(buttonY);
 
     button->AddOnClickFunction([game]
@@ -171,15 +178,15 @@ ScreenMainMenu::ScreenMainMenu(Game * game)
     buttonY += button->GetHeight() + VMARGIN;
 
     // -- BUTTON EXIT --
-    button = new ButtonMainMenu(sm->GetCString("EXIT"), panelButtons);
+    button = new ButtonMainMenu(sm->GetCString("EXIT"), mPanelButtons);
     button->SetY(buttonY);
 
     button->AddOnClickFunction([game] { game->Exit(); });
 
     // position buttons panel
-    const int containerX = buttonsCX - panelButtons->GetWidth() * 0.5f;
+    const int containerX = buttonsCX - mPanelButtons->GetWidth() * 0.5f;
     const int containerY = 350;
-    panelButtons->SetPosition(containerX, containerY);
+    mPanelButtons->SetPosition(containerX, containerY);
 
     // CHANGELOG
     CreateChangelog();
@@ -313,6 +320,157 @@ void ScreenMainMenu::OnApplicationQuit(sgl::core::ApplicationEvent & event)
     event.SetConsumed();
 }
 
+void ScreenMainMenu::CreatePanelLoad()
+{
+    if(mPanelLoad != nullptr)
+        return ;
+
+    using namespace sgl;
+
+    auto fm = graphic::FontManager::Instance();
+    auto sm = utilities::StringManager::Instance();
+    auto tm = graphic::TextureManager::Instance();
+
+    auto game = GetGame();
+
+    // create panel
+    mPanelLoad =  new sgui::Widget;
+
+    const int marginHeaderB = 50;
+    const int marginHeaderL = 30;
+    int contY = 0;
+
+    // PANEL HEADER
+    auto tex = tm->GetSprite(SpriteFileMainMenuUI, ID_MM_HEADER_BG);
+    auto bgHeader = new sgui::Image(tex, mPanelLoad);
+
+    const int w = bgHeader->GetWidth();
+    auto fontHeader1 = fm->GetFont("Lato-Regular.ttf", 32, graphic::Font::NORMAL);
+    auto labelHeader1 = new sgui::Label(sm->GetCString("LOAD_GAME"), fontHeader1, mPanelLoad);
+    labelHeader1->SetColor(0xe7f6feff);
+    labelHeader1->SetPosition((w - labelHeader1->GetWidth()) / 2,
+                             (bgHeader->GetHeight() - labelHeader1->GetHeight()) / 2);
+
+    contY = bgHeader->GetHeight() + marginHeaderB;
+
+    // AUTOMATIC SAVE HEADER
+    const unsigned int colorHeader2 = 0xf1f3f4ff;
+    const int marginHeader2B = 5;
+    const int marginLineB = 15;
+    const int marginSlotB = 10;
+    const int marginSlotsB = 50;
+
+    auto fontHeader2 = fm->GetFont("Lato-Regular.ttf", 26, graphic::Font::NORMAL);
+
+    auto labelHeader2 = new sgui::Label(sm->GetCString("AUTO_SAVE"), fontHeader2, mPanelLoad);
+    labelHeader2->SetColor(colorHeader2);
+    labelHeader2->SetPosition(marginHeaderL, contY);
+
+    contY += labelHeader2->GetHeight() + marginHeader2B;
+
+    tex = tm->GetSprite(SpriteFileMainMenuUI, ID_MM_HLINE);
+    auto line = new sgui::Image(tex, mPanelLoad);
+    line->SetPosition(marginHeaderL, contY);
+
+    contY += line->GetHeight() + marginLineB;
+
+    // AUTOMATIC SAVE SLOT
+    GameMode mode;
+    PlayerFaction faction;
+    PlanetId planet;
+    unsigned int map;
+    int turn;
+    std::time_t timestamp;
+    ButtonSaveSlot * btnSlot;
+    int slot = 0;
+
+    const bool used = game->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
+                                           game->GetAutoSavefile());
+
+    if(used)
+        btnSlot = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelLoad);
+    else
+    {
+        btnSlot = new ButtonSaveSlot(mPanelLoad);
+        btnSlot->SetEnabled(false);
+    }
+
+    btnSlot->AddOnClickFunction([game]
+    {
+        game->LoadGame(game->GetAutoSavefile());
+    });
+
+    btnSlot->SetPosition((w - btnSlot->GetWidth()) / 2, contY);
+
+    contY += btnSlot->GetHeight() + marginSlotsB;
+
+    // SAVE SLOTS HEADER
+    labelHeader2 = new sgui::Label(sm->GetCString("SAVE_FILES"), fontHeader2, mPanelLoad);
+    labelHeader2->SetColor(colorHeader2);
+    labelHeader2->SetPosition(marginHeaderL, contY);
+
+    contY += labelHeader2->GetHeight() + marginHeader2B;
+
+    tex = tm->GetSprite(SpriteFileMainMenuUI, ID_MM_HLINE);
+    line = new sgui::Image(tex, mPanelLoad);
+    line->SetPosition(marginHeaderL, contY);
+
+    contY += line->GetHeight() + marginLineB;
+
+    const unsigned int numSlots = 3;
+
+    for(unsigned int i = 0; i < numSlots; ++i)
+    {
+        const bool used = game->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
+                                               game->GetSavefile(i));
+
+        if(used)
+        {
+            btnSlot = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelLoad);
+
+            btnSlot->AddOnClickFunction([game, i]
+            {
+                game->LoadGame(game->GetSavefile(i));
+            });
+        }
+        else
+        {
+            btnSlot = new ButtonSaveSlot(mPanelLoad);
+            btnSlot->SetEnabled(false);
+        }
+
+#ifdef DEMO_MODE
+        // only 1 slot available in DEMO
+        if(i > 0)
+            btnSlot->MarkNotAvailable();
+#endif
+
+        btnSlot->SetPosition((w - btnSlot->GetWidth()) / 2, contY);
+
+        contY += btnSlot->GetHeight() + marginSlotB;
+    }
+
+    contY += marginSlotsB;
+
+    // BUTTON BACK
+    auto button = new ButtonMainMenu(sm->GetCString("BACK"), mPanelLoad);
+    button->SetShortcutKey(sgl::core::KeyboardEvent::KEY_ESCAPE);
+    button->SetPosition((w - button->GetWidth()) / 2, contY);
+
+    button->AddOnClickFunction([this]
+    {
+        mPanelButtons->SetVisible(true);
+        mButtonChangelog->SetVisible(true);
+
+        mPanelLoad->SetVisible(false);
+    });
+
+    // position panel
+    const int containerX = buttonsCX - mPanelLoad->GetWidth() / 2;
+    const int containerY = 350;
+    mPanelLoad->SetPosition(containerX, containerY);
+}
+
 void ScreenMainMenu::CreateChangelog()
 {
     using namespace sgl;
@@ -359,7 +517,7 @@ void ScreenMainMenu::CreateChangelog()
     const int contX = 0;
     int contY = 0;
 
-    auto title = new sgui::Label("0.6.15.1 - \"Playtest more\"", font, content);
+    auto title = new sgui::Label("0.6.19 - \"Better DEMO time\"", font, content);
     title->SetPosition(contX, contY);
     title->SetColor(colorContent);
 
@@ -370,35 +528,42 @@ void ScreenMainMenu::CreateChangelog()
 
     auto text = new sgui::TextArea(contentW, minBlockH, font, true, content);
     text->SetText("NEW FEATURES\n"
-                  "- New screen: CREDITS.\n"
-                  "- Added construction of wall with gate at the end of tutorial 1.\n"
-                  "- Units can build towers and gates on cells with wall.\n"
-                  "- Towers and bunkers can attack manually.\n"
-                  "- Save slots show mission and turn when saved in game.\n"
-                  "- Experimental multiple screen support in settings.\n"
-                  "- Video mode and resolution saved and loaded from settings.\n"
-                  "- New Video option to grab the mouse inside the game window.\n"
+                  "- Added master volume to audio settings.\n"
+                  "- Double action-button click makes unit move faster.\n"
+                  "- Active action of selected object is kept over next turn.\n"
+                  "- Added button to control panel to cycle through units.\n"
+                  "- Structures show resources consumed every turn at the end of each turn.\n"
+                  "- Added new sound effects.\n"
+                  "- New language: Portuguese (Brazilian)\n"
                   "\nCHANGES\n"
-                  "- Game is no longer paused when mouse leaves the screen.\n"
-                  "- Energy and material generators produce more resources.\n"
-                  "- Updated graphics of: trading post, spawning tower, hospital.\n"
-                  "- Removed faction energy.\n"
-                  "- Removed auto turn end.\n"
-                  "- Improved particles explosion for lasers.\n"
-                  "- Changed design for showing text in bottom control panel.\n"
-                  "- Tutorial missions 2 and 3 redesigned from scratch.\n"
-                  "- Different font sizes for hit points depending on outcome.\n"
-                  "- Increased contrast in tutorial info panels.\n"
+                  "- Active structures like gates, bunkers and defensive towers consume"
+                  " energy every new turn.\n"
+                  "- Kills in chain of explosions are assigned to the object which started"
+                  " the chain (the one which destroyed the first object of the chain).\n"
+                  "- Manual save and auto-save are now disabled during the tutorial.\n"
+                  "- Laser weapons inflict variable damage.\n"
+                  "- Structures consume resources at the end of their turn and produce some"
+                  " at the beginning of a new turn.\n"
+                  "- Lowered health of trees.\n"
+                  "- Added accuracy bonus when shooting fixed elements.\n"
+                  "- Lowered health and energy of mini units.\n"
+                  "- Reduced potential effect of explosions.\n"
+                  "- Replaced 1 music track played during missions.\n"
+                  "- Changed second half of tutorial mission 1 to be like 2 and 3.\n"
                   "\nFIXES\n"
-                  "- Music no longer stops after first play during missions.\n"
-                  "- Music no longer stops after first play in other screens.\n"
-                  "- Option to hide static cursor is saved correctly.\n"
-                  "- Fixed Research Center not producing research points when on low resources.\n"
-                  "- Fixed check of valid saved files in main menu.\n"
-                  "- Add missing view attribute to City Block.\n"
-                  "- Owned Structures are unlinked if enemy interrups connection"
-                  " conquering a structure.\n"
-                  "- Reduced camera shake when following moving units.\n"
+                  "- Fixed soft lock in tutorial mission 3 when unit doesn't have enough energy"
+                  " to open the first lootbox.\n"
+                  "- Fixed growing trees not cutting power of structures when links are broken.\n"
+                  "- Fixed units unable to move after loading in tutorial mission 1.\n"
+                  "- Fixed crash when shooting mini-units are destroyed while attacking.\n"
+                  "- Fixed soft lock when player doesn't have enough research points to unlock"
+                  " a tech upgrade in tutorial missions 2 and 3.\n"
+                  "- Fixed soft lock in tutorial 2 when one of final enemies is destroyed by"
+                  " an explosion of own faction's unit.\n"
+                  "- Fix output notification of Research Center appearing below"
+                  " status bars when selected.\n"
+                  "- Fixed several typos and improved Italian translation.\n"
+                  "- Fixed weapons created twice for mini-units when loading.\n"
                   );
     text->SetPosition(contX, contY);
     text->SetColor(colorContent);

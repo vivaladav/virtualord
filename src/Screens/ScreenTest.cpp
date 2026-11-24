@@ -139,6 +139,9 @@ ScreenTest::~ScreenTest()
     sgl::sgui::Stage::Instance()->ClearWidgets();
 
     GetGame()->SetCurrentCursor(CURSOR_DEFAULT);
+
+    auto ap = sgl::media::AudioManager::Instance()->GetPlayer();
+    ap->ClearMusicQueue();
 }
 
 void ScreenTest::OnKeyUp(sgl::core::KeyboardEvent & event)
@@ -663,8 +666,8 @@ void ScreenTest::TestAudio()
     auto ap = am->GetPlayer();
 
     ap->StopMusic();
+    ap->AddMusicToQueue("test/music_01.ogg");
     ap->AddMusicToQueue("test/test.ogg");
-    ap->AddMusicToQueue("test/menu_01.ogg");
     ap->PlayMusicQueue(true);
 }
 

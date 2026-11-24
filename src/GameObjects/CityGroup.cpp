@@ -89,6 +89,9 @@ bool CityGroup::Load(sgl::utilities::BinaryFile & bf)
     if(!res)
         return false;
 
+    if(IsEmpty())
+        return true;
+
     mConquered = bf.ReadBool();
 
     return true;

@@ -19,20 +19,32 @@ OverlayHealRange::OverlayHealRange(IsoMap * im)
 
 OverlayHealRange::~OverlayHealRange()
 {
-    for(auto pi : mActiveIndicators)
-        delete pi;
+    for(auto ind : mActiveIndicators)
+        delete ind;
 
-    for(auto pi : mAvailableIndicators)
-        delete pi;
+    for(auto ind : mAvailableIndicators)
+        delete ind;
+}
+
+void OverlayHealRange::Hide()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, false);
+}
+
+void OverlayHealRange::Show()
+{
+    for(auto ind : mActiveIndicators)
+        mLayer->SetObjectVisible(ind, true);
 }
 
 void OverlayHealRange::Clear()
 {
-    for(auto pi : mActiveIndicators)
+    for(auto ind : mActiveIndicators)
     {
-        mLayer->RemoveObject(pi);
+        mLayer->RemoveObject(ind);
 
-        mAvailableIndicators.emplace_back(pi);
+        mAvailableIndicators.emplace_back(ind);
     }
 
     mActiveIndicators.clear();
@@ -63,10 +75,10 @@ void OverlayHealRange::Show(const GameObject * obj, unsigned int range)
             // skip cells below object
             if(!(r >= r1 && r <= r0 && c >= c1 && c <= c0))
             {
-                auto pi = GetNewIndicator(faction);
-                mActiveIndicators.emplace_back(pi);
+                auto ind = GetNewIndicator(faction);
+                mActiveIndicators.emplace_back(ind);
 
-                mLayer->AddObject(pi, r, c);
+                mLayer->AddObject(ind, r, c);
             }
         }
     }

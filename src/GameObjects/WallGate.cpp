@@ -21,6 +21,18 @@ WallGate::WallGate(const ObjectData & data, const ObjectInitData & initData,
     mVariant = orientation;
 
     SetImage();
+
+    // track changes of ENERGY
+    auto p = GetOwner();
+
+    if(p != nullptr)
+    {
+        mResTrackerId = p->AddOnResourceChanged(ER_ENERGY,
+                                                [this](const StatValue *, int, int)
+                                                {
+                                                    UpdateWorkingState();
+                                                });
+    }
 }
 
 WallGate::~WallGate()
@@ -30,7 +42,9 @@ WallGate::~WallGate()
     if(p == nullptr)
         return ;
 
-    p->SetCellWalkable(GetRow0(), GetCol0(), false);
+    p->SetCellWalkable(GetRow0(), GetCol0(), true);
+
+    p->RemoveOnResourceChanged(ER_ENERGY, mResTrackerId);
 }
 
 bool WallGate::Load(sgl::utilities::BinaryFile & bf)
@@ -61,7 +75,9 @@ bool WallGate::Save(sgl::utilities::BinaryFile & bf) const
 
 bool WallGate::Toggle()
 {
-    if(!IsLinked())
+    auto p = GetOwner();
+
+    if(!IsLinked() || (p != nullptr && p->GetResource(ER_ENERGY).GetValue() == 0))
         return false;
 
     // toggle open value
@@ -82,7 +98,7 @@ bool WallGate::Toggle()
     const GameMapCell * cell = GetCell();
     GetGameMap()->SetCellWalkable(cell->row, cell->col, mOpen);
 
-    ActionStepCompleted(TOGGLE_GATE);
+    ActionStepCompleted(ACT_TOGGLE_GATE);
 
     // update image
     SetImage();
@@ -90,16 +106,31 @@ bool WallGate::Toggle()
     return true;
 }
 
-void WallGate::OnNewTurn(PlayerFaction faction)
+void WallGate::OnTurnStart(PlayerFaction faction)
 {
-    Structure::OnNewTurn(faction);
+    Structure::OnTurnStart(faction);
 
     if(faction != GetFaction())
         return ;
 
+    UpdateWorkingState();
+
     // close gate if open and nothing on top
-    if(IsOpen() && GetCell()->objTop == nullptr)
+    if(mWorking && IsOpen() && GetCell()->objTop == nullptr)
         GetGameMap()->CloseGate(this);
+}
+
+void WallGate::OnTurnEnd(PlayerFaction faction)
+{
+    Structure::OnTurnEnd(faction);
+
+    // not own turn or not active -> exit
+    if(faction != GetFaction() || !IsLinked())
+        return ;
+
+    UpdateWorkingState();
+
+    ShowEnergyUsage();
 }
 
 unsigned int WallGate::GetCostEnergy(unsigned int level)
@@ -114,16 +145,34 @@ unsigned int WallGate::GetCostMaterial(unsigned int level)
     return (level + 1) * cost0;
 }
 
+int WallGate::GetResourceUsage(ExtendedResource res) const
+{
+    const int energy = 3;
+
+    if(res == ER_ENERGY)
+        return energy;
+    else
+        return 0;
+}
+
+void WallGate::UpdateWorkingState()
+{
+    auto p = GetOwner();
+
+    if(p == nullptr)
+        mWorking = false;
+    else
+        mWorking = IsLinked() && p->GetResource(ER_ENERGY).GetValue() > 0 &&
+                   HasEnergyForActionStep(ACT_TOGGLE_GATE);
+
+    p->SetCellWalkable(GetRow0(), GetCol0(), mWorking);
+}
+
 void WallGate::OnLinkedChanged()
 {
     Structure::OnLinkedChanged();
 
-    auto p = GetOwner();
-
-    if(p == nullptr)
-        return ;
-
-    p->SetCellWalkable(GetRow0(), GetCol0(), IsLinked());
+    UpdateWorkingState();
 }
 
 void WallGate::UpdateGraphics()

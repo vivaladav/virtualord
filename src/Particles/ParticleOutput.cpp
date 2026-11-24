@@ -89,12 +89,17 @@ void ParticleOutput::SetData(const DataParticleOutput & data)
 
     // TEXT
     const unsigned int colorText = 0xeff0f5ff;
+    const unsigned int colotTextNeg = 0xef9890ff;
     const int fontSize = 20;
     auto fm = graphic::FontManager::Instance();
     graphic::Font * font = fm->GetFont("Lato-Bold.ttf", fontSize, graphic::Font::NORMAL);
 
     mTxt = new graphic::Text(std::to_string(data.quantity).c_str(), font);
-    mTxt->SetColor(colorText);
+
+    if(data.quantity < 0)
+        mTxt->SetColor(colotTextNeg);
+    else
+        mTxt->SetColor(colorText);
 
     SetStart(data.x0, data.y0);
 }

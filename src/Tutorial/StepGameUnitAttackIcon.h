@@ -15,7 +15,7 @@ class StepGameUnitAttackIcon : public TutorialInfoStep
 {
 public:
     StepGameUnitAttackIcon(const Game * game, Screen * screen, PanelObjectActions * panel,
-                           const sgl::core::Pointd2D & p0);
+                           const char * text, const sgl::core::Pointd2D & p0);
     ~StepGameUnitAttackIcon();
 
     void SetPause(bool paused) override;

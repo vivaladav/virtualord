@@ -22,29 +22,42 @@ enum GameObjectActionType : unsigned int
     IDLE,
 
     // BASE
-    BUILD_UNIT,
+    ACT_BUILD_UNIT,
 
     // MINI UNIT
-    SET_TARGET,
+    ACT_SET_TARGET,
 
     // UNIT
-    MOVE,
-    CONQUER_CELL,
-    CONQUER_STRUCTURE,
-    ATTACK,
-    BUILD_STRUCTURE,
-    BUILD_WALL,
-    HEAL,
-    SPAWN,
-    OPEN_LOOTBOX,
+    ACT_MOVE,
+    ACT_CONQUER_CELL,
+    ACT_CONQUER_STRUCTURE,
+    ACT_ATTACK,
+    ACT_BUILD_STRUCTURE,
+    ACT_BUILD_WALL,
+    ACT_HEAL,
+    ACT_SPAWN,
+    ACT_OPEN_LOOTBOX,
 
     // WALL GATE
-    TOGGLE_GATE,
+    ACT_TOGGLE_GATE,
 
     // GENERIC
-    SELF_DESTRUCTION,
+    ACT_SELF_DESTRUCTION,
 
     NUM_OBJ_ACTIONS
+};
+
+enum AttackStrategy : unsigned int
+{
+    ATTSTR_NO_ATTACK,
+    ATTSTR_CLOSEST_ENEMY,
+    ATTSTR_RANDOM_ENEMY,
+    ATTSTR_LOWEST_HP_ENEMY,
+    ATTSTR_HIGHEST_HP_ENEMY,
+
+    NUM_ATTACK_STRATEGIES,
+
+    ATTSTR_NULL,
 };
 
 class Game;
@@ -100,7 +113,7 @@ public:
     int GetWidth() const;
     int GetHeight() const;
 
-    void ShowWarning(const char * text, float time);
+    void ShowWarning(const char * text, float time = 2.f);
 
     bool IsStructure() const;
     bool CanBeConquered() const;
@@ -156,6 +169,8 @@ public:
     float GetEnergy() const;
     void SumEnergy(float val);
     float GetMaxEnergy() const;
+    float GetEnergyToSave() const;
+    void SetEnergyToSave(float val);
 
     float GetExplosionDamage() const;
 
@@ -185,15 +200,20 @@ public:
     void SetWeapon(Weapon * w);
 
     void SetAttackMode(AttackMode am);
-    void SetPerfectShot(bool enabled);
-    void SetFatalHit(bool enabled);
+    AttackStrategy GetAttackStrategy() const;
+    void SetAttackStrategy(AttackStrategy as);
+    void SetPerfectShotEnabled(bool val, bool forceFatal);
+    void SetFatalHitEnabled(bool val);
+
     void ClearTargetAttack();
     bool SetTargetAttack(GameObject * obj);
-
     void FindAndSetEnemyTarget();
     bool HasEnemyInRange();
 
-    void Hit(float damage, GameObject * attacker, bool fatal, bool showHitPoints = true);
+    GameObject * GetKiller() const;
+    PlayerFaction GetKillerFaction() const;
+    void Hit(float damage, GameObject * attacker, PlayerFaction factionAttacker, bool fatal,
+             bool showHitPoints = true);
     void MissHit();
     void SelfDestroy();
     void SetIndestructible(bool val);
@@ -206,7 +226,11 @@ public:
     GameObjectActionType GetDefaultAction() const;
     void SetDefaultAction(GameObjectActionType action);
 
-    virtual void OnNewTurn(PlayerFaction faction);
+    void HideStatusUI();
+    void ShowStatusUI();
+
+    virtual void OnTurnStart(PlayerFaction faction);
+    virtual void OnTurnEnd(PlayerFaction faction);
 
     virtual void Update(float delta);
 
@@ -256,6 +280,11 @@ private:
     virtual float GetActionExperienceGain(GameObjectActionType action) const;
 
     void PositionWarningMessage();
+
+    GameObject * FindEnemyClosest();
+    GameObject * FindEnemyRandom();
+    GameObject * FindEnemyLowHealth();
+    GameObject * FindEnemyHighHealth();
 
     void ShowIconUpgrade();
     void HideIconUpgrade();
@@ -307,6 +336,11 @@ private:
 
     const GameMapCell * mCell = nullptr;
 
+    GameObject * mKiller = nullptr;
+    // NOTE killer faction is needed to propagate killer in chain of kills as killer object
+    // can be destroyed in the middle of it and its faction value becomes unusable
+    PlayerFaction mKillerFaction;
+
     WarningMessage * mWarnMessage = nullptr;
 
     IconUpgrade * mIconUpgrade = nullptr;
@@ -322,6 +356,8 @@ private:
 
     PlayerFaction mFaction;
 
+    AttackStrategy mAttStrategy = ATTSTR_CLOSEST_ENEMY;
+
     unsigned int mRows = 1;
     unsigned int mCols = 1;
 
@@ -332,6 +368,7 @@ private:
 
     float mMaxEnergy = 100.f;
     float mEnergy = 100.f;
+    float mEnergyToSave = 0.f;
     float mMaxHealth = 100.f;
     float mHealth = 100.f;
     float mMaxSpeed = 0.f;
@@ -411,6 +448,8 @@ inline void GameObject::SetMaxSpeed(float val) { mMaxSpeed = val; }
 inline float GameObject::GetHealth() const { return mHealth; }
 
 inline float GameObject::GetEnergy() const { return mEnergy; }
+inline float GameObject::GetEnergyToSave() const { return mEnergyToSave; }
+inline void GameObject::SetEnergyToSave(float val) { mEnergyToSave = val; }
 
 inline float GameObject::GetEnergyForActionStep(GameObjectActionType action) const
 {
@@ -437,6 +476,12 @@ inline const std::unordered_map<ObjAttId, int> & GameObject::GetAttributes() con
 }
 
 inline const Weapon * GameObject::GetWeapon() const { return mWeapon; }
+
+inline void GameObject::SetAttackStrategy(AttackStrategy as) { mAttStrategy = as; }
+inline AttackStrategy GameObject::GetAttackStrategy() const { return mAttStrategy; }
+
+inline GameObject * GameObject::GetKiller() const { return mKiller; }
+inline PlayerFaction GameObject::GetKillerFaction() const { return mKillerFaction; }
 
 inline void GameObject::SetIndestructible(bool val) { mIndestructible = val; }
 

@@ -105,7 +105,7 @@ bool MissionGoalsTracker::Load(sgl::utilities::BinaryFile & bf)
     {
         const GameObjectTypeId type = bf.ReadSizeT();
         const unsigned int val = bf.ReadUint();
-        mCategoriesDestroyed.emplace(type, val);
+        mCategoriesEnemyDestroyed.emplace(type, val);
     }
 
     // data tracking
@@ -157,9 +157,9 @@ bool MissionGoalsTracker::Save(sgl::utilities::BinaryFile & bf) const
     }
 
     // categories destroyed
-    bf.WriteUint(mCategoriesDestroyed.size());
+    bf.WriteUint(mCategoriesEnemyDestroyed.size());
 
-    for(const auto it : mCategoriesDestroyed)
+    for(const auto it : mCategoriesEnemyDestroyed)
     {
         bf.WriteSizeT(it.first);
         bf.WriteUint(it.second);
@@ -294,14 +294,14 @@ void MissionGoalsTracker::AddStructureConquered(GameObjectTypeId type)
     ++mTotStructuresConquered;
 }
 
-void MissionGoalsTracker::AddObjectDestroyedByCategory(GameObjectCategoryId cat)
+void MissionGoalsTracker::AddEnemyObjectDestroyedByCategory(GameObjectCategoryId cat)
 {
-    auto it = mCategoriesDestroyed.find(cat);
+    auto it = mCategoriesEnemyDestroyed.find(cat);
 
-    if(it != mCategoriesDestroyed.end())
+    if(it != mCategoriesEnemyDestroyed.end())
         ++(it->second);
     else
-        mCategoriesDestroyed.emplace(cat, 1);
+        mCategoriesEnemyDestroyed.emplace(cat, 1);
 }
 
 #ifdef DEV_MODE
@@ -511,7 +511,7 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_MUNITS)
     {
-        const unsigned int num = GetNumObjectsDestroyedByCategory(ObjectData::CAT_MINI_UNIT);
+        const unsigned int num = GetNumEnemyObjectsDestroyedByCategory(ObjectData::CAT_MINI_UNIT);
 
         if(num < g.GetQuantity())
         {
@@ -522,7 +522,7 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_STRUCTURES)
     {
-        const unsigned int num = GetNumObjectsDestroyedByCategory(ObjectData::CAT_STRUCTURE);
+        const unsigned int num = GetNumEnemyObjectsDestroyedByCategory(ObjectData::CAT_STRUCTURE);
 
         if(num < g.GetQuantity())
         {
@@ -533,7 +533,7 @@ bool MissionGoalsTracker::CheckIfGoalCompleted(MissionGoal & g)
     }
     else if(gt == MissionGoal::TYPE_DESTROY_ENEMY_UNITS)
     {
-        const unsigned int num = GetNumObjectsDestroyedByCategory(ObjectData::CAT_UNIT);
+        const unsigned int num = GetNumEnemyObjectsDestroyedByCategory(ObjectData::CAT_UNIT);
 
         if(num < g.GetQuantity())
         {

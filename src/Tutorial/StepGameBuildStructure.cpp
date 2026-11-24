@@ -1,5 +1,7 @@
 #include "Tutorial/StepGameBuildStructure.h"
 
+#include "GameObjects/Unit.h"
+#include "Tutorial/TutorialConstants.h"
 #include "Widgets/DialogNewElement.h"
 #include "Widgets/GameHUD.h"
 #include "Widgets/Tutorial/FocusArea.h"
@@ -11,6 +13,8 @@
 #include <sgl/sgui/Stage.h>
 #include <sgl/utilities/StringManager.h>
 
+#include <cassert>
+
 namespace
 {
 constexpr int padding = 10;
@@ -19,15 +23,81 @@ constexpr int padding = 10;
 namespace game
 {
 
-StepGameBuildStructure::StepGameBuildStructure(GameHUD * HUD, const char * textCat,
-                                               const char * textStruct, const char * textBuild,
-                                               int indCat, int indStruct)
+StepGameBuildStructure::StepGameBuildStructure(const Unit * unit, GameHUD * HUD,
+                                               const char * textCat, const char * textStruct,
+                                               const char * textBuild, GameObjectTypeId type)
     : TutorialInfoStep(550, 130)
     , mFocusArea(new FocusArea)
     , mHUD(HUD)
-    , mIndCat(indCat)
-    , mIndStruct(indStruct)
 {
+    assert(unit != nullptr);
+
+    // unit already ready to build right structure
+    if(unit->GetActiveAction() == ACT_BUILD_STRUCTURE &&
+       unit->GetStructureToBuild() == type)
+    {
+        SetDone();
+        return ;
+    }
+
+    if(ObjectData::TYPE_DEFENSIVE_TOWER == type)
+    {
+        mIndCat = TutorialConstants::catDefenses;
+        mIndStruct = TutorialConstants::structDefTower;
+    }
+    else if(ObjectData::TYPE_BUNKER == type)
+    {
+        mIndCat = TutorialConstants::catDefenses;
+        mIndStruct = TutorialConstants::structBunker;
+    }
+    else if(ObjectData::TYPE_WALL_GATE == type)
+    {
+        mIndCat = TutorialConstants::catDefenses;
+        mIndStruct = TutorialConstants::structGate;
+    }
+    else if(ObjectData::TYPE_BARRACKS == type)
+    {
+        mIndCat = TutorialConstants::catGeneric;
+        mIndStruct = TutorialConstants::structBarracks;
+    }
+    else if(ObjectData::TYPE_RESEARCH_CENTER == type)
+    {
+        mIndCat = TutorialConstants::catTech;
+        mIndStruct = TutorialConstants::structResearchCenter;
+    }
+    else if(ObjectData::TYPE_TRADING_POST == type)
+    {
+        mIndCat = TutorialConstants::catGeneric;
+        mIndStruct = TutorialConstants::structTradingPost;
+    }
+    else if(ObjectData::TYPE_RES_GEN_ENERGY_SOLAR == type)
+    {
+        mIndCat = TutorialConstants::catResources;
+        mIndStruct = TutorialConstants::structSolarPanel;
+    }
+    else if(ObjectData::TYPE_RES_GEN_MATERIAL_EXTRACT == type)
+    {
+        mIndCat = TutorialConstants::catResources;
+        mIndStruct = TutorialConstants::structMatExtr;
+    }
+    else if(ObjectData::TYPE_RES_STORAGE_MATERIAL == type)
+    {
+        mIndCat = TutorialConstants::catResources;
+        mIndStruct = TutorialConstants::structMatWarehouse;
+    }
+    else if(ObjectData::TYPE_RES_STORAGE_ENERGY == type)
+    {
+        mIndCat = TutorialConstants::catResources;
+        mIndStruct = TutorialConstants::structEneWarehouse;
+    }
+    else if(ObjectData::TYPE_RADAR_STATION == type)
+    {
+        mIndCat = TutorialConstants::catTech;
+        mIndStruct = TutorialConstants::structRadarStation;
+    }
+    else
+        assert(false);
+
     auto sm = sgl::utilities::StringManager::Instance();
 
     // FOCUS

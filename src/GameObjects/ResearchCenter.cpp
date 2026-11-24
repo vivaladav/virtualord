@@ -118,9 +118,9 @@ bool ResearchCenter::Save(sgl::utilities::BinaryFile & bf) const
 }
 
 
-void ResearchCenter::OnNewTurn(PlayerFaction faction)
+void ResearchCenter::OnTurnStart(PlayerFaction faction)
 {
-    Structure::OnNewTurn(faction);
+    Structure::OnTurnStart(faction);
 
     // not producing anything
     if(mResearchPerTurn == 0)
@@ -143,13 +143,77 @@ void ResearchCenter::OnNewTurn(PlayerFaction faction)
     auto partMan = GetParticlesManager();
     auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
 
-    const int marginV = 20;
+    const int marginV = 25;
     const float x = GetX() + GetWidth() / 2.f;
-    const float y = GetY() - marginV;
+    const float y = GetStatusIconBaseY() - marginV;
     const float delay = 0.f;
 
     const DataParticleOutput pd(mResearchPerTurn, ER_RESEARCH, x, y, delay);
     pu->AddParticle(pd);
+}
+
+void ResearchCenter::OnTurnEnd(PlayerFaction faction)
+{
+    Structure::OnTurnEnd(faction);
+
+    // not own turn or not active -> exit
+    if(faction != GetFaction() || !IsLinked())
+        return ;
+
+    auto partMan = GetParticlesManager();
+    auto pu = static_cast<UpdaterOutput *>(partMan->GetUpdater(PU_OUTPUT));
+
+    const int money = GetResourceUsage(ER_MONEY);
+    const int energy = GetResourceUsage(ER_ENERGY);
+    const int material = GetResourceUsage(ER_MATERIAL);
+    const int blobs = GetResourceUsage(ER_BLOBS);
+    const int diamonds = GetResourceUsage(ER_DIAMONDS);
+
+    const bool bothRows = blobs > 0 || diamonds > 0;
+    const int marginV = 20;
+    const float x0 = GetX();
+    const float x1 = GetX() + GetWidth() / 2.f;
+    const float x2 = GetX() + GetWidth();
+    const float x0b = GetX() + GetWidth() * 0.25f;
+    const float x1b = GetX() + GetWidth() * 0.75f;
+    const float y0 = bothRows ? GetY() - (marginV * 3) : GetY() - marginV;
+    const float y1 = GetY() - marginV;
+    const float delay = 0.f;
+
+    // MONEY
+    if(money > 0)
+    {
+        const DataParticleOutput data(-money, ER_MONEY, x0, y0, delay);
+        pu->AddParticle(data);
+    }
+
+    // ENERGY
+    if(energy > 0)
+    {
+        const DataParticleOutput data(-energy, ER_ENERGY, x1, y0, delay);
+        pu->AddParticle(data);
+    }
+
+    // MATERIAL
+    if(material > 0)
+    {
+        const DataParticleOutput data(-material, ER_MATERIAL, x2, y0, delay);
+        pu->AddParticle(data);
+    }
+
+    // BLOBS
+    if(blobs > 0)
+    {
+        const DataParticleOutput data(-blobs, ER_BLOBS, x0b, y1, delay);
+        pu->AddParticle(data);
+    }
+
+    // DIAMONDS
+    if(diamonds > 0)
+    {
+        const DataParticleOutput data(-diamonds, ER_DIAMONDS, x1b, y1, delay);
+        pu->AddParticle(data);
+    }
 }
 
 int ResearchCenter::GetResourceProduction(ExtendedResource res) const
@@ -319,7 +383,7 @@ void ResearchCenter::UpdateProduction()
     const int baseProd = (maxProdElem * mResUsage[ER_ENERGY] / maxUsage) +
                          (maxProdElem * mResUsage[ER_MATERIAL] / maxUsage) +
                          (maxProdElem2 * mResUsage[ER_MONEY] / maxUsage);
-    const int multProd2 = 2;
+    const int multProd2 = 3;
 
     mResearchPerTurn = baseProd + (baseProd * multProd2 * mResUsage[ER_BLOBS] / maxUsage) +
                        (baseProd * multProd2 * mResUsage[ER_DIAMONDS] / maxUsage);
@@ -396,7 +460,7 @@ void ResearchCenter::UpdateHighlight()
 
         // there's at least 1 available upgrade that can be unlocked -> SHOW
         if(!player->IsUpgradeUnlocked(tu) && player->IsUpgradeAvailable(tu) &&
-           game->GetTechUpgradecost(tu) <= resPoints)
+           game->GetCostTechUpgrade(tu) <= resPoints)
         {
             ShowHighlight();
             return ;

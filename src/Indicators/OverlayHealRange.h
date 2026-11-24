@@ -18,6 +18,9 @@ public:
     OverlayHealRange(IsoMap * im);
     ~OverlayHealRange();
 
+    void Hide();
+    void Show();
+
     void Clear();
     void Show(const GameObject * obj, unsigned int range);
 

@@ -191,6 +191,8 @@ void ResourceLoader::DestroyGameTextures()
     tm->DestroySprite(SpriteFileWalls);
 
     // ===== UI GAME =====
+    // DIALOG AUTO ATTACK SETTINGS
+    tm->DestroyTexture(SpriteFileDialogAutoAttSettings);
     // DIALOG EXIT
     tm->DestroySprite(SpriteFileDialogExit);
     tm->DestroyTexture(SpriteFileDialogExitExp);
@@ -244,7 +246,6 @@ void ResourceLoader::DestroyGameTextures()
     tm->DestroySprite(SpriteFileObjActionButton);
     // PLANET MAP
     tm->DestroySprite(SpriteFilePlanetMap);
-    tm->DestroySprite(SpriteFilePlanetMap2);
     // RESOURCES BAR
     tm->DestroySprite(SpriteFileResourcesBar);
     tm->DestroyTexture(SpriteFileResourcesBarExp);
@@ -314,8 +315,10 @@ void ResourceLoader::SetupMusic()
     mJobs.emplace_back([this, am]
                        {
                            am->CreateMusic(packageMusicGame, "game/music_01.ogg");
-                           am->CreateMusic(packageMusicGame, "mission/music_01.ogg");
-                           am->CreateMusic(packageMusicGame, "mission/music_02.ogg");
+                           am->CreateMusic(packageMusicGame, "game/mission_01.ogg");
+                           am->CreateMusic(packageMusicGame, "game/mission_02.ogg");
+                           am->CreateMusic(packageMusicGame, "game/mission_03.ogg");
+                           am->CreateMusic(packageMusicGame, "game/mission_04.ogg");
                        });
 
     // MENUS MUSIC
@@ -328,8 +331,8 @@ void ResourceLoader::SetupMusic()
     // TEST MUSIC
     mJobs.emplace_back([this, am]
                        {
-                           am->CreateMusic(packageMusicTest, "test/menu_01.ogg");
-                           am->CreateMusic(packageSoundsTest, "test/test.ogg");
+                           am->CreateMusic(packageMusicTest, "test/music_01.ogg");
+                           am->CreateMusic(packageMusicTest, "test/test.ogg");
                        });
 #endif
 }
@@ -379,7 +382,9 @@ void ResourceLoader::SetupSFX()
                            am->CreateSound(packageSoundsGame, "game/explosion-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/gate_close.ogg");
                            am->CreateSound(packageSoundsGame, "game/gate_open.ogg");
+                           am->CreateSound(packageSoundsGame, "game/hit-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/laser-01.ogg");
+                           am->CreateSound(packageSoundsGame, "game/miss-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/miniunit_move-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/selection-01.ogg");
                            am->CreateSound(packageSoundsGame, "game/selection-02.ogg");
@@ -453,28 +458,18 @@ void ResourceLoader::SetupPermanentTextures()
             { 0, 0, 90, 800 },
             { 91, 0, 110, 800 },
 
-            // COMBO BOX
-            { 201, 0, 350, 38 },
-            { 201, 39, 350, 38 },
-            { 201, 78, 350, 38 },
-            { 201, 117, 350, 38 },
-            { 201, 156, 350, 38 },
-            { 201, 195, 350, 38 },
-            { 201, 234, 350, 38 },
-            { 201, 273, 350, 38 },
-
             // CHECK BOX
-            { 201, 312, 45, 39 },
-            { 247, 312, 45, 39 },
-            { 293, 312, 45, 39 },
-            { 339, 312, 45, 39 },
-            { 385, 312, 45, 39 },
-            { 431, 312, 45, 39 },
+            { 0, 801, 45, 39 },
+            { 46, 801, 45, 39 },
+            { 92, 801, 45, 39 },
+            { 138, 801, 45, 39 },
+            { 184, 801, 45, 39 },
+            { 230, 801, 45, 39 },
 
             // SLIDER
-            { 201, 352, 304, 18 },
-            { 201, 371, 300, 14 },
-            { 201, 386, 30, 30 },
+            { 0, 841, 304, 18 },
+            { 0, 860, 300, 14 },
+            { 202, 770, 30, 30 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileDialogSettings, rects);
@@ -620,6 +615,20 @@ void ResourceLoader::SetupPermanentTextures()
             { 622, 82, 32, 24 },
             { 655, 82, 32, 24 },
             { 688, 82, 32, 24 },
+            // COMBO BOX
+            { 0, 702, 350, 38 },
+            { 0, 741, 350, 38 },
+            { 0, 780, 350, 38 },
+            { 0, 819, 350, 38 },
+            { 351, 702, 350, 38 },
+            { 351, 741, 350, 38 },
+            { 351, 780, 350, 38 },
+            { 351, 819, 350, 38 },
+            // BUTTON SAVE SLOT
+            { 812, 0, 540, 70 },
+            { 812, 71, 540, 70 },
+            { 812, 142, 540, 70 },
+            { 812, 213, 540, 70 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PERM], SpriteFileUIShared, rects);
@@ -714,6 +723,7 @@ void ResourceLoader::SetupPregameTextures()
             // BACKROUNDS
             { 0, 244, 500, 250 },
             { 0, 495, 554, 136 },
+            { 0, 632, 600, 64 },
 
             // PRIMARY BUTTON
             { 0, 0, 400, 60 },
@@ -723,6 +733,9 @@ void ResourceLoader::SetupPregameTextures()
 
             // ICONS
             { 401, 0, 16, 16 },
+
+            // OTHERS
+            { 0, 697, 540, 3 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_PREGAME], SpriteFileMainMenuUI, rects);
@@ -857,11 +870,6 @@ void ResourceLoader::SetupGameSetupTextures()
             { 1028, 201, 540, 200 },
             { 1028, 402, 540, 200 },
             { 1028, 603, 540, 200 },
-            // SAVE SLOT
-            { 1028, 804, 540, 70 },
-            { 1028, 875, 540, 70 },
-            { 1028, 946, 540, 70 },
-            { 1028, 1017, 540, 70 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME_SETUP],
@@ -1742,6 +1750,12 @@ void ResourceLoader::SetupGameTextures()
     });
 
     // ===== UI GAME =====
+    // DIALOG AUTO ATTACK SETTINGS
+    mJobs.emplace_back([this, tm]
+    {
+        tm->RegisterTexture(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFileDialogAutoAttSettings);
+    });
+
     // DIALOG EXIT
     mJobs.emplace_back([this, tm]
     {
@@ -2148,7 +2162,7 @@ void ResourceLoader::SetupGameTextures()
         const std::vector<sgl::core::Rectd> rects
         {
             // BACKGROUND
-            { 0, 0, 750, 62 },
+            { 0, 0, 832, 62 },
             // BUTTON BASE
             { 0, 63, 60, 44 },
             { 61, 63, 60, 44 },
@@ -2159,6 +2173,11 @@ void ResourceLoader::SetupGameTextures()
             { 305, 63, 60, 44 },
             { 366, 63, 60, 44 },
             { 427, 63, 60, 44 },
+            // BUTTON NEXT UNIT
+            { 488, 63, 60, 44 },
+            { 549, 63, 60, 44 },
+            { 610, 63, 60, 44 },
+            { 671, 63, 60, 44 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePanelTurnControl, rects);
@@ -2360,6 +2379,7 @@ void ResourceLoader::SetupGameTextures()
             { 106, 180, 52, 52 },
             { 159, 180, 52, 52 },
             { 212, 180, 52, 52 },
+            { 265, 180, 52, 52 },
             // BUTTON ACTION OPTION
             { 371, 0, 258, 40 },
             { 371, 41, 258, 40 },
@@ -2459,26 +2479,17 @@ void ResourceLoader::SetupGameTextures()
             { 0, 746, 350, 44 },
             { 351, 701, 350, 44 },
             { 351, 746, 350, 44 },
+
+            // PANELS
+            { 0, 791, 400, 52 },
+            { 401, 791, 400, 52 },
+            { 0, 844, 477, 204 },
+            { 0, 1049, 475, 402 },
+            { 478, 844, 477, 504 },
+            { 478, 1349, 475, 87 },
         };
 
         tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePlanetMap, rects);
-    });
-
-    // PLANET MAP 2
-    mJobs.emplace_back([this, tm]
-    {
-        const std::vector<sgl::core::Rectd> rects
-        {
-            // PANELS
-            { 0, 0, 400, 50 },
-            { 401, 0, 400, 50 },
-            { 0, 51, 475, 200 },
-            { 0, 252, 475, 400 },
-            { 476, 52, 475, 500 },
-            { 476, 552, 475, 85 }
-        };
-
-        tm->RegisterSprite(*mTexPackages[PACKAGE_IMGS_UI_GAME], SpriteFilePlanetMap2, rects);
     });
 
     // RESOURCES BAR

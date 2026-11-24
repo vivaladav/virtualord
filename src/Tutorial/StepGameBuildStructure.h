@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameObjects/GameObjectTypes.h"
 #include "Tutorial/TutorialInfoStep.h"
 
 namespace game
@@ -7,12 +8,13 @@ namespace game
 
 class GameHUD;
 class FocusArea;
+class Unit;
 
 class StepGameBuildStructure : public TutorialInfoStep
 {
 public:
-    StepGameBuildStructure(GameHUD * HUD, const char * textCat, const char * textStruct,
-                           const char * textBuild, int indCat, int indStruct);
+    StepGameBuildStructure(const Unit * unit, GameHUD * HUD, const char * textCat,
+                           const char * textStruct, const char * textBuild, GameObjectTypeId type);
     ~StepGameBuildStructure();
 
     void SetDelayAnimation(float val);

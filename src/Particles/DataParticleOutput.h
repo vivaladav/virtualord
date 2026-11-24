@@ -10,7 +10,7 @@ enum ExtendedResource : unsigned int;
 struct DataParticleOutput : public sgl::graphic::ParticleData
 {
     DataParticleOutput(int q, ExtendedResource t, float x, float y, float de)
-        : sgl::graphic::ParticleData(x, y, 50.f, de)
+        : sgl::graphic::ParticleData(x, y, 30.f, de)
         , quantity(q)
         , type(t)
     {
@@ -28,7 +28,7 @@ struct DataParticleOutput : public sgl::graphic::ParticleData
 
     int quantity = 0;
     ExtendedResource type;
-    float decaySpeed = 70.f;
+    float decaySpeed = 0.f;
     float timeLife = 1.5f;
 };
 

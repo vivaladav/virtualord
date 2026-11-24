@@ -478,14 +478,13 @@ void DialogNewGame::CreatePanelSaves()
     const int spacingButtons = 10;
     int btnY = panelContY0;
 
-
     mButtonsSave = new sgui::AbstractButtonsGroup;
 
     mButtonsSave->AddFunctionOnToggle([this](unsigned int ind, bool checked)
     {
         if(checked)
         {
-            mGame->SetSaveFile(mGame->GetSavefile(mGame->GetGameMode(), ind));
+            mGame->SetSaveSlot(ind);
 
             mButtonContinue->SetEnabled(true);
         }
@@ -497,60 +496,33 @@ void DialogNewGame::CreatePanelSaves()
     unsigned int map;
     int turn;
     std::time_t timestamp;
-    bool used;
     ButtonSaveSlot * btn;
     int slot = 0;
 
-    // SLOT 1
-    used = mGame->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
-                                 mGame->GetSavefile(mGame->GetGameMode(), slot++));
+    const unsigned int numSlots = 3;
 
-    if(used)
-        btn = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelSave);
-    else
-        btn = new ButtonSaveSlot(mPanelSave);
+    for(unsigned int i = 0; i < numSlots; ++i)
+    {
+        const bool used = mGame->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
+                                                mGame->GetSavefile(slot++));
 
-    btn->SetPosition(paddingPanelL, btnY);
+        if(used)
+            btn = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelSave);
+        else
+            btn = new ButtonSaveSlot(mPanelSave);
 
-    mButtonsSave->AddButton(btn);
+        btn->SetPosition(paddingPanelL, btnY);
 
-    btnY += btn->GetHeight() + spacingButtons;
-
-    // SLOT 2
-    used = mGame->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
-                                 mGame->GetSavefile(mGame->GetGameMode(), slot++));
-
-    if(used)
-        btn = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelSave);
-    else
-        btn = new ButtonSaveSlot(mPanelSave);
-
-    btn->SetPosition(paddingPanelL, btnY);
+        mButtonsSave->AddButton(btn);
 
 #ifdef DEMO_MODE
-    btn->MarkNotAvailable();
+        // only 1 slot available in DEMO
+        if(i > 0)
+            btn->MarkNotAvailable();
 #endif
 
-    mButtonsSave->AddButton(btn);
-
-    btnY += btn->GetHeight() + spacingButtons;
-
-    // SLOT 3
-    used = mGame->LoadGameHeader(mode, faction, planet, map, turn, timestamp,
-                                 mGame->GetSavefile(mGame->GetGameMode(), slot++));
-
-    if(used)
-        btn = new ButtonSaveSlot(mode, faction, planet, map, turn, timestamp, mPanelSave);
-    else
-        btn = new ButtonSaveSlot(mPanelSave);
-
-    btn->SetPosition(paddingPanelL, btnY);
-
-#ifdef DEMO_MODE
-    btn->MarkNotAvailable();
-#endif
-
-    mButtonsSave->AddButton(btn);
+        btnY += btn->GetHeight() + spacingButtons;
+    }
 }
 
 void DialogNewGame::HandlePositionChanged()

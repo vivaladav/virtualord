@@ -10,8 +10,7 @@ namespace sgl
 namespace game
 {
 
-
-// ==== COMBO BOX ====
+// ==== HORIZONTAL GAME SLIDER ====
 class GameSliderH : public sgl::sgui::Slider
 {
 
@@ -35,6 +34,13 @@ private:
 
 private:
     sgl::graphic::Texture * mTexBar = nullptr;
+};
+
+// ==== STANDARD HORIZONTAL GAME SLIDER ====
+class StandardGameSliderH : public GameSliderH
+{
+public:
+    StandardGameSliderH(sgl::sgui::Widget * parent);
 };
 
 } // namespace game

@@ -60,6 +60,8 @@ public:
 
     const ControlMap * GetControlMap() const;
 
+    bool CanAddObjectToCell(unsigned int ind) const;
+    bool CanAddObjectToCell(unsigned int r, unsigned int c) const;
     bool HasObject(unsigned int ind) const;
     bool HasObject(unsigned int r, unsigned int c) const;
     bool HasObjectType(GameObjectTypeId type, unsigned int ind) const;
@@ -126,7 +128,7 @@ public:
     void SetObjectActionFailed(GameObject * obj);
 
     // kills
-    void RegisterEnemyKill(GameObject * killer, GameObject * victim);
+    void RegisterEnemyKill(GameObject * killer, PlayerFaction factionKiller, GameObject * victim);
     void RegisterCasualty(PlayerFaction killed);
 
     bool AreObjectsAdjacent(const GameObject * obj1, const GameObject * obj2) const;
@@ -180,12 +182,14 @@ public:
     bool IsDoingAutomaticMoves() const;
 
     // damage
-    void DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject * attacker, int radius, float maxDamage);
+    void DamageArea(const Cell2D & srcBR, const Cell2D & srcTL, GameObject * attacker,
+                    PlayerFaction factionAttacker, int radius, float maxDamage);
 
     // move units
     bool CanUnitMove(const Cell2D & start, const Cell2D & end, Player * player) const;
     bool MoveUnit(ObjectPath * path);
     bool AbortMove(GameObject * obj);
+    void SetMoveFast(GameObject * obj);
 
     Cell2D GetCloseMoveTarget(const Cell2D & start, const Cell2D & end) const;
     Cell2D GetAdjacentMoveTarget(const Cell2D & start, const GameObject * target) const;
@@ -220,7 +224,9 @@ public:
     void CloseGate(WallGate * gate);
 
     // turn system
-    void OnNewTurn(PlayerFaction faction);
+    void OnTurnAuto(PlayerFaction faction);
+    void OnTurnStart(PlayerFaction faction);
+    void OnTurnEnd(PlayerFaction faction);
 
     int GetFactionMoneyPerTurn(PlayerFaction faction);
 
@@ -242,7 +248,7 @@ private:
     Cell2D GetClosestCell(const Cell2D & start, const std::vector<Cell2D> & targets) const;
 
     struct ObjectToAdd;
-    void AddObjectToMap(const ObjectToAdd & o2a);
+    bool AddObjectToMap(const ObjectToAdd & o2a);
     void DestroyObject(GameObject * obj);
 
     // -- player visibility --
@@ -345,6 +351,12 @@ private:
 // ==================== INLINE METHODS ====================
 
 inline const ControlMap * GameMap::GetControlMap() const { return mControlMap; }
+
+inline bool GameMap::CanAddObjectToCell(unsigned int r, unsigned int c) const
+{
+    const unsigned int ind = r * mCols + c;
+    return CanAddObjectToCell(ind);
+}
 
 inline bool GameMap::HasObject(unsigned int ind) const
 {

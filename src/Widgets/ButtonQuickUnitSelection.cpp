@@ -78,6 +78,8 @@ ButtonQuickUnitSelection::ButtonQuickUnitSelection(int index, ScreenGame * sg, s
         Player * p = mScreenGame->GetGame()->GetActivePlayerByFaction(mUnit->GetFaction());
         mScreenGame->ClearSelection(p);
         mScreenGame->SelectObject(mUnit, p);
+
+        mScreenGame->CenterCameraOverObject(mUnit);
     });
 
     // button disabled by default as it has no unit assigned yet
@@ -267,13 +269,6 @@ void ButtonQuickUnitSelection::HandleKeyUp(sgl::core::KeyboardEvent & event)
 
         event.SetConsumed();
     }
-}
-
-void ButtonQuickUnitSelection::HandleButtonUp()
-{
-    sgl::sgui::ImageButton::HandleButtonUp();
-
-    mScreenGame->CenterCameraOverObject(mUnit);
 }
 
 void ButtonQuickUnitSelection::UpdateValues()

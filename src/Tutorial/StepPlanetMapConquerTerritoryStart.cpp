@@ -22,7 +22,6 @@ StepPlanetMapConquerTerritoryStart::StepPlanetMapConquerTerritoryStart(PanelPlan
     mButton = panel->GetButtonOk();
 
     // FOCUS
-
     mFocusArea->SetCornersColorAction();
     mFocusArea->SetBlinking(true);
     mFocusArea->SetVisible(false);
@@ -32,7 +31,7 @@ StepPlanetMapConquerTerritoryStart::StepPlanetMapConquerTerritoryStart(PanelPlan
 
     info->SetPosition(TutorialConstants::infoPlanetMapX, TutorialConstants::infoPlanetMapY);
 
-    info->AddInfoEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_START_1"), 0.f, false, false);
+    info->AddActionEntry(sm->GetCString("TUT_PM_CONQUER_TERRITORY_START_1"), 0.f, false, false);
 
     info->SetFunctionOnFinished([this, panel]
     {
@@ -42,8 +41,9 @@ StepPlanetMapConquerTerritoryStart::StepPlanetMapConquerTerritoryStart(PanelPlan
         const int fY = panel->GetY() + mButton->GetY() - padding;
         const int fW = mButton->GetWidth() + (padding * 2);
         const int fH = mButton->GetHeight() + (padding * 2);
+        const float animDelay = 2.f;
 
-        mFocusArea->SetScreenArea(fX, fY, fW, fH, true);
+        mFocusArea->SetScreenArea(fX, fY, fW, fH, true, animDelay);
         mFocusArea->SetVisible(true);
 
         mShowingFocus = true;

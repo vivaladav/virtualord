@@ -15,10 +15,7 @@
 
 namespace
 {
-    const float maxSingleHealthValue = 50.f;
-    const float maxSingleEnergyValue = 120.f;
-
-    const int MAX_ELEMENTS = 5;
+constexpr int MAX_ELEMENTS = 5;
 }
 
 namespace game
@@ -33,13 +30,9 @@ MiniUnit::MiniUnit(const ObjectData & data, const ObjectInitData & initData, int
     const float maxSpeed = 10.f;
     SetMaxSpeed(maxSpeed);
 
-    // health
-    const float maxHealthValue = maxSingleHealthValue * elements;
-    SetMaxHealth(maxHealthValue);
+    SetMaxHealth(GetGroupMaxHealth(elements));
 
-    // energy
-    const float maxEnergy = maxSingleEnergyValue * elements;
-    SetMaxEnergy(maxEnergy);
+    SetMaxEnergy(GetGroupMaxEnergy(elements));
 
     // INIT GRAPHICS
     SetImage();
@@ -86,12 +79,10 @@ void MiniUnit::SetNumElements(int num)
     SetObjectVariant(num);
 
     // health
-    const float maxHealthValue = maxSingleHealthValue * num;
-    SetMaxHealth(maxHealthValue);
+    SetMaxHealth(GetGroupMaxHealth(num));
 
     // energy
-    const float maxEnergy = maxSingleEnergyValue * num;
-    SetMaxEnergy(maxEnergy);
+    SetMaxEnergy(GetGroupMaxEnergy(num));
 
     UpdateGraphics();
 }

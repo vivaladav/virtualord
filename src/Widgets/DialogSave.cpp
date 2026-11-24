@@ -161,6 +161,9 @@ DialogSave::DialogSave(Game * game, Screen * screen)
         player->SumResource(ER_ENERGY, -cost.at(ER_ENERGY));
         player->SumResource(ER_MATERIAL, -cost.at(ER_MATERIAL));
 
+        // reset cost of saving before saving the values
+        game->InitCostSaveGame();
+
         // save game
         game->SaveGame();
 

@@ -333,6 +333,8 @@ unsigned int Player::GetNumStructuresByType(GameObjectTypeId type) const
 
 void Player::AddStructure(Structure * s)
 {
+    assert(s->IsStructure());
+
     mStructures.push_back(s);
 }
 
@@ -437,6 +439,27 @@ void Player::RemVisibilityToAll()
         if(mVisMap[i] > 0)
             --mVisMap[i];
     }
+}
+
+Cell2D Player::GetAverageBasePosition() const
+{
+    if(mStructures.empty())
+        return Cell2D(-1, -1);
+
+    Cell2D pos(0, 0);
+
+    for(const auto s : mStructures)
+    {
+        pos.row += (s->GetRow0() + s->GetRow1()) / 2;
+        pos.col += (s->GetCol0() + s->GetCol1()) / 2;
+    }
+
+    const unsigned int numStructs = mStructures.size();
+
+    pos.row /= numStructs;
+    pos.col /= numStructs;
+
+    return pos;
 }
 
 const StatValue & Player::GetResource(ExtendedResource res) const
@@ -750,16 +773,28 @@ void Player::RemoveOnUpgradeUnlocked(unsigned int funId)
         mOnUpgradeUnlocked.erase(it);
 }
 
-void Player::OnNewTurn()
+void Player::OnTurnStart()
 {
     // update turns counter
     ++mTurnsPlayed;
 
-    // UPDATE RESOURCES
+    // PRODUCE RESOURCES
     for(unsigned int r = 0; r < NUM_EXT_RESOURCES; ++r)
     {
-        const int delta = GetResourceDelta(static_cast<ExtendedResource>(r));
-        mLocalResources[r].SumValue(delta);
+        const int val = GetResourceProduction(static_cast<ExtendedResource>(r));
+        mLocalResources[r].SumValue(val);
+    }
+
+    NotifyResourcesChanged();
+}
+
+void Player::OnTurnEnd()
+{
+    // CONSUME RESOURCES
+    for(unsigned int r = 0; r < NUM_EXT_RESOURCES; ++r)
+    {
+        const int val = GetResourceConsumption(static_cast<ExtendedResource>(r));
+        mLocalResources[r].SumValue(-val);
     }
 
     NotifyResourcesChanged();
@@ -909,6 +944,9 @@ void Player::OnMissionOver()
 {
     mUnits.clear();
     mStructures.clear();
+
+    mVisMap.clear();
+    mWalkableOverrideMap.clear();
 
     mSelObj = nullptr;
 

@@ -27,7 +27,7 @@ public:
 
     GameObjectTypeId GetProductType() const;
 
-    void OnNewTurn();
+    void OnTurnStart();
 
     void Update(float delta);
 

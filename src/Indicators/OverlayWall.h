@@ -23,6 +23,9 @@ public:
     OverlayWall(IsoLayer * layer, PlayerFaction faction, int mapCols);
     ~OverlayWall();
 
+    void Hide();
+    void Show();
+
     const Cell2D & GetCellStart() const;
     void SetCellStart(int row, int col);
     void SetCellStart(const Cell2D & start);

@@ -7,11 +7,12 @@ namespace game
 
 class GameHUD;
 class FocusArea;
+class Player;
 
 class StepGameUpgradeUnit : public TutorialInfoStep
 {
 public:
-    StepGameUpgradeUnit(GameHUD * HUD, bool showIntro);
+    StepGameUpgradeUnit(const Player * p, GameHUD * HUD, bool showIntro);
     ~StepGameUpgradeUnit();
 
     void OnStart() override;

@@ -19,7 +19,7 @@ SpawningTower::SpawningTower(const ObjectData & data, const ObjectInitData & ini
 
 float SpawningTower::GetTimeSpawnMiniUnit() const
 {
-    const float maxTime = 2.f;
+    const float maxTime = 1.5f;
     return GetTime(maxTime, GetAttribute(OBJ_ATT_SPAWNING));
 }
 
