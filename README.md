@@ -9,6 +9,7 @@ Code here on GitHub is usually updated once a month, or when I release a new bui
 ## Wishlist and follow on Steam
 [![Wishlist and follow on Steam](https://i.imgur.com/euSZC0a.png)](https://store.steampowered.com/app/1607580/Virtualord_The_Virtual_Conqueror/?utm_source=github&utm_medium=web&utm_campaign=ongoing&utm_content=readme&utm_term=img)
 
+On Steam you can also find the latest demo builds for Windows and Linux.
 
 ## Follow the development
 If you want to influence the development and to know more about what's happening behind the scenes, join the official Discord server:
@@ -26,12 +27,12 @@ You can also follow all the less frequent updates on social media:
 
 
 ## Current status
-**0.6.15 (alpha)**
+**0.6.19 (alpha) - DEMO RELEASED**
 
 ### Videos
-Announcement trailer
+Demo trailer
 
-<a href="https://youtu.be/7vOECjtEBig" target="_blank"><img src="https://i.imgur.com/wNpvwVQ.jpeg" title ="Virtualord, announcement trailer" alt="Virtualord, announcement trailer" width="806" height="auto" /></a>
+<a href="https://youtu.be/fJFVHg5P7M8" target="_blank"><img src="https://i.imgur.com/2FcMG04.jpeg" title ="Virtualord, demo trailer" alt="Virtualord, demo trailer" width="800" height="auto" /></a>
 
 ### Screenshots
 click to enlarge the images
